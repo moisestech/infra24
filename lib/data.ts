@@ -185,25 +185,6 @@ const unsortedAnnouncements: Announcement[] = [
   },
 
   // SPECIAL VISITS
-  {
-    id: "event-3",
-    type: "event",
-    subType: "social",
-    template: "pattern",
-    title: "INTERNATIONAL RESIDENCY VISIT: Cité des Arts Paris",
-    date: "March 5, 2025",
-    location: "Bakehouse Office",
-    description: "Vincent Gonzalvez, Head of Residency at Cité international des arts Paris, visiting to strengthen our partnership. Drop by to meet and connect!",
-    additional_info: "Opportunity to discuss international residency possibilities",
-    visibility: "internal",
-    key_people: [
-      {
-        name: "Vincent Gonzalvez",
-        role: "Head of Residency Department, Cité international des arts"
-      }
-    ],
-    expires_at: "2025-03-14",
-  },
 
   // EXHIBITIONS
   {
@@ -339,6 +320,108 @@ const unsortedAnnouncements: Announcement[] = [
     ],
     expires_at: "2025-03-03",
   },
+
+  {
+    id: "opportunity-1",
+    type: "opportunity",
+    subType: "open_call",
+    template: "pattern",
+    patternType: "abstract",
+    title: "Laundromat Art Space Solo Show Applications Open",
+    date: "March 13, 2025",
+    time: "11:59 PM EST",
+    location: "Laundromat Art Space",
+    description: "Laundromat Art Space is now accepting applications for a solo show in their 1,500 square foot gallery exhibition space. The application deadline is Thursday, March 13 at 11:59 PM EST.",
+    primary_link: "https://example.com/laundromat-application", // Replace with actual link
+    visibility: "external",
+    expires_at: "March 14, 2025",
+    key_people: [
+      {
+        name: "Curatorial Team",
+        role: "Selection Committee"
+      }
+    ],
+    organizations: [
+      {
+        name: "Laundromat Art Space"
+      }
+    ],
+    visual_style: {
+      accent_color: "#FF5733",
+      background_pattern: "waves"
+    },
+    icon: Brush
+  },
+  {
+    id: "opportunity-2",
+    type: "opportunity",
+    subType: "residency",
+    template: "pattern",
+    patternType: "grid",
+    title: "The Wolfsonian's Creative Fellowship Applications Open",
+    date: "April 30, 2025",
+    description: "Applications are now open for The Wolfsonian's Creative Fellowship program, which invites visual artists, designers, writers, filmmakers, performers, and musicians to immerse themselves in the museum’s collection.",
+    primary_link: "https://example.com/wolfsonian-fellowship", // Replace with actual link
+    visibility: "external",
+    expires_at: "May 1, 2025",
+    key_people: [
+      {
+        name: "Fellowship Coordinator",
+        role: "Program Manager"
+      }
+    ],
+    organizations: [
+      {
+        name: "The Wolfsonian Museum"
+      }
+    ],
+    visual_style: {
+      accent_color: "#3366FF",
+      background_pattern: "lines"
+    },
+    icon: Briefcase
+  },
+  {
+    id: "event-3",
+    type: "event",
+    subType: "workshop",
+    template: "pattern",
+    patternType: "geometric",
+    title: "Artist-Led Workshop with Pati Monclús & Katharine Labuda",
+    date: "March 4, 2025",
+    time: "6:30 - 8:30 PM",
+    location: "Swenson Gallery",
+    description: "Join us in the Swenson Gallery for an artist-led workshop facilitated by Pati Monclús and inspired by her current exhibition, Pico Radial. Special guest Katharine Labuda of Strange Pursuits will project a selection of 16 mm films, contextualizing the exhibition’s themes.",
+    visibility: "both",
+    expires_at: "March 5, 2025",
+    icon: Calendar
+  },
+  {
+    id: "notice-1",
+    type: "administrative",
+    subType: "policy",
+    template: "pattern",
+    title: "Private Events Notice",
+    date: "March 5-6, 2025",
+    description: "We are hosting private events on Wednesday, March 5 from 6:30 - 9:30 PM and Thursday, March 6 from 4:00 - 6:00 PM. We appreciate your patience!",
+    visibility: "internal",
+    expires_at: "March 7, 2025",
+    icon: Calendar
+  },
+  {
+    id: "event-4",
+    type: "event",
+    subType: "open_studios",
+    template: "pattern",
+    patternType: "minimal",
+    title: "Open Studios",
+    date: "March 11, 2025",
+    time: "6:00 - 9:00 PM",
+    description: "A calendar invite has been sent out for Open Studios on Tuesday, March 11 from 6:00 - 9:00 PM. Looking forward to seeing you all there!",
+    visibility: "both",
+    expires_at: "March 12, 2025",
+    icon: Calendar
+  }
 ];
 
 // Export sorted announcements
