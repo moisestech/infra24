@@ -326,7 +326,7 @@ const unsortedAnnouncements: Announcement[] = [
     type: "opportunity",
     subType: "open_call",
     template: "pattern",
-    patternType: "abstract",
+    patternType: "bauhaus",
     title: "Laundromat Art Space Solo Show Applications Open",
     date: "March 13, 2025",
     time: "11:59 PM EST",
