@@ -12,7 +12,6 @@ import {
   // Camera,
   // Theater,
   // Award,
-  // Briefcase,
   // DollarSign,
   // Globe,
   // Mail,
@@ -20,6 +19,7 @@ import {
   // FileQuestion,
   // Clock,
   // Bell,
+  Briefcase,
   AlertTriangle,
   Building2,
   Hammer,
@@ -350,7 +350,6 @@ const unsortedAnnouncements: Announcement[] = [
       accent_color: "#FF5733",
       background_pattern: "waves"
     },
-    icon: Brush
   },
   {
     id: "opportunity-2",
@@ -379,7 +378,6 @@ const unsortedAnnouncements: Announcement[] = [
       accent_color: "#3366FF",
       background_pattern: "lines"
     },
-    icon: Briefcase
   },
   {
     id: "event-3",
@@ -394,7 +392,6 @@ const unsortedAnnouncements: Announcement[] = [
     description: "Join us in the Swenson Gallery for an artist-led workshop facilitated by Pati Monclús and inspired by her current exhibition, Pico Radial. Special guest Katharine Labuda of Strange Pursuits will project a selection of 16 mm films, contextualizing the exhibition’s themes.",
     visibility: "both",
     expires_at: "March 5, 2025",
-    icon: Calendar
   },
   {
     id: "notice-1",
@@ -406,21 +403,18 @@ const unsortedAnnouncements: Announcement[] = [
     description: "We are hosting private events on Wednesday, March 5 from 6:30 - 9:30 PM and Thursday, March 6 from 4:00 - 6:00 PM. We appreciate your patience!",
     visibility: "internal",
     expires_at: "March 7, 2025",
-    icon: Calendar
   },
   {
     id: "event-4",
     type: "event",
     subType: "open_studios",
     template: "pattern",
-    patternType: "minimal",
     title: "Open Studios",
     date: "March 11, 2025",
     time: "6:00 - 9:00 PM",
     description: "A calendar invite has been sent out for Open Studios on Tuesday, March 11 from 6:00 - 9:00 PM. Looking forward to seeing you all there!",
     visibility: "both",
     expires_at: "March 12, 2025",
-    icon: Calendar
   }
 ];
 
