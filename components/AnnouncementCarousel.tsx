@@ -3,8 +3,7 @@
 import useEmblaCarousel from 'embla-carousel-react';
 import { 
   ChevronLeft, 
-  ChevronRight, 
-  Calendar, 
+  ChevronRight,
   MapPin, 
   ExternalLink, 
   Clock,
@@ -32,7 +31,7 @@ import {
   Pause,
   Play
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import { useState, useCallback, useEffect } from 'react';
 import { Announcement, AnnouncementSubType } from '@/types/announcement';
 import { cn } from '@/lib/utils';
@@ -65,62 +64,142 @@ interface TemplateProps {
   IconComponent: LucideIcon;
 }
 
+// Add this helper function at the top of the file
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+  const day = date.getDate();
+  return `${month} ${day}`;
+};
+
 // Standard template
 function StandardTemplate({ announcement, styles, IconComponent }: TemplateProps) {
+  const getDateStatus = (dateStr: string) => {
+    const today = new Date();
+    const date = new Date(dateStr);
+    today.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+    
+    const diffTime = date.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (date.getTime() === today.getTime()) return { type: 'today', message: 'Happening Today' };
+    if (date < today) return { type: 'past', message: `${Math.abs(diffDays)} days ago` };
+    return { type: 'future', message: `In ${diffDays} days` };
+  };
+
+  const dateStatus = getDateStatus(announcement.date);
+
   return (
     <motion.div 
-      className="relative z-10 h-full p-12 md:p-20 flex flex-col justify-center"
+      className="relative z-10 h-screen w-full p-8 md:p-12"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-7xl mx-auto w-full space-y-12">
-        {/* Move date to top and make it more prominent */}
-        <div className="flex flex-wrap gap-8 text-xl">
-          <div className="flex items-center gap-3">
-            <Calendar className="w-8 h-8" />
-            <span className="text-5xl md:text-6xl font-bold tracking-tight">
-              {announcement.date}
-            </span>
-            {announcement.time && (
-              <span className="text-3xl text-white/80">
-                {announcement.time}
-              </span>
-            )}
-          </div>
-        </div>
+      {/* Date Display - Absolute Position */}
+      <motion.div 
+        className="absolute top-8 right-8 md:right-12 text-right z-20"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div 
+          className={cn(
+            "text-[10rem] md:text-[12rem] xl:text-[14rem] font-black tracking-tighter leading-none",
+            dateStatus.type === 'today' ? "text-white/90" : 
+            dateStatus.type === 'past' ? "text-white/60" : 
+            "text-white/90"
+          )}
+        >
+          {formatDate(announcement.date)}
+        </motion.div>
 
-        {/* Type Badge */}
-        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm">
-          <IconComponent className="w-8 h-8 text-white" />
-          <span className="text-2xl font-bold text-white uppercase tracking-wider">
-            {announcement.type}
-          </span>
-        </div>
-
-        {/* Title */}
-        <h2 className={cn(
-          "text-7xl md:text-8xl xl:text-9xl font-black tracking-tight leading-none",
-          styles.text
-        )}>
-          {announcement.title}
-        </h2>
-
-        {/* Description */}
-        <p className="text-3xl md:text-4xl text-white/80 max-w-4xl leading-relaxed">
-          {announcement.description}
-        </p>
-
-        {/* Call to Action */}
-        {announcement.primary_link && (
-          <a 
-            href={announcement.primary_link}
-            className="inline-flex items-center gap-3 text-2xl text-white hover:text-white/80 transition-colors group"
+        {announcement.time && (
+          <motion.div 
+            className="text-3xl text-white/60 font-medium tracking-tight mt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
-            Learn More
-            <ExternalLink className="w-8 h-8 group-hover:translate-x-1 transition-transform" />
-          </a>
+            {announcement.time}
+          </motion.div>
         )}
+
+        <motion.div 
+          className={cn(
+            "text-xl font-bold tracking-tight mt-2",
+            dateStatus.type === 'today' ? "text-green-400" : 
+            dateStatus.type === 'past' ? "text-red-400" : 
+            "text-blue-400"
+          )}
+        >
+          {dateStatus.message}
+        </motion.div>
+      </motion.div>
+
+      {/* Main Content - Full Width */}
+      <div className="h-full flex flex-col justify-center max-w-4xl">
+        {/* Type Badge */}
+        <motion.div 
+          className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-white/10 backdrop-blur-sm mb-8"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <IconComponent className="w-10 h-10 text-white" />
+          <span className="text-3xl font-bold text-white uppercase tracking-wider">
+            {announcement.subType.replace('_', ' ')}
+          </span>
+        </motion.div>
+
+        {/* Title and Description */}
+        <div className="space-y-8">
+          <motion.h2 
+            className={cn(
+              "text-6xl md:text-7xl xl:text-8xl font-black tracking-tight leading-none",
+              styles.text
+            )}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            {announcement.title}
+          </motion.h2>
+
+          <motion.p 
+            className="text-2xl md:text-3xl text-white/80 max-w-3xl leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            {announcement.description}
+          </motion.p>
+        </div>
+
+        {/* Footer Info */}
+        <div className="flex items-center justify-between mt-12">
+          {announcement.location && (
+            <motion.div 
+              className="flex items-center gap-4 text-2xl text-white/80"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <MapPin className="w-8 h-8" />
+              <span>{announcement.location}</span>
+            </motion.div>
+          )}
+
+          {announcement.primary_link && (
+            <motion.a 
+              href={announcement.primary_link}
+              className="inline-flex items-center gap-4 px-8 py-4 text-2xl text-white hover:text-white/80 transition-colors group bg-white/10 backdrop-blur-sm rounded-full"
+              whileHover={{ scale: 1.05 }}
+            >
+              Learn More
+              <ExternalLink className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </motion.a>
+          )}
+        </div>
       </div>
     </motion.div>
   );
@@ -130,6 +209,22 @@ function StandardTemplate({ announcement, styles, IconComponent }: TemplateProps
 function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
+
+  const getDateStatus = (dateStr: string) => {
+    const today = new Date();
+    const date = new Date(dateStr);
+    today.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+    
+    const diffTime = date.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (date.getTime() === today.getTime()) return { type: 'today', message: 'Happening Today' };
+    if (date < today) return { type: 'past', message: `${Math.abs(diffDays)} days ago` };
+    return { type: 'future', message: `In ${diffDays} days` };
+  };
+
+  const dateStatus = getDateStatus(announcement.date);
 
   useEffect(() => {
     setIsMounted(true);
@@ -142,19 +237,13 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
 
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
-
-    return () => {
-      window.removeEventListener('resize', updateDimensions);
-    };
+    return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
   return (
-    <div id="pattern-template" className="relative w-full h-full">
+    <div className="relative w-full h-full">
       {/* Base gradient background */}
-      <div className={cn(
-        "absolute inset-0",
-        styles.gradient
-      )} />
+      <div className={cn("absolute inset-0", styles.gradient)} />
 
       {/* Pattern overlay */}
       {isMounted && (
@@ -168,65 +257,114 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
         </div>
       )}
 
-      {/* Content */}
+      {/* Absolute positioned date display */}
+      <motion.div 
+        className="absolute top-8 right-8 md:right-12 text-right z-20"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div 
+          className={cn(
+            "text-[10rem] md:text-[12rem] xl:text-[14rem] font-black tracking-tighter leading-none",
+            dateStatus.type === 'today' ? "text-white/90" : 
+            dateStatus.type === 'past' ? "text-white/60" : 
+            "text-white/90"
+          )}
+        >
+          {formatDate(announcement.date)}
+        </motion.div>
+
+        {announcement.time && (
+          <motion.div 
+            className="text-3xl text-white/60 font-medium tracking-tight mt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            {announcement.time}
+          </motion.div>
+        )}
+
+        <motion.div 
+          className={cn(
+            "text-xl font-bold tracking-tight mt-2",
+            dateStatus.type === 'today' ? "text-green-400" : 
+            dateStatus.type === 'past' ? "text-red-400" : 
+            "text-blue-400"
+          )}
+        >
+          {dateStatus.message}
+        </motion.div>
+      </motion.div>
+
+      {/* Main content */}
       <motion.div 
         className="relative z-20 h-full p-12 md:p-20 flex flex-col justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="max-w-7xl mx-auto w-full space-y-12">
-          {/* Type Badge with SubType Icon */}
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm">
-            <IconComponent className="w-8 h-8 text-white" />
-            <span className="text-2xl font-bold text-white uppercase tracking-wider">
+        <div className="max-w-4xl space-y-16">
+          {/* Type Badge */}
+          <motion.div 
+            className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-white/10 backdrop-blur-sm"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <IconComponent className="w-10 h-10 text-white" />
+            <span className="text-3xl font-bold text-white uppercase tracking-wider">
               {announcement.subType.replace('_', ' ')}
             </span>
-          </div>
-          
-          {/* Title */}
-          <h2 className={cn(
-            "text-7xl md:text-8xl xl:text-9xl font-black tracking-tight leading-none",
-            styles.text
-          )}>
-            {announcement.title}
-          </h2>
+          </motion.div>
 
-          {/* Info Row */}
-          <div className="flex flex-wrap gap-8 text-xl text-white/90">
-            <div className="flex items-center gap-3">
-              <Calendar className="w-6 h-6" />
-              <span>{announcement.date}</span>
-            </div>
-            {announcement.time && (
-              <div className="flex items-center gap-3">
-                <Clock className="w-6 h-6" />
-                <span>{announcement.time}</span>
-              </div>
+          {/* Title */}
+          <motion.h2 
+            className={cn(
+              "text-6xl md:text-7xl xl:text-8xl font-black tracking-tight leading-none",
+              styles.text
             )}
-            {announcement.location && (
-              <div className="flex items-center gap-3">
-                <MapPin className="w-6 h-6" />
-                <span>{announcement.location}</span>
-              </div>
-            )}
-          </div>
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            {announcement.title}
+          </motion.h2>
 
           {/* Description */}
-          <p className="text-3xl md:text-4xl text-white/80 max-w-4xl leading-relaxed">
+          <motion.p 
+            className="text-2xl md:text-3xl text-white/80 max-w-3xl leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
             {announcement.description}
-          </p>
+          </motion.p>
 
-          {/* Call to Action */}
-          {announcement.primary_link && (
-            <a 
-              href={announcement.primary_link}
-              className="inline-flex items-center gap-3 text-2xl text-white hover:text-white/80 transition-colors group"
-            >
-              Learn More
-              <ExternalLink className="w-8 h-8 group-hover:translate-x-1 transition-transform" />
-            </a>
-          )}
+          {/* Footer Info */}
+          <div className="flex items-center justify-between">
+            {announcement.location && (
+              <motion.div 
+                className="flex items-center gap-4 text-2xl text-white/80"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <MapPin className="w-8 h-8" />
+                <span>{announcement.location}</span>
+              </motion.div>
+            )}
+
+            {announcement.primary_link && (
+              <motion.a 
+                href={announcement.primary_link}
+                className="inline-flex items-center gap-4 px-8 py-4 text-2xl text-white hover:text-white/80 transition-colors group bg-white/10 backdrop-blur-sm rounded-full"
+                whileHover={{ scale: 1.05 }}
+              >
+                Learn More
+                <ExternalLink className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </motion.a>
+            )}
+          </div>
         </div>
       </motion.div>
     </div>
@@ -249,25 +387,19 @@ interface TypeIconMappings {
 }
 
 export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProps) {
-  console.log('AnnouncementCarousel rendering with announcements:', announcements);
-  
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
-  const [nextBtnEnabled, setNextBtnEnabled] = useState(false);
-
-  // Get most recent 7 announcements
-  const recentAnnouncements = announcements
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 7);
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    duration: 30
+  });
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
-    setPrevBtnEnabled(emblaApi.canScrollPrev());
-    setNextBtnEnabled(emblaApi.canScrollNext());
+    setCurrentIndex(emblaApi.selectedScrollSnap());
   }, [emblaApi]);
 
   useEffect(() => {
@@ -283,14 +415,14 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
 
   // Auto-play functionality
   useEffect(() => {
-    if (!emblaApi || !isAutoPlaying) return;
+    if (!emblaApi || !isPaused) return;
 
     const intervalId = setInterval(() => {
       emblaApi.scrollNext();
     }, 5000); // Change slide every 5 seconds
 
     return () => clearInterval(intervalId);
-  }, [emblaApi, isAutoPlaying]);
+  }, [emblaApi, isPaused]);
 
   // Update the icon mappings with proper typing
   const typeIcons: TypeIconMappings = {
@@ -381,10 +513,10 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
     <div className="relative h-screen bg-white">
       {/* Move auto-play toggle button to bottom right */}
       <button
-        onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+        onClick={() => setIsPaused(!isPaused)}
         className="absolute bottom-8 right-8 z-30 p-4 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all flex items-center gap-2"
       >
-        {isAutoPlaying ? (
+        {isPaused ? (
           <>
             <Pause className="w-6 h-6 text-white" />
             <span className="text-white text-sm font-medium">Pause</span>
@@ -398,45 +530,27 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
       </button>
 
       <div className="overflow-hidden h-full" ref={emblaRef}>
-        <div className="flex h-full touch-pan-y">
-          {recentAnnouncements.map((announcement) => {
-            console.log('Processing announcement:', {
-              id: announcement.id,
-              type: announcement.type,
-              subType: announcement.subType,
-              template: announcement.template
-            });
-
-            const IconComponent = typeIcons[announcement.type][announcement.subType as keyof typeof typeIcons[typeof announcement.type]];
-            const styles = typeStyles[announcement.type];
-            
-            console.log('Styles and Icon:', {
-              styles,
-              hasIcon: !!IconComponent
-            });
-
-            const isPatternTemplate = announcement.template === 'pattern';
-            console.log('Template selection:', { isPatternTemplate });
+        <div className="flex h-full">
+          {announcements.map((announcement, index) => {
+            // Create a truly unique key using multiple unique identifiers
+            const uniqueKey = `${announcement.type}-${announcement.subType}-${announcement.date}-${index}`;
             
             return (
-              <div
-                key={announcement.id}
-                className={cn(
-                  "flex-[0_0_100%] min-w-0 relative h-full",
-                  styles.gradient
-                )}
+              <div 
+                key={uniqueKey}
+                className="flex-[0_0_100%] min-w-0 relative h-full"
               >
-                {isPatternTemplate ? (
+                {announcement.type === 'event' || announcement.type === 'opportunity' ? (
                   <PatternTemplate 
                     announcement={announcement}
-                    styles={styles}
-                    IconComponent={IconComponent}
+                    styles={typeStyles[announcement.type]}
+                    IconComponent={typeIcons[announcement.type][announcement.subType as keyof typeof typeIcons[typeof announcement.type]]}
                   />
                 ) : (
                   <StandardTemplate 
                     announcement={announcement}
-                    styles={styles}
-                    IconComponent={IconComponent}
+                    styles={typeStyles[announcement.type]}
+                    IconComponent={typeIcons[announcement.type][announcement.subType as keyof typeof typeIcons[typeof announcement.type]]}
                   />
                 )}
               </div>
@@ -449,10 +563,10 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
       <button
         className={cn(
           "absolute left-8 top-1/2 -translate-y-1/2 p-6 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all",
-          !prevBtnEnabled && "opacity-50 cursor-not-allowed"
+          currentIndex === 0 && "opacity-50 cursor-not-allowed"
         )}
         onClick={scrollPrev}
-        disabled={!prevBtnEnabled}
+        disabled={currentIndex === 0}
       >
         <ChevronLeft className="w-8 h-8 text-white" />
       </button>
@@ -460,10 +574,10 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
       <button
         className={cn(
           "absolute right-8 top-1/2 -translate-y-1/2 p-6 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all",
-          !nextBtnEnabled && "opacity-50 cursor-not-allowed"
+          currentIndex === announcements.length - 1 && "opacity-50 cursor-not-allowed"
         )}
         onClick={scrollNext}
-        disabled={!nextBtnEnabled}
+        disabled={currentIndex === announcements.length - 1}
       >
         <ChevronRight className="w-8 h-8 text-white" />
       </button>

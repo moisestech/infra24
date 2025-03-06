@@ -1,16 +1,16 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnnouncementType, AnnouncementSubType } from '@/types/announcement';
 import { PatternFactory, PatternType } from './patterns';
 import { PatternColors } from './patterns/types';
+import { DevComponent } from './DevComponent';
 
 interface BackgroundPatternProps {
   type: AnnouncementType;
   subType: AnnouncementSubType;
   width: number;
   height: number;
-  patternType?: PatternType;
 }
 
 interface ColorScheme extends PatternColors {
@@ -21,7 +21,7 @@ interface ColorSchemes {
   [key: string]: ColorScheme;
 }
 
-// Move colorSchemes outside component to avoid recreation on each render
+// Color schemes for different announcement types
 const colorSchemes: ColorSchemes = {
   urgent: {
     primary: 'rgba(239, 68, 68, 0.05)',
@@ -55,41 +55,66 @@ const colorSchemes: ColorSchemes = {
   }
 };
 
-export function BackgroundPattern({ type, subType, width, height, patternType = 'memphis' }: BackgroundPatternProps) {
+export function BackgroundPattern({ type, subType, width, height }: BackgroundPatternProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [currentPattern, setCurrentPattern] = useState<PatternType>();
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas?.getContext('2d');
     if (!ctx) return;
 
-    const colors = colorSchemes[type];
-    
-    // Clear canvas
+    // Clear the canvas
     ctx.clearRect(0, 0, width, height);
 
-    // Draw gradient background
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, colors.primary);
-    gradient.addColorStop(1, colors.accent);
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
+    // Define colors based on announcement type
+    const colors: PatternColors = {
+      primary: getColorForType(type),
+      secondary: getSecondaryColorForType(type),
+      accent: getAccentColorForType(type),
+      pattern: getPatternColorForType(type),
+      background: getBackgroundColorForType(type),
+    };
 
-    // Create and draw pattern
-    const pattern = PatternFactory.create(patternType, ctx, colors);
+    // Create pattern with undefined type to get random pattern
+    const pattern = PatternFactory.create(undefined, ctx, colors);
     pattern.draw(width, height);
+    
+    // Store the pattern type for dev display
+    setCurrentPattern(PatternFactory.getCurrentPattern());
 
-  }, [type, subType, width, height, patternType]);
+  }, [type, subType, width, height]);
 
   return (
-    <canvas 
-      ref={canvasRef}
-      width={width}
-      height={height}
-      className="w-full h-full"
-    />
+    <DevComponent patternName={currentPattern}>
+      <canvas 
+        ref={canvasRef}
+        width={width}
+        height={height}
+        className="w-full h-full"
+      />
+    </DevComponent>
   );
+}
+
+// Color helper functions
+function getColorForType(type: AnnouncementType): string {
+  return colorSchemes[type]?.primary || colorSchemes.administrative.primary;
+}
+
+function getSecondaryColorForType(type: AnnouncementType): string {
+  return colorSchemes[type]?.secondary || colorSchemes.administrative.secondary;
+}
+
+function getAccentColorForType(type: AnnouncementType): string {
+  return colorSchemes[type]?.accent || colorSchemes.administrative.accent;
+}
+
+function getPatternColorForType(type: AnnouncementType): string {
+  return colorSchemes[type]?.pattern || colorSchemes.administrative.pattern;
+}
+
+function getBackgroundColorForType(type: AnnouncementType): string {
+  // Use primary color with lower opacity for background if not specified
+  return colorSchemes[type]?.background || colorSchemes[type]?.primary || colorSchemes.administrative.primary;
 } 
