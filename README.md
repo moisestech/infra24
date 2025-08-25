@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bakehouse Smart Sign
 
-## Getting Started
+A sophisticated digital signage system designed to control and leverage community information flow. This system transforms how art communities communicate, creating power and influence through communication infrastructure.
 
-First, run the development server:
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📚 Documentation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Comprehensive documentation is available in the `/docs` directory:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **[📖 Main Documentation](/docs/README.md)** - Complete project overview
+- **[🎯 Strategy & Business](/docs/strategy/)** - Strategic leverage plans and business models
+- **[👥 LLM Roles](/docs/roles/)** - Role-based collaboration framework
+- **[🔧 Technical Docs](/docs/technical/)** - Architecture and implementation details
+- **[📖 User Guides](/docs/user-guides/)** - Implementation and usage guides
 
-## Learn More
+## 🎭 LLM Role System
 
-To learn more about Next.js, take a look at the following resources:
+This project uses a role-based approach for AI collaboration:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **[UI Engineer](/docs/roles/UI_ENGINEER.md)** - Frontend development and user experience
+- **[Backend Engineer](/docs/roles/BACKEND_ENGINEER.md)** - Data management and system architecture
+- **[DevOps Engineer](/docs/roles/DEVOPS_ENGINEER.md)** - Deployment and infrastructure
+- **[Product Manager](/docs/roles/PRODUCT_MANAGER.md)** - Feature planning and user research
+- **[Designer](/docs/roles/DESIGNER.md)** - Visual design and user interface
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🎯 Project Overview
 
-## Deploy on Vercel
+The Smart Sign system is more than a digital display—it's a **communication infrastructure** that:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Controls Communication**: Becomes the central nervous system of community information
+- **Creates Leverage**: Uses communication theory to gain institutional power
+- **Generates Revenue**: Multiple monetization streams through attention control
+- **Scales**: Replicable system for other art communities
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠️ Technology Stack
+
+- **Frontend**: React 18, TypeScript, Tailwind CSS
+- **Backend**: Next.js 14 App Router
+- **Styling**: Framer Motion, Custom Patterns
+- **Deployment**: Vercel
+- **Database**: Static data (ready for PostgreSQL)
+
+## 📈 Success Metrics
+
+- **Week 1**: 10+ residents using system
+- **Month 1**: 50% of residents active, $500+ monthly revenue
+- **Quarter 1**: Formal adoption, $2,000+ monthly revenue
+
+## 🔗 Key Resources
+
+- **[Strategic Leverage Plan](/docs/strategy/STRATEGIC_LEVERAGE_PLAN.md)** - Core business strategy
+- **[QR Code Implementation](/docs/user-guides/QR_CODE_GENERATOR.md)** - Mobile access setup
+- **[Technical Architecture](/docs/technical/README.md)** - System design and implementation
+
+## 🚀 Deployment
+
+The easiest way to deploy is using [Vercel](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
+
+## 📄 License
+
+This project is proprietary and confidential.
+
+---
+
+**Remember**: You're not just building a digital sign—you're building the communication infrastructure that will define how this community operates. Once you own that infrastructure, you own the power to shape the community's future.
