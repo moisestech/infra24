@@ -91,7 +91,7 @@ const darkColorSchemes: ColorSchemes = {
 };
 
 // Responsive BackgroundPattern
-export function BackgroundPattern({ type, subType }: { type: AnnouncementType; subType: AnnouncementSubType }) {
+export function BackgroundPattern({ type, subType, width = 400, height = 400 }: BackgroundPatternProps) {
   const { resolvedTheme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);

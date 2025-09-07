@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, User, Tag, Eye, EyeOff, Shield, Edit } from 'lucide-react'
+import { ArrowLeft, Calendar, User, Tag, Eye, EyeOff, Shield, Edit, CheckCircle, Clock, ExternalLink } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 
 interface Announcement {
@@ -19,6 +19,15 @@ interface Announcement {
   tags: string[]
   org_id: string
   scheduled_at?: string
+  location?: string
+  visibility?: string
+  starts_at?: string
+  ends_at?: string
+  type?: string
+  sub_type?: string
+  primary_link?: string
+  additional_info?: string
+  image_url?: string
 }
 
 interface Organization {
@@ -36,6 +45,7 @@ export default function AnnouncementViewPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [userRole, setUserRole] = useState<string>('')
+  const [isPublishing, setIsPublishing] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -110,6 +120,37 @@ export default function AnnouncementViewPage() {
 
   const isAdmin = userRole === 'super_admin' || userRole === 'org_admin' || userRole === 'moderator'
 
+  const handlePublish = async () => {
+    if (!announcement) return
+    
+    setIsPublishing(true)
+    try {
+      const response = await fetch(`/api/announcements/${announcement.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          status: 'published'
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setAnnouncement(data.announcement)
+        // Show success message or refresh the page
+        window.location.reload()
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || 'Failed to publish announcement')
+      }
+    } catch (err) {
+      setError('Failed to publish announcement')
+    } finally {
+      setIsPublishing(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -173,13 +214,29 @@ export default function AnnouncementViewPage() {
               {announcement.title}
             </h1>
             {isAdmin && (
-              <Link
-                href={`/o/${organization.slug}/announcements/${announcement.id}/edit`}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-              >
-                <Edit className="h-4 w-4" />
-                <span>Edit</span>
-              </Link>
+              <div className="flex items-center space-x-3">
+                {announcement.status === 'pending' && (
+                  <button
+                    onClick={handlePublish}
+                    disabled={isPublishing}
+                    className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                  >
+                    {isPublishing ? (
+                      <Clock className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4" />
+                    )}
+                    <span>{isPublishing ? 'Publishing...' : 'Publish'}</span>
+                  </button>
+                )}
+                <Link
+                  href={`/o/${organization.slug}/announcements/${announcement.id}/edit`}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                >
+                  <Edit className="h-4 w-4" />
+                  <span>Edit</span>
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -258,6 +315,63 @@ export default function AnnouncementViewPage() {
                     </span>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Rich Announcement Data */}
+            {(announcement.location || announcement.type || announcement.primary_link) && (
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Event Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {announcement.type && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Type:</span>
+                      <span className="px-2 py-1 text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
+                        {announcement.type}
+                      </span>
+                    </div>
+                  )}
+                  {announcement.sub_type && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Category:</span>
+                      <span className="px-2 py-1 text-sm bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded">
+                        {announcement.sub_type.replace('_', ' ')}
+                      </span>
+                    </div>
+                  )}
+                  {announcement.location && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Location:</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{announcement.location}</span>
+                    </div>
+                  )}
+                  {announcement.visibility && (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Visibility:</span>
+                      <span className={`px-2 py-1 text-sm rounded ${
+                        announcement.visibility === 'public' 
+                          ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                          : 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
+                      }`}>
+                        {announcement.visibility}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {announcement.primary_link && (
+                  <div className="mt-4">
+                    <a
+                      href={announcement.primary_link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-blue-600 hover:text-blue-500 text-sm font-medium"
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Event Details
+                      <ExternalLink className="h-3 w-3 ml-1" />
+                    </a>
+                  </div>
+                )}
               </div>
             )}
 

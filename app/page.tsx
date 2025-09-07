@@ -127,7 +127,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <PublicNavigation />
-      <BackgroundPattern type="event" subType="exhibition" />
+      <BackgroundPattern type="event" subType="exhibition" width={400} height={400} />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white">
@@ -273,16 +273,24 @@ export default function HomePage() {
                     <Badge variant="info">
                       Active
                     </Badge>
-                    {org.website_url && (
+                    <div className="flex space-x-2">
+                      {org.website_url && (
+                        <a
+                          href={org.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-500 text-sm font-medium"
+                        >
+                          Visit Website
+                        </a>
+                      )}
                       <a
-                        href={org.website_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-500 text-sm font-medium"
+                        href={`/o/${org.slug}/announcements/public`}
+                        className="text-purple-600 hover:text-purple-500 text-sm font-medium"
                       >
-                        Visit Website
+                        View Announcements
                       </a>
-                    )}
+                    </div>
                   </div>
                 </div>
               </div>

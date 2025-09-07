@@ -15,7 +15,7 @@ const supabase = createClient(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -23,13 +23,13 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { slug } = await params;
+    const { id } = await params;
 
-    // First, get the organization by slug
+    // First, get the organization by ID
     const { data: organization, error: orgError } = await supabase
       .from('organizations')
       .select('id, name, slug')
-      .eq('slug', slug)
+      .eq('id', id)
       .single();
 
     if (orgError || !organization) {
@@ -67,7 +67,25 @@ export async function GET(
         priority,
         tags,
         org_id,
-        scheduled_at
+        scheduled_at,
+        location,
+        visibility,
+        starts_at,
+        ends_at,
+        type,
+        sub_type,
+        primary_link,
+        additional_info,
+        image_url,
+        people,
+        external_orgs,
+        style,
+        timezone,
+        is_all_day,
+        is_time_tbd,
+        rsvp_label,
+        rsvp_url,
+        event_state
       `)
       .eq('org_id', organization.id)
       .is('deleted_at', null)
@@ -105,7 +123,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -113,14 +131,14 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { slug } = await params;
+    const { id } = await params;
     const body = await request.json();
 
-    // First, get the organization by slug
+    // First, get the organization by ID
     const { data: organization, error: orgError } = await supabase
       .from('organizations')
       .select('id, name, slug')
-      .eq('slug', slug)
+      .eq('id', id)
       .single();
 
     if (orgError || !organization) {

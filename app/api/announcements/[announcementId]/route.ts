@@ -15,7 +15,7 @@ const supabase = createClient(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ announcementId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -23,9 +23,9 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { announcementId } = await params;
 
-    // Get the announcement
+    // Get the announcement with organization data
     const { data: announcement, error } = await supabase
       .from('announcements')
       .select(`
@@ -40,9 +40,32 @@ export async function GET(
         priority,
         tags,
         org_id,
-        scheduled_at
+        scheduled_at,
+        location,
+        visibility,
+        starts_at,
+        ends_at,
+        type,
+        sub_type,
+        primary_link,
+        additional_info,
+        image_url,
+        people,
+        external_orgs,
+        style,
+        timezone,
+        is_all_day,
+        is_time_tbd,
+        rsvp_label,
+        rsvp_url,
+        event_state,
+        organizations!inner(
+          id,
+          name,
+          slug
+        )
       `)
-      .eq('id', id)
+      .eq('id', announcementId)
       .is('deleted_at', null)
       .single();
 
@@ -68,6 +91,13 @@ export async function GET(
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
+    // Non-admin users can only see published announcements or their own
+    if (!['super_admin', 'org_admin', 'moderator'].includes(userMembership.role) &&
+        announcement.status !== 'published' &&
+        announcement.author_clerk_id !== userId) {
+      return NextResponse.json({ error: 'Announcement not found' }, { status: 404 });
+    }
+
     return NextResponse.json({
       announcement
     });
@@ -83,7 +113,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ announcementId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -91,14 +121,14 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { announcementId } = await params;
     const body = await request.json();
 
     // Get the announcement first to check permissions
     const { data: announcement, error: fetchError } = await supabase
       .from('announcements')
       .select('id, org_id, author_clerk_id, status')
-      .eq('id', id)
+      .eq('id', announcementId)
       .is('deleted_at', null)
       .single();
 
@@ -135,6 +165,24 @@ export async function PATCH(
     if (body.tags !== undefined) updateData.tags = body.tags;
     if (body.scheduled_at !== undefined) updateData.scheduled_at = body.scheduled_at || null;
     if (body.expires_at !== undefined) updateData.expires_at = body.expires_at || null;
+    if (body.location !== undefined) updateData.location = body.location;
+    if (body.visibility !== undefined) updateData.visibility = body.visibility;
+    if (body.starts_at !== undefined) updateData.starts_at = body.starts_at || null;
+    if (body.ends_at !== undefined) updateData.ends_at = body.ends_at || null;
+    if (body.type !== undefined) updateData.type = body.type;
+    if (body.sub_type !== undefined) updateData.sub_type = body.sub_type;
+    if (body.primary_link !== undefined) updateData.primary_link = body.primary_link;
+    if (body.additional_info !== undefined) updateData.additional_info = body.additional_info;
+    if (body.image_url !== undefined) updateData.image_url = body.image_url;
+    if (body.people !== undefined) updateData.people = body.people;
+    if (body.external_orgs !== undefined) updateData.external_orgs = body.external_orgs;
+    if (body.style !== undefined) updateData.style = body.style;
+    if (body.timezone !== undefined) updateData.timezone = body.timezone;
+    if (body.is_all_day !== undefined) updateData.is_all_day = body.is_all_day;
+    if (body.is_time_tbd !== undefined) updateData.is_time_tbd = body.is_time_tbd;
+    if (body.rsvp_label !== undefined) updateData.rsvp_label = body.rsvp_label;
+    if (body.rsvp_url !== undefined) updateData.rsvp_url = body.rsvp_url;
+    if (body.event_state !== undefined) updateData.event_state = body.event_state;
     
     // Only super admins can change the author
     if (body.author_clerk_id !== undefined && userMembership.role === 'super_admin') {
@@ -150,7 +198,7 @@ export async function PATCH(
     const { data: updatedAnnouncement, error: updateError } = await supabase
       .from('announcements')
       .update(updateData)
-      .eq('id', id)
+      .eq('id', announcementId)
       .select(`
         id,
         title,
@@ -163,7 +211,25 @@ export async function PATCH(
         priority,
         tags,
         org_id,
-        scheduled_at
+        scheduled_at,
+        location,
+        visibility,
+        starts_at,
+        ends_at,
+        type,
+        sub_type,
+        primary_link,
+        additional_info,
+        image_url,
+        people,
+        external_orgs,
+        style,
+        timezone,
+        is_all_day,
+        is_time_tbd,
+        rsvp_label,
+        rsvp_url,
+        event_state
       `)
       .single();
 

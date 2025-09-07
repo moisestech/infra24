@@ -56,18 +56,18 @@ export default function OrganizationUsersPage() {
 
   useEffect(() => {
     async function loadData() {
-      if (!user || !params.slug) return
+      if (!user || !params.id) return
 
       try {
         // Load organization details
-        const orgResponse = await fetch(`/api/organizations/by-slug/${params.slug}`)
+        const orgResponse = await fetch(`/api/organizations/${params.id}`)
         const orgData = await orgResponse.json()
         if (orgData.organization) {
           setOrganization(orgData.organization)
         }
 
         // Load users for this organization
-        const usersResponse = await fetch(`/api/organizations/${params.slug}/users`)
+        const usersResponse = await fetch(`/api/organizations/${params.id}/users`)
         const usersData = await usersResponse.json()
         setUsers(usersData.users || [])
       } catch (error) {
@@ -80,7 +80,7 @@ export default function OrganizationUsersPage() {
     if (isLoaded && user) {
       loadData()
     }
-  }, [user, isLoaded, params.slug])
+  }, [user, isLoaded, params.id])
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = 

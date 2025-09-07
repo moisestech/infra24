@@ -15,7 +15,7 @@ const supabase = createClient(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -23,13 +23,13 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { slug } = await params;
+    const { id } = await params;
 
-    // First, get the organization by slug
+    // First, get the organization by ID
     const { data: organization, error: orgError } = await supabase
       .from('organizations')
       .select('id, name, slug')
-      .eq('slug', slug)
+      .eq('id', id)
       .single();
 
     if (orgError || !organization) {

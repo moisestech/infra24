@@ -27,17 +27,25 @@ export default function FallbackAnnouncementPage() {
         const data = await response.json()
         const announcement = data.announcement
         
-        // Get the organization for this announcement
-        const orgResponse = await fetch(`/api/organizations/${announcement.org_id}`)
-        
-        if (orgResponse.ok) {
-          const orgData = await orgResponse.json()
-          const organization = orgData.organization
+        // Get the organization data from the announcement response
+        if (announcement.organizations) {
+          const organization = announcement.organizations
           
           // Redirect to the organization-specific route
           router.replace(`/o/${organization.slug}/announcements/${id}`)
         } else {
-          throw new Error('Organization not found')
+          // Fallback: try to get organization by ID
+          const orgResponse = await fetch(`/api/organizations/${announcement.org_id}`)
+          
+          if (orgResponse.ok) {
+            const orgData = await orgResponse.json()
+            const organization = orgData.organization
+            
+            // Redirect to the organization-specific route
+            router.replace(`/o/${organization.slug}/announcements/${id}`)
+          } else {
+            throw new Error('Organization not found')
+          }
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load announcement')

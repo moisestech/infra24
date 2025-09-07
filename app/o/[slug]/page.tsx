@@ -242,6 +242,19 @@ export default function OrganizationPage() {
             </a>
 
             <a
+              href={`/o/${organization.slug}/announcements/display`}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-sm p-3 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center">
+                <Eye className="h-5 w-5 text-white mr-2" />
+                <div>
+                  <p className="font-medium text-white text-sm">View Announcements</p>
+                  <p className="text-xs text-blue-100">Display Mode</p>
+                </div>
+              </div>
+            </a>
+
+            <a
               href={`/o/${organization.slug}/users?filter=staff`}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 hover:shadow-md transition-shadow"
             >

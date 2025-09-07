@@ -69,18 +69,18 @@ export default function OrganizationAnnouncementsPage() {
 
   useEffect(() => {
     async function loadData() {
-      if (!user || !params.slug) return
+      if (!user || !params.id) return
 
       try {
         // Load organization details
-        const orgResponse = await fetch(`/api/organizations/by-slug/${params.slug}`)
+        const orgResponse = await fetch(`/api/organizations/${params.id}`)
         const orgData = await orgResponse.json()
         if (orgData.organization) {
           setOrganization(orgData.organization)
         }
 
         // Load announcements for this organization
-        const announcementsResponse = await fetch(`/api/organizations/${params.slug}/announcements`)
+        const announcementsResponse = await fetch(`/api/organizations/${params.id}/announcements`)
         const announcementsData = await announcementsResponse.json()
         setAnnouncements(announcementsData.announcements || [])
 
@@ -113,7 +113,7 @@ export default function OrganizationAnnouncementsPage() {
     if (isLoaded && user) {
       loadData()
     }
-  }, [user, isLoaded, params.slug])
+  }, [user, isLoaded, params.id])
 
   const filteredAnnouncements = announcements
     .filter(announcement => {

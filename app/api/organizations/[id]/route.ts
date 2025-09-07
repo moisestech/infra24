@@ -15,7 +15,7 @@ const supabase = createClient(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -23,16 +23,16 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { slug } = await params;
+    const { id } = await params;
 
-    // First, get the organization by slug
-    const { data: organization, error: orgError } = await supabase
+    // Get the organization by ID
+    const { data: organization, error } = await supabase
       .from('organizations')
-      .select('id, name, slug')
-      .eq('slug', slug)
+      .select('id, name, slug, logo_url, description')
+      .eq('id', id)
       .single();
 
-    if (orgError || !organization) {
+    if (error || !organization) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
@@ -52,37 +52,12 @@ export async function GET(
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // Get all member types for this organization
-    const { data: memberTypes, error: memberTypesError } = await supabase
-      .from('org_member_types')
-      .select(`
-        id,
-        type_key,
-        label,
-        description,
-        is_staff,
-        default_role_on_claim,
-        sort_order
-      `)
-      .eq('org_id', organization.id)
-      .order('sort_order', { ascending: true });
-
-    if (memberTypesError) {
-      console.error('Error fetching member types:', memberTypesError);
-      return NextResponse.json({ error: 'Failed to fetch member types' }, { status: 500 });
-    }
-
     return NextResponse.json({
-      member_types: memberTypes || [],
-      organization: {
-        id: organization.id,
-        name: organization.name,
-        slug: organization.slug
-      }
+      organization
     });
 
   } catch (error) {
-    console.error('Error in organization member types API:', error);
+    console.error('Error in organization API:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

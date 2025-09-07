@@ -60,6 +60,28 @@ export interface Announcement {
   priority: number;
   created_at: string;
   updated_at: string;
+  // Extended fields from database schema
+  location?: string;
+  visibility?: 'internal' | 'external' | 'both';
+  starts_at?: string;
+  ends_at?: string;
+  payload?: any;
+  slug?: string;
+  type?: AnnouncementType;
+  sub_type?: AnnouncementSubType;
+  template?: string;
+  primary_link?: string;
+  additional_info?: string;
+  image_url?: string;
+  people?: any[];
+  external_orgs?: any[];
+  style?: any;
+  timezone?: string;
+  is_all_day?: boolean;
+  is_time_tbd?: boolean;
+  rsvp_label?: string;
+  rsvp_url?: string;
+  event_state?: 'scheduled' | 'postponed' | 'canceled';
 }
 
 export interface AnnouncementAudienceMemberType {
