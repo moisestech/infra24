@@ -78,7 +78,7 @@ function formatDateWithDay(dateStr: string) {
 }
 
 // Pattern-based template using BackgroundPattern
-function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps) {
+function PatternTemplate({ announcement, styles, IconComponent, orientation }: TemplateProps & { orientation: 'portrait' | 'landscape' }) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
 
@@ -173,8 +173,11 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
         {/* Days Left Badge */}
         <motion.div 
           className={cn(
-            "inline-flex items-center gap-2 xl:gap-4 2xl:gap-6 3xl:gap-8 px-4 xl:px-6 2xl:px-8 3xl:px-12 py-2 xl:py-3 2xl:py-4 3xl:py-6 rounded-full mt-4",
-            "text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl 4xl:text-6xl font-bold",
+            `inline-flex items-center rounded-full mt-4 font-bold ${
+              orientation === 'portrait'
+                ? 'gap-3 xl:gap-5 2xl:gap-7 3xl:gap-9 px-6 xl:px-8 2xl:px-10 3xl:px-14 py-3 xl:py-4 2xl:py-5 3xl:py-7 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl'
+                : 'gap-2 xl:gap-4 2xl:gap-6 3xl:gap-8 px-4 xl:px-6 2xl:px-8 3xl:px-12 py-2 xl:py-3 2xl:py-4 3xl:py-6 text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl 4xl:text-6xl'
+            }`,
             dateStatus.type === 'today' ? "bg-green-500 text-white" : 
             dateStatus.type === 'past' ? "bg-red-500 text-white" : 
             "bg-blue-500 text-white"
@@ -219,7 +222,11 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
           {/* Title */}
           <motion.h2 
             className={cn(
-              "text-6xl md:text-7xl xl:text-9xl 2xl:text-[12rem] 3xl:text-[16rem] font-black tracking-tight leading-none",
+              `font-black tracking-tight leading-none ${
+                orientation === 'portrait'
+                  ? 'text-5xl md:text-6xl xl:text-7xl 2xl:text-8xl 3xl:text-9xl 4xl:text-[10rem]'
+                  : 'text-6xl md:text-7xl xl:text-9xl 2xl:text-[12rem] 3xl:text-[16rem] 4xl:text-[20rem]'
+              }`,
               styles.text
             )}
             initial={{ opacity: 0, y: 20 }}
@@ -231,7 +238,11 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
 
           {/* Description */}
           <motion.p 
-            className="text-5xl md:text-5xl xl:text-6xl 2xl:text-7xl 3xl:text-8xl text-white/80 max-w-3xl xl:max-w-4xl 2xl:max-w-5xl 3xl:max-w-6xl leading-snug"
+            className={`text-white/80 leading-snug ${
+              orientation === 'portrait'
+                ? 'text-3xl md:text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl 4xl:text-8xl max-w-2xl xl:max-w-3xl 2xl:max-w-4xl 3xl:max-w-5xl 4xl:max-w-6xl'
+                : 'text-5xl md:text-5xl xl:text-6xl 2xl:text-7xl 3xl:text-8xl 4xl:text-9xl max-w-3xl xl:max-w-4xl 2xl:max-w-5xl 3xl:max-w-6xl 4xl:max-w-7xl'
+            }`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -243,11 +254,19 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
           <div className="flex items-center justify-between">
             {announcement.location && (
               <motion.div 
-                className="flex items-center gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 4xl:gap-12 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-8xl text-white/80"
+                className={`flex items-center gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 4xl:gap-12 text-white/80 ${
+                  orientation === 'portrait' 
+                    ? 'text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl 4xl:text-9xl' 
+                    : 'text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-8xl'
+                }`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <MapPin className="w-8 h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 3xl:w-16 3xl:h-16 4xl:w-32 4xl:h-32" />
+                <MapPin className={`${
+                  orientation === 'portrait'
+                    ? 'w-12 h-12 xl:w-16 xl:h-16 2xl:w-20 2xl:h-20 3xl:w-24 3xl:h-24 4xl:w-48 4xl:h-48'
+                    : 'w-8 h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 3xl:w-16 3xl:h-16 4xl:w-32 4xl:h-32'
+                }`} />
                 <span>{announcement.location}</span>
               </motion.div>
             )}
@@ -255,26 +274,42 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
             <div className="flex items-center gap-6 xl:gap-8 2xl:gap-10 3xl:gap-12">
               {/* QR Code */}
               <motion.div 
-                className="bg-white/90 backdrop-blur-sm rounded-lg p-2 xl:p-3 2xl:p-4 3xl:p-6 4xl:p-8"
+                className={`bg-white/90 backdrop-blur-sm rounded-lg ${
+                  orientation === 'portrait' 
+                    ? 'p-3 xl:p-4 2xl:p-6 3xl:p-8 4xl:p-12' 
+                    : 'p-2 xl:p-3 2xl:p-4 3xl:p-6 4xl:p-8'
+                }`}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.6 }}
               >
                 <QRCode 
                   value={announcement.primary_link || `https://art-events.vercel.app/announcements/${announcement.id}`}
-                  size={400}
-                  className="w-20 h-20 xl:w-32 xl:h-32 2xl:w-48 2xl:h-48 3xl:w-64 3xl:h-64 4xl:w-80 4xl:h-80"
+                  size={orientation === 'portrait' ? 600 : 400}
+                  className={`${
+                    orientation === 'portrait'
+                      ? 'w-24 h-24 xl:w-40 xl:h-40 2xl:w-56 2xl:h-56 3xl:w-72 3xl:h-72 4xl:w-96 4xl:h-96'
+                      : 'w-20 h-20 xl:w-32 xl:h-32 2xl:w-48 2xl:h-48 3xl:w-64 3xl:h-64 4xl:w-80 4xl:h-80'
+                  }`}
                 />
               </motion.div>
 
               {announcement.primary_link && (
                 <motion.a 
                   href={announcement.primary_link}
-                  className="inline-flex items-center gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 4xl:gap-12 px-8 xl:px-12 2xl:px-16 3xl:px-20 4xl:px-24 py-4 xl:py-6 2xl:py-8 3xl:py-10 4xl:py-12 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl text-white hover:text-white/80 transition-colors group bg-white/10 backdrop-blur-sm rounded-full"
+                  className={`inline-flex items-center text-white hover:text-white/80 transition-colors group bg-white/10 backdrop-blur-sm rounded-full ${
+                    orientation === 'portrait'
+                      ? 'gap-6 xl:gap-8 2xl:gap-10 3xl:gap-12 4xl:gap-16 px-12 xl:px-16 2xl:px-20 3xl:px-24 4xl:px-32 py-6 xl:py-8 2xl:py-10 3xl:py-12 4xl:py-16 text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl 4xl:text-8xl'
+                      : 'gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 4xl:gap-12 px-8 xl:px-12 2xl:px-16 3xl:px-20 4xl:px-24 py-4 xl:py-6 2xl:py-8 3xl:py-10 4xl:py-12 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl'
+                  }`}
                   whileHover={{ scale: 1.05 }}
                 >
                   Learn More
-                  <ExternalLink className="w-6 h-6 xl:w-8 xl:h-8 2xl:w-10 2xl:h-10 3xl:w-12 3xl:h-12 4xl:w-16 4xl:h-16 group-hover:translate-x-1 transition-transform" />
+                  <ExternalLink className={`group-hover:translate-x-1 transition-transform ${
+                    orientation === 'portrait'
+                      ? 'w-8 h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 3xl:w-14 3xl:h-14 4xl:w-20 4xl:h-20'
+                      : 'w-6 h-6 xl:w-8 xl:h-8 2xl:w-10 2xl:h-10 3xl:w-12 3xl:h-12 4xl:w-16 4xl:h-16'
+                  }`} />
                 </motion.a>
               )}
             </div>
@@ -309,6 +344,29 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('landscape');
+  const [screenRatio, setScreenRatio] = useState(1);
+
+  // Orientation and screen ratio detection
+  useEffect(() => {
+    const updateOrientation = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const ratio = width / height;
+      
+      setScreenRatio(ratio);
+      setOrientation(ratio > 1 ? 'landscape' : 'portrait');
+    };
+
+    updateOrientation();
+    window.addEventListener('resize', updateOrientation);
+    window.addEventListener('orientationchange', updateOrientation);
+
+    return () => {
+      window.removeEventListener('resize', updateOrientation);
+      window.removeEventListener('orientationchange', updateOrientation);
+    };
+  }, []);
 
   // Filter and sort announcements
   const futureAnnouncements = useMemo(() => {
@@ -517,6 +575,7 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
                 announcement={announcement}
                 styles={typeStyles[announcement.type || 'event']}
                 IconComponent={getIconForAnnouncement(announcement)}
+                orientation={orientation}
               />
             </div>
           ))}
