@@ -216,9 +216,25 @@ export default function AnnouncementDisplayPage() {
                 Back to {organization?.name}
               </Link>
               
-              <div className="hidden md:block text-white/80">
-                <h1 className="text-lg font-semibold">{organization?.name} Announcements</h1>
-                <p className="text-sm">Display View</p>
+              <div className="hidden md:flex items-center space-x-4 text-white/80">
+                {organization?.logo_url ? (
+                  <div className="flex items-center space-x-3">
+                    <img 
+                      src={organization.logo_url} 
+                      alt={organization.name}
+                      className="h-8 w-auto"
+                    />
+                    <div>
+                      <h1 className="text-lg font-semibold">{organization.name} Announcements</h1>
+                      <p className="text-sm">Display View</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <h1 className="text-lg font-semibold">{organization?.name} Announcements</h1>
+                    <p className="text-sm">Display View</p>
+                  </div>
+                )}
               </div>
             </div>
             

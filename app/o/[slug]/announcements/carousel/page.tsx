@@ -1,46 +1,45 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, List, Settings } from 'lucide-react';
+import { ArrowLeft, List, Settings, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { AnnouncementCarousel } from '@/components/AnnouncementCarousel';
 import { Announcement } from '@/types/announcement';
 
-export default function GlobalAnnouncementCarouselPage() {
+interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url?: string;
+  description?: string;
+}
+
+export default function OrganizationAnnouncementCarouselPage() {
   const { user, isLoaded } = useUser();
-  const router = useRouter();
+  const params = useParams();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
-      if (!user) return;
+      if (!user || !params.slug) return;
 
       try {
         setLoading(true);
         
-        // Check if user is super admin
-        const userResponse = await fetch('/api/users/me');
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          
-          // If user is not super admin, redirect to their organization's carousel
-          if (userData.user.role !== 'super_admin') {
-            if (userData.organization) {
-              router.push(`/o/${userData.organization.slug}/announcements/carousel`);
-              return;
-            } else {
-              router.push('/dashboard');
-              return;
-            }
-          }
+        // Load organization details
+        const orgResponse = await fetch(`/api/organizations/by-slug/${params.slug}`);
+        if (orgResponse.ok) {
+          const orgData = await orgResponse.json();
+          setOrganization(orgData.organization);
         }
 
-        // Load all announcements for super admin
-        const announcementsResponse = await fetch('/api/announcements');
+        // Load announcements for this organization
+        const announcementsResponse = await fetch(`/api/organizations/by-slug/${params.slug}/announcements?visibility=both`);
         if (!announcementsResponse.ok) {
           throw new Error('Failed to load announcements');
         }
@@ -57,7 +56,7 @@ export default function GlobalAnnouncementCarouselPage() {
     if (isLoaded && user) {
       loadData();
     }
-  }, [user, isLoaded, router]);
+  }, [user, isLoaded, params.slug]);
 
   if (!isLoaded || loading) {
     return (
@@ -78,7 +77,7 @@ export default function GlobalAnnouncementCarouselPage() {
             <h2 className="text-xl font-bold mb-2">Error Loading Announcements</h2>
             <p className="mb-4">{error}</p>
             <Link
-              href="/announcements"
+              href={`/o/${params.slug}/announcements`}
               className="inline-flex items-center px-4 py-2 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -97,18 +96,18 @@ export default function GlobalAnnouncementCarouselPage() {
           <div className="bg-gray-800 text-white p-8 rounded-lg max-w-md">
             <h2 className="text-xl font-bold mb-2">No Announcements Available</h2>
             <p className="mb-6 text-gray-300">
-              There are no announcements to display in carousel mode.
+              {organization?.name} has no announcements to display in carousel mode.
             </p>
             <div className="flex space-x-4 justify-center">
               <Link
-                href="/announcements"
+                href={`/o/${params.slug}/announcements`}
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <List className="h-4 w-4 mr-2" />
                 List View
               </Link>
               <Link
-                href="/announcements/create"
+                href={`/o/${params.slug}/announcements/create`}
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 <Settings className="h-4 w-4 mr-2" />
@@ -127,7 +126,7 @@ export default function GlobalAnnouncementCarouselPage() {
       <div className="absolute top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm">
         <div className="flex items-center justify-between p-4">
           <Link
-            href="/announcements"
+            href={`/o/${params.slug}/announcements`}
             className="inline-flex items-center px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -136,15 +135,23 @@ export default function GlobalAnnouncementCarouselPage() {
           
           <div className="flex items-center space-x-4">
             <Link
-              href="/announcements"
+              href={`/o/${params.slug}/announcements`}
               className="inline-flex items-center px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm"
             >
               <List className="h-4 w-4 mr-2" />
               List View
             </Link>
             
+            <Link
+              href={`/o/${params.slug}/announcements/public`}
+              className="inline-flex items-center px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors backdrop-blur-sm"
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              Public View
+            </Link>
+            
             <div className="text-white text-sm bg-white/10 px-3 py-2 rounded-lg backdrop-blur-sm">
-              {announcements.length} Announcement{announcements.length !== 1 ? 's' : ''}
+              {organization?.name} • {announcements.length} Announcement{announcements.length !== 1 ? 's' : ''}
             </div>
           </div>
         </div>

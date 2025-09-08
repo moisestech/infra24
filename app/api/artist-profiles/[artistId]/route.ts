@@ -15,7 +15,7 @@ const supabase = createClient(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ artistId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -23,7 +23,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { artistId } = await params;
     const updates = await request.json();
 
     // Get the requesting user's membership to check permissions
@@ -46,7 +46,7 @@ export async function PATCH(
     const { data: artistProfile, error: artistError } = await supabase
       .from('artist_profiles')
       .select('id, organization_id, name, claimed_by_clerk_user_id')
-      .eq('id', id)
+      .eq('id', artistId)
       .single();
 
     if (artistError || !artistProfile) {
@@ -95,7 +95,7 @@ export async function PATCH(
     const { data: updatedArtist, error: updateError } = await supabase
       .from('artist_profiles')
       .update(updateData)
-      .eq('id', id)
+      .eq('id', artistId)
       .select(`
         id,
         name,

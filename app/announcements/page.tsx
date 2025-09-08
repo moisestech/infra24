@@ -12,7 +12,8 @@ import {
   User,
   Building2,
   Eye,
-  Edit
+  Edit,
+  Play
 } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import { Badge } from '@/components/ui/Badge'
@@ -30,6 +31,8 @@ interface Announcement {
   priority: number
   tags: string[]
   org_id: string
+  type?: string
+  sub_type?: string
   organization?: {
     id: string
     name: string
@@ -200,6 +203,26 @@ export default function AnnouncementsPage() {
     }
   }
 
+  const getTypeBadge = (type?: string) => {
+    if (!type) return null;
+    
+    const typeStyles = {
+      urgent: { bg: 'bg-red-100', text: 'text-red-800', label: 'Urgent' },
+      facility: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Facility' },
+      event: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Event' },
+      opportunity: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Opportunity' },
+      administrative: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Admin' },
+    };
+    
+    const style = typeStyles[type as keyof typeof typeStyles] || typeStyles.event;
+    
+    return (
+      <span className={`px-2 py-1 text-xs font-medium rounded-full ${style.bg} ${style.text}`}>
+        {style.label}
+      </span>
+    );
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -250,13 +273,23 @@ export default function AnnouncementsPage() {
             </p>
           </div>
           
-          <Link
-            href="/announcements/create"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            New Announcement
-          </Link>
+          <div className="flex space-x-3">
+            <Link
+              href="/announcements/carousel"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+            >
+              <Play className="h-4 w-4 mr-2" />
+              Carousel View
+            </Link>
+            
+            <Link
+              href="/announcements/create"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              New Announcement
+            </Link>
+          </div>
         </div>
 
         {/* Stats */}
@@ -424,6 +457,7 @@ export default function AnnouncementsPage() {
                             Past Event
                           </Badge>
                         )}
+                        {getTypeBadge(announcement.type)}
                       </div>
                       
                       {announcement.body && (

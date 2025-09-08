@@ -118,7 +118,7 @@ export default function UserProfilePage() {
         }
 
         // Try to get user data - could be either a membership or artist profile
-        const usersResponse = await fetch(`/api/organizations/${orgSlug}/users`)
+        const usersResponse = await fetch(`/api/organizations/by-slug/${orgSlug}/users`)
         if (usersResponse.ok) {
           const usersData = await usersResponse.json()
           

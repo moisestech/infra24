@@ -1,228 +1,125 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { ClerkServerService } from '@/lib/clerk-server';
+import { createClient } from '@supabase/supabase-js';
 
-// GET /api/artists - Get artists for the current user's organization
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+);
+
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
     if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get user's organization
-    const userProfile = await ClerkServerService.getUserMembership(userId);
-    if (!userProfile?.org_id) {
-      return NextResponse.json(
-        { error: 'User not assigned to an organization' },
-        { status: 400 }
-      );
-    }
-
-    // Get query parameters
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get('search');
-    const type = searchParams.get('type');
-    const status = searchParams.get('status');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const orgId = searchParams.get('orgId');
+    const role = searchParams.get('role');
+    const studio = searchParams.get('studio');
 
-    // Build query
-    let query = `
-      SELECT * FROM artist_profiles 
-      WHERE organization_id = $1
-    `;
-    const params: any[] = [userProfile.organization_id];
-    let paramIndex = 2;
+    let query = supabase
+      .from('artist_profiles')
+      .select(`
+        id,
+        name,
+        bio,
+        profile_image_url,
+        studio,
+        role,
+        status,
+        created_at,
+        updated_at,
+        org_id,
+        organizations (
+          id,
+          name,
+          slug
+        )
+      `);
 
-    // Add search filter
-    if (search) {
-      query += ` AND (name ILIKE $${paramIndex} OR studio_number ILIKE $${paramIndex})`;
-      params.push(`%${search}%`);
-      paramIndex++;
+    if (orgId) {
+      query = query.eq('org_id', orgId);
     }
 
-    // Add type filter
-    if (type && type !== 'all') {
-      query += ` AND studio_type = $${paramIndex}`;
-      params.push(type.charAt(0).toUpperCase() + type.slice(1));
-      paramIndex++;
+    if (role) {
+      query = query.eq('role', role);
     }
 
-    // Add status filter
-    if (status && status !== 'all') {
-      if (status === 'claimed') {
-        query += ` AND is_claimed = true`;
-      } else if (status === 'unclaimed') {
-        query += ` AND is_claimed = false`;
-      }
+    if (studio) {
+      query = query.eq('studio', studio);
     }
 
-    // Add ordering and pagination
-    query += ` ORDER BY name ASC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
-    params.push(limit, offset);
+    const { data: artists, error } = await query.order('name', { ascending: true });
 
-    // Execute query
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/get_artists`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        },
-        body: JSON.stringify({
-          org_id: userProfile.organization_id,
-          search_term: search || '',
-          type_filter: type || 'all',
-          status_filter: status || 'all',
-          limit_count: limit,
-          offset_count: offset
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      // Fallback to direct query if RPC doesn't exist
-      const directResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/artist_profiles?organization_id=eq.${userProfile.organization_id}&select=*&order=name.asc&limit=${limit}&offset=${offset}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-            'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-          },
-        }
-      );
-
-      if (!directResponse.ok) {
-        throw new Error(`Failed to fetch artists: ${directResponse.statusText}`);
-      }
-
-      const artists = await directResponse.json();
-      
-      // Apply filters in memory if RPC failed
-      let filteredArtists = artists;
-      
-      if (search) {
-        filteredArtists = filteredArtists.filter((artist: any) =>
-          artist.name.toLowerCase().includes(search.toLowerCase()) ||
-          (artist.studio_number && artist.studio_number.toLowerCase().includes(search.toLowerCase()))
-        );
-      }
-      
-      if (type && type !== 'all') {
-        filteredArtists = filteredArtists.filter((artist: any) =>
-          artist.studio_type.toLowerCase() === type.toLowerCase()
-        );
-      }
-      
-      if (status && status !== 'all') {
-        if (status === 'claimed') {
-          filteredArtists = filteredArtists.filter((artist: any) => artist.is_claimed);
-        } else if (status === 'unclaimed') {
-          filteredArtists = filteredArtists.filter((artist: any) => !artist.is_claimed);
-        }
-      }
-
-      return NextResponse.json(filteredArtists);
+    if (error) {
+      console.error('Error fetching artists:', error);
+      return NextResponse.json({ error: 'Failed to fetch artists' }, { status: 500 });
     }
 
-    const artists = await response.json();
-    return NextResponse.json(artists);
+    return NextResponse.json({ artists }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching artists:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Error in artists API:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
-// POST /api/artists - Create a new artist profile (admin only)
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
     if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Get user's organization
-    const userProfile = await ClerkServerService.getUserMembership(userId);
-    if (!userProfile?.org_id) {
-      return NextResponse.json(
-        { error: 'User not assigned to an organization' },
-        { status: 400 }
-      );
-    }
-
-    // Check if user has permission to create artists (admin only)
-    if (!['super_admin', 'org_admin'].includes(userProfile.role)) {
-      return NextResponse.json(
-        { error: 'Forbidden - Admin access required' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { name, studio_number, studio_type, studio_location, bio, website_url, instagram_handle, email, phone } = body;
+    const { name, bio, profile_image_url, studio, role, org_id } = body;
 
-    // Validate required fields
-    if (!name || !studio_type) {
-      return NextResponse.json(
-        { error: 'Missing required fields: name, studio_type' },
-        { status: 400 }
-      );
+    // Check if user has permission to create artist profiles
+    const { data: membership, error: membershipError } = await supabase
+      .from('org_memberships')
+      .select('role')
+      .eq('org_id', org_id)
+      .eq('clerk_user_id', userId)
+      .single();
+
+    if (membershipError || !membership) {
+      return NextResponse.json({ error: 'Not authorized to create artist profiles' }, { status: 403 });
     }
 
-    // Create artist profile
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/artist_profiles`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
-          'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        },
-        body: JSON.stringify({
-          name,
-          studio_number,
-          studio_type,
-          studio_location,
-          bio,
-          website_url,
-          instagram_handle,
-          email,
-          phone,
-          org_id: userProfile.org_id,
-          is_active: true,
-          is_claimed: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to create artist profile: ${response.statusText}`);
+    const userRole = membership.role;
+    if (!['super_admin', 'org_admin', 'moderator'].includes(userRole)) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const artist = await response.json();
-    return NextResponse.json(artist, { status: 201 });
+    const { data: artist, error } = await supabase
+      .from('artist_profiles')
+      .insert({
+        name,
+        bio,
+        profile_image_url,
+        studio,
+        role,
+        org_id,
+        status: 'active'
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating artist profile:', error);
+      return NextResponse.json({ error: 'Failed to create artist profile' }, { status: 500 });
+    }
+
+    return NextResponse.json({ artist }, { status: 201 });
   } catch (error) {
-    console.error('Error creating artist profile:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Error in create artist API:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

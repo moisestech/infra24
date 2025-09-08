@@ -267,7 +267,7 @@ export default function OrganizationPage() {
             </a>
 
             <a
-              href={`/o/${organization.slug}/users?filter=artists`}
+              href={`/o/${organization.slug}/artists`}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center">

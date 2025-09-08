@@ -62,3 +62,4 @@ SELECT
   created_at
 FROM organizations 
 WHERE slug = 'bakehouse' OR name ILIKE '%bakehouse%';
+

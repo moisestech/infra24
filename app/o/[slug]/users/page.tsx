@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
-import { Search, Filter, User, Mail, Calendar, Shield, Building2, Eye, Edit, Users, Copy } from 'lucide-react'
+import { Search, Filter, User, Mail, Calendar, Shield, Building2, Eye, Edit, Users, Copy, UserPlus } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 import Tooltip from '@/components/ui/Tooltip'
@@ -89,6 +89,7 @@ export default function OrganizationUsersPage() {
     type: 'success',
     isVisible: false
   })
+  const [claiming, setClaiming] = useState<string | null>(null)
 
   // Get filter from URL params
   const urlFilter = searchParams.get('filter') || 'all'
@@ -127,18 +128,12 @@ export default function OrganizationUsersPage() {
         }
 
         // Get users and artists for this organization
-        const usersResponse = await fetch(`/api/organizations/${slug}/users`)
+        const usersResponse = await fetch(`/api/organizations/by-slug/${slug}/users`)
         if (usersResponse.ok) {
           const usersData = await usersResponse.json()
           setUsers(usersData.memberships || [])
           setArtists(usersData.artist_profiles || [])
-        }
-
-        // Get member types for this organization
-        const memberTypesResponse = await fetch(`/api/organizations/${slug}/member-types`)
-        if (memberTypesResponse.ok) {
-          const memberTypesData = await memberTypesResponse.json()
-          setMemberTypes(memberTypesData.member_types || [])
+          setMemberTypes(usersData.member_types || [])
         }
 
       } catch (error) {
@@ -231,6 +226,41 @@ export default function OrganizationUsersPage() {
     setEditingUser(user)
     setEditModalOpen(true)
   }
+
+  const handleClaimArtist = async (artistId: string, artistName: string) => {
+    if (!user) return;
+
+    setClaiming(artistId);
+    setToast({ message: '', type: 'success', isVisible: false });
+
+    try {
+      const response = await fetch('/api/artists/claim', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          artist_id: artistId,
+          claim_reason: `I am ${artistName} and would like to claim my artist profile.`,
+          supporting_evidence: `My email address (${user.emailAddresses[0]?.emailAddress}) and name (${user.firstName} ${user.lastName}) match this artist profile.`
+        }),
+      });
+
+      if (response.ok) {
+        setToast({ message: `Successfully submitted claim for ${artistName}. An administrator will review your request.`, type: 'success', isVisible: true });
+        // Refresh the data to update the claim status
+        setTimeout(() => window.location.reload(), 2000);
+      } else {
+        const error = await response.json();
+        setToast({ message: error.error || 'Failed to submit claim request', type: 'error', isVisible: true });
+      }
+    } catch (error) {
+      console.error('Error claiming artist:', error);
+      setToast({ message: 'Failed to submit claim request. Please try again.', type: 'error', isVisible: true });
+    } finally {
+      setClaiming(null);
+    }
+  };
 
   // Edit permissions are now handled directly in the JSX for more granular control
 
@@ -598,6 +628,28 @@ export default function OrganizationUsersPage() {
                     >
                       View
                     </a>
+                    
+                    {/* Claim button for unclaimed artists */}
+                    {isArtist(item) && !item.is_claimed && user && (
+                      <button
+                        onClick={() => handleClaimArtist(item.id, item.name)}
+                        disabled={claiming === item.id}
+                        className="inline-flex items-center px-2 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-400 rounded-md transition-colors"
+                      >
+                        {claiming === item.id ? (
+                          <>
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1"></div>
+                            Claiming...
+                          </>
+                        ) : (
+                          <>
+                            <UserPlus className="h-3 w-3 mr-1" />
+                            Claim
+                          </>
+                        )}
+                      </button>
+                    )}
+                    
                     {((userRole === 'super_admin' || userRole === 'org_admin') || 
                       (isArtist(item) && item.claimed_by_clerk_user_id === user?.id) ||
                       (!isArtist(item) && item.clerk_user_id === user?.id)) && (

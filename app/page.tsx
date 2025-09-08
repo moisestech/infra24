@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/Badge';
-import { BackgroundPattern } from '@/components/BackgroundPattern';
+import { OrbitingCircles } from '@/components/magicui/orbiting-circles';
+import { SparklesText } from '@/components/magicui/sparkles-text';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import PublicNavigation from '@/components/ui/PublicNavigation';
 import { 
   Building2, 
@@ -16,7 +18,21 @@ import {
   Zap,
   BarChart3,
   MessageSquare,
-  Eye
+  Eye,
+  Palette,
+  Paintbrush,
+  Handshake,
+  User,
+  Brush,
+  Image,
+  Mic,
+  Film,
+  PenTool,
+  Compass,
+  Layers,
+  Camera,
+  Music,
+  Scissors
 } from 'lucide-react';
 
 interface Organization {
@@ -37,6 +53,7 @@ interface PublicAnnouncement {
   organization: Organization;
   published_at: string;
   expires_at?: string;
+  scheduled_at?: string;
   priority: number;
   tags: string[];
   media: any[];
@@ -120,42 +137,101 @@ export default function HomePage() {
     .sort((a, b) => b.priority - a.priority)
     .slice(0, 6);
 
+  // Date utility functions
+  const isToday = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
+
+  const isTomorrow = (dateString: string) => {
+    const date = new Date(dateString);
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return date.toDateString() === tomorrow.toDateString();
+  };
+
+  const isPast = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+  };
+
+  const getDateStatus = (dateString: string) => {
+    if (isToday(dateString)) return 'today';
+    if (isTomorrow(dateString)) return 'tomorrow';
+    if (isPast(dateString)) return 'past';
+    return 'upcoming';
+  };
+
   const recentAnnouncements = announcements
-    .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
+    .sort((a, b) => {
+      const dateA = new Date(a.scheduled_at || a.published_at);
+      const dateB = new Date(b.scheduled_at || b.published_at);
+      return dateB.getTime() - dateA.getTime();
+    })
     .slice(0, 12);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <PublicNavigation />
-      <BackgroundPattern type="event" subType="exhibition" width={400} height={400} />
+      
+      {/* Theme Toggle - Fixed Position */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              Smart Signs for
-              <span className="block text-yellow-300">Communities</span>
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-blue-100">
-              The digital communication infrastructure that powers Miami's art communities. 
-              See announcements from organizations across the city.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/sign-up"
-                className="inline-flex items-center px-8 py-4 text-lg font-semibold bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                Get Started
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </a>
-              <a
-                href="#organizations"
-                className="inline-flex items-center px-8 py-4 text-lg font-semibold border-2 border-white text-white rounded-lg hover:bg-white hover:text-blue-600 transition-colors"
-              >
-                View Organizations
-              </a>
+      <section className="relative overflow-hidden min-h-screen flex items-center justify-center">
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+          <div className="absolute inset-0 bg-gradient-to-tr from-pink-500/20 via-purple-500/20 to-blue-500/20 animate-pulse"></div>
+          <div className="absolute inset-0 bg-gradient-to-bl from-cyan-400/10 via-blue-500/10 to-purple-600/10 animate-pulse delay-1000"></div>
+        </div>
+        
+        {/* Floating Orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-white/10 backdrop-blur-sm animate-pulse"></div>
+          <div className="absolute top-3/4 right-1/4 w-24 h-24 rounded-full bg-purple-400/20 backdrop-blur-sm animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 right-1/3 w-16 h-16 rounded-full bg-cyan-400/20 backdrop-blur-sm animate-pulse delay-500"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+          <div className="mb-8">
+            <SparklesText 
+              text="Smart Signs for Communities" 
+              className="text-4xl md:text-6xl font-bold text-white mb-6"
+              sparklesCount={30}
+              colors={["#FFD700", "#FFA500", "#FF69B4", "#00BFFF", "#32CD32", "#FF6B6B", "#4ECDC4"]}
+            />
+          </div>
+          
+          <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
+            The digital communication infrastructure that powers Miami's art communities. 
+            See announcements from organizations across the city.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <a
+              href="/sign-up"
+              className="inline-flex items-center px-8 py-4 text-lg font-semibold bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              Get Started
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </a>
+            <a
+              href="#organizations"
+              className="inline-flex items-center px-8 py-4 text-lg font-semibold border-2 border-white text-white rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105"
+            >
+              View Organizations
+            </a>
+          </div>
+          
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+              <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
             </div>
           </div>
         </div>
@@ -226,7 +302,7 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* Organizations Grid */}
+      {/* Art Communities - Orbiting Circles */}
       <section id="organizations" className="py-16 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -238,63 +314,51 @@ export default function HomePage() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {organizations.map((org) => (
-              <div
-                key={org.id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
-              >
-                <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  {org.logo_url ? (
-                    <img
-                      src={org.logo_url}
-                      alt={org.name}
-                      className="h-24 w-auto object-contain"
-                    />
-                  ) : (
-                    <Building2 className="h-24 w-24 text-white/80" />
-                  )}
+          <div className="relative flex h-[500px] w-full flex-col items-center justify-center overflow-hidden">
+            {/* Art-themed icons orbiting in outer circle */}
+            <OrbitingCircles iconSize={60} radius={180}>
+              {[
+                { icon: Palette, color: 'from-pink-500 to-rose-500' },
+                { icon: Paintbrush, color: 'from-blue-500 to-cyan-500' },
+                { icon: Handshake, color: 'from-green-500 to-emerald-500' },
+                { icon: User, color: 'from-purple-500 to-violet-500' },
+                { icon: Brush, color: 'from-orange-500 to-red-500' },
+                { icon: Image, color: 'from-indigo-500 to-blue-500' },
+                { icon: Mic, color: 'from-yellow-500 to-orange-500' },
+                { icon: Film, color: 'from-teal-500 to-green-500' }
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className={`flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br ${item.color} shadow-lg hover:shadow-xl transition-shadow`}
+                >
+                  <item.icon className="h-8 w-8 text-white" />
                 </div>
-                
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                    {org.name}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    {org.description}
-                  </p>
-                  
-                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    {org.location}
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <Badge variant="info">
-                      Active
-                    </Badge>
-                    <div className="flex space-x-2">
-                      {org.website_url && (
-                        <a
-                          href={org.website_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-500 text-sm font-medium"
-                        >
-                          Visit Website
-                        </a>
-                      )}
-                      <a
-                        href={`/o/${org.slug}/announcements/public`}
-                        className="text-purple-600 hover:text-purple-500 text-sm font-medium"
-                      >
-                        View Announcements
-                      </a>
-                    </div>
-                  </div>
+              ))}
+            </OrbitingCircles>
+            
+            {/* Art-themed icons orbiting in inner circle */}
+            <OrbitingCircles iconSize={40} radius={120} reverse speed={1.5}>
+              {[
+                { icon: PenTool, color: 'from-rose-500 to-pink-500' },
+                { icon: Compass, color: 'from-cyan-500 to-blue-500' },
+                { icon: Layers, color: 'from-emerald-500 to-green-500' },
+                { icon: Camera, color: 'from-violet-500 to-purple-500' }
+              ].map((item, index) => (
+                <div
+                  key={`inner-${index}`}
+                  className={`flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br ${item.color} shadow-lg hover:shadow-xl transition-shadow`}
+                >
+                  <item.icon className="h-6 w-6 text-white" />
                 </div>
+              ))}
+            </OrbitingCircles>
+            
+            {/* Smart Sign icon in the center */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-purple-600 shadow-2xl border-4 border-white dark:border-gray-800">
+                <MessageSquare className="h-10 w-10 text-white" />
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
@@ -319,53 +383,109 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recentAnnouncements.map((announcement) => (
-                <div key={announcement.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <Badge variant="success">
-                      {announcement.organization.name}
-                    </Badge>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {new Date(announcement.published_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                  
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    {announcement.title}
-                  </h3>
-                  
-                  {announcement.body && (
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-3">
-                      {announcement.body}
-                    </p>
-                  )}
-                  
-                  {announcement.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {announcement.tags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded"
-                        >
-                          {tag}
+              {recentAnnouncements.map((announcement) => {
+                const eventDate = announcement.scheduled_at || announcement.published_at;
+                const isEventToday = isToday(eventDate);
+                const isEventTomorrow = isTomorrow(eventDate);
+                const isEventPast = isPast(eventDate);
+                
+                return (
+                  <div 
+                    key={announcement.id} 
+                    className={`rounded-lg p-6 transition-shadow ${
+                      isEventPast
+                        ? 'bg-gray-50 dark:bg-gray-800/50 border border-gray-300 dark:border-gray-600 opacity-75'
+                        : 'bg-gray-50 dark:bg-gray-700 hover:shadow-md'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Badge variant="success">
+                        {announcement.organization.name}
+                      </Badge>
+                      <div className="flex items-center space-x-2">
+                        {isEventToday && (
+                          <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded-full">
+                            TODAY
+                          </span>
+                        )}
+                        {isEventTomorrow && (
+                          <span className="px-2 py-1 bg-blue-500 text-white text-xs font-bold rounded-full">
+                            TOMORROW
+                          </span>
+                        )}
+                        {isEventPast && (
+                          <span className="px-2 py-1 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 text-xs rounded-full">
+                            Past Event
+                          </span>
+                        )}
+                        <span className={`text-sm ${
+                          isEventPast
+                            ? 'text-gray-400 dark:text-gray-500'
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}>
+                          {new Date(eventDate).toLocaleDateString()}
                         </span>
-                      ))}
+                      </div>
                     </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      Priority: {announcement.priority}
-                    </span>
-                    <a
-                      href={`/announcements/${announcement.id}`}
-                      className="text-blue-600 hover:text-blue-500 text-sm font-medium"
-                    >
-                      Read More
-                    </a>
+                    
+                    <h3 className={`text-lg font-semibold mb-2 ${
+                      isEventPast
+                        ? 'text-gray-500 dark:text-gray-400'
+                        : 'text-gray-900 dark:text-white'
+                    }`}>
+                      {announcement.title}
+                    </h3>
+                    
+                    {announcement.body && (
+                      <p className={`text-sm mb-3 line-clamp-3 ${
+                        isEventPast
+                          ? 'text-gray-400 dark:text-gray-500'
+                          : 'text-gray-600 dark:text-gray-400'
+                      }`}>
+                        {announcement.body}
+                      </p>
+                    )}
+                    
+                    {announcement.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {announcement.tags.slice(0, 3).map((tag) => (
+                          <span
+                            key={tag}
+                            className={`px-2 py-1 text-xs rounded ${
+                              isEventPast
+                                ? 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'
+                                : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
+                            }`}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center justify-between">
+                      <span className={`text-xs ${
+                        isEventPast
+                          ? 'text-gray-400 dark:text-gray-500'
+                          : 'text-gray-500 dark:text-gray-400'
+                      }`}>
+                        Priority: {announcement.priority}
+                      </span>
+                      <a
+                        href={`/announcements/${announcement.id}`}
+                        className={`text-sm font-medium ${
+                          isEventPast
+                            ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                            : 'text-blue-600 hover:text-blue-500'
+                        }`}
+                        style={isEventPast ? { pointerEvents: 'none' } : {}}
+                      >
+                        Read More
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

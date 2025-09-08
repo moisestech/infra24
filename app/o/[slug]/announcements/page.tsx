@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { Bell, Plus, Calendar, User, Tag, Eye, EyeOff, Shield } from 'lucide-react'
+import { Bell, Plus, Calendar, User, Tag, Eye, EyeOff, Shield, Play } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 
 interface Announcement {
@@ -19,6 +19,8 @@ interface Announcement {
   tags: string[]
   org_id: string
   scheduled_at?: string
+  type?: string
+  sub_type?: string
 }
 
 interface Organization {
@@ -141,6 +143,26 @@ export default function OrganizationAnnouncementsPage() {
     }
   }
 
+  const getTypeBadge = (type?: string) => {
+    if (!type) return null;
+    
+    const typeStyles = {
+      urgent: { bg: 'bg-red-100', text: 'text-red-800', label: 'Urgent' },
+      facility: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Facility' },
+      event: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Event' },
+      opportunity: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Opportunity' },
+      administrative: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Admin' },
+    };
+    
+    const style = typeStyles[type as keyof typeof typeStyles] || typeStyles.event;
+    
+    return (
+      <span className={`px-2 py-1 text-xs font-medium rounded-full ${style.bg} ${style.text}`}>
+        {style.label}
+      </span>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -191,13 +213,23 @@ export default function OrganizationAnnouncementsPage() {
                 Manage and view all announcements for this organization
               </p>
             </div>
-            <Link
-              href={`/o/${slug}/announcements/create`}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-            >
-              <Plus className="h-4 w-4" />
-              <span>New Announcement</span>
-            </Link>
+            <div className="flex space-x-3">
+              <Link
+                href={`/o/${slug}/announcements/carousel`}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+              >
+                <Play className="h-4 w-4" />
+                <span>Carousel View</span>
+              </Link>
+              
+              <Link
+                href={`/o/${slug}/announcements/create`}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                <span>New Announcement</span>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -360,6 +392,7 @@ export default function OrganizationAnnouncementsPage() {
                                 Past Event
                               </span>
                             )}
+                            {getTypeBadge(announcement.type)}
                           </div>
                           
                           <p className={`mb-4 line-clamp-3 ${
