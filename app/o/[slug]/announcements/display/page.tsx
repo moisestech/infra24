@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { ArrowLeft, Eye, List, EyeOff, Building2 } from 'lucide-react';
+import { ArrowLeft, Eye, List, EyeOff, Building2, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { AnnouncementCarousel } from '@/components/AnnouncementCarousel';
 import { Announcement } from '@/types/announcement';
@@ -24,7 +24,7 @@ export default function AnnouncementDisplayPage() {
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showLogo, setShowLogo] = useState(false);
+  const [showNavigation, setShowNavigation] = useState(true);
 
   useEffect(() => {
     async function loadData() {
@@ -206,7 +206,9 @@ export default function AnnouncementDisplayPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header with navigation */}
-      <div className="absolute top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm">
+      <div className={`absolute top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm transition-all duration-300 ${
+        showNavigation ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -220,6 +222,14 @@ export default function AnnouncementDisplayPage() {
               
               <div className="hidden md:flex items-center space-x-4 text-white/80">
                 <div className="flex items-center space-x-3">
+                  {organization && (
+                    <OrganizationLogo 
+                      organization={organization}
+                      size="md"
+                      shape="square"
+                      className="h-8 w-8"
+                    />
+                  )}
                   <div>
                     <h1 className="text-lg font-semibold">{organization?.name} Announcements</h1>
                     <p className="text-sm">Display View</p>
@@ -229,22 +239,6 @@ export default function AnnouncementDisplayPage() {
             </div>
             
             <div className="flex items-center space-x-2">
-              {/* Logo Toggle Button */}
-              {organization && (
-                <button
-                  onClick={() => setShowLogo(!showLogo)}
-                  className="inline-flex items-center px-3 py-2 text-white hover:text-white/80 transition-colors"
-                  title={showLogo ? "Hide logo" : "Show logo"}
-                >
-                  {showLogo ? (
-                    <EyeOff className="w-4 h-4 mr-2" />
-                  ) : (
-                    <Building2 className="w-4 h-4 mr-2" />
-                  )}
-                  {showLogo ? "Hide Logo" : "Show Logo"}
-                </button>
-              )}
-              
               <Link
                 href={`/o/${params.slug}/announcements`}
                 className="inline-flex items-center px-3 py-2 text-white hover:text-white/80 transition-colors"
@@ -257,31 +251,20 @@ export default function AnnouncementDisplayPage() {
         </div>
       </div>
 
-      {/* Toggleable Organization Logo */}
-      {organization && (
-        <div 
-          className={`fixed top-20 right-4 z-40 transition-all duration-500 ease-in-out ${
-            showLogo 
-              ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 -translate-y-4 pointer-events-none'
-          }`}
-        >
-          <div className="bg-black/60 backdrop-blur-md rounded-lg p-4 border border-white/20">
-            <div className="flex items-center space-x-3">
-              <OrganizationLogo 
-                organization={organization}
-                size="lg"
-                shape="square"
-                className="h-12 w-12"
-              />
-              <div className="text-white">
-                <h3 className="font-semibold text-sm">{organization.name}</h3>
-                <p className="text-xs text-white/70">Organization Logo</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Navigation Toggle Button */}
+      <button
+        onClick={() => setShowNavigation(!showNavigation)}
+        className={`fixed top-4 right-4 z-50 inline-flex items-center justify-center w-12 h-12 bg-black/60 backdrop-blur-md text-white hover:bg-black/80 transition-all duration-300 rounded-lg border border-white/20 ${
+          showNavigation ? 'opacity-100' : 'opacity-70 hover:opacity-100'
+        }`}
+        title={showNavigation ? "Hide navigation" : "Show navigation"}
+      >
+        {showNavigation ? (
+          <X className="w-5 h-5" />
+        ) : (
+          <Menu className="w-5 h-5" />
+        )}
+      </button>
 
       {/* Carousel */}
       <AnnouncementCarousel announcements={announcements} />
