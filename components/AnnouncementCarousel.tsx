@@ -243,11 +243,11 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
           <div className="flex items-center justify-between">
             {announcement.location && (
               <motion.div 
-                className="flex items-center gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl text-white/80"
+                className="flex items-center gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 4xl:gap-12 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-8xl text-white/80"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <MapPin className="w-8 h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 3xl:w-16 3xl:h-16 4xl:w-24 4xl:h-24" />
+                <MapPin className="w-8 h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 3xl:w-16 3xl:h-16 4xl:w-32 4xl:h-32" />
                 <span>{announcement.location}</span>
               </motion.div>
             )}
@@ -255,26 +255,26 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
             <div className="flex items-center gap-6 xl:gap-8 2xl:gap-10 3xl:gap-12">
               {/* QR Code */}
               <motion.div 
-                className="bg-white/90 backdrop-blur-sm rounded-lg p-2 xl:p-3 2xl:p-4 3xl:p-6"
+                className="bg-white/90 backdrop-blur-sm rounded-lg p-2 xl:p-3 2xl:p-4 3xl:p-6 4xl:p-8"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.6 }}
               >
                 <QRCode 
                   value={announcement.primary_link || `https://art-events.vercel.app/announcements/${announcement.id}`}
-                  size={80}
-                  className="xl:w-24 xl:h-24 2xl:w-32 2xl:h-32 3xl:w-40 3xl:h-40"
+                  size={400}
+                  className="w-20 h-20 xl:w-32 xl:h-32 2xl:w-48 2xl:h-48 3xl:w-64 3xl:h-64 4xl:w-80 4xl:h-80"
                 />
               </motion.div>
 
               {announcement.primary_link && (
                 <motion.a 
                   href={announcement.primary_link}
-                  className="inline-flex items-center gap-4 xl:gap-6 px-8 xl:px-12 py-4 xl:py-6 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl text-white hover:text-white/80 transition-colors group bg-white/10 backdrop-blur-sm rounded-full"
+                  className="inline-flex items-center gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 4xl:gap-12 px-8 xl:px-12 2xl:px-16 3xl:px-20 4xl:px-24 py-4 xl:py-6 2xl:py-8 3xl:py-10 4xl:py-12 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl text-white hover:text-white/80 transition-colors group bg-white/10 backdrop-blur-sm rounded-full"
                   whileHover={{ scale: 1.05 }}
                 >
                   Learn More
-                  <ExternalLink className="w-6 h-6 xl:w-8 xl:h-8 2xl:w-10 2xl:h-10 3xl:w-12 3xl:h-12 group-hover:translate-x-1 transition-transform" />
+                  <ExternalLink className="w-6 h-6 xl:w-8 xl:h-8 2xl:w-10 2xl:h-10 3xl:w-12 3xl:h-12 4xl:w-16 4xl:h-16 group-hover:translate-x-1 transition-transform" />
                 </motion.a>
               )}
             </div>
