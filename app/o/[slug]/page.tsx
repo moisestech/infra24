@@ -155,6 +155,7 @@ export default function OrganizationPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navigation />
+      <div className="max-w-7xl 4xl:max-w-none mx-auto px-4 sm:px-6 lg:px-8 4xl:px-12 py-8 4xl:py-16">
       
       {/* Banner Background */}
       {organization?.banner_image && (
@@ -178,25 +179,25 @@ export default function OrganizationPage() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-6 4xl:mb-12">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-2">
+              <div className="flex items-center space-x-3 4xl:space-x-6 mb-2 4xl:mb-4">
                 <OrganizationLogo 
                   organization={organization}
                   size="lg"
-                  className="h-12 w-12"
+                  className="h-12 w-12 4xl:h-24 4xl:w-24"
                 />
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-3xl 4xl:text-6xl font-bold text-gray-900 dark:text-white">
                   {organization.name}
                 </h1>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                <span className="inline-flex items-center px-2.5 py-0.5 4xl:px-5 4xl:py-2 rounded-full text-xs 4xl:text-2xl font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                   Active
                 </span>
               </div>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex flex-wrap items-center gap-4 4xl:gap-8 text-sm 4xl:text-2xl text-gray-500 dark:text-gray-400">
                 <div className="flex items-center">
-                  <MapPin className="h-4 w-4 mr-1" />
+                  <MapPin className="h-4 w-4 4xl:h-8 4xl:w-8 mr-1" />
                   Member since {new Date(organization.created_at).getFullYear()}
                 </div>
               </div>
@@ -446,6 +447,7 @@ export default function OrganizationPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

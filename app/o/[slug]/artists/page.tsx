@@ -138,32 +138,32 @@ export default function ArtistsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl 4xl:max-w-none mx-auto px-4 sm:px-6 lg:px-8 4xl:px-12 py-8 4xl:py-16">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 4xl:mb-16">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               {organization && (
-                <div className="mr-4">
-                  <OrganizationLogo 
+                <div className="mr-4 4xl:mr-8">
+                  <OrganizationLogo
                     organization={organization}
                     size="lg"
-                    className="h-12 w-12"
+                    className="h-12 w-12 4xl:h-24 4xl:w-24"
                   />
                 </div>
               )}
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 className="text-3xl 4xl:text-6xl font-bold text-gray-900 dark:text-white mb-2 4xl:mb-4">
                   Artists & Members
                 </h1>
-                <p className="text-lg text-gray-600 dark:text-gray-400">
+                <p className="text-lg 4xl:text-3xl text-gray-600 dark:text-gray-400">
                   {organization?.name} - {artists.length} members
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <Plus className="h-4 w-4 mr-2" />
+            <div className="flex items-center space-x-4 4xl:space-x-8">
+              <button className="inline-flex items-center px-4 py-2 4xl:px-8 4xl:py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm 4xl:text-2xl">
+                <Plus className="h-4 w-4 4xl:h-8 4xl:w-8 mr-2" />
                 Add Artist
               </button>
             </div>
