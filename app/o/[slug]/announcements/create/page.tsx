@@ -66,7 +66,7 @@ export default function CreateAnnouncementPage() {
         expires_at: formData.expires_at ? new Date(formData.expires_at).toISOString() : null
       }
 
-      const response = await fetch(`/api/organizations/${slug}/announcements`, {
+      const response = await fetch(`/api/organizations/by-slug/${slug}/announcements`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

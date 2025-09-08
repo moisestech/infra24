@@ -49,7 +49,7 @@ export default function OrganizationAnnouncementsPage() {
           setUserRole(userData.role || 'resident')
         }
         
-        const response = await fetch(`/api/organizations/${slug}/announcements`)
+        const response = await fetch(`/api/organizations/by-slug/${slug}/announcements`)
         
         if (!response.ok) {
           throw new Error(`Failed to load announcements: ${response.status}`)
@@ -74,6 +74,34 @@ export default function OrganizationAnnouncementsPage() {
     if (filter === 'all') return true
     return announcement.status === filter
   })
+
+  // Sort announcements by date (latest first)
+  const sortedAnnouncements = filteredAnnouncements.sort((a, b) => {
+    const dateA = new Date(a.scheduled_at || a.created_at)
+    const dateB = new Date(b.scheduled_at || b.created_at)
+    return dateB.getTime() - dateA.getTime()
+  })
+
+  // Utility functions for date handling
+  const isToday = (dateString: string) => {
+    const date = new Date(dateString)
+    const today = new Date()
+    return date.toDateString() === today.toDateString()
+  }
+
+  const isPast = (dateString: string) => {
+    const date = new Date(dateString)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // Reset time to start of day
+    return date < today
+  }
+
+  const isUpcoming = (dateString: string) => {
+    const date = new Date(dateString)
+    const today = new Date()
+    today.setHours(23, 59, 59, 999) // End of today
+    return date > today
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -199,7 +227,7 @@ export default function OrganizationAnnouncementsPage() {
 
         {/* Announcements List */}
         <div className="space-y-4">
-          {filteredAnnouncements.length === 0 ? (
+          {sortedAnnouncements.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-lg p-8 text-center">
               <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
@@ -220,7 +248,7 @@ export default function OrganizationAnnouncementsPage() {
               </Link>
             </div>
           ) : (
-            filteredAnnouncements.map((announcement) => {
+            sortedAnnouncements.map((announcement) => {
               // Determine the event date - prioritize scheduled_at, then created_at
               const eventDate = announcement.scheduled_at || announcement.created_at
               const formattedEventDate = formatEventDate(eventDate)
@@ -232,28 +260,74 @@ export default function OrganizationAnnouncementsPage() {
                 minute: '2-digit',
                 hour12: true
               }) : null
+
+              // Determine date status
+              const isEventToday = isToday(eventDate)
+              const isEventPast = isPast(eventDate)
+              const isEventUpcoming = isUpcoming(eventDate)
               
               return (
                 <div
                   key={announcement.id}
-                  className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
+                  className={`rounded-lg border transition-shadow ${
+                    isEventPast 
+                      ? 'bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-600 opacity-75' 
+                      : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-md'
+                  }`}
                 >
                   <div className="flex flex-col md:flex-row">
                     {/* Event Date Column - Prominent on mobile top, left side on desktop */}
-                    <div className="md:w-32 flex-shrink-0 bg-blue-50 dark:bg-blue-900/20 md:border-r border-b md:border-b-0 border-gray-200 dark:border-gray-700 p-4 flex flex-row md:flex-col items-center justify-center">
+                    <div className={`md:w-32 flex-shrink-0 md:border-r border-b md:border-b-0 border-gray-200 dark:border-gray-700 p-4 flex flex-row md:flex-col items-center justify-center relative ${
+                      isEventPast 
+                        ? 'bg-gray-100 dark:bg-gray-700/50' 
+                        : isEventToday 
+                          ? 'bg-green-50 dark:bg-green-900/20' 
+                          : 'bg-blue-50 dark:bg-blue-900/20'
+                    }`}>
+                      {/* Today Badge */}
+                      {isEventToday && (
+                        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                          TODAY
+                        </div>
+                      )}
+                      
                       <div className="text-center flex items-center md:flex-col space-x-2 md:space-x-0">
-                        <div className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
+                        <div className={`text-2xl md:text-3xl font-bold ${
+                          isEventPast 
+                            ? 'text-gray-500 dark:text-gray-400' 
+                            : isEventToday 
+                              ? 'text-green-600 dark:text-green-400' 
+                              : 'text-blue-600 dark:text-blue-400'
+                        }`}>
                           {formattedEventDate.day}
                         </div>
                         <div className="md:block">
-                          <div className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+                          <div className={`text-sm font-medium uppercase tracking-wide ${
+                            isEventPast 
+                              ? 'text-gray-500 dark:text-gray-400' 
+                              : isEventToday 
+                                ? 'text-green-600 dark:text-green-400' 
+                                : 'text-blue-600 dark:text-blue-400'
+                          }`}>
                             {formattedEventDate.month}
                           </div>
-                          <div className="text-xs text-blue-500 dark:text-blue-300">
+                          <div className={`text-xs ${
+                            isEventPast 
+                              ? 'text-gray-400 dark:text-gray-500' 
+                              : isEventToday 
+                                ? 'text-green-500 dark:text-green-300' 
+                                : 'text-blue-500 dark:text-blue-300'
+                          }`}>
                             {formattedEventDate.year}
                           </div>
                           {timeInfo && (
-                            <div className="text-xs text-blue-500 dark:text-blue-300 mt-1 font-medium">
+                            <div className={`text-xs mt-1 font-medium ${
+                              isEventPast 
+                                ? 'text-gray-400 dark:text-gray-500' 
+                                : isEventToday 
+                                  ? 'text-green-500 dark:text-green-300' 
+                                  : 'text-blue-500 dark:text-blue-300'
+                            }`}>
                               {timeInfo}
                             </div>
                           )}
@@ -266,7 +340,11 @@ export default function OrganizationAnnouncementsPage() {
                       <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4 space-y-3 md:space-y-0">
                         <div className="flex-1">
                           <div className="flex items-center space-x-3 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            <h3 className={`text-lg font-semibold ${
+                              isEventPast 
+                                ? 'text-gray-500 dark:text-gray-400' 
+                                : 'text-gray-900 dark:text-white'
+                            }`}>
                               {announcement.title}
                             </h3>
                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(announcement.status)}`}>
@@ -277,9 +355,18 @@ export default function OrganizationAnnouncementsPage() {
                                 Priority {announcement.priority}
                               </span>
                             )}
+                            {isEventPast && (
+                              <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-full">
+                                Past Event
+                              </span>
+                            )}
                           </div>
                           
-                          <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+                          <p className={`mb-4 line-clamp-3 ${
+                            isEventPast 
+                              ? 'text-gray-400 dark:text-gray-500' 
+                              : 'text-gray-600 dark:text-gray-400'
+                          }`}>
                             {announcement.body}
                           </p>
                           

@@ -26,6 +26,7 @@ interface Announcement {
   created_at: string
   published_at?: string
   expires_at?: string
+  scheduled_at?: string
   priority: number
   tags: string[]
   org_id: string
@@ -62,6 +63,7 @@ export default function AnnouncementsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [orgFilter, setOrgFilter] = useState('')
+  const [dateFilter, setDateFilter] = useState('')
 
   useEffect(() => {
     async function loadData() {
@@ -138,9 +140,54 @@ export default function AnnouncementsPage() {
     
     const matchesStatus = !statusFilter || announcement.status === statusFilter
     const matchesOrg = !orgFilter || announcement.org_id === orgFilter
+    
+    const eventDate = announcement.scheduled_at || announcement.created_at
+    const matchesDate = !dateFilter || getDateStatus(eventDate) === dateFilter
 
-    return matchesSearch && matchesStatus && matchesOrg
+    return matchesSearch && matchesStatus && matchesOrg && matchesDate
   })
+
+  // Sort announcements by date (latest first, prioritizing scheduled_at)
+  const sortedAnnouncements = filteredAnnouncements.sort((a, b) => {
+    const dateA = new Date(a.scheduled_at || a.created_at)
+    const dateB = new Date(b.scheduled_at || b.created_at)
+    return dateB.getTime() - dateA.getTime()
+  })
+
+  // Utility functions for date handling
+  const isToday = (dateString: string) => {
+    const date = new Date(dateString)
+    const today = new Date()
+    return date.toDateString() === today.toDateString()
+  }
+
+  const isTomorrow = (dateString: string) => {
+    const date = new Date(dateString)
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return date.toDateString() === tomorrow.toDateString()
+  }
+
+  const isPast = (dateString: string) => {
+    const date = new Date(dateString)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // Reset time to start of day
+    return date < today
+  }
+
+  const isUpcoming = (dateString: string) => {
+    const date = new Date(dateString)
+    const today = new Date()
+    today.setHours(23, 59, 59, 999) // End of today
+    return date > today
+  }
+
+  const getDateStatus = (dateString: string) => {
+    if (isToday(dateString)) return 'today'
+    if (isTomorrow(dateString)) return 'tomorrow'
+    if (isPast(dateString)) return 'past'
+    return 'upcoming'
+  }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -296,6 +343,18 @@ export default function AnnouncementsPage() {
               </select>
               
               <select
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">All Dates</option>
+                <option value="today">Today</option>
+                <option value="tomorrow">Tomorrow</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="past">Past Events</option>
+              </select>
+              
+              <select
                 value={orgFilter}
                 onChange={(e) => setOrgFilter(e.target.value)}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -313,18 +372,36 @@ export default function AnnouncementsPage() {
 
         {/* Announcements List */}
         <div className="space-y-4">
-          {filteredAnnouncements.map((announcement) => {
+          {sortedAnnouncements.map((announcement) => {
             const author = authors[announcement.author_clerk_id]
             const organization = organizations.find(org => org.id === announcement.org_id)
             
+            // Determine the event date - prioritize scheduled_at, then created_at
+            const eventDate = announcement.scheduled_at || announcement.created_at
+            const dateStatus = getDateStatus(eventDate)
+            const isEventToday = isToday(eventDate)
+            const isEventTomorrow = isTomorrow(eventDate)
+            const isEventPast = isPast(eventDate)
+            
             return (
-              <div key={announcement.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+              <div 
+                key={announcement.id} 
+                className={`rounded-lg shadow-sm transition-shadow ${
+                  isEventPast 
+                    ? 'bg-gray-50 dark:bg-gray-800/50 opacity-75' 
+                    : 'bg-white dark:bg-gray-800 hover:shadow-md'
+                }`}
+              >
                 <div className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-3">
                         {getStatusIcon(announcement.status)}
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <h3 className={`text-lg font-semibold ${
+                          isEventPast 
+                            ? 'text-gray-500 dark:text-gray-400' 
+                            : 'text-gray-900 dark:text-white'
+                        }`}>
                           {announcement.title}
                         </h3>
                         {announcement.priority > 0 && (
@@ -332,15 +409,38 @@ export default function AnnouncementsPage() {
                             Priority {announcement.priority}
                           </Badge>
                         )}
+                        {isEventToday && (
+                          <Badge variant="success" className="bg-green-500 text-white">
+                            TODAY
+                          </Badge>
+                        )}
+                        {isEventTomorrow && (
+                          <Badge variant="info" className="bg-blue-500 text-white">
+                            TOMORROW
+                          </Badge>
+                        )}
+                        {isEventPast && (
+                          <Badge variant="default" className="bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            Past Event
+                          </Badge>
+                        )}
                       </div>
                       
                       {announcement.body && (
-                        <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                        <p className={`mb-4 line-clamp-2 ${
+                          isEventPast 
+                            ? 'text-gray-400 dark:text-gray-500' 
+                            : 'text-gray-600 dark:text-gray-400'
+                        }`}>
                           {announcement.body}
                         </p>
                       )}
                       
-                      <div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400">
+                      <div className={`flex items-center space-x-6 text-sm ${
+                        isEventPast 
+                          ? 'text-gray-400 dark:text-gray-500' 
+                          : 'text-gray-500 dark:text-gray-400'
+                      }`}>
                         <div className="flex items-center space-x-1">
                           <User className="h-4 w-4" />
                           <span>
@@ -411,12 +511,12 @@ export default function AnnouncementsPage() {
           })}
         </div>
 
-        {filteredAnnouncements.length === 0 && (
+        {sortedAnnouncements.length === 0 && (
           <div className="text-center py-12">
             <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No announcements found</h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {searchTerm || statusFilter || orgFilter 
+              {searchTerm || statusFilter || orgFilter || dateFilter
                 ? 'Try adjusting your filters or search terms.'
                 : 'No announcements have been created yet.'
               }

@@ -38,7 +38,7 @@ export default function AnnouncementDisplayPage() {
         setOrganization(orgData.organization);
 
         // Load announcements for this organization
-        const announcementsResponse = await fetch(`/api/organizations/${params.slug}/announcements?visibility=both`);
+        const announcementsResponse = await fetch(`/api/organizations/by-slug/${params.slug}/announcements?visibility=both`);
         if (!announcementsResponse.ok) {
           throw new Error('Failed to load announcements');
         }

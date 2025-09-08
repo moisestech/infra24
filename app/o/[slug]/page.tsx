@@ -69,7 +69,7 @@ export default function OrganizationPage() {
         }
 
         // Get recent announcements
-        const announcementsResponse = await fetch(`/api/organizations/${slug}/announcements?limit=5`)
+        const announcementsResponse = await fetch(`/api/organizations/by-slug/${slug}/announcements?limit=5`)
         if (announcementsResponse.ok) {
           const announcementsData = await announcementsResponse.json()
           setRecentAnnouncements(announcementsData.announcements || [])
