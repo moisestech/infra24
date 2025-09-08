@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation'
 import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import ArtistIcon from '@/components/ui/ArtistIcon'
+import OrganizationLogo from '@/components/ui/OrganizationLogo'
 
 interface Organization {
   id: string
@@ -76,12 +77,14 @@ export default function OrganizationPage() {
         }
 
         // Get user count and breakdown
-        const usersResponse = await fetch(`/api/organizations/${slug}/users`)
+        const usersResponse = await fetch(`/api/organizations/by-slug/${slug}/users`)
         if (usersResponse.ok) {
           const usersData = await usersResponse.json()
-          const totalUsers = usersData.users?.length || 0
           const memberships = usersData.memberships || []
           const artistProfiles = usersData.artist_profiles || []
+          
+          // Calculate total members (memberships + artists)
+          const totalMembers = memberships.length + artistProfiles.length
           
           // Calculate staff count (memberships with admin/moderator roles)
           const staffMembers = memberships.filter((m: any) => 
@@ -92,7 +95,7 @@ export default function OrganizationPage() {
           console.log('Debug - Staff members:', staffMembers)
           console.log('Debug - Artist profiles:', artistProfiles)
           
-          setUserCount(totalUsers)
+          setUserCount(totalMembers)
           setStaffCount(staffMembers.length)
           setArtistCount(artistProfiles.length)
         }
@@ -179,6 +182,11 @@ export default function OrganizationPage() {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center space-x-3 mb-2">
+                <OrganizationLogo 
+                  organization={organization}
+                  size="lg"
+                  className="h-12 w-12"
+                />
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   {organization.name}
                 </h1>
@@ -197,25 +205,25 @@ export default function OrganizationPage() {
         </div>
 
         {/* Compact Stats */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        <div className="grid grid-cols-2 gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 mb-6 xl:mb-8 2xl:mb-10 3xl:mb-12">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 xl:p-6 2xl:p-8 3xl:p-10">
             <div className="flex items-center">
-              <Bell className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Announcements</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">
+              <Bell className="h-6 w-6 xl:h-8 xl:w-8 2xl:h-10 2xl:w-10 3xl:h-12 3xl:w-12 text-blue-600 dark:text-blue-400" />
+              <div className="ml-3 xl:ml-4 2xl:ml-5 3xl:ml-6">
+                <p className="text-sm xl:text-base 2xl:text-lg 3xl:text-xl font-medium text-gray-600 dark:text-gray-400">Announcements</p>
+                <p className="text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl font-bold text-gray-900 dark:text-white">
                   {recentAnnouncements.length}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 xl:p-6 2xl:p-8 3xl:p-10">
             <div className="flex items-center">
-              <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Members</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white">
+              <Users className="h-6 w-6 xl:h-8 xl:w-8 2xl:h-10 2xl:w-10 3xl:h-12 3xl:w-12 text-green-600 dark:text-green-400" />
+              <div className="ml-3 xl:ml-4 2xl:ml-5 3xl:ml-6">
+                <p className="text-sm xl:text-base 2xl:text-lg 3xl:text-xl font-medium text-gray-600 dark:text-gray-400">Members</p>
+                <p className="text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl font-bold text-gray-900 dark:text-white">
                   {userCount}
                 </p>
               </div>
@@ -224,56 +232,56 @@ export default function OrganizationPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+        <div className="mb-6 xl:mb-8 2xl:mb-10 3xl:mb-12">
+          <h2 className="text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl font-semibold text-gray-900 dark:text-white mb-3 xl:mb-4 2xl:mb-5 3xl:mb-6">
             Quick Actions
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 xl:gap-4 2xl:gap-5 3xl:gap-6">
             <a
               href={`/o/${organization.slug}/announcements`}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center">
-                <Bell className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
+                <Bell className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-blue-600 dark:text-blue-400 mr-2" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white text-sm">Announcements</p>
+                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Announcements</p>
                 </div>
               </div>
             </a>
 
             <a
               href={`/o/${organization.slug}/announcements/display`}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-sm p-3 hover:shadow-md transition-shadow"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-sm p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center">
-                <Eye className="h-5 w-5 text-white mr-2" />
+                <Eye className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-white mr-2" />
                 <div>
-                  <p className="font-medium text-white text-sm">View Announcements</p>
-                  <p className="text-xs text-blue-100">Display Mode</p>
+                  <p className="font-medium text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">View Announcements</p>
+                  <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-blue-100">Display Mode</p>
                 </div>
               </div>
             </a>
 
             <a
-              href={`/o/${organization.slug}/users?filter=staff`}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 hover:shadow-md transition-shadow"
+              href={`/o/${organization.slug}/users`}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center">
-                <Users className="h-5 w-5 text-green-600 dark:text-green-400 mr-2" />
+                <Users className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-green-600 dark:text-green-400 mr-2" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white text-sm">Staff</p>
+                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Members</p>
                 </div>
               </div>
             </a>
 
             <a
               href={`/o/${organization.slug}/artists`}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center">
-                <ArtistIcon organization={organization} className="h-5 w-5 text-purple-600 dark:text-purple-400 mr-2" />
+                <ArtistIcon organization={organization} className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-purple-600 dark:text-purple-400 mr-2" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white text-sm">Artists</p>
+                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Artists</p>
                 </div>
               </div>
             </a>

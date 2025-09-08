@@ -21,6 +21,7 @@ import SmartSignIcon from './SmartSignIcon'
 import OrganizationLogo from './OrganizationLogo'
 import ArtistIcon from './ArtistIcon'
 import { ClerkClientService } from '@/lib/clerk-client'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 interface Organization {
   id: string
@@ -210,7 +211,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
                             href={`/organizations/${org.slug}/users`}
                             className="block text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                           >
-                            Users
+                            Members
                           </Link>
                           <Link 
                             href={`/organizations/${org.slug}/artists`}
@@ -225,11 +226,11 @@ export default function Navigation({ className = '' }: NavigationProps) {
                 </div>
               </div>
 
-              {/* Users Dropdown */}
+              {/* Members Dropdown */}
               <div className="relative group">
                 <button className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                   <Users className="h-4 w-4" />
-                  <span className="hidden md:block">Users</span>
+                  <span className="hidden md:block">Members</span>
                   <ChevronDown className="h-4 w-4" />
                 </button>
                 
@@ -239,7 +240,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
                       href="/users"
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
-                      All Users
+                      All Members
                     </Link>
                     <Link 
                       href="/users?role=resident"
@@ -296,7 +297,10 @@ export default function Navigation({ className = '' }: NavigationProps) {
               </button>
             </div>
 
-            {/* User menu - Second */}
+            {/* Theme Toggle - Second */}
+            <ThemeToggle />
+
+            {/* User menu - Third */}
             <div className="relative group">
               <Link href="/profile" className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 {user.imageUrl ? (
@@ -362,7 +366,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
                 </div>
               </div>
 
-            {/* Create button - Third */}
+            {/* Create button - Fourth */}
             {(userRole === 'org_admin' || userRole === 'super_admin' || userRole === 'moderator') && (
               <div className="relative group">
                 <button className="flex items-center space-x-1 bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">

@@ -31,13 +31,15 @@ export async function GET(request: NextRequest) {
         id,
         name,
         bio,
-        profile_image_url,
-        studio,
-        role,
-        status,
+        profile_image,
+        studio_number,
+        studio_type,
+        is_claimed,
+        claimed_by_clerk_user_id,
+        member_type_id,
         created_at,
         updated_at,
-        org_id,
+        organization_id,
         organizations (
           id,
           name,
@@ -46,7 +48,7 @@ export async function GET(request: NextRequest) {
       `);
 
     if (orgId) {
-      query = query.eq('org_id', orgId);
+      query = query.eq('organization_id', orgId);
     }
 
     if (role) {

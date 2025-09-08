@@ -150,7 +150,7 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
       >
         {/* Day of Week */}
         <motion.div 
-          className="text-4xl font-bold text-white/80 mb-2"
+          className="text-4xl xl:text-6xl 2xl:text-8xl 3xl:text-10xl font-bold text-white/80 mb-2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
@@ -158,13 +158,13 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
         </motion.div>
 
         {/* Date */}
-        <motion.div className="text-[10rem] md:text-[12rem] xl:text-[14rem] font-black text-white tracking-tighter leading-none">
+        <motion.div className="text-[10rem] md:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] 3xl:text-[24rem] font-black text-white tracking-tighter leading-none">
           {formatDateWithDay(eventDate).date}
         </motion.div>
 
         {/* Time if available */}
         {formatTime(eventDate) && (
-          <motion.div className="text-3xl text-white/60 font-medium tracking-tight mt-2">
+          <motion.div className="text-3xl xl:text-5xl 2xl:text-6xl 3xl:text-8xl text-white/60 font-medium tracking-tight mt-2">
             {formatTime(eventDate)}
           </motion.div>
         )}
@@ -172,8 +172,8 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
         {/* Days Left Badge */}
         <motion.div 
           className={cn(
-            "inline-flex items-center gap-2 px-4 py-2 rounded-full mt-4",
-            "text-xl font-bold",
+            "inline-flex items-center gap-2 xl:gap-4 px-4 xl:px-6 py-2 xl:py-3 rounded-full mt-4",
+            "text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl font-bold",
             dateStatus.type === 'today' ? "bg-green-500 text-white" : 
             dateStatus.type === 'past' ? "bg-red-500 text-white" : 
             "bg-blue-500 text-white"
@@ -196,21 +196,21 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
 
       {/* Main content */}
       <motion.div 
-        className="relative z-20 h-full p-20 md:p-32 flex flex-col justify-center"
+        className="relative z-20 h-full p-20 md:p-32 xl:p-40 2xl:p-48 3xl:p-56 flex flex-col justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="max-w-4xl space-y-16">
+        <div className="max-w-4xl xl:max-w-6xl 2xl:max-w-7xl 3xl:max-w-8xl space-y-16 xl:space-y-20 2xl:space-y-24 3xl:space-y-28">
           {/* Type Badge */}
           <motion.div 
-            className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-white/10 backdrop-blur-sm"
+            className="inline-flex items-center gap-4 xl:gap-6 px-8 xl:px-12 py-4 xl:py-6 rounded-full bg-white/10 backdrop-blur-sm"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <IconComponent className="w-10 h-10 text-white" />
-            <span className="text-3xl font-bold text-white uppercase tracking-wider">
+            <IconComponent className="w-10 h-10 xl:w-14 xl:h-14 2xl:w-16 2xl:h-16 3xl:w-20 3xl:h-20 text-white" />
+            <span className="text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl font-bold text-white uppercase tracking-wider">
               {(announcement.sub_type || announcement.type || 'announcement').replace('_', ' ')}
             </span>
           </motion.div>
@@ -218,7 +218,7 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
           {/* Title */}
           <motion.h2 
             className={cn(
-              "text-6xl md:text-7xl xl:text-8xl font-black tracking-tight leading-none",
+              "text-6xl md:text-7xl xl:text-9xl 2xl:text-[12rem] 3xl:text-[16rem] font-black tracking-tight leading-none",
               styles.text
             )}
             initial={{ opacity: 0, y: 20 }}
@@ -230,7 +230,7 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
 
           {/* Description */}
           <motion.p 
-            className="text-5xl md:text-5xl text-white/80 max-w-3xl leading-snug"
+            className="text-5xl md:text-5xl xl:text-6xl 2xl:text-7xl 3xl:text-8xl text-white/80 max-w-3xl xl:max-w-4xl 2xl:max-w-5xl 3xl:max-w-6xl leading-snug"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -242,11 +242,11 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
           <div className="flex items-center justify-between">
             {announcement.location && (
               <motion.div 
-                className="flex items-center gap-4 text-2xl text-white/80"
+                className="flex items-center gap-4 xl:gap-6 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl text-white/80"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <MapPin className="w-8 h-8" />
+                <MapPin className="w-8 h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 3xl:w-16 3xl:h-16" />
                 <span>{announcement.location}</span>
               </motion.div>
             )}
@@ -254,11 +254,11 @@ function PatternTemplate({ announcement, styles, IconComponent }: TemplateProps)
             {announcement.primary_link && (
               <motion.a 
                 href={announcement.primary_link}
-                className="inline-flex items-center gap-4 px-8 py-4 text-2xl text-white hover:text-white/80 transition-colors group bg-white/10 backdrop-blur-sm rounded-full"
+                className="inline-flex items-center gap-4 xl:gap-6 px-8 xl:px-12 py-4 xl:py-6 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl text-white hover:text-white/80 transition-colors group bg-white/10 backdrop-blur-sm rounded-full"
                 whileHover={{ scale: 1.05 }}
               >
                 Learn More
-                <ExternalLink className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                <ExternalLink className="w-6 h-6 xl:w-8 xl:h-8 2xl:w-10 2xl:h-10 3xl:w-12 3xl:h-12 group-hover:translate-x-1 transition-transform" />
               </motion.a>
             )}
           </div>

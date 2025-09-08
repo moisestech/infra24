@@ -10,6 +10,7 @@ interface OrganizationLogoProps {
     logo_url?: string
   }
   size?: 'sm' | 'md' | 'lg'
+  shape?: 'circle' | 'square'
   className?: string
   showText?: boolean
   autoHideOnMobile?: boolean
@@ -18,6 +19,7 @@ interface OrganizationLogoProps {
 export default function OrganizationLogo({ 
   organization, 
   size = 'md', 
+  shape = 'square',
   className = '',
   showText = false,
   autoHideOnMobile = false
@@ -42,6 +44,12 @@ export default function OrganizationLogo({
     lg: 'h-12 w-12 text-lg'
   }
 
+  // Shape classes
+  const shapeClasses = {
+    circle: 'rounded-full',
+    square: 'rounded-lg'
+  }
+
   const shouldShowText = autoHideOnMobile ? (showText && !isMobile) : showText
 
   return (
@@ -51,18 +59,18 @@ export default function OrganizationLogo({
           <img
             src="https://res.cloudinary.com/dck5rzi4h/image/upload/v1755993342/smart-sign/bakehouse-logo-low-rez_yyiht6.png"
             alt={`${organization.name} logo`}
-            className="h-full w-full rounded-full object-cover"
+            className={`h-full w-full ${shapeClasses[shape]} object-cover`}
             onError={() => setImageError(true)}
           />
         ) : organization.logo_url && !imageError ? (
           <img
             src={organization.logo_url}
             alt={`${organization.name} logo`}
-            className="h-full w-full rounded-full object-cover"
+            className={`h-full w-full ${shapeClasses[shape]} object-cover`}
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="h-full w-full rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+          <div className={`h-full w-full ${shapeClasses[shape]} bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold`}>
             {getInitials(organization.name)}
           </div>
         )}

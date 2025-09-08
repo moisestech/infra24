@@ -101,7 +101,7 @@ export default function UsersPage() {
     const matchesSearch = 
       user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesRole = !roleFilter || user.role === roleFilter
     const matchesOrg = !orgFilter || user.organization_id === orgFilter
@@ -167,15 +167,15 @@ export default function UsersPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center space-x-3 mb-2">
-            <Users className="h-6 w-6 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              All Users
-            </h1>
-          </div>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage users across all organizations (Super Admin Only)
-          </p>
+            <div className="flex items-center space-x-3 mb-2">
+              <Users className="h-6 w-6 text-blue-600" />
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                All Members
+              </h1>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400">
+              Manage community members across all organizations (Super Admin Only)
+            </p>
         </div>
 
         {/* Stats */}
@@ -184,7 +184,7 @@ export default function UsersPage() {
             <div className="flex items-center">
               <Users className="h-8 w-8 text-blue-600" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Users</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Members</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{users.length}</p>
               </div>
             </div>
