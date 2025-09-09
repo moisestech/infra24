@@ -82,7 +82,7 @@ function formatDateWithDay(dateStr: string) {
 }
 
 // Pattern-based template using BackgroundPattern
-function PatternTemplate({ announcement, styles, IconComponent, orientation, showQRCode, setShowQRCode, organizationSlug }: TemplateProps & { orientation: 'portrait' | 'landscape', showQRCode: boolean, setShowQRCode: (show: boolean) => void, organizationSlug?: string }) {
+function PatternTemplate({ announcement, styles, IconComponent, orientation, showQRCode, setShowQRCode, organizationSlug, organizationTheme }: TemplateProps & { orientation: 'portrait' | 'landscape', showQRCode: boolean, setShowQRCode: (show: boolean) => void, organizationSlug?: string, organizationTheme?: any }) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
 
@@ -182,10 +182,13 @@ function PatternTemplate({ announcement, styles, IconComponent, orientation, sho
                 ? 'gap-3 xl:gap-5 2xl:gap-7 3xl:gap-9 px-6 xl:px-8 2xl:px-10 3xl:px-14 py-3 xl:py-4 2xl:py-5 3xl:py-7 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl'
                 : 'gap-2 xl:gap-4 2xl:gap-6 3xl:gap-8 px-4 xl:px-6 2xl:px-8 3xl:px-12 py-2 xl:py-3 2xl:py-4 3xl:py-6 text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl 4xl:text-6xl'
             }`,
-            dateStatus.type === 'today' ? "bg-green-500 text-white" : 
-            dateStatus.type === 'past' ? "bg-red-500 text-white" : 
-            "bg-blue-500 text-white"
+            dateStatus.type === 'today' ? "bg-green-500" : 
+            dateStatus.type === 'past' ? "bg-red-500" : 
+            "bg-blue-500"
           )}
+          style={{
+            color: organizationTheme?.dateTextColor || '#ffffff'
+          }}
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.05 }}
@@ -379,6 +382,38 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('landscape');
   const [screenRatio, setScreenRatio] = useState(1);
   const [showQRCode, setShowQRCode] = useState(false);
+  const [organizationTheme, setOrganizationTheme] = useState<any>(null);
+
+  // Get organization-specific theming
+  useEffect(() => {
+    const getOrganizationTheme = async () => {
+      if (!organizationSlug) return;
+      
+      try {
+        // For now, we'll use hardcoded themes based on organization slug
+        // In the future, this could fetch from the database
+        if (organizationSlug === 'bakehouse') {
+          setOrganizationTheme({
+            dateTextColor: '#fbbf24', // Bright yellow for Bakehouse
+            primaryColor: '#1e40af', // Blue
+            secondaryColor: '#dc2626', // Red
+            accentColor: '#fbbf24' // Yellow
+          });
+        } else {
+          setOrganizationTheme({
+            dateTextColor: '#ffffff', // Default white
+            primaryColor: '#3b82f6', // Default blue
+            secondaryColor: '#10b981', // Default green
+            accentColor: '#f59e0b' // Default amber
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching organization theme:', error);
+      }
+    };
+
+    getOrganizationTheme();
+  }, [organizationSlug]);
 
   // Orientation and screen ratio detection
   useEffect(() => {
@@ -667,6 +702,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
                 showQRCode={showQRCode}
                 setShowQRCode={setShowQRCode}
                 organizationSlug={organizationSlug}
+                organizationTheme={organizationTheme}
               />
             </div>
           ))}
