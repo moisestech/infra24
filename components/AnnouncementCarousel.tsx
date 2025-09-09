@@ -103,6 +103,10 @@ function PatternTemplate({ announcement, styles, IconComponent, orientation, sho
   // Use starts_at if available, otherwise use created_at
   const eventDate = announcement.starts_at || announcement.created_at;
   const dateStatus = getDateStatus(eventDate);
+  
+  // Check if this is a fun_fact that shouldn't show dates (like historical facts)
+  const isHistoricalFunFact = announcement.type === 'fun_fact' && announcement.sub_type === 'historical';
+  const shouldShowDate = !isHistoricalFunFact;
 
   useEffect(() => {
     setIsMounted(true);
@@ -153,56 +157,130 @@ function PatternTemplate({ announcement, styles, IconComponent, orientation, sho
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Day of Week */}
-        <motion.div 
-          className="text-4xl xl:text-6xl 2xl:text-8xl 3xl:text-10xl font-bold text-white/80 mb-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          {formatDateWithDay(eventDate).dayOfWeek}
-        </motion.div>
+        {/* Day of Week - only show for non-historical fun facts */}
+        {shouldShowDate && (
+          <motion.div 
+            className="text-4xl xl:text-6xl 2xl:text-8xl 3xl:text-10xl font-bold text-white/80 mb-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            {formatDateWithDay(eventDate).dayOfWeek}
+          </motion.div>
+        )}
 
-        {/* Date */}
-        <motion.div className="text-[10rem] md:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] 3xl:text-[24rem] font-black text-white tracking-tighter leading-none">
-          {formatDateWithDay(eventDate).date}
-        </motion.div>
+        {/* Special Historical Fun Fact Day Display */}
+        {isHistoricalFunFact && (
+          <motion.div 
+            className="text-4xl xl:text-6xl 2xl:text-8xl 3xl:text-10xl font-bold mb-2"
+            style={{
+              color: organizationTheme?.dateTextColor || '#fbbf24'
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            HISTORY
+          </motion.div>
+        )}
 
-        {/* Time if available */}
-        {formatTime(eventDate) && (
+        {/* Date - only show for non-historical fun facts */}
+        {shouldShowDate && (
+          <motion.div className="text-[10rem] md:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] 3xl:text-[24rem] font-black text-white tracking-tighter leading-none">
+            {formatDateWithDay(eventDate).date}
+          </motion.div>
+        )}
+
+        {/* Special Historical Fun Fact Date Display */}
+        {isHistoricalFunFact && (
+          <motion.div 
+            className="text-[10rem] md:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] 3xl:text-[24rem] font-black tracking-tighter leading-none"
+            style={{
+              color: organizationTheme?.dateTextColor || '#fbbf24'
+            }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            📚
+          </motion.div>
+        )}
+
+        {/* Time if available - only show for non-historical fun facts */}
+        {shouldShowDate && formatTime(eventDate) && (
           <motion.div className="text-3xl xl:text-5xl 2xl:text-6xl 3xl:text-8xl text-white/60 font-medium tracking-tight mt-2">
             {formatTime(eventDate)}
           </motion.div>
         )}
 
-        {/* Days Left Badge */}
-        <motion.div 
-          className={cn(
-            `inline-flex items-center rounded-full mt-4 font-bold ${
-              orientation === 'portrait'
-                ? 'gap-3 xl:gap-5 2xl:gap-7 3xl:gap-9 px-6 xl:px-8 2xl:px-10 3xl:px-14 py-3 xl:py-4 2xl:py-5 3xl:py-7 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl'
-                : 'gap-2 xl:gap-4 2xl:gap-6 3xl:gap-8 px-4 xl:px-6 2xl:px-8 3xl:px-12 py-2 xl:py-3 2xl:py-4 3xl:py-6 text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl 4xl:text-6xl'
-            }`,
-            dateStatus.type === 'today' ? "bg-green-500" : 
-            dateStatus.type === 'past' ? "bg-red-500" : 
-            "bg-blue-500"
-          )}
-          style={{
-            color: organizationTheme?.dateTextColor || '#ffffff'
-          }}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.05 }}
-        >
-          <span className="flex items-center gap-2">
-            {dateStatus.type === 'today' ? (
-              <>🎯 Today</>
-            ) : dateStatus.type === 'future' ? (
-              <>⏰ {dateStatus.message}</>
-            ) : (
-              <>📅 {dateStatus.message}</>
+        {/* Special Historical Fun Fact Badge */}
+        {isHistoricalFunFact && (
+          <motion.div 
+            className="text-3xl xl:text-5xl 2xl:text-6xl 3xl:text-8xl font-medium tracking-tight mt-2"
+            style={{
+              color: organizationTheme?.dateTextColor || '#fbbf24'
+            }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            📚 Historical Fact
+          </motion.div>
+        )}
+
+        {/* Days Left Badge - only show for non-historical fun facts */}
+        {shouldShowDate && (
+          <motion.div 
+            className={cn(
+              `inline-flex items-center rounded-full mt-4 font-bold ${
+                orientation === 'portrait'
+                  ? 'gap-3 xl:gap-5 2xl:gap-7 3xl:gap-9 px-6 xl:px-8 2xl:px-10 3xl:px-14 py-3 xl:py-4 2xl:py-5 3xl:py-7 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl'
+                  : 'gap-2 xl:gap-4 2xl:gap-6 3xl:gap-8 px-4 xl:px-6 2xl:px-8 3xl:px-12 py-2 xl:py-3 2xl:py-4 3xl:py-6 text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl 4xl:text-6xl'
+              }`,
+              dateStatus.type === 'today' ? "bg-green-500" : 
+              dateStatus.type === 'past' ? "bg-red-500" : 
+              "bg-blue-500"
             )}
-          </span>
-        </motion.div>
+            style={{
+              color: organizationTheme?.dateTextColor || '#ffffff'
+            }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+          >
+            <span className="flex items-center gap-2">
+              {dateStatus.type === 'today' ? (
+                <>🎯 Today</>
+              ) : dateStatus.type === 'future' ? (
+                <>⏰ {dateStatus.message}</>
+              ) : (
+                <>📅 {dateStatus.message}</>
+              )}
+            </span>
+          </motion.div>
+        )}
+
+        {/* Special Fun Fact Badge for Historical Facts */}
+        {isHistoricalFunFact && (
+          <motion.div 
+            className={cn(
+              `inline-flex items-center rounded-full mt-4 font-bold ${
+                orientation === 'portrait'
+                  ? 'gap-3 xl:gap-5 2xl:gap-7 3xl:gap-9 px-6 xl:px-8 2xl:px-10 3xl:px-14 py-3 xl:py-4 2xl:py-5 3xl:py-7 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl'
+                  : 'gap-2 xl:gap-4 2xl:gap-6 3xl:gap-8 px-4 xl:px-6 2xl:px-8 3xl:px-12 py-2 xl:py-3 2xl:py-4 3xl:py-6 text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl 4xl:text-6xl'
+              }`,
+              "bg-yellow-500"
+            )}
+            style={{
+              color: organizationTheme?.dateTextColor || '#ffffff'
+            }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+          >
+            <span className="flex items-center gap-2">
+              <>💡 Fun Fact</>
+            </span>
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Main content */}
@@ -231,8 +309,8 @@ function PatternTemplate({ announcement, styles, IconComponent, orientation, sho
             className={cn(
               `font-black tracking-tight leading-none ${
                 orientation === 'portrait'
-                  ? 'text-5xl md:text-6xl xl:text-7xl 2xl:text-8xl 3xl:text-9xl 4xl:text-[10rem]'
-                  : 'text-6xl md:text-7xl xl:text-9xl 2xl:text-[12rem] 3xl:text-[16rem] 4xl:text-[20rem]'
+                  ? 'text-20xl md:text-24xl xl:text-28xl 2xl:text-32xl 3xl:text-36xl 4xl:text-[40rem]'
+                  : 'text-24xl md:text-28xl xl:text-36xl 2xl:text-[48rem] 3xl:text-[64rem] 4xl:text-[80rem]'
               }`,
               styles.text
             )}
@@ -247,8 +325,8 @@ function PatternTemplate({ announcement, styles, IconComponent, orientation, sho
           <motion.p 
             className={`text-white/80 leading-snug ${
               orientation === 'portrait'
-                ? 'text-3xl md:text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl 4xl:text-8xl max-w-2xl xl:max-w-3xl 2xl:max-w-4xl 3xl:max-w-5xl 4xl:max-w-6xl'
-                : 'text-5xl md:text-5xl xl:text-6xl 2xl:text-7xl 3xl:text-8xl 4xl:text-9xl max-w-3xl xl:max-w-4xl 2xl:max-w-5xl 3xl:max-w-6xl 4xl:max-w-7xl'
+                ? 'text-12xl md:text-16xl xl:text-20xl 2xl:text-24xl 3xl:text-28xl 4xl:text-32xl max-w-2xl xl:max-w-3xl 2xl:max-w-4xl 3xl:max-w-5xl 4xl:max-w-6xl'
+                : 'text-20xl md:text-20xl xl:text-24xl 2xl:text-28xl 3xl:text-32xl 4xl:text-36xl max-w-3xl xl:max-w-4xl 2xl:max-w-5xl 3xl:max-w-6xl 4xl:max-w-7xl'
             }`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
