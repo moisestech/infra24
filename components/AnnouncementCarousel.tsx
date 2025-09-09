@@ -31,7 +31,10 @@ import {
   ClipboardCheck,
   FileQuestion,
   Pause,
-  Play
+  Play,
+  Lightbulb,
+  Gift,
+  Crown
 } from 'lucide-react';
 import { motion } from "framer-motion";
 import { useState, useCallback, useEffect, useMemo } from 'react';
@@ -42,6 +45,7 @@ import { LucideIcon } from 'lucide-react';
 
 interface AnnouncementCarouselProps {
   announcements: Announcement[];
+  organizationSlug?: string;
 }
 
 // Update TypeStyle interface
@@ -78,7 +82,7 @@ function formatDateWithDay(dateStr: string) {
 }
 
 // Pattern-based template using BackgroundPattern
-function PatternTemplate({ announcement, styles, IconComponent, orientation }: TemplateProps & { orientation: 'portrait' | 'landscape' }) {
+function PatternTemplate({ announcement, styles, IconComponent, orientation, showQRCode, setShowQRCode, organizationSlug }: TemplateProps & { orientation: 'portrait' | 'landscape', showQRCode: boolean, setShowQRCode: (show: boolean) => void, organizationSlug?: string }) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
 
@@ -272,31 +276,59 @@ function PatternTemplate({ announcement, styles, IconComponent, orientation }: T
             )}
 
             <div className="flex items-center gap-6 xl:gap-8 2xl:gap-10 3xl:gap-12">
-              {/* QR Code */}
-              <motion.div 
-                className={`bg-white/90 backdrop-blur-sm rounded-lg ${
-                  orientation === 'portrait' 
-                    ? 'p-3 xl:p-4 2xl:p-6 3xl:p-8 4xl:p-12' 
-                    : 'p-2 xl:p-3 2xl:p-4 3xl:p-6 4xl:p-8'
+              {/* QR Code Toggle Button */}
+              <motion.button
+                onClick={() => setShowQRCode(!showQRCode)}
+                className={`inline-flex items-center gap-2 px-4 xl:px-6 2xl:px-8 3xl:px-10 4xl:px-12 py-2 xl:py-3 2xl:py-4 3xl:py-5 4xl:py-6 text-sm xl:text-base 2xl:text-lg 3xl:text-xl 4xl:text-2xl font-medium rounded-full transition-all duration-300 ${
+                  showQRCode 
+                    ? 'bg-yellow-500 text-white hover:bg-yellow-600' 
+                    : 'bg-white/20 text-white hover:bg-white/30'
                 }`}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <QRCode 
-                  value={announcement.primary_link || `https://art-events.vercel.app/announcements/${announcement.id}`}
-                  size={orientation === 'portrait' ? 600 : 400}
-                  className={`${
-                    orientation === 'portrait'
-                      ? 'w-24 h-24 xl:w-40 xl:h-40 2xl:w-56 2xl:h-56 3xl:w-72 3xl:h-72 4xl:w-96 4xl:h-96'
-                      : 'w-20 h-20 xl:w-32 xl:h-32 2xl:w-48 2xl:h-48 3xl:w-64 3xl:h-64 4xl:w-80 4xl:h-80'
-                  }`}
-                />
-              </motion.div>
+                <span className="text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl 4xl:text-4xl">
+                  {showQRCode ? '📱' : '📱'}
+                </span>
+                <span className="hidden xl:inline">
+                  {showQRCode ? 'Hide QR' : 'Show QR'}
+                </span>
+              </motion.button>
 
-              {announcement.primary_link && (
+              {/* QR Code */}
+              {showQRCode && (
+                <motion.div 
+                  className={`bg-white/90 backdrop-blur-sm rounded-lg ${
+                    orientation === 'portrait' 
+                      ? 'p-3 xl:p-4 2xl:p-6 3xl:p-8 4xl:p-12' 
+                      : 'p-2 xl:p-3 2xl:p-4 3xl:p-6 4xl:p-8'
+                  }`}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <QRCode 
+                    value={announcement.primary_link || (organizationSlug 
+                      ? `https://art-events.vercel.app/o/${organizationSlug}/announcements/${announcement.id}`
+                      : `https://art-events.vercel.app/announcements/${announcement.id}`
+                    )}
+                    size={orientation === 'portrait' ? 600 : 400}
+                    className={`${
+                      orientation === 'portrait'
+                        ? 'w-24 h-24 xl:w-40 xl:h-40 2xl:w-56 2xl:h-56 3xl:w-72 3xl:h-72 4xl:w-96 4xl:h-96'
+                        : 'w-20 h-20 xl:w-32 xl:h-32 2xl:w-48 2xl:h-48 3xl:w-64 3xl:h-64 4xl:w-80 4xl:h-80'
+                    }`}
+                  />
+                </motion.div>
+              )}
+
+              {(announcement.primary_link || organizationSlug) && (
                 <motion.a 
-                  href={announcement.primary_link}
+                  href={announcement.primary_link || (organizationSlug 
+                    ? `https://art-events.vercel.app/o/${organizationSlug}/announcements/${announcement.id}`
+                    : `https://art-events.vercel.app/announcements/${announcement.id}`
+                  )}
                   className={`inline-flex items-center text-white hover:text-white/80 transition-colors group bg-white/10 backdrop-blur-sm rounded-full ${
                     orientation === 'portrait'
                       ? 'gap-6 xl:gap-8 2xl:gap-10 3xl:gap-12 4xl:gap-16 px-12 xl:px-16 2xl:px-20 3xl:px-24 4xl:px-32 py-6 xl:py-8 2xl:py-10 3xl:py-12 4xl:py-16 text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl 4xl:text-8xl'
@@ -335,7 +367,7 @@ interface TypeIconMappings {
   administrative: Record<AdministrativeSubTypes, LucideIcon>;
 }
 
-export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProps) {
+export function AnnouncementCarousel({ announcements, organizationSlug }: AnnouncementCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
     duration: 60,
@@ -346,6 +378,7 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
   const [isPaused, setIsPaused] = useState(false);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('landscape');
   const [screenRatio, setScreenRatio] = useState(1);
+  const [showQRCode, setShowQRCode] = useState(false);
 
   // Orientation and screen ratio detection
   useEffect(() => {
@@ -509,8 +542,12 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
     },
     opportunity: {
       gradient: "bg-gradient-to-br from-purple-500/90 to-fuchsia-500/90",
+      overlay: "bg-black/20",
       accent: "from-purple-200 to-fuchsia-200",
+      badge: "bg-purple-500",
       text: "text-white",
+      dateStyle: "bg-purple-700/90 text-white",
+      icon: Sparkles,
       backgroundPattern: "sparkles"
     },
     administrative: {
@@ -522,6 +559,57 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
       dateStyle: "bg-gray-700/90 text-white",
       icon: FileText,
       backgroundPattern: "dots"
+    },
+    // Bakehouse-specific custom types
+    attention_artists: {
+      gradient: "bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500",
+      overlay: "bg-black/20",
+      accent: "from-blue-300 to-indigo-300",
+      badge: "bg-blue-500",
+      text: "text-white",
+      dateStyle: "bg-blue-700/90 text-white",
+      icon: Palette,
+      backgroundPattern: "geometric"
+    },
+    attention_public: {
+      gradient: "bg-gradient-to-br from-red-600 via-red-500 to-rose-500",
+      overlay: "bg-black/20",
+      accent: "from-red-300 to-rose-300",
+      badge: "bg-red-500",
+      text: "text-white",
+      dateStyle: "bg-red-700/90 text-white",
+      icon: Users,
+      backgroundPattern: "dots"
+    },
+    fun_fact: {
+      gradient: "bg-gradient-to-br from-yellow-500 via-amber-500 to-orange-400",
+      overlay: "bg-black/10",
+      accent: "from-yellow-300 to-amber-300",
+      badge: "bg-yellow-500",
+      text: "text-white",
+      dateStyle: "bg-yellow-600/90 text-white",
+      icon: Lightbulb,
+      backgroundPattern: "confetti"
+    },
+    promotion: {
+      gradient: "bg-gradient-to-br from-purple-600 via-purple-500 to-violet-500",
+      overlay: "bg-black/20",
+      accent: "from-purple-300 to-violet-300",
+      badge: "bg-purple-500",
+      text: "text-white",
+      dateStyle: "bg-purple-700/90 text-white",
+      icon: Gift,
+      backgroundPattern: "sparkles"
+    },
+    gala_announcement: {
+      gradient: "bg-gradient-to-br from-red-600 via-rose-500 to-pink-500",
+      overlay: "bg-black/20",
+      accent: "from-red-300 to-pink-300",
+      badge: "bg-red-500",
+      text: "text-white",
+      dateStyle: "bg-red-700/90 text-white",
+      icon: Crown,
+      backgroundPattern: "radial-gradient-dots"
     }
   };
 
@@ -573,9 +661,12 @@ export function AnnouncementCarousel({ announcements }: AnnouncementCarouselProp
             >
               <PatternTemplate 
                 announcement={announcement}
-                styles={typeStyles[announcement.type || 'event']}
+                styles={typeStyles[announcement.type || 'event'] || typeStyles['event']}
                 IconComponent={getIconForAnnouncement(announcement)}
                 orientation={orientation}
+                showQRCode={showQRCode}
+                setShowQRCode={setShowQRCode}
+                organizationSlug={organizationSlug}
               />
             </div>
           ))}

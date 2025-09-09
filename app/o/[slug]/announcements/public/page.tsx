@@ -212,7 +212,7 @@ export default function PublicAnnouncementDisplayPage() {
       </div>
 
       {/* Carousel */}
-      <AnnouncementCarousel announcements={announcements} />
+        <AnnouncementCarousel announcements={announcements} organizationSlug={params.slug as string} />
     </div>
   );
 }
