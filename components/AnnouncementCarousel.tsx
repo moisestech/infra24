@@ -105,7 +105,7 @@ function PatternTemplate({ announcement, styles, IconComponent, orientation, sho
   const dateStatus = getDateStatus(eventDate);
   
   // Check if this is a fun_fact that shouldn't show dates (like historical facts)
-  const isHistoricalFunFact = announcement.type === 'fun_fact' && announcement.sub_type === 'historical';
+  const isHistoricalFunFact = (announcement.type as string) === 'fun_fact' && (announcement.sub_type as string) === 'historical';
   const shouldShowDate = !isHistoricalFunFact;
 
   useEffect(() => {
@@ -146,6 +146,8 @@ function PatternTemplate({ announcement, styles, IconComponent, orientation, sho
             subType={announcement.sub_type || 'exhibition'}
             width={dimensions.width}
             height={dimensions.height}
+            organizationSlug={organizationSlug}
+            organizationTheme={organizationTheme}
           />
         </div>
       )}
