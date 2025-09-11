@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { ArrowLeft, Eye, List, EyeOff, Building2, Menu, X } from 'lucide-react';
 import Link from 'next/link';
-import { AnnouncementCarousel } from '@/components/AnnouncementCarousel';
+import { AnnouncementCarousel, OrganizationThemeProvider } from '@/components/AnnouncementCarousel';
 import { Announcement } from '@/types/announcement';
 import OrganizationLogo from '@/components/ui/OrganizationLogo';
 
@@ -267,7 +267,9 @@ export default function AnnouncementDisplayPage() {
       </button>
 
       {/* Carousel */}
+      <OrganizationThemeProvider initialSlug={params.slug as string}>
         <AnnouncementCarousel announcements={announcements} organizationSlug={params.slug as string} />
+      </OrganizationThemeProvider>
     </div>
   );
 }

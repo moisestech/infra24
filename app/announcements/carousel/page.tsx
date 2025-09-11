@@ -5,7 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, List, Settings } from 'lucide-react';
 import Link from 'next/link';
-import { AnnouncementCarousel } from '@/components/AnnouncementCarousel';
+import { AnnouncementCarousel, OrganizationThemeProvider } from '@/components/AnnouncementCarousel';
 import { Announcement } from '@/types/announcement';
 
 export default function GlobalAnnouncementCarouselPage() {
@@ -151,7 +151,9 @@ export default function GlobalAnnouncementCarouselPage() {
       </div>
 
       {/* Carousel */}
-      <AnnouncementCarousel announcements={announcements} />
+      <OrganizationThemeProvider>
+        <AnnouncementCarousel announcements={announcements} />
+      </OrganizationThemeProvider>
     </div>
   );
 }
