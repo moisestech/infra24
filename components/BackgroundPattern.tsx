@@ -56,41 +56,41 @@ const colorSchemes: ColorSchemes = {
     accent: 'rgba(229, 231, 235, 0.05)',
     pattern: 'rgba(107, 114, 128, 0.9)'
   },
-  // Bakehouse-specific custom types with bright primary yellow
+  // Bakehouse-specific custom types with primary yellow palette (light mode)
   attention_artists: {
-    primary: 'rgba(30, 64, 175, 0.08)', // Blue
-    secondary: 'rgba(59, 130, 246, 0.06)',
-    accent: 'rgba(147, 197, 253, 0.04)',
-    pattern: 'rgba(30, 64, 175, 0.9)',
-    background: 'rgba(251, 191, 36, 0.12)' // Bright primary yellow background
+    primary: 'rgba(255, 193, 7, 0.12)', // Primary yellow
+    secondary: 'rgba(255, 213, 79, 0.10)', // Light yellow
+    accent: 'rgba(255, 235, 59, 0.08)', // Bright yellow
+    pattern: 'rgba(255, 193, 7, 0.9)', // Strong primary yellow pattern
+    background: 'rgba(255, 193, 7, 0.08)' // Primary yellow background
   },
   attention_public: {
-    primary: 'rgba(220, 38, 38, 0.08)', // Red
-    secondary: 'rgba(239, 68, 68, 0.06)',
-    accent: 'rgba(252, 165, 165, 0.04)',
-    pattern: 'rgba(220, 38, 38, 0.9)',
-    background: 'rgba(251, 191, 36, 0.12)' // Bright primary yellow background
+    primary: 'rgba(255, 152, 0, 0.12)', // Orange-yellow
+    secondary: 'rgba(255, 183, 77, 0.10)', // Light orange-yellow
+    accent: 'rgba(255, 213, 79, 0.08)', // Yellow-orange
+    pattern: 'rgba(255, 152, 0, 0.9)', // Strong orange-yellow pattern
+    background: 'rgba(255, 193, 7, 0.08)' // Primary yellow background
   },
   fun_fact: {
-    primary: 'rgba(251, 191, 36, 0.12)', // Bright primary yellow
-    secondary: 'rgba(245, 158, 11, 0.10)',
-    accent: 'rgba(254, 240, 138, 0.08)',
-    pattern: 'rgba(251, 191, 36, 0.9)',
-    background: 'rgba(251, 191, 36, 0.15)' // Even brighter yellow background
+    primary: 'rgba(255, 235, 59, 0.15)', // Bright yellow
+    secondary: 'rgba(255, 213, 79, 0.12)', // Light yellow
+    accent: 'rgba(255, 193, 7, 0.10)', // Primary yellow
+    pattern: 'rgba(255, 235, 59, 0.9)', // Strong bright yellow pattern
+    background: 'rgba(255, 235, 59, 0.10)' // Bright yellow background
   },
   promotion: {
-    primary: 'rgba(124, 58, 237, 0.08)', // Purple
-    secondary: 'rgba(147, 51, 234, 0.06)',
-    accent: 'rgba(196, 181, 253, 0.04)',
-    pattern: 'rgba(124, 58, 237, 0.9)',
-    background: 'rgba(251, 191, 36, 0.12)' // Bright primary yellow background
+    primary: 'rgba(255, 171, 0, 0.12)', // Amber-yellow
+    secondary: 'rgba(255, 193, 7, 0.10)', // Primary yellow
+    accent: 'rgba(255, 213, 79, 0.08)', // Light yellow
+    pattern: 'rgba(255, 171, 0, 0.9)', // Strong amber-yellow pattern
+    background: 'rgba(255, 193, 7, 0.08)' // Primary yellow background
   },
   gala_announcement: {
-    primary: 'rgba(220, 38, 38, 0.08)', // Red
-    secondary: 'rgba(239, 68, 68, 0.06)',
-    accent: 'rgba(252, 165, 165, 0.04)',
-    pattern: 'rgba(220, 38, 38, 0.9)',
-    background: 'rgba(251, 191, 36, 0.12)' // Bright primary yellow background
+    primary: 'rgba(255, 111, 0, 0.12)', // Deep orange-yellow
+    secondary: 'rgba(255, 152, 0, 0.10)', // Orange-yellow
+    accent: 'rgba(255, 193, 7, 0.08)', // Primary yellow
+    pattern: 'rgba(255, 111, 0, 0.9)', // Strong deep orange-yellow pattern
+    background: 'rgba(255, 193, 7, 0.08)' // Primary yellow background
   }
 };
 
@@ -126,41 +126,41 @@ const darkColorSchemes: ColorSchemes = {
     accent: 'rgba(229, 231, 235, 0.10)',
     pattern: 'rgba(107, 114, 128, 0.5)'
   },
-  // Bakehouse-specific custom types with bright primary yellow (dark mode)
+  // Bakehouse-specific custom types with primary yellow palette (dark mode)
   attention_artists: {
-    primary: 'rgba(30, 64, 175, 0.20)', // Blue
-    secondary: 'rgba(59, 130, 246, 0.18)',
-    accent: 'rgba(147, 197, 253, 0.15)',
-    pattern: 'rgba(30, 64, 175, 0.7)',
-    background: 'rgba(251, 191, 36, 0.25)' // Bright primary yellow background
+    primary: 'rgba(255, 193, 7, 0.25)', // Primary yellow
+    secondary: 'rgba(255, 213, 79, 0.22)', // Light yellow
+    accent: 'rgba(255, 235, 59, 0.20)', // Bright yellow
+    pattern: 'rgba(255, 193, 7, 0.8)', // Strong primary yellow pattern
+    background: 'rgba(255, 193, 7, 0.15)' // Primary yellow background
   },
   attention_public: {
-    primary: 'rgba(220, 38, 38, 0.20)', // Red
-    secondary: 'rgba(239, 68, 68, 0.18)',
-    accent: 'rgba(252, 165, 165, 0.15)',
-    pattern: 'rgba(220, 38, 38, 0.7)',
-    background: 'rgba(251, 191, 36, 0.25)' // Bright primary yellow background
+    primary: 'rgba(255, 152, 0, 0.25)', // Orange-yellow
+    secondary: 'rgba(255, 183, 77, 0.22)', // Light orange-yellow
+    accent: 'rgba(255, 213, 79, 0.20)', // Yellow-orange
+    pattern: 'rgba(255, 152, 0, 0.8)', // Strong orange-yellow pattern
+    background: 'rgba(255, 193, 7, 0.15)' // Primary yellow background
   },
   fun_fact: {
-    primary: 'rgba(251, 191, 36, 0.25)', // Bright primary yellow
-    secondary: 'rgba(245, 158, 11, 0.22)',
-    accent: 'rgba(254, 240, 138, 0.20)',
-    pattern: 'rgba(251, 191, 36, 0.7)',
-    background: 'rgba(251, 191, 36, 0.30)' // Even brighter yellow background
+    primary: 'rgba(255, 235, 59, 0.30)', // Bright yellow
+    secondary: 'rgba(255, 213, 79, 0.27)', // Light yellow
+    accent: 'rgba(255, 193, 7, 0.25)', // Primary yellow
+    pattern: 'rgba(255, 235, 59, 0.8)', // Strong bright yellow pattern
+    background: 'rgba(255, 235, 59, 0.20)' // Bright yellow background
   },
   promotion: {
-    primary: 'rgba(124, 58, 237, 0.20)', // Purple
-    secondary: 'rgba(147, 51, 234, 0.18)',
-    accent: 'rgba(196, 181, 253, 0.15)',
-    pattern: 'rgba(124, 58, 237, 0.7)',
-    background: 'rgba(251, 191, 36, 0.25)' // Bright primary yellow background
+    primary: 'rgba(255, 171, 0, 0.25)', // Amber-yellow
+    secondary: 'rgba(255, 193, 7, 0.22)', // Primary yellow
+    accent: 'rgba(255, 213, 79, 0.20)', // Light yellow
+    pattern: 'rgba(255, 171, 0, 0.8)', // Strong amber-yellow pattern
+    background: 'rgba(255, 193, 7, 0.15)' // Primary yellow background
   },
   gala_announcement: {
-    primary: 'rgba(220, 38, 38, 0.20)', // Red
-    secondary: 'rgba(239, 68, 68, 0.18)',
-    accent: 'rgba(252, 165, 165, 0.15)',
-    pattern: 'rgba(220, 38, 38, 0.7)',
-    background: 'rgba(251, 191, 36, 0.25)' // Bright primary yellow background
+    primary: 'rgba(255, 111, 0, 0.25)', // Deep orange-yellow
+    secondary: 'rgba(255, 152, 0, 0.22)', // Orange-yellow
+    accent: 'rgba(255, 193, 7, 0.20)', // Primary yellow
+    pattern: 'rgba(255, 111, 0, 0.8)', // Strong deep orange-yellow pattern
+    background: 'rgba(255, 193, 7, 0.15)' // Primary yellow background
   }
 };
 

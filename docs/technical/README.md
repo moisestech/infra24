@@ -10,15 +10,19 @@ The Smart Sign platform features a comprehensive theming system that allows orga
 |----------|-------------|----------|
 | [Organization Theming System](./organization-theming-system.md) | Complete system architecture and technical details | Developers, System Architects |
 | [Color Palette Reference](./color-palette-reference.md) | Visual reference of all color schemes and palettes | Designers, Developers |
+| [Bakehouse Yellow Palette](./bakehouse-yellow-palette.md) | Detailed documentation of Bakehouse's primary yellow palette | Designers, Brand Managers |
 | [Theme Implementation Guide](./theme-implementation-guide.md) | Step-by-step guide for adding new themes | Developers, Organization Admins |
 
 ### 🎨 Current Theme Implementations
 
 #### Bakehouse Art Complex
-- **Theme**: Bright Primary Yellow
+- **Theme**: Primary Yellow Palette
+- **Base Color**: Primary Yellow (`#FFC107`)
+- **Variations**: 6 yellow tones for visual hierarchy
 - **Patterns**: All 9 pattern types supported
 - **Custom Types**: `attention_artists`, `attention_public`, `fun_fact`, `promotion`, `gala_announcement`
-- **Background**: Bright yellow (`#fbbf24`) with 12-15% opacity
+- **Background**: Cohesive yellow-based backgrounds with 8-30% opacity
+- **Philosophy**: Warm, energetic, brand-consistent yellow family
 
 #### Primary Colors Art Collective
 - **Theme**: Clean White with Primary Colors

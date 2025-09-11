@@ -41,47 +41,66 @@
 
 ## Organization-Specific Color Schemes
 
-### Bakehouse Art Complex
+### Bakehouse Art Complex - Primary Yellow Palette
 
-#### Attention Artists (Blue Theme)
-- **Primary**: `rgba(30, 64, 175, 0.08)` - Navy blue background
-- **Secondary**: `rgba(59, 130, 246, 0.06)` - Blue background
-- **Accent**: `rgba(147, 197, 253, 0.04)` - Light blue background
-- **Pattern**: `rgba(30, 64, 175, 0.9)` - Strong navy pattern
-- **Background**: `rgba(251, 191, 36, 0.12)` - Bright yellow background
-- **Dark Mode Pattern**: `rgba(30, 64, 175, 0.7)` - Medium navy pattern
+Bakehouse uses a cohesive primary yellow color palette with variations in yellow tones to create visual hierarchy while maintaining brand consistency.
 
-#### Attention Public (Red Theme)
-- **Primary**: `rgba(220, 38, 38, 0.08)` - Red background
-- **Secondary**: `rgba(239, 68, 68, 0.06)` - Light red background
-- **Accent**: `rgba(252, 165, 165, 0.04)` - Very light red background
-- **Pattern**: `rgba(220, 38, 38, 0.9)` - Strong red pattern
-- **Background**: `rgba(251, 191, 36, 0.12)` - Bright yellow background
-- **Dark Mode Pattern**: `rgba(220, 38, 38, 0.7)` - Medium red pattern
+#### Attention Artists (Primary Yellow Theme)
+- **Primary**: `rgba(255, 193, 7, 0.12)` - Primary yellow background (Light Mode)
+- **Secondary**: `rgba(255, 213, 79, 0.10)` - Light yellow background
+- **Accent**: `rgba(255, 235, 59, 0.08)` - Bright yellow background
+- **Pattern**: `rgba(255, 193, 7, 0.9)` - Strong primary yellow pattern
+- **Background**: `rgba(255, 193, 7, 0.08)` - Primary yellow background
+- **Dark Mode Primary**: `rgba(255, 193, 7, 0.25)` - Enhanced primary yellow
+- **Dark Mode Pattern**: `rgba(255, 193, 7, 0.8)` - Strong primary yellow pattern
 
-#### Fun Fact (Yellow Theme)
-- **Primary**: `rgba(251, 191, 36, 0.12)` - Bright yellow background
-- **Secondary**: `rgba(245, 158, 11, 0.10)` - Amber background
-- **Accent**: `rgba(254, 240, 138, 0.08)` - Light yellow background
-- **Pattern**: `rgba(251, 191, 36, 0.9)` - Strong yellow pattern
-- **Background**: `rgba(251, 191, 36, 0.15)` - Brighter yellow background
-- **Dark Mode Pattern**: `rgba(251, 191, 36, 0.7)` - Medium yellow pattern
+#### Attention Public (Orange-Yellow Theme)
+- **Primary**: `rgba(255, 152, 0, 0.12)` - Orange-yellow background (Light Mode)
+- **Secondary**: `rgba(255, 183, 77, 0.10)` - Light orange-yellow background
+- **Accent**: `rgba(255, 213, 79, 0.08)` - Yellow-orange background
+- **Pattern**: `rgba(255, 152, 0, 0.9)` - Strong orange-yellow pattern
+- **Background**: `rgba(255, 193, 7, 0.08)` - Primary yellow background
+- **Dark Mode Primary**: `rgba(255, 152, 0, 0.25)` - Enhanced orange-yellow
+- **Dark Mode Pattern**: `rgba(255, 152, 0, 0.8)` - Strong orange-yellow pattern
 
-#### Promotion (Purple Theme)
-- **Primary**: `rgba(124, 58, 237, 0.08)` - Purple background
-- **Secondary**: `rgba(147, 51, 234, 0.06)` - Light purple background
-- **Accent**: `rgba(196, 181, 253, 0.04)` - Very light purple background
-- **Pattern**: `rgba(124, 58, 237, 0.9)` - Strong purple pattern
-- **Background**: `rgba(251, 191, 36, 0.12)` - Bright yellow background
-- **Dark Mode Pattern**: `rgba(124, 58, 237, 0.7)` - Medium purple pattern
+#### Fun Fact (Bright Yellow Theme)
+- **Primary**: `rgba(255, 235, 59, 0.15)` - Bright yellow background (Light Mode)
+- **Secondary**: `rgba(255, 213, 79, 0.12)` - Light yellow background
+- **Accent**: `rgba(255, 193, 7, 0.10)` - Primary yellow background
+- **Pattern**: `rgba(255, 235, 59, 0.9)` - Strong bright yellow pattern
+- **Background**: `rgba(255, 235, 59, 0.10)` - Bright yellow background
+- **Dark Mode Primary**: `rgba(255, 235, 59, 0.30)` - Enhanced bright yellow
+- **Dark Mode Pattern**: `rgba(255, 235, 59, 0.8)` - Strong bright yellow pattern
 
-#### Gala Announcement (Red Theme)
-- **Primary**: `rgba(220, 38, 38, 0.08)` - Red background
-- **Secondary**: `rgba(239, 68, 68, 0.06)` - Light red background
-- **Accent**: `rgba(252, 165, 165, 0.04)` - Very light red background
-- **Pattern**: `rgba(220, 38, 38, 0.9)` - Strong red pattern
-- **Background**: `rgba(251, 191, 36, 0.12)` - Bright yellow background
-- **Dark Mode Pattern**: `rgba(220, 38, 38, 0.7)` - Medium red pattern
+#### Promotion (Amber-Yellow Theme)
+- **Primary**: `rgba(255, 171, 0, 0.12)` - Amber-yellow background (Light Mode)
+- **Secondary**: `rgba(255, 193, 7, 0.10)` - Primary yellow background
+- **Accent**: `rgba(255, 213, 79, 0.08)` - Light yellow background
+- **Pattern**: `rgba(255, 171, 0, 0.9)` - Strong amber-yellow pattern
+- **Background**: `rgba(255, 193, 7, 0.08)` - Primary yellow background
+- **Dark Mode Primary**: `rgba(255, 171, 0, 0.25)` - Enhanced amber-yellow
+- **Dark Mode Pattern**: `rgba(255, 171, 0, 0.8)` - Strong amber-yellow pattern
+
+#### Gala Announcement (Deep Orange-Yellow Theme)
+- **Primary**: `rgba(255, 111, 0, 0.12)` - Deep orange-yellow background (Light Mode)
+- **Secondary**: `rgba(255, 152, 0, 0.10)` - Orange-yellow background
+- **Accent**: `rgba(255, 193, 7, 0.08)` - Primary yellow background
+- **Pattern**: `rgba(255, 111, 0, 0.9)` - Strong deep orange-yellow pattern
+- **Background**: `rgba(255, 193, 7, 0.08)` - Primary yellow background
+- **Dark Mode Primary**: `rgba(255, 111, 0, 0.25)` - Enhanced deep orange-yellow
+- **Dark Mode Pattern**: `rgba(255, 111, 0, 0.8)` - Strong deep orange-yellow pattern
+
+#### Color Palette Philosophy
+The Bakehouse palette is built around **Primary Yellow** (`#FFC107`) as the foundation, with variations that create visual hierarchy:
+
+- **Primary Yellow** (`#FFC107`) - Base brand color
+- **Light Yellow** (`#FFD54F`) - Lighter variation for secondary elements
+- **Bright Yellow** (`#FFEB3B`) - Brightest variation for highlights
+- **Orange-Yellow** (`#FF9800`) - Warmer variation for attention
+- **Amber-Yellow** (`#FFAB00`) - Rich variation for promotions
+- **Deep Orange-Yellow** (`#FF6F00`) - Deepest variation for special events
+
+This creates a cohesive yellow-based palette that maintains brand identity while providing visual distinction between announcement types.
 
 ### Primary Colors Art Collective
 
