@@ -1,309 +1,181 @@
 # Technical Documentation
 
-Welcome to the technical documentation for the Bakehouse Smart Sign system. This section provides comprehensive information about the system architecture, implementation details, and development guidelines.
+## Organization Theming System
 
-## 🏗️ System Architecture
+The Smart Sign platform features a comprehensive theming system that allows organizations to customize their visual identity through background patterns and color palettes.
 
-### Overview
-The Smart Sign system is built as a modern web application using Next.js 14 with the App Router, providing both server-side rendering and client-side interactivity.
+### 📚 Documentation Overview
 
-### Technology Stack
-- **Frontend**: React 18, TypeScript, Tailwind CSS
-- **Backend**: Next.js 14 App Router, API Routes
-- **Styling**: Tailwind CSS, Framer Motion
-- **Database**: Currently using static data (ready for PostgreSQL)
-- **Deployment**: Vercel
-- **Authentication**: NextAuth.js (planned)
-- **Analytics**: Vercel Analytics
+| Document | Description | Audience |
+|----------|-------------|----------|
+| [Organization Theming System](./organization-theming-system.md) | Complete system architecture and technical details | Developers, System Architects |
+| [Color Palette Reference](./color-palette-reference.md) | Visual reference of all color schemes and palettes | Designers, Developers |
+| [Theme Implementation Guide](./theme-implementation-guide.md) | Step-by-step guide for adding new themes | Developers, Organization Admins |
 
-### Architecture Diagram
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Client        │    │   Next.js App   │    │   Data Layer    │
-│   (Browser)     │◄──►│   (React/TS)    │◄──►│   (Static/DB)   │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   CDN/Edge      │    │   API Routes    │    │   File System   │
-│   (Vercel)      │    │   (Serverless)  │    │   (Git)         │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
+### 🎨 Current Theme Implementations
 
-## 📁 Project Structure
+#### Bakehouse Art Complex
+- **Theme**: Bright Primary Yellow
+- **Patterns**: All 9 pattern types supported
+- **Custom Types**: `attention_artists`, `attention_public`, `fun_fact`, `promotion`, `gala_announcement`
+- **Background**: Bright yellow (`#fbbf24`) with 12-15% opacity
+
+#### Primary Colors Art Collective
+- **Theme**: Clean White with Primary Colors
+- **Patterns**: Red, blue, yellow patterns on white backgrounds
+- **Focus**: Minimalist design with strong color contrast
+- **Background**: Pure white (`rgba(255, 255, 255, 0.98)`)
+
+### 🔧 Technical Architecture
 
 ```
-bakehouse-news/
-├── app/                    # Next.js App Router
-│   ├── create-announcement/ # Admin interface
-│   ├── globals.css         # Global styles
-│   ├── layout.tsx          # Root layout
-│   └── page.tsx            # Home page
-├── components/             # React components
-│   ├── ui/                 # Reusable UI components
-│   ├── patterns/           # Background pattern system
-│   └── magicui/            # Animation components
-├── lib/                    # Utility functions
-│   ├── data.ts             # Sample data
-│   ├── dateUtils.ts        # Date utilities
-│   └── utils.ts            # General utilities
-├── types/                  # TypeScript definitions
-│   └── announcement.ts     # Core data types
-├── public/                 # Static assets
-└── docs/                   # Documentation
+┌─────────────────────────────────────────────────────────────┐
+│                    Organization Theming System              │
+├─────────────────────────────────────────────────────────────┤
+│  BackgroundPattern Component                                │
+│  ├── Organization Detection                                 │
+│  ├── Color Scheme Selection                                 │
+│  ├── Pattern Generation                                     │
+│  └── Dark/Light Mode Support                               │
+├─────────────────────────────────────────────────────────────┤
+│  Pattern Factory                                            │
+│  ├── 9 Pattern Types                                        │
+│  ├── Random Selection Logic                                 │
+│  ├── Pattern Cycling                                        │
+│  └── Performance Optimization                               │
+├─────────────────────────────────────────────────────────────┤
+│  Color Scheme System                                        │
+│  ├── Standard Announcement Types                            │
+│  ├── Organization-Specific Schemes                          │
+│  ├── Dark Mode Variants                                     │
+│  └── Accessibility Compliance                               │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## 🔧 Core Components
+### 🎯 Key Features
 
-### AnnouncementCarousel
-The main display component that shows announcements in a carousel format.
+#### Pattern Types
+- **Bauhaus**: Modern geometric shapes
+- **Memphis**: Bold, playful retro patterns
+- **Stripes**: Clean linear patterns
+- **Circles**: Organic circular patterns
+- **Grid**: Structured geometric grids
+- **Stars**: Celestial star patterns
+- **Confetti**: Festive celebration patterns
+- **Voronoi**: Natural cellular patterns
+- **Polkadot**: Playful dot patterns
 
-**Key Features:**
-- Auto-playing carousel with manual controls
-- Responsive design for all screen sizes
-- Pattern-based backgrounds
-- Animation and visual effects
-- Filtering by announcement type
+#### Color System
+- **5-Color Palette**: Primary, secondary, accent, pattern, background
+- **Opacity Control**: Fine-tuned opacity for different use cases
+- **Dark Mode Support**: Automatic dark mode variants
+- **Accessibility**: WCAG compliant contrast ratios
 
-**File:** `components/AnnouncementCarousel.tsx`
+#### Organization Control
+- **Custom Color Schemes**: Full control over color palettes
+- **Pattern Selection**: Choose which patterns to use
+- **Announcement Type Mapping**: Different colors for different content types
+- **Database Integration**: Store preferences in organization settings
 
-### AnnouncementCard
-Individual announcement display component for grid view.
+### 🚀 Quick Start
 
-**Key Features:**
-- Compact announcement display
-- Type-based styling
-- Responsive layout
-- Interactive elements
+#### For Developers
+1. Read [Organization Theming System](./organization-theming-system.md) for architecture
+2. Follow [Theme Implementation Guide](./theme-implementation-guide.md) for adding themes
+3. Reference [Color Palette Reference](./color-palette-reference.md) for color choices
 
-**File:** `components/AnnouncementCard.tsx`
+#### For Organization Admins
+1. Review [Color Palette Reference](./color-palette-reference.md) for inspiration
+2. Work with developers to implement your theme
+3. Test thoroughly across devices and modes
 
-### BackgroundPattern
-Dynamic background pattern system for visual enhancement.
+### 📊 Current Statistics
 
-**Key Features:**
-- Multiple pattern types
-- Type-based pattern selection
-- Performance optimized
-- Customizable patterns
+- **Organizations with Custom Themes**: 2
+- **Available Pattern Types**: 9
+- **Standard Announcement Types**: 5
+- **Custom Announcement Types**: 5 (Bakehouse)
+- **Color Schemes**: 15+ (including dark mode variants)
 
-**File:** `components/BackgroundPattern.tsx`
+### 🔮 Future Roadmap
 
-## 📊 Data Model
+#### Phase 1: Enhanced Control
+- [ ] Visual theme editor UI
+- [ ] Pattern preference controls
+- [ ] Real-time theme preview
 
-### Core Types
+#### Phase 2: Advanced Features
+- [ ] AI-powered color generation
+- [ ] Seasonal theme switching
+- [ ] Brand color extraction from logos
 
-#### Announcement
+#### Phase 3: Community Features
+- [ ] Theme template library
+- [ ] Theme sharing between organizations
+- [ ] Community theme marketplace
+
+### 🛠️ Development Tools
+
+#### Testing
+```bash
+# Test theme rendering
+npm run test:themes
+
+# Validate color contrast
+npm run test:accessibility
+
+# Performance testing
+npm run test:performance
+```
+
+#### Debugging
 ```typescript
-interface Announcement {
-  id: string;
-  type: AnnouncementType;
-  subType: AnnouncementSubType;
-  template: 'pattern' | 'standard';
-  title: string;
-  date: string;
-  time?: string;
-  location?: string;
-  description: string;
-  additional_info?: string;
-  primary_link?: string;
-  visibility: 'internal' | 'external' | 'both';
-  expires_at: string;
-  key_people?: KeyPerson[];
-  organizations?: Organization[];
-  image?: string;
+// Enable theme debugging
+const DEBUG_THEMES = process.env.NODE_ENV === 'development';
+
+if (DEBUG_THEMES) {
+  console.log('Theme Debug:', {
+    organization: orgSlug,
+    theme: organizationTheme,
+    colorScheme: scheme,
+    selectedPattern: currentPattern
+  });
 }
 ```
 
-#### Announcement Types
-- **urgent**: Critical information (closures, safety, weather)
-- **facility**: Building and equipment updates
-- **event**: Community events and activities
-- **opportunity**: Calls for artists, jobs, funding
-- **administrative**: Surveys, policies, deadlines
+### 📞 Support
 
-## 🎨 Design System
+#### Getting Help
+- **Technical Issues**: Create an issue in the project repository
+- **Theme Design**: Consult with the design team
+- **Implementation**: Contact the development team
 
-### Visual Patterns
-The system uses a sophisticated pattern system with multiple pattern types:
+#### Contributing
+- **New Themes**: Follow the implementation guide
+- **Documentation**: Update relevant docs when adding features
+- **Testing**: Add tests for new theme functionality
 
-- **Geometric**: Clean, modern geometric designs
-- **Organic**: Flowing, natural-inspired patterns
-- **Abstract**: Artistic, expressive patterns
-- **Thematic**: Pattern variations for different content types
+### 📝 Changelog
 
-### Color System
-- **Primary**: Blue-based color scheme
-- **Semantic**: Success (green), warning (yellow), error (red)
-- **Neutral**: Gray scale for text and backgrounds
-- **Theme-aware**: Dark/light mode support
+#### v1.0.0 - Initial Implementation
+- Basic organization theming system
+- 9 pattern types
+- Bakehouse and Primary Colors themes
+- Dark/light mode support
 
-### Typography
-- **Display**: Large, bold text for headlines
-- **Body**: Readable text for content
-- **UI**: Interface text and labels
-- **Responsive**: Scales appropriately across devices
+#### v1.1.0 - Enhanced Features
+- Custom announcement types
+- Improved color system
+- Performance optimizations
+- Comprehensive documentation
 
-## 🚀 Performance Optimization
+### 🔗 Related Documentation
 
-### Current Optimizations
-- **Image Optimization**: Next.js Image component
-- **Code Splitting**: Automatic by Next.js
-- **Static Generation**: Pre-rendered pages
-- **Caching**: Browser and CDN caching
-
-### Planned Optimizations
-- **Database Caching**: Redis for data caching
-- **CDN**: Global content delivery
-- **Service Worker**: Offline functionality
-- **Bundle Analysis**: Optimize JavaScript bundles
-
-## 🔐 Security Considerations
-
-### Current Security
-- **Input Validation**: Zod schema validation
-- **XSS Prevention**: React's built-in protection
-- **HTTPS**: Secure connections via Vercel
-
-### Planned Security
-- **Authentication**: NextAuth.js integration
-- **Authorization**: Role-based access control
-- **Rate Limiting**: API request limiting
-- **Data Encryption**: Sensitive data protection
-
-## 📱 Mobile Experience
-
-### Responsive Design
-- **Mobile-First**: Designed for mobile devices
-- **Touch-Friendly**: Optimized for touch interactions
-- **Performance**: Fast loading on mobile networks
-- **Accessibility**: Screen reader support
-
-### Progressive Web App
-- **Installable**: Can be installed on mobile devices
-- **Offline**: Basic offline functionality
-- **Push Notifications**: Real-time updates
-- **App-like Experience**: Native app feel
-
-## 🔄 Development Workflow
-
-### Local Development
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-```
-
-### Code Quality
-- **TypeScript**: Type safety throughout
-- **ESLint**: Code linting and formatting
-- **Prettier**: Code formatting
-- **Git Hooks**: Pre-commit checks
-
-### Testing Strategy
-- **Unit Tests**: Component and utility testing
-- **Integration Tests**: API and data flow testing
-- **E2E Tests**: User workflow testing
-- **Performance Tests**: Load and stress testing
-
-## 📈 Analytics & Monitoring
-
-### Current Analytics
-- **Vercel Analytics**: Basic performance metrics
-- **Console Logging**: Development debugging
-
-### Planned Analytics
-- **User Engagement**: Track user interactions
-- **Performance Monitoring**: Real-time performance data
-- **Error Tracking**: Sentry integration
-- **Business Metrics**: Custom analytics dashboard
-
-## 🔧 Configuration
-
-### Environment Variables
-```bash
-# Database
-DATABASE_URL=postgresql://...
-
-# Authentication
-NEXTAUTH_SECRET=your-secret
-NEXTAUTH_URL=http://localhost:3000
-
-# External Services
-CLOUDINARY_URL=cloudinary://...
-STRIPE_SECRET_KEY=sk_test_...
-```
-
-### Next.js Configuration
-```typescript
-// next.config.ts
-const nextConfig = {
-  images: {
-    domains: ['images.unsplash.com', 'res.cloudinary.com'],
-  },
-  experimental: {
-    appDir: true,
-  },
-}
-```
-
-## 🚀 Deployment
-
-### Vercel Deployment
-- **Automatic**: Git-based deployments
-- **Preview**: Feature branch deployments
-- **Production**: Main branch deployment
-- **Rollback**: Easy deployment rollback
-
-### Environment Management
-- **Development**: Local environment
-- **Staging**: Pre-production testing
-- **Production**: Live system
-
-## 📚 API Documentation
-
-### Current Endpoints
-- **GET /api/announcements**: Get all announcements
-- **POST /api/announcements**: Create new announcement
-- **GET /api/announcements/[id]**: Get specific announcement
-
-### Planned Endpoints
-- **Authentication**: User login/logout
-- **Analytics**: Usage statistics
-- **Notifications**: Push notifications
-- **Payments**: Stripe integration
-
-## 🔮 Future Roadmap
-
-### Phase 1: Core Features (Current)
-- ✅ Basic announcement display
-- ✅ Content creation interface
-- ✅ Mobile responsiveness
-- 🔄 User authentication
-- 🔄 Basic analytics
-
-### Phase 2: Advanced Features (Next 3 months)
-- 📅 Database integration
-- 📅 Real-time updates
-- 📅 Advanced analytics
-- 📅 Payment processing
-- 📅 API development
-
-### Phase 3: Scale & Expansion (3-6 months)
-- 📅 Multi-tenant support
-- 📅 Advanced automation
-- 📅 AI-powered features
-- 📅 Enterprise features
-- 📅 White-label solution
+- [Authentication System](./authentication-system.md)
+- [Clerk Integration Guide](./clerk-integration-guide.md)
+- [Technical Summary](./TECHNICAL_SUMMARY.md)
 
 ---
 
-**Remember**: This technical foundation supports the strategic goal of creating a communication infrastructure that can be leveraged for power and influence. Every technical decision should contribute to the system's ability to scale, perform, and maintain its position as the central nervous system of community information.
+*Last updated: January 2025*
+*Version: 1.1.0*
