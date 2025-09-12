@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { BackgroundPattern } from '@/components/BackgroundPattern';
 import { AnnouncementDateDisplay } from './AnnouncementDateDisplay';
 import { AnnouncementContent } from './AnnouncementContent';
+import { AnnouncementPeople } from './AnnouncementPeople';
+import { AnnouncementTags } from './AnnouncementTags';
 import { TypeStyle } from './announcement-styles';
 import { LucideIcon } from 'lucide-react';
 
@@ -27,6 +29,8 @@ interface PatternTemplateProps {
     metadata: string;
   };
   iconSizeMultiplier?: number;
+  avatarSizeMultiplier?: number;
+  showTags?: boolean;
 }
 
 export function PatternTemplate({ 
@@ -36,8 +40,8 @@ export function PatternTemplate({
   orientation, 
   showQRCode, 
   setShowQRCode, 
-  organizationSlug, 
-  organizationTheme, 
+  organizationSlug,
+  organizationTheme,
   textSizes = {
     title: 'text-9xl',
     description: 'text-7xl',
@@ -46,7 +50,9 @@ export function PatternTemplate({
     type: 'text-8xl',
     metadata: 'text-sm'
   },
-  iconSizeMultiplier = 1
+  iconSizeMultiplier = 1,
+  avatarSizeMultiplier = 4,
+  showTags = false
 }: PatternTemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
@@ -90,6 +96,7 @@ export function PatternTemplate({
         orientation={orientation}
         organizationTheme={organizationTheme}
         showDetailedMetadata={true}
+        textSizes={textSizes}
       />
 
       {/* Main Content */}
@@ -104,6 +111,22 @@ export function PatternTemplate({
         textSizes={textSizes}
         iconSizeMultiplier={iconSizeMultiplier}
       />
+
+      {/* People with Avatars */}
+      <AnnouncementPeople 
+        people={announcement.people || []}
+        orientation={orientation}
+        avatarSizeMultiplier={avatarSizeMultiplier}
+      />
+
+      {/* Tags */}
+      {showTags && (
+        <AnnouncementTags 
+          tags={announcement.tags || []}
+          orientation={orientation}
+          textSizes={textSizes}
+        />
+      )}
     </div>
   );
 }

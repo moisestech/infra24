@@ -2,18 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Minus, RotateCcw, Settings, X } from 'lucide-react';
+import { Plus, Minus, RotateCcw, Settings, X, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TextSizeControlsProps {
   onTextSizeChange: (element: string, size: string) => void;
   onIconSizeChange?: (multiplier: number) => void;
+  onAvatarSizeChange?: (multiplier: number) => void;
+  onShowTagsChange?: (show: boolean) => void;
   className?: string;
 }
 
-export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className }: TextSizeControlsProps) {
+export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarSizeChange, onShowTagsChange, className }: TextSizeControlsProps) {
   const [screenDimensions, setScreenDimensions] = useState({ width: 0, height: 0, ratio: 0 });
   const [iconSizeMultiplier, setIconSizeMultiplier] = useState(1);
+  const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(4);
+  const [showTags, setShowTags] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   
@@ -85,12 +89,20 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
       onTextSizeChange(element, size);
     });
     handleIconSizeChange(5.0);
+    handleAvatarSizeChange(4.0);
   };
 
   const handleIconSizeChange = (newMultiplier: number) => {
     setIconSizeMultiplier(newMultiplier);
     if (onIconSizeChange) {
       onIconSizeChange(newMultiplier);
+    }
+  };
+
+  const handleAvatarSizeChange = (newMultiplier: number) => {
+    setAvatarSizeMultiplier(newMultiplier);
+    if (onAvatarSizeChange) {
+      onAvatarSizeChange(newMultiplier);
     }
   };
 
@@ -102,6 +114,24 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
   const decreaseIconSize = () => {
     const newSize = Math.max(iconSizeMultiplier - 0.5, 0.5);
     handleIconSizeChange(newSize);
+  };
+
+  const increaseAvatarSize = () => {
+    const newSize = Math.min(avatarSizeMultiplier + 1, 10);
+    handleAvatarSizeChange(newSize);
+  };
+
+  const decreaseAvatarSize = () => {
+    const newSize = Math.max(avatarSizeMultiplier - 1, 1);
+    handleAvatarSizeChange(newSize);
+  };
+
+  const toggleTags = () => {
+    const newShowTags = !showTags;
+    setShowTags(newShowTags);
+    if (onShowTagsChange) {
+      onShowTagsChange(newShowTags);
+    }
   };
 
   // Set default icon size to 5x for vertical orientation
@@ -252,6 +282,60 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
               </div>
             </div>
           )}
+
+          {/* Avatar Size Controls */}
+          {onAvatarSizeChange && (
+            <div className="space-y-2">
+              <div className="text-white text-xs font-medium">Avatar Size</div>
+              <div className="flex items-center gap-2">
+                <motion.button
+                  onClick={decreaseAvatarSize}
+                  className="p-1 bg-purple-500/80 hover:bg-purple-500 rounded transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Decrease avatar size"
+                >
+                  <Minus className="w-3 h-3 text-white" />
+                </motion.button>
+                
+                <div className="text-white text-xs font-mono min-w-[60px] text-center bg-white/10 rounded px-2 py-1">
+                  {avatarSizeMultiplier}x
+                </div>
+                
+                <motion.button
+                  onClick={increaseAvatarSize}
+                  className="p-1 bg-pink-500/80 hover:bg-pink-500 rounded transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Increase avatar size"
+                >
+                  <Plus className="w-3 h-3 text-white" />
+                </motion.button>
+              </div>
+            </div>
+          )}
+
+          {/* Tags Toggle */}
+          {onShowTagsChange && (
+            <div className="space-y-2">
+              <div className="text-white text-xs font-medium">Show Tags</div>
+              <motion.button
+                onClick={toggleTags}
+                className={cn(
+                  "flex items-center gap-2 px-3 py-2 rounded transition-colors text-white text-xs font-medium",
+                  showTags 
+                    ? "bg-green-500/80 hover:bg-green-500" 
+                    : "bg-gray-500/80 hover:bg-gray-500"
+                )}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                title={showTags ? "Hide tags" : "Show tags"}
+              >
+                <Tag className="w-3 h-3" />
+                {showTags ? "ON" : "OFF"}
+              </motion.button>
+            </div>
+          )}
           
           <motion.button
             onClick={resetAllSizes}
@@ -273,6 +357,8 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
           <div className="text-white text-xs font-mono">
             {screenDimensions.width}×{screenDimensions.height} | {screenDimensions.ratio.toFixed(1)}
             {onIconSizeChange && ` | I:${iconSizeMultiplier.toFixed(1)}x`}
+            {onAvatarSizeChange && ` | A:${avatarSizeMultiplier}x`}
+            {onShowTagsChange && ` | T:${showTags ? 'ON' : 'OFF'}`}
           </div>
           <motion.button
             onClick={toggleMinimize}

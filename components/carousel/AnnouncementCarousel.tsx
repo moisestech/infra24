@@ -29,6 +29,8 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
     metadata: 'text-sm'
   });
   const [iconSizeMultiplier, setIconSizeMultiplier] = useState(5);
+  const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(4);
+  const [showTags, setShowTags] = useState(false);
   const { theme: organizationTheme } = useOrganizationTheme();
 
   // Filter future announcements
@@ -118,6 +120,8 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
       <TextSizeControls 
         onTextSizeChange={(element, size) => setTextSizes(prev => ({ ...prev, [element]: size }))} 
         onIconSizeChange={setIconSizeMultiplier}
+        onAvatarSizeChange={setAvatarSizeMultiplier}
+        onShowTagsChange={setShowTags}
       />
 
       {/* Carousel Controls */}
@@ -149,6 +153,8 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
                 organizationTheme={organizationTheme}
                 textSizes={textSizes}
                 iconSizeMultiplier={iconSizeMultiplier}
+                avatarSizeMultiplier={avatarSizeMultiplier}
+                showTags={showTags}
               />
             </div>
           ))}

@@ -9,13 +9,29 @@ interface AnnouncementDateDisplayProps {
   orientation: 'portrait' | 'landscape';
   organizationTheme?: any;
   showDetailedMetadata?: boolean; // New prop to show detailed date info in metadata section
+  textSizes?: {
+    title: string;
+    description: string;
+    location: string;
+    date: string;
+    type: string;
+    metadata: string;
+  };
 }
 
 export function AnnouncementDateDisplay({ 
   announcement, 
   orientation, 
   organizationTheme,
-  showDetailedMetadata = false
+  showDetailedMetadata = false,
+  textSizes = {
+    title: 'text-9xl',
+    description: 'text-7xl',
+    location: 'text-7xl',
+    date: 'text-7xl',
+    type: 'text-8xl',
+    metadata: 'text-sm'
+  }
 }: AnnouncementDateDisplayProps) {
   
   const getDateStatus = (dateStr: string) => {
@@ -123,18 +139,19 @@ export function AnnouncementDateDisplay({
       return formatDetailedDate(startDate);
     }
     
-    // Different days
-    const startFormatted = start.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric'
-    });
-    const endFormatted = end.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    // Different days - avoid redundant month mentions
+    const startMonth = start.toLocaleDateString('en-US', { month: 'short' });
+    const startDay = start.getDate();
+    const endMonth = end.toLocaleDateString('en-US', { month: 'short' });
+    const endDay = end.getDate();
     
-    return `${startFormatted} - ${endFormatted}`;
+    // If same month, only show month once
+    if (startMonth === endMonth) {
+      return `${startMonth} ${startDay} - ${endDay}`;
+    }
+    
+    // Different months
+    return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
   };
 
   // Use starts_at if available, otherwise use created_at
@@ -306,57 +323,80 @@ export function AnnouncementDateDisplay({
       {/* Detailed Date and Time Information for Metadata Section */}
       {showDetailedMetadata && (
         <motion.div 
-          className="mt-6 space-y-3"
+          className="mt-6 space-y-4 text-right"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          {/* Date and Time Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {/* Start Date/Time */}
-            {announcement.starts_at && (
-              <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                <Calendar className="w-5 h-5 text-white/70" />
-                <div className="flex-1">
-                  <div className="text-white/90 text-sm font-medium">
-                    {formatDetailedDate(announcement.starts_at)}
-                  </div>
-                  {formatDetailedTime(announcement.starts_at) && (
-                    <div className="text-white/70 text-xs">
-                      {formatDetailedTime(announcement.starts_at)}
-                    </div>
-                  )}
+          {/* Start Date/Time */}
+          {announcement.starts_at && (
+            <motion.div 
+              className="flex items-center justify-end gap-3 p-4 bg-white/5 rounded-lg"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <div className="text-right flex-1">
+                <div className="text-white/60 text-xs font-medium uppercase tracking-wide mb-1">
+                  Start
                 </div>
+                <div className={cn("text-white/90 font-medium", textSizes.metadata)}>
+                  {formatDetailedDate(announcement.starts_at)}
+                </div>
+                {formatDetailedTime(announcement.starts_at) && (
+                  <div className={cn("text-white/70", textSizes.metadata)}>
+                    {formatDetailedTime(announcement.starts_at)}
+                  </div>
+                )}
               </div>
-            )}
+              <Calendar className="w-6 h-6 text-white/70" />
+            </motion.div>
+          )}
 
-            {/* End Date/Time */}
-            {announcement.ends_at && (
-              <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                <Clock className="w-5 h-5 text-white/70" />
-                <div className="flex-1">
-                  <div className="text-white/90 text-sm font-medium">
-                    {formatDetailedDate(announcement.ends_at)}
-                  </div>
-                  {formatDetailedTime(announcement.ends_at) && (
-                    <div className="text-white/70 text-xs">
-                      {formatDetailedTime(announcement.ends_at)}
-                    </div>
-                  )}
+          {/* End Date/Time */}
+          {announcement.ends_at && (
+            <motion.div 
+              className="flex items-center justify-end gap-3 p-4 bg-white/5 rounded-lg"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <div className="text-right flex-1">
+                <div className="text-white/60 text-xs font-medium uppercase tracking-wide mb-1">
+                  End
                 </div>
+                <div className={cn("text-white/90 font-medium", textSizes.metadata)}>
+                  {formatDetailedDate(announcement.ends_at)}
+                </div>
+                {formatDetailedTime(announcement.ends_at) && (
+                  <div className={cn("text-white/70", textSizes.metadata)}>
+                    {formatDetailedTime(announcement.ends_at)}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+              <Clock className="w-6 h-6 text-white/70" />
+            </motion.div>
+          )}
 
           {/* Date Range (if multi-day) */}
           {announcement.starts_at && announcement.ends_at && 
            formatDetailedDateRange(announcement.starts_at, announcement.ends_at) && (
-            <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-              <Calendar className="w-5 h-5 text-white/70" />
-              <div className="text-white/90 text-sm font-medium">
-                Duration: {formatDetailedDateRange(announcement.starts_at, announcement.ends_at)}
+            <motion.div 
+              className="flex items-center justify-end gap-3 p-4 bg-white/5 rounded-lg"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              <div className="text-right flex-1">
+                <div className="text-white/60 text-xs font-medium uppercase tracking-wide mb-1">
+                  Duration
+                </div>
+                <div className={cn("text-white/90 font-medium", textSizes.metadata)}>
+                  {formatDetailedDateRange(announcement.starts_at, announcement.ends_at)}
+                </div>
               </div>
-            </div>
+              <Calendar className="w-6 h-6 text-white/70" />
+            </motion.div>
           )}
         </motion.div>
       )}
