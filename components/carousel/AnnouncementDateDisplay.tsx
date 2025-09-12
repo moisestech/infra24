@@ -2,17 +2,20 @@
 
 import { motion } from "framer-motion";
 import { cn } from '@/lib/utils';
+import { Calendar, Clock } from 'lucide-react';
 
 interface AnnouncementDateDisplayProps {
   announcement: any;
   orientation: 'portrait' | 'landscape';
   organizationTheme?: any;
+  showDetailedMetadata?: boolean; // New prop to show detailed date info in metadata section
 }
 
 export function AnnouncementDateDisplay({ 
   announcement, 
   orientation, 
-  organizationTheme 
+  organizationTheme,
+  showDetailedMetadata = false
 }: AnnouncementDateDisplayProps) {
   
   const getDateStatus = (dateStr: string) => {
@@ -85,6 +88,53 @@ export function AnnouncementDateDisplay({
     const endDay = endDate.getDate();
     
     return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
+  };
+
+  // Detailed date formatting functions for metadata section
+  const formatDetailedDate = (dateStr: string) => {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const formatDetailedTime = (dateStr: string) => {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  const formatDetailedDateRange = (startDate: string, endDate: string) => {
+    if (!startDate || !endDate) return null;
+    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    // Same day
+    if (start.toDateString() === end.toDateString()) {
+      return formatDetailedDate(startDate);
+    }
+    
+    // Different days
+    const startFormatted = start.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    });
+    const endFormatted = end.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+    
+    return `${startFormatted} - ${endFormatted}`;
   };
 
   // Use starts_at if available, otherwise use created_at
@@ -250,6 +300,64 @@ export function AnnouncementDateDisplay({
           <span className="flex items-center gap-2">
             <>💡 Fun Fact</>
           </span>
+        </motion.div>
+      )}
+
+      {/* Detailed Date and Time Information for Metadata Section */}
+      {showDetailedMetadata && (
+        <motion.div 
+          className="mt-6 space-y-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          {/* Date and Time Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Start Date/Time */}
+            {announcement.starts_at && (
+              <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                <Calendar className="w-5 h-5 text-white/70" />
+                <div className="flex-1">
+                  <div className="text-white/90 text-sm font-medium">
+                    {formatDetailedDate(announcement.starts_at)}
+                  </div>
+                  {formatDetailedTime(announcement.starts_at) && (
+                    <div className="text-white/70 text-xs">
+                      {formatDetailedTime(announcement.starts_at)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* End Date/Time */}
+            {announcement.ends_at && (
+              <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                <Clock className="w-5 h-5 text-white/70" />
+                <div className="flex-1">
+                  <div className="text-white/90 text-sm font-medium">
+                    {formatDetailedDate(announcement.ends_at)}
+                  </div>
+                  {formatDetailedTime(announcement.ends_at) && (
+                    <div className="text-white/70 text-xs">
+                      {formatDetailedTime(announcement.ends_at)}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Date Range (if multi-day) */}
+          {announcement.starts_at && announcement.ends_at && 
+           formatDetailedDateRange(announcement.starts_at, announcement.ends_at) && (
+            <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+              <Calendar className="w-5 h-5 text-white/70" />
+              <div className="text-white/90 text-sm font-medium">
+                Duration: {formatDetailedDateRange(announcement.starts_at, announcement.ends_at)}
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
     </motion.div>

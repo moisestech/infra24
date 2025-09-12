@@ -114,11 +114,11 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
 
   return (
     <div className="relative h-screen bg-white">
-              {/* Text Size Debug Controls - Available in production with ?debug=true */}
-              <TextSizeControls 
-                onTextSizeChange={(element, size) => setTextSizes(prev => ({ ...prev, [element]: size }))} 
-                onIconSizeChange={setIconSizeMultiplier}
-              />
+      {/* Text Size Debug Controls - Available in production with ?debug=true */}
+      <TextSizeControls 
+        onTextSizeChange={(element, size) => setTextSizes(prev => ({ ...prev, [element]: size }))} 
+        onIconSizeChange={setIconSizeMultiplier}
+      />
 
       {/* Carousel Controls */}
       <CarouselControls

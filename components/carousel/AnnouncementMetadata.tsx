@@ -2,8 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { 
-  Calendar, 
-  Clock, 
   MapPin, 
   Users, 
   ExternalLink, 
@@ -12,7 +10,8 @@ import {
   Award,
   AlertCircle,
   Info,
-  User
+  User,
+  Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -44,51 +43,6 @@ export function AnnouncementMetadata({
   className 
 }: AnnouncementMetadataProps) {
   
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return null;
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  const formatTime = (dateStr: string) => {
-    if (!dateStr) return null;
-    const date = new Date(dateStr);
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
-  };
-
-  const formatDateRange = (startDate: string, endDate: string) => {
-    if (!startDate || !endDate) return null;
-    
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    
-    // Same day
-    if (start.toDateString() === end.toDateString()) {
-      return formatDate(startDate);
-    }
-    
-    // Different days
-    const startFormatted = start.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric'
-    });
-    const endFormatted = end.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-    
-    return `${startFormatted} - ${endFormatted}`;
-  };
 
   const getPriorityColor = (priority: number) => {
     switch (priority) {
@@ -131,7 +85,7 @@ export function AnnouncementMetadata({
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'urgent': return <AlertCircle className="w-4 h-4" />;
-      case 'event': return <Calendar className="w-4 h-4" />;
+      case 'event': return <Clock className="w-4 h-4" />;
       case 'opportunity': return <Award className="w-4 h-4" />;
       case 'facility': return <Building2 className="w-4 h-4" />;
       case 'administrative': return <Info className="w-4 h-4" />;
@@ -183,53 +137,6 @@ export function AnnouncementMetadata({
         </div>
       </div>
 
-      {/* Date and Time Information */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {/* Start Date/Time */}
-        {announcement.starts_at && (
-          <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-            <Calendar className="w-5 h-5 text-white/70" />
-            <div className="flex-1">
-              <div className="text-white/90 text-sm font-medium">
-                {formatDate(announcement.starts_at)}
-              </div>
-              {formatTime(announcement.starts_at) && (
-                <div className="text-white/70 text-xs">
-                  {formatTime(announcement.starts_at)}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* End Date/Time */}
-        {announcement.ends_at && (
-          <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-            <Clock className="w-5 h-5 text-white/70" />
-            <div className="flex-1">
-              <div className="text-white/90 text-sm font-medium">
-                {formatDate(announcement.ends_at)}
-              </div>
-              {formatTime(announcement.ends_at) && (
-                <div className="text-white/70 text-xs">
-                  {formatTime(announcement.ends_at)}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Date Range (if multi-day) */}
-      {announcement.starts_at && announcement.ends_at && 
-       formatDateRange(announcement.starts_at, announcement.ends_at) && (
-        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-          <Calendar className="w-5 h-5 text-white/70" />
-          <div className="text-white/90 text-sm font-medium">
-            Duration: {formatDateRange(announcement.starts_at, announcement.ends_at)}
-          </div>
-        </div>
-      )}
 
       {/* Location */}
       {announcement.location && (

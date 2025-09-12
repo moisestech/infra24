@@ -89,6 +89,7 @@ export function PatternTemplate({
         announcement={announcement}
         orientation={orientation}
         organizationTheme={organizationTheme}
+        showDetailedMetadata={true}
       />
 
       {/* Main Content */}
