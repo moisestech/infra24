@@ -6,12 +6,9 @@ import {
   Users, 
   ExternalLink, 
   Tag,
-  Building2,
-  Award,
-  AlertCircle,
-  Info,
   User,
-  Clock
+  Info,
+  Building2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -82,16 +79,6 @@ export function AnnouncementMetadata({
     }
   };
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'urgent': return <AlertCircle className="w-4 h-4" />;
-      case 'event': return <Clock className="w-4 h-4" />;
-      case 'opportunity': return <Award className="w-4 h-4" />;
-      case 'facility': return <Building2 className="w-4 h-4" />;
-      case 'administrative': return <Info className="w-4 h-4" />;
-      default: return <Info className="w-4 h-4" />;
-    }
-  };
 
   return (
     <motion.div 
@@ -105,18 +92,6 @@ export function AnnouncementMetadata({
     >
       {/* Type and Priority Row */}
       <div className="flex items-center gap-3 flex-wrap">
-        {/* Type Badge */}
-        <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full">
-          {getTypeIcon(announcement.type)}
-          <span className="text-white/90 text-sm font-medium capitalize">
-            {announcement.type?.replace('_', ' ')}
-          </span>
-          {announcement.sub_type && (
-            <span className="text-white/70 text-sm">
-              • {announcement.sub_type.replace('_', ' ')}
-            </span>
-          )}
-        </div>
 
         {/* Priority Badge */}
         <div className={cn(

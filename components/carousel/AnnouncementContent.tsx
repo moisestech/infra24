@@ -69,9 +69,16 @@ export function AnnouncementContent({
             className="text-white" 
             size={getIconSize(orientation === 'portrait' ? 32 : 48)} 
           />
-          <span className={cn("font-bold text-white", textSizes.type)}>
-            {announcement.type?.replace('_', ' ').toUpperCase() || 'EVENT'}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className={cn("font-bold text-white", textSizes.type)}>
+              {announcement.type?.replace('_', ' ').toUpperCase() || 'EVENT'}
+            </span>
+            {announcement.sub_type && (
+              <span className={cn("text-white/70 font-medium", textSizes.type)}>
+                • {announcement.sub_type.replace('_', ' ').toUpperCase()}
+              </span>
+            )}
+          </div>
         </motion.div>
 
         {/* Title */}
