@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:full": "./scripts/test-build-and-dev.sh",
+    "test:build": "npm run build && echo '✅ Build test passed'",
+    "test:dev": "npm run dev"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.4",

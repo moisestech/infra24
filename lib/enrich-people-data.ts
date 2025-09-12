@@ -1,16 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 import { AnnouncementPerson } from '@/types/people';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
+// Create Supabase client only if environment variables are available
+const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ? createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
+  : null;
 
 /**
  * Enriches people data in announcements with actual member information from the database
@@ -22,6 +25,16 @@ export async function enrichPeopleData(
 ): Promise<AnnouncementPerson[]> {
   if (!people || people.length === 0) {
     return [];
+  }
+
+  // Check if we have the Supabase client available
+  if (!supabase) {
+    console.warn('Supabase client not available, returning original people data');
+    return people.map(person => ({
+      ...person,
+      is_member: false,
+      relationship_type: person.relationship_type || 'participant'
+    }));
   }
 
   try {
@@ -162,6 +175,12 @@ export async function enrichPeopleData(
  * Gets all available Bakehouse members for selection in announcements
  */
 export async function getBakehouseMembers(): Promise<AnnouncementPerson[]> {
+  // Check if we have the Supabase client available
+  if (!supabase) {
+    console.warn('Supabase client not available, returning empty array');
+    return [];
+  }
+
   try {
     const { data: organization } = await supabase
       .from('organizations')
