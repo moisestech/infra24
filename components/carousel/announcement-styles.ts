@@ -128,12 +128,12 @@ export const typeStyles: TypeStyles = {
     backgroundPattern: "radial-gradient-dots"
   },
   facility: {
-    gradient: "bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500",
+    gradient: "bg-gradient-to-br from-red-600 via-red-500 to-rose-500",
     overlay: "bg-black/20",
-    accent: "from-blue-300 to-cyan-300",
-    badge: "bg-blue-500",
+    accent: "from-red-300 to-rose-300",
+    badge: "bg-red-500",
     text: "text-white",
-    dateStyle: "bg-blue-700/90 text-white",
+    dateStyle: "bg-red-700/90 text-white",
     icon: Building2,
     backgroundPattern: "grid"
   },
@@ -243,5 +243,60 @@ export const getIconForAnnouncement = (announcement: Announcement): LucideIcon =
 // Helper function to get styles for announcement type
 export const getStylesForAnnouncement = (announcement: Announcement): TypeStyle => {
   const type = announcement.type || 'event';
+  const subType = announcement.sub_type || '';
+  
+  // Special handling for specific type/subtype combinations
+  if (type === 'event' && subType === 'exhibition') {
+    return {
+      gradient: "bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500",
+      overlay: "bg-black/20",
+      accent: "from-blue-300 to-indigo-300",
+      badge: "bg-blue-500",
+      text: "text-white",
+      dateStyle: "bg-blue-700/90 text-white",
+      icon: Palette,
+      backgroundPattern: "bauhaus"
+    };
+  }
+  
+  if (type === 'event' && subType === 'workshop') {
+    return {
+      gradient: "bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500",
+      overlay: "bg-black/20",
+      accent: "from-blue-300 to-indigo-300",
+      badge: "bg-blue-500",
+      text: "text-white",
+      dateStyle: "bg-blue-700/90 text-white",
+      icon: Palette,
+      backgroundPattern: "bauhaus"
+    };
+  }
+  
+  if (type === 'event' && subType === 'meeting') {
+    return {
+      gradient: "bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500",
+      overlay: "bg-black/20",
+      accent: "from-blue-300 to-indigo-300",
+      badge: "bg-blue-500",
+      text: "text-white",
+      dateStyle: "bg-blue-700/90 text-white",
+      icon: Crown,
+      backgroundPattern: "bauhaus"
+    };
+  }
+  
+  if (type === 'administrative' && subType === 'survey') {
+    return {
+      gradient: "bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500",
+      overlay: "bg-black/20",
+      accent: "from-blue-300 to-indigo-300",
+      badge: "bg-blue-500",
+      text: "text-white",
+      dateStyle: "bg-blue-700/90 text-white",
+      icon: Lightbulb,
+      backgroundPattern: "bauhaus"
+    };
+  }
+  
   return typeStyles[type] || typeStyles['event'];
 };

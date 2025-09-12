@@ -28,7 +28,10 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
     location: 'text-7xl',
     date: 'text-7xl',
     type: 'text-8xl',
-    metadata: 'text-sm'
+    metadata: 'text-sm',
+    startDate: 'text-3xl',
+    endDate: 'text-3xl',
+    duration: 'text-3xl'
   });
 
   // Check for debug mode via URL parameter or localStorage
@@ -82,7 +85,10 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
       location: 'text-7xl',
       date: 'text-7xl',
       type: 'text-8xl',
-      metadata: 'text-sm'
+      metadata: 'text-sm',
+      startDate: 'text-3xl',
+      endDate: 'text-3xl',
+      duration: 'text-3xl'
     };
     setTextSizes(defaultSizes);
     Object.entries(defaultSizes).forEach(([element, size]) => {

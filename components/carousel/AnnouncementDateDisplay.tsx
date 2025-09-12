@@ -16,6 +16,9 @@ interface AnnouncementDateDisplayProps {
     date: string;
     type: string;
     metadata: string;
+    startDate: string;
+    endDate: string;
+    duration: string;
   };
 }
 
@@ -30,7 +33,10 @@ export function AnnouncementDateDisplay({
     location: 'text-7xl',
     date: 'text-7xl',
     type: 'text-8xl',
-    metadata: 'text-sm'
+    metadata: 'text-sm',
+    startDate: 'text-3xl',
+    endDate: 'text-3xl',
+    duration: 'text-3xl'
   }
 }: AnnouncementDateDisplayProps) {
   
@@ -340,11 +346,11 @@ export function AnnouncementDateDisplay({
                 <div className="text-white/60 text-xs font-medium uppercase tracking-wide mb-1">
                   Start
                 </div>
-                <div className={cn("text-white/90 font-medium", textSizes.metadata)}>
+                <div className={cn("text-white/90 font-medium", textSizes.startDate)}>
                   {formatDetailedDate(announcement.starts_at)}
                 </div>
                 {formatDetailedTime(announcement.starts_at) && (
-                  <div className={cn("text-white/70", textSizes.metadata)}>
+                  <div className={cn("text-white/70", textSizes.startDate)}>
                     {formatDetailedTime(announcement.starts_at)}
                   </div>
                 )}
@@ -365,11 +371,11 @@ export function AnnouncementDateDisplay({
                 <div className="text-white/60 text-xs font-medium uppercase tracking-wide mb-1">
                   End
                 </div>
-                <div className={cn("text-white/90 font-medium", textSizes.metadata)}>
+                <div className={cn("text-white/90 font-medium", textSizes.endDate)}>
                   {formatDetailedDate(announcement.ends_at)}
                 </div>
                 {formatDetailedTime(announcement.ends_at) && (
-                  <div className={cn("text-white/70", textSizes.metadata)}>
+                  <div className={cn("text-white/70", textSizes.endDate)}>
                     {formatDetailedTime(announcement.ends_at)}
                   </div>
                 )}
@@ -391,7 +397,7 @@ export function AnnouncementDateDisplay({
                 <div className="text-white/60 text-xs font-medium uppercase tracking-wide mb-1">
                   Duration
                 </div>
-                <div className={cn("text-white/90 font-medium", textSizes.metadata)}>
+                <div className={cn("text-white/90 font-medium", textSizes.duration)}>
                   {formatDetailedDateRange(announcement.starts_at, announcement.ends_at)}
                 </div>
               </div>

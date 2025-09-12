@@ -5,7 +5,6 @@ import {
   MapPin, 
   ExternalLink, 
   Info,
-  Building2,
   Users
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -20,6 +19,9 @@ interface AnnouncementMetadataProps {
     date: string;
     type: string;
     metadata: string;
+    startDate: string;
+    endDate: string;
+    duration: string;
   };
   className?: string;
 }
@@ -33,7 +35,10 @@ export function AnnouncementMetadata({
     location: 'text-7xl',
     date: 'text-7xl',
     type: 'text-8xl',
-    metadata: 'text-sm'
+    metadata: 'text-sm',
+    startDate: 'text-3xl',
+    endDate: 'text-3xl',
+    duration: 'text-3xl'
   },
   className 
 }: AnnouncementMetadataProps) {
@@ -111,20 +116,6 @@ export function AnnouncementMetadata({
       </div>
 
 
-      {/* External Organizations */}
-      {announcement.external_orgs && announcement.external_orgs.length > 0 && (
-        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-          <Building2 className="w-5 h-5 text-white/70" />
-          <div className="flex-1">
-            <div className="text-white/90 text-sm font-medium mb-1">
-              Partner Organizations
-            </div>
-            <div className="text-white/70 text-xs">
-              {announcement.external_orgs.map((org: any) => org.name).join(', ')}
-            </div>
-          </div>
-        </div>
-      )}
 
 
       {/* Primary Link */}

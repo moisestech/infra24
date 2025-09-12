@@ -26,7 +26,10 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
     location: 'text-7xl',
     date: 'text-7xl',
     type: 'text-8xl',
-    metadata: 'text-sm'
+    metadata: 'text-sm',
+    startDate: 'text-3xl',
+    endDate: 'text-3xl',
+    duration: 'text-3xl'
   });
   const [iconSizeMultiplier, setIconSizeMultiplier] = useState(5);
   const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(4);

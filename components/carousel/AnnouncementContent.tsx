@@ -22,6 +22,9 @@ interface AnnouncementContentProps {
     date: string;
     type: string;
     metadata: string;
+    startDate: string;
+    endDate: string;
+    duration: string;
   };
   iconSizeMultiplier?: number;
 }
@@ -40,7 +43,10 @@ export function AnnouncementContent({
     location: 'text-7xl',
     date: 'text-7xl',
     type: 'text-8xl',
-    metadata: 'text-sm'
+    metadata: 'text-sm',
+    startDate: 'text-3xl',
+    endDate: 'text-3xl',
+    duration: 'text-3xl'
   },
   iconSizeMultiplier = 1
 }: AnnouncementContentProps) {

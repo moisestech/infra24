@@ -14,6 +14,9 @@ interface AnnouncementTagsProps {
     date: string;
     type: string;
     metadata: string;
+    startDate: string;
+    endDate: string;
+    duration: string;
   };
   className?: string;
 }
@@ -27,7 +30,10 @@ export function AnnouncementTags({
     location: 'text-7xl',
     date: 'text-7xl',
     type: 'text-8xl',
-    metadata: 'text-sm'
+    metadata: 'text-sm',
+    startDate: 'text-3xl',
+    endDate: 'text-3xl',
+    duration: 'text-3xl'
   },
   className 
 }: AnnouncementTagsProps) {

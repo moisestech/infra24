@@ -8,6 +8,7 @@ import { AnnouncementDateDisplay } from './AnnouncementDateDisplay';
 import { AnnouncementContent } from './AnnouncementContent';
 import { AnnouncementPeople } from './AnnouncementPeople';
 import { AnnouncementTags } from './AnnouncementTags';
+import { AnnouncementPartnerOrgs } from './AnnouncementPartnerOrgs';
 import { TypeStyle } from './announcement-styles';
 import { LucideIcon } from 'lucide-react';
 
@@ -27,6 +28,9 @@ interface PatternTemplateProps {
     date: string;
     type: string;
     metadata: string;
+    startDate: string;
+    endDate: string;
+    duration: string;
   };
   iconSizeMultiplier?: number;
   avatarSizeMultiplier?: number;
@@ -48,7 +52,10 @@ export function PatternTemplate({
     location: 'text-7xl',
     date: 'text-7xl',
     type: 'text-8xl',
-    metadata: 'text-sm'
+    metadata: 'text-sm',
+    startDate: 'text-3xl',
+    endDate: 'text-3xl',
+    duration: 'text-3xl'
   },
   iconSizeMultiplier = 1,
   avatarSizeMultiplier = 4,
@@ -91,12 +98,27 @@ export function PatternTemplate({
       )}
 
       {/* Date Display */}
-      <AnnouncementDateDisplay 
+      <AnnouncementDateDisplay
         announcement={announcement}
         orientation={orientation}
         organizationTheme={organizationTheme}
         showDetailedMetadata={true}
         textSizes={textSizes}
+      />
+
+      {/* People with Avatars */}
+      <AnnouncementPeople 
+        people={announcement.people || []}
+        orientation={orientation}
+        avatarSizeMultiplier={avatarSizeMultiplier}
+      />
+
+      {/* Partner Organizations */}
+      <AnnouncementPartnerOrgs
+        externalOrgs={announcement.external_orgs || []}
+        orientation={orientation}
+        textSizes={textSizes}
+        className="absolute top-80 right-8 md:right-12 z-20"
       />
 
       {/* Main Content */}
@@ -112,12 +134,7 @@ export function PatternTemplate({
         iconSizeMultiplier={iconSizeMultiplier}
       />
 
-      {/* People with Avatars */}
-      <AnnouncementPeople 
-        people={announcement.people || []}
-        orientation={orientation}
-        avatarSizeMultiplier={avatarSizeMultiplier}
-      />
+
 
       {/* Tags */}
       {showTags && (
