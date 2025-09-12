@@ -334,7 +334,7 @@ export default function AnnouncementViewPage() {
                   {announcement.sub_type && (
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Category:</span>
-                      <span className="px-2 py-1 text-sm bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded">
+                      <span className="px-2 py-1 text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">
                         {announcement.sub_type.replace('_', ' ')}
                       </span>
                     </div>

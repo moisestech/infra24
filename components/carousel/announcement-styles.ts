@@ -148,12 +148,12 @@ export const typeStyles: TypeStyles = {
     backgroundPattern: "confetti"
   },
   opportunity: {
-    gradient: "bg-gradient-to-br from-purple-600 via-purple-500 to-violet-500",
+    gradient: "bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500",
     overlay: "bg-black/20",
-    accent: "from-purple-300 to-violet-300",
-    badge: "bg-purple-500",
+    accent: "from-blue-300 to-indigo-300",
+    badge: "bg-blue-500",
     text: "text-white",
-    dateStyle: "bg-purple-700/90 text-white",
+    dateStyle: "bg-blue-700/90 text-white",
     icon: Sparkles,
     backgroundPattern: "sparkles"
   },
@@ -198,12 +198,12 @@ export const typeStyles: TypeStyles = {
     backgroundPattern: "confetti"
   },
   promotion: {
-    gradient: "bg-gradient-to-br from-purple-600 via-purple-500 to-violet-500",
+    gradient: "bg-gradient-to-br from-amber-600 via-amber-500 to-yellow-500",
     overlay: "bg-black/20",
-    accent: "from-purple-300 to-violet-300",
-    badge: "bg-purple-500",
+    accent: "from-amber-300 to-yellow-300",
+    badge: "bg-amber-500",
     text: "text-white",
-    dateStyle: "bg-purple-700/90 text-white",
+    dateStyle: "bg-amber-700/90 text-white",
     icon: Gift,
     backgroundPattern: "sparkles"
   },

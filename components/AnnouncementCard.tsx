@@ -51,11 +51,11 @@ export function AnnouncementCard({ announcement }: AnnouncementCardProps) {
       dateBg: "bg-amber-600",
     },
     opportunity: {
-      gradient: "bg-gradient-to-br from-purple-50 via-purple-100 to-fuchsia-50",
-      iconGradient: "from-purple-500 to-fuchsia-500",
-      textGradient: "from-purple-600 to-fuchsia-600",
-      cardBg: "bg-purple-50",
-      dateBg: "bg-purple-600",
+      gradient: "bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-50",
+      iconGradient: "from-blue-500 to-indigo-500",
+      textGradient: "from-blue-600 to-indigo-600",
+      cardBg: "bg-blue-50",
+      dateBg: "bg-blue-600",
     },
     administrative: {
       gradient: "bg-gradient-to-br from-gray-50 via-gray-100 to-slate-50",

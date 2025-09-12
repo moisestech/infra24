@@ -11,7 +11,7 @@ const typeStyles = {
   urgent: { label: 'Urgent', color: 'bg-red-600' },
   facility: { label: 'Facility', color: 'bg-blue-600' },
   event: { label: 'Event', color: 'bg-amber-600' },
-  opportunity: { label: 'Opportunity', color: 'bg-purple-600' },
+  opportunity: { label: 'Opportunity', color: 'bg-blue-600' },
   administrative: { label: 'Administrative', color: 'bg-slate-700' },
 };
 

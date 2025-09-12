@@ -4,6 +4,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Custom breakpoint for navigation at 1028px */
+@media (max-width: 1028px) {
+  .nav-text-hidden {
+    display: none;
+  }
+}
+
+@media (min-width: 1029px) {
+  .nav-text-visible {
+    display: block;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

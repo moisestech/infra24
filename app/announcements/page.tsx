@@ -210,7 +210,7 @@ export default function AnnouncementsPage() {
       urgent: { bg: 'bg-red-100', text: 'text-red-800', label: 'Urgent' },
       facility: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Facility' },
       event: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Event' },
-      opportunity: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Opportunity' },
+      opportunity: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Opportunity' },
       administrative: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Admin' },
     };
     

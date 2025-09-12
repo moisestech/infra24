@@ -19,6 +19,7 @@ interface PatternTemplateProps {
   organizationSlug?: string;
   organizationTheme?: any;
   textSizeMultiplier?: number;
+  iconSizeMultiplier?: number;
 }
 
 export function PatternTemplate({ 
@@ -29,8 +30,9 @@ export function PatternTemplate({
   showQRCode, 
   setShowQRCode, 
   organizationSlug, 
-  organizationTheme,
-  textSizeMultiplier = 1
+  organizationTheme, 
+  textSizeMultiplier = 1,
+  iconSizeMultiplier = 1
 }: PatternTemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
@@ -85,6 +87,7 @@ export function PatternTemplate({
         setShowQRCode={setShowQRCode}
         organizationSlug={organizationSlug}
         textSizeMultiplier={textSizeMultiplier}
+        iconSizeMultiplier={iconSizeMultiplier}
       />
     </div>
   );

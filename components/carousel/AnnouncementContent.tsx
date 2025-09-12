@@ -16,6 +16,7 @@ interface AnnouncementContentProps {
   setShowQRCode: (show: boolean) => void;
   organizationSlug?: string;
   textSizeMultiplier?: number;
+  iconSizeMultiplier?: number;
 }
 
 export function AnnouncementContent({ 
@@ -26,7 +27,8 @@ export function AnnouncementContent({
   showQRCode,
   setShowQRCode,
   organizationSlug,
-  textSizeMultiplier = 1
+  textSizeMultiplier = 1,
+  iconSizeMultiplier = 1
 }: AnnouncementContentProps) {
   
   // Helper function to apply text size multiplier
@@ -44,6 +46,11 @@ export function AnnouncementContent({
     return baseSize;
   };
 
+  // Helper function to apply icon size multiplier
+  const getIconSize = (baseSize: number) => {
+    return baseSize * iconSizeMultiplier;
+  };
+
   return (
     <motion.div 
       className="relative z-20 h-full p-20 md:p-32 xl:p-40 2xl:p-48 3xl:p-56 flex flex-col justify-center"
@@ -59,7 +66,10 @@ export function AnnouncementContent({
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <IconComponent className="w-8 xl:w-12 2xl:w-16 3xl:w-20 h-8 xl:h-12 2xl:h-16 3xl:h-20 text-white" />
+          <IconComponent 
+            className="text-white" 
+            size={getIconSize(orientation === 'portrait' ? 32 : 48)} 
+          />
           <span className="text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl font-bold text-white">
             {announcement.type?.replace('_', ' ').toUpperCase() || 'EVENT'}
           </span>
@@ -113,12 +123,10 @@ export function AnnouncementContent({
               )}
               whileHover={{ scale: 1.05 }}
             >
-              <MapPin className={cn(
-                "text-white/80",
-                orientation === 'portrait'
-                  ? "w-12 xl:w-16 2xl:w-20 3xl:w-24 4xl:w-28 h-12 xl:h-16 2xl:h-20 3xl:h-24 4xl:h-28"
-                  : "w-16 xl:w-20 2xl:w-24 3xl:w-28 4xl:w-32 h-16 xl:h-20 2xl:h-24 3xl:h-28 4xl:h-32"
-              )} />
+              <MapPin 
+                className="text-white/80"
+                size={getIconSize(orientation === 'portrait' ? 48 : 64)} 
+              />
               <span className="text-white/80 font-medium">
                 {announcement.location}
               </span>
@@ -207,12 +215,10 @@ export function AnnouncementContent({
             whileTap={{ scale: 0.95 }}
           >
             <span>Learn More</span>
-            <ExternalLink className={cn(
-              "text-white",
-              orientation === 'portrait'
-                ? "w-8 xl:w-10 2xl:w-12 3xl:w-14 4xl:w-16 h-8 xl:h-10 2xl:h-12 3xl:h-14 4xl:h-16"
-                : "w-10 xl:w-12 2xl:w-14 3xl:w-16 4xl:w-18 h-10 xl:h-12 2xl:h-14 3xl:h-16 4xl:h-18"
-            )} />
+            <ExternalLink 
+              className="text-white"
+              size={getIconSize(orientation === 'portrait' ? 32 : 40)} 
+            />
           </motion.a>
         </motion.div>
       </div>

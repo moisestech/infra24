@@ -159,7 +159,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
             )}
 
             {/* Main Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
+            <div className="hidden lg:flex items-center space-x-1">
               <Link 
                 href="/"
                 className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -169,14 +169,14 @@ export default function Navigation({ className = '' }: NavigationProps) {
                 }`}
               >
                 <Home className="h-4 w-4" />
-                <span className="hidden md:block">Home</span>
+                <span className="nav-text-hidden lg:block">Home</span>
               </Link>
 
               {/* Organizations Dropdown */}
               <div className="relative group">
                 <button className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                   <SmartSignIcon size={16} showText={false} />
-                  <span className="hidden md:block">Organizations</span>
+                  <span className="nav-text-hidden lg:block">Organizations</span>
                   <ChevronDown className="h-4 w-4" />
                 </button>
                 
@@ -230,7 +230,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
               <div className="relative group">
                 <button className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                   <Users className="h-4 w-4" />
-                  <span className="hidden md:block">Members</span>
+                  <span className="nav-text-hidden lg:block">Members</span>
                   <ChevronDown className="h-4 w-4" />
                 </button>
                 
@@ -274,7 +274,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
                 }`}
               >
                 <Bell className="h-4 w-4" />
-                <span className="hidden md:block">Announcements</span>
+                <span className="nav-text-hidden lg:block">Announcements</span>
               </Link>
 
 
@@ -284,7 +284,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
           {/* Right side - User menu and actions */}
           <div className="flex items-center space-x-4">
             {/* Mobile menu button - First on mobile */}
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <button
                 onClick={toggleMobileMenu}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white p-2 rounded-md"
@@ -314,8 +314,8 @@ export default function Navigation({ className = '' }: NavigationProps) {
                     <User className="h-4 w-4 text-gray-600 dark:text-gray-400" />
                   </div>
                 )}
-                <span className="hidden md:block text-sm font-medium">{user.fullName || user.emailAddresses[0]?.emailAddress}</span>
-                <ChevronDown className="hidden md:block h-4 w-4" />
+                <span className="nav-text-hidden lg:block text-sm font-medium">{user.fullName || user.emailAddresses[0]?.emailAddress}</span>
+                <ChevronDown className="nav-text-hidden lg:block h-4 w-4" />
               </Link>
               
               <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
@@ -371,8 +371,8 @@ export default function Navigation({ className = '' }: NavigationProps) {
               <div className="relative group">
                 <button className="flex items-center space-x-1 bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
                   <Plus className="h-4 w-4" />
-                  <span className="hidden md:block">Create</span>
-                  <ChevronDown className="hidden md:block h-4 w-4" />
+                  <span className="nav-text-hidden lg:block">Create</span>
+                  <ChevronDown className="nav-text-hidden lg:block h-4 w-4" />
                 </button>
                 
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
@@ -406,7 +406,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
               <Link
                 href="/"

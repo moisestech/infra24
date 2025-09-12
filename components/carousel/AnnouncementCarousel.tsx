@@ -7,7 +7,7 @@ import { PatternTemplate } from './PatternTemplate';
 import { CarouselControls } from './CarouselControls';
 import { getIconForAnnouncement, getStylesForAnnouncement } from './announcement-styles';
 import { useOrganizationTheme } from './OrganizationThemeContext';
-import { DevTextSizeControls } from './DevTextSizeControls';
+import { TextSizeControls } from './DevTextSizeControls';
 
 interface AnnouncementCarouselProps {
   announcements: Announcement[];
@@ -21,6 +21,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
   const [showQRCode, setShowQRCode] = useState(false);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const [textSizeMultiplier, setTextSizeMultiplier] = useState(1);
+  const [iconSizeMultiplier, setIconSizeMultiplier] = useState(1);
   const { theme: organizationTheme } = useOrganizationTheme();
 
   // Filter future announcements
@@ -106,10 +107,11 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
 
   return (
     <div className="relative h-screen bg-white">
-      {/* Dev Controls - Only show in development */}
-      {process.env.NODE_ENV === 'development' && (
-        <DevTextSizeControls onTextSizeChange={setTextSizeMultiplier} />
-      )}
+              {/* Text Size Debug Controls - Available in production with ?debug=true */}
+              <TextSizeControls 
+                onTextSizeChange={setTextSizeMultiplier} 
+                onIconSizeChange={setIconSizeMultiplier}
+              />
 
       {/* Carousel Controls */}
       <CarouselControls
@@ -139,6 +141,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
                 organizationSlug={organizationSlug}
                 organizationTheme={organizationTheme}
                 textSizeMultiplier={textSizeMultiplier}
+                iconSizeMultiplier={iconSizeMultiplier}
               />
             </div>
           ))}

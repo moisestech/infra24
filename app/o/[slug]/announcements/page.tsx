@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { Bell, Plus, Calendar, User, Tag, Eye, EyeOff, Shield, Play } from 'lucide-react'
+import { Bell, Plus, Calendar, User, Tag, Eye, EyeOff, Shield, Play, MapPin, Users, Building2, ExternalLink, Clock, Info } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 
 interface Announcement {
@@ -21,6 +21,14 @@ interface Announcement {
   scheduled_at?: string
   type?: string
   sub_type?: string
+  visibility?: string
+  starts_at?: string
+  ends_at?: string
+  location?: string
+  people?: any[]
+  external_orgs?: any[]
+  primary_link?: string
+  additional_info?: string
 }
 
 interface Organization {
@@ -150,7 +158,7 @@ export default function OrganizationAnnouncementsPage() {
       urgent: { bg: 'bg-red-100', text: 'text-red-800', label: 'Urgent' },
       facility: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Facility' },
       event: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Event' },
-      opportunity: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Opportunity' },
+      opportunity: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Opportunity' },
       administrative: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Admin' },
     };
     
@@ -443,21 +451,115 @@ export default function OrganizationAnnouncementsPage() {
                             </div>
                           </div>
                           
-                          {announcement.tags && announcement.tags.length > 0 && (
-                            <div className="flex items-center space-x-2">
-                              <Tag className="h-4 w-4 text-gray-400" />
-                              <div className="flex flex-wrap gap-1">
-                                {announcement.tags.map((tag, index) => (
-                                  <span
-                                    key={index}
-                                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
+                          {/* Enhanced Metadata Display */}
+                          <div className="space-y-3">
+                            {/* Tags */}
+                            {announcement.tags && announcement.tags.length > 0 && (
+                              <div className="flex items-center space-x-2">
+                                <Tag className="h-4 w-4 text-gray-400" />
+                                <div className="flex flex-wrap gap-1">
+                                  {announcement.tags.map((tag, index) => (
+                                    <span
+                                      key={index}
+                                      className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
+
+                            {/* Location */}
+                            {announcement.location && (
+                              <div className="flex items-center space-x-2">
+                                <MapPin className="h-4 w-4 text-gray-400" />
+                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                  {announcement.location}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Date Range */}
+                            {announcement.starts_at && announcement.ends_at && (
+                              <div className="flex items-center space-x-2">
+                                <Clock className="h-4 w-4 text-gray-400" />
+                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                  {new Date(announcement.starts_at).toLocaleDateString()} - {new Date(announcement.ends_at).toLocaleDateString()}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* People */}
+                            {announcement.people && announcement.people.length > 0 && (
+                              <div className="flex items-start space-x-2">
+                                <Users className="h-4 w-4 text-gray-400 mt-0.5" />
+                                <div className="flex flex-wrap gap-2">
+                                  {announcement.people.map((person: any, index: number) => (
+                                    <div key={index} className="flex items-center space-x-2">
+                                      {person.avatar_url ? (
+                                        <img
+                                          src={person.avatar_url}
+                                          alt={person.name}
+                                          className="w-6 h-6 rounded-full object-cover border border-gray-200 dark:border-gray-600"
+                                        />
+                                      ) : (
+                                        <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                                          <User className="w-3 h-3 text-gray-500" />
+                                        </div>
+                                      )}
+                                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                                        {person.name}
+                                        {person.role && ` (${person.role})`}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* External Organizations */}
+                            {announcement.external_orgs && announcement.external_orgs.length > 0 && (
+                              <div className="flex items-center space-x-2">
+                                <Building2 className="h-4 w-4 text-gray-400" />
+                                <div className="flex flex-wrap gap-1">
+                                  {announcement.external_orgs.map((org: any, index: number) => (
+                                    <span
+                                      key={index}
+                                      className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded"
+                                    >
+                                      {org.name}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Primary Link */}
+                            {announcement.primary_link && (
+                              <div className="flex items-center space-x-2">
+                                <ExternalLink className="h-4 w-4 text-gray-400" />
+                                <a
+                                  href={announcement.primary_link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                                >
+                                  Learn More
+                                </a>
+                              </div>
+                            )}
+
+                            {/* Additional Info */}
+                            {announcement.additional_info && (
+                              <div className="flex items-start space-x-2">
+                                <Info className="h-4 w-4 text-gray-400 mt-0.5" />
+                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                  {announcement.additional_info}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                         
                         <div className="flex items-center space-x-2 md:ml-4">
