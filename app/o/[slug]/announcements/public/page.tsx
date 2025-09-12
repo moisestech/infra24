@@ -27,8 +27,8 @@ export default function PublicAnnouncementDisplayPage() {
       if (!params.slug) return;
 
       try {
-        // Load organization details
-        const orgResponse = await fetch(`/api/organizations/by-slug/${params.slug}`);
+        // Load organization details (public)
+        const orgResponse = await fetch(`/api/organizations/by-slug/${params.slug}/public`);
         if (!orgResponse.ok) {
           throw new Error('Organization not found');
         }

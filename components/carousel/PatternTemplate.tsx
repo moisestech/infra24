@@ -18,6 +18,7 @@ interface PatternTemplateProps {
   setShowQRCode: (show: boolean) => void;
   organizationSlug?: string;
   organizationTheme?: any;
+  textSizeMultiplier?: number;
 }
 
 export function PatternTemplate({ 
@@ -28,7 +29,8 @@ export function PatternTemplate({
   showQRCode, 
   setShowQRCode, 
   organizationSlug, 
-  organizationTheme 
+  organizationTheme,
+  textSizeMultiplier = 1
 }: PatternTemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
@@ -82,6 +84,7 @@ export function PatternTemplate({
         showQRCode={showQRCode}
         setShowQRCode={setShowQRCode}
         organizationSlug={organizationSlug}
+        textSizeMultiplier={textSizeMultiplier}
       />
     </div>
   );

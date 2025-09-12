@@ -7,6 +7,7 @@ import { PatternTemplate } from './PatternTemplate';
 import { CarouselControls } from './CarouselControls';
 import { getIconForAnnouncement, getStylesForAnnouncement } from './announcement-styles';
 import { useOrganizationTheme } from './OrganizationThemeContext';
+import { DevTextSizeControls } from './DevTextSizeControls';
 
 interface AnnouncementCarouselProps {
   announcements: Announcement[];
@@ -19,6 +20,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
   const [isPaused, setIsPaused] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const [textSizeMultiplier, setTextSizeMultiplier] = useState(1);
   const { theme: organizationTheme } = useOrganizationTheme();
 
   // Filter future announcements
@@ -104,6 +106,11 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
 
   return (
     <div className="relative h-screen bg-white">
+      {/* Dev Controls - Only show in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <DevTextSizeControls onTextSizeChange={setTextSizeMultiplier} />
+      )}
+
       {/* Carousel Controls */}
       <CarouselControls
         onPrevious={scrollPrev}
@@ -131,6 +138,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
                 setShowQRCode={setShowQRCode}
                 organizationSlug={organizationSlug}
                 organizationTheme={organizationTheme}
+                textSizeMultiplier={textSizeMultiplier}
               />
             </div>
           ))}

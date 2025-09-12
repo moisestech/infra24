@@ -2,6 +2,22 @@
 
 This folder contains SQL scripts to help debug and test announcement functionality.
 
+## ⚠️ IMPORTANT: Real vs Test Organizations
+
+**REAL ORGANIZATIONS (Production):**
+- `bakehouse` - Bakehouse Art Complex
+- `oolite` - Oolite Arts  
+- `locust-projects` - Locust Projects
+
+**TEST ORGANIZATIONS (Development Only):**
+- `primary-colors` - Primary Colors Art Collective (TEST)
+- `midnight-gallery` - Midnight Gallery (TEST)
+- `sunset-studios` - Sunset Studios (TEST)
+- `ocean-workshop` - Ocean Workshop (TEST)
+- `forest-collective` - Forest Collective (TEST)
+
+**⚠️ NEVER use test organizations in production! Use `cleanup-fake-organizations.sql` to remove them.**
+
 ## Scripts
 
 ### 1. `debug-announcements.sql`
@@ -34,6 +50,65 @@ Use this script to create test announcements for debugging.
 2. Uncomment the announcements you want to create
 3. Replace placeholder user IDs with actual clerk user IDs
 4. Run the script in Supabase
+
+### 3. `view-all-announcements.sql`
+Comprehensive script to view all announcements across all organizations.
+
+**What it does:**
+- Shows organization summary with announcement counts
+- Lists all announcements with organization details
+- Groups announcements by type across organizations
+- Shows recent announcements and upcoming events
+- Displays status distribution and priority levels
+
+### 4. `view-new-organization-themes.sql`
+Script to view announcements for the new organization themes (TEST ONLY).
+
+**What it does:**
+- Focuses on test organizations created for theme testing
+- Shows announcement distribution by theme
+- Compares new themes with Bakehouse
+- **⚠️ Only use in development environment**
+
+### 5. `cleanup-fake-organizations.sql`
+**CRITICAL:** Use this script to remove test organizations and their announcements.
+
+**What it does:**
+- Soft deletes all announcements for fake organizations
+- Removes fake organizations from database
+- Verifies cleanup was successful
+- **⚠️ Run this before deploying to production**
+
+### 6. `add-christine-cortes-september-announcements.sql`
+Adds announcements from Christine Cortes' email dated September 11, 2025.
+
+**What it does:**
+- Adds 7 announcements covering survey, book club, exhibitions, and achievements
+- Includes proper organization references and metadata
+- Sets appropriate visibility and priority levels
+- **Includes both SQL and JavaScript versions**
+
+**Announcements added:**
+- Bakehouse Annual Anonymous Survey 2025 (REQUIRED)
+- Book Club with Krys Ortega and Rene Morales
+- Noah Cribb "Lacuna" exhibition at Fred Snitzer Gallery
+- Marilyn Loddi/HUSHFELL "CONNECTOME" performance at Edge Zones
+- "CATS!" exhibition benefiting Humane Society
+- Joel Gaitan SAUER Art Prize achievement
+- Artist highlights submission call
+
+### 7. `add-christine-cortes-september-announcements.js`
+JavaScript version of the Christine Cortes announcements script.
+
+**How to use:**
+```bash
+node scripts/add-christine-cortes-september-announcements.js
+```
+
+**What it does:**
+- Same as SQL version but runs directly via Node.js
+- Provides detailed console output and error handling
+- Verifies announcements were added successfully
 
 ## Common Issues and Solutions
 

@@ -45,10 +45,11 @@ const colorSchemes: ColorSchemes = {
     pattern: 'rgba(234, 179, 8, 0.9)'
   },
   opportunity: {
-    primary: 'rgba(168, 85, 247, 0.05)',
-    secondary: 'rgba(192, 132, 252, 0.05)',
-    accent: 'rgba(233, 213, 255, 0.05)',
-    pattern: 'rgba(168, 85, 247, 0.9)'
+    primary: 'rgba(59, 130, 246, 0.12)', // Primary blue for exhibitions
+    secondary: 'rgba(96, 165, 250, 0.10)', // Light blue
+    accent: 'rgba(147, 197, 253, 0.08)', // Lighter blue
+    pattern: 'rgba(59, 130, 246, 0.9)', // Strong primary blue pattern
+    background: 'rgba(59, 130, 246, 0.08)' // Primary blue background
   },
   administrative: {
     primary: 'rgba(107, 114, 128, 0.05)',
@@ -115,10 +116,11 @@ const darkColorSchemes: ColorSchemes = {
     pattern: 'rgba(234, 179, 8, 0.5)'
   },
   opportunity: {
-    primary: 'rgba(168, 85, 247, 0.15)',
-    secondary: 'rgba(192, 132, 252, 0.12)',
-    accent: 'rgba(233, 213, 255, 0.10)',
-    pattern: 'rgba(168, 85, 247, 0.5)'
+    primary: 'rgba(59, 130, 246, 0.25)', // Primary blue for exhibitions (dark mode)
+    secondary: 'rgba(96, 165, 250, 0.22)', // Light blue
+    accent: 'rgba(147, 197, 253, 0.20)', // Lighter blue
+    pattern: 'rgba(59, 130, 246, 0.8)', // Strong primary blue pattern
+    background: 'rgba(59, 130, 246, 0.15)' // Primary blue background
   },
   administrative: {
     primary: 'rgba(107, 114, 128, 0.15)',

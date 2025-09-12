@@ -5,6 +5,7 @@ import { MapPin, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
 import { TypeStyle } from './announcement-styles';
+import { AnnouncementMetadata } from './AnnouncementMetadata';
 
 interface AnnouncementContentProps {
   announcement: any;
@@ -14,6 +15,7 @@ interface AnnouncementContentProps {
   showQRCode: boolean;
   setShowQRCode: (show: boolean) => void;
   organizationSlug?: string;
+  textSizeMultiplier?: number;
 }
 
 export function AnnouncementContent({ 
@@ -23,9 +25,25 @@ export function AnnouncementContent({
   orientation,
   showQRCode,
   setShowQRCode,
-  organizationSlug
+  organizationSlug,
+  textSizeMultiplier = 1
 }: AnnouncementContentProps) {
   
+  // Helper function to apply text size multiplier
+  const getTextSize = (baseSize: string) => {
+    if (textSizeMultiplier === 1) return baseSize;
+    
+    // Extract the size value and apply multiplier
+    const sizeMatch = baseSize.match(/(\d+(?:\.\d+)?)([a-z]+)/);
+    if (sizeMatch) {
+      const [, size, unit] = sizeMatch;
+      const newSize = parseFloat(size) * textSizeMultiplier;
+      return `${newSize}${unit}`;
+    }
+    
+    return baseSize;
+  };
+
   return (
     <motion.div 
       className="relative z-20 h-full p-20 md:p-32 xl:p-40 2xl:p-48 3xl:p-56 flex flex-col justify-center"
@@ -49,12 +67,12 @@ export function AnnouncementContent({
 
         {/* Title */}
         <motion.h1 
-          className={cn(
-            "font-black text-white leading-tight",
-            orientation === 'portrait'
-              ? "text-20xl md:text-24xl xl:text-28xl 2xl:text-32xl 3xl:text-36xl 4xl:text-[40rem]"
-              : "text-24xl md:text-28xl xl:text-36xl 2xl:text-[48rem] 3xl:text-[64rem] 4xl:text-[80rem]"
-          )}
+          className="font-black text-white leading-tight"
+          style={{
+            fontSize: textSizeMultiplier !== 1 
+              ? getTextSize(orientation === 'portrait' ? '20rem' : '24rem')
+              : undefined
+          }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -156,11 +174,24 @@ export function AnnouncementContent({
           </div>
         </motion.div>
 
-        {/* Learn More Button */}
+        {/* Metadata Display */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
+        >
+          <AnnouncementMetadata 
+            announcement={announcement}
+            orientation={orientation}
+            className="mt-8"
+          />
+        </motion.div>
+
+        {/* Learn More Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
         >
           <motion.a
             href={organizationSlug ? `/o/${organizationSlug}/announcements/${announcement.id}` : `/announcements/${announcement.id}`}

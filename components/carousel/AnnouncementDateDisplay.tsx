@@ -50,6 +50,43 @@ export function AnnouncementDateDisplay({
     });
   };
 
+  const formatEndDate = (startDateStr: string, endDateStr: string) => {
+    if (!endDateStr) return null;
+    
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
+    
+    // If same day, just show time
+    if (startDate.toDateString() === endDate.toDateString()) {
+      return formatTime(endDateStr);
+    }
+    
+    // If different days, show date
+    const month = endDate.toLocaleString('en-US', { month: 'short' });
+    const dayNum = endDate.getDate();
+    return `${month} ${dayNum}`;
+  };
+
+  const getDateRange = (startDateStr: string, endDateStr: string) => {
+    if (!endDateStr) return null;
+    
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
+    
+    // If same day
+    if (startDate.toDateString() === endDate.toDateString()) {
+      return null; // Don't show range for same day
+    }
+    
+    // If different days, show range
+    const startMonth = startDate.toLocaleString('en-US', { month: 'short' });
+    const startDay = startDate.getDate();
+    const endMonth = endDate.toLocaleString('en-US', { month: 'short' });
+    const endDay = endDate.getDate();
+    
+    return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
+  };
+
   // Use starts_at if available, otherwise use created_at
   const eventDate = announcement.starts_at || announcement.created_at;
   const dateStatus = getDateStatus(eventDate);
@@ -116,6 +153,32 @@ export function AnnouncementDateDisplay({
       {shouldShowDate && formatTime(eventDate) && (
         <motion.div className="text-3xl xl:text-5xl 2xl:text-6xl 3xl:text-8xl text-white/60 font-medium tracking-tight mt-2">
           {formatTime(eventDate)}
+        </motion.div>
+      )}
+
+      {/* End Date/Time if available - only show for non-historical fun facts */}
+      {shouldShowDate && announcement.ends_at && (
+        <motion.div 
+          className="text-2xl xl:text-4xl 2xl:text-5xl 3xl:text-7xl text-white/50 font-medium tracking-tight mt-1"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          {formatEndDate(eventDate, announcement.ends_at) && (
+            <span>Until {formatEndDate(eventDate, announcement.ends_at)}</span>
+          )}
+        </motion.div>
+      )}
+
+      {/* Date Range if multi-day event */}
+      {shouldShowDate && getDateRange(eventDate, announcement.ends_at) && (
+        <motion.div 
+          className="text-xl xl:text-3xl 2xl:text-4xl 3xl:text-6xl text-white/40 font-medium tracking-tight mt-1"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          {getDateRange(eventDate, announcement.ends_at)}
         </motion.div>
       )}
 
