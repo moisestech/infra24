@@ -19,12 +19,28 @@ import { cn } from '@/lib/utils';
 interface AnnouncementMetadataProps {
   announcement: any;
   orientation: 'portrait' | 'landscape';
+  textSizes?: {
+    title: string;
+    description: string;
+    location: string;
+    date: string;
+    type: string;
+    metadata: string;
+  };
   className?: string;
 }
 
 export function AnnouncementMetadata({ 
   announcement, 
   orientation, 
+  textSizes = {
+    title: 'text-6xl',
+    description: 'text-xl',
+    location: 'text-lg',
+    date: 'text-sm',
+    type: 'text-2xl',
+    metadata: 'text-sm'
+  },
   className 
 }: AnnouncementMetadataProps) {
   

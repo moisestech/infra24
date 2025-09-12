@@ -226,8 +226,8 @@ export default function AnnouncementDisplayPage() {
                     <OrganizationLogo 
                       organization={organization}
                       size="md"
-                      shape="square"
-                      className="h-8 w-8"
+                      orientation="horizontal"
+                      className="h-8"
                     />
                   )}
                   <div>

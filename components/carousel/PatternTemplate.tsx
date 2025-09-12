@@ -18,7 +18,14 @@ interface PatternTemplateProps {
   setShowQRCode: (show: boolean) => void;
   organizationSlug?: string;
   organizationTheme?: any;
-  textSizeMultiplier?: number;
+  textSizes?: {
+    title: string;
+    description: string;
+    location: string;
+    date: string;
+    type: string;
+    metadata: string;
+  };
   iconSizeMultiplier?: number;
 }
 
@@ -31,7 +38,14 @@ export function PatternTemplate({
   setShowQRCode, 
   organizationSlug, 
   organizationTheme, 
-  textSizeMultiplier = 1,
+  textSizes = {
+    title: 'text-6xl',
+    description: 'text-xl',
+    location: 'text-lg',
+    date: 'text-sm',
+    type: 'text-2xl',
+    metadata: 'text-sm'
+  },
   iconSizeMultiplier = 1
 }: PatternTemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -86,7 +100,7 @@ export function PatternTemplate({
         showQRCode={showQRCode}
         setShowQRCode={setShowQRCode}
         organizationSlug={organizationSlug}
-        textSizeMultiplier={textSizeMultiplier}
+        textSizes={textSizes}
         iconSizeMultiplier={iconSizeMultiplier}
       />
     </div>

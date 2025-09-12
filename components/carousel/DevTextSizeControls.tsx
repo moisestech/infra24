@@ -6,16 +6,26 @@ import { Plus, Minus, RotateCcw, Settings, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TextSizeControlsProps {
-  onTextSizeChange: (multiplier: number) => void;
+  onTextSizeChange: (element: string, size: string) => void;
   onIconSizeChange?: (multiplier: number) => void;
   className?: string;
 }
 
 export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className }: TextSizeControlsProps) {
-  const [textSizeMultiplier, setTextSizeMultiplier] = useState(1);
+  const [screenDimensions, setScreenDimensions] = useState({ width: 0, height: 0, ratio: 0 });
   const [iconSizeMultiplier, setIconSizeMultiplier] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  
+  // Individual text size controls for each element
+  const [textSizes, setTextSizes] = useState({
+    title: 'text-6xl',
+    description: 'text-xl',
+    location: 'text-lg',
+    date: 'text-sm',
+    type: 'text-2xl',
+    metadata: 'text-sm'
+  });
 
   // Check for debug mode via URL parameter or localStorage
   useEffect(() => {
@@ -24,23 +34,56 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
     setIsVisible(debugMode);
   }, []);
 
-  const handleSizeChange = (newMultiplier: number) => {
-    setTextSizeMultiplier(newMultiplier);
-    onTextSizeChange(newMultiplier);
+  // Track screen dimensions
+  useEffect(() => {
+    const updateDimensions = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const ratio = width / height;
+      setScreenDimensions({ width, height, ratio });
+    };
+    
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  // Tailwind text size options
+  const textSizeOptions = [
+    'text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl', 
+    'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl', 'text-8xl', 
+    'text-9xl', 'text-10xl', 'text-11xl', 'text-12xl', 'text-13xl', 'text-14xl', 
+    'text-15xl', 'text-16xl', 'text-17xl', 'text-18xl'
+  ];
+
+  const handleTextSizeChange = (element: string, newSize: string) => {
+    setTextSizes(prev => ({ ...prev, [element]: newSize }));
+    onTextSizeChange(element, newSize);
   };
 
-  const increaseSize = () => {
-    const newSize = Math.min(textSizeMultiplier + 0.1, 2.0);
-    handleSizeChange(newSize);
+  const getNextSize = (currentSize: string, direction: 'up' | 'down') => {
+    const currentIndex = textSizeOptions.indexOf(currentSize);
+    if (direction === 'up' && currentIndex < textSizeOptions.length - 1) {
+      return textSizeOptions[currentIndex + 1];
+    } else if (direction === 'down' && currentIndex > 0) {
+      return textSizeOptions[currentIndex - 1];
+    }
+    return currentSize;
   };
 
-  const decreaseSize = () => {
-    const newSize = Math.max(textSizeMultiplier - 0.1, 0.5);
-    handleSizeChange(newSize);
-  };
-
-  const resetSize = () => {
-    handleSizeChange(1.0);
+  const resetAllSizes = () => {
+    const defaultSizes = {
+      title: 'text-6xl',
+      description: 'text-xl',
+      location: 'text-lg',
+      date: 'text-sm',
+      type: 'text-2xl',
+      metadata: 'text-sm'
+    };
+    setTextSizes(defaultSizes);
+    Object.entries(defaultSizes).forEach(([element, size]) => {
+      onTextSizeChange(element, size);
+    });
     handleIconSizeChange(1.0);
   };
 
@@ -52,14 +95,23 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
   };
 
   const increaseIconSize = () => {
-    const newSize = Math.min(iconSizeMultiplier + 0.1, 2.0);
+    const newSize = Math.min(iconSizeMultiplier + 0.5, 5.0);
     handleIconSizeChange(newSize);
   };
 
   const decreaseIconSize = () => {
-    const newSize = Math.max(iconSizeMultiplier - 0.1, 0.5);
+    const newSize = Math.max(iconSizeMultiplier - 0.5, 0.5);
     handleIconSizeChange(newSize);
   };
+
+  // Set default icon size to 4x for vertical orientation
+  useEffect(() => {
+    if (screenDimensions.ratio < 1) { // Portrait/vertical
+      handleIconSizeChange(4.0);
+    } else {
+      handleIconSizeChange(1.0);
+    }
+  }, [screenDimensions.ratio]);
 
   const toggleVisibility = () => {
     const newVisibility = !isVisible;
@@ -102,10 +154,10 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
       transition={{ duration: 0.3 }}
     >
       {!isMinimized ? (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 max-h-[80vh] overflow-y-auto">
           <div className="flex items-center justify-between">
             <div className="text-white text-sm font-medium">
-              Text Size Debug
+              Design Debug Controls
             </div>
             <div className="flex items-center gap-1">
               <motion.button
@@ -124,80 +176,92 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
               </motion.button>
             </div>
           </div>
+
+          {/* Screen Dimensions */}
+          <div className="bg-white/10 rounded p-2">
+            <div className="text-white text-xs font-medium mb-1">Screen Info</div>
+            <div className="text-white text-xs font-mono">
+              {screenDimensions.width} × {screenDimensions.height}
+            </div>
+            <div className="text-white text-xs font-mono">
+              Ratio: {screenDimensions.ratio.toFixed(2)} ({screenDimensions.ratio < 1 ? 'Portrait' : 'Landscape'})
+            </div>
+          </div>
           
-          <div className="space-y-3">
-            {/* Text Size Controls */}
-            <div>
-              <div className="text-white text-xs font-medium mb-2">Text Size</div>
-              <div className="flex items-center gap-2">
+          {/* Individual Text Size Controls */}
+          <div className="space-y-2">
+            <div className="text-white text-xs font-medium">Text Elements</div>
+            {Object.entries(textSizes).map(([element, currentSize]) => (
+              <div key={element} className="flex items-center gap-2">
+                <div className="text-white text-xs w-20 capitalize">{element}:</div>
                 <motion.button
-                  onClick={decreaseSize}
-                  className="p-2 bg-red-500/80 hover:bg-red-500 rounded-md transition-colors"
+                  onClick={() => handleTextSizeChange(element, getNextSize(currentSize, 'down'))}
+                  className="p-1 bg-red-500/80 hover:bg-red-500 rounded transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  title="Decrease text size"
+                  title={`Decrease ${element} size`}
                 >
-                  <Minus className="w-4 h-4 text-white" />
+                  <Minus className="w-3 h-3 text-white" />
                 </motion.button>
                 
-                <div className="text-white text-sm font-mono min-w-[60px] text-center bg-white/10 rounded px-2 py-1">
-                  {(textSizeMultiplier * 100).toFixed(0)}%
+                <div className="text-white text-xs font-mono min-w-[80px] text-center bg-white/10 rounded px-2 py-1">
+                  {currentSize}
                 </div>
                 
                 <motion.button
-                  onClick={increaseSize}
-                  className="p-2 bg-green-500/80 hover:bg-green-500 rounded-md transition-colors"
+                  onClick={() => handleTextSizeChange(element, getNextSize(currentSize, 'up'))}
+                  className="p-1 bg-green-500/80 hover:bg-green-500 rounded transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  title="Increase text size"
+                  title={`Increase ${element} size`}
                 >
-                  <Plus className="w-4 h-4 text-white" />
+                  <Plus className="w-3 h-3 text-white" />
+                </motion.button>
+              </div>
+            ))}
+          </div>
+
+          {/* Icon Size Controls */}
+          {onIconSizeChange && (
+            <div className="space-y-2">
+              <div className="text-white text-xs font-medium">Icon Size</div>
+              <div className="flex items-center gap-2">
+                <motion.button
+                  onClick={decreaseIconSize}
+                  className="p-1 bg-orange-500/80 hover:bg-orange-500 rounded transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Decrease icon size"
+                >
+                  <Minus className="w-3 h-3 text-white" />
+                </motion.button>
+                
+                <div className="text-white text-xs font-mono min-w-[60px] text-center bg-white/10 rounded px-2 py-1">
+                  {iconSizeMultiplier.toFixed(1)}x
+                </div>
+                
+                <motion.button
+                  onClick={increaseIconSize}
+                  className="p-1 bg-cyan-500/80 hover:bg-cyan-500 rounded transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Increase icon size"
+                >
+                  <Plus className="w-3 h-3 text-white" />
                 </motion.button>
               </div>
             </div>
-
-            {/* Icon Size Controls */}
-            {onIconSizeChange && (
-              <div>
-                <div className="text-white text-xs font-medium mb-2">Icon Size</div>
-                <div className="flex items-center gap-2">
-                  <motion.button
-                    onClick={decreaseIconSize}
-                    className="p-2 bg-orange-500/80 hover:bg-orange-500 rounded-md transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    title="Decrease icon size"
-                  >
-                    <Minus className="w-4 h-4 text-white" />
-                  </motion.button>
-                  
-                  <div className="text-white text-sm font-mono min-w-[60px] text-center bg-white/10 rounded px-2 py-1">
-                    {(iconSizeMultiplier * 100).toFixed(0)}%
-                  </div>
-                  
-                  <motion.button
-                    onClick={increaseIconSize}
-                    className="p-2 bg-cyan-500/80 hover:bg-cyan-500 rounded-md transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    title="Increase icon size"
-                  >
-                    <Plus className="w-4 h-4 text-white" />
-                  </motion.button>
-                </div>
-              </div>
-            )}
-          </div>
+          )}
           
           <motion.button
-            onClick={resetSize}
+            onClick={resetAllSizes}
             className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-500/80 hover:bg-blue-500 rounded-md transition-colors text-white text-sm"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            title="Reset to default size"
+            title="Reset all sizes to default"
           >
             <RotateCcw className="w-4 h-4" />
-            Reset
+            Reset All
           </motion.button>
 
           <div className="text-xs text-white/60 text-center">
@@ -207,8 +271,8 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
       ) : (
         <div className="flex items-center gap-2">
           <div className="text-white text-xs font-mono">
-            T:{(textSizeMultiplier * 100).toFixed(0)}%
-            {onIconSizeChange && ` I:${(iconSizeMultiplier * 100).toFixed(0)}%`}
+            {screenDimensions.width}×{screenDimensions.height} | {screenDimensions.ratio.toFixed(1)}
+            {onIconSizeChange && ` | I:${iconSizeMultiplier.toFixed(1)}x`}
           </div>
           <motion.button
             onClick={toggleMinimize}

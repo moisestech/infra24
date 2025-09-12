@@ -15,7 +15,14 @@ interface AnnouncementContentProps {
   showQRCode: boolean;
   setShowQRCode: (show: boolean) => void;
   organizationSlug?: string;
-  textSizeMultiplier?: number;
+  textSizes?: {
+    title: string;
+    description: string;
+    location: string;
+    date: string;
+    type: string;
+    metadata: string;
+  };
   iconSizeMultiplier?: number;
 }
 
@@ -27,25 +34,17 @@ export function AnnouncementContent({
   showQRCode,
   setShowQRCode,
   organizationSlug,
-  textSizeMultiplier = 1,
+  textSizes = {
+    title: 'text-6xl',
+    description: 'text-xl',
+    location: 'text-lg',
+    date: 'text-sm',
+    type: 'text-2xl',
+    metadata: 'text-sm'
+  },
   iconSizeMultiplier = 1
 }: AnnouncementContentProps) {
   
-  // Helper function to apply text size multiplier
-  const getTextSize = (baseSize: string) => {
-    if (textSizeMultiplier === 1) return baseSize;
-    
-    // Extract the size value and apply multiplier
-    const sizeMatch = baseSize.match(/(\d+(?:\.\d+)?)([a-z]+)/);
-    if (sizeMatch) {
-      const [, size, unit] = sizeMatch;
-      const newSize = parseFloat(size) * textSizeMultiplier;
-      return `${newSize}${unit}`;
-    }
-    
-    return baseSize;
-  };
-
   // Helper function to apply icon size multiplier
   const getIconSize = (baseSize: number) => {
     return baseSize * iconSizeMultiplier;
@@ -70,19 +69,14 @@ export function AnnouncementContent({
             className="text-white" 
             size={getIconSize(orientation === 'portrait' ? 32 : 48)} 
           />
-          <span className="text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl font-bold text-white">
+          <span className={cn("font-bold text-white", textSizes.type)}>
             {announcement.type?.replace('_', ' ').toUpperCase() || 'EVENT'}
           </span>
         </motion.div>
 
         {/* Title */}
         <motion.h1 
-          className="font-black text-white leading-tight"
-          style={{
-            fontSize: textSizeMultiplier !== 1 
-              ? getTextSize(orientation === 'portrait' ? '20rem' : '24rem')
-              : undefined
-          }}
+          className={cn("font-black text-white leading-tight", textSizes.title)}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -92,12 +86,7 @@ export function AnnouncementContent({
 
         {/* Description */}
         <motion.p 
-          className={cn(
-            "text-white/90 font-medium leading-relaxed",
-            orientation === 'portrait'
-              ? "text-12xl md:text-16xl xl:text-20xl 2xl:text-24xl 3xl:text-28xl 4xl:text-32xl"
-              : "text-20xl md:text-20xl xl:text-24xl 2xl:text-28xl 3xl:text-32xl 4xl:text-36xl"
-          )}
+          className={cn("text-white/90 font-medium leading-relaxed", textSizes.description)}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -127,7 +116,7 @@ export function AnnouncementContent({
                 className="text-white/80"
                 size={getIconSize(orientation === 'portrait' ? 48 : 64)} 
               />
-              <span className="text-white/80 font-medium">
+              <span className={cn("text-white/80 font-medium", textSizes.location)}>
                 {announcement.location}
               </span>
             </motion.div>
@@ -191,6 +180,7 @@ export function AnnouncementContent({
           <AnnouncementMetadata 
             announcement={announcement}
             orientation={orientation}
+            textSizes={textSizes}
             className="mt-8"
           />
         </motion.div>

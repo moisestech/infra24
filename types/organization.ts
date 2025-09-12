@@ -5,6 +5,7 @@ export interface Organization {
   name: string;
   slug: string;
   logo_url?: string;
+  horizontal_logo_url?: string;
   artist_icon?: string;
   banner_image?: string;
   settings: Record<string, any>;
@@ -54,6 +55,7 @@ export interface CreateOrganizationRequest {
   name: string;
   slug: string;
   logo_url?: string;
+  horizontal_logo_url?: string;
   settings?: Record<string, any>;
 }
 
@@ -61,6 +63,7 @@ export interface UpdateOrganizationRequest {
   name?: string;
   slug?: string;
   logo_url?: string;
+  horizontal_logo_url?: string;
   settings?: Record<string, any>;
 }
 

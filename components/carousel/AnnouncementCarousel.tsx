@@ -20,7 +20,14 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
   const [isPaused, setIsPaused] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
-  const [textSizeMultiplier, setTextSizeMultiplier] = useState(1);
+  const [textSizes, setTextSizes] = useState({
+    title: 'text-6xl',
+    description: 'text-xl',
+    location: 'text-lg',
+    date: 'text-sm',
+    type: 'text-2xl',
+    metadata: 'text-sm'
+  });
   const [iconSizeMultiplier, setIconSizeMultiplier] = useState(1);
   const { theme: organizationTheme } = useOrganizationTheme();
 
@@ -109,7 +116,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
     <div className="relative h-screen bg-white">
               {/* Text Size Debug Controls - Available in production with ?debug=true */}
               <TextSizeControls 
-                onTextSizeChange={setTextSizeMultiplier} 
+                onTextSizeChange={(element, size) => setTextSizes(prev => ({ ...prev, [element]: size }))} 
                 onIconSizeChange={setIconSizeMultiplier}
               />
 
@@ -140,7 +147,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
                 setShowQRCode={setShowQRCode}
                 organizationSlug={organizationSlug}
                 organizationTheme={organizationTheme}
-                textSizeMultiplier={textSizeMultiplier}
+                textSizes={textSizes}
                 iconSizeMultiplier={iconSizeMultiplier}
               />
             </div>
