@@ -19,11 +19,11 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
   
   // Individual text size controls for each element
   const [textSizes, setTextSizes] = useState({
-    title: 'text-6xl',
-    description: 'text-xl',
-    location: 'text-lg',
-    date: 'text-sm',
-    type: 'text-2xl',
+    title: 'text-9xl',
+    description: 'text-7xl',
+    location: 'text-7xl',
+    date: 'text-7xl',
+    type: 'text-8xl',
     metadata: 'text-sm'
   });
 
@@ -73,18 +73,18 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
 
   const resetAllSizes = () => {
     const defaultSizes = {
-      title: 'text-6xl',
-      description: 'text-xl',
-      location: 'text-lg',
-      date: 'text-sm',
-      type: 'text-2xl',
+      title: 'text-9xl',
+      description: 'text-7xl',
+      location: 'text-7xl',
+      date: 'text-7xl',
+      type: 'text-8xl',
       metadata: 'text-sm'
     };
     setTextSizes(defaultSizes);
     Object.entries(defaultSizes).forEach(([element, size]) => {
       onTextSizeChange(element, size);
     });
-    handleIconSizeChange(1.0);
+    handleIconSizeChange(5.0);
   };
 
   const handleIconSizeChange = (newMultiplier: number) => {
@@ -104,10 +104,10 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, className
     handleIconSizeChange(newSize);
   };
 
-  // Set default icon size to 4x for vertical orientation
+  // Set default icon size to 5x for vertical orientation
   useEffect(() => {
     if (screenDimensions.ratio < 1) { // Portrait/vertical
-      handleIconSizeChange(4.0);
+      handleIconSizeChange(5.0);
     } else {
       handleIconSizeChange(1.0);
     }

@@ -21,14 +21,14 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
   const [showQRCode, setShowQRCode] = useState(false);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const [textSizes, setTextSizes] = useState({
-    title: 'text-6xl',
-    description: 'text-xl',
-    location: 'text-lg',
-    date: 'text-sm',
-    type: 'text-2xl',
+    title: 'text-9xl',
+    description: 'text-7xl',
+    location: 'text-7xl',
+    date: 'text-7xl',
+    type: 'text-8xl',
     metadata: 'text-sm'
   });
-  const [iconSizeMultiplier, setIconSizeMultiplier] = useState(1);
+  const [iconSizeMultiplier, setIconSizeMultiplier] = useState(5);
   const { theme: organizationTheme } = useOrganizationTheme();
 
   // Filter future announcements

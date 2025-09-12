@@ -217,7 +217,6 @@ export default function AnnouncementDisplayPage() {
                 className="inline-flex items-center px-3 py-2 text-white hover:text-white/80 transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
-                Back to {organization?.name}
               </Link>
               
               <div className="hidden md:flex items-center space-x-4 text-white/80">
@@ -230,10 +229,6 @@ export default function AnnouncementDisplayPage() {
                       className="h-8"
                     />
                   )}
-                  <div>
-                    <h1 className="text-lg font-semibold">{organization?.name} Announcements</h1>
-                    <p className="text-sm">Display View</p>
-                  </div>
                 </div>
               </div>
             </div>

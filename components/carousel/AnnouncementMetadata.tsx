@@ -34,11 +34,11 @@ export function AnnouncementMetadata({
   announcement, 
   orientation, 
   textSizes = {
-    title: 'text-6xl',
-    description: 'text-xl',
-    location: 'text-lg',
-    date: 'text-sm',
-    type: 'text-2xl',
+    title: 'text-9xl',
+    description: 'text-7xl',
+    location: 'text-7xl',
+    date: 'text-7xl',
+    type: 'text-8xl',
     metadata: 'text-sm'
   },
   className 

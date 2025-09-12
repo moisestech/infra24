@@ -59,7 +59,7 @@ export default function OrganizationLogo({
   const getLogoUrl = () => {
     if (organization.slug === 'bakehouse') {
       if (orientation === 'horizontal') {
-        return "https://res.cloudinary.com/du1ysiumj/image/upload/v1757702629/bakehouse-logo-horizontal-transparent_g6l6gh.png"
+        return "https://res.cloudinary.com/du1ysiumj/image/upload/v1757706285/bakehouse-logo-horizontal-transparent-white_r3u1yy.png"
       } else {
         return "https://res.cloudinary.com/dck5rzi4h/image/upload/v1755993342/smart-sign/bakehouse-logo-low-rez_yyiht6.png"
       }
