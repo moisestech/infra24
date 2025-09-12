@@ -46,6 +46,9 @@ export default function OrganizationAnnouncementsPage() {
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | 'published' | 'pending' | 'draft'>('all')
   const [userRole, setUserRole] = useState<string>('')
+  const [editingEndDate, setEditingEndDate] = useState<string | null>(null)
+  const [tempEndDate, setTempEndDate] = useState<string>('')
+  const [updating, setUpdating] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadData() {
@@ -119,6 +122,57 @@ export default function OrganizationAnnouncementsPage() {
       month: 'short',
       day: 'numeric'
     })
+  }
+
+  const formatDateForInput = (dateString: string) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    return date.toISOString().split('T')[0]
+  }
+
+  const handleEditEndDate = (announcementId: string, currentEndDate?: string) => {
+    setEditingEndDate(announcementId)
+    setTempEndDate(formatDateForInput(currentEndDate || ''))
+  }
+
+  const handleCancelEdit = () => {
+    setEditingEndDate(null)
+    setTempEndDate('')
+  }
+
+  const handleSaveEndDate = async (announcementId: string) => {
+    try {
+      setUpdating(announcementId)
+      
+      const response = await fetch(`/api/announcements/${announcementId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ends_at: tempEndDate ? new Date(tempEndDate).toISOString() : null
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update end date')
+      }
+
+      // Update the local state
+      setAnnouncements(prev => prev.map(announcement => 
+        announcement.id === announcementId 
+          ? { ...announcement, ends_at: tempEndDate ? new Date(tempEndDate).toISOString() : undefined }
+          : announcement
+      ))
+
+      setEditingEndDate(null)
+      setTempEndDate('')
+    } catch (error) {
+      console.error('Error updating end date:', error)
+      alert('Failed to update end date. Please try again.')
+    } finally {
+      setUpdating(null)
+    }
   }
 
   const formatEventDate = (dateString: string) => {
@@ -481,12 +535,113 @@ export default function OrganizationAnnouncementsPage() {
                             )}
 
                             {/* Date Range */}
-                            {announcement.starts_at && announcement.ends_at && (
+                            {(announcement.starts_at || announcement.ends_at) && (
                               <div className="flex items-center space-x-2">
                                 <Clock className="h-4 w-4 text-gray-400" />
-                                <span className="text-sm text-gray-600 dark:text-gray-400">
-                                  {new Date(announcement.starts_at).toLocaleDateString()} - {new Date(announcement.ends_at).toLocaleDateString()}
-                                </span>
+                                <div className="flex items-center space-x-2">
+                                  {announcement.starts_at && (
+                                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                                      {new Date(announcement.starts_at).toLocaleDateString()}
+                                    </span>
+                                  )}
+                                  {announcement.starts_at && announcement.ends_at && (
+                                    <span className="text-gray-400">-</span>
+                                  )}
+                                  {announcement.ends_at && (
+                                    <div className="flex items-center space-x-2">
+                                      {editingEndDate === announcement.id ? (
+                                        <div className="flex items-center space-x-2">
+                                          <input
+                                            type="date"
+                                            value={tempEndDate}
+                                            onChange={(e) => setTempEndDate(e.target.value)}
+                                            className="text-sm border border-gray-300 rounded px-2 py-1"
+                                            disabled={updating === announcement.id}
+                                          />
+                                          <button
+                                            onClick={() => handleSaveEndDate(announcement.id)}
+                                            disabled={updating === announcement.id}
+                                            className="text-green-600 hover:text-green-500 text-xs font-medium disabled:opacity-50"
+                                          >
+                                            {updating === announcement.id ? 'Saving...' : 'Save'}
+                                          </button>
+                                          <button
+                                            onClick={handleCancelEdit}
+                                            disabled={updating === announcement.id}
+                                            className="text-gray-600 hover:text-gray-500 text-xs font-medium disabled:opacity-50"
+                                          >
+                                            Cancel
+                                          </button>
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center space-x-2">
+                                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            {new Date(announcement.ends_at).toLocaleDateString()}
+                                          </span>
+                                          {isAdmin && (
+                                            <button
+                                              onClick={() => handleEditEndDate(announcement.id, announcement.ends_at)}
+                                              className="text-blue-600 hover:text-blue-500 text-xs font-medium"
+                                            >
+                                              Edit
+                                            </button>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* End Date Only (when no start date) */}
+                            {!announcement.starts_at && announcement.ends_at && (
+                              <div className="flex items-center space-x-2">
+                                <Clock className="h-4 w-4 text-gray-400" />
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                                    Ends: 
+                                  </span>
+                                  {editingEndDate === announcement.id ? (
+                                    <div className="flex items-center space-x-2">
+                                      <input
+                                        type="date"
+                                        value={tempEndDate}
+                                        onChange={(e) => setTempEndDate(e.target.value)}
+                                        className="text-sm border border-gray-300 rounded px-2 py-1"
+                                        disabled={updating === announcement.id}
+                                      />
+                                      <button
+                                        onClick={() => handleSaveEndDate(announcement.id)}
+                                        disabled={updating === announcement.id}
+                                        className="text-green-600 hover:text-green-500 text-xs font-medium disabled:opacity-50"
+                                      >
+                                        {updating === announcement.id ? 'Saving...' : 'Save'}
+                                      </button>
+                                      <button
+                                        onClick={handleCancelEdit}
+                                        disabled={updating === announcement.id}
+                                        className="text-gray-600 hover:text-gray-500 text-xs font-medium disabled:opacity-50"
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center space-x-2">
+                                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                                        {new Date(announcement.ends_at).toLocaleDateString()}
+                                      </span>
+                                      {isAdmin && (
+                                        <button
+                                          onClick={() => handleEditEndDate(announcement.id, announcement.ends_at)}
+                                          className="text-blue-600 hover:text-blue-500 text-xs font-medium"
+                                        >
+                                          Edit
+                                        </button>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             )}
 
