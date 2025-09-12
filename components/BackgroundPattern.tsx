@@ -211,6 +211,162 @@ export function BackgroundPattern({ type, subType, width = 400, height = 400, or
     }
   };
 
+  // Midnight Gallery - Dark purple and blue tones for sophisticated art gallery
+  const midnightGalleryScheme: ColorSchemes = {
+    event: {
+      primary: 'rgba(75, 0, 130, 0.12)', // Indigo background
+      secondary: 'rgba(138, 43, 226, 0.10)', // Blue violet
+      accent: 'rgba(72, 61, 139, 0.08)', // Dark slate blue
+      pattern: 'rgba(75, 0, 130, 0.8)', // Strong indigo pattern
+      background: 'rgba(25, 25, 112, 0.08)' // Midnight blue background
+    },
+    opportunity: {
+      primary: 'rgba(72, 61, 139, 0.12)', // Dark slate blue
+      secondary: 'rgba(75, 0, 130, 0.10)', // Indigo
+      accent: 'rgba(138, 43, 226, 0.08)', // Blue violet
+      pattern: 'rgba(72, 61, 139, 0.8)', // Strong dark slate blue pattern
+      background: 'rgba(25, 25, 112, 0.08)' // Midnight blue background
+    },
+    urgent: {
+      primary: 'rgba(138, 43, 226, 0.15)', // Blue violet
+      secondary: 'rgba(75, 0, 130, 0.12)', // Indigo
+      accent: 'rgba(72, 61, 139, 0.10)', // Dark slate blue
+      pattern: 'rgba(138, 43, 226, 0.8)', // Strong blue violet pattern
+      background: 'rgba(25, 25, 112, 0.10)' // Midnight blue background
+    },
+    facility: {
+      primary: 'rgba(25, 25, 112, 0.12)', // Midnight blue
+      secondary: 'rgba(72, 61, 139, 0.10)', // Dark slate blue
+      accent: 'rgba(75, 0, 130, 0.08)', // Indigo
+      pattern: 'rgba(25, 25, 112, 0.8)', // Strong midnight blue pattern
+      background: 'rgba(25, 25, 112, 0.08)' // Midnight blue background
+    },
+    administrative: {
+      primary: 'rgba(72, 61, 139, 0.10)', // Dark slate blue
+      secondary: 'rgba(25, 25, 112, 0.08)', // Midnight blue
+      accent: 'rgba(138, 43, 226, 0.06)', // Blue violet
+      pattern: 'rgba(72, 61, 139, 0.8)', // Strong dark slate blue pattern
+      background: 'rgba(25, 25, 112, 0.06)' // Midnight blue background
+    }
+  };
+
+  // Sunset Studios - Warm orange and red tones for creative studio
+  const sunsetStudiosScheme: ColorSchemes = {
+    event: {
+      primary: 'rgba(255, 69, 0, 0.12)', // Red orange
+      secondary: 'rgba(255, 140, 0, 0.10)', // Dark orange
+      accent: 'rgba(255, 165, 0, 0.08)', // Orange
+      pattern: 'rgba(255, 69, 0, 0.8)', // Strong red orange pattern
+      background: 'rgba(255, 99, 71, 0.08)' // Tomato background
+    },
+    opportunity: {
+      primary: 'rgba(255, 140, 0, 0.12)', // Dark orange
+      secondary: 'rgba(255, 69, 0, 0.10)', // Red orange
+      accent: 'rgba(255, 165, 0, 0.08)', // Orange
+      pattern: 'rgba(255, 140, 0, 0.8)', // Strong dark orange pattern
+      background: 'rgba(255, 99, 71, 0.08)' // Tomato background
+    },
+    urgent: {
+      primary: 'rgba(255, 165, 0, 0.15)', // Orange
+      secondary: 'rgba(255, 69, 0, 0.12)', // Red orange
+      accent: 'rgba(255, 140, 0, 0.10)', // Dark orange
+      pattern: 'rgba(255, 165, 0, 0.8)', // Strong orange pattern
+      background: 'rgba(255, 99, 71, 0.10)' // Tomato background
+    },
+    facility: {
+      primary: 'rgba(255, 99, 71, 0.12)', // Tomato
+      secondary: 'rgba(255, 140, 0, 0.10)', // Dark orange
+      accent: 'rgba(255, 69, 0, 0.08)', // Red orange
+      pattern: 'rgba(255, 99, 71, 0.8)', // Strong tomato pattern
+      background: 'rgba(255, 99, 71, 0.08)' // Tomato background
+    },
+    administrative: {
+      primary: 'rgba(255, 140, 0, 0.10)', // Dark orange
+      secondary: 'rgba(255, 99, 71, 0.08)', // Tomato
+      accent: 'rgba(255, 165, 0, 0.06)', // Orange
+      pattern: 'rgba(255, 140, 0, 0.8)', // Strong dark orange pattern
+      background: 'rgba(255, 99, 71, 0.06)' // Tomato background
+    }
+  };
+
+  // Ocean Workshop - Cool blue and teal tones for marine-inspired art
+  const oceanWorkshopScheme: ColorSchemes = {
+    event: {
+      primary: 'rgba(0, 191, 255, 0.12)', // Deep sky blue
+      secondary: 'rgba(0, 206, 209, 0.10)', // Dark turquoise
+      accent: 'rgba(64, 224, 208, 0.08)', // Turquoise
+      pattern: 'rgba(0, 191, 255, 0.8)', // Strong deep sky blue pattern
+      background: 'rgba(0, 128, 128, 0.08)' // Teal background
+    },
+    opportunity: {
+      primary: 'rgba(0, 206, 209, 0.12)', // Dark turquoise
+      secondary: 'rgba(0, 191, 255, 0.10)', // Deep sky blue
+      accent: 'rgba(64, 224, 208, 0.08)', // Turquoise
+      pattern: 'rgba(0, 206, 209, 0.8)', // Strong dark turquoise pattern
+      background: 'rgba(0, 128, 128, 0.08)' // Teal background
+    },
+    urgent: {
+      primary: 'rgba(64, 224, 208, 0.15)', // Turquoise
+      secondary: 'rgba(0, 191, 255, 0.12)', // Deep sky blue
+      accent: 'rgba(0, 206, 209, 0.10)', // Dark turquoise
+      pattern: 'rgba(64, 224, 208, 0.8)', // Strong turquoise pattern
+      background: 'rgba(0, 128, 128, 0.10)' // Teal background
+    },
+    facility: {
+      primary: 'rgba(0, 128, 128, 0.12)', // Teal
+      secondary: 'rgba(0, 206, 209, 0.10)', // Dark turquoise
+      accent: 'rgba(0, 191, 255, 0.08)', // Deep sky blue
+      pattern: 'rgba(0, 128, 128, 0.8)', // Strong teal pattern
+      background: 'rgba(0, 128, 128, 0.08)' // Teal background
+    },
+    administrative: {
+      primary: 'rgba(0, 206, 209, 0.10)', // Dark turquoise
+      secondary: 'rgba(0, 128, 128, 0.08)', // Teal
+      accent: 'rgba(64, 224, 208, 0.06)', // Turquoise
+      pattern: 'rgba(0, 206, 209, 0.8)', // Strong dark turquoise pattern
+      background: 'rgba(0, 128, 128, 0.06)' // Teal background
+    }
+  };
+
+  // Forest Collective - Natural green and earth tones for eco-friendly art
+  const forestCollectiveScheme: ColorSchemes = {
+    event: {
+      primary: 'rgba(34, 139, 34, 0.12)', // Forest green
+      secondary: 'rgba(107, 142, 35, 0.10)', // Olive drab
+      accent: 'rgba(154, 205, 50, 0.08)', // Yellow green
+      pattern: 'rgba(34, 139, 34, 0.8)', // Strong forest green pattern
+      background: 'rgba(85, 107, 47, 0.08)' // Dark olive green background
+    },
+    opportunity: {
+      primary: 'rgba(107, 142, 35, 0.12)', // Olive drab
+      secondary: 'rgba(34, 139, 34, 0.10)', // Forest green
+      accent: 'rgba(154, 205, 50, 0.08)', // Yellow green
+      pattern: 'rgba(107, 142, 35, 0.8)', // Strong olive drab pattern
+      background: 'rgba(85, 107, 47, 0.08)' // Dark olive green background
+    },
+    urgent: {
+      primary: 'rgba(154, 205, 50, 0.15)', // Yellow green
+      secondary: 'rgba(34, 139, 34, 0.12)', // Forest green
+      accent: 'rgba(107, 142, 35, 0.10)', // Olive drab
+      pattern: 'rgba(154, 205, 50, 0.8)', // Strong yellow green pattern
+      background: 'rgba(85, 107, 47, 0.10)' // Dark olive green background
+    },
+    facility: {
+      primary: 'rgba(85, 107, 47, 0.12)', // Dark olive green
+      secondary: 'rgba(107, 142, 35, 0.10)', // Olive drab
+      accent: 'rgba(34, 139, 34, 0.08)', // Forest green
+      pattern: 'rgba(85, 107, 47, 0.8)', // Strong dark olive green pattern
+      background: 'rgba(85, 107, 47, 0.08)' // Dark olive green background
+    },
+    administrative: {
+      primary: 'rgba(107, 142, 35, 0.10)', // Olive drab
+      secondary: 'rgba(85, 107, 47, 0.08)', // Dark olive green
+      accent: 'rgba(154, 205, 50, 0.06)', // Yellow green
+      pattern: 'rgba(107, 142, 35, 0.8)', // Strong olive drab pattern
+      background: 'rgba(85, 107, 47, 0.06)' // Dark olive green background
+    }
+  };
+
   // Get organization-specific color scheme
   const getOrganizationColorScheme = (orgSlug?: string, theme?: any) => {
     if (orgSlug === 'bakehouse') {
@@ -221,6 +377,26 @@ export function BackgroundPattern({ type, subType, width = 400, height = 400, or
     if (orgSlug === 'primary-colors') {
       // For Primary Colors organization, use white backgrounds with primary color patterns
       return primaryColorsScheme;
+    }
+    
+    if (orgSlug === 'midnight-gallery') {
+      // For Midnight Gallery, use dark purple and blue tones
+      return midnightGalleryScheme;
+    }
+    
+    if (orgSlug === 'sunset-studios') {
+      // For Sunset Studios, use warm orange and red tones
+      return sunsetStudiosScheme;
+    }
+    
+    if (orgSlug === 'ocean-workshop') {
+      // For Ocean Workshop, use cool blue and teal tones
+      return oceanWorkshopScheme;
+    }
+    
+    if (orgSlug === 'forest-collective') {
+      // For Forest Collective, use natural green and earth tones
+      return forestCollectiveScheme;
     }
     
     // For other organizations, return the default schemes

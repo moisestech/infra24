@@ -98,3 +98,4 @@ SELECT COUNT(*) as total_artists FROM artist_profiles WHERE org_id = '2efcebf3-9
 -- Show breakdown by role
 SELECT role, COUNT(*) as count FROM artist_profiles WHERE org_id = '2efcebf3-9750-4ea2-85a0-9501eb698b20' GROUP BY role ORDER BY count DESC;
 
+

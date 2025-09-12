@@ -11,6 +11,7 @@ The Smart Sign platform features a comprehensive theming system that allows orga
 | [Organization Theming System](./organization-theming-system.md) | Complete system architecture and technical details | Developers, System Architects |
 | [Color Palette Reference](./color-palette-reference.md) | Visual reference of all color schemes and palettes | Designers, Developers |
 | [Bakehouse Yellow Palette](./bakehouse-yellow-palette.md) | Detailed documentation of Bakehouse's primary yellow palette | Designers, Brand Managers |
+| [Organization Themes Reference](./organization-themes-reference.md) | Comprehensive reference for all available organization themes | Designers, Developers, Organization Admins |
 | [Theme Implementation Guide](./theme-implementation-guide.md) | Step-by-step guide for adding new themes | Developers, Organization Admins |
 
 ### 🎨 Current Theme Implementations
@@ -29,6 +30,34 @@ The Smart Sign platform features a comprehensive theming system that allows orga
 - **Patterns**: Red, blue, yellow patterns on white backgrounds
 - **Focus**: Minimalist design with strong color contrast
 - **Background**: Pure white (`rgba(255, 255, 255, 0.98)`)
+
+#### Midnight Gallery
+- **Theme**: Dark Purple and Blue Tones
+- **Base Color**: Midnight Blue (`#191970`)
+- **Variations**: Indigo, blue violet, dark slate blue
+- **Patterns**: Sophisticated, gallery-focused patterns
+- **Philosophy**: Mysterious, sophisticated, contemporary art
+
+#### Sunset Studios
+- **Theme**: Warm Orange and Red Tones
+- **Base Color**: Tomato (`#FF6347`)
+- **Variations**: Red orange, dark orange, orange
+- **Patterns**: Warm, creative, studio-focused patterns
+- **Philosophy**: Warm, creative, maker-focused
+
+#### Ocean Workshop
+- **Theme**: Cool Blue and Teal Tones
+- **Base Color**: Teal (`#008080`)
+- **Variations**: Deep sky blue, dark turquoise, turquoise
+- **Patterns**: Marine-inspired, flowing patterns
+- **Philosophy**: Environmental, marine-inspired, flowing
+
+#### Forest Collective
+- **Theme**: Natural Green and Earth Tones
+- **Base Color**: Dark Olive Green (`#556B2F`)
+- **Variations**: Forest green, olive drab, yellow green
+- **Patterns**: Natural, organic, eco-friendly patterns
+- **Philosophy**: Eco-friendly, sustainable, nature-focused
 
 ### 🔧 Technical Architecture
 

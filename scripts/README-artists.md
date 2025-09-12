@@ -161,3 +161,4 @@ Use the browser's developer tools to check:
 - **Social Media**: Add social media links to artist profiles
 - **Exhibition History**: Track artist exhibitions and shows
 
+
