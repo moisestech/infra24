@@ -9,6 +9,7 @@ import { AnnouncementContent } from './AnnouncementContent';
 import { AnnouncementPeople } from './AnnouncementPeople';
 import { AnnouncementTags } from './AnnouncementTags';
 import { AnnouncementPartnerOrgs } from './AnnouncementPartnerOrgs';
+import { LearnMoreButton } from './LearnMoreButton';
 import { TypeStyle } from './announcement-styles';
 import { LucideIcon } from 'lucide-react';
 
@@ -35,6 +36,8 @@ interface PatternTemplateProps {
   iconSizeMultiplier?: number;
   avatarSizeMultiplier?: number;
   showTags?: boolean;
+  showPriorityBadge?: boolean;
+  showVisibilityBadge?: boolean;
 }
 
 export function PatternTemplate({ 
@@ -59,7 +62,9 @@ export function PatternTemplate({
   },
   iconSizeMultiplier = 1,
   avatarSizeMultiplier = 4,
-  showTags = false
+  showTags = false,
+  showPriorityBadge = false,
+  showVisibilityBadge = false
 }: PatternTemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
@@ -106,11 +111,13 @@ export function PatternTemplate({
         textSizes={textSizes}
       />
 
-      {/* People with Avatars */}
+      {/* People with Avatars - right under date display */}
       <AnnouncementPeople 
         people={announcement.people || []}
         orientation={orientation}
         avatarSizeMultiplier={avatarSizeMultiplier}
+        organizationSlug={organizationSlug}
+        className="absolute top-80 right-8 md:right-12 z-20"
       />
 
       {/* Partner Organizations */}
@@ -118,7 +125,7 @@ export function PatternTemplate({
         externalOrgs={announcement.external_orgs || []}
         orientation={orientation}
         textSizes={textSizes}
-        className="absolute top-80 right-8 md:right-12 z-20"
+        className="absolute top-96 right-8 md:right-12 z-20"
       />
 
       {/* Main Content */}
@@ -132,9 +139,18 @@ export function PatternTemplate({
         organizationSlug={organizationSlug}
         textSizes={textSizes}
         iconSizeMultiplier={iconSizeMultiplier}
+        showPriorityBadge={showPriorityBadge}
+        showVisibilityBadge={showVisibilityBadge}
       />
 
 
+
+      {/* Learn More Button */}
+      <LearnMoreButton
+        primaryLink={announcement.primary_link}
+        orientation={orientation}
+        className="absolute bottom-8 right-8 md:right-12 z-20"
+      />
 
       {/* Tags */}
       {showTags && (

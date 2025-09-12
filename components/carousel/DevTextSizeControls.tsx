@@ -10,14 +10,18 @@ interface TextSizeControlsProps {
   onIconSizeChange?: (multiplier: number) => void;
   onAvatarSizeChange?: (multiplier: number) => void;
   onShowTagsChange?: (show: boolean) => void;
+  onShowPriorityBadgeChange?: (show: boolean) => void;
+  onShowVisibilityBadgeChange?: (show: boolean) => void;
   className?: string;
 }
 
-export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarSizeChange, onShowTagsChange, className }: TextSizeControlsProps) {
+export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarSizeChange, onShowTagsChange, onShowPriorityBadgeChange, onShowVisibilityBadgeChange, className }: TextSizeControlsProps) {
   const [screenDimensions, setScreenDimensions] = useState({ width: 0, height: 0, ratio: 0 });
   const [iconSizeMultiplier, setIconSizeMultiplier] = useState(1);
-  const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(4);
+  const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(8);
   const [showTags, setShowTags] = useState(false);
+  const [showPriorityBadge, setShowPriorityBadge] = useState(false);
+  const [showVisibilityBadge, setShowVisibilityBadge] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   
@@ -95,7 +99,7 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
       onTextSizeChange(element, size);
     });
     handleIconSizeChange(5.0);
-    handleAvatarSizeChange(4.0);
+    handleAvatarSizeChange(8.0);
   };
 
   const handleIconSizeChange = (newMultiplier: number) => {
@@ -137,6 +141,22 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
     setShowTags(newShowTags);
     if (onShowTagsChange) {
       onShowTagsChange(newShowTags);
+    }
+  };
+
+  const togglePriorityBadge = () => {
+    const newShowPriorityBadge = !showPriorityBadge;
+    setShowPriorityBadge(newShowPriorityBadge);
+    if (onShowPriorityBadgeChange) {
+      onShowPriorityBadgeChange(newShowPriorityBadge);
+    }
+  };
+
+  const toggleVisibilityBadge = () => {
+    const newShowVisibilityBadge = !showVisibilityBadge;
+    setShowVisibilityBadge(newShowVisibilityBadge);
+    if (onShowVisibilityBadgeChange) {
+      onShowVisibilityBadgeChange(newShowVisibilityBadge);
     }
   };
 
@@ -318,6 +338,46 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
                   <Plus className="w-3 h-3 text-white" />
                 </motion.button>
               </div>
+            </div>
+          )}
+
+          {/* Priority Badge Toggle */}
+          {onShowPriorityBadgeChange && (
+            <div className="space-y-2">
+              <div className="text-white text-xs font-medium">Priority Badge</div>
+              <motion.button
+                onClick={togglePriorityBadge}
+                className={cn(
+                  "px-3 py-1 rounded text-xs font-medium transition-colors",
+                  showPriorityBadge 
+                    ? "bg-red-500/80 hover:bg-red-500 text-white" 
+                    : "bg-white/10 hover:bg-white/20 text-white/70"
+                )}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {showPriorityBadge ? 'ON' : 'OFF'}
+              </motion.button>
+            </div>
+          )}
+
+          {/* Visibility Badge Toggle */}
+          {onShowVisibilityBadgeChange && (
+            <div className="space-y-2">
+              <div className="text-white text-xs font-medium">Visibility Badge</div>
+              <motion.button
+                onClick={toggleVisibilityBadge}
+                className={cn(
+                  "px-3 py-1 rounded text-xs font-medium transition-colors",
+                  showVisibilityBadge 
+                    ? "bg-blue-500/80 hover:bg-blue-500 text-white" 
+                    : "bg-white/10 hover:bg-white/20 text-white/70"
+                )}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {showVisibilityBadge ? 'ON' : 'OFF'}
+              </motion.button>
             </div>
           )}
 

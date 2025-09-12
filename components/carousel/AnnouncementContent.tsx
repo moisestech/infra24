@@ -27,15 +27,17 @@ interface AnnouncementContentProps {
     duration: string;
   };
   iconSizeMultiplier?: number;
+  showPriorityBadge?: boolean;
+  showVisibilityBadge?: boolean;
 }
 
 export function AnnouncementContent({ 
   announcement, 
   styles, 
   IconComponent, 
-  orientation,
-  showQRCode,
-  setShowQRCode,
+  orientation, 
+  showQRCode, 
+  setShowQRCode, 
   organizationSlug,
   textSizes = {
     title: 'text-9xl',
@@ -48,7 +50,9 @@ export function AnnouncementContent({
     endDate: 'text-3xl',
     duration: 'text-3xl'
   },
-  iconSizeMultiplier = 1
+  iconSizeMultiplier = 1,
+  showPriorityBadge = false,
+  showVisibilityBadge = false
 }: AnnouncementContentProps) {
   
   // Helper function to apply icon size multiplier
@@ -193,6 +197,8 @@ export function AnnouncementContent({
           <AnnouncementMetadata 
             announcement={announcement}
             orientation={orientation}
+            showPriorityBadge={showPriorityBadge}
+            showVisibilityBadge={showVisibilityBadge}
             textSizes={textSizes}
             className="mt-8"
           />

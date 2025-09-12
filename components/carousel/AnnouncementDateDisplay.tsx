@@ -118,7 +118,6 @@ export function AnnouncementDateDisplay({
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
-      year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
@@ -164,9 +163,10 @@ export function AnnouncementDateDisplay({
   const eventDate = announcement.starts_at || announcement.created_at;
   const dateStatus = getDateStatus(eventDate);
   
-  // Check if this is a fun_fact that shouldn't show dates (like historical facts)
-  const isHistoricalFunFact = (announcement.type as string) === 'fun_fact' && (announcement.sub_type as string) === 'historical';
-  const shouldShowDate = !isHistoricalFunFact;
+  // Check if this is a fun_fact that shouldn't show dates
+  const isFunFact = (announcement.type as string) === 'fun_fact';
+  const isHistoricalFunFact = isFunFact && (announcement.sub_type as string) === 'historical';
+  const shouldShowDate = !isFunFact;
 
   return (
     <motion.div 
@@ -327,7 +327,7 @@ export function AnnouncementDateDisplay({
       )}
 
       {/* Detailed Date and Time Information for Metadata Section */}
-      {showDetailedMetadata && (
+      {showDetailedMetadata && shouldShowDate && (
         <motion.div 
           className="mt-6 space-y-4 text-right"
           initial={{ opacity: 0, y: 20 }}

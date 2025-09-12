@@ -12,6 +12,8 @@ import { cn } from '@/lib/utils';
 interface AnnouncementMetadataProps {
   announcement: any;
   orientation: 'portrait' | 'landscape';
+  showPriorityBadge?: boolean;
+  showVisibilityBadge?: boolean;
   textSizes?: {
     title: string;
     description: string;
@@ -29,6 +31,8 @@ interface AnnouncementMetadataProps {
 export function AnnouncementMetadata({ 
   announcement, 
   orientation, 
+  showPriorityBadge = false,
+  showVisibilityBadge = false,
   textSizes = {
     title: 'text-9xl',
     description: 'text-7xl',
@@ -96,47 +100,32 @@ export function AnnouncementMetadata({
       {/* Type and Priority Row */}
       <div className="flex items-center gap-3 flex-wrap">
 
-        {/* Priority Badge */}
-        <div className={cn(
-          "flex items-center gap-2 px-3 py-1 rounded-full",
-          getPriorityColor(announcement.priority)
-        )}>
-          <span className="text-sm font-medium">
-            {getPriorityLabel(announcement.priority)}
-          </span>
-        </div>
+        {/* Priority Badge - only show if enabled */}
+        {showPriorityBadge && (
+          <div className={cn(
+            "flex items-center gap-2 px-3 py-1 rounded-full",
+            getPriorityColor(announcement.priority)
+          )}>
+            <span className="text-sm font-medium">
+              {getPriorityLabel(announcement.priority)}
+            </span>
+          </div>
+        )}
 
-        {/* Visibility Badge */}
-        <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full">
-          {getVisibilityIcon(announcement.visibility)}
-          <span className="text-white/90 text-sm font-medium">
-            {getVisibilityLabel(announcement.visibility)}
-          </span>
-        </div>
+        {/* Visibility Badge - only show if enabled */}
+        {showVisibilityBadge && (
+          <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full">
+            {getVisibilityIcon(announcement.visibility)}
+            <span className="text-white/90 text-sm font-medium">
+              {getVisibilityLabel(announcement.visibility)}
+            </span>
+          </div>
+        )}
       </div>
 
 
 
 
-      {/* Primary Link */}
-      {announcement.primary_link && (
-        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-          <ExternalLink className="w-5 h-5 text-white/70" />
-          <div className="flex-1">
-            <div className="text-white/90 text-sm font-medium mb-1">
-              Learn More
-            </div>
-            <a 
-              href={announcement.primary_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/70 text-xs hover:text-white/90 transition-colors break-all"
-            >
-              {announcement.primary_link}
-            </a>
-          </div>
-        </div>
-      )}
 
       {/* Additional Info */}
       {announcement.additional_info && (

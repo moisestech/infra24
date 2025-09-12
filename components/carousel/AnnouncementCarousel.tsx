@@ -32,8 +32,10 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
     duration: 'text-3xl'
   });
   const [iconSizeMultiplier, setIconSizeMultiplier] = useState(5);
-  const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(4);
+  const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(8);
   const [showTags, setShowTags] = useState(false);
+  const [showPriorityBadge, setShowPriorityBadge] = useState(false);
+  const [showVisibilityBadge, setShowVisibilityBadge] = useState(false);
   const { theme: organizationTheme } = useOrganizationTheme();
 
   // Filter future announcements
@@ -125,6 +127,8 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
         onIconSizeChange={setIconSizeMultiplier}
         onAvatarSizeChange={setAvatarSizeMultiplier}
         onShowTagsChange={setShowTags}
+        onShowPriorityBadgeChange={setShowPriorityBadge}
+        onShowVisibilityBadgeChange={setShowVisibilityBadge}
       />
 
       {/* Carousel Controls */}
@@ -158,6 +162,8 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
                 iconSizeMultiplier={iconSizeMultiplier}
                 avatarSizeMultiplier={avatarSizeMultiplier}
                 showTags={showTags}
+                showPriorityBadge={showPriorityBadge}
+                showVisibilityBadge={showVisibilityBadge}
               />
             </div>
           ))}

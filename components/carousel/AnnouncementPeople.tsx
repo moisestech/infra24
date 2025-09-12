@@ -3,11 +3,15 @@
 import { motion } from 'framer-motion';
 import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
+import { enrichPeopleData } from '@/lib/enrich-people-data';
+import { AnnouncementPerson } from '@/types/people';
 
 interface AnnouncementPeopleProps {
   people: any[];
   orientation: 'portrait' | 'landscape';
   avatarSizeMultiplier?: number;
+  organizationSlug?: string;
   className?: string;
 }
 
@@ -15,23 +19,57 @@ export function AnnouncementPeople({
   people, 
   orientation, 
   avatarSizeMultiplier = 1,
+  organizationSlug = 'bakehouse',
   className 
 }: AnnouncementPeopleProps) {
   
-  if (!people || people.length === 0) {
+  const [enrichedPeople, setEnrichedPeople] = useState<AnnouncementPerson[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const enrichData = async () => {
+      if (!people || people.length === 0) {
+        setEnrichedPeople([]);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const enriched = await enrichPeopleData(people, organizationSlug);
+        setEnrichedPeople(enriched);
+      } catch (error) {
+        console.error('Error enriching people data:', error);
+        setEnrichedPeople(people.map(person => ({
+          ...person,
+          is_member: false,
+          relationship_type: person.relationship_type || 'participant'
+        })));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    enrichData();
+  }, [people, organizationSlug]);
+
+  if (!people || people.length === 0 || isLoading) {
     return null;
   }
 
   const getAvatarSize = (baseSize: number) => {
-    return Math.round(baseSize * avatarSizeMultiplier);
+    // Much larger base sizes for carousel display
+    const largeBaseSize = orientation === 'portrait' ? 24 : 20; // Increased from 12/10
+    return Math.round(largeBaseSize * avatarSizeMultiplier);
   };
 
   const getTextSize = () => {
-    const baseSize = orientation === 'portrait' ? 'text-sm' : 'text-xs';
-    if (avatarSizeMultiplier >= 2) return 'text-lg';
-    if (avatarSizeMultiplier >= 3) return 'text-xl';
+    // Much larger text sizes for carousel display
+    if (avatarSizeMultiplier >= 6) return 'text-4xl';
+    if (avatarSizeMultiplier >= 5) return 'text-3xl';
     if (avatarSizeMultiplier >= 4) return 'text-2xl';
-    return baseSize;
+    if (avatarSizeMultiplier >= 3) return 'text-xl';
+    if (avatarSizeMultiplier >= 2) return 'text-lg';
+    return orientation === 'portrait' ? 'text-lg' : 'text-base';
   };
 
   return (
@@ -44,12 +82,12 @@ export function AnnouncementPeople({
       <div className="flex items-center gap-2 mb-3">
         <User className="w-4 h-4 text-white/70" />
         <span className="text-white/90 text-sm font-medium">
-          People ({people.length})
+          People ({enrichedPeople.length})
         </span>
       </div>
       
       <div className="grid grid-cols-1 gap-3">
-        {people.map((person, index) => (
+        {enrichedPeople.map((person, index) => (
           <motion.div 
             key={person.id || index}
             className="flex items-center gap-3 p-3 bg-white/5 rounded-lg"
@@ -63,12 +101,11 @@ export function AnnouncementPeople({
                 <img
                   src={person.avatar_url}
                   alt={person.name || 'Person'}
-                  className={cn(
-                    "rounded-full object-cover border-2 border-white/20",
-                    orientation === 'portrait' 
-                      ? `w-${getAvatarSize(12)} h-${getAvatarSize(12)}`
-                      : `w-${getAvatarSize(10)} h-${getAvatarSize(10)}`
-                  )}
+                  className="rounded-full object-cover border-2 border-white/20"
+                  style={{
+                    width: `${getAvatarSize(1)}px`,
+                    height: `${getAvatarSize(1)}px`
+                  }}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
@@ -82,12 +119,14 @@ export function AnnouncementPeople({
               <div 
                 className={cn(
                   "rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold border-2 border-white/20",
-                  orientation === 'portrait' 
-                    ? `w-${getAvatarSize(12)} h-${getAvatarSize(12)}`
-                    : `w-${getAvatarSize(10)} h-${getAvatarSize(10)}`,
                   person.avatar_url ? 'hidden' : 'flex'
                 )}
-                style={{ display: person.avatar_url ? 'none' : 'flex' }}
+                style={{
+                  width: `${getAvatarSize(1)}px`,
+                  height: `${getAvatarSize(1)}px`,
+                  fontSize: `${Math.max(12, getAvatarSize(1) * 0.4)}px`,
+                  display: person.avatar_url ? 'none' : 'flex'
+                }}
               >
                 {person.name ? person.name.charAt(0).toUpperCase() : '?'}
               </div>
