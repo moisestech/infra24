@@ -3,12 +3,13 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from '@/components/ThemeProvider'
+import { TenantProvider } from '@/components/tenant/TenantProvider'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Smart Sign - Digital Signage for Communities',
-  description: 'Smart Sign is a digital signage platform designed for art organizations and communities to manage announcements, artist profiles, and communication.',
+  title: 'Infra24 - Multi-tenant Cultural Infrastructure Platform',
+  description: 'Infra24 is a comprehensive platform for cultural organizations to manage announcements, bookings, workshops, and community engagement.',
 }
 
 export default function RootLayout({
@@ -29,7 +30,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <TenantProvider>
+              {children}
+            </TenantProvider>
           </ThemeProvider>
         </body>
       </html>

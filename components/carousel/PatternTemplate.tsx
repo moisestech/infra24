@@ -50,9 +50,9 @@ export function PatternTemplate({
   organizationSlug,
   organizationTheme,
   textSizes = {
-    title: 'text-9xl',
-    description: 'text-7xl',
-    location: 'text-7xl',
+    title: 'text-6xl',
+    description: 'text-3xl',
+    location: 'text-3xl',
     date: 'text-7xl',
     type: 'text-8xl',
     metadata: 'text-sm',
@@ -61,7 +61,7 @@ export function PatternTemplate({
     duration: 'text-3xl'
   },
   iconSizeMultiplier = 1,
-  avatarSizeMultiplier = 4,
+  avatarSizeMultiplier = 5,
   showTags = false,
   showPriorityBadge = false,
   showVisibilityBadge = false

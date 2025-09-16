@@ -12,7 +12,7 @@ import {
   Globe,
   ChevronDown
 } from 'lucide-react'
-import SmartSignIcon from './SmartSignIcon'
+import { Infra24Logo } from './Infra24Logo'
 
 // Smooth scroll utility function
 const smoothScrollTo = (elementId: string) => {
@@ -41,7 +41,7 @@ export default function PublicNavigation() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <SmartSignIcon size={32} showText={true} autoHideOnMobile={true} />
+              <Infra24Logo size="lg" showText={true} />
             </Link>
           </div>
 
@@ -59,6 +59,12 @@ export default function PublicNavigation() {
             >
               Features
             </button>
+            <Link 
+              href="/product" 
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              Products
+            </Link>
             <Link 
               href="/contact" 
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -104,7 +110,7 @@ export default function PublicNavigation() {
           {/* Mobile Logo and Menu Button */}
           <div className="md:hidden flex items-center space-x-4">
             <Link href="/" className="flex items-center">
-              <SmartSignIcon size={28} showText={false} autoHideOnMobile={true} />
+              <Infra24Logo size="md" showText={false} />
             </Link>
             <button
               onClick={toggleMobileMenu}
@@ -141,6 +147,13 @@ export default function PublicNavigation() {
               >
                 Features
               </button>
+              <Link
+                href="/product"
+                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Products
+              </Link>
               <Link
                 href="/contact"
                 className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"

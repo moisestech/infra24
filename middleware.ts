@@ -8,7 +8,21 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/clerk(.*)',
   '/api/organizations/by-slug/(.*)/public(.*)',
   '/api/organizations/by-slug/(.*)/announcements/public(.*)',
-  '/o/(.*)/announcements/public(.*)'
+  '/o/(.*)/announcements/public(.*)',
+  '/o/(.*)/announcements/display(.*)',
+  '/o/(.*)/workshops(.*)',
+  '/o/(.*)/bookings(.*)',
+  '/o/(.*)/analytics(.*)',
+  '/o/(.*)/submissions(.*)',
+  '/o/(.*)/digital-lab(.*)',
+  '/o/(.*)/ai-tools(.*)',
+  '/o/(.*)/roadmap(.*)',
+  '/o/(.*)/budget(.*)',
+  '/o/(.*)/impact-roi(.*)',
+  '/o/(.*)',
+  '/product(.*)',
+  '/test(.*)',
+  '/tenant-example(.*)'
 ])
 
 export default clerkMiddleware(async (auth, req) => {

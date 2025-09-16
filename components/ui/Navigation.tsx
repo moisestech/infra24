@@ -17,7 +17,7 @@ import {
   X,
   Building2
 } from 'lucide-react'
-import SmartSignIcon from './SmartSignIcon'
+import { Infra24Logo } from './Infra24Logo'
 import OrganizationLogo from './OrganizationLogo'
 import ArtistIcon from './ArtistIcon'
 import { ClerkClientService } from '@/lib/clerk-client'
@@ -113,7 +113,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Link href="/" className="flex items-center">
-                <SmartSignIcon size={32} showText={true} />
+                <Infra24Logo size="lg" showText={true} />
               </Link>
             </div>
             <div className="flex items-center space-x-4">
@@ -142,9 +142,9 @@ export default function Navigation({ className = '' }: NavigationProps) {
         <div className="flex justify-between h-16">
           {/* Left side - Logo and main nav */}
           <div className="flex items-center space-x-8">
-            {/* Smart Sign Logo - takes you to home */}
+            {/* Infra24 Logo - takes you to home */}
             <Link href="/" className="flex items-center">
-              <SmartSignIcon size={32} showText={true} autoHideOnMobile={true} />
+              <Infra24Logo size="lg" showText={true} />
             </Link>
             
             {/* Organization Logo - takes you to current org */}
@@ -175,7 +175,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
               {/* Organizations Dropdown */}
               <div className="relative group">
                 <button className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                  <SmartSignIcon size={16} showText={false} />
+                  <Infra24Logo size="sm" showText={false} />
                   <span className="nav-text-hidden lg:block">Organizations</span>
                   <ChevronDown className="h-4 w-4" />
                 </button>

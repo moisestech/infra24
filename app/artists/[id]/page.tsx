@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { Badge } from '@/components/ui/Badge';
+import { TipButton } from '@/components/ui/TipButton';
 import { 
   MapPin, 
   Calendar, 
@@ -53,6 +54,7 @@ interface ArtistProfile {
   claimed_by_clerk_user_id: string | null;
   claimed_at: string | null;
   profile_type: 'artist' | 'staff';
+  organization_id: string;
   created_at: string;
   updated_at: string;
 }
@@ -216,35 +218,46 @@ export default function ArtistProfilePage() {
               </div>
               
               <div className="mt-6 lg:mt-0">
-                <div className="flex space-x-2">
-                  {artist.website_url && (
-                    <a
-                      href={artist.website_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                    >
-                      <Globe className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    </a>
-                  )}
-                  {artist.instagram_handle && (
-                    <a
-                      href={`https://instagram.com/${artist.instagram_handle}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                    >
-                      <Instagram className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    </a>
-                  )}
-                  {artist.email && (
-                    <a
-                      href={`mailto:${artist.email}`}
-                      className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                    >
-                      <Mail className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    </a>
-                  )}
+                <div className="flex flex-col space-y-3">
+                  {/* Tip Button */}
+                  <TipButton
+                    artistId={artist.id}
+                    artistName={artist.name}
+                    organizationId={artist.organization_id}
+                    className="w-full"
+                  />
+                  
+                  {/* Social Links */}
+                  <div className="flex space-x-2">
+                    {artist.website_url && (
+                      <a
+                        href={artist.website_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      >
+                        <Globe className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                      </a>
+                    )}
+                    {artist.instagram_handle && (
+                      <a
+                        href={`https://instagram.com/${artist.instagram_handle}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      >
+                        <Instagram className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                      </a>
+                    )}
+                    {artist.email && (
+                      <a
+                        href={`mailto:${artist.email}`}
+                        className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      >
+                        <Mail className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

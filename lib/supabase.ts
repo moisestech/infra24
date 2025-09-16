@@ -12,6 +12,9 @@ export const supabaseAdmin = createClient(
   }
 );
 
+// Export createClient for API routes that need it
+export { createClient };
+
 // Client-side Supabase client (for components)
 export function createSupabaseClient(token?: string) {
   return createClient(

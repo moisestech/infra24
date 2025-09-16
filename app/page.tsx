@@ -198,16 +198,19 @@ export default function HomePage() {
         <div className="relative max-w-7xl xl:max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-24 xl:py-32 text-center">
           <div className="mb-8 xl:mb-12">
             <SparklesText 
-              text="Smart Signs for Communities" 
+              text="Infra24" 
               className="text-4xl md:text-6xl xl:text-8xl 2xl:text-9xl font-bold text-white mb-6 xl:mb-8"
               sparklesCount={30}
               colors={["#FFD700", "#FFA500", "#FF69B4", "#00BFFF", "#32CD32", "#FF6B6B", "#4ECDC4"]}
             />
+            <h2 className="text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl font-semibold text-blue-100 mb-6 xl:mb-8">
+              Art Organization Operating System
+            </h2>
           </div>
           
           <p className="text-xl md:text-2xl xl:text-3xl 2xl:text-4xl mb-8 xl:mb-12 text-blue-100 max-w-3xl xl:max-w-5xl mx-auto leading-relaxed">
-            The digital communication infrastructure that powers Miami's art communities. 
-            See announcements from organizations across the city.
+            The comprehensive platform that powers art organizations with Smart Signs, 
+            interactive maps, booking systems, and community engagement tools.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 xl:gap-6 justify-center mb-12 xl:mb-16">
@@ -222,7 +225,7 @@ export default function HomePage() {
               href="#organizations"
               className="inline-flex items-center px-8 xl:px-12 py-4 xl:py-6 text-lg xl:text-xl 2xl:text-2xl font-semibold border-2 border-white text-white rounded-lg xl:rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105"
             >
-              View Organizations
+              Explore Platform
             </a>
           </div>
           
@@ -372,15 +375,15 @@ export default function HomePage() {
         <div className="max-w-7xl xl:max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="text-center mb-16 xl:mb-20 2xl:mb-24">
             <h2 className="text-3xl xl:text-4xl 2xl:text-5xl font-bold text-gray-900 dark:text-white mb-4 xl:mb-6">
-              Smart Sign Features
+              Infra24 Platform Features
             </h2>
             <p className="text-lg xl:text-xl 2xl:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl xl:max-w-4xl 2xl:max-w-5xl mx-auto">
-              Everything you need to manage your organization's communication, from announcements to member management
+              Complete infrastructure for art organizations: Smart Signs, interactive maps, booking systems, and community engagement
             </p>
           </div>
 
           {/* Feature Categories */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-10 2xl:gap-12 mb-16 xl:mb-20 2xl:mb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 xl:gap-10 2xl:gap-12 mb-16 xl:mb-20 2xl:mb-24">
             {/* Announcement Management */}
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl xl:rounded-3xl p-8 xl:p-10 2xl:p-12 hover:shadow-xl xl:hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
               <div className="flex items-center mb-6 xl:mb-8">
@@ -482,16 +485,50 @@ export default function HomePage() {
                 </li>
               </ul>
             </div>
+
+            {/* Interactive Maps */}
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl xl:rounded-3xl p-8 xl:p-10 2xl:p-12 hover:shadow-xl xl:hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+              <div className="flex items-center mb-6 xl:mb-8">
+                <div className="bg-orange-100 dark:bg-orange-900/30 rounded-lg xl:rounded-xl p-3 xl:p-4 mr-4 xl:mr-6">
+                  <MapPin className="w-8 h-8 xl:w-10 xl:h-10 2xl:w-12 2xl:h-12 text-orange-600 dark:text-orange-400" />
+                </div>
+                <h3 className="text-xl xl:text-2xl 2xl:text-3xl font-bold text-gray-900 dark:text-white">
+                  Interactive Maps
+                </h3>
+              </div>
+              <ul className="space-y-3 xl:space-y-4 text-gray-600 dark:text-gray-400 text-sm xl:text-base 2xl:text-lg">
+                <li className="flex items-center">
+                  <div className="w-2 h-2 xl:w-3 xl:h-3 bg-orange-500 rounded-full mr-3 xl:mr-4"></div>
+                  Studio location mapping
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 xl:w-3 xl:h-3 bg-orange-500 rounded-full mr-3 xl:mr-4"></div>
+                  Artist profile integration
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 xl:w-3 xl:h-3 bg-orange-500 rounded-full mr-3 xl:mr-4"></div>
+                  Real-time availability
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 xl:w-3 xl:h-3 bg-orange-500 rounded-full mr-3 xl:mr-4"></div>
+                  Interactive hover cards
+                </li>
+                <li className="flex items-center">
+                  <div className="w-2 h-2 xl:w-3 xl:h-3 bg-orange-500 rounded-full mr-3 xl:mr-4"></div>
+                  SVG-based layouts
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* Interactive Feature Showcase */}
           <div className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-3xl xl:rounded-[2rem] 2xl:rounded-[2.5rem] p-8 md:p-12 xl:p-16 2xl:p-20">
             <div className="text-center mb-12 xl:mb-16 2xl:mb-20">
               <h3 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold text-gray-900 dark:text-white mb-4 xl:mb-6">
-                See Smart Sign in Action
+                See Infra24 in Action
               </h3>
               <p className="text-gray-600 dark:text-gray-400 text-base xl:text-lg 2xl:text-xl">
-                Experience the features that make Smart Sign the perfect solution for art organizations
+                Experience the comprehensive platform that powers art organizations with modern infrastructure
               </p>
             </div>
 
@@ -683,10 +720,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Why Smart Sign?
+              Why Infra24?
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400">
-              The communication infrastructure that gives you control
+              The comprehensive platform that powers art organizations with modern infrastructure
             </p>
           </div>
           
@@ -746,10 +783,10 @@ export default function HomePage() {
       <section className="py-16 xl:py-24 2xl:py-32 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 dark:from-blue-800 dark:via-purple-800 dark:to-indigo-900 text-white">
         <div className="max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8 xl:px-12">
           <h2 className="text-3xl md:text-4xl xl:text-5xl 2xl:text-6xl font-bold mb-6 xl:mb-8 2xl:mb-10">
-            Ready to Control Your Community's Communication?
+            Ready to Power Your Art Organization?
           </h2>
           <p className="text-xl xl:text-2xl 2xl:text-3xl mb-8 xl:mb-12 2xl:mb-16 text-blue-100 dark:text-blue-200 max-w-2xl xl:max-w-4xl 2xl:max-w-5xl mx-auto leading-relaxed">
-            Join the organizations already using Smart Sign to power their digital infrastructure and connect their creative communities.
+            Join the organizations already using Infra24 to power their digital infrastructure with Smart Signs, interactive maps, and community engagement tools.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 xl:gap-6 justify-center">
             <a

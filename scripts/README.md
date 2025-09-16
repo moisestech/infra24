@@ -1,176 +1,211 @@
-# Debug Scripts for Announcements
+# Scripts Directory
 
-This folder contains SQL scripts to help debug and test announcement functionality.
+This directory contains all utility scripts for the Infra24 platform, organized by category for better maintainability.
 
-## ⚠️ IMPORTANT: Real vs Test Organizations
+## 📁 Directory Structure
 
-**REAL ORGANIZATIONS (Production):**
-- `bakehouse` - Bakehouse Art Complex
-- `oolite` - Oolite Arts  
-- `locust-projects` - Locust Projects
+```
+scripts/
+├── README.md                    # This file
+├── database/                    # Database-related scripts
+│   ├── migrations/             # SQL migration files
+│   ├── setup/                 # Database setup scripts
+│   └── maintenance/           # Database maintenance scripts
+├── data/                      # Data management scripts
+│   ├── seed/                  # Sample data insertion
+│   ├── import/                # Data import utilities
+│   └── export/                # Data export utilities
+├── testing/                   # Testing and validation scripts
+│   ├── api/                   # API testing scripts
+│   ├── integration/           # Integration tests
+│   └── performance/           # Performance testing
+└── utilities/                 # General utility scripts
+    ├── build/                 # Build and deployment utilities
+    ├── monitoring/            # Monitoring and health checks
+    └── maintenance/           # General maintenance tasks
+```
 
-**TEST ORGANIZATIONS (Development Only):**
-- `primary-colors` - Primary Colors Art Collective (TEST)
-- `midnight-gallery` - Midnight Gallery (TEST)
-- `sunset-studios` - Sunset Studios (TEST)
-- `ocean-workshop` - Ocean Workshop (TEST)
-- `forest-collective` - Forest Collective (TEST)
+## 🗄️ Database Scripts (`database/`)
 
-**⚠️ NEVER use test organizations in production! Use `cleanup-fake-organizations.sql` to remove them.**
+### Migrations (`database/migrations/`)
+- **Purpose**: SQL migration files for database schema changes
+- **Naming Convention**: `YYYYMMDD_HHMMSS_description.sql`
+- **Usage**: Run these in Supabase dashboard or via CLI
 
-## Scripts
+### Setup (`database/setup/`)
+- **Purpose**: Initial database setup and configuration
+- **Files**:
+  - `setup-supabase-complete.js` - Complete database setup
+  - `setup-tables-simple.js` - Simple table creation
+  - `run-migration.js` - Migration runner
 
-### 1. `debug-announcements.sql`
-Use this script to debug announcement issues in your production Supabase database.
+### Maintenance (`database/maintenance/`)
+- **Purpose**: Database maintenance and optimization scripts
+- **Files**:
+  - `cleanup-old-data.js` - Clean up old records
+  - `optimize-indexes.js` - Database optimization
+  - `backup-data.js` - Data backup utilities
 
-**What it does:**
-- Checks if a specific announcement exists
-- Lists all announcements for an organization
-- Shows organization details
-- Displays user memberships
-- Counts announcements by status
-- Shows recent announcements
+## 📊 Data Scripts (`data/`)
 
-**How to use:**
-1. Open your Supabase SQL editor
-2. Copy and paste the script
-3. Modify the announcement ID or organization slug as needed
-4. Run the queries to see what's happening
+### Seed (`data/seed/`)
+- **Purpose**: Insert sample/test data
+- **Files**:
+  - `create-test-announcements.js` - Sample announcements
+  - `create-bakehouse-artists.sql` - Artist profiles
+  - `create-test-bookings.js` - Sample bookings
 
-### 2. `create-test-announcements.sql`
-Use this script to create test announcements for debugging.
+### Import (`data/import/`)
+- **Purpose**: Import data from external sources
+- **Files**:
+  - `import-users.js` - User data import
+  - `import-organizations.js` - Organization data import
 
-**What it does:**
-- Creates sample announcements of different types
-- Includes proper organization and user references
-- Sets up realistic test data
+### Export (`data/export/`)
+- **Purpose**: Export data for backup or analysis
+- **Files**:
+  - `export-analytics.js` - Analytics data export
+  - `export-bookings.js` - Booking data export
 
-**How to use:**
-1. First run `debug-announcements.sql` to get organization and user IDs
-2. Uncomment the announcements you want to create
-3. Replace placeholder user IDs with actual clerk user IDs
-4. Run the script in Supabase
+## 🧪 Testing Scripts (`testing/`)
 
-### 3. `view-all-announcements.sql`
-Comprehensive script to view all announcements across all organizations.
+### API (`testing/api/`)
+- **Purpose**: API endpoint testing
+- **Files**:
+  - `test-api.js` - General API testing
+  - `test-booking-api.js` - Booking API tests
+  - `test-submission-api.js` - Submission API tests
 
-**What it does:**
-- Shows organization summary with announcement counts
-- Lists all announcements with organization details
-- Groups announcements by type across organizations
-- Shows recent announcements and upcoming events
-- Displays status distribution and priority levels
+### Integration (`testing/integration/`)
+- **Purpose**: End-to-end integration testing
+- **Files**:
+  - `test-booking-flow.js` - Complete booking flow test
+  - `test-submission-flow.js` - Complete submission flow test
 
-### 4. `view-new-organization-themes.sql`
-Script to view announcements for the new organization themes (TEST ONLY).
+### Performance (`testing/performance/`)
+- **Purpose**: Performance and load testing
+- **Files**:
+  - `load-test-bookings.js` - Booking system load test
+  - `performance-monitor.js` - Performance monitoring
 
-**What it does:**
-- Focuses on test organizations created for theme testing
-- Shows announcement distribution by theme
-- Compares new themes with Bakehouse
-- **⚠️ Only use in development environment**
+## 🔧 Utility Scripts (`utilities/`)
 
-### 5. `cleanup-fake-organizations.sql`
-**CRITICAL:** Use this script to remove test organizations and their announcements.
+### Build (`utilities/build/`)
+- **Purpose**: Build and deployment utilities
+- **Files**:
+  - `test-build-and-dev.sh` - Build and dev server testing
+  - `deploy-check.js` - Pre-deployment checks
 
-**What it does:**
-- Soft deletes all announcements for fake organizations
-- Removes fake organizations from database
-- Verifies cleanup was successful
-- **⚠️ Run this before deploying to production**
+### Monitoring (`utilities/monitoring/`)
+- **Purpose**: System monitoring and health checks
+- **Files**:
+  - `health-check.js` - System health monitoring
+  - `uptime-monitor.js` - Uptime monitoring
 
-### 6. `add-christine-cortes-september-announcements.sql`
-Adds announcements from Christine Cortes' email dated September 11, 2025.
+### Maintenance (`utilities/maintenance/`)
+- **Purpose**: General maintenance tasks
+- **Files**:
+  - `cleanup-temp-files.js` - Clean temporary files
+  - `update-dependencies.js` - Dependency updates
 
-**What it does:**
-- Adds 7 announcements covering survey, book club, exhibitions, and achievements
-- Includes proper organization references and metadata
-- Sets appropriate visibility and priority levels
-- **Includes both SQL and JavaScript versions**
+## 🚀 Quick Start
 
-**Announcements added:**
-- Bakehouse Annual Anonymous Survey 2025 (REQUIRED)
-- Book Club with Krys Ortega and Rene Morales
-- Noah Cribb "Lacuna" exhibition at Fred Snitzer Gallery
-- Marilyn Loddi/HUSHFELL "CONNECTOME" performance at Edge Zones
-- "CATS!" exhibition benefiting Humane Society
-- Joel Gaitan SAUER Art Prize achievement
-- Artist highlights submission call
-
-### 7. `add-christine-cortes-september-announcements.js`
-JavaScript version of the Christine Cortes announcements script.
-
-**How to use:**
+### 1. Database Setup
 ```bash
-node scripts/add-christine-cortes-september-announcements.js
+# Run the complete database setup
+node scripts/database/setup/setup-supabase-complete.js
+
+# Or run a specific migration
+node scripts/database/setup/run-migration.js
 ```
 
-**What it does:**
-- Same as SQL version but runs directly via Node.js
-- Provides detailed console output and error handling
-- Verifies announcements were added successfully
+### 2. Seed Sample Data
+```bash
+# Create test announcements
+node scripts/data/seed/create-test-announcements.js
 
-## Common Issues and Solutions
-
-### Issue: "Announcement not found" error
-**Possible causes:**
-1. Announcement ID doesn't exist in database
-2. Announcement is soft-deleted (`deleted_at` is not null)
-3. User doesn't have access to the announcement
-4. Organization doesn't exist
-
-**Debug steps:**
-1. Run the first query in `debug-announcements.sql` with the specific ID
-2. Check if the announcement exists and isn't deleted
-3. Verify the user has proper membership in the organization
-4. Check if the organization exists
-
-### Issue: API endpoint not working
-**Check:**
-1. The API route file exists at `/app/api/announcements/[announcementId]/route.ts`
-2. The parameter name matches (should be `announcementId`, not `id`)
-3. The user is authenticated
-4. The user has proper permissions
-
-### Issue: Organization not found
-**Check:**
-1. The organization slug is correct
-2. The organization exists in the database
-3. The user has membership in that organization
-
-## Testing Workflow
-
-1. **Check existing data:**
-   ```sql
-   -- Run this first to see what's in your database
-   SELECT * FROM announcements WHERE org_id = (SELECT id FROM organizations WHERE slug = 'bakehouse');
-   ```
-
-2. **Create test data:**
-   ```sql
-   -- Use the create-test-announcements.sql script
-   ```
-
-3. **Test the API:**
-   - Try accessing the announcement directly via API
-   - Check browser network tab for errors
-   - Verify authentication is working
-
-4. **Test the UI:**
-   - Navigate to the organization announcements page
-   - Click on an announcement
-   - Check if it loads properly
-
-## Environment Variables
-
-Make sure these are set in your `.env.local`:
+# Create sample bookings
+node scripts/data/seed/create-test-bookings.js
 ```
+
+### 3. Run Tests
+```bash
+# Test API endpoints
+node scripts/testing/api/test-api.js
+
+# Test booking flow
+node scripts/testing/integration/test-booking-flow.js
+```
+
+### 4. Health Checks
+```bash
+# Check system health
+node scripts/utilities/monitoring/health-check.js
+
+# Monitor uptime
+node scripts/utilities/monitoring/uptime-monitor.js
+```
+
+## 📋 Environment Variables
+
+All scripts require the following environment variables (from `.env.local`):
+
+```bash
+# Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# Clerk Configuration (for user management)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
 ```
 
-## Production vs Development
+## 🔒 Security Notes
 
-- **Development:** Use your local Supabase instance
-- **Production:** Use your production Supabase instance
-- Make sure to run these scripts in the correct environment
+- **Never commit** `.env.local` or any files containing secrets
+- **Service Role Key** should only be used in server-side scripts
+- **Anon Key** can be used in client-side scripts
+- Always validate input data before database operations
+- Use parameterized queries to prevent SQL injection
+
+## 📝 Adding New Scripts
+
+When adding new scripts:
+
+1. **Choose the right directory** based on the script's purpose
+2. **Follow naming conventions** (kebab-case for files)
+3. **Add documentation** with comments explaining the script's purpose
+4. **Update this README** with the new script's description
+5. **Test thoroughly** before committing
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Environment Variables Not Found**
+   - Ensure `.env.local` exists and contains required variables
+   - Check that the script is running from the project root
+
+2. **Database Connection Errors**
+   - Verify Supabase URL and keys are correct
+   - Check if tables exist in the database
+   - Ensure RLS policies allow the operation
+
+3. **Permission Errors**
+   - Check if the service role key has sufficient permissions
+   - Verify user authentication for user-specific operations
+
+### Getting Help
+
+- Check the script's inline documentation
+- Review the Supabase logs for database errors
+- Test with smaller datasets first
+- Use the testing scripts to validate functionality
+
+## 📚 Related Documentation
+
+- [Supabase Setup Guide](../docs/technical/SUPABASE_SETUP.md)
+- [API Documentation](../docs/technical/INFRA24_API_SPECIFICATION.md)
+- [Database Schema](../docs/technical/INFRA24_DATABASE_SCHEMA.sql)
+- [Infra24 Platform Overview](../docs/INFRA24_PLATFORM.md)

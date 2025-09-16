@@ -28,19 +28,19 @@ export default function AnnouncementDisplayPage() {
 
   useEffect(() => {
     async function loadData() {
-      if (!user || !params.slug) return;
+      if (!params.slug) return;
 
       try {
-        // Load organization details
-        const orgResponse = await fetch(`/api/organizations/by-slug/${params.slug}`);
+        // Load organization details from public API
+        const orgResponse = await fetch(`/api/organizations/by-slug/${params.slug}/public`);
         if (!orgResponse.ok) {
           throw new Error('Organization not found');
         }
         const orgData = await orgResponse.json();
         setOrganization(orgData.organization);
 
-        // Load announcements for this organization
-        const announcementsResponse = await fetch(`/api/organizations/by-slug/${params.slug}/announcements?visibility=both`);
+        // Load announcements for this organization from public API
+        const announcementsResponse = await fetch(`/api/organizations/by-slug/${params.slug}/announcements/public`);
         if (!announcementsResponse.ok) {
           throw new Error('Failed to load announcements');
         }
@@ -65,10 +65,10 @@ export default function AnnouncementDisplayPage() {
       }
     }
 
-    if (isLoaded && user) {
+    if (isLoaded) {
       loadData();
     }
-  }, [user, isLoaded, params.slug]);
+  }, [isLoaded, params.slug]);
 
   // Helper function to infer announcement type from existing data
   function inferAnnouncementType(announcement: any): string {
@@ -184,24 +184,6 @@ export default function AnnouncementDisplayPage() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-center p-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Access Denied</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">You must be logged in to view announcements.</p>
-            <Link
-              href="/sign-in"
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Sign In
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

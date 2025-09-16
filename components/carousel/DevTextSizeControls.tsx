@@ -18,7 +18,7 @@ interface TextSizeControlsProps {
 export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarSizeChange, onShowTagsChange, onShowPriorityBadgeChange, onShowVisibilityBadgeChange, className }: TextSizeControlsProps) {
   const [screenDimensions, setScreenDimensions] = useState({ width: 0, height: 0, ratio: 0 });
   const [iconSizeMultiplier, setIconSizeMultiplier] = useState(1);
-  const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(8);
+  const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(5);
   const [showTags, setShowTags] = useState(false);
   const [showPriorityBadge, setShowPriorityBadge] = useState(false);
   const [showVisibilityBadge, setShowVisibilityBadge] = useState(false);
@@ -27,9 +27,9 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
   
   // Individual text size controls for each element
   const [textSizes, setTextSizes] = useState({
-    title: 'text-9xl',
-    description: 'text-7xl',
-    location: 'text-7xl',
+    title: 'text-6xl',
+    description: 'text-3xl',
+    location: 'text-3xl',
     date: 'text-7xl',
     type: 'text-8xl',
     metadata: 'text-sm',

@@ -149,14 +149,23 @@ export function AnnouncementPeople({
               )}
             </div>
 
-            {/* Membership Badge */}
-            {person.is_member && (
-              <div className="flex-shrink-0">
+            {/* Membership Status */}
+            <div className="flex-shrink-0 flex flex-col gap-1">
+              {person.is_member ? (
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
-                  Member
+                  ✓ Member
                 </span>
-              </div>
-            )}
+              ) : (
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                  External
+                </span>
+              )}
+              {person.relationship_type && person.relationship_type !== 'participant' && (
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  {person.relationship_type.replace('_', ' ')}
+                </span>
+              )}
+            </div>
           </motion.div>
         ))}
       </div>

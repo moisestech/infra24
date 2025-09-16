@@ -1,6 +1,8 @@
-# Bakehouse Smart Sign
+# Infra24 Platform
 
-A sophisticated digital signage system designed to control and leverage community information flow. This system transforms how art communities communicate, creating power and influence through communication infrastructure.
+**The infrastructure that scales digital arts education across cultural organizations.**
+
+A sophisticated multi-tenant SaaS platform that powers digital arts education, community management, and cultural infrastructure. Built on the foundation of the Bakehouse Smart Sign system, Infra24 transforms how art communities communicate, learn, and collaborate.
 
 ## 🚀 Quick Start
 
@@ -24,6 +26,20 @@ Comprehensive documentation is available in the `/docs` directory:
 - **[🔧 Technical Docs](/docs/technical/)** - Architecture and implementation details
 - **[📖 User Guides](/docs/user-guides/)** - Implementation and usage guides
 
+### 🚀 **Infra24 Platform**
+
+- **[📋 Platform Overview](/docs/INFRA24_PLATFORM.md)** - Complete platform architecture and modules
+- **[💾 Database Schema](/docs/technical/INFRA24_DATABASE_SCHEMA.sql)** - Multi-tenant database design with RLS
+- **[🔌 API Specification](/docs/technical/INFRA24_API_SPECIFICATION.md)** - RESTful API documentation
+- **[🤝 Partnerships](/docs/strategy/INFRA24_PARTNERSHIPS.md)** - Partnership strategy and integration framework
+
+### 🏗️ **Legacy Documentation**
+
+- **[📋 Technical Roadmap](/docs/technical/CULTURAL_INFRASTRUCTURE_ROADMAP.md)** - Original technical architecture
+- **[💾 Database Schema](/docs/technical/DATABASE_SCHEMA.sql)** - Original database design
+- **[🔌 API Specification](/docs/technical/API_SPECIFICATION.md)** - Original API documentation
+- **[💰 Business Model](/docs/strategy/BUSINESS_MODEL.md)** - Original business model
+
 ## 🎭 LLM Role System
 
 This project uses a role-based approach for AI collaboration:
@@ -34,34 +50,44 @@ This project uses a role-based approach for AI collaboration:
 - **[Product Manager](/docs/roles/PRODUCT_MANAGER.md)** - Feature planning and user research
 - **[Designer](/docs/roles/DESIGNER.md)** - Visual design and user interface
 
-## 🎯 Project Overview
+## 🎯 Platform Overview
 
-The Smart Sign system is more than a digital display—it's a **communication infrastructure** that:
+Infra24 is more than a digital signage system—it's a **comprehensive digital arts education platform** that:
 
-- **Controls Communication**: Becomes the central nervous system of community information
-- **Creates Leverage**: Uses communication theory to gain institutional power
-- **Generates Revenue**: Multiple monetization streams through attention control
-- **Scales**: Replicable system for other art communities
+- **Scales Education**: Multi-tenant platform for digital arts workshops and courses
+- **Manages Communities**: Booking systems, event management, and community submissions
+- **Powers Signage**: Smart displays and kiosks for real-time information
+- **Generates Revenue**: Subscription models and transaction fees across multiple organizations
+- **Builds Networks**: Connects arts organizations and creates partnership opportunities
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: React 18, TypeScript, Tailwind CSS
-- **Backend**: Next.js 14 App Router
-- **Styling**: Framer Motion, Custom Patterns
-- **Deployment**: Vercel
-- **Database**: Static data (ready for PostgreSQL)
+- **Frontend**: Next.js 15, TypeScript, Tailwind CSS, PWA
+- **Backend**: Next.js API routes, Supabase
+- **Database**: PostgreSQL with Row-Level Security (RLS)
+- **Authentication**: Clerk (JWT tokens)
+- **Styling**: Framer Motion, Custom Patterns, Radix UI
+- **Deployment**: Vercel, Cloudflare
+- **Devices**: Raspberry Pi 4/5, ChromeOS kiosks
 
 ## 📈 Success Metrics
 
-- **Week 1**: 10+ residents using system
-- **Month 1**: 50% of residents active, $500+ monthly revenue
-- **Quarter 1**: Formal adoption, $2,000+ monthly revenue
+### Platform Growth
+- **Month 1**: 4 founding partners, $2,000+ MRR
+- **Month 6**: 8-10 partners, $5,000+ MRR  
+- **Year 1**: 15+ partners, $10,000+ MRR
+
+### User Engagement
+- **Utilization**: ≥60-70% of residents book lab time monthly
+- **Programming**: 24-30 workshops/year, 8-10 talks/year
+- **Documentation**: 100% events documented, ≥12 MDX modules published
 
 ## 🔗 Key Resources
 
-- **[Strategic Leverage Plan](/docs/strategy/STRATEGIC_LEVERAGE_PLAN.md)** - Core business strategy
-- **[QR Code Implementation](/docs/user-guides/QR_CODE_GENERATOR.md)** - Mobile access setup
-- **[Technical Architecture](/docs/technical/README.md)** - System design and implementation
+- **[Infra24 Platform Overview](/docs/INFRA24_PLATFORM.md)** - Complete platform documentation
+- **[Partnership Strategy](/docs/strategy/INFRA24_PARTNERSHIPS.md)** - Partnership and integration framework
+- **[API Documentation](/docs/technical/INFRA24_API_SPECIFICATION.md)** - Complete API reference
+- **[Database Schema](/docs/technical/INFRA24_DATABASE_SCHEMA.sql)** - Multi-tenant database design
 
 ## 🚀 Deployment
 
@@ -73,4 +99,4 @@ This project is proprietary and confidential.
 
 ---
 
-**Remember**: You're not just building a digital sign—you're building the communication infrastructure that will define how this community operates. Once you own that infrastructure, you own the power to shape the community's future.
+**Infra24** - Building the digital infrastructure that empowers cultural organizations to scale their impact and reach. From digital signage to comprehensive arts education, we're creating the platform that connects communities and drives innovation in the arts.

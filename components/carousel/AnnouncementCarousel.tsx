@@ -21,9 +21,9 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
   const [showQRCode, setShowQRCode] = useState(false);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const [textSizes, setTextSizes] = useState({
-    title: 'text-9xl',
-    description: 'text-7xl',
-    location: 'text-7xl',
+    title: 'text-6xl',
+    description: 'text-3xl',
+    location: 'text-3xl',
     date: 'text-7xl',
     type: 'text-8xl',
     metadata: 'text-sm',
@@ -31,8 +31,8 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
     endDate: 'text-3xl',
     duration: 'text-3xl'
   });
-  const [iconSizeMultiplier, setIconSizeMultiplier] = useState(5);
-  const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(8);
+  const [iconSizeMultiplier, setIconSizeMultiplier] = useState(1);
+  const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(5);
   const [showTags, setShowTags] = useState(false);
   const [showPriorityBadge, setShowPriorityBadge] = useState(false);
   const [showVisibilityBadge, setShowVisibilityBadge] = useState(false);
@@ -74,14 +74,15 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
     };
   }, [emblaApi]);
 
-  // Handle orientation changes
+  // Handle orientation changes - using 1.37 ratio (1280x934) for landscape
   useEffect(() => {
     const updateOrientation = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
       const ratio = width / height;
       
-      setOrientation(ratio > 1.2 ? 'landscape' : 'portrait');
+      // Use 1.37 ratio threshold for landscape (1280x934)
+      setOrientation(ratio >= 1.37 ? 'landscape' : 'portrait');
     };
 
     updateOrientation();
@@ -120,7 +121,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
   }
 
   return (
-    <div className="relative h-screen bg-white">
+    <div className="relative h-screen bg-white" style={{ aspectRatio: '1.37' }}>
       {/* Text Size Debug Controls - Available in production with ?debug=true */}
       <TextSizeControls 
         onTextSizeChange={(element, size) => setTextSizes(prev => ({ ...prev, [element]: size }))} 

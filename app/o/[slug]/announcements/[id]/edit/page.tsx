@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, X } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
+import { UserPicker } from '@/components/ui/UserPicker'
+import { AnnouncementPerson } from '@/types/people'
 
 interface Announcement {
   id: string
@@ -19,6 +21,7 @@ interface Announcement {
   tags: string[]
   org_id: string
   scheduled_at?: string
+  key_people?: AnnouncementPerson[]
 }
 
 interface Organization {
@@ -50,6 +53,8 @@ export default function AnnouncementEditPage() {
     expires_time: '',
     author_clerk_id: ''
   })
+  
+  const [selectedPeople, setSelectedPeople] = useState<AnnouncementPerson[]>([])
 
   useEffect(() => {
     async function loadData() {
@@ -96,6 +101,9 @@ export default function AnnouncementEditPage() {
             expires_time: expiresDate ? expiresDate.toTimeString().slice(0, 5) : '',
             author_clerk_id: ann.author_clerk_id || ''
           })
+          
+          // Set selected people
+          setSelectedPeople(ann.key_people || [])
         } else {
           setError('Announcement not found')
         }
@@ -134,8 +142,9 @@ export default function AnnouncementEditPage() {
         updateData.expires_at = `${formData.expires_at}T00:00:00`
       }
       
-      // Remove time fields from the data sent to API
+      // Remove time fields from the data sent to API and add people
       const { scheduled_time, expires_time, ...apiData } = updateData
+      apiData.key_people = selectedPeople
       
       const response = await fetch(`/api/announcements/${id}`, {
         method: 'PATCH',
@@ -348,6 +357,19 @@ export default function AnnouncementEditPage() {
                   Leave empty if no specific time
                 </p>
               </div>
+            </div>
+
+            {/* People */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                People
+              </label>
+              <UserPicker
+                selectedPeople={selectedPeople}
+                onPeopleChange={setSelectedPeople}
+                organizationSlug={params.slug as string}
+                className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800"
+              />
             </div>
 
             {/* Tags */}

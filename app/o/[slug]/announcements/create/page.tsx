@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Bell, Save, X } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
+import { UserPicker } from '@/components/ui/UserPicker'
+import { AnnouncementPerson } from '@/types/people'
 
 interface Organization {
   id: string
@@ -33,6 +35,8 @@ export default function CreateAnnouncementPage() {
     expires_at: '',
     expires_time: ''
   })
+  
+  const [selectedPeople, setSelectedPeople] = useState<AnnouncementPerson[]>([])
 
   useEffect(() => {
     async function loadOrganization() {
@@ -63,7 +67,8 @@ export default function CreateAnnouncementPage() {
         ...formData,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0),
         scheduled_at: formData.scheduled_at ? new Date(formData.scheduled_at).toISOString() : null,
-        expires_at: formData.expires_at ? new Date(formData.expires_at).toISOString() : null
+        expires_at: formData.expires_at ? new Date(formData.expires_at).toISOString() : null,
+        key_people: selectedPeople
       }
 
       const response = await fetch(`/api/organizations/by-slug/${slug}/announcements`, {
@@ -253,6 +258,19 @@ export default function CreateAnnouncementPage() {
                   placeholder="Enter tags separated by commas"
                 />
               </div>
+            </div>
+
+            {/* People */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                People
+              </label>
+              <UserPicker
+                selectedPeople={selectedPeople}
+                onPeopleChange={setSelectedPeople}
+                organizationSlug={slug}
+                className="border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-700"
+              />
             </div>
 
             {/* Schedule and Expiry */}
