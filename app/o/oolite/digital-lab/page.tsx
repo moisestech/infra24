@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import OoliteDigitalLabPage from '@/components/page/OoliteDigitalLabPage';
 
-export default function OoliteDigitalLabPageRoute() {
+function OoliteDigitalLabPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
 
   if (isLoading) {
@@ -46,5 +46,13 @@ export default function OoliteDigitalLabPageRoute() {
         <OoliteDigitalLabPage />
       </div>
     </TenantLayout>
+  );
+}
+
+export default function OoliteDigitalLabPageRoute() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OoliteDigitalLabPageContent />
+    </Suspense>
   );
 }

@@ -405,3 +405,4 @@ BEGIN
     DO UPDATE SET metric_value = EXCLUDED.metric_value;
 END;
 $$ LANGUAGE plpgsql;
+

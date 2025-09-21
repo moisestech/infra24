@@ -29,13 +29,13 @@ export async function GET(request: NextRequest) {
 
     // Get the user's membership info
     console.log('👤 Looking up user membership for userId:', userId);
-    const { data: userMembership, error: membershipError } = await supabase
+    const { data: userMemberships, error: membershipError } = await supabase
       .from('org_memberships')
       .select(`
         id,
         clerk_user_id,
         role,
-        org_id,
+        organization_id,
         joined_at,
         organizations (
           id,
@@ -45,35 +45,38 @@ export async function GET(request: NextRequest) {
         )
       `)
       .eq('clerk_user_id', userId)
-      .single();
+      .eq('is_active', true);
 
-    console.log('👤 User membership lookup result:', { userMembership, membershipError });
+    console.log('👤 User membership lookup result:', { userMemberships, membershipError });
 
-    if (membershipError || !userMembership) {
+    if (membershipError || !userMemberships || userMemberships.length === 0) {
       console.log('❌ User membership not found in database:', membershipError);
       return NextResponse.json({ error: 'User membership not found' }, { status: 404 });
     }
 
-    // Organization data is already included in the membership query
-    const organization = userMembership.organizations;
+    // Get the primary membership (first one) and all organizations
+    const primaryMembership = userMemberships[0];
+    const organizations = userMemberships.map(membership => membership.organizations);
 
     console.log('✅ Returning user data:', { 
-      membershipId: userMembership.id, 
-      role: userMembership.role, 
-      hasOrg: !!organization 
+      membershipId: primaryMembership.id, 
+      role: primaryMembership.role, 
+      hasOrg: !!primaryMembership.organizations,
+      totalOrgs: organizations.length
     });
 
     return NextResponse.json({
       user: {
-        id: userMembership.id,
-        clerk_user_id: userMembership.clerk_user_id,
-        role: userMembership.role,
-        organization_id: userMembership.org_id,
-        joined_at: userMembership.joined_at
+        id: primaryMembership.id,
+        clerk_user_id: primaryMembership.clerk_user_id,
+        role: primaryMembership.role,
+        organization_id: primaryMembership.organization_id,
+        joined_at: primaryMembership.joined_at
       },
-      organization,
-      role: userMembership.role,
-      permissions: getPermissionsForRole(userMembership.role)
+      organization: primaryMembership.organizations,
+      organizations: organizations,
+      role: primaryMembership.role,
+      permissions: getPermissionsForRole(primaryMembership.role)
     });
 
   } catch (error) {

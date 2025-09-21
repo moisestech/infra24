@@ -1,441 +1,349 @@
-'use client';
+'use client'
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Clock, AlertCircle, Save, Send } from 'lucide-react';
-
-interface SurveyQuestion {
-  id: string;
-  type: 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'rating' | 'boolean';
-  label: string;
-  description?: string;
-  required: boolean;
-  options?: string[];
-  validation?: {
-    minLength?: number;
-    maxLength?: number;
-    pattern?: string;
-  };
-}
-
-interface Survey {
-  id: string;
-  title: string;
-  description: string;
-  organizationId: string;
-  questions: SurveyQuestion[];
-  status: 'draft' | 'active' | 'closed';
-  submissionDeadline?: string;
-  maxSubmissions?: number;
-  currentSubmissions: number;
-}
+import { useState, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { motion, AnimatePresence } from 'framer-motion'
+import toast from 'react-hot-toast'
+import { FormField } from './FormField'
+import { ProgressIndicator } from './ProgressIndicator'
+import { SurveyThankYou } from './SurveyThankYou'
+import { SurveyProgress } from './SurveyProgress'
+import { SurveyDraftManager } from './SurveyDraftManager'
+import { EnhancedFormField } from './EnhancedFormField'
+import { FileUploader } from './FileUploader'
+import { ReactSelectField } from './ReactSelectField'
+import { Button } from '@/components/ui/button'
+import { getSchemaForSurvey } from '@/lib/validation/survey-schemas'
+import { cn } from '@/lib/utils'
 
 interface SurveyFormProps {
-  survey: Survey;
-  onSubmit: (responses: Record<string, any>) => Promise<void>;
-  onSaveDraft: (responses: Record<string, any>) => Promise<void>;
-  initialResponses?: Record<string, any>;
-  isSubmitting?: boolean;
-  isSaving?: boolean;
+  survey: {
+    id: string
+    title: string
+    description: string
+    category: string
+    form_schema: {
+      title: string
+      description: string
+      questions: Array<{
+        id: string
+        question: string
+        type: string
+        required?: boolean
+        choices?: string[]
+        scale?: number
+        labels?: {
+          low: string
+          high: string
+        }
+        placeholder?: string
+      }>
+    }
+    submission_settings: {
+      allow_anonymous: boolean
+      require_authentication: boolean
+      max_submissions_per_user: number
+    }
+  }
+  organization: {
+    id: string
+    name: string
+    slug: string
+  }
 }
 
-export function SurveyForm({
-  survey,
-  onSubmit,
-  onSaveDraft,
-  initialResponses = {},
-  isSubmitting = false,
-  isSaving = false
-}: SurveyFormProps) {
-  const [responses, setResponses] = useState<Record<string, any>>(initialResponses);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isDraft, setIsDraft] = useState(false);
+export function SurveyForm({ survey, organization }: SurveyFormProps) {
+  const [currentStep, setCurrentStep] = useState(0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  
+  const form = useForm({
+    resolver: zodResolver(getSchemaForSurvey(survey.category)),
+    mode: 'onChange'
+  })
 
-  const questionsPerStep = 3;
-  const totalSteps = Math.ceil(survey.questions.length / questionsPerStep);
-  const currentQuestions = survey.questions.slice(
-    currentStep * questionsPerStep,
-    (currentStep + 1) * questionsPerStep
-  );
+  const { formState: { errors, isValid } } = form
 
+  // Auto-save form data to localStorage
   useEffect(() => {
-    // Check if this is a draft submission
-    setIsDraft(Object.keys(initialResponses).length > 0);
-  }, [initialResponses]);
-
-  const handleResponseChange = (questionId: string, value: any) => {
-    setResponses(prev => ({
-      ...prev,
-      [questionId]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[questionId]) {
-      setErrors(prev => ({
-        ...prev,
-        [questionId]: ''
-      }));
-    }
-  };
-
-  const validateStep = () => {
-    const newErrors: Record<string, string> = {};
-    
-    currentQuestions.forEach(question => {
-      if (question.required && (!responses[question.id] || responses[question.id] === '')) {
-        newErrors[question.id] = 'This field is required';
-      }
-      
-      if (responses[question.id] && question.validation) {
-        const value = responses[question.id];
-        
-        if (question.validation.minLength && value.length < question.validation.minLength) {
-          newErrors[question.id] = `Minimum length is ${question.validation.minLength} characters`;
-        }
-        
-        if (question.validation.maxLength && value.length > question.validation.maxLength) {
-          newErrors[question.id] = `Maximum length is ${question.validation.maxLength} characters`;
-        }
-        
-        if (question.validation.pattern && !new RegExp(question.validation.pattern).test(value)) {
-          newErrors[question.id] = 'Invalid format';
-        }
-      }
-    });
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleNext = () => {
-    if (validateStep()) {
-      setCurrentStep(prev => Math.min(prev + 1, totalSteps - 1));
-    }
-  };
-
-  const handlePrevious = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 0));
-  };
-
-  const handleSaveDraft = async () => {
-    try {
-      await onSaveDraft(responses);
-      setIsDraft(true);
-    } catch (error) {
-      console.error('Error saving draft:', error);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (validateStep()) {
+    const savedData = localStorage.getItem(`survey_draft_${survey.id}`)
+    if (savedData) {
       try {
-        await onSubmit(responses);
+        const parsedData = JSON.parse(savedData)
+        if (parsedData.data) {
+          form.reset(parsedData.data)
+        }
       } catch (error) {
-        console.error('Error submitting survey:', error);
+        console.error('Error parsing saved form data:', error)
       }
     }
-  };
+  }, [survey.id, form])
 
-  const renderQuestion = (question: SurveyQuestion) => {
-    const value = responses[question.id] || '';
-    const error = errors[question.id];
+  // Track form data for auto-save
+  const formData = form.watch()
 
-    switch (question.type) {
-      case 'text':
-        return (
-          <div className="space-y-2">
-            <Label htmlFor={question.id} className="text-sm font-medium">
-              {question.label}
-              {question.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
-            {question.description && (
-              <p className="text-sm text-gray-600">{question.description}</p>
-            )}
-            <Input
-              id={question.id}
-              value={value}
-              onChange={(e) => handleResponseChange(question.id, e.target.value)}
-              className={error ? 'border-red-500' : ''}
-            />
-            {error && <p className="text-sm text-red-500">{error}</p>}
-          </div>
-        );
+  const onSubmit = async (data: any) => {
+    setIsSubmitting(true)
+    const loadingToast = toast.loading('Submitting your survey...')
+    
+    try {
+      const response = await fetch('/api/surveys/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          surveyId: survey.id,
+          organizationId: organization.id,
+          responses: data,
+          metadata: {
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString(),
+            completionTime: Date.now() - (window as any).surveyStartTime
+          }
+        })
+      })
 
-      case 'textarea':
-        return (
-          <div className="space-y-2">
-            <Label htmlFor={question.id} className="text-sm font-medium">
-              {question.label}
-              {question.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
-            {question.description && (
-              <p className="text-sm text-gray-600">{question.description}</p>
-            )}
-            <Textarea
-              id={question.id}
-              value={value}
-              onChange={(e) => handleResponseChange(question.id, e.target.value)}
-              className={error ? 'border-red-500' : ''}
-              rows={4}
-            />
-            {error && <p className="text-sm text-red-500">{error}</p>}
-          </div>
-        );
+      if (response.ok) {
+        toast.dismiss(loadingToast)
+        toast.success('Survey submitted successfully!')
+        
+        // Clear saved data
+        localStorage.removeItem(`survey_${survey.id}`)
+        
+        setSubmitted(true)
+      } else {
+        throw new Error('Submission failed')
+      }
+    } catch (error) {
+      toast.dismiss(loadingToast)
+      toast.error('Failed to submit survey. Please try again.')
+      console.error('Survey submission error:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
-      case 'select':
-        return (
-          <div className="space-y-2">
-            <Label htmlFor={question.id} className="text-sm font-medium">
-              {question.label}
-              {question.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
-            {question.description && (
-              <p className="text-sm text-gray-600">{question.description}</p>
-            )}
-            <Select value={value} onValueChange={(val) => handleResponseChange(question.id, val)}>
-              <SelectTrigger className={error ? 'border-red-500' : ''}>
-                <SelectValue placeholder="Select an option" />
-              </SelectTrigger>
-              <SelectContent>
-                {question.options?.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-          </div>
-        );
+  const nextStep = () => {
+    const currentQuestion = survey.form_schema.questions[currentStep]
+    const fieldName = currentQuestion.id
+    
+    // Validate current step
+    if (currentQuestion.required && !form.getValues(fieldName)) {
+      toast.error('Please answer this question before continuing')
+      return
+    }
+    
+    setCurrentStep(prev => Math.min(prev + 1, survey.form_schema.questions.length - 1))
+  }
 
-      case 'radio':
-        return (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
-              {question.label}
-              {question.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
-            {question.description && (
-              <p className="text-sm text-gray-600">{question.description}</p>
-            )}
-            <div className="space-y-2">
-              {question.options?.map((option) => (
-                <label key={option} className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    name={question.id}
-                    value={option}
-                    checked={value === option}
-                    onChange={(e) => handleResponseChange(question.id, e.target.value)}
-                    className="text-blue-600"
-                  />
-                  <span className="text-sm">{option}</span>
-                </label>
-              ))}
-            </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-          </div>
-        );
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 0))
+  }
 
-      case 'checkbox':
-        return (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
-              {question.label}
-              {question.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
-            {question.description && (
-              <p className="text-sm text-gray-600">{question.description}</p>
-            )}
-            <div className="space-y-2">
-              {question.options?.map((option) => (
-                <label key={option} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={Array.isArray(value) && value.includes(option)}
-                    onChange={(e) => {
-                      const currentValues = Array.isArray(value) ? value : [];
-                      if (e.target.checked) {
-                        handleResponseChange(question.id, [...currentValues, option]);
-                      } else {
-                        handleResponseChange(question.id, currentValues.filter(v => v !== option));
-                      }
-                    }}
-                    className="text-blue-600"
-                  />
-                  <span className="text-sm">{option}</span>
-                </label>
-              ))}
-            </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-          </div>
-        );
+  const renderQuestion = (question: any, index: number) => {
+    const fieldName = question.id as string
+    const fieldError = (errors as any)[fieldName]?.message as string
+    const currentValue = String(form.watch(fieldName) || '')
 
-      case 'rating':
-        return (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
-              {question.label}
-              {question.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
-            {question.description && (
-              <p className="text-sm text-gray-600">{question.description}</p>
-            )}
-            <div className="flex space-x-2">
-              {[1, 2, 3, 4, 5].map((rating) => (
+    return (
+      <EnhancedFormField
+        key={fieldName}
+        label={question.question}
+        error={fieldError}
+        required={question.required}
+        description={question.description}
+        helpText={question.helpText}
+        characterLimit={question.characterLimit}
+        wordLimit={question.wordLimit}
+        currentValue={currentValue}
+        showCharacterCount={question.showCharacterCount}
+        showWordCount={question.showWordCount}
+        acceptedFormats={question.acceptedFormats}
+        maxFileSize={question.maxFileSize}
+        examples={question.examples}
+      >
+        {question.type === 'single_choice' && question.choices && (
+          <ReactSelectField
+            name={fieldName}
+            label=""
+            options={question.choices.map((choice: string) => ({ value: choice, label: choice }))}
+            placeholder="Select an option..."
+            isSearchable={false}
+            isClearable={true}
+            required={question.required}
+            helpText={question.helpText}
+            examples={question.examples}
+          />
+        )}
+
+        {question.type === 'multiple_choice' && question.choices && (
+          <ReactSelectField
+            name={fieldName}
+            label=""
+            options={question.choices.map((choice: string) => ({ value: choice, label: choice }))}
+            placeholder="Select one or more options..."
+            isMulti={true}
+            isSearchable={false}
+            isClearable={true}
+            required={question.required}
+            helpText={question.helpText}
+            examples={question.examples}
+          />
+        )}
+
+        {question.type === 'rating' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-center space-x-4">
+              {Array.from({ length: question.scale || 5 }, (_, i) => (
                 <button
-                  key={rating}
+                  key={i}
                   type="button"
-                  onClick={() => handleResponseChange(question.id, rating)}
-                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-medium ${
-                    value >= rating
-                      ? 'bg-blue-600 border-blue-600 text-white'
-                      : 'border-gray-300 text-gray-400 hover:border-blue-300'
-                  }`}
+                  onClick={() => form.setValue(fieldName, i + 1)}
+                  className={cn(
+                    "w-14 h-14 rounded-full border-2 flex items-center justify-center text-lg font-semibold transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-500/50 focus:ring-offset-2",
+                    form.watch(fieldName) === i + 1
+                      ? "border-blue-600 bg-blue-600 text-white shadow-xl transform scale-110"
+                      : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  )}
                 >
-                  {rating}
+                  {i + 1}
                 </button>
               ))}
             </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-          </div>
-        );
-
-      case 'boolean':
-        return (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
-              {question.label}
-              {question.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
-            {question.description && (
-              <p className="text-sm text-gray-600">{question.description}</p>
+            {question.labels && (
+              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 font-medium">
+                <span>{question.labels.low}</span>
+                <span>{question.labels.high}</span>
+              </div>
             )}
-            <div className="flex items-center space-x-2">
-              <Switch
-                checked={value === true}
-                onCheckedChange={(checked) => handleResponseChange(question.id, checked)}
-              />
-              <span className="text-sm text-gray-600">
-                {value === true ? 'Yes' : 'No'}
-              </span>
-            </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {form.watch(fieldName) && (
+              <div className="text-center">
+                <div className="inline-flex items-center px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
+                  Selected: {form.watch(fieldName)} out of {question.scale || 5}
+                </div>
+              </div>
+            )}
           </div>
-        );
+        )}
 
-      default:
-        return null;
-    }
-  };
+        {question.type === 'open' && (
+          <div className="space-y-3">
+            <textarea
+              {...form.register(fieldName)}
+              placeholder={question.placeholder || "Please share your thoughts..."}
+              rows={6}
+              maxLength={question.characterLimit}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+            />
+          </div>
+        )}
+
+        {question.type === 'file_upload' && (
+          <FileUploader
+            onFileSelect={setUploadedFiles}
+            acceptedTypes={question.acceptedFormats}
+            maxFileSize={question.maxFileSize}
+            maxFiles={question.maxFiles}
+          />
+        )}
+      </EnhancedFormField>
+    )
+  }
+
+  if (submitted) {
+    return (
+      <SurveyThankYou 
+        organizationName={organization.name}
+        onBackToOrg={() => window.location.href = `/o/${organization.slug}`}
+      />
+    )
+  }
+
+  const stepLabels = survey.form_schema.questions.map((q: any, index: number) => 
+    q.stepLabel || `Question ${index + 1}`
+  )
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-2xl">{survey.title}</CardTitle>
-            <CardDescription className="mt-2">{survey.description}</CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            {isDraft && (
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Save className="w-3 h-3" />
-                Draft
-              </Badge>
-            )}
-            <Badge className={
-              survey.status === 'active' ? 'bg-green-100 text-green-800' :
-              survey.status === 'closed' ? 'bg-red-100 text-red-800' :
-              'bg-yellow-100 text-yellow-800'
-            }>
-              {survey.status}
-            </Badge>
-          </div>
+    <div className="space-y-8">
+      {/* Enhanced Progress with Draft Management */}
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {survey.form_schema.title}
+          </h2>
+          <SurveyDraftManager 
+            surveyId={survey.id}
+            formData={formData}
+          />
         </div>
         
-        {/* Progress Bar */}
-        <div className="mt-4">
-          <div className="flex justify-between text-sm text-gray-600 mb-2">
-            <span>Step {currentStep + 1} of {totalSteps}</span>
-            <span>{Math.round(((currentStep + 1) / totalSteps) * 100)}% Complete</span>
-          </div>
-          <Progress value={((currentStep + 1) / totalSteps) * 100} className="h-2" />
-        </div>
-      </CardHeader>
+        <SurveyProgress 
+          currentStep={currentStep}
+          totalSteps={survey.form_schema.questions.length}
+          stepLabels={stepLabels}
+        />
+      </div>
+      
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentStep}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          {renderQuestion(survey.form_schema.questions[currentStep], currentStep)}
+        </motion.div>
+      </AnimatePresence>
 
-      <CardContent className="space-y-6">
-        {/* Current Step Questions */}
-        {currentQuestions.map((question) => (
-          <div key={question.id} className="space-y-4">
-            {renderQuestion(question)}
-          </div>
-        ))}
-
-        {/* Navigation */}
-        <div className="flex justify-between pt-6 border-t">
+      {/* Sticky Footer Actions */}
+      <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 -mx-4 -mb-8">
+        <div className="flex justify-between items-center">
           <Button
+            type="button"
             variant="outline"
-            onClick={handlePrevious}
+            onClick={prevStep}
             disabled={currentStep === 0}
+            className="px-6 py-3 text-sm font-medium"
           >
-            Previous
+            ← Previous
           </Button>
-
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={handleSaveDraft}
-              disabled={isSaving}
-            >
-              {isSaving ? (
-                <>
-                  <Clock className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Draft
-                </>
-              )}
-            </Button>
-
-            {currentStep === totalSteps - 1 ? (
-              <Button
-                onClick={handleSubmit}
+          
+          <div className="flex items-center space-x-3">
+            <SurveyDraftManager 
+              surveyId={survey.id}
+              formData={formData}
+            />
+            
+            {currentStep === survey.form_schema.questions.length - 1 ? (
+              <Button 
+                type="button"
+                onClick={form.handleSubmit(onSubmit)} 
                 disabled={isSubmitting}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="px-8 py-3 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 {isSubmitting ? (
-                  <>
-                    <Clock className="w-4 h-4 mr-2 animate-spin" />
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                     Submitting...
-                  </>
+                  </div>
                 ) : (
-                  <>
-                    <Send className="w-4 h-4 mr-2" />
-                    Submit Survey
-                  </>
+                  'Submit Survey ✓'
                 )}
               </Button>
             ) : (
-              <Button onClick={handleNext}>
-                Next
+              <Button
+                type="button"
+                onClick={nextStep}
+                className="px-6 py-3 text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Next →
               </Button>
             )}
           </div>
         </div>
-      </CardContent>
-    </Card>
-  );
+      </div>
+    </div>
+  )
 }

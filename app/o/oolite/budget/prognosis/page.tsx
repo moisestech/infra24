@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import OoliteBudgetPrognosisPage from '@/components/page/OoliteBudgetPrognosisPage';
 
-export default function OoliteBudgetPrognosisPageRoute() {
+function OoliteBudgetPrognosisPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
 
   if (isLoading) {
@@ -46,5 +46,13 @@ export default function OoliteBudgetPrognosisPageRoute() {
         <OoliteBudgetPrognosisPage />
       </div>
     </TenantLayout>
+  );
+}
+
+export default function OoliteBudgetPrognosisPageRoute() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OoliteBudgetPrognosisPageContent />
+    </Suspense>
   );
 }

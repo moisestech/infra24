@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/input';
 import { 
   MapPin, 
@@ -78,7 +78,7 @@ interface Exhibition {
   }[];
 }
 
-export default function EdgeZonesMapPage() {
+function EdgeZonesMapPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
   const [exhibitionSpaces, setExhibitionSpaces] = useState<ExhibitionSpace[]>([]);
   const [exhibitions, setExhibitions] = useState<Exhibition[]>([]);
@@ -426,12 +426,12 @@ export default function EdgeZonesMapPage() {
                       <h4 className="text-sm font-medium text-gray-900 mb-2">Equipment:</h4>
                       <div className="flex flex-wrap gap-1">
                         {space.equipment.slice(0, 3).map((equipment, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
+                          <Badge key={index} variant="default" className="text-xs">
                             {equipment}
                           </Badge>
                         ))}
                         {space.equipment.length > 3 && (
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="default" className="text-xs">
                             +{space.equipment.length - 3} more
                           </Badge>
                         )}
@@ -505,7 +505,7 @@ export default function EdgeZonesMapPage() {
                             <h4 className="font-medium text-gray-900">Equipment</h4>
                             <div className="flex flex-wrap gap-2">
                               {selectedSpace.equipment.map((equipment, index) => (
-                                <Badge key={index} variant="secondary">
+                                <Badge key={index} variant="default">
                                   {equipment}
                                 </Badge>
                               ))}
@@ -515,7 +515,7 @@ export default function EdgeZonesMapPage() {
                             <h4 className="font-medium text-gray-900">Amenities</h4>
                             <div className="flex flex-wrap gap-2">
                               {selectedSpace.amenities.map((amenity, index) => (
-                                <Badge key={index} variant="outline">
+                                <Badge key={index} variant="default">
                                   {amenity}
                                 </Badge>
                               ))}
@@ -567,7 +567,7 @@ export default function EdgeZonesMapPage() {
                               <h4 className="font-medium text-gray-900">Artist Specialties</h4>
                               <div className="flex flex-wrap gap-2">
                                 {selectedSpace.currentExhibition.specialties.map((specialty, index) => (
-                                  <Badge key={index} variant="outline">
+                                  <Badge key={index} variant="default">
                                     {specialty}
                                   </Badge>
                                 ))}
@@ -618,3 +618,12 @@ export default function EdgeZonesMapPage() {
     </TenantLayout>
   );
 }
+
+export default function EdgeZonesMapPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EdgeZonesMapPageContent />
+    </Suspense>
+  );
+}
+

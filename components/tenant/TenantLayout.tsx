@@ -54,3 +54,4 @@ export function TenantLayout({ children, fallback }: TenantLayoutProps) {
     </div>
   );
 }
+

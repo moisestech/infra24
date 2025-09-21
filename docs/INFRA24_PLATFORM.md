@@ -202,3 +202,4 @@ Infra24 is a multi-tenant SaaS platform that powers digital arts education, comm
 ---
 
 **Infra24** - Building the digital infrastructure that empowers cultural organizations to scale their impact and reach.
+

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { MemphisPattern } from '@/components/patterns/MemphisPattern';
 import { PatternColors } from '@/components/patterns/types';
 
-export default function PatternTestPage() {
+function PatternTestPageContent() {
   const [dimensions] = useState({ width: 1200, height: 800 });
   const [cellSize, setCellSize] = useState(120);
   const [canvasRef, setCanvasRef] = useState<HTMLCanvasElement | null>(null);
@@ -62,5 +62,13 @@ export default function PatternTestPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function PatternTestPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PatternTestPageContent />
+    </Suspense>
   );
 } 

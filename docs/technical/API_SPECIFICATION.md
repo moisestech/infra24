@@ -690,3 +690,4 @@ Use the test organization with slug `test-org` for development and testing.
 ---
 
 This API specification provides a comprehensive foundation for building the cultural infrastructure platform, supporting all the features needed for the three pricing tiers while maintaining security and scalability.
+

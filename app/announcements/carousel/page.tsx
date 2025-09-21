@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, List, Settings } from 'lucide-react';
@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { AnnouncementCarousel, OrganizationThemeProvider } from '@/components/AnnouncementCarousel';
 import { Announcement } from '@/types/announcement';
 
-export default function GlobalAnnouncementCarouselPage() {
+function GlobalAnnouncementCarouselPageContent() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -156,5 +156,13 @@ export default function GlobalAnnouncementCarouselPage() {
       </OrganizationThemeProvider>
     </div>
   );
+}
+
+export default function GlobalAnnouncementCarouselPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GlobalAnnouncementCarouselPageContent />
+    </Suspense>
+  )
 }
 

@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Infra24Logo } from '@/components/ui/Infra24Logo';
 import { 
   BarChart3, 
@@ -272,7 +272,7 @@ export default function AnalyticsProductPage() {
                     <p className="text-sm text-gray-600 mb-3">
                       {report.description}
                     </p>
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="default" className="text-xs">
                       {report.frequency}
                     </Badge>
                   </CardContent>
@@ -397,3 +397,4 @@ export default function AnalyticsProductPage() {
     </div>
   );
 }
+

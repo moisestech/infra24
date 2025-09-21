@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import { SubmissionFormBuilder } from '@/components/submissions/SubmissionFormBuilder';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Plus, FileText, Users, Clock, CheckCircle, XCircle, Eye } from 'lucide-react';
 
 interface SubmissionForm {
@@ -41,7 +41,7 @@ interface Submission {
   };
 }
 
-export default function OoliteSubmissionsPage() {
+function OoliteSubmissionsPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
   const [forms, setForms] = useState<SubmissionForm[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -295,7 +295,7 @@ export default function OoliteSubmissionsPage() {
                             {form.type}
                           </Badge>
                           {form.is_public && (
-                            <Badge variant="outline">Public</Badge>
+                            <Badge variant="default">Public</Badge>
                           )}
                         </div>
                       </div>
@@ -410,3 +410,12 @@ export default function OoliteSubmissionsPage() {
     </TenantLayout>
   );
 }
+
+export default function OoliteSubmissionsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OoliteSubmissionsPageContent />
+    </Suspense>
+  )
+}
+

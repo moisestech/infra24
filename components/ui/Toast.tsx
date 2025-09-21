@@ -1,56 +1,132 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { CheckCircle, XCircle, X } from 'lucide-react'
+import { Toaster as HotToaster } from 'react-hot-toast'
+import { cn } from '@/lib/utils'
 
-interface ToastProps {
-  message: string
-  type: 'success' | 'error'
-  isVisible: boolean
-  onClose: () => void
+export function Toaster() {
+  return (
+    <HotToaster
+      position="top-right"
+      reverseOrder={false}
+      gutter={8}
+      containerClassName=""
+      containerStyle={{}}
+      toastOptions={{
+        // Default options for all toasts
+        duration: 4000,
+        style: {
+          background: 'var(--background)',
+          color: 'var(--foreground)',
+          border: '1px solid var(--border)',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          fontSize: '14px',
+          fontWeight: '500',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        },
+        // Success toast styling
+        success: {
+          duration: 3000,
+          style: {
+            background: '#f0fdf4',
+            color: '#166534',
+            border: '1px solid #bbf7d0',
+          },
+          iconTheme: {
+            primary: '#22c55e',
+            secondary: '#f0fdf4',
+          },
+        },
+        // Error toast styling
+        error: {
+          duration: 5000,
+          style: {
+            background: '#fef2f2',
+            color: '#dc2626',
+            border: '1px solid #fecaca',
+          },
+          iconTheme: {
+            primary: '#ef4444',
+            secondary: '#fef2f2',
+          },
+        },
+        // Loading toast styling
+        loading: {
+          style: {
+            background: '#f8fafc',
+            color: '#475569',
+            border: '1px solid #e2e8f0',
+          },
+        },
+      }}
+    />
+  )
 }
 
-export default function Toast({ message, type, isVisible, onClose }: ToastProps) {
-  useEffect(() => {
-    if (isVisible) {
-      const timer = setTimeout(() => {
-        onClose()
-      }, 5000)
-
-      return () => clearTimeout(timer)
+// Custom toast components for specific use cases
+export const toast = {
+  success: (message: string) => {
+    return import('react-hot-toast').then(({ toast: hotToast }) => {
+      return hotToast.success(message, {
+        duration: 3000,
+        style: {
+          background: '#f0fdf4',
+          color: '#166534',
+          border: '1px solid #bbf7d0',
+        },
+        iconTheme: {
+          primary: '#22c55e',
+          secondary: '#f0fdf4',
+        },
+      })
+    })
+  },
+  
+  error: (message: string) => {
+    return import('react-hot-toast').then(({ toast: hotToast }) => {
+      return hotToast.error(message, {
+        duration: 5000,
+        style: {
+          background: '#fef2f2',
+          color: '#dc2626',
+          border: '1px solid #fecaca',
+        },
+        iconTheme: {
+          primary: '#ef4444',
+          secondary: '#fef2f2',
+        },
+      })
+    })
+  },
+  
+  loading: (message: string) => {
+    return import('react-hot-toast').then(({ toast: hotToast }) => {
+      return hotToast.loading(message, {
+        style: {
+          background: '#f8fafc',
+          color: '#475569',
+          border: '1px solid #e2e8f0',
+        },
+      })
+    })
+  },
+  
+  promise: <T,>(
+    promise: Promise<T>,
+    messages: {
+      loading: string
+      success: string
+      error: string
     }
-  }, [isVisible, onClose])
-
-  if (!isVisible) return null
-
-  const bgColor = type === 'success' 
-    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
-    : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
-
-  const textColor = type === 'success' 
-    ? 'text-green-600 dark:text-green-400' 
-    : 'text-red-600 dark:text-red-400'
-
-  const iconColor = type === 'success' 
-    ? 'text-green-400 dark:text-green-500' 
-    : 'text-red-400 dark:text-red-500'
-
-  const Icon = type === 'success' ? CheckCircle : XCircle
-
-  return (
-    <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right-2">
-      <div className={`flex items-center p-4 rounded-lg border ${bgColor} shadow-lg max-w-sm`}>
-        <Icon className={`h-5 w-5 ${iconColor} mr-3 flex-shrink-0`} />
-        <p className={`text-sm font-medium ${textColor} flex-1`}>
-          {message}
-        </p>
-        <button
-          onClick={onClose}
-          className="ml-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-    </div>
-  )
+  ) => {
+    return import('react-hot-toast').then(({ toast: hotToast }) => {
+      return hotToast.promise(promise, messages, {
+        style: {
+          background: 'var(--background)',
+          color: 'var(--foreground)',
+          border: '1px solid var(--border)',
+        },
+      })
+    })
+  }
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Badge } from '@/components/ui/Badge';
-import OrganizationLogo from '@/components/ui/OrganizationLogo';
+import { OrganizationLogo } from '@/components/ui/OrganizationLogo';
 import { 
   Users, 
   Filter, 
@@ -146,7 +146,7 @@ export default function ArtistsPage() {
               {organization && (
                 <div className="mr-4 4xl:mr-8">
                   <OrganizationLogo
-                    organization={organization}
+                    organizationSlug={organization.slug}
                     size="lg"
                     className="h-12 w-12 4xl:h-24 4xl:w-24"
                   />

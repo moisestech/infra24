@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Infra24Logo } from '@/components/ui/Infra24Logo';
 import { 
   Monitor, 
@@ -329,3 +329,4 @@ export default function ProductsPage() {
     </div>
   );
 }
+

@@ -368,3 +368,4 @@ COMMENT ON TABLE public.bookings IS 'Records of actual bookings made by users';
 COMMENT ON FUNCTION public.get_available_slots IS 'Returns available time slots for a resource on a given date';
 COMMENT ON FUNCTION public.create_booking IS 'Creates a new booking with validation';
 COMMENT ON FUNCTION public.get_resource_bookings IS 'Retrieves bookings for a specific resource within a date range';
+

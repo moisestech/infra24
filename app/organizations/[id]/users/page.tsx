@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
@@ -43,7 +43,7 @@ interface Organization {
   logo_url?: string
 }
 
-export default function OrganizationUsersPage() {
+function OrganizationUsersPageContent() {
   const params = useParams()
   const searchParams = useSearchParams()
   const { user, isLoaded } = useUser()
@@ -371,5 +371,13 @@ export default function OrganizationUsersPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function OrganizationUsersPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OrganizationUsersPageContent />
+    </Suspense>
   )
 }

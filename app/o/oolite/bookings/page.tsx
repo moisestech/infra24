@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
@@ -8,7 +8,7 @@ import { BookingCalendar } from '@/components/booking/BookingCalendar';
 import { BookingForm } from '@/components/booking/BookingForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Plus, Calendar, Users, Clock, MapPin, X } from 'lucide-react';
 
 interface Booking {
@@ -27,7 +27,7 @@ interface Booking {
   resource_id: string;
 }
 
-export default function OoliteBookingsPage() {
+function OoliteBookingsPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -298,7 +298,7 @@ export default function OoliteBookingsPage() {
                       }>
                         {selectedBooking.status}
                       </Badge>
-                      <Badge variant="outline">
+                      <Badge variant="default">
                         {selectedBooking.resource_type}
                       </Badge>
                     </div>
@@ -319,5 +319,13 @@ export default function OoliteBookingsPage() {
         </div>
       </div>
     </TenantLayout>
+  );
+}
+
+export default function OoliteBookingsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OoliteBookingsPageContent />
+    </Suspense>
   );
 }

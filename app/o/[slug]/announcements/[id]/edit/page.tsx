@@ -144,14 +144,17 @@ export default function AnnouncementEditPage() {
       
       // Remove time fields from the data sent to API and add people
       const { scheduled_time, expires_time, ...apiData } = updateData
-      apiData.key_people = selectedPeople
+      const apiDataWithPeople = {
+        ...apiData,
+        key_people: selectedPeople
+      }
       
       const response = await fetch(`/api/announcements/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(apiData),
+        body: JSON.stringify(apiDataWithPeople),
       })
 
       if (!response.ok) {

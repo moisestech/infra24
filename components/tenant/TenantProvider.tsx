@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { TenantConfig, getTenantConfig, getTenantCSSVariables } from '@/lib/tenant';
 
 interface TenantContextType {
@@ -32,7 +32,8 @@ export function TenantProvider({ children }: TenantProviderProps) {
   const [error, setError] = useState<string | null>(null);
   
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  // Note: searchParams is not currently used in tenant detection logic
+  // const searchParams = useSearchParams();
   
   useEffect(() => {
     const detectTenant = () => {
@@ -92,7 +93,7 @@ export function TenantProvider({ children }: TenantProviderProps) {
     };
     
     detectTenant();
-  }, [pathname, searchParams]);
+  }, [pathname]);
   
   const value: TenantContextType = {
     tenantId,
@@ -107,3 +108,4 @@ export function TenantProvider({ children }: TenantProviderProps) {
     </TenantContext.Provider>
   );
 }
+

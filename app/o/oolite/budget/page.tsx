@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import OoliteDigitalBudgetPage from '@/components/page/OoliteDigitalBudgetPage';
 
-export default function OoliteBudgetPageRoute() {
+function OoliteBudgetPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
 
   if (isLoading) {
@@ -46,5 +46,13 @@ export default function OoliteBudgetPageRoute() {
         <OoliteDigitalBudgetPage />
       </div>
     </TenantLayout>
+  );
+}
+
+export default function OoliteBudgetPageRoute() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OoliteBudgetPageContent />
+    </Suspense>
   );
 }

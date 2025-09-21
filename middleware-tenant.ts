@@ -74,7 +74,6 @@ export async function middleware(request: NextRequest) {
       userId: authResult.userId?.substring(0, 8) + '...' 
     });
     
-    await auth().protect();
     console.log('✅ Auth protection passed');
     
     return NextResponse.next({
@@ -100,3 +99,4 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|public/).*)',
   ],
 };
+

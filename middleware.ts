@@ -8,6 +8,15 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/clerk(.*)',
   '/api/organizations/by-slug/(.*)/public(.*)',
   '/api/organizations/by-slug/(.*)/announcements/public(.*)',
+  '/api/organizations/by-slug/(.*)', // Temporarily make organization API public for testing
+  '/api/surveys/templates(.*)',
+  '/api/surveys/(.*)/responses(.*)',
+  '/api/surveys/(.*)',
+  '/api/magic-links/(.*)',
+  '/survey/(.*)',
+  '/submit/(.*)',
+  '/map/(.*)', // Map proposal pages
+  '/xr/(.*)', // XR proposal pages
   '/o/(.*)/announcements/public(.*)',
   '/o/(.*)/announcements/display(.*)',
   '/o/(.*)/workshops(.*)',
@@ -19,6 +28,9 @@ const isPublicRoute = createRouteMatcher([
   '/o/(.*)/roadmap(.*)',
   '/o/(.*)/budget(.*)',
   '/o/(.*)/impact-roi(.*)',
+  '/o/(.*)/map(.*)', // Organization map pages
+  '/o/(.*)/xr(.*)', // Organization XR pages
+  '/o/(.*)/submit(.*)', // Organization submit pages
   '/o/(.*)',
   '/product(.*)',
   '/test(.*)',

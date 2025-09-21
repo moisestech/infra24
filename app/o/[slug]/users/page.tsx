@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, Suspense } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { Search, Filter, User, Mail, Calendar, Shield, Building2, Eye, Edit, Users, Copy, UserPlus } from 'lucide-react'
@@ -8,11 +8,11 @@ import Navigation from '@/components/ui/Navigation'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 import Tooltip from '@/components/ui/Tooltip'
 import EditUserModal from '@/components/ui/EditUserModal'
-import Toast from '@/components/ui/Toast'
+import { toast } from '@/components/ui/Toast'
 import UserBadges from '@/components/ui/UserBadges'
 import UserAvatar from '@/components/ui/UserAvatar'
 import Pagination from '@/components/ui/Pagination'
-import OrganizationLogo from '@/components/ui/OrganizationLogo'
+import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 
 interface Organization {
   id: string
@@ -68,7 +68,7 @@ interface Artist {
 
 type FilterType = 'all' | 'artists' | 'staff' | 'resident' | 'moderator' | 'org_admin' | 'super_admin' | 'studio' | 'associate' | 'gallery'
 
-export default function OrganizationUsersPage() {
+function OrganizationUsersPageContent() {
   const { user, isLoaded } = useUser()
   const params = useParams()
   const searchParams = useSearchParams()
@@ -86,11 +86,6 @@ export default function OrganizationUsersPage() {
   const [editingUser, setEditingUser] = useState<any>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(20) // Increased for better mobile experience
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error'; isVisible: boolean }>({
-    message: '',
-    type: 'success',
-    isVisible: false
-  })
   const [claiming, setClaiming] = useState<string | null>(null)
 
   // Get filter from URL params
@@ -250,7 +245,6 @@ export default function OrganizationUsersPage() {
     if (!user) return;
 
     setClaiming(artistId);
-    setToast({ message: '', type: 'success', isVisible: false });
 
     try {
       const response = await fetch('/api/artists/claim', {
@@ -266,16 +260,16 @@ export default function OrganizationUsersPage() {
       });
 
       if (response.ok) {
-        setToast({ message: `Successfully submitted claim for ${artistName}. An administrator will review your request.`, type: 'success', isVisible: true });
+        toast.success(`Successfully submitted claim for ${artistName}. An administrator will review your request.`);
         // Refresh the data to update the claim status
         setTimeout(() => window.location.reload(), 2000);
       } else {
         const error = await response.json();
-        setToast({ message: error.error || 'Failed to submit claim request', type: 'error', isVisible: true });
+        toast.error(error.error || 'Failed to submit claim request');
       }
     } catch (error) {
       console.error('Error claiming artist:', error);
-      setToast({ message: 'Failed to submit claim request. Please try again.', type: 'error', isVisible: true });
+      toast.error('Failed to submit claim request. Please try again.');
     } finally {
       setClaiming(null);
     }
@@ -331,17 +325,9 @@ export default function OrganizationUsersPage() {
         ))
       }
 
-      setToast({
-        message: `${isArtistUser ? 'Artist' : 'User'} updated successfully!`,
-        type: 'success',
-        isVisible: true
-      })
+      toast.success(`${isArtistUser ? 'Artist' : 'User'} updated successfully!`)
     } catch (error: any) {
-      setToast({
-        message: error.message || 'Failed to update user',
-        type: 'error',
-        isVisible: true
-      })
+      toast.error(error.message || 'Failed to update user')
       throw error
     }
   }
@@ -429,7 +415,7 @@ export default function OrganizationUsersPage() {
             <div className="flex items-center">
               <div className="mr-4 xl:mr-6 2xl:mr-8 3xl:mr-10 4xl:mr-12">
                 <OrganizationLogo 
-                  organization={organization}
+                  organizationSlug={organization.slug}
                   size="lg"
                   className="h-12 w-12 xl:h-16 xl:w-16 2xl:h-20 2xl:w-20 3xl:h-24 3xl:w-24 4xl:h-32 4xl:w-32"
                 />
@@ -677,14 +663,15 @@ export default function OrganizationUsersPage() {
         memberTypes={memberTypes}
       />
 
-      {/* Toast Notification */}
-      <Toast
-        message={toast.message}
-        type={toast.type}
-        isVisible={toast.isVisible}
-        onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
-      />
       </div>
     </div>
+  )
+}
+
+export default function OrganizationUsersPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OrganizationUsersPageContent />
+    </Suspense>
   )
 }

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { 
   Monitor, 
   Printer, 
@@ -227,7 +227,7 @@ export default function OoliteDigitalLabPage() {
                       </div>
                       <div>
                         <CardTitle className="text-lg">{item.name}</CardTitle>
-                        <Badge variant="outline" className="mt-1">
+                        <Badge variant="default" className="mt-1">
                           {item.category}
                         </Badge>
                       </div>
@@ -260,7 +260,7 @@ export default function OoliteDigitalLabPage() {
                       <h4 className="font-semibold text-gray-900 mb-2">Available Slots</h4>
                       <div className="flex flex-wrap gap-1 mb-2">
                         {item.bookingSlots.map((slot, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
+                          <Badge key={index} variant="default" className="text-xs">
                             {slot}
                           </Badge>
                         ))}

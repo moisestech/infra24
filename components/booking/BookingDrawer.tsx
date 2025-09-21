@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Calendar,
@@ -228,7 +228,7 @@ export const BookingDrawer: React.FC<BookingDrawerProps> = ({
                 {profile.specialties && profile.specialties.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
                     {profile.specialties.slice(0, 3).map((specialty, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
+                      <Badge key={index} variant="default" className="text-xs">
                         {specialty}
                       </Badge>
                     ))}

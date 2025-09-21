@@ -402,3 +402,4 @@ FROM organizations o,
     ('Conference Area', 'room', 8, 'Meeting space for workshops and discussions', '{"min_booking_hours": 1, "max_booking_hours": 4}')
 ) AS r(name, type, capacity, description, rules)
 WHERE o.slug = 'oolite';
+

@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import OoliteAIToolsPage from '@/components/page/OoliteAIToolsPage';
 
-export default function OoliteAIToolsPageRoute() {
+function OoliteAIToolsPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
 
   if (isLoading) {
@@ -46,5 +46,13 @@ export default function OoliteAIToolsPageRoute() {
         <OoliteAIToolsPage />
       </div>
     </TenantLayout>
+  );
+}
+
+export default function OoliteAIToolsPageRoute() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OoliteAIToolsPageContent />
+    </Suspense>
   );
 }

@@ -261,3 +261,4 @@ export function getTenantMetadata(tenantId: string) {
     logo: config.theme.logo,
   };
 }
+

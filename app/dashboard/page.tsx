@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import { Badge } from '@/components/ui/Badge'
-import OrganizationLogo from '@/components/ui/OrganizationLogo'
+import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 
 interface UserProfile {
   id: string
@@ -65,11 +65,12 @@ interface Announcement {
   }
 }
 
-export default function DashboardPage() {
+function DashboardPageContent() {
   const { user, isLoaded } = useUser()
   const router = useRouter()
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [organization, setOrganization] = useState<Organization | null>(null)
+  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [recentAnnouncements, setRecentAnnouncements] = useState<Announcement[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -82,8 +83,10 @@ export default function DashboardPage() {
         const userResponse = await fetch('/api/users/me')
         if (userResponse.ok) {
           const userData = await userResponse.json()
+          console.log('📊 Dashboard data loaded:', userData)
           setUserProfile(userData.user)
           setOrganization(userData.organization)
+          setOrganizations(userData.organizations || [])
         }
 
         // Load recent announcements
@@ -223,73 +226,65 @@ export default function DashboardPage() {
         </div>
 
         {/* Organization Access */}
-        {userProfile?.role === 'super_admin' && (
+        {(organizations.length > 0 || userProfile?.role === 'admin') && (
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Your Organizations</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Your Organizations ({organizations.length})</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Link
-                href="/o/bakehouse"
-                className="bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
-              >
-                <div className="flex items-center space-x-3">
-                  <OrganizationLogo 
-                    organization={{ name: 'Bakehouse Art Complex', slug: 'bakehouse' }}
-                    size="md"
-                  />
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Bakehouse</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Art Complex</p>
+              {organizations.map((org) => (
+                <Link
+                  key={org.id}
+                  href={`/o/${org.slug}`}
+                  className="bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+                >
+                  <div className="flex items-center space-x-3">
+                    <OrganizationLogo 
+                      organizationSlug={org.slug}
+                      size="md"
+                    />
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{org.name}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{org.slug}</p>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              ))}
               
-              <Link
-                href="/o/oolite"
-                className="bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
-              >
-                <div className="flex items-center space-x-3">
-                  <OrganizationLogo 
-                    organization={{ name: 'Oolite Arts', slug: 'oolite' }}
-                    size="md"
-                  />
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Oolite Arts</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Artist Support</p>
-                  </div>
-                </div>
-              </Link>
-              
-              <Link
-                href="/o/fountainhead"
-                className="bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
-              >
-                <div className="flex items-center space-x-3">
-                  <OrganizationLogo 
-                    organization={{ name: 'Fountainhead', slug: 'fountainhead' }}
-                    size="md"
-                  />
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Fountainhead</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Artist Studios</p>
-                  </div>
-                </div>
-              </Link>
-
-              <Link
-                href="/o/locust-projects"
-                className="bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
-              >
-                <div className="flex items-center space-x-3">
-                  <OrganizationLogo 
-                    organization={{ name: 'Locust Projects', slug: 'locust-projects' }}
-                    size="md"
-                  />
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Locust Projects</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Contemporary Art</p>
-                  </div>
-                </div>
-              </Link>
+              {/* Fallback organizations if API doesn't return any */}
+              {organizations.length === 0 && userProfile?.role === 'admin' && (
+                <>
+                  <Link
+                    href="/o/bakehouse"
+                    className="bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <OrganizationLogo 
+                        organizationSlug="bakehouse"
+                        size="md"
+                      />
+                      <div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">Bakehouse Art Complex</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">bakehouse</p>
+                      </div>
+                    </div>
+                  </Link>
+                  
+                  <Link
+                    href="/o/oolite"
+                    className="bg-white dark:bg-gray-800 rounded-lg p-4 hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <OrganizationLogo 
+                        organizationSlug="oolite"
+                        size="md"
+                      />
+                      <div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">Oolite Arts</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">oolite</p>
+                      </div>
+                    </div>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -429,7 +424,7 @@ export default function DashboardPage() {
                           <div className="flex items-center space-x-3 mb-2">
                             {announcement.organization && (
                               <OrganizationLogo 
-                                organization={announcement.organization}
+                                organizationSlug={announcement.organization.slug}
                                 size="sm"
                               />
                             )}
@@ -489,4 +484,12 @@ export default function DashboardPage() {
       </div>
     </div>
   )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DashboardPageContent />
+    </Suspense>
+  );
 }

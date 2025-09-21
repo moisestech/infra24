@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard';
 
-export default function OoliteAnalyticsPage() {
+function OoliteAnalyticsPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
 
   if (isLoading) {
@@ -50,3 +50,12 @@ export default function OoliteAnalyticsPage() {
     </TenantLayout>
   );
 }
+
+export default function OoliteAnalyticsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OoliteAnalyticsPageContent />
+    </Suspense>
+  );
+}
+

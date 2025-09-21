@@ -688,3 +688,4 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Migration Complete
 -- The database is now ready for the Infra24 multi-tenant platform
+

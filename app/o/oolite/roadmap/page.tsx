@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import OoliteRoadmapPage from '@/components/page/OoliteRoadmapPage';
 
-export default function OoliteRoadmapPageRoute() {
+function OoliteRoadmapPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
 
   if (isLoading) {
@@ -46,5 +46,13 @@ export default function OoliteRoadmapPageRoute() {
         <OoliteRoadmapPage />
       </div>
     </TenantLayout>
+  );
+}
+
+export default function OoliteRoadmapPageRoute() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OoliteRoadmapPageContent />
+    </Suspense>
   );
 }

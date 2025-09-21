@@ -185,3 +185,4 @@ async function createMockBookingData() {
 
 // Run the script
 createMockBookingData();
+

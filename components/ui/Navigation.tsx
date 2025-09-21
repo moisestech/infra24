@@ -15,10 +15,20 @@ import {
   Filter,
   Menu,
   X,
-  Building2
+  Building2,
+  Shield,
+  BarChart3,
+  FileText,
+  Map,
+  DollarSign,
+  TrendingUp,
+  Bot,
+  Calendar,
+  Microscope,
+  GraduationCap
 } from 'lucide-react'
 import { Infra24Logo } from './Infra24Logo'
-import OrganizationLogo from './OrganizationLogo'
+import { OrganizationLogo } from './OrganizationLogo'
 import ArtistIcon from './ArtistIcon'
 import { ClerkClientService } from '@/lib/clerk-client'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -43,6 +53,10 @@ export default function Navigation({ className = '' }: NavigationProps) {
   const [currentOrg, setCurrentOrg] = useState<Organization | null>(null)
   const [userRole, setUserRole] = useState<string>('')
   const [loading, setLoading] = useState(true)
+  
+  // Detect if we're on an organization page
+  const isOnOrgPage = pathname.startsWith('/o/')
+  const orgSlug = isOnOrgPage ? pathname.split('/')[2] : null
 
   useEffect(() => {
     async function loadUserData() {
@@ -142,19 +156,18 @@ export default function Navigation({ className = '' }: NavigationProps) {
         <div className="flex justify-between h-16">
           {/* Left side - Logo and main nav */}
           <div className="flex items-center space-x-8">
-            {/* Infra24 Logo - takes you to home */}
-            <Link href="/" className="flex items-center">
-              <Infra24Logo size="lg" showText={true} />
-            </Link>
-            
-            {/* Organization Logo - takes you to current org */}
-            {currentOrg && currentOrg.logo_url && (
-              <Link href={`/o/${currentOrg.slug}`} className="flex items-center">
-                <img 
-                  src={currentOrg.logo_url} 
-                  alt={currentOrg.name}
-                  className="h-8 w-auto"
+            {/* Logo - Organization logo when on org pages, Infra24 logo otherwise */}
+            {isOnOrgPage && orgSlug ? (
+              <Link href={`/o/${orgSlug}`} className="flex items-center">
+                <OrganizationLogo 
+                  organizationSlug={orgSlug} 
+                  variant="horizontal" 
+                  size="lg" 
                 />
+              </Link>
+            ) : (
+              <Link href="/" className="flex items-center">
+                <Infra24Logo size="lg" showText={true} />
               </Link>
             )}
 
@@ -162,15 +175,156 @@ export default function Navigation({ className = '' }: NavigationProps) {
             <div className="hidden lg:flex items-center space-x-1">
               <Link 
                 href="/"
-                className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                   isActive('/') 
                     ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
                 }`}
               >
-                <Home className="h-4 w-4" />
-                <span className="nav-text-hidden lg:block">Home</span>
+                <Home className="h-6 w-6 xl:h-4 xl:w-4" />
+                <span className="nav-text-hidden xl:block">Home</span>
               </Link>
+
+              {/* Organization Navigation - Show when on org pages */}
+              {isOnOrgPage && orgSlug && (
+                <>
+                  <Link 
+                    href={`/o/${orgSlug}`}
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                      isActive(`/o/${orgSlug}`) 
+                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
+                    }`}
+                  >
+                    <Home className="h-6 w-6 xl:h-4 xl:w-4" />
+                    <span className="nav-text-hidden xl:block">Overview</span>
+                  </Link>
+
+                  <Link 
+                    href={`/o/${orgSlug}/digital-lab`}
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                      isActiveStartsWith(`/o/${orgSlug}/digital-lab`) 
+                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
+                    }`}
+                  >
+                    <Microscope className="h-6 w-6 xl:h-4 xl:w-4" />
+                    <span className="nav-text-hidden xl:block">Digital Lab</span>
+                  </Link>
+
+                  <Link 
+                    href={`/o/${orgSlug}/workshops`}
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                      isActiveStartsWith(`/o/${orgSlug}/workshops`) 
+                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
+                    }`}
+                  >
+                    <GraduationCap className="h-6 w-6 xl:h-4 xl:w-4" />
+                    <span className="nav-text-hidden xl:block">Workshops</span>
+                  </Link>
+
+                  <Link 
+                    href={`/o/${orgSlug}/announcements/display`}
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                      isActiveStartsWith(`/o/${orgSlug}/announcements`) 
+                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
+                    }`}
+                  >
+                    <Bell className="h-6 w-6 xl:h-4 xl:w-4" />
+                    <span className="nav-text-hidden xl:block">Announcements</span>
+                  </Link>
+
+                  <Link 
+                    href={`/o/${orgSlug}/users`}
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                      isActiveStartsWith(`/o/${orgSlug}/users`) 
+                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
+                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
+                    }`}
+                  >
+                    <Users className="h-6 w-6 xl:h-4 xl:w-4" />
+                    <span className="nav-text-hidden xl:block">Members</span>
+                  </Link>
+
+                  {/* Admin Dropdown for Organization Pages */}
+                  {(userRole === 'org_admin' || userRole === 'super_admin' || userRole === 'moderator') && (
+                    <div className="relative group">
+                      <button className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105 transition-all duration-200">
+                        <Shield className="h-6 w-6 xl:h-4 xl:w-4" />
+                        <span className="nav-text-hidden xl:block">Admin</span>
+                        <ChevronDown className="h-4 w-4 hidden xl:block" />
+                      </button>
+                      
+                      <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div className="py-2">
+                          <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              Admin Tools
+                            </div>
+                          </div>
+                          
+                          <Link 
+                            href={`/o/${orgSlug}/analytics`}
+                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <BarChart3 className="h-4 w-4" />
+                            <div>
+                              <div>Analytics</div>
+                              <div className="text-xs opacity-75">Performance metrics and insights</div>
+                            </div>
+                          </Link>
+                          
+                          <Link 
+                            href={`/o/${orgSlug}/surveys`}
+                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <FileText className="h-4 w-4" />
+                            <div>
+                              <div>Surveys</div>
+                              <div className="text-xs opacity-75">Survey management and analytics</div>
+                            </div>
+                          </Link>
+                          
+                          <Link 
+                            href={`/o/${orgSlug}/roadmap`}
+                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <Map className="h-4 w-4" />
+                            <div>
+                              <div>Roadmap</div>
+                              <div className="text-xs opacity-75">Strategic development plan</div>
+                            </div>
+                          </Link>
+                          
+                          <Link 
+                            href={`/o/${orgSlug}/budget`}
+                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <DollarSign className="h-4 w-4" />
+                            <div>
+                              <div>Budget</div>
+                              <div className="text-xs opacity-75">Financial planning and costs</div>
+                            </div>
+                          </Link>
+                          
+                          <Link 
+                            href={`/o/${orgSlug}/impact-roi`}
+                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <TrendingUp className="h-4 w-4" />
+                            <div>
+                              <div>Impact & ROI</div>
+                              <div className="text-xs opacity-75">Success metrics and outcomes</div>
+                            </div>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
 
               {/* Organizations Dropdown */}
               <div className="relative group">
@@ -348,7 +502,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
                               href={`/o/${org.slug}`}
                               className="flex items-center space-x-2 px-2 py-1 rounded text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
-                              <OrganizationLogo organization={org} size="sm" />
+                              <OrganizationLogo organizationSlug={org.slug} variant="horizontal" size="sm" />
                             </Link>
                           ))}
                         </div>
@@ -408,6 +562,23 @@ export default function Navigation({ className = '' }: NavigationProps) {
         {isMobileMenuOpen && (
           <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+              {/* Show organization logo in mobile menu when on org pages */}
+              {isOnOrgPage && orgSlug && (
+                <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700 mb-2">
+                  <Link 
+                    href={`/o/${orgSlug}`}
+                    className="flex items-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <OrganizationLogo 
+                      organizationSlug={orgSlug} 
+                      variant="horizontal" 
+                      size="md" 
+                    />
+                  </Link>
+                </div>
+              )}
+              
               <Link
                 href="/"
                 className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -479,7 +650,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <div className="flex items-center space-x-2">
-                          <OrganizationLogo organization={org} size="sm" />
+                          <OrganizationLogo organizationSlug={org.slug} variant="horizontal" size="sm" />
                           <span>{org.name}</span>
                         </div>
                       </Link>

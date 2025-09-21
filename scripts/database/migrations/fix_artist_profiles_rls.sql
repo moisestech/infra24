@@ -23,3 +23,4 @@ USING (true);
 -- Grant necessary permissions
 GRANT SELECT ON artist_profiles TO public;
 GRANT SELECT ON artist_profiles TO authenticated;
+

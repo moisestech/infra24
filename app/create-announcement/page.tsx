@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { AnnouncementType, AnnouncementSubType } from "@/types/announcement";
 
 const announcementSchema = z.object({
@@ -25,7 +25,7 @@ const subTypeOptions: Record<AnnouncementType, AnnouncementSubType[]> = {
   administrative: ["survey", "deadline", "reminder", "meeting", "critique"],
 };
 
-export default function CreateAnnouncementPage() {
+function CreateAnnouncementPageContent() {
   const [success, setSuccess] = useState(false);
   const {
     register,
@@ -121,5 +121,13 @@ export default function CreateAnnouncementPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function CreateAnnouncementPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CreateAnnouncementPageContent />
+    </Suspense>
   );
 } 

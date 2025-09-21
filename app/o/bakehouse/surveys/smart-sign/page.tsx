@@ -6,7 +6,7 @@ import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { SurveyForm } from '@/components/survey/SurveyForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { CheckCircle, Clock, Users, BarChart3, FileText, Monitor } from 'lucide-react';
 
 interface SurveyResponse {
@@ -25,39 +25,53 @@ const smartSignSurvey = {
   id: 'smart-sign-feedback-2024',
   title: 'Smart Sign System Feedback',
   description: 'Help us improve the Smart Sign system by sharing your experience and suggestions. This survey takes about 3-5 minutes to complete.',
-  organizationId: 'bakehouse',
-  status: 'active' as const,
-  submissionDeadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(), // 21 days from now
-  maxSubmissions: 50,
-  currentSubmissions: 0,
-  questions: [
+  category: 'feedback',
+  form_schema: {
+    title: 'Smart Sign System Feedback',
+    description: 'Help us improve the Smart Sign system by sharing your experience and suggestions. This survey takes about 3-5 minutes to complete.',
+    questions: [
     {
       id: 'sign_visibility',
       type: 'rating' as const,
-      label: 'How visible and noticeable is the Smart Sign?',
+      question: 'How visible and noticeable is the Smart Sign?',
       description: 'Rate from 1 (not visible at all) to 5 (very visible)',
-      required: true
+      required: true,
+      scale: 5,
+      labels: {
+        low: 'Not visible at all',
+        high: 'Very visible'
+      }
     },
     {
       id: 'content_relevance',
       type: 'rating' as const,
-      label: 'How relevant is the content displayed on the Smart Sign?',
+      question: 'How relevant is the content displayed on the Smart Sign?',
       description: 'Rate from 1 (not relevant) to 5 (very relevant)',
-      required: true
+      required: true,
+      scale: 5,
+      labels: {
+        low: 'Not relevant',
+        high: 'Very relevant'
+      }
     },
     {
       id: 'content_freshness',
       type: 'rating' as const,
-      label: 'How fresh and up-to-date is the content?',
+      question: 'How fresh and up-to-date is the content?',
       description: 'Rate from 1 (outdated) to 5 (always current)',
-      required: true
+      required: true,
+      scale: 5,
+      labels: {
+        low: 'Outdated',
+        high: 'Always current'
+      }
     },
     {
       id: 'sign_usage_frequency',
       type: 'radio' as const,
-      label: 'How often do you look at the Smart Sign?',
+      question: 'How often do you look at the Smart Sign?',
       required: true,
-      options: [
+      choices: [
         'Every time I pass by',
         'Most of the time',
         'Sometimes',
@@ -68,9 +82,9 @@ const smartSignSurvey = {
     {
       id: 'useful_information',
       type: 'checkbox' as const,
-      label: 'What information do you find most useful on the Smart Sign? (Select all that apply)',
+      question: 'What information do you find most useful on the Smart Sign? (Select all that apply)',
       required: false,
-      options: [
+      choices: [
         'Upcoming events',
         'Workshop schedules',
         'Artist announcements',
@@ -84,9 +98,9 @@ const smartSignSurvey = {
     {
       id: 'content_preferences',
       type: 'select' as const,
-      label: 'What type of content would you like to see more of?',
+      question: 'What type of content would you like to see more of?',
       required: false,
-      options: [
+      choices: [
         'More event announcements',
         'More workshop information',
         'More artist spotlights',
@@ -99,9 +113,9 @@ const smartSignSurvey = {
     {
       id: 'sign_location',
       type: 'radio' as const,
-      label: 'Is the Smart Sign location convenient for you?',
+      question: 'Is the Smart Sign location convenient for you?',
       required: true,
-      options: [
+      choices: [
         'Very convenient',
         'Somewhat convenient',
         'Neutral',
@@ -112,46 +126,54 @@ const smartSignSurvey = {
     {
       id: 'technical_issues',
       type: 'boolean' as const,
-      label: 'Have you noticed any technical issues with the Smart Sign?',
+      question: 'Have you noticed any technical issues with the Smart Sign?',
       description: 'Such as display problems, connectivity issues, or content not updating',
       required: false
     },
     {
       id: 'technical_issues_description',
       type: 'textarea' as const,
-      label: 'If you noticed technical issues, please describe them:',
+      question: 'If you noticed technical issues, please describe them:',
       required: false,
-      validation: {
-        maxLength: 300
-      }
+      placeholder: 'Describe any technical issues you\'ve observed...'
     },
     {
       id: 'improvement_suggestions',
       type: 'textarea' as const,
-      label: 'What improvements would you suggest for the Smart Sign system?',
+      question: 'What improvements would you suggest for the Smart Sign system?',
       description: 'Please share any ideas for better content, features, or functionality',
       required: false,
-      validation: {
-        maxLength: 500
-      }
+      placeholder: 'Share your improvement ideas...'
     },
     {
       id: 'overall_satisfaction',
       type: 'rating' as const,
-      label: 'Overall, how satisfied are you with the Smart Sign system?',
+      question: 'Overall, how satisfied are you with the Smart Sign system?',
       description: 'Rate from 1 (very dissatisfied) to 5 (very satisfied)',
-      required: true
+      required: true,
+      scale: 5,
+      labels: {
+        low: 'Very dissatisfied',
+        high: 'Very satisfied'
+      }
     },
     {
       id: 'additional_comments',
       type: 'textarea' as const,
-      label: 'Any additional comments about the Smart Sign system?',
+      question: 'Any additional comments about the Smart Sign system?',
       required: false,
-      validation: {
-        maxLength: 1000
-      }
+      placeholder: 'Share any additional thoughts...'
     }
   ]
+  },
+  submission_settings: {
+    allow_anonymous: false,
+    require_authentication: true,
+    max_submissions_per_user: 1
+  },
+  submissionDeadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(), // 21 days from now
+  maxSubmissions: 50,
+  currentSubmissions: 0
 };
 
 export default function SmartSignSurveyPage() {
@@ -421,11 +443,11 @@ export default function SmartSignSurveyPage() {
                 <div className="p-6">
                   <SurveyForm
                     survey={smartSignSurvey}
-                    onSubmit={handleSubmitSurvey}
-                    onSaveDraft={handleSaveDraft}
-                    initialResponses={currentResponse}
-                    isSubmitting={isSubmitting}
-                    isSaving={isSaving}
+                    organization={{
+                      id: 'bakehouse',
+                      name: 'Bakehouse Art Complex',
+                      slug: 'bakehouse'
+                    }}
                   />
                   <div className="mt-4 flex justify-end">
                     <Button 
@@ -488,3 +510,4 @@ export default function SmartSignSurveyPage() {
     </TenantLayout>
   );
 }
+

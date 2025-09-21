@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Clock, Users, Calendar, ArrowRight } from 'lucide-react';
 import { getWorkshopsForOrganization, getWorkshopCategories } from '@/lib/workshops/shared-workshops';
 
@@ -68,7 +68,7 @@ export default function OoliteWorkshopsPage() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <Badge variant="outline">{workshop.category}</Badge>
+                      <Badge variant="default">{workshop.category}</Badge>
                       <Badge className={
                         workshop.level === 'beginner' ? 'bg-green-100 text-green-800' :
                         workshop.level === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :

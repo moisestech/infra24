@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import { OrbitingCircles } from '@/components/magicui/orbiting-circles';
 import { SparklesText } from '@/components/magicui/sparkles-text';
@@ -109,7 +109,7 @@ const organizations: Organization[] = [
   }
 ];
 
-export default function HomePage() {
+function HomePageContent() {
   const [announcements, setAnnouncements] = useState<PublicAnnouncement[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -806,5 +806,13 @@ export default function HomePage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomePageContent />
+    </Suspense>
   );
 }

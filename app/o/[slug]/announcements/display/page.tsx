@@ -7,7 +7,7 @@ import { ArrowLeft, Eye, List, EyeOff, Building2, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { AnnouncementCarousel, OrganizationThemeProvider } from '@/components/AnnouncementCarousel';
 import { Announcement } from '@/types/announcement';
-import OrganizationLogo from '@/components/ui/OrganizationLogo';
+import { OrganizationLogo } from '@/components/ui/OrganizationLogo';
 
 interface Organization {
   id: string;
@@ -205,9 +205,9 @@ export default function AnnouncementDisplayPage() {
                 <div className="flex items-center space-x-3">
                   {organization && (
                     <OrganizationLogo 
-                      organization={organization}
+                      organizationSlug={organization.slug}
                       size="md"
-                      orientation="horizontal"
+                      variant="horizontal"
                       className="h-8"
                     />
                   )}

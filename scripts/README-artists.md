@@ -162,3 +162,4 @@ Use the browser's developer tools to check:
 - **Exhibition History**: Track artist exhibitions and shows
 
 
+

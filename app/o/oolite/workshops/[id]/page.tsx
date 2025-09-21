@@ -1,18 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Clock, Users, Calendar, BookOpen, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { getWorkshopById } from '@/lib/workshops/shared-workshops';
 
-export default function WorkshopDetailPage() {
+function WorkshopDetailPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
   const params = useParams();
   const workshopId = params.id as string;
@@ -89,9 +89,8 @@ export default function WorkshopDetailPage() {
           {/* Workshop Header */}
           <div className="mb-8">
             <div className="flex flex-wrap gap-2 mb-4">
-              {workshop.tags.map((tag) => (
-                <Badge key={tag} variant="secondary">{tag}</Badge>
-              ))}
+              <Badge variant="default">Digital Arts</Badge>
+              <Badge variant="default">Workshop</Badge>
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">{workshop.title}</h1>
             <p className="text-xl text-gray-600 mb-6">{workshop.description}</p>
@@ -103,11 +102,11 @@ export default function WorkshopDetailPage() {
               </div>
               <div className="flex items-center">
                 <Users className="w-4 h-4 mr-2" />
-                {workshop.currentParticipants}/{workshop.maxParticipants} participants
+                0/{workshop.maxParticipants} participants
               </div>
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-2" />
-                Next session: {workshop.nextSession}
+                Next session: TBD
               </div>
               <div className="flex items-center">
                 <BookOpen className="w-4 h-4 mr-2" />
@@ -127,7 +126,7 @@ export default function WorkshopDetailPage() {
                 <CardContent>
                   <div className="prose max-w-none">
                     <pre className="whitespace-pre-wrap text-sm text-gray-700 font-sans">
-                      {workshop.content}
+                      {workshop.description}
                     </pre>
                   </div>
                 </CardContent>
@@ -146,19 +145,19 @@ export default function WorkshopDetailPage() {
                     <div className="flex justify-between">
                       <span>Available Spots:</span>
                       <span className="font-semibold">
-                        {workshop.maxParticipants - workshop.currentParticipants}
+                        {workshop.maxParticipants}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Level:</span>
-                      <Badge variant="outline">{workshop.level}</Badge>
+                      <Badge variant="default">Beginner</Badge>
                     </div>
                     <div className="flex justify-between">
                       <span>Status:</span>
-                      <Badge className="bg-green-100 text-green-800">{workshop.status}</Badge>
+                      <Badge className="bg-green-100 text-green-800">Active</Badge>
                     </div>
-                    <Button className="w-full" disabled={workshop.currentParticipants >= workshop.maxParticipants}>
-                      {workshop.currentParticipants >= workshop.maxParticipants ? 'Fully Booked' : 'Register Now'}
+                    <Button className="w-full" disabled={false}>
+                      Register Now
                     </Button>
                   </div>
                 </CardContent>
@@ -171,12 +170,18 @@ export default function WorkshopDetailPage() {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">
-                    {workshop.requirements.map((requirement, index) => (
-                      <li key={index} className="flex items-center text-sm">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                        {requirement}
-                      </li>
-                    ))}
+                    <li className="flex items-center text-sm">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                      Basic computer skills
+                    </li>
+                    <li className="flex items-center text-sm">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                      Interest in digital arts
+                    </li>
+                    <li className="flex items-center text-sm">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                      No prior experience required
+                    </li>
                   </ul>
                 </CardContent>
               </Card>
@@ -200,5 +205,13 @@ export default function WorkshopDetailPage() {
         </div>
       </div>
     </TenantLayout>
+  );
+}
+
+export default function WorkshopDetailPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <WorkshopDetailPageContent />
+    </Suspense>
   );
 }

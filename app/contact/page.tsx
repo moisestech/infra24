@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { Mail, Send, CheckCircle } from 'lucide-react';
 import PublicNavigation from '@/components/ui/PublicNavigation';
 
-export default function ContactPage() {
+function ContactPageContent() {
   const [emailSent, setEmailSent] = useState(false);
 
   const handleEmailClick = () => {
@@ -114,5 +114,13 @@ export default function ContactPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ContactPageContent />
+    </Suspense>
   );
 }

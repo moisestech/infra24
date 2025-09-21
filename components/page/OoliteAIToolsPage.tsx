@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { 
   Brain, 
   Video, 
@@ -151,7 +151,7 @@ export default function OoliteAIToolsPage() {
                     </div>
                     <div>
                       <CardTitle className="text-xl">{tool.name}</CardTitle>
-                      <Badge variant="outline" className="mt-1">
+                      <Badge variant="default" className="mt-1">
                         {tool.category}
                       </Badge>
                     </div>
@@ -167,7 +167,7 @@ export default function OoliteAIToolsPage() {
                       <h4 className="font-semibold text-gray-900 mb-2">Key Features</h4>
                       <div className="flex flex-wrap gap-1">
                         {tool.features.map((feature, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
+                          <Badge key={index} variant="default" className="text-xs">
                             {feature}
                           </Badge>
                         ))}
@@ -178,7 +178,7 @@ export default function OoliteAIToolsPage() {
                     <div className="flex justify-between items-center">
                       <div>
                         <span className="text-sm text-gray-600">Pricing: </span>
-                        <Badge variant="outline">{tool.pricing}</Badge>
+                        <Badge variant="default">{tool.pricing}</Badge>
                       </div>
                       <div>
                         <span className="text-sm text-gray-600">Level: </span>

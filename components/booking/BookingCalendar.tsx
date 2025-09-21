@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Calendar, Clock, Users, MapPin, Plus, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -247,3 +247,4 @@ export function BookingCalendar({
     </Card>
   );
 }
+

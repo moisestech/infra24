@@ -7,7 +7,7 @@ import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Clock, Users, Calendar, ArrowRight } from 'lucide-react';
 import { getWorkshopsForOrganization, getWorkshopCategories } from '@/lib/workshops/shared-workshops';
 
@@ -108,7 +108,7 @@ export default function BakehouseWorkshopsPage() {
                     <CardHeader>
                       <div className="flex justify-between items-start mb-2">
                         <CardTitle className="text-xl">{workshop.title}</CardTitle>
-                        <Badge className="bg-green-100 text-green-800">{workshop.status}</Badge>
+                        <Badge variant="default" className="bg-green-100 text-green-800">Active</Badge>
                       </div>
                       <CardDescription>{workshop.description}</CardDescription>
                     </CardHeader>
@@ -122,28 +122,26 @@ export default function BakehouseWorkshopsPage() {
                           </div>
                           <div className="flex items-center">
                             <Users className="w-4 h-4 mr-2" />
-                            {workshop.currentParticipants}/{workshop.maxParticipants} participants
+                            0/{workshop.maxParticipants || 'N/A'} participants
                           </div>
                           <div className="flex items-center">
                             <Calendar className="w-4 h-4 mr-2" />
-                            Next: {workshop.nextSession}
+                            Next: TBD
                           </div>
                         </div>
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-1">
-                          {workshop.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
+                          <Badge variant="default" className="text-xs">
+                            Digital Arts
+                          </Badge>
                         </div>
 
                         {/* Level and Availability */}
                         <div className="flex justify-between items-center">
-                          <Badge variant="outline">{workshop.level}</Badge>
+                          <Badge variant="default">Beginner</Badge>
                           <span className="text-sm text-gray-600">
-                            {workshop.maxParticipants - workshop.currentParticipants} spots left
+                            {workshop.maxParticipants || 'N/A'} spots available
                           </span>
                         </div>
 
@@ -184,3 +182,4 @@ export default function BakehouseWorkshopsPage() {
     </TenantLayout>
   );
 }
+

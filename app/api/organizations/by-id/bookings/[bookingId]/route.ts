@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orgId: string; bookingId: string } }
+  { params }: { params: Promise<{ orgId: string; bookingId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -12,8 +12,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const supabase = createClient();
-    const { orgId, bookingId } = params;
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+    const { orgId, bookingId } = await params;
 
     const { data: booking, error } = await supabase
       .from('bookings')
@@ -41,7 +41,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { orgId: string; bookingId: string } }
+  { params }: { params: Promise<{ orgId: string; bookingId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -49,8 +49,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const supabase = createClient();
-    const { orgId, bookingId } = params;
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+    const { orgId, bookingId } = await params;
     const body = await request.json();
 
     // Check if user has permission to update this booking
@@ -108,7 +108,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { orgId: string; bookingId: string } }
+  { params }: { params: Promise<{ orgId: string; bookingId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -116,8 +116,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const supabase = createClient();
-    const { orgId, bookingId } = params;
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+    const { orgId, bookingId } = await params;
 
     // Check if user has permission to delete this booking
     const { data: booking } = await supabase

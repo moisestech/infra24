@@ -283,3 +283,4 @@ CREATE POLICY org_isolation_bookings ON bookings
 ---
 
 *This migration plan ensures a smooth transition from the tech-nonprofit structure to the comprehensive Infra24 platform while maintaining all valuable functionality and improving the overall user experience.*
+

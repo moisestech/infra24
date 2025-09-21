@@ -74,3 +74,4 @@ async function checkSchema() {
 
 // Run the script
 checkSchema().catch(console.error);
+

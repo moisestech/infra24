@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useParams } from 'next/navigation'
-import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit } from 'lucide-react'
+import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import ArtistIcon from '@/components/ui/ArtistIcon'
-import OrganizationLogo from '@/components/ui/OrganizationLogo'
+import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 
 interface Organization {
   id: string
@@ -184,9 +184,10 @@ export default function OrganizationPage() {
             <div className="flex-1">
               <div className="flex items-center space-x-3 4xl:space-x-6 mb-2 4xl:mb-4">
                 <OrganizationLogo 
-                  organization={organization}
+                  organizationSlug={organization.slug}
+                  variant="horizontal"
                   size="lg"
-                  className="h-12 w-12 4xl:h-24 4xl:w-24"
+                  className="h-12 4xl:h-24"
                 />
                 <h1 className="text-3xl 4xl:text-6xl font-bold text-gray-900 dark:text-white">
                   {organization.name}
@@ -299,18 +300,85 @@ export default function OrganizationPage() {
               </div>
             </a>
 
-            {(userRole === 'org_admin' || userRole === 'super_admin' || userRole === 'moderator') && (
+            <a
+              href={`/o/${organization.slug}/surveys`}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center">
+                <ClipboardList className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-indigo-600 dark:text-indigo-400 mr-2" />
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Surveys</p>
+                </div>
+              </div>
+            </a>
+
+            <a
+              href={`/o/${organization.slug}/xr`}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg shadow-sm p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center">
+                <Globe className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-white mr-2" />
+                <div>
+                  <p className="font-medium text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">XR Experiences</p>
+                  <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-purple-100">VR & Maquettes</p>
+                </div>
+              </div>
+            </a>
+
+            <a
+              href={`/o/${organization.slug}/workshops`}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center">
+                <Calendar className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-pink-600 dark:text-pink-400 mr-2" />
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Workshops</p>
+                </div>
+              </div>
+            </a>
+
+            {/* Oolite-specific Digital Lab link */}
+            {organization.slug === 'oolite' && (
               <a
-                href={`/o/${organization.slug}/announcements/create`}
-                className="bg-blue-600 text-white rounded-lg shadow-sm p-3 hover:bg-blue-700 transition-colors"
+                href={`/o/${organization.slug}/digital`}
+                className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg shadow-sm p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center">
-                  <Edit className="h-5 w-5 mr-2" />
+                  <Globe className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-white mr-2" />
                   <div>
-                    <p className="font-medium text-sm">Create</p>
+                    <p className="font-medium text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Digital Lab</p>
+                    <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-cyan-100">XR & Technology</p>
                   </div>
                 </div>
               </a>
+            )}
+
+            {(userRole === 'org_admin' || userRole === 'super_admin' || userRole === 'moderator') && (
+              <>
+                <a
+                  href={`/o/${organization.slug}/announcements/create`}
+                  className="bg-blue-600 text-white rounded-lg shadow-sm p-3 hover:bg-blue-700 transition-colors"
+                >
+                  <div className="flex items-center">
+                    <Edit className="h-5 w-5 mr-2" />
+                    <div>
+                      <p className="font-medium text-sm">Create</p>
+                    </div>
+                  </div>
+                </a>
+                
+                <a
+                  href={`/o/${organization.slug}/admin/surveys`}
+                  className="bg-indigo-600 text-white rounded-lg shadow-sm p-3 hover:bg-indigo-700 transition-colors"
+                >
+                  <div className="flex items-center">
+                    <ClipboardList className="h-5 w-5 mr-2" />
+                    <div>
+                      <p className="font-medium text-sm">Manage Surveys</p>
+                    </div>
+                  </div>
+                </a>
+              </>
             )}
           </div>
         </div>

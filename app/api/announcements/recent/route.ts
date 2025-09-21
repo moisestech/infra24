@@ -23,7 +23,7 @@ export async function GET() {
     // Get the requesting user's membership to check permissions
     const { data: requestingUserMembership } = await supabase
       .from('org_memberships')
-      .select('role, org_id')
+      .select('role, organization_id')
       .eq('clerk_user_id', userId)
       .single();
 
@@ -37,18 +37,20 @@ export async function GET() {
       .select(`
         id,
         title,
-        body,
-        status,
-        created_at,
-        published_at,
-        expires_at,
+        content,
+        type,
         priority,
-        tags,
-        org_id,
-        author_clerk_id,
+        visibility,
+        start_date,
+        end_date,
+        location,
+        created_at,
+        updated_at,
+        created_by,
+        organization_id,
         organizations!inner(id, name, slug)
       `)
-      .is('deleted_at', null)
+      .eq('is_active', true)
       .order('created_at', { ascending: false })
       .limit(10);
 
@@ -57,10 +59,10 @@ export async function GET() {
     // Regular users can only see their own announcements
     if (requestingUserMembership.role === 'super_admin') {
       // No additional filters needed
-    } else if (['org_admin', 'moderator'].includes(requestingUserMembership.role)) {
-      query = query.eq('org_id', requestingUserMembership.org_id);
+    } else if (['admin', 'manager'].includes(requestingUserMembership.role)) {
+      query = query.eq('organization_id', requestingUserMembership.organization_id);
     } else {
-      query = query.eq('author_clerk_id', userId);
+      query = query.eq('created_by', userId);
     }
 
     const { data: announcements, error: announcementsError } = await query;
@@ -77,18 +79,17 @@ export async function GET() {
         const { data: authorData } = await supabase
           .from('org_memberships')
           .select(`
-            clerk_user_id,
-            user_profiles!inner(first_name, last_name, email)
+            clerk_user_id
           `)
-          .eq('clerk_user_id', announcement.author_clerk_id)
+          .eq('clerk_user_id', announcement.created_by)
           .single();
 
         return {
           ...announcement,
           organization: announcement.organizations,
-          author: authorData?.user_profiles?.[0] ? {
-            name: `${authorData.user_profiles[0].first_name || ''} ${authorData.user_profiles[0].last_name || ''}`.trim() || 'Unknown User',
-            email: authorData.user_profiles[0].email
+          author: authorData ? {
+            name: 'User',
+            email: announcement.created_by
           } : null
         };
       })

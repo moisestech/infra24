@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
 // import { ClerkService } from '@/lib/clerk';
 import { Badge } from '@/components/ui/Badge';
@@ -28,7 +28,7 @@ interface ArtistProfile {
   updated_at: string;
 }
 
-export default function ClaimArtistPage() {
+function ClaimArtistPageContent() {
   const { user, isLoaded } = useUser();
   const [artists, setArtists] = useState<ArtistProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -334,5 +334,13 @@ export default function ClaimArtistPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ClaimArtistPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ClaimArtistPageContent />
+    </Suspense>
   );
 }

@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   MapPin, 
@@ -49,6 +49,7 @@ interface InteractiveStudioMapProps {
   svgUrl: string;
   onStudioClick: (studio: StudioShape) => void;
   onBookArtist: (profile: StudioProfile) => void;
+  onViewProfile?: (profile: StudioProfile) => void;
   onArtistsLoaded?: (artists: StudioProfile[]) => void;
   searchTerm?: string;
   filterType?: string;
@@ -59,7 +60,7 @@ interface InteractiveStudioMapProps {
 const StudioHoverCard: React.FC<{
   studio: StudioShape;
   onBook: (profile: StudioProfile) => void;
-  onViewProfile: (profile: StudioProfile) => void;
+  onViewProfile?: (profile: StudioProfile) => void;
   hoverTimeout: NodeJS.Timeout | null;
   setHoverTimeout: (timeout: NodeJS.Timeout | null) => void;
   setHoveredStudio: (studioId: string | null) => void;
@@ -83,6 +84,7 @@ const StudioHoverCard: React.FC<{
           // Clear any existing timeout when hovering over the card
           if (hoverTimeout) {
             clearTimeout(hoverTimeout);
+            setHoverTimeout(null);
           }
         }}
         onMouseLeave={() => {
@@ -93,7 +95,7 @@ const StudioHoverCard: React.FC<{
           setHoverTimeout(timeout);
         }}
       >
-        <Card className="w-80 shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+        <Card className="w-80 sm:w-96 shadow-xl border-0 bg-white/95 backdrop-blur-sm">
           <CardContent className="p-6">
             <div className="text-center">
               <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -129,6 +131,7 @@ const StudioHoverCard: React.FC<{
           // Clear any existing timeout when hovering over the card
           if (hoverTimeout) {
             clearTimeout(hoverTimeout);
+            setHoverTimeout(null);
           }
         }}
         onMouseLeave={() => {
@@ -139,7 +142,7 @@ const StudioHoverCard: React.FC<{
           setHoverTimeout(timeout);
         }}
       >
-        <Card className="w-80 shadow-xl border-0 bg-green-50/95 backdrop-blur-sm border-green-200">
+        <Card className="w-80 sm:w-96 shadow-xl border-0 bg-green-50/95 backdrop-blur-sm border-green-200">
           <CardContent className="p-6">
             <div className="text-center">
               <div className="w-24 h-24 bg-green-200 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -157,7 +160,7 @@ const StudioHoverCard: React.FC<{
     );
   }
 
-  const { profile } = studio;
+  const profile = studio.profile!;
 
   return (
     <motion.div
@@ -184,12 +187,12 @@ const StudioHoverCard: React.FC<{
         setHoverTimeout(timeout);
       }}
     >
-      <Card className="w-96 shadow-xl border-0 bg-white/95 backdrop-blur-sm overflow-hidden">
+      <Card className="w-80 sm:w-96 shadow-xl border-0 bg-white/95 backdrop-blur-sm overflow-hidden">
         {/* Background Banner */}
         <div 
           className="h-20 bg-gradient-to-r from-blue-500 to-blue-600 relative"
           style={{
-            backgroundImage: profile.avatarUrl ? `url(${profile.avatarUrl})` : 'none',
+            backgroundImage: profile?.avatarUrl ? `url(${profile.avatarUrl})` : 'none',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundBlendMode: 'overlay'
@@ -228,12 +231,12 @@ const StudioHoverCard: React.FC<{
               {profile.specialties && profile.specialties.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-4">
                   {profile.specialties.slice(0, 3).map((specialty, index) => (
-                    <Badge key={index} variant="secondary" className="text-sm">
+                    <Badge key={index} variant="default" className="text-sm">
                       {specialty}
                     </Badge>
                   ))}
                   {profile.specialties.length > 3 && (
-                    <Badge variant="secondary" className="text-sm">
+                    <Badge variant="default" className="text-sm">
                       +{profile.specialties.length - 3} more
                     </Badge>
                   )}
@@ -249,13 +252,15 @@ const StudioHoverCard: React.FC<{
                   <BookOpen className="w-5 h-5 mr-2" />
                   Book Visit
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  onClick={() => onViewProfile(profile)}
-                >
-                  <ExternalLink className="w-5 h-5" />
-                </Button>
+                {onViewProfile && (
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    onClick={() => onViewProfile(profile)}
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -271,6 +276,7 @@ export const InteractiveStudioMap: React.FC<InteractiveStudioMapProps> = ({
   svgUrl,
   onStudioClick,
   onBookArtist,
+  onViewProfile,
   onArtistsLoaded,
   searchTerm = '',
   filterType = 'all',
@@ -393,8 +399,8 @@ export const InteractiveStudioMap: React.FC<InteractiveStudioMapProps> = ({
           // Also create entries for common variations
           if (studioNumber.includes(',')) {
             // Handle cases like "1,15" - create entries for both
-            const numbers = studioNumber.split(',').map(n => n.trim());
-            numbers.forEach(num => {
+            const numbers = studioNumber.split(',').map((n: string) => n.trim());
+            numbers.forEach((num: string) => {
               profileMap[num] = profileMap[studioNumber];
             });
           }
@@ -571,8 +577,12 @@ export const InteractiveStudioMap: React.FC<InteractiveStudioMapProps> = ({
   };
 
   const handleViewProfile = (profile: StudioProfile) => {
-    // Navigate to artist profile page
-    window.open(`/artists/${profile.id}`, '_blank');
+    if (onViewProfile) {
+      onViewProfile(profile);
+    } else {
+      // Fallback: navigate to artist profile page
+      window.open(`/o/${orgSlug}/artists/${profile.id}`, '_blank');
+    }
   };
 
   // Filter studios based on search term and filter type
@@ -675,6 +685,14 @@ export const InteractiveStudioMap: React.FC<InteractiveStudioMapProps> = ({
                 }, 1000);
                 setHoverTimeout(timeout);
               }}
+              onTouchStart={() => {
+                // For mobile devices, show tooltip on touch
+                if (hoverTimeout) {
+                  clearTimeout(hoverTimeout);
+                  setHoverTimeout(null);
+                }
+                setHoveredStudio(studio.id);
+              }}
               onClick={() => handleStudioClick(studio)}
             >
               {/* Studio highlight overlay */}
@@ -739,7 +757,7 @@ export const InteractiveStudioMap: React.FC<InteractiveStudioMapProps> = ({
               {/* Hover Tooltip */}
               {hoveredStudio === studio.id && studio.profile && (
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-20">
-                  <div className="bg-gray-900 text-white text-sm rounded-lg p-4 shadow-xl border max-w-sm">
+                  <div className="bg-gray-900 text-white text-sm rounded-lg p-4 shadow-xl border max-w-xs sm:max-w-sm">
                     <div className="flex items-center gap-3 mb-3">
                       <Avatar className="w-12 h-12">
                         <AvatarImage src={studio.profile.avatarUrl || ''} alt={studio.profile.name} />
@@ -785,13 +803,20 @@ export const InteractiveStudioMap: React.FC<InteractiveStudioMapProps> = ({
                     )}
 
                     <div className="flex gap-2">
-                      <a
-                        href={`/o/bakehouse/artists/${studio.profile.id}`}
+                      <button
+                        onClick={() => handleViewProfile(studio.profile!)}
                         className="flex items-center gap-1 text-green-400 hover:text-green-300 text-sm"
                       >
                         <User className="w-4 h-4" />
                         View Profile
-                      </a>
+                      </button>
+                      <button
+                        onClick={() => handleBookArtist(studio.profile!)}
+                        className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        Book Visit
+                      </button>
                     </div>
                   </div>
                   {/* Tooltip arrow */}

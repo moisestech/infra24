@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
@@ -192,7 +192,7 @@ export const ArtistListDrawer: React.FC<ArtistListDrawerProps> = ({
                                 <h3 className="font-semibold text-gray-900 truncate">
                                   {artist.name}
                                 </h3>
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="default" className="text-xs">
                                   <MapPin className="w-3 h-3 mr-1" />
                                   {artist.studioNumber}
                                 </Badge>
@@ -201,12 +201,12 @@ export const ArtistListDrawer: React.FC<ArtistListDrawerProps> = ({
                               {artist.specialties && artist.specialties.length > 0 && (
                                 <div className="flex flex-wrap gap-1 mb-3">
                                   {artist.specialties.slice(0, 3).map((specialty, index) => (
-                                    <Badge key={index} variant="secondary" className="text-xs">
+                                    <Badge key={index} variant="default" className="text-xs">
                                       {specialty}
                                     </Badge>
                                   ))}
                                   {artist.specialties.length > 3 && (
-                                    <Badge variant="secondary" className="text-xs">
+                                    <Badge variant="default" className="text-xs">
                                       +{artist.specialties.length - 3}
                                     </Badge>
                                   )}

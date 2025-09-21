@@ -362,3 +362,4 @@ INSERT INTO organizations (name, slug, subscription_tier) VALUES
 -- Create a super admin user (replace with actual Clerk user ID)
 -- INSERT INTO users (clerk_user_id, email, first_name, last_name, organization_id, role) VALUES
 -- ('user_1234567890', 'admin@example.com', 'Super', 'Admin', (SELECT id FROM organizations WHERE slug = 'bakehouse'), 'owner');
+

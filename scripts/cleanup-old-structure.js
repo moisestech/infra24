@@ -208,3 +208,4 @@ async function main() {
 
 // Run the cleanup
 main().catch(console.error);
+

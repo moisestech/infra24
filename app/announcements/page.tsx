@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -56,7 +56,7 @@ interface AuthorInfo {
   image_url?: string
 }
 
-export default function AnnouncementsPage() {
+function AnnouncementsPageContent() {
   const { user, isLoaded } = useUser()
   const router = useRouter()
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
@@ -567,4 +567,12 @@ export default function AnnouncementsPage() {
       </div>
     </div>
   )
+}
+
+export default function AnnouncementsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AnnouncementsPageContent />
+    </Suspense>
+  );
 }

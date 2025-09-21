@@ -1,100 +1,219 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Building2 } from 'lucide-react'
+import React from 'react';
+import Image from 'next/image';
+import { useTheme } from '@/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 
 interface OrganizationLogoProps {
-  organization: {
-    name: string
-    slug: string
-    logo_url?: string
-    horizontal_logo_url?: string
-  }
-  size?: 'sm' | 'md' | 'lg'
-  shape?: 'circle' | 'square'
-  orientation?: 'square' | 'horizontal'
-  className?: string
-  showText?: boolean
-  autoHideOnMobile?: boolean
+  organizationSlug: string;
+  variant?: 'horizontal' | 'vertical' | 'icon';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  theme?: 'light' | 'dark' | 'auto';
+  className?: string;
+  alt?: string;
+  priority?: boolean;
 }
 
-export default function OrganizationLogo({ 
-  organization, 
-  size = 'md', 
-  shape = 'square',
-  orientation = 'square',
-  className = '',
-  showText = false,
-  autoHideOnMobile = false
+// Logo configuration for each organization
+const LOGO_CONFIG = {
+  oolite: {
+    name: 'Oolite Arts',
+    colors: {
+      primary: '#00B4D8', // Cyan Blue
+      secondary: '#FFFFFF', // White
+      dark: '#000000', // Black
+    },
+    logos: {
+      horizontal: {
+        light: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758209450/smart-sign/orgs/oolite/Oolite-Arts_Logotype_B_Blue_2019-01-29_gwaje2.png',
+        dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758209446/smart-sign/orgs/oolite/Oolite-Arts_Logotype_B_White_2019-01-29_mq3bw6.png',
+        highContrast: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758209446/smart-sign/orgs/oolite/Oolite-Arts_Logotype_B_Black_2019-01-29_yx8zao.png',
+      },
+    },
+  },
+  bakehouse: {
+    name: 'Bakehouse Arts Center',
+    colors: {
+      primary: '#8B4513', // Saddle Brown
+      secondary: '#D2691E', // Chocolate
+      accent: '#F4A460', // Sandy Brown
+    },
+    logos: {
+      horizontal: {
+        light: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758209450/smart-sign/orgs/bakehouse/bakehouse-logo-primary.png',
+        dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758209446/smart-sign/orgs/bakehouse/bakehouse-logo-white.png',
+        highContrast: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758209446/smart-sign/orgs/bakehouse/bakehouse-logo-dark.png',
+      },
+    },
+  },
+  // Add more organizations as needed
+} as const;
+
+// Size configurations
+const SIZE_CONFIG = {
+  sm: {
+    width: 120,
+    height: 40,
+    className: 'h-8 w-auto',
+  },
+  md: {
+    width: 180,
+    height: 60,
+    className: 'h-12 w-auto',
+  },
+  lg: {
+    width: 240,
+    height: 80,
+    className: 'h-16 w-auto',
+  },
+  xl: {
+    width: 300,
+    height: 100,
+    className: 'h-20 w-auto',
+  },
+} as const;
+
+export function OrganizationLogo({
+  organizationSlug,
+  variant = 'horizontal',
+  size = 'md',
+  theme = 'auto',
+  className,
+  alt,
+  priority = false,
 }: OrganizationLogoProps) {
-  const [imageError, setImageError] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
-
-  // Get initials from organization name
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
+  const { theme: currentTheme } = useTheme();
+  const [imageError, setImageError] = React.useState(false);
+  
+  // Get organization config
+  const orgConfig = LOGO_CONFIG[organizationSlug as keyof typeof LOGO_CONFIG];
+  
+  if (!orgConfig || imageError) {
+    // Fallback to text if organization not found or image error
+    return (
+      <div className={cn(
+        'flex items-center justify-center font-semibold text-gray-600 dark:text-gray-300',
+        SIZE_CONFIG[size].className,
+        className
+      )}>
+        {orgConfig?.name || organizationSlug.toUpperCase()}
+      </div>
+    );
   }
 
-  // Size classes
-  const sizeClasses = {
-    sm: orientation === 'horizontal' ? 'h-6 w-auto text-sm' : 'h-8 w-8 text-sm',
-    md: orientation === 'horizontal' ? 'h-8 w-auto text-base' : 'h-10 w-10 text-base',
-    lg: orientation === 'horizontal' ? 'h-10 w-auto text-lg' : 'h-12 w-12 text-lg'
-  }
-
-  // Shape classes
-  const shapeClasses = {
-    circle: 'rounded-full',
-    square: 'rounded-lg'
-  }
-
-  const shouldShowText = autoHideOnMobile ? (showText && !isMobile) : showText
-
-  // Get the appropriate logo URL based on orientation
-  const getLogoUrl = () => {
-    if (organization.slug === 'bakehouse') {
-      if (orientation === 'horizontal') {
-        return "https://res.cloudinary.com/du1ysiumj/image/upload/v1757706285/bakehouse-logo-horizontal-transparent-white_r3u1yy.png"
-      } else {
-        return "https://res.cloudinary.com/dck5rzi4h/image/upload/v1755993342/smart-sign/bakehouse-logo-low-rez_yyiht6.png"
-      }
+  // Determine which logo variant to use
+  const logoVariant = orgConfig.logos[variant as keyof typeof orgConfig.logos];
+  if (!logoVariant) {
+    // Fallback to horizontal if variant not available
+    const fallbackVariant = orgConfig.logos.horizontal;
+    if (!fallbackVariant) {
+      return (
+        <div className={cn(
+          'flex items-center justify-center font-semibold text-gray-600 dark:text-gray-300',
+          SIZE_CONFIG[size].className,
+          className
+        )}>
+          {orgConfig.name}
+        </div>
+      );
     }
-    
-    if (orientation === 'horizontal' && organization.horizontal_logo_url) {
-      return organization.horizontal_logo_url
-    }
-    
-    return organization.logo_url
   }
 
-  const logoUrl = getLogoUrl()
+  // Determine theme
+  const effectiveTheme = theme === 'auto' ? currentTheme : theme;
+  
+  // Select appropriate logo based on theme
+  let logoSrc: string;
+  let logoSrcSet: string | undefined;
+  
+  if (effectiveTheme === 'dark') {
+    logoSrc = logoVariant.dark;
+  } else if (effectiveTheme === 'light') {
+    logoSrc = logoVariant.light;
+  } else {
+    // System theme - use light as default, will be overridden by CSS
+    logoSrc = logoVariant.light;
+  }
+
+  // Create srcSet for responsive images
+  const baseUrl = logoSrc.split('/upload/')[0] + '/upload/';
+  const imagePath = logoSrc.split('/upload/')[1];
+  
+  logoSrcSet = [
+    `${baseUrl}w_120/${imagePath} 120w`,
+    `${baseUrl}w_180/${imagePath} 180w`,
+    `${baseUrl}w_240/${imagePath} 240w`,
+    `${baseUrl}w_300/${imagePath} 300w`,
+  ].join(', ');
+
+  const sizeConfig = SIZE_CONFIG[size];
+  const altText = alt || `${orgConfig.name} logo`;
 
   return (
-    <div className="flex items-center space-x-2">
-      <div className={`relative ${sizeClasses[size]} ${className}`}>
-        {logoUrl && !imageError ? (
-          <img
-            src={logoUrl}
-            alt={`${organization.name} logo`}
-            className={`h-full w-full ${orientation === 'horizontal' ? 'object-contain' : shapeClasses[shape] + ' object-cover'}`}
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <div className={`h-full w-full ${orientation === 'horizontal' ? 'rounded-lg' : shapeClasses[shape]} bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold`}>
-            {getInitials(organization.name)}
-          </div>
+    <div className={cn('relative', className)}>
+      <Image
+        src={logoSrc}
+        alt={altText}
+        width={sizeConfig.width}
+        height={sizeConfig.height}
+        className={cn(
+          'object-contain transition-opacity duration-200',
+          sizeConfig.className,
+          // Theme-specific styling
+          effectiveTheme === 'dark' ? 'dark:opacity-100 opacity-0' : 'opacity-100 dark:opacity-0'
         )}
-      </div>
-      {shouldShowText && (
-        <span className="font-semibold text-gray-900 dark:text-white">
-          {organization.name}
-        </span>
+        priority={priority}
+        sizes="(max-width: 768px) 120px, (max-width: 1024px) 180px, (max-width: 1280px) 240px, 300px"
+        onError={() => setImageError(true)}
+        // Add a second image for dark theme if using auto theme
+        {...(theme === 'auto' && {
+          onLoad: (e) => {
+            // Preload dark theme image
+            if (typeof window !== 'undefined') {
+              const darkImg = new window.Image();
+              darkImg.src = logoVariant.dark;
+            }
+          }
+        })}
+      />
+      
+      {/* Dark theme image for auto theme */}
+      {theme === 'auto' && (
+        <Image
+          src={logoVariant.dark}
+          alt={altText}
+          width={sizeConfig.width}
+          height={sizeConfig.height}
+          className={cn(
+            'object-contain transition-opacity duration-200 absolute inset-0',
+            sizeConfig.className,
+            'opacity-0 dark:opacity-100'
+          )}
+          priority={priority}
+          sizes="(max-width: 768px) 120px, (max-width: 1024px) 180px, (max-width: 1280px) 240px, 300px"
+          onError={() => setImageError(true)}
+        />
       )}
     </div>
-  )
+  );
 }
+
+// Utility function to get organization colors
+export function getOrganizationColors(organizationSlug: string) {
+  const orgConfig = LOGO_CONFIG[organizationSlug as keyof typeof LOGO_CONFIG];
+  return orgConfig?.colors || {
+    primary: '#6B7280',
+    secondary: '#9CA3AF',
+    dark: '#374151',
+  };
+}
+
+// Utility function to get organization name
+export function getOrganizationName(organizationSlug: string) {
+  const orgConfig = LOGO_CONFIG[organizationSlug as keyof typeof LOGO_CONFIG];
+  return orgConfig?.name || organizationSlug;
+}
+
+// Export logo configuration for use in other components
+export { LOGO_CONFIG };

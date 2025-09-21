@@ -311,3 +311,4 @@
 ---
 
 This business model positions you as the "CTO for art culture" while building a sustainable, scalable business that serves the cultural sector's unique needs at accessible price points.
+

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Plus, Trash2, Edit, Eye, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -316,7 +316,7 @@ export function SubmissionFormBuilder({
                   <div key={index} className="border rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline">{field.type}</Badge>
+                        <Badge variant="default">{field.type}</Badge>
                         <span className="font-medium">{field.label}</span>
                         {field.required && <Badge className="bg-red-100 text-red-800">Required</Badge>}
                       </div>
@@ -424,3 +424,4 @@ export function SubmissionFormBuilder({
     </div>
   );
 }
+

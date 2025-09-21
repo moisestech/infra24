@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import { SurveyForm } from '@/components/survey/SurveyForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { CheckCircle, Clock, Users, BarChart3, FileText } from 'lucide-react';
 
 interface SurveyResponse {
@@ -26,19 +26,17 @@ const digitalLabSurvey = {
   id: 'digital-lab-feedback-2024',
   title: 'Digital Lab Experience Survey',
   description: 'Help us improve the Digital Lab by sharing your experience and feedback. This survey takes about 5-10 minutes to complete.',
-  organizationId: 'oolite',
-  status: 'active' as const,
-  submissionDeadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
-  maxSubmissions: 100,
-  currentSubmissions: 0,
-  questions: [
+  category: 'digital-lab',
+  form_schema: {
+    title: 'Digital Lab Experience Survey',
+    description: 'Help us improve the Digital Lab by sharing your experience and feedback. This survey takes about 5-10 minutes to complete.',
+    questions: [
     {
       id: 'experience_level',
-      type: 'select' as const,
-      label: 'What is your experience level with digital arts?',
-      description: 'This helps us tailor our programs to your needs',
+      question: 'What is your experience level with digital arts?',
+      type: 'select',
       required: true,
-      options: [
+      choices: [
         'Complete beginner',
         'Some experience',
         'Intermediate',
@@ -48,10 +46,10 @@ const digitalLabSurvey = {
     },
     {
       id: 'lab_usage_frequency',
-      type: 'radio' as const,
-      label: 'How often do you use the Digital Lab?',
+      question: 'How often do you use the Digital Lab?',
+      type: 'radio',
       required: true,
-      options: [
+      choices: [
         'Daily',
         'Weekly',
         'Monthly',
@@ -61,38 +59,54 @@ const digitalLabSurvey = {
     },
     {
       id: 'equipment_rating',
-      type: 'rating' as const,
-      label: 'How would you rate the equipment and technology available?',
-      description: 'Rate from 1 (poor) to 5 (excellent)',
-      required: true
+      question: 'How would you rate the equipment and technology available?',
+      type: 'rating',
+      required: true,
+      scale: 5,
+      labels: {
+        low: 'Poor',
+        high: 'Excellent'
+      }
     },
     {
       id: 'staff_support_rating',
-      type: 'rating' as const,
-      label: 'How would you rate the staff support and guidance?',
-      description: 'Rate from 1 (poor) to 5 (excellent)',
-      required: true
+      question: 'How would you rate the staff support and guidance?',
+      type: 'rating',
+      required: true,
+      scale: 5,
+      labels: {
+        low: 'Poor',
+        high: 'Excellent'
+      }
     },
     {
       id: 'workshop_quality',
-      type: 'rating' as const,
-      label: 'How would you rate the quality of workshops offered?',
-      description: 'Rate from 1 (poor) to 5 (excellent)',
-      required: true
+      question: 'How would you rate the quality of workshops offered?',
+      type: 'rating',
+      required: true,
+      scale: 5,
+      labels: {
+        low: 'Poor',
+        high: 'Excellent'
+      }
     },
     {
       id: 'booking_system',
-      type: 'rating' as const,
-      label: 'How easy is it to book equipment and workshops?',
-      description: 'Rate from 1 (very difficult) to 5 (very easy)',
-      required: true
+      question: 'How easy is it to book equipment and workshops?',
+      type: 'rating',
+      required: true,
+      scale: 5,
+      labels: {
+        low: 'Very Difficult',
+        high: 'Very Easy'
+      }
     },
     {
       id: 'favorite_equipment',
-      type: 'checkbox' as const,
-      label: 'Which equipment do you use most often? (Select all that apply)',
+      question: 'Which equipment do you use most often? (Select all that apply)',
+      type: 'checkbox',
       required: false,
-      options: [
+      choices: [
         '3D Printers',
         'Laser Cutters',
         'CNC Machines',
@@ -107,44 +121,45 @@ const digitalLabSurvey = {
     },
     {
       id: 'improvement_suggestions',
-      type: 'textarea' as const,
-      label: 'What improvements would you like to see in the Digital Lab?',
-      description: 'Please share any suggestions for equipment, programs, or services',
+      question: 'What improvements would you like to see in the Digital Lab?',
+      type: 'textarea',
       required: false,
-      validation: {
-        maxLength: 500
-      }
+      placeholder: 'Please share any suggestions for equipment, programs, or services'
     },
     {
       id: 'workshop_topics',
-      type: 'textarea' as const,
-      label: 'What workshop topics would you like to see offered?',
-      description: 'Help us plan future programming',
+      question: 'What workshop topics would you like to see offered?',
+      type: 'textarea',
       required: false,
-      validation: {
-        maxLength: 300
-      }
+      placeholder: 'Help us plan future programming'
     },
     {
       id: 'community_engagement',
-      type: 'boolean' as const,
-      label: 'Would you be interested in participating in a Digital Lab community group?',
-      description: 'This could include peer learning, project collaborations, and networking',
+      question: 'Would you be interested in participating in a Digital Lab community group?',
+      type: 'boolean',
       required: false
     },
     {
       id: 'additional_comments',
-      type: 'textarea' as const,
-      label: 'Any additional comments or feedback?',
+      question: 'Any additional comments or feedback?',
+      type: 'textarea',
       required: false,
-      validation: {
-        maxLength: 1000
-      }
+      placeholder: 'Any additional thoughts or suggestions'
     }
   ]
+  },
+  submission_settings: {
+    allow_anonymous: false,
+    require_authentication: true,
+    max_submissions_per_user: 1
+  },
+  // Additional properties for display purposes
+  submissionDeadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+  maxSubmissions: 100,
+  currentSubmissions: 0
 };
 
-export default function DigitalLabSurveyPage() {
+function DigitalLabSurveyPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
   const [userResponses, setUserResponses] = useState<SurveyResponse[]>([]);
   const [currentResponse, setCurrentResponse] = useState<Record<string, any>>({});
@@ -412,11 +427,11 @@ export default function DigitalLabSurveyPage() {
                 <div className="p-6">
                   <SurveyForm
                     survey={digitalLabSurvey}
-                    onSubmit={handleSubmitSurvey}
-                    onSaveDraft={handleSaveDraft}
-                    initialResponses={currentResponse}
-                    isSubmitting={isSubmitting}
-                    isSaving={isSaving}
+                    organization={{
+                      id: tenantConfig?.id || 'oolite',
+                      name: tenantConfig?.name || 'Oolite',
+                      slug: tenantId || 'oolite'
+                    }}
                   />
                   <div className="mt-4 flex justify-end">
                     <Button 
@@ -479,3 +494,12 @@ export default function DigitalLabSurveyPage() {
     </TenantLayout>
   );
 }
+
+export default function DigitalLabSurveyPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DigitalLabSurveyPageContent />
+    </Suspense>
+  );
+}
+

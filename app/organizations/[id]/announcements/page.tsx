@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
@@ -54,7 +54,7 @@ interface AuthorInfo {
   image_url?: string
 }
 
-export default function OrganizationAnnouncementsPage() {
+function OrganizationAnnouncementsPageContent() {
   const params = useParams()
   const searchParams = useSearchParams()
   const { user, isLoaded } = useUser()
@@ -480,5 +480,13 @@ export default function OrganizationAnnouncementsPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function OrganizationAnnouncementsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OrganizationAnnouncementsPageContent />
+    </Suspense>
   )
 }

@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
 import OoliteImpactROIPage from '@/components/page/OoliteImpactROIPage';
 
-export default function OoliteImpactROIPageRoute() {
+function OoliteImpactROIPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
 
   if (isLoading) {
@@ -46,5 +46,13 @@ export default function OoliteImpactROIPageRoute() {
         <OoliteImpactROIPage />
       </div>
     </TenantLayout>
+  );
+}
+
+export default function OoliteImpactROIPageRoute() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OoliteImpactROIPageContent />
+    </Suspense>
   );
 }

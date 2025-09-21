@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Calendar, Clock, Users, MapPin, User, Mail, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -297,7 +297,7 @@ export function BookingForm({
                     <p className="text-gray-600 text-sm">{selectedResource.description}</p>
                   )}
                 </div>
-                <Badge variant="outline">{selectedResource.type}</Badge>
+                <Badge variant="default">{selectedResource.type}</Badge>
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -323,7 +323,7 @@ export function BookingForm({
                   <p className="text-sm font-medium text-gray-700 mb-1">Requirements:</p>
                   <div className="flex flex-wrap gap-1">
                     {selectedResource.requirements.map((req, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
+                      <Badge key={index} variant="default" className="text-xs">
                         {req}
                       </Badge>
                     ))}

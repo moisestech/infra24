@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Navigation from '@/components/ui/Navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BookingDrawer } from '@/components/booking/BookingDrawer';
 import { useUser } from '@clerk/nextjs';
@@ -89,71 +89,45 @@ export default function ArtistProfilePage() {
     const fetchArtist = async () => {
       try {
         setLoading(true);
-        // TODO: Replace with actual API call
-        // const response = await fetch(`/api/o/bakehouse/artists/${slug}`);
-        // const data = await response.json();
         
-        // Mock data for now
-        const mockArtist: ArtistProfile = {
-          id: slug as string,
-          name: 'Jane Smith',
+        // Fetch artist data from API
+        const response = await fetch(`/api/artists/${slug}`);
+        if (!response.ok) {
+          throw new Error('Artist not found');
+        }
+        
+        const data = await response.json();
+        const apiArtist = data.artist;
+        
+        // Transform API data to match our interface
+        const transformedArtist: ArtistProfile = {
+          id: apiArtist.id,
+          name: apiArtist.name,
           slug: slug as string,
-          bio: 'Jane Smith is a contemporary artist working primarily in mixed media and digital art. Her work explores themes of identity, technology, and the intersection of traditional and modern artistic practices.',
-          specialties: ['Mixed Media', 'Digital Art', 'Photography', 'Installation'],
-          website: 'https://janesmith.art',
-          instagram: '@janesmithart',
-          email: 'jane@janesmith.art',
-          phone: '(305) 555-0123',
-          studioNumber: 'A-12',
-          studioFloor: '1st Floor',
-          avatar: '/avatars/jane-smith.jpg',
-          coverImage: '/covers/jane-smith-cover.jpg',
-          portfolio: [
-            {
-              id: '1',
-              title: 'Digital Landscapes',
-              description: 'A series exploring the relationship between nature and technology',
-              image: '/portfolio/digital-landscapes.jpg',
-              date: '2024-01-15',
-              type: 'solo'
-            },
-            {
-              id: '2',
-              title: 'Identity Fragments',
-              description: 'Mixed media pieces examining personal and cultural identity',
-              image: '/portfolio/identity-fragments.jpg',
-              date: '2023-11-20',
-              type: 'group'
-            }
-          ],
-          exhibitions: [
-            {
-              id: '1',
-              title: 'Digital Futures',
-              venue: 'Miami Art Museum',
-              date: '2024-03-15',
-              type: 'group'
-            },
-            {
-              id: '2',
-              title: 'Jane Smith: New Works',
-              venue: 'Bakehouse Gallery',
-              date: '2023-09-10',
-              type: 'solo'
-            }
-          ],
+          bio: apiArtist.bio || 'No bio available',
+          specialties: apiArtist.studio_type ? [apiArtist.studio_type] : [],
+          website: undefined, // Not in current API
+          instagram: undefined, // Not in current API
+          email: undefined, // Not in current API
+          phone: undefined, // Not in current API
+          studioNumber: apiArtist.studio_number,
+          studioFloor: '1st Floor', // Default, could be enhanced
+          avatar: apiArtist.profile_image,
+          coverImage: undefined, // Not in current API
+          portfolio: [], // Not in current API
+          exhibitions: [], // Not in current API
           availability: {
-            days: ['Monday', 'Wednesday', 'Friday'],
-            hours: '10:00 AM - 6:00 PM',
-            bookingUrl: '/book/jane-smith'
+            days: ['Monday', 'Wednesday', 'Friday'], // Default
+            hours: '10:00 AM - 6:00 PM', // Default
+            bookingUrl: `/book/${apiArtist.id}`
           },
-          rating: 4.8,
-          reviewCount: 24,
-          joinedDate: '2022-03-15',
-          isActive: true
+          rating: 4.5, // Default
+          reviewCount: 0, // Default
+          joinedDate: apiArtist.created_at,
+          isActive: apiArtist.is_claimed
         };
         
-        setArtist(mockArtist);
+        setArtist(transformedArtist);
       } catch (err) {
         setError('Failed to load artist profile');
         console.error('Error fetching artist:', err);
@@ -296,7 +270,7 @@ export default function ArtistProfilePage() {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {artist.specialties.map((specialty, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    <Badge key={index} variant="info" className="flex items-center gap-1">
                       {getSpecialtyIcon(specialty)}
                       {specialty}
                     </Badge>
@@ -326,7 +300,7 @@ export default function ArtistProfilePage() {
                         <h4 className="font-semibold mb-2">{work.title}</h4>
                         <p className="text-sm text-gray-600 mb-2">{work.description}</p>
                         <div className="flex justify-between items-center">
-                          <Badge variant="outline">{work.type}</Badge>
+                          <Badge variant="default">{work.type}</Badge>
                           <span className="text-sm text-gray-500">{work.date}</span>
                         </div>
                       </div>
@@ -353,7 +327,7 @@ export default function ArtistProfilePage() {
                         <p className="text-sm text-gray-600">{exhibition.venue}</p>
                       </div>
                       <div className="text-right">
-                        <Badge variant="outline" className="mb-1">{exhibition.type}</Badge>
+                        <Badge variant="default" className="mb-1">{exhibition.type}</Badge>
                         <p className="text-sm text-gray-500">{exhibition.date}</p>
                       </div>
                     </div>
@@ -528,7 +502,7 @@ export default function ArtistProfilePage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Status:</span>
-                      <Badge variant={artist.isActive ? "default" : "secondary"}>
+                      <Badge variant={artist.isActive ? "default" : "info"}>
                         {artist.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </div>
@@ -543,7 +517,16 @@ export default function ArtistProfilePage() {
         <BookingDrawer
           open={bookingDrawerOpen}
           onOpenChange={setBookingDrawerOpen}
-          profile={artist}
+          profile={{
+            id: artist.id,
+            name: artist.name,
+            avatarUrl: artist.avatar || null,
+            claimed: true, // Assuming artist profiles are claimed
+            studioNumber: artist.studioNumber || '',
+            specialties: artist.specialties,
+            bio: artist.bio,
+            website: artist.website
+          }}
           orgSlug="bakehouse"
           currentUser={{
             id: user?.id || null,
@@ -560,3 +543,4 @@ export default function ArtistProfilePage() {
     </div>
   );
 }
+

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { 
   TrendingUp, 
   Users, 
@@ -237,7 +237,7 @@ export function AnalyticsDashboard({ organizationId, className }: AnalyticsDashb
                 {Object.entries(analytics.bookings.byStatus).map(([status, count]) => (
                   <div key={status} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="capitalize">
+                      <Badge variant="default" className="capitalize">
                         {status.replace('_', ' ')}
                       </Badge>
                     </div>
@@ -263,7 +263,7 @@ export function AnalyticsDashboard({ organizationId, className }: AnalyticsDashb
                 {Object.entries(analytics.bookings.byResourceType).map(([type, count]) => (
                   <div key={type} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="capitalize">
+                      <Badge variant="default" className="capitalize">
                         {type}
                       </Badge>
                     </div>
@@ -299,3 +299,4 @@ export function AnalyticsDashboard({ organizationId, className }: AnalyticsDashb
     </div>
   );
 }
+

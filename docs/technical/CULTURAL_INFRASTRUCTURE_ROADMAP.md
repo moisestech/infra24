@@ -383,3 +383,4 @@ CREATE TABLE announcements (
 6. **Launch with Bakehouse as pilot**
 
 This roadmap provides a clear path from MVP to enterprise-scale platform, positioning you as the "CTO for art culture" while building a sustainable business.
+

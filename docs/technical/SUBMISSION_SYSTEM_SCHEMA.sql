@@ -384,3 +384,4 @@ BEGIN
     VALUES (p_submission_id, p_user_id, p_type, p_title, p_message);
 END;
 $$ LANGUAGE plpgsql;
+

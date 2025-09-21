@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params }: { params: Promise<{ orgId: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -12,8 +12,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const supabase = createClient();
-    const { orgId } = params;
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+    const { orgId } = await params;
     const { searchParams } = new URL(request.url);
     
     const startDate = searchParams.get('start_date') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -74,7 +74,7 @@ export async function GET(
         .gte('created_at', startDate)
         .lte('created_at', endDate);
 
-      const completionRate = totalBookings ? (completedBookings / totalBookings) * 100 : 0;
+      const completionRate = totalBookings && completedBookings ? (completedBookings / totalBookings) * 100 : 0;
 
       // Bookings by status
       const { data: bookingsByStatus } = await supabase
@@ -152,7 +152,7 @@ export async function GET(
         .gte('created_at', startDate)
         .lte('created_at', endDate);
 
-      const approvalRate = reviewedSubmissions ? (approvedSubmissions / reviewedSubmissions) * 100 : 0;
+      const approvalRate = reviewedSubmissions && approvedSubmissions ? (approvedSubmissions / reviewedSubmissions) * 100 : 0;
 
       // Average review time
       const { data: reviewTimes } = await supabase
@@ -180,7 +180,7 @@ export async function GET(
         .lte('created_at', endDate);
 
       const formCounts = submissionsByForm?.reduce((acc, submission) => {
-        const formTitle = submission.submission_forms?.title || 'Unknown Form';
+        const formTitle = (submission.submission_forms as any)?.title || 'Unknown Form';
         acc[formTitle] = (acc[formTitle] || 0) + 1;
         return acc;
       }, {} as Record<string, number>) || {};
