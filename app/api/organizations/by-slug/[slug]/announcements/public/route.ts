@@ -37,39 +37,24 @@ export async function GET(
         id,
         title,
         body,
-        status,
-        author_clerk_id,
-        created_at,
-        published_at,
-        expires_at,
+        type,
         priority,
-        tags,
-        org_id,
-        scheduled_at,
-        location,
         visibility,
         starts_at,
         ends_at,
-        type,
-        sub_type,
-        primary_link,
-        additional_info,
-        image_url,
+        location,
         people,
-        external_orgs,
-        style,
-        timezone,
-        is_all_day,
-        is_time_tbd,
-        rsvp_label,
-        rsvp_url,
-        event_state
+        payload,
+        status,
+        published_at,
+        created_at,
+        updated_at,
+        author_clerk_id
       `)
-      .eq('org_id', organization.id)
-      .in('visibility', ['external', 'both'])
-      .eq('status', 'published')
-      .is('deleted_at', null)
-      .order('published_at', { ascending: false });
+      .eq('organization_id', organization.id)
+      .in('visibility', ['public'])
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching public announcements:', error);

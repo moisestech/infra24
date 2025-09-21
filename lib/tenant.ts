@@ -15,6 +15,7 @@ export interface TenantConfig {
     accentColor: string;
     logo: string;
     favicon: string;
+    banner?: string;
     customCSS?: string;
   };
   features: {
@@ -75,6 +76,7 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       accentColor: '#60A5FA',
       logo: '/logos/oolite-logo.png',
       favicon: '/favicons/oolite-favicon.ico',
+      banner: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758247127/smart-sign/orgs/oolite/oolite-digital-arts-program_ai-sketch_mqtbm9.png',
     },
     features: {
       smartSign: true,

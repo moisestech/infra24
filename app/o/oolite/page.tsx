@@ -74,72 +74,120 @@ function OoliteOrganizationPageContent() {
     async function loadData() {
       const slug = 'oolite' // Hardcoded for this specific page
       console.log('🔄 Oolite page: Starting loadData', { user: !!user, slug })
-      if (!user) {
-        console.log('❌ Oolite page: Missing user', { user: !!user })
-        return
-      }
+      
+      // Load public data regardless of authentication status
       
       try {
-        // Get user profile and role
-        const userResponse = await fetch('/api/users/me')
-        if (userResponse.ok) {
-          const userData = await userResponse.json()
-          setUserRole(userData.role || 'resident')
+        // Get user profile and role (only if authenticated)
+        if (user) {
+          const userResponse = await fetch('/api/users/me')
+          if (userResponse.ok) {
+            const userData = await userResponse.json()
+            setUserRole(userData.role || 'resident')
+          }
         }
 
-        // Get organization details
-        console.log('🔍 Oolite page: Fetching organization details for slug:', slug)
-        const orgResponse = await fetch(`/api/organizations/by-slug/${slug}`)
-        console.log('📊 Oolite page: Organization response:', { ok: orgResponse.ok, status: orgResponse.status })
-        if (orgResponse.ok) {
-          const orgData = await orgResponse.json()
-          console.log('✅ Oolite page: Organization data:', orgData)
-          setOrganization(orgData.organization)
+        // Get organization details from tenant config (fallback when DB is not available)
+        console.log('🔍 Oolite page: Using tenant config for organization details')
+        const { getTenantConfig } = await import('@/lib/tenant')
+        const tenantConfig = getTenantConfig(slug)
+        
+        if (tenantConfig) {
+          console.log('✅ Oolite page: Using tenant config:', tenantConfig)
+          setOrganization({
+            id: tenantConfig.id,
+            name: tenantConfig.name,
+            slug: tenantConfig.slug,
+            banner_image: tenantConfig.theme.banner,
+            created_at: new Date().toISOString()
+          })
         } else {
-          console.log('❌ Oolite page: Failed to fetch organization:', await orgResponse.text())
+          console.log('❌ Oolite page: No tenant config found for slug:', slug)
         }
 
-        // Get recent announcements
-        const announcementsResponse = await fetch(`/api/organizations/by-slug/${slug}/announcements?limit=5`)
-        if (announcementsResponse.ok) {
-          const announcementsData = await announcementsResponse.json()
-          setRecentAnnouncements(announcementsData.announcements || [])
+        // Get recent announcements (public endpoint)
+        try {
+          const announcementsResponse = await fetch(`/api/organizations/by-slug/${slug}/announcements/public`)
+          if (announcementsResponse.ok) {
+            const announcementsData = await announcementsResponse.json()
+            setRecentAnnouncements(announcementsData.announcements || [])
+          } else {
+            // Set default announcements when API fails
+            setRecentAnnouncements([
+              {
+                id: '1',
+                title: 'Welcome to Oolite Arts',
+                body: 'We are excited to welcome you to our digital platform. Explore our workshops, connect with artists, and discover new opportunities.',
+                status: 'published',
+                priority: 'normal',
+                created_at: new Date().toISOString(),
+                published_at: new Date().toISOString(),
+                expires_at: null
+              }
+            ])
+          }
+        } catch (error) {
+          console.log('❌ Oolite page: Failed to fetch announcements, using defaults')
+          setRecentAnnouncements([
+            {
+              id: '1',
+              title: 'Welcome to Oolite Arts',
+              body: 'We are excited to welcome you to our digital platform. Explore our workshops, connect with artists, and discover new opportunities.',
+              status: 'published',
+              priority: 'normal',
+              created_at: new Date().toISOString(),
+               published_at: new Date().toISOString(),
+               expires_at: null
+            }
+          ])
         }
 
-        // Get user count and breakdown
-        const usersResponse = await fetch(`/api/organizations/by-slug/${slug}/users`)
-        if (usersResponse.ok) {
-          const usersData = await usersResponse.json()
-          const memberships = usersData.memberships || []
-          const artistProfiles = usersData.artist_profiles || []
-          
-          // Calculate total members (memberships + artists)
-          const totalMembers = memberships.length + artistProfiles.length
-          
-          // Calculate staff count (memberships with admin/moderator roles)
-          const staffMembers = memberships.filter((m: any) => 
-            ['super_admin', 'org_admin', 'moderator', 'staff'].includes(m.role)
-          )
-          
-          console.log('Debug - Memberships:', memberships)
-          console.log('Debug - Staff members:', staffMembers)
-          console.log('Debug - Artist profiles:', artistProfiles)
-          
-          setUserCount(totalMembers)
-          setStaffCount(staffMembers.length)
-          setArtistCount(artistProfiles.length)
-        }
-
-        // Get surveys for this organization
-        console.log('📋 Oolite page: Fetching surveys for slug:', slug)
-        const surveysResponse = await fetch(`/api/organizations/by-slug/${slug}/surveys`)
-        console.log('📊 Oolite page: Surveys response:', { ok: surveysResponse.ok, status: surveysResponse.status })
-        if (surveysResponse.ok) {
-          const surveysData = await surveysResponse.json()
-          console.log('✅ Oolite page: Surveys data:', surveysData)
-          setSurveys(surveysData.surveys || [])
+        // Get user count and breakdown (only if authenticated)
+        if (user) {
+          const usersResponse = await fetch(`/api/organizations/by-slug/${slug}/users`)
+          if (usersResponse.ok) {
+            const usersData = await usersResponse.json()
+            const memberships = usersData.memberships || []
+            const artistProfiles = usersData.artist_profiles || []
+            
+            // Calculate total members (memberships + artists)
+            const totalMembers = memberships.length + artistProfiles.length
+            
+            // Calculate staff count (memberships with admin/moderator roles)
+            const staffMembers = memberships.filter((m: any) => 
+              ['super_admin', 'org_admin', 'moderator', 'staff'].includes(m.role)
+            )
+            
+            console.log('Debug - Memberships:', memberships)
+            console.log('Debug - Staff members:', staffMembers)
+            console.log('Debug - Artist profiles:', artistProfiles)
+            
+            setUserCount(totalMembers)
+            setStaffCount(staffMembers.length)
+            setArtistCount(artistProfiles.length)
+          }
         } else {
-          console.log('❌ Oolite page: Failed to fetch surveys:', await surveysResponse.text())
+          // Set default public values when not authenticated
+          setUserCount(0)
+          setStaffCount(0)
+          setArtistCount(0)
+        }
+
+        // Get surveys for this organization (only if authenticated)
+        if (user) {
+          console.log('📋 Oolite page: Fetching surveys for slug:', slug)
+          const surveysResponse = await fetch(`/api/organizations/by-slug/${slug}/surveys`)
+          console.log('📊 Oolite page: Surveys response:', { ok: surveysResponse.ok, status: surveysResponse.status })
+          if (surveysResponse.ok) {
+            const surveysData = await surveysResponse.json()
+            console.log('✅ Oolite page: Surveys data:', surveysData)
+            setSurveys(surveysData.surveys || [])
+          } else {
+            console.log('❌ Oolite page: Failed to fetch surveys:', await surveysResponse.text())
+          }
+        } else {
+          // Set empty surveys for public users
+          setSurveys([])
         }
 
       } catch (error) {
@@ -150,7 +198,7 @@ function OoliteOrganizationPageContent() {
       }
     }
 
-    if (isLoaded && user) {
+    if (isLoaded) {
       loadData()
     }
   }, [user, isLoaded])

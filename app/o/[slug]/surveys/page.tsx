@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/Badge"
 import { OrganizationLogo } from "@/components/ui/OrganizationLogo"
 import { 
-  Clipboard, 
+  FileCheck, 
   Eye, 
   Clock, 
   Users, 
@@ -359,7 +359,7 @@ export default function OrganizationSurveysPage() {
             transition={{ duration: 0.6 }}
           >
             <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Users className="w-12 h-12 text-gray-400" />
+              <FileCheck className="w-12 h-12 text-gray-400" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               No Surveys Available

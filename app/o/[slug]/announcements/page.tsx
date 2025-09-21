@@ -14,7 +14,7 @@ interface Announcement {
   author_clerk_id: string
   created_at: string
   published_at: string
-  expires_at: string
+  expires_at?: string
   priority: number
   tags: string[]
   org_id: string
@@ -55,14 +55,25 @@ export default function OrganizationAnnouncementsPage() {
       try {
         setLoading(true)
         
-        // Get user role first
-        const userResponse = await fetch('/api/users/me')
-        if (userResponse.ok) {
-          const userData = await userResponse.json()
-          setUserRole(userData.role || 'resident')
+        // Try to get user role (optional - don't fail if not authenticated)
+        try {
+          const userResponse = await fetch('/api/users/me')
+          if (userResponse.ok) {
+            const userData = await userResponse.json()
+            setUserRole(userData.role || 'resident')
+          }
+        } catch (userError) {
+          // User not authenticated - that's okay, we'll show public announcements
+          console.log('User not authenticated, showing public announcements only')
         }
         
-        const response = await fetch(`/api/organizations/by-slug/${slug}/announcements`)
+        // Try to get announcements - first try authenticated endpoint, then public
+        let response = await fetch(`/api/organizations/by-slug/${slug}/announcements`)
+        
+        if (!response.ok && response.status === 401) {
+          // If unauthorized, try the public endpoint
+          response = await fetch(`/api/organizations/by-slug/${slug}/announcements/public`)
+        }
         
         if (!response.ok) {
           throw new Error(`Failed to load announcements: ${response.status}`)

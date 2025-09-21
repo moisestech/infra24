@@ -50,54 +50,104 @@ export default function OrganizationPage() {
 
   useEffect(() => {
     async function loadData() {
-      if (!user || !params.slug) return
+      if (!params.slug) return
       
       try {
-        // Get user profile and role
-        const userResponse = await fetch('/api/users/me')
-        if (userResponse.ok) {
-          const userData = await userResponse.json()
-          setUserRole(userData.role || 'resident')
-        }
-
         const slug = params.slug as string
 
-        // Get organization details
-        const orgResponse = await fetch(`/api/organizations/by-slug/${slug}`)
-        if (orgResponse.ok) {
-          const orgData = await orgResponse.json()
-          setOrganization(orgData.organization)
+        // Get user profile and role (only if authenticated)
+        if (user) {
+          const userResponse = await fetch('/api/users/me')
+          if (userResponse.ok) {
+            const userData = await userResponse.json()
+            setUserRole(userData.role || 'resident')
+          }
         }
 
-        // Get recent announcements
-        const announcementsResponse = await fetch(`/api/organizations/by-slug/${slug}/announcements?limit=5`)
-        if (announcementsResponse.ok) {
-          const announcementsData = await announcementsResponse.json()
-          setRecentAnnouncements(announcementsData.announcements || [])
+        // Get organization details from tenant config (fallback when DB is not available)
+        console.log('🔍 Generic org page: Using tenant config for organization details')
+        const { getTenantConfig } = await import('@/lib/tenant')
+        const tenantConfig = getTenantConfig(slug)
+        
+        if (tenantConfig) {
+          console.log('✅ Generic org page: Using tenant config:', tenantConfig)
+          setOrganization({
+            id: tenantConfig.id,
+            name: tenantConfig.name,
+            slug: tenantConfig.slug,
+            banner_image: tenantConfig.theme.banner,
+            created_at: new Date().toISOString()
+          })
+        } else {
+          console.log('❌ Generic org page: No tenant config found for slug:', slug)
         }
 
-        // Get user count and breakdown
-        const usersResponse = await fetch(`/api/organizations/by-slug/${slug}/users`)
-        if (usersResponse.ok) {
-          const usersData = await usersResponse.json()
-          const memberships = usersData.memberships || []
-          const artistProfiles = usersData.artist_profiles || []
-          
-          // Calculate total members (memberships + artists)
-          const totalMembers = memberships.length + artistProfiles.length
-          
-          // Calculate staff count (memberships with admin/moderator roles)
-          const staffMembers = memberships.filter((m: any) => 
-            ['super_admin', 'org_admin', 'moderator', 'staff'].includes(m.role)
-          )
-          
-          console.log('Debug - Memberships:', memberships)
-          console.log('Debug - Staff members:', staffMembers)
-          console.log('Debug - Artist profiles:', artistProfiles)
-          
-          setUserCount(totalMembers)
-          setStaffCount(staffMembers.length)
-          setArtistCount(artistProfiles.length)
+        // Get recent announcements (public endpoint)
+        try {
+          const announcementsResponse = await fetch(`/api/organizations/by-slug/${slug}/announcements/public`)
+          if (announcementsResponse.ok) {
+            const announcementsData = await announcementsResponse.json()
+            setRecentAnnouncements(announcementsData.announcements || [])
+          } else {
+            // Set default announcements when API fails
+            setRecentAnnouncements([
+              {
+                id: '1',
+                title: `Welcome to ${tenantConfig?.name || 'Our Organization'}`,
+                body: 'We are excited to welcome you to our digital platform. Explore our workshops, connect with artists, and discover new opportunities.',
+                priority: 'normal',
+                status: 'published',
+                created_at: new Date().toISOString(),
+                published_at: new Date().toISOString(),
+                expires_at: null
+              }
+            ])
+          }
+        } catch (error) {
+          console.log('❌ Generic org page: Failed to fetch announcements, using defaults')
+          setRecentAnnouncements([
+            {
+              id: '1',
+              title: `Welcome to ${tenantConfig?.name || 'Our Organization'}`,
+              body: 'We are excited to welcome you to our digital platform. Explore our workshops, connect with artists, and discover new opportunities.',
+               priority: 'normal',
+              status: 'published',
+              created_at: new Date().toISOString(),
+              published_at: new Date().toISOString(),
+              expires_at: null
+            }
+          ])
+        }
+
+        // Get user count and breakdown (only if authenticated)
+        if (user) {
+          const usersResponse = await fetch(`/api/organizations/by-slug/${slug}/users`)
+          if (usersResponse.ok) {
+            const usersData = await usersResponse.json()
+            const memberships = usersData.memberships || []
+            const artistProfiles = usersData.artist_profiles || []
+            
+            // Calculate total members (memberships + artists)
+            const totalMembers = memberships.length + artistProfiles.length
+            
+            // Calculate staff count (memberships with admin/moderator roles)
+            const staffMembers = memberships.filter((m: any) => 
+              ['super_admin', 'org_admin', 'moderator', 'staff'].includes(m.role)
+            )
+            
+            console.log('Debug - Memberships:', memberships)
+            console.log('Debug - Staff members:', staffMembers)
+            console.log('Debug - Artist profiles:', artistProfiles)
+            
+            setUserCount(totalMembers)
+            setStaffCount(staffMembers.length)
+            setArtistCount(artistProfiles.length)
+          }
+        } else {
+          // Set default public values when not authenticated
+          setUserCount(0)
+          setStaffCount(0)
+          setArtistCount(0)
         }
 
       } catch (error) {
@@ -107,7 +157,7 @@ export default function OrganizationPage() {
       }
     }
 
-    if (isLoaded && user) {
+    if (isLoaded) {
       loadData()
     }
   }, [user, isLoaded, params.slug])
@@ -233,10 +283,42 @@ export default function OrganizationPage() {
           </div>
         </div>
 
+        {/* Sign In Prompt for Guest Users */}
+        {!user && (
+          <div className="mb-6 xl:mb-8 2xl:mb-10 3xl:mb-12">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg xl:text-xl 2xl:text-2xl font-semibold mb-2">
+                    Join {organization.name}
+                  </h3>
+                  <p className="text-blue-100 text-sm xl:text-base 2xl:text-lg">
+                    Sign in to access exclusive content, workshops, and connect with our community.
+                  </p>
+                </div>
+                <div className="flex space-x-3">
+                  <a
+                    href="/sign-in"
+                    className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                  >
+                    Sign In
+                  </a>
+                  <a
+                    href="/sign-up"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-400 transition-colors"
+                  >
+                    Join Now
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Quick Actions */}
         <div className="mb-6 xl:mb-8 2xl:mb-10 3xl:mb-12">
           <h2 className="text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl font-semibold text-gray-900 dark:text-white mb-3 xl:mb-4 2xl:mb-5 3xl:mb-6">
-            Quick Actions
+            {user ? 'Quick Actions' : 'Explore Our Platform'}
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 xl:gap-4 2xl:gap-5 3xl:gap-6">
             <a
@@ -457,9 +539,9 @@ export default function OrganizationPage() {
                               <h3 className="font-medium text-gray-900 dark:text-white mb-1 text-sm truncate">
                                 {announcement.title}
                               </h3>
-                              <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
-                                {announcement.body.substring(0, 100)}...
-                              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+                {announcement.body ? announcement.body.substring(0, 100) + '...' : announcement.title}
+              </p>
                               <div className="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
                                 <span className={`px-2 py-1 rounded-full ${
                                   announcement.status === 'published' 
@@ -488,40 +570,25 @@ export default function OrganizationPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Members
+                Community
               </h2>
               <a
-                href={`/o/${organization.slug}/users`}
+                href={`/o/${organization.slug}/members`}
                 className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 text-sm font-medium"
               >
-                View all →
+                View members →
               </a>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Total Members</span>
-                  <span className="font-semibold text-gray-900 dark:text-white">{userCount}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Active Artists</span>
-                  <span className="font-semibold text-gray-900 dark:text-white">
-                    {artistCount}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Staff</span>
-                  <span className="font-semibold text-gray-900 dark:text-white">
-                    {staffCount}
-                  </span>
-                </div>
-              </div>
-              <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+              <div className="text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Connect with our community of artists, staff, and supporters
+                </p>
                 <a
-                  href={`/o/${organization.slug}/users`}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 text-sm font-medium"
+                  href={`/o/${organization.slug}/members`}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  Manage Members →
+                  Explore Members
                 </a>
               </div>
             </div>
