@@ -39,7 +39,7 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
     id: 'bakehouse',
     name: 'Bakehouse Art Complex',
     slug: 'bakehouse',
-    domain: 'bakehouse.digital',
+    domain: 'bakehouse.infra24.com',
     subdomain: 'bakehouse',
     theme: {
       primaryColor: '#8B4513',
@@ -67,7 +67,7 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
     id: 'oolite',
     name: 'Oolite Arts',
     slug: 'oolite',
-    domain: 'oolite.digital',
+    domain: 'oolite.infra24.com',
     subdomain: 'oolite',
     theme: {
       primaryColor: '#1E40AF',
@@ -95,7 +95,7 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
     id: 'edgezones',
     name: 'Edge Zones',
     slug: 'edgezones',
-    domain: 'edgezones.digital',
+    domain: 'edgezones.infra24.com',
     subdomain: 'edgezones',
     theme: {
       primaryColor: '#DC2626',
@@ -123,7 +123,7 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
     id: 'locust',
     name: 'Locust Projects',
     slug: 'locust',
-    domain: 'locust.digital',
+    domain: 'locust.infra24.com',
     subdomain: 'locust',
     theme: {
       primaryColor: '#059669',
@@ -151,7 +151,7 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
     id: 'ai24',
     name: 'AI24',
     slug: 'ai24',
-    domain: 'ai24.digital',
+    domain: 'ai24.infra24.com',
     subdomain: 'ai24',
     theme: {
       primaryColor: '#7C3AED',
@@ -184,19 +184,34 @@ export function getTenantFromRequest(request: Request): string | null {
   const url = new URL(request.url);
   const hostname = url.hostname;
   
-  // Check for custom domain
+  // Check for custom domain (e.g., bakehouse.infra24.com)
   for (const [tenantId, config] of Object.entries(TENANT_CONFIGS)) {
     if (hostname === config.domain) {
       return tenantId;
     }
   }
   
-  // Check for subdomain
-  const subdomain = hostname.split('.')[0];
-  if (subdomain && subdomain !== 'www' && subdomain !== 'localhost') {
-    for (const [tenantId, config] of Object.entries(TENANT_CONFIGS)) {
-      if (config.subdomain === subdomain) {
-        return tenantId;
+  // Check for subdomain pattern (e.g., bakehouse.infra24.com)
+  if (hostname.endsWith('.infra24.com')) {
+    const subdomain = hostname.split('.')[0];
+    if (subdomain && subdomain !== 'www') {
+      for (const [tenantId, config] of Object.entries(TENANT_CONFIGS)) {
+        if (config.subdomain === subdomain) {
+          return tenantId;
+        }
+      }
+    }
+  }
+  
+  
+  // Check for legacy .digital domains
+  if (hostname.endsWith('.digital')) {
+    const subdomain = hostname.split('.')[0];
+    if (subdomain && subdomain !== 'www') {
+      for (const [tenantId, config] of Object.entries(TENANT_CONFIGS)) {
+        if (config.subdomain === subdomain) {
+          return tenantId;
+        }
       }
     }
   }
