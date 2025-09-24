@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { OoliteNavigation } from '@/components/tenant/OoliteNavigation'
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { TenantProvider } from '@/components/tenant/TenantProvider'
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -90,6 +90,17 @@ interface QuestionAnalytics {
 export default function SurveyAnalyticsPage() {
   const params = useParams()
   const slug = params.slug as string
+  // Get navigation config based on organization slug
+  const getNavigationConfig = () => {
+    switch (slug) {
+      case 'oolite':
+        return ooliteConfig
+      case 'bakehouse':
+        return bakehouseConfig
+      default:
+        return ooliteConfig // Default fallback
+    }
+  }
 
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [surveys, setSurveys] = useState<any[]>([])
@@ -164,7 +175,7 @@ export default function SurveyAnalyticsPage() {
     return (
       <TenantProvider>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-          <OoliteNavigation />
+          <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -178,7 +189,7 @@ export default function SurveyAnalyticsPage() {
   return (
     <TenantProvider>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <OoliteNavigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}

@@ -168,6 +168,9 @@ npm run test:analytics
 - Business models and monetization strategies
 - Communication theory applications
 
+### 🔧 [Technical Standards](/technical/)
+- **[THEME_SYSTEM_STANDARD.md](./technical/THEME_SYSTEM_STANDARD.md)** - Theme system implementation standard
+
 ### 👥 [LLM Roles](/roles/)
 - **UI Engineer** - Frontend development and user experience
 - **Backend Engineer** - Data management and system architecture

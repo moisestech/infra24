@@ -1,4 +1,4 @@
-# Smart Sign Setup Guide
+# Infra24 Setup Guide
 
 **Complete Authentication & Artist Claiming System**
 

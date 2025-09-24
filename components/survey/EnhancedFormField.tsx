@@ -69,9 +69,13 @@ export function EnhancedFormField({
           </label>
           
           {description && (
-            <p className="text-base text-gray-600 dark:text-gray-400 mb-3">
-              {description}
-            </p>
+            <div className="text-base text-gray-600 dark:text-gray-400 mb-3">
+              {description.split('\n').map((line, index) => (
+                <p key={index} className={index > 0 ? 'mt-2' : ''}>
+                  {line}
+                </p>
+              ))}
+            </div>
           )}
         </div>
 

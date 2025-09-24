@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import Navigation from '@/components/ui/Navigation'
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/button'
@@ -96,6 +96,18 @@ const hoverScale = {
 
 export default function WorkshopsPage() {
   const params = useParams()
+  const slug = params.slug as string
+  // Get navigation config based on organization slug
+  const getNavigationConfig = () => {
+    switch (slug) {
+      case 'oolite':
+        return ooliteConfig
+      case 'bakehouse':
+        return bakehouseConfig
+      default:
+        return ooliteConfig // Default fallback
+    }
+  }
   const { theme } = useTheme()
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [workshops, setWorkshops] = useState<Workshop[]>([])
@@ -190,7 +202,7 @@ export default function WorkshopsPage() {
           ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
           : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
       }`}>
-        <Navigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className={`h-8 rounded w-1/3 mb-6 ${
@@ -232,7 +244,7 @@ export default function WorkshopsPage() {
           : 'bg-white/80 backdrop-blur-md border-b border-gray-200'
       }`}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Navigation />
+          <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
           <div className="flex items-center gap-4">
             <ThemeToggle />
           </div>

@@ -1,4 +1,4 @@
-# Smart Sign Setup Checklist
+# Infra24 Setup Checklist
 
 **Complete Clerk + Supabase Integration**
 

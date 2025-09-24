@@ -18,29 +18,50 @@ import {
   XCircle
 } from 'lucide-react';
 import { SurveyForm } from '@/components/survey/SurveyForm';
+import { OrganizationThemeProvider } from '@/components/carousel/OrganizationThemeContext';
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 
 interface Survey {
   id: string;
   title: string;
   description: string;
-  status: 'draft' | 'active' | 'closed' | 'archived';
-  is_anonymous: boolean;
-  language_default: string;
-  languages_supported: string[];
-  opens_at: string | null;
-  closes_at: string | null;
-  max_responses: number | null;
-  max_responses_per_user: number;
-  response_count: number;
-  survey_schema: any;
-  survey_templates?: {
+  category: string;
+  type: string;
+  form_schema: any;
+  submission_settings: any;
+  is_active: boolean;
+  is_public: boolean;
+  requires_authentication: boolean;
+  max_submissions_per_user?: number;
+  submission_deadline?: string;
+  review_deadline?: string;
+  metadata: any;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  updated_by: string;
+  organization: {
+    id: string;
     name: string;
-    category: string;
+    slug: string;
   };
 }
 
 export default function SurveyPage() {
-  const params = useParams();
+  const params = useParams()
+  const slug = params.slug as string
+  // Get navigation config based on organization slug
+  const getNavigationConfig = () => {
+    const slug = params.slug as string
+    switch (slug) {
+      case 'oolite':
+        return ooliteConfig
+      case 'bakehouse':
+        return bakehouseConfig
+      default:
+        return ooliteConfig // Default fallback
+    }
+  };
   const router = useRouter();
   const { tenantId, tenantConfig } = useTenant();
   const [survey, setSurvey] = useState<Survey | null>(null);
@@ -85,36 +106,17 @@ export default function SurveyPage() {
   const isSurveyOpen = () => {
     if (!survey) return false;
     const now = new Date();
-    const opensAt = survey.opens_at ? new Date(survey.opens_at) : null;
-    const closesAt = survey.closes_at ? new Date(survey.closes_at) : null;
     
-    if (opensAt && now < opensAt) return false;
-    if (closesAt && now > closesAt) return false;
-    return survey.status === 'active';
+    // For submission_forms table structure
+    if (survey.submission_deadline) {
+      const deadline = new Date(survey.submission_deadline);
+      if (now > deadline) return false;
+    }
+    
+    // Check if survey is active (submission_forms uses is_active boolean)
+    return survey.is_active !== false;
   };
 
-  const getStatusBadge = (status: string) => {
-    const variants = {
-      draft: 'info',
-      active: 'success',
-      closed: 'error',
-      archived: 'warning'
-    } as const;
-
-    const icons = {
-      draft: <AlertCircle className="w-3 h-3" />,
-      active: <CheckCircle className="w-3 h-3" />,
-      closed: <XCircle className="w-3 h-3" />,
-      archived: <AlertCircle className="w-3 h-3" />
-    };
-
-    return (
-      <Badge variant={variants[status as keyof typeof variants] || 'default'}>
-        {icons[status as keyof typeof icons]}
-        <span className="ml-1 capitalize">{status}</span>
-      </Badge>
-    );
-  };
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'No deadline';
@@ -162,8 +164,8 @@ export default function SurveyPage() {
           <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Survey Not Available</h2>
           <p className="text-gray-600 mb-4">
-            {survey.status === 'closed' ? 'This survey has been closed.' :
-             survey.opens_at && new Date(survey.opens_at) > new Date() ? 'This survey has not opened yet.' :
+            {!survey.is_active ? 'This survey has been closed.' :
+             survey.submission_deadline && new Date(survey.submission_deadline) < new Date() ? 'This survey has passed its deadline.' :
              'This survey is not currently available.'}
           </p>
           <Button onClick={() => router.back()}>
@@ -180,32 +182,17 @@ export default function SurveyPage() {
     id: survey.id,
     title: survey.title,
     description: survey.description,
-    category: survey.survey_templates?.category || 'general',
-    form_schema: {
-      title: survey.title,
-      description: survey.description,
-      questions: survey.survey_schema?.sections?.flatMap((section: any) => 
-        section.questions?.map((question: any) => ({
-          id: question.id,
-          question: question.prompt?.en || question.prompt || question.label,
-          type: question.type,
-          required: question.required || false,
-          choices: question.options?.map((option: any) => option.label?.en || option.label) || [],
-          scale: question.scale,
-          labels: question.labels,
-          placeholder: question.placeholder
-        })) || []
-      ) || []
-    },
-    submission_settings: {
-      allow_anonymous: survey.is_anonymous,
-      require_authentication: !survey.is_anonymous,
-      max_submissions_per_user: survey.max_responses_per_user
-    }
+    category: survey.category || 'general',
+    form_schema: survey.form_schema,
+    submission_settings: survey.submission_settings
   };
 
+  const orgSlug = params.slug as string;
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <OrganizationThemeProvider organizationSlug={orgSlug}>
+      <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+      <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
         <Button 
@@ -223,9 +210,11 @@ export default function SurveyPage() {
             <p className="text-gray-600 text-lg">{survey.description}</p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            {getStatusBadge(survey.status)}
+            <Badge variant={survey.is_active ? 'success' : 'destructive'}>
+              {survey.is_active ? 'Active' : 'Inactive'}
+            </Badge>
             <Badge variant="info">
-              {survey.survey_templates?.category || 'Custom'}
+              {survey.category || 'Custom'}
             </Badge>
           </div>
         </div>
@@ -235,31 +224,34 @@ export default function SurveyPage() {
           <CardContent className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-gray-400" />
-                <span>{survey.response_count} responses</span>
-                {survey.max_responses && (
-                  <span className="text-gray-400">/ {survey.max_responses}</span>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-gray-400" />
-                <span>Closes: {formatDate(survey.closes_at)}</span>
+                <span>Deadline: {formatDate(survey.submission_deadline)}</span>
               </div>
               <div className="flex items-center gap-2">
-                {survey.is_anonymous ? (
+                {survey.is_public ? (
                   <>
                     <Globe className="w-4 h-4 text-gray-400" />
-                    <span>Anonymous</span>
+                    <span>Public</span>
                   </>
                 ) : (
                   <>
                     <Lock className="w-4 h-4 text-gray-400" />
-                    <span>Authenticated</span>
+                    <span>Private</span>
                   </>
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <span>Languages: {survey.languages_supported.join(', ').toUpperCase()}</span>
+                {survey.requires_authentication ? (
+                  <>
+                    <Users className="w-4 h-4 text-gray-400" />
+                    <span>Requires Login</span>
+                  </>
+                ) : (
+                  <>
+                    <Globe className="w-4 h-4 text-gray-400" />
+                    <span>No Login Required</span>
+                  </>
+                )}
               </div>
             </div>
           </CardContent>
@@ -272,13 +264,14 @@ export default function SurveyPage() {
           <SurveyForm
             survey={surveyForForm}
             organization={{
-              id: tenantId || '',
-              name: tenantConfig?.name || '',
-              slug: tenantConfig?.slug || ''
+              id: survey?.organization?.id || '',
+              name: survey?.organization?.name || '',
+              slug: survey?.organization?.slug || ''
             }}
           />
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </OrganizationThemeProvider>
   );
 }

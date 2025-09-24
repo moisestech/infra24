@@ -26,6 +26,15 @@ export interface TenantConfig {
     workshops: boolean;
     calendar: boolean;
   };
+  dashboard: {
+    showAnnouncements: boolean;
+    showArtists: boolean;
+    showInteractiveMap: boolean;
+    showSurveys: boolean;
+    showXRExperiences: boolean;
+    showWorkshops: boolean;
+    showDigitalLab: boolean;
+  };
   settings: {
     timezone: string;
     dateFormat: string;
@@ -57,6 +66,15 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       workshops: true,
       calendar: true,
     },
+    dashboard: {
+      showAnnouncements: true,
+      showArtists: true,
+      showInteractiveMap: true,
+      showSurveys: true,
+      showXRExperiences: true,
+      showWorkshops: true,
+      showDigitalLab: false,
+    },
     settings: {
       timezone: 'America/New_York',
       dateFormat: 'MM/DD/YYYY',
@@ -85,6 +103,15 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       analytics: true,
       workshops: true,
       calendar: true,
+    },
+    dashboard: {
+      showAnnouncements: true,
+      showArtists: true,
+      showInteractiveMap: false, // Hidden for Oolite
+      showSurveys: true,
+      showXRExperiences: false, // Hidden for Oolite
+      showWorkshops: true,
+      showDigitalLab: true,
     },
     settings: {
       timezone: 'America/New_York',
@@ -141,6 +168,15 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       analytics: true,
       workshops: true,
       calendar: true,
+    },
+    dashboard: {
+      showAnnouncements: true,
+      showArtists: true,
+      showInteractiveMap: true,
+      showSurveys: true,
+      showXRExperiences: true,
+      showWorkshops: true,
+      showDigitalLab: false,
     },
     settings: {
       timezone: 'America/New_York',

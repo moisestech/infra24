@@ -19,11 +19,15 @@ export async function GET(
 ) {
   try {
     const { userId } = await auth();
+    console.log('🔐 Auth check - userId:', userId ? 'present' : 'missing');
+    
     if (!userId) {
+      console.log('🔐 No userId, returning 401');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { slug } = await params;
+    console.log('🏢 Fetching announcements for organization slug:', slug);
 
     // First, get the organization by slug
     const { data: organization, error: orgError } = await supabase
@@ -33,8 +37,11 @@ export async function GET(
       .single();
 
     if (orgError || !organization) {
+      console.log('🏢 Organization not found for slug:', slug, 'Error:', orgError);
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
+
+    console.log('🏢 Found organization:', organization);
 
     // Check if user has access to this organization
     const { data: userMembership } = await supabase
@@ -44,64 +51,54 @@ export async function GET(
       .single();
 
     if (!userMembership) {
-      return NextResponse.json({ error: 'User membership not found' }, { status: 404 });
+      console.log('👥 User membership not found for userId:', userId);
+      return NextResponse.json({ error: 'User membership not found' }, { status: 401 });
     }
+
+    console.log('👥 Found user membership:', userMembership);
 
     // Super admins can see all organizations, others can only see their own
     if (userMembership.role !== 'super_admin' && userMembership.organization_id !== organization.id) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // Get all announcements for this organization
+    // Get all announcements for this organization using correct schema
     let query = supabase
       .from('announcements')
       .select(`
         id,
         title,
-        body,
-        status,
-        author_clerk_id,
-        created_at,
-        published_at,
-        expires_at,
-        priority,
-        tags,
-        org_id,
-        scheduled_at,
-        location,
-        visibility,
-        starts_at,
-        ends_at,
+        content,
         type,
-        sub_type,
-        primary_link,
-        additional_info,
-        image_url,
-        people,
-        external_orgs,
-        style,
-        timezone,
-        is_all_day,
-        is_time_tbd,
-        rsvp_label,
-        rsvp_url,
-        event_state
+        priority,
+        visibility,
+        start_date,
+        end_date,
+        location,
+        key_people,
+        metadata,
+        is_active,
+        created_at,
+        updated_at,
+        created_by,
+        updated_by
       `)
-      .eq('org_id', organization.id)
-      .is('deleted_at', null)
+      .eq('organization_id', organization.id)
       .order('created_at', { ascending: false });
 
-    // If user is not an admin, only show published announcements or their own
+    // If user is not an admin, only show active announcements
     if (!['super_admin', 'org_admin', 'moderator'].includes(userMembership.role)) {
-      query = query.or(`status.eq.published,author_clerk_id.eq.${userId}`);
+      query = query.eq('is_active', true);
     }
 
     const { data: announcements, error: announcementsError } = await query;
 
     if (announcementsError) {
-      console.error('Error fetching announcements:', announcementsError);
+      console.error('📢 Error fetching announcements:', announcementsError);
       return NextResponse.json({ error: 'Failed to fetch announcements' }, { status: 500 });
     }
+
+    console.log('📢 Successfully fetched announcements:', announcements?.length || 0, 'announcements');
 
     return NextResponse.json({
       announcements: announcements || [],
@@ -166,21 +163,22 @@ export async function POST(
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    // Create the announcement
+    // Create the announcement using correct schema
     const { data: announcement, error: createError } = await supabase
       .from('announcements')
       .insert({
-        org_id: organization.id,
-        author_clerk_id: userId,
+        organization_id: organization.id,
+        created_by: userId,
         title: body.title,
-        body: body.body,
-        status: body.status || 'draft',
-        priority: body.priority || 0,
-        tags: body.tags || [],
+        content: body.content,
+        is_active: body.is_active !== false, // Default to true
+        priority: body.priority || 'normal',
         visibility: body.visibility || 'internal',
-        scheduled_at: body.scheduled_at || null,
-        expires_at: body.expires_at || null,
-        published_at: body.status === 'published' ? new Date().toISOString() : null
+        start_date: body.start_date || null,
+        end_date: body.end_date || null,
+        location: body.location || null,
+        key_people: body.key_people || [],
+        metadata: body.metadata || {}
       })
       .select()
       .single();

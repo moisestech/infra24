@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback, Suspense } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { Search, Filter, User, Mail, Calendar, Shield, Building2, Eye, Edit, Users, Copy, UserPlus } from 'lucide-react'
-import Navigation from '@/components/ui/Navigation'
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 import Tooltip from '@/components/ui/Tooltip'
 import EditUserModal from '@/components/ui/EditUserModal'
@@ -73,6 +73,20 @@ function OrganizationUsersPageContent() {
   const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()
+  const slug = params.slug as string
+
+  // Get navigation config based on organization slug
+  const getNavigationConfig = () => {
+    switch (slug) {
+      case 'oolite':
+        return ooliteConfig
+      case 'bakehouse':
+        return bakehouseConfig
+      default:
+        return ooliteConfig // Default fallback
+    }
+  }
+
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [users, setUsers] = useState<User[]>([])
   const [artists, setArtists] = useState<Artist[]>([])
@@ -335,7 +349,7 @@ function OrganizationUsersPageContent() {
   if (!isLoaded || loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
@@ -357,7 +371,7 @@ function OrganizationUsersPageContent() {
   if (!organization) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <Building2 className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -375,7 +389,7 @@ function OrganizationUsersPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Navigation />
+      <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
       <div className="max-w-7xl 4xl:max-w-none mx-auto px-4 sm:px-6 lg:px-8 4xl:px-12 py-8 4xl:py-16">
       
       {/* Sticky Header */}
@@ -422,7 +436,7 @@ function OrganizationUsersPageContent() {
               </div>
               <div>
                 <h1 className="text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl 4xl:text-9xl font-bold text-gray-900 dark:text-white mb-2 xl:mb-3 2xl:mb-4 3xl:mb-5 4xl:mb-8">
-                  Bakehouse Art Complex - Members
+                  {organization.name} - Members
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 text-base xl:text-lg 2xl:text-xl 3xl:text-2xl 4xl:text-4xl">
                   Meet our community of artists and members

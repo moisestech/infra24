@@ -38,12 +38,11 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
   const [showVisibilityBadge, setShowVisibilityBadge] = useState(false);
   const { theme: organizationTheme } = useOrganizationTheme();
 
-  // Filter future announcements
+  // Filter active announcements (show all active announcements, not just future ones)
   const futureAnnouncements = useMemo(() => {
-    const now = new Date();
     return announcements.filter(announcement => {
-      const eventDate = announcement.starts_at || announcement.created_at;
-      return new Date(eventDate) >= now;
+      // Show all active announcements
+      return announcement.is_active === true;
     });
   }, [announcements]);
 

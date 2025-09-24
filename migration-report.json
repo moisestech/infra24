@@ -1,0 +1,289 @@
+[
+  {
+    "file": "app/o/[slug]/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 3 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/[slug]/surveys/[id]/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/[slug]/announcements/[id]/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/submit/[id]/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/surveys/digital-lab/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/budget/prognosis/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/workshops/[id]/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/analytics/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/budget/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/ai-tools/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/impact-roi/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/dashboard/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/admin/workshop-sharing/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/bookings/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/submissions/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/organizations/[id]/announcements/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/organizations/[id]/users/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/digital/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/digital-lab/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/roadmap/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/workshops/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/oolite/map/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/bakehouse/workshops/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/bakehouse/artists/[slug]/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 3 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/[slug]/workshops/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/[slug]/surveys/analytics/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/bakehouse/map/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 1 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/[slug]/budget/page.tsx",
+    "success": true,
+    "changes": [
+      "OoliteNavigation Import: 1 replacement(s)",
+      "OoliteNavigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/[slug]/announcements/[id]/edit/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 3 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/[slug]/xr/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/[slug]/announcements/create/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/users/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/o/[slug]/users/[userId]/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 3 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/announcements/[id]/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 2 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/profile/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 3 replacement(s)"
+    ]
+  },
+  {
+    "file": "app/users/[userId]/page.tsx",
+    "success": true,
+    "changes": [
+      "Navigation Import: 1 replacement(s)",
+      "Navigation Component: 3 replacement(s)"
+    ]
+  }
+]

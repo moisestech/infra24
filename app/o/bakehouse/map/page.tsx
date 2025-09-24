@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navigation from '@/components/ui/Navigation';
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/Badge';
@@ -145,7 +145,7 @@ export default function BakehouseMapPage() {
 
   return (
     <div className={`min-h-screen bg-gray-50 ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
-      {!isFullscreen && <Navigation />}
+      {!isFullscreen && <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />}
       <div className={`${isFullscreen ? 'h-full' : 'container mx-auto px-4 py-8'}`}>
         {/* Header */}
         {!isFullscreen && (

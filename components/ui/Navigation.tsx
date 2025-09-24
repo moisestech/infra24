@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useUser, SignOutButton } from '@clerk/nextjs'
 import { 
-  Home, 
   Users, 
   Bell, 
   ChevronDown, 
@@ -32,6 +31,7 @@ import { OrganizationLogo } from './OrganizationLogo'
 import ArtistIcon from './ArtistIcon'
 import { ClerkClientService } from '@/lib/clerk-client'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface Organization {
   id: string
@@ -44,23 +44,111 @@ interface Organization {
 
 interface NavigationProps {
   className?: string
+  organization?: Organization | null
 }
 
-export default function Navigation({ className = '' }: NavigationProps) {
+export default function Navigation({ className = '', organization }: NavigationProps) {
   const { user, isLoaded } = useUser()
+  const { resolvedTheme } = useTheme()
   const pathname = usePathname()
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [currentOrg, setCurrentOrg] = useState<Organization | null>(null)
   const [userRole, setUserRole] = useState<string>('')
   const [loading, setLoading] = useState(true)
   
-  // Detect if we're on an organization page
+  // Client-side organization detection
+  const [showOrgLogo, setShowOrgLogo] = useState(false)
+  
+  useEffect(() => {
+    // Only run on client side after hydration
+    const isOnOrgPage = pathname.startsWith('/o/')
+    const slug = isOnOrgPage ? pathname.split('/')[2] : (organization?.slug || null)
+    
+    setShowOrgLogo(!!slug)
+  }, [pathname, organization?.slug])
+  
+  // Detect organization slug for theme colors
   const isOnOrgPage = pathname.startsWith('/o/')
-  const orgSlug = isOnOrgPage ? pathname.split('/')[2] : null
+  const orgSlug = isOnOrgPage ? pathname.split('/')[2] : (organization?.slug || null)
+
+  // Organization theme colors (default to Oolite if no organization)
+  const getThemeColors = () => {
+    if (orgSlug === 'oolite') {
+      return {
+        primary: '#47abc4',
+        primaryLight: '#6bb8d1',
+        primaryDark: '#3a8ba3',
+        primaryAlpha: 'rgba(71, 171, 196, 0.1)',
+        primaryAlphaLight: 'rgba(71, 171, 196, 0.05)',
+        primaryAlphaDark: 'rgba(71, 171, 196, 0.15)',
+      }
+    }
+    // Default theme colors
+    return {
+      primary: '#3b82f6',
+      primaryLight: '#60a5fa',
+      primaryDark: '#2563eb',
+      primaryAlpha: 'rgba(59, 130, 246, 0.1)',
+      primaryAlphaLight: 'rgba(59, 130, 246, 0.05)',
+      primaryAlphaDark: 'rgba(59, 130, 246, 0.15)',
+    }
+  }
+
+  const themeColors = getThemeColors()
+
+  // Theme-aware styles for navigation
+  const getNavStyles = () => {
+    if (resolvedTheme === 'dark') {
+      return {
+        background: isOnOrgPage ? `linear-gradient(135deg, ${themeColors.primaryAlphaDark} 0%, #1a1a1a 50%, ${themeColors.primaryAlphaDark} 100%)` : '#1a1a1a',
+        borderColor: themeColors.primary,
+        textPrimary: '#ffffff',
+        textSecondary: '#a0a0a0',
+        hoverBg: themeColors.primaryAlpha,
+        activeBg: themeColors.primaryAlpha,
+      }
+    } else {
+      return {
+        background: isOnOrgPage ? `linear-gradient(135deg, ${themeColors.primaryAlphaLight} 0%, #ffffff 50%, ${themeColors.primaryAlphaLight} 100%)` : '#ffffff',
+        borderColor: themeColors.primary,
+        textPrimary: '#1a1a1a',
+        textSecondary: '#666666',
+        hoverBg: themeColors.primaryAlpha,
+        activeBg: themeColors.primaryAlpha,
+      }
+    }
+  }
+
+  const navStyles = getNavStyles()
+
+  // Helper function to create theme-aware link styles
+  const getLinkStyles = (isActive: boolean) => ({
+    color: isActive ? themeColors.primary : navStyles.textSecondary,
+    backgroundColor: isActive ? navStyles.activeBg : 'transparent'
+  })
+
+  const getLinkHandlers = (isActive: boolean) => ({
+    onMouseEnter: (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (!isActive) {
+        e.currentTarget.style.color = navStyles.textPrimary
+        e.currentTarget.style.backgroundColor = navStyles.hoverBg
+      }
+    },
+    onMouseLeave: (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (!isActive) {
+        e.currentTarget.style.color = navStyles.textSecondary
+        e.currentTarget.style.backgroundColor = 'transparent'
+      }
+    }
+  })
 
   useEffect(() => {
     async function loadUserData() {
-      if (!user) return
+      if (!user) {
+        // No user - set loading to false immediately for guest access
+        setLoading(false)
+        return
+      }
 
       try {
         // For now, we'll fetch user data via API routes
@@ -89,7 +177,7 @@ export default function Navigation({ className = '' }: NavigationProps) {
       }
     }
 
-    if (isLoaded && user) {
+    if (isLoaded) {
       loadUserData()
     }
   }, [user, isLoaded])
@@ -102,9 +190,19 @@ export default function Navigation({ className = '' }: NavigationProps) {
     setIsMobileMenuOpen(!isMobileMenuOpen)
   }
 
-  if (!isLoaded || loading) {
+  // Show loading state only if we don't have organization data and Clerk is still loading
+  // But if we're on an organization page, we can show the org logo immediately
+  // Simplified: only show loading if we have no organization AND no org slug from URL
+  
+  if (!organization && !orgSlug && (!isLoaded || loading)) {
     return (
-      <nav className={`bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 ${className}`}>
+      <nav 
+        className={`border-b sticky top-0 z-50 ${className}`}
+        style={{ 
+          background: navStyles.background,
+          borderColor: navStyles.borderColor
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
@@ -122,24 +220,67 @@ export default function Navigation({ className = '' }: NavigationProps) {
 
   if (!user) {
     return (
-      <nav className={`bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 ${className}`}>
+      <nav 
+        className={`border-b sticky top-0 z-50 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 ${className}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <Link href="/" className="flex items-center">
-                <Infra24Logo size="lg" showText={true} />
-              </Link>
+              {(() => {
+                // Use the same logic as the main navigation for organization detection
+                const isOnOrgPage = pathname.startsWith('/o/')
+                const slug = isOnOrgPage ? pathname.split('/')[2] : (organization?.slug || null)
+                const shouldShowOrgLogo = !!slug
+                
+                
+                return shouldShowOrgLogo ? (
+                  <Link href={organization ? `/o/${slug}` : "/"} className="flex items-center py-2">
+                    <OrganizationLogo 
+                      organizationSlug={slug || organization?.slug || ''} 
+                      variant="horizontal" 
+                      size="md" 
+                    />
+                  </Link>
+                ) : (
+                  <Link href="/" className="flex items-center">
+                    <Infra24Logo size="lg" showText={true} />
+                  </Link>
+                )
+              })()}
             </div>
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <Link 
                 href="/sign-in"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                className="px-3 py-2 rounded-md text-sm font-medium"
+                style={{ 
+                  color: navStyles.textSecondary,
+                  backgroundColor: 'transparent'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = navStyles.textPrimary
+                  e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = navStyles.textSecondary
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                }}
               >
                 Sign In
               </Link>
               <Link 
                 href="/sign-up"
-                className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
+                className="px-4 py-2 rounded-md text-sm font-medium text-white"
+                style={{ 
+                  backgroundColor: themeColors.primary,
+                  borderColor: themeColors.primary
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = themeColors.primaryLight
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = themeColors.primary
+                }}
               >
                 Sign Up
               </Link>
@@ -151,18 +292,32 @@ export default function Navigation({ className = '' }: NavigationProps) {
   }
 
   return (
-    <nav className={`bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 ${className}`}>
+    <nav 
+      className={`border-b sticky top-0 z-50 ${className}`}
+      style={{ 
+        background: navStyles.background,
+        borderColor: navStyles.borderColor
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Left side - Logo and main nav */}
           <div className="flex items-center space-x-8">
-            {/* Logo - Organization logo when on org pages, Infra24 logo otherwise */}
-            {isOnOrgPage && orgSlug ? (
-              <Link href={`/o/${orgSlug}`} className="flex items-center">
+            {/* Logo - Organization logo when on org pages or when organization prop is provided, Infra24 logo otherwise */}
+            {(() => {
+              // Use the same logic as useEffect to ensure consistency
+              const isOnOrgPage = pathname.startsWith('/o/')
+              const slug = isOnOrgPage ? pathname.split('/')[2] : (organization?.slug || null)
+              const shouldShowOrgLogo = !!slug
+              
+              
+              return shouldShowOrgLogo
+            })() ? (
+              <Link href={organization ? `/o/${orgSlug}` : "/"} className="flex items-center py-2">
                 <OrganizationLogo 
-                  organizationSlug={orgSlug} 
+                  organizationSlug={orgSlug || organization?.slug || ''} 
                   variant="horizontal" 
-                  size="lg" 
+                  size="md" 
                 />
               </Link>
             ) : (
@@ -173,101 +328,88 @@ export default function Navigation({ className = '' }: NavigationProps) {
 
             {/* Main Navigation */}
             <div className="hidden lg:flex items-center space-x-1">
-              <Link 
-                href="/"
-                className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                  isActive('/') 
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
-                }`}
-              >
-                <Home className="h-6 w-6 xl:h-4 xl:w-4" />
-                <span className="nav-text-hidden xl:block">Home</span>
-              </Link>
 
-              {/* Organization Navigation - Show when on org pages */}
-              {isOnOrgPage && orgSlug && (
+              {/* Organization Navigation - Show when on org pages or when organization prop is provided */}
+              {((isOnOrgPage && orgSlug) || (organization && orgSlug)) && (
                 <>
-                  <Link 
-                    href={`/o/${orgSlug}`}
-                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      isActive(`/o/${orgSlug}`) 
-                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
-                    }`}
-                  >
-                    <Home className="h-6 w-6 xl:h-4 xl:w-4" />
-                    <span className="nav-text-hidden xl:block">Overview</span>
-                  </Link>
 
                   <Link 
                     href={`/o/${orgSlug}/digital-lab`}
-                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      isActiveStartsWith(`/o/${orgSlug}/digital-lab`) 
-                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
-                    }`}
+                    className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105"
+                    style={getLinkStyles(isActiveStartsWith(`/o/${orgSlug}/digital-lab`))}
+                    {...getLinkHandlers(isActiveStartsWith(`/o/${orgSlug}/digital-lab`))}
                   >
                     <Microscope className="h-6 w-6 xl:h-4 xl:w-4" />
-                    <span className="nav-text-hidden xl:block">Digital Lab</span>
+                    <span className="hidden xl:block">Digital Lab</span>
                   </Link>
 
                   <Link 
                     href={`/o/${orgSlug}/workshops`}
-                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      isActiveStartsWith(`/o/${orgSlug}/workshops`) 
-                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
-                    }`}
+                    className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:scale-105"
+                    style={getLinkStyles(isActiveStartsWith(`/o/${orgSlug}/workshops`))}
+                    {...getLinkHandlers(isActiveStartsWith(`/o/${orgSlug}/workshops`))}
                   >
                     <GraduationCap className="h-6 w-6 xl:h-4 xl:w-4" />
-                    <span className="nav-text-hidden xl:block">Workshops</span>
+                    <span className="hidden xl:block">Workshops</span>
                   </Link>
 
-                  <Link 
-                    href={`/o/${orgSlug}/announcements/display`}
-                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      isActiveStartsWith(`/o/${orgSlug}/announcements`) 
-                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
-                    }`}
-                  >
-                    <Bell className="h-6 w-6 xl:h-4 xl:w-4" />
-                    <span className="nav-text-hidden xl:block">Announcements</span>
-                  </Link>
-
-                  <Link 
-                    href={`/o/${orgSlug}/users`}
-                    className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      isActiveStartsWith(`/o/${orgSlug}/users`) 
-                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105'
-                    }`}
-                  >
-                    <Users className="h-6 w-6 xl:h-4 xl:w-4" />
-                    <span className="nav-text-hidden xl:block">Members</span>
-                  </Link>
 
                   {/* Admin Dropdown for Organization Pages */}
                   {(userRole === 'org_admin' || userRole === 'super_admin' || userRole === 'moderator') && (
                     <div className="relative group">
-                      <button className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105 transition-all duration-200">
+                      <button 
+                        className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium hover:scale-105 transition-all duration-200"
+                        style={{
+                          color: navStyles.textSecondary,
+                          backgroundColor: 'transparent'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = navStyles.textPrimary
+                          e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = navStyles.textSecondary
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
+                      >
                         <Shield className="h-6 w-6 xl:h-4 xl:w-4" />
-                        <span className="nav-text-hidden xl:block">Admin</span>
+                        <span className="hidden xl:block">Admin</span>
                         <ChevronDown className="h-4 w-4 hidden xl:block" />
                       </button>
                       
-                      <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <div 
+                        className="absolute right-0 mt-2 w-64 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+                        style={{
+                          backgroundColor: navStyles.background.includes('gradient') ? (resolvedTheme === 'dark' ? '#2a2a2a' : '#ffffff') : navStyles.background,
+                          borderColor: navStyles.borderColor,
+                          border: '1px solid'
+                        }}
+                      >
                         <div className="py-2">
-                          <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <div 
+                            className="px-4 py-2"
+                            style={{ borderBottom: `1px solid ${navStyles.borderColor}` }}
+                          >
+                            <div 
+                              className="text-xs font-medium uppercase tracking-wider"
+                              style={{ color: navStyles.textSecondary }}
+                            >
                               Admin Tools
                             </div>
                           </div>
                           
                           <Link 
                             href={`/o/${orgSlug}/analytics`}
-                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                            className="flex items-center space-x-3 px-4 py-2 text-sm"
+                            style={{ color: navStyles.textSecondary }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = navStyles.textPrimary
+                              e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = navStyles.textSecondary
+                              e.currentTarget.style.backgroundColor = 'transparent'
+                            }}
                           >
                             <BarChart3 className="h-4 w-4" />
                             <div>
@@ -277,8 +419,37 @@ export default function Navigation({ className = '' }: NavigationProps) {
                           </Link>
                           
                           <Link 
+                            href={`/o/${orgSlug}/users`}
+                            className="flex items-center space-x-3 px-4 py-2 text-sm"
+                            style={{ color: navStyles.textSecondary }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = navStyles.textPrimary
+                              e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = navStyles.textSecondary
+                              e.currentTarget.style.backgroundColor = 'transparent'
+                            }}
+                          >
+                            <Users className="h-4 w-4" />
+                            <div>
+                              <div>Members</div>
+                              <div className="text-xs opacity-75">Manage organization members</div>
+                            </div>
+                          </Link>
+                          
+                          <Link 
                             href={`/o/${orgSlug}/surveys`}
-                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                            className="flex items-center space-x-3 px-4 py-2 text-sm"
+                            style={{ color: navStyles.textSecondary }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = navStyles.textPrimary
+                              e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = navStyles.textSecondary
+                              e.currentTarget.style.backgroundColor = 'transparent'
+                            }}
                           >
                             <FileText className="h-4 w-4" />
                             <div>
@@ -289,7 +460,16 @@ export default function Navigation({ className = '' }: NavigationProps) {
                           
                           <Link 
                             href={`/o/${orgSlug}/roadmap`}
-                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                            className="flex items-center space-x-3 px-4 py-2 text-sm"
+                            style={{ color: navStyles.textSecondary }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = navStyles.textPrimary
+                              e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = navStyles.textSecondary
+                              e.currentTarget.style.backgroundColor = 'transparent'
+                            }}
                           >
                             <Map className="h-4 w-4" />
                             <div>
@@ -300,7 +480,16 @@ export default function Navigation({ className = '' }: NavigationProps) {
                           
                           <Link 
                             href={`/o/${orgSlug}/budget`}
-                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                            className="flex items-center space-x-3 px-4 py-2 text-sm"
+                            style={{ color: navStyles.textSecondary }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = navStyles.textPrimary
+                              e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = navStyles.textSecondary
+                              e.currentTarget.style.backgroundColor = 'transparent'
+                            }}
                           >
                             <DollarSign className="h-4 w-4" />
                             <div>
@@ -311,7 +500,16 @@ export default function Navigation({ className = '' }: NavigationProps) {
                           
                           <Link 
                             href={`/o/${orgSlug}/impact-roi`}
-                            className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                            className="flex items-center space-x-3 px-4 py-2 text-sm"
+                            style={{ color: navStyles.textSecondary }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = navStyles.textPrimary
+                              e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = navStyles.textSecondary
+                              e.currentTarget.style.backgroundColor = 'transparent'
+                            }}
                           >
                             <TrendingUp className="h-4 w-4" />
                             <div>
@@ -326,110 +524,8 @@ export default function Navigation({ className = '' }: NavigationProps) {
                 </>
               )}
 
-              {/* Organizations Dropdown */}
-              <div className="relative group">
-                <button className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                  <Infra24Logo size="sm" showText={false} />
-                  <span className="nav-text-hidden lg:block">Organizations</span>
-                  <ChevronDown className="h-4 w-4" />
-                </button>
-                
-                <div className="absolute left-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="py-2">
-                    {organizations.map((org) => (
-                      <div key={org.id} className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
-                            {org.name}
-                          </span>
-                          {currentOrg?.id === org.id && (
-                            <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
-                              Current
-                            </span>
-                          )}
-                        </div>
-                        <div className="mt-1 space-y-1">
-                          <Link 
-                            href={`/organizations/${org.slug}`}
-                            className="block text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-                          >
-                            Overview
-                          </Link>
-                          <Link 
-                            href={`/organizations/${org.slug}/announcements`}
-                            className="block text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-                          >
-                            Announcements
-                          </Link>
-                          <Link 
-                            href={`/organizations/${org.slug}/users`}
-                            className="block text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-                          >
-                            Members
-                          </Link>
-                          <Link 
-                            href={`/organizations/${org.slug}/artists`}
-                            className="block text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-                          >
-                            Artists
-                          </Link>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
 
-              {/* Members Dropdown */}
-              <div className="relative group">
-                <button className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                  <Users className="h-4 w-4" />
-                  <span className="nav-text-hidden lg:block">Members</span>
-                  <ChevronDown className="h-4 w-4" />
-                </button>
-                
-                <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="py-2">
-                    <Link 
-                      href="/users"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      All Members
-                    </Link>
-                    <Link 
-                      href="/users?role=resident"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      Residents
-                    </Link>
-                    <Link 
-                      href="/users?role=moderator"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      Moderators
-                    </Link>
-                    <Link 
-                      href="/users?role=org_admin"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      Admins
-                    </Link>
-                  </div>
-                </div>
-              </div>
 
-              {/* Announcements */}
-              <Link 
-                href="/announcements"
-                className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActiveStartsWith('/announcements') 
-                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-              >
-                <Bell className="h-4 w-4" />
-                <span className="nav-text-hidden lg:block">Announcements</span>
-              </Link>
 
 
             </div>
@@ -456,7 +552,17 @@ export default function Navigation({ className = '' }: NavigationProps) {
 
             {/* User menu - Third */}
             <div className="relative group">
-              <Link href="/profile" className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+              <Link 
+                href="/profile" 
+                className="flex items-center space-x-2"
+                style={{ color: navStyles.textSecondary }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = navStyles.textPrimary
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = navStyles.textSecondary
+                }}
+              >
                 {user.imageUrl ? (
                   <img 
                     src={user.imageUrl} 
@@ -468,21 +574,46 @@ export default function Navigation({ className = '' }: NavigationProps) {
                     <User className="h-4 w-4 text-gray-600 dark:text-gray-400" />
                   </div>
                 )}
-                <span className="nav-text-hidden lg:block text-sm font-medium">{user.fullName || user.emailAddresses[0]?.emailAddress}</span>
-                <ChevronDown className="nav-text-hidden lg:block h-4 w-4" />
+                <span className="hidden lg:block text-sm font-medium">{user.fullName || user.emailAddresses[0]?.emailAddress}</span>
+                <ChevronDown className="hidden lg:block h-4 w-4" />
               </Link>
               
-              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div 
+                className="absolute right-0 mt-2 w-64 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+                style={{
+                  backgroundColor: navStyles.background.includes('gradient') ? (resolvedTheme === 'dark' ? '#2a2a2a' : '#ffffff') : navStyles.background,
+                  borderColor: navStyles.borderColor,
+                  border: '1px solid'
+                }}
+              >
                 <div className="py-2">
                   <Link 
                     href="/profile"
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="block px-4 py-2 text-sm"
+                    style={{ color: navStyles.textSecondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = navStyles.textPrimary
+                      e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = navStyles.textSecondary
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                    }}
                   >
                     Your Profile
                   </Link>
                   <Link 
                     href="/settings"
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="block px-4 py-2 text-sm"
+                    style={{ color: navStyles.textSecondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = navStyles.textPrimary
+                      e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = navStyles.textSecondary
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                    }}
                   >
                     Settings
                   </Link>
@@ -490,9 +621,15 @@ export default function Navigation({ className = '' }: NavigationProps) {
                   {/* Organization Access */}
                   {organizations.length > 0 && (
                     <>
-                      <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                      <div 
+                        className="my-1"
+                        style={{ borderTop: `1px solid ${navStyles.borderColor}` }}
+                      ></div>
                       <div className="px-4 py-2">
-                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                        <div 
+                          className="text-xs font-medium uppercase tracking-wider mb-2"
+                          style={{ color: navStyles.textSecondary }}
+                        >
                           Organizations
                         </div>
                         <div className="space-y-1">
@@ -500,7 +637,16 @@ export default function Navigation({ className = '' }: NavigationProps) {
                             <Link
                               key={org.id}
                               href={`/o/${org.slug}`}
-                              className="flex items-center space-x-2 px-2 py-1 rounded text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                              className="flex items-center space-x-2 px-2 py-1 rounded text-sm"
+                              style={{ color: navStyles.textSecondary }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color = navStyles.textPrimary
+                                e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = navStyles.textSecondary
+                                e.currentTarget.style.backgroundColor = 'transparent'
+                              }}
                             >
                               <OrganizationLogo organizationSlug={org.slug} variant="horizontal" size="sm" />
                             </Link>
@@ -510,9 +656,21 @@ export default function Navigation({ className = '' }: NavigationProps) {
                     </>
                   )}
                   
-                  <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                  <div 
+                    className="my-1"
+                    style={{ borderTop: `1px solid ${navStyles.borderColor}` }}
+                  ></div>
                   <SignOutButton>
-                    <button className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <button 
+                      className="block w-full text-left px-4 py-2 text-sm"
+                      style={{ color: '#ef4444' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
+                    >
                       Sign Out
                     </button>
                   </SignOutButton>
@@ -523,30 +681,76 @@ export default function Navigation({ className = '' }: NavigationProps) {
             {/* Create button - Fourth */}
             {(userRole === 'org_admin' || userRole === 'super_admin' || userRole === 'moderator') && (
               <div className="relative group">
-                <button className="flex items-center space-x-1 bg-blue-600 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                <button 
+                  className="flex items-center space-x-1 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  style={{ 
+                    backgroundColor: themeColors.primary,
+                    borderColor: themeColors.primary
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = themeColors.primaryLight
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = themeColors.primary
+                  }}
+                >
                   <Plus className="h-4 w-4" />
-                  <span className="nav-text-hidden lg:block">Create</span>
-                  <ChevronDown className="nav-text-hidden lg:block h-4 w-4" />
+                  <span className="hidden lg:block">Create</span>
+                  <ChevronDown className="hidden lg:block h-4 w-4" />
                 </button>
                 
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div 
+                  className="absolute right-0 mt-2 w-48 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+                  style={{
+                    backgroundColor: navStyles.background.includes('gradient') ? (resolvedTheme === 'dark' ? '#2a2a2a' : '#ffffff') : navStyles.background,
+                    borderColor: navStyles.borderColor,
+                    border: '1px solid'
+                  }}
+                >
                   <div className="py-2">
                     <Link 
                       href="/announcements/create"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="block px-4 py-2 text-sm"
+                      style={{ color: navStyles.textSecondary }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = navStyles.textPrimary
+                        e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = navStyles.textSecondary
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
                     >
                       New Announcement
                     </Link>
                     <Link 
                       href="/artists/create"
-                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="block px-4 py-2 text-sm"
+                      style={{ color: navStyles.textSecondary }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = navStyles.textPrimary
+                        e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = navStyles.textSecondary
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
                     >
                       New Artist Profile
                     </Link>
                     {(userRole === 'super_admin') && (
                       <Link 
                         href="/organizations/create"
-                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="block px-4 py-2 text-sm"
+                        style={{ color: navStyles.textSecondary }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = navStyles.textPrimary
+                          e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = navStyles.textSecondary
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
                       >
                         New Organization
                       </Link>
@@ -562,8 +766,8 @@ export default function Navigation({ className = '' }: NavigationProps) {
         {isMobileMenuOpen && (
           <div className="lg:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-              {/* Show organization logo in mobile menu when on org pages */}
-              {isOnOrgPage && orgSlug && (
+              {/* Show organization logo in mobile menu when on org pages or when organization prop is provided */}
+              {((isOnOrgPage && orgSlug) || (organization && orgSlug)) && (
                 <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700 mb-2">
                   <Link 
                     href={`/o/${orgSlug}`}
@@ -579,16 +783,6 @@ export default function Navigation({ className = '' }: NavigationProps) {
                 </div>
               )}
               
-              <Link
-                href="/"
-                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <div className="flex items-center space-x-2">
-                  <Home className="h-4 w-4" />
-                  <span>Home</span>
-                </div>
-              </Link>
               
               <Link
                 href="/dashboard"
@@ -612,52 +806,10 @@ export default function Navigation({ className = '' }: NavigationProps) {
                 </div>
               </Link>
               
-              <Link
-                href="/announcements"
-                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <div className="flex items-center space-x-2">
-                  <Bell className="h-4 w-4" />
-                  <span>Announcements</span>
-                </div>
-              </Link>
               
-              <Link
-                href="/users"
-                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <div className="flex items-center space-x-2">
-                  <Users className="h-4 w-4" />
-                  <span>Users</span>
-                </div>
-              </Link>
               
 
               
-              {/* Organizations in mobile menu */}
-              {organizations.length > 0 && (
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
-                  <div className="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Organizations
-                  </div>
-                  {organizations.map((org) => (
-                    <div key={org.id} className="pl-3">
-                      <Link
-                        href={`/o/${org.slug}`}
-                        className="block px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <OrganizationLogo organizationSlug={org.slug} variant="horizontal" size="sm" />
-                          <span>{org.name}</span>
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
               
               {/* Sign Out in mobile menu */}
               <div className="border-t border-gray-200 dark:border-gray-700 pt-2">

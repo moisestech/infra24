@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { OoliteNavigation } from '@/components/tenant/OoliteNavigation'
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { TenantProvider } from '@/components/tenant/TenantProvider'
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,6 +15,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar, Clock, Users, MapPin, Monitor, Palette, Zap, CheckCircle, ArrowRight, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'react-hot-toast'
+import { useTheme } from '@/contexts/ThemeContext'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { OrganizationThemeProvider, useOrganizationTheme } from '@/components/carousel/OrganizationThemeContext'
 
 interface Organization {
   id: string
@@ -48,9 +51,22 @@ interface TimeSlot {
   time: string
 }
 
-export default function DigitalLabPage() {
+function DigitalLabPageContent() {
   const params = useParams()
   const slug = params.slug as string
+  const { resolvedTheme } = useTheme()
+
+  // Get navigation config based on organization slug
+  const getNavigationConfig = () => {
+    switch (slug) {
+      case 'oolite':
+        return ooliteConfig
+      case 'bakehouse':
+        return bakehouseConfig
+      default:
+        return ooliteConfig // Default fallback
+    }
+  }
 
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [resources, setResources] = useState<Resource[]>([])
@@ -67,6 +83,59 @@ export default function DigitalLabPage() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [showBookingForm, setShowBookingForm] = useState(false)
+
+  // Get organization theme colors with fallback
+  let themeColors
+  try {
+    const orgTheme = useOrganizationTheme()
+    themeColors = orgTheme?.themeColors
+  } catch (error) {
+    console.warn('OrganizationTheme not available, using fallback colors')
+  }
+
+  const fallbackColors = {
+    primary: '#47abc4',
+    primaryLight: '#6bb8d1',
+    primaryDark: '#3a8ba3',
+    secondary: '#8b5cf6',
+    accent: '#06b6d4',
+    background: '#ffffff',
+    cardBackground: '#ffffff',
+    textPrimary: '#111827',
+    textSecondary: '#6b7280'
+  }
+  const colors = themeColors || fallbackColors
+
+  // Theme-aware styles using organization colors
+  const getThemeStyles = () => {
+    if (resolvedTheme === 'dark') {
+      return {
+        background: `linear-gradient(135deg, ${colors.primaryLight}20 0%, #1a1a1a 50%, ${colors.primaryLight}20 100%)`,
+        headerBg: '#2a2a2a',
+        headerBorder: '#404040',
+        cardBg: colors.cardBackground || '#2a2a2a',
+        cardBorder: '#404040',
+        textPrimary: colors.textPrimary || '#ffffff',
+        textSecondary: colors.textSecondary || '#a0a0a0',
+        buttonBg: colors.primary,
+        buttonHover: colors.primaryLight,
+      }
+    } else {
+      return {
+        background: `linear-gradient(135deg, ${colors.primaryLight}10 0%, ${colors.background} 50%, ${colors.primaryLight}10 100%)`,
+        headerBg: colors.background,
+        headerBorder: '#e5e5e5',
+        cardBg: colors.cardBackground,
+        cardBorder: '#e5e5e5',
+        textPrimary: colors.textPrimary,
+        textSecondary: colors.textSecondary,
+        buttonBg: colors.primary,
+        buttonHover: colors.primaryLight,
+      }
+    }
+  }
+
+  const themeStyles = getThemeStyles()
 
   useEffect(() => {
     loadData()
@@ -215,22 +284,34 @@ export default function DigitalLabPage() {
   if (loading) {
     return (
       <TenantProvider>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-          <OoliteNavigation />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <OrganizationThemeProvider organizationSlug={slug}>
+          <div 
+            className="min-h-screen"
+            style={{ background: themeStyles.background }}
+          >
+            <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <div className="flex items-center justify-center h-64">
+                <div 
+                  className="animate-spin rounded-full h-12 w-12 border-b-2"
+                  style={{ borderColor: colors.primary }}
+                ></div>
+              </div>
             </div>
           </div>
-        </div>
+        </OrganizationThemeProvider>
       </TenantProvider>
     )
   }
 
   return (
     <TenantProvider>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <OoliteNavigation />
+      <OrganizationThemeProvider organizationSlug={slug}>
+        <div 
+          className="min-h-screen"
+          style={{ background: themeStyles.background }}
+        >
+          <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
@@ -240,12 +321,19 @@ export default function DigitalLabPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center justify-center mb-6">
-              <OrganizationLogo organizationSlug={slug} size="lg" className="h-16 w-16" />
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex-1"></div>
+              <div className="flex items-center justify-center">
+                <OrganizationLogo organizationSlug={slug} size="lg" className="h-12 w-12 sm:h-16 sm:w-16" />
+              </div>
+              <div className="flex-1 flex justify-end">
+                <ThemeToggle />
+              </div>
             </div>
             
             <motion.h1 
-              className="text-4xl font-bold text-gray-900 dark:text-white mb-4"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4"
+              style={{ color: themeStyles.textPrimary }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -254,7 +342,8 @@ export default function DigitalLabPage() {
             </motion.h1>
             
             <motion.p 
-              className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto"
+              className="text-lg sm:text-xl max-w-3xl mx-auto px-4"
+              style={{ color: themeStyles.textSecondary }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
@@ -266,7 +355,7 @@ export default function DigitalLabPage() {
 
           {/* Resources Grid */}
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -275,8 +364,16 @@ export default function DigitalLabPage() {
               <Card 
                 key={resource.id} 
                 className={`cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                  selectedResource?.id === resource.id ? 'ring-2 ring-blue-500' : ''
+                  selectedResource?.id === resource.id ? 'ring-2' : ''
                 }`}
+                style={{ 
+                  backgroundColor: themeStyles.cardBg,
+                  borderColor: themeStyles.cardBorder,
+                  ...(selectedResource?.id === resource.id ? { 
+                    ringColor: colors.primary,
+                    borderColor: colors.primary 
+                  } : {})
+                }}
                 onClick={() => handleResourceSelect(resource.id)}
               >
                 <CardHeader>
@@ -286,17 +383,17 @@ export default function DigitalLabPage() {
                         {getResourceIcon(resource.type)}
                       </div>
                       <div>
-                        <CardTitle className="text-lg">{resource.title}</CardTitle>
+                        <CardTitle className="text-lg" style={{ color: themeStyles.textPrimary }}>{resource.title}</CardTitle>
                         <Badge variant="info" className="mt-1">
                           {resource.type}
                         </Badge>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                      <div className="text-2xl font-bold" style={{ color: colors.primary }}>
                         ${resource.price}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm" style={{ color: themeStyles.textSecondary }}>
                         {resource.duration_minutes} min
                       </div>
                     </div>
@@ -304,18 +401,18 @@ export default function DigitalLabPage() {
                 </CardHeader>
                 
                 <CardContent>
-                  <CardDescription className="mb-4">
+                  <CardDescription className="mb-4" style={{ color: themeStyles.textSecondary }}>
                     {resource.description}
                   </CardDescription>
                   
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center space-x-2">
-                      <MapPin className="h-4 w-4 text-gray-500" />
-                      <span>{resource.location}</span>
+                      <MapPin className="h-4 w-4" style={{ color: themeStyles.textSecondary }} />
+                      <span style={{ color: themeStyles.textSecondary }}>{resource.location}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Users className="h-4 w-4 text-gray-500" />
-                      <span>Capacity: {resource.capacity}</span>
+                      <Users className="h-4 w-4" style={{ color: themeStyles.textSecondary }} />
+                      <span style={{ color: themeStyles.textSecondary }}>Capacity: {resource.capacity}</span>
                     </div>
                     {resource.requirements.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
@@ -345,12 +442,12 @@ export default function DigitalLabPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Card>
+              <Card style={{ backgroundColor: themeStyles.cardBg, borderColor: themeStyles.cardBorder }}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-2xl">{selectedResource.title}</CardTitle>
-                      <CardDescription className="text-lg mt-2">
+                      <CardTitle className="text-2xl" style={{ color: themeStyles.textPrimary }}>{selectedResource.title}</CardTitle>
+                      <CardDescription className="text-lg mt-2" style={{ color: themeStyles.textSecondary }}>
                         {selectedResource.description}
                       </CardDescription>
                     </div>
@@ -370,20 +467,20 @@ export default function DigitalLabPage() {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <h4 className="font-semibold mb-2">Availability</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <h4 className="font-semibold mb-2" style={{ color: themeStyles.textPrimary }}>Availability</h4>
+                      <p className="text-sm" style={{ color: themeStyles.textSecondary }}>
                         {availableSlots.length} slots available in the next 30 days
                       </p>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-2">Duration</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <h4 className="font-semibold mb-2" style={{ color: themeStyles.textPrimary }}>Duration</h4>
+                      <p className="text-sm" style={{ color: themeStyles.textSecondary }}>
                         {selectedResource.duration_minutes} minutes minimum
                       </p>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-2">Price</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <h4 className="font-semibold mb-2" style={{ color: themeStyles.textPrimary }}>Price</h4>
+                      <p className="text-sm" style={{ color: themeStyles.textSecondary }}>
                         ${selectedResource.price} {selectedResource.currency}
                       </p>
                     </div>
@@ -401,38 +498,47 @@ export default function DigitalLabPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              <h3 className="text-2xl font-bold mb-6" style={{ color: themeStyles.textPrimary }}>
                 Available Time Slots
               </h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                 {availableSlots.slice(0, 12).map((slot, index) => (
                   <Card 
                     key={index}
                     className={`cursor-pointer transition-all duration-300 hover:shadow-md ${
-                      selectedSlot?.starts_at === slot.starts_at ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20' : ''
+                      selectedSlot?.starts_at === slot.starts_at ? 'ring-2' : ''
                     }`}
+                    style={{ 
+                      backgroundColor: themeStyles.cardBg,
+                      borderColor: themeStyles.cardBorder,
+                      ...(selectedSlot?.starts_at === slot.starts_at ? { 
+                        ringColor: colors.primary,
+                        borderColor: colors.primary,
+                        backgroundColor: resolvedTheme === 'dark' ? `${colors.primary}20` : `${colors.primary}10`
+                      } : {})
+                    }}
                     onClick={() => handleSlotSelect(slot)}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="font-semibold">
+                          <div className="font-semibold" style={{ color: themeStyles.textPrimary }}>
                             {new Date(slot.date).toLocaleDateString('en-US', {
                               weekday: 'short',
                               month: 'short',
                               day: 'numeric'
                             })}
                           </div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                          <div className="text-sm" style={{ color: themeStyles.textSecondary }}>
                             {slot.time}
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm font-medium">
+                          <div className="text-sm font-medium" style={{ color: themeStyles.textPrimary }}>
                             {slot.duration_hours}h
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs" style={{ color: themeStyles.textSecondary }}>
                             ${selectedResource.price}
                           </div>
                         </div>
@@ -458,22 +564,22 @@ export default function DigitalLabPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <Card>
+              <Card style={{ backgroundColor: themeStyles.cardBg, borderColor: themeStyles.cardBorder }}>
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <CheckCircle className="h-6 w-6 text-green-600" />
+                  <CardTitle className="flex items-center space-x-2" style={{ color: themeStyles.textPrimary }}>
+                    <CheckCircle className="h-6 w-6" style={{ color: colors.primary }} />
                     <span>Complete Your Booking</span>
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription style={{ color: themeStyles.textSecondary }}>
                     {selectedResource?.title} - {new Date(selectedSlot.date).toLocaleDateString()} at {selectedSlot.time}
                   </CardDescription>
                 </CardHeader>
                 
                 <CardContent>
                   <form onSubmit={handleBookingSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="user_name">Your Name *</Label>
+                        <Label htmlFor="user_name" style={{ color: themeStyles.textPrimary }}>Your Name *</Label>
                         <Input
                           id="user_name"
                           value={bookingForm.user_name}
@@ -482,7 +588,7 @@ export default function DigitalLabPage() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="user_email">Email Address *</Label>
+                        <Label htmlFor="user_email" style={{ color: themeStyles.textPrimary }}>Email Address *</Label>
                         <Input
                           id="user_email"
                           type="email"
@@ -494,7 +600,7 @@ export default function DigitalLabPage() {
                     </div>
                     
                     <div>
-                      <Label htmlFor="title">Booking Title *</Label>
+                      <Label htmlFor="title" style={{ color: themeStyles.textPrimary }}>Booking Title *</Label>
                       <Input
                         id="title"
                         value={bookingForm.title}
@@ -504,7 +610,7 @@ export default function DigitalLabPage() {
                     </div>
                     
                     <div>
-                      <Label htmlFor="description">Project Description</Label>
+                      <Label htmlFor="description" style={{ color: themeStyles.textPrimary }}>Project Description</Label>
                       <Textarea
                         id="description"
                         value={bookingForm.description}
@@ -515,7 +621,7 @@ export default function DigitalLabPage() {
                     </div>
                     
                     <div>
-                      <Label htmlFor="notes">Special Requirements</Label>
+                      <Label htmlFor="notes" style={{ color: themeStyles.textPrimary }}>Special Requirements</Label>
                       <Textarea
                         id="notes"
                         value={bookingForm.notes}
@@ -536,7 +642,11 @@ export default function DigitalLabPage() {
                       <Button
                         type="submit"
                         disabled={submitting}
-                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                        style={{ 
+                          backgroundColor: colors.primary,
+                          borderColor: colors.primary
+                        }}
+                        className="hover:opacity-90"
                       >
                         {submitting ? 'Creating Booking...' : 'Confirm Booking'}
                         <ArrowRight className="h-4 w-4 ml-2" />
@@ -555,42 +665,51 @@ export default function DigitalLabPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+            <h3 className="text-2xl font-bold mb-8 text-center" style={{ color: themeStyles.textPrimary }}>
               Why Choose Our Digital Lab?
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Card>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+              <Card style={{ backgroundColor: themeStyles.cardBg, borderColor: themeStyles.cardBorder }}>
                 <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                  <div 
+                    className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4"
+                    style={{ backgroundColor: `${colors.primary}20` }}
+                  >
+                    <Sparkles className="h-6 w-6" style={{ color: colors.primary }} />
                   </div>
-                  <h4 className="font-semibold mb-2">Cutting-Edge Equipment</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <h4 className="font-semibold mb-2" style={{ color: themeStyles.textPrimary }}>Cutting-Edge Equipment</h4>
+                  <p className="text-sm" style={{ color: themeStyles.textSecondary }}>
                     Access to the latest 3D printers, VR/AR kits, and high-performance workstations
                   </p>
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card style={{ backgroundColor: themeStyles.cardBg, borderColor: themeStyles.cardBorder }}>
                 <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <Users className="h-6 w-6 text-green-600 dark:text-green-400" />
+                  <div 
+                    className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4"
+                    style={{ backgroundColor: `${colors.primary}20` }}
+                  >
+                    <Users className="h-6 w-6" style={{ color: colors.primary }} />
                   </div>
-                  <h4 className="font-semibold mb-2">Expert Support</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <h4 className="font-semibold mb-2" style={{ color: themeStyles.textPrimary }}>Expert Support</h4>
+                  <p className="text-sm" style={{ color: themeStyles.textSecondary }}>
                     Get help from experienced instructors and technical staff
                   </p>
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card style={{ backgroundColor: themeStyles.cardBg, borderColor: themeStyles.cardBorder }}>
                 <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <Calendar className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                  <div 
+                    className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4"
+                    style={{ backgroundColor: `${colors.primary}20` }}
+                  >
+                    <Calendar className="h-6 w-6" style={{ color: colors.primary }} />
                   </div>
-                  <h4 className="font-semibold mb-2">Flexible Scheduling</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <h4 className="font-semibold mb-2" style={{ color: themeStyles.textPrimary }}>Flexible Scheduling</h4>
+                  <p className="text-sm" style={{ color: themeStyles.textSecondary }}>
                     Book equipment and spaces that fit your schedule and project timeline
                   </p>
                 </CardContent>
@@ -598,7 +717,12 @@ export default function DigitalLabPage() {
             </div>
           </motion.div>
         </div>
-      </div>
+        </div>
+      </OrganizationThemeProvider>
     </TenantProvider>
   )
+}
+
+export default function DigitalLabPage() {
+  return <DigitalLabPageContent />
 }

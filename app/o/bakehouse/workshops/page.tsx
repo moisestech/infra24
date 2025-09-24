@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
-import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -49,7 +49,7 @@ export default function BakehouseWorkshopsPage() {
   return (
     <TenantLayout>
       <div className="min-h-screen bg-gray-50">
-        <OoliteNavigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100">
           <div className="container mx-auto px-4 py-16">
             {/* Header */}

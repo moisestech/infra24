@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
-import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { SurveyForm } from '@/components/survey/SurveyForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -340,7 +340,7 @@ function DigitalLabSurveyPageContent() {
   return (
     <TenantLayout>
       <div className="min-h-screen bg-gray-50">
-        <OoliteNavigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">

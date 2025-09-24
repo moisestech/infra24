@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Bell, Save, X } from 'lucide-react'
-import Navigation from '@/components/ui/Navigation'
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { UserPicker } from '@/components/ui/UserPicker'
 import { AnnouncementPerson } from '@/types/people'
 
@@ -15,8 +15,19 @@ interface Organization {
 
 export default function CreateAnnouncementPage() {
   const params = useParams()
-  const router = useRouter()
   const slug = params.slug as string
+  // Get navigation config based on organization slug
+  const getNavigationConfig = () => {
+    switch (slug) {
+      case 'oolite':
+        return ooliteConfig
+      case 'bakehouse':
+        return bakehouseConfig
+      default:
+        return ooliteConfig // Default fallback
+    }
+  }
+  const router = useRouter()
   
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [loading, setLoading] = useState(false)
@@ -103,7 +114,7 @@ export default function CreateAnnouncementPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-8"></div>
@@ -122,7 +133,7 @@ export default function CreateAnnouncementPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Navigation />
+      <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}

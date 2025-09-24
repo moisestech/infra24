@@ -83,6 +83,13 @@ export function OrganizationLogo({
   alt,
   priority = false,
 }: OrganizationLogoProps) {
+  console.log('🏢 OrganizationLogo called with:', {
+    organizationSlug,
+    variant,
+    size,
+    theme
+  })
+  
   const { theme: currentTheme } = useTheme();
   const [imageError, setImageError] = React.useState(false);
   
@@ -186,7 +193,7 @@ export function OrganizationLogo({
           width={sizeConfig.width}
           height={sizeConfig.height}
           className={cn(
-            'object-contain transition-opacity duration-200 absolute inset-0',
+            'object-contain transition-opacity duration-200 absolute top-0 left-0',
             sizeConfig.className,
             'opacity-0 dark:opacity-100'
           )}

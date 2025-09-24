@@ -5,6 +5,7 @@ import Select from 'react-select'
 import { Controller, useFormContext } from 'react-hook-form'
 import { EnhancedFormField } from './EnhancedFormField'
 import { cn } from '@/lib/utils'
+import { useOrganizationTheme } from '@/components/carousel/OrganizationThemeContext'
 
 interface ReactSelectFieldProps {
   name: string
@@ -254,47 +255,136 @@ export function ReactSelectField({
   wordLimit,
   examples
 }: ReactSelectFieldProps) {
-  const { control, watch } = useFormContext()
+  const formContext = useFormContext()
+  
+  // Handle case where form context is not available
+  if (!formContext) {
+    return (
+      <div className="p-4 border border-gray-200 rounded-md bg-gray-50">
+        <p className="text-sm text-gray-500">Form not available</p>
+      </div>
+    )
+  }
+  
+  const { control, watch } = formContext
   const currentValue = watch(name)
+
+  // Get organization theme colors with fallback
+  let themeColors
+  try {
+    const orgTheme = useOrganizationTheme()
+    themeColors = orgTheme?.themeColors
+  } catch (error) {
+    console.warn('OrganizationTheme not available, using fallback colors')
+  }
+
+  // Fallback colors if themeColors is not available
+  const fallbackColors = {
+    primary: '#3b82f6',
+    primaryLight: '#dbeafe',
+    primaryDark: '#1e40af',
+    textPrimary: '#111827',
+    textSecondary: '#6b7280',
+    cardBackground: '#ffffff'
+  }
+
+  const colors = themeColors || fallbackColors
 
   // Determine if we're in dark mode
   const isDarkMode = document.documentElement.classList.contains('dark')
 
   const getStyles = () => {
-    if (isDarkMode) {
-      return {
-        control: customSelectStyles.controlDark,
-        placeholder: customSelectStyles.placeholderDark,
-        singleValue: customSelectStyles.singleValueDark,
-        multiValue: customSelectStyles.multiValueDark,
-        multiValueLabel: customSelectStyles.multiValueLabelDark,
-        multiValueRemove: customSelectStyles.multiValueRemoveDark,
-        menu: customSelectStyles.menuDark,
-        option: customSelectStyles.optionDark,
-        indicatorSeparator: customSelectStyles.indicatorSeparatorDark,
-        dropdownIndicator: customSelectStyles.dropdownIndicatorDark,
-        clearIndicator: customSelectStyles.clearIndicatorDark,
-        valueContainer: customSelectStyles.valueContainer,
-        input: customSelectStyles.input,
-        menuList: customSelectStyles.menuList
-      }
+    // Create organization-themed styles
+    const orgStyles = {
+      control: (provided: any, state: any) => ({
+        ...provided,
+        backgroundColor: isDarkMode ? colors.cardBackground : '#ffffff',
+        borderColor: state.isFocused ? colors.primary : (isDarkMode ? '#374151' : '#d1d5db'),
+        borderWidth: '1px',
+        boxShadow: state.isFocused ? `0 0 0 1px ${colors.primary}` : 'none',
+        '&:hover': {
+          borderColor: colors.primary
+        }
+      }),
+      placeholder: (provided: any) => ({
+        ...provided,
+        color: isDarkMode ? '#9ca3af' : '#6b7280'
+      }),
+      singleValue: (provided: any) => ({
+        ...provided,
+        color: isDarkMode ? colors.textPrimary : '#111827'
+      }),
+      multiValue: (provided: any) => ({
+        ...provided,
+        backgroundColor: colors.primaryLight
+      }),
+      multiValueLabel: (provided: any) => ({
+        ...provided,
+        color: colors.primaryDark
+      }),
+      multiValueRemove: (provided: any) => ({
+        ...provided,
+        color: colors.primary,
+        '&:hover': {
+          backgroundColor: colors.primary,
+          color: '#ffffff'
+        }
+      }),
+      menu: (provided: any) => ({
+        ...provided,
+        backgroundColor: isDarkMode ? colors.cardBackground : '#ffffff',
+        border: `1px solid ${colors.primary}`,
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+      }),
+      option: (provided: any, state: any) => ({
+        ...provided,
+        backgroundColor: state.isSelected 
+          ? colors.primary 
+          : state.isFocused 
+            ? colors.primaryLight 
+            : 'transparent',
+        color: state.isSelected 
+          ? '#ffffff' 
+          : isDarkMode 
+            ? colors.textPrimary 
+            : '#111827',
+        '&:hover': {
+          backgroundColor: state.isSelected ? colors.primary : colors.primaryLight
+        }
+      }),
+      indicatorSeparator: (provided: any) => ({
+        ...provided,
+        backgroundColor: isDarkMode ? '#374151' : '#d1d5db'
+      }),
+      dropdownIndicator: (provided: any) => ({
+        ...provided,
+        color: isDarkMode ? '#9ca3af' : '#6b7280',
+        '&:hover': {
+          color: colors.primary
+        }
+      }),
+      clearIndicator: (provided: any) => ({
+        ...provided,
+        color: isDarkMode ? '#9ca3af' : '#6b7280',
+        '&:hover': {
+          color: colors.primary
+        }
+      }),
+      valueContainer: (provided: any) => ({
+        ...provided,
+        padding: '2px 8px'
+      }),
+      input: (provided: any) => ({
+        ...provided,
+        color: isDarkMode ? colors.textPrimary : '#111827'
+      }),
+      menuList: (provided: any) => ({
+        ...provided,
+        maxHeight: '200px'
+      })
     }
-    return {
-      control: customSelectStyles.control,
-      placeholder: customSelectStyles.placeholder,
-      singleValue: customSelectStyles.singleValue,
-      multiValue: customSelectStyles.multiValue,
-      multiValueLabel: customSelectStyles.multiValueLabel,
-      multiValueRemove: customSelectStyles.multiValueRemove,
-      menu: customSelectStyles.menu,
-      option: customSelectStyles.option,
-      indicatorSeparator: customSelectStyles.indicatorSeparator,
-      dropdownIndicator: customSelectStyles.dropdownIndicator,
-      clearIndicator: customSelectStyles.clearIndicator,
-      valueContainer: customSelectStyles.valueContainer,
-      input: customSelectStyles.input,
-      menuList: customSelectStyles.menuList
-    }
+
+    return orgStyles
   }
 
   return (

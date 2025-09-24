@@ -3,7 +3,7 @@
 import React, { Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
-import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,7 +53,7 @@ function WorkshopDetailPageContent() {
     return (
       <TenantLayout>
         <div className="min-h-screen bg-gray-50">
-          <OoliteNavigation />
+          <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
           <div className="max-w-4xl mx-auto px-4 py-16">
             <div className="text-center">
               <h1 className="text-3xl font-bold text-gray-900 mb-4">Workshop Not Found</h1>
@@ -74,7 +74,7 @@ function WorkshopDetailPageContent() {
   return (
     <TenantLayout>
       <div className="min-h-screen bg-gray-50">
-        <OoliteNavigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="max-w-4xl mx-auto px-4 py-16">
           {/* Back Button */}
           <div className="mb-8">

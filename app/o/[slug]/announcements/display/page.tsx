@@ -31,26 +31,23 @@ export default function AnnouncementDisplayPage() {
       if (!params.slug) return;
 
       try {
-        // Load organization details from public API
-        const orgResponse = await fetch(`/api/organizations/by-slug/${params.slug}/public`);
-        if (!orgResponse.ok) {
-          throw new Error('Organization not found');
-        }
-        const orgData = await orgResponse.json();
-        setOrganization(orgData.organization);
-
-        // Load announcements for this organization from public API
+        // Load announcements and organization data from public API
         const announcementsResponse = await fetch(`/api/organizations/by-slug/${params.slug}/announcements/public`);
         if (!announcementsResponse.ok) {
           throw new Error('Failed to load announcements');
         }
         const announcementsData = await announcementsResponse.json();
         
-        // Filter for published announcements and add type inference
+        // Set organization data from the announcements response
+        setOrganization(announcementsData.organization);
+        
+        // Filter for active announcements and add type inference
         const publishedAnnouncements = (announcementsData.announcements || [])
-          .filter((announcement: any) => announcement.status === 'published')
+          .filter((announcement: any) => announcement.is_active === true)
           .map((announcement: any) => ({
             ...announcement,
+            // Add status field for compatibility
+            status: 'published',
             // Infer type from existing data if not set
             type: announcement.type || inferAnnouncementType(announcement),
             sub_type: announcement.sub_type || inferAnnouncementSubType(announcement),

@@ -18,6 +18,7 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+    console.log('🌐 Public announcements API - fetching for slug:', slug);
 
     // First, get the organization by slug
     const { data: organization, error: orgError } = await supabase
@@ -27,8 +28,11 @@ export async function GET(
       .single();
 
     if (orgError || !organization) {
+      console.log('🌐 Organization not found for slug:', slug, 'Error:', orgError);
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
+
+    console.log('🌐 Found organization:', organization);
 
     // Get public announcements for this organization
     const { data: announcements, error } = await supabase
@@ -36,20 +40,20 @@ export async function GET(
       .select(`
         id,
         title,
-        body,
+        content,
         type,
         priority,
         visibility,
-        starts_at,
-        ends_at,
+        start_date,
+        end_date,
         location,
-        people,
-        payload,
-        status,
-        published_at,
+        key_people,
+        metadata,
+        is_active,
         created_at,
         updated_at,
-        author_clerk_id
+        created_by,
+        updated_by
       `)
       .eq('organization_id', organization.id)
       .in('visibility', ['public'])
@@ -57,12 +61,14 @@ export async function GET(
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching public announcements:', error);
+      console.error('🌐 Error fetching public announcements:', error);
       return NextResponse.json(
         { error: 'Failed to fetch announcements' },
         { status: 500 }
       );
     }
+
+    console.log('🌐 Successfully fetched public announcements:', announcements?.length || 0, 'announcements');
 
     return NextResponse.json({
       announcements: announcements || [],

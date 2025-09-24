@@ -3,7 +3,7 @@
 import React, { Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
-import { OoliteNavigation } from '@/components/tenant/OoliteNavigation';
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import OoliteDigitalBudgetPage from '@/components/page/OoliteDigitalBudgetPage';
 
 function OoliteBudgetPageContent() {
@@ -42,7 +42,7 @@ function OoliteBudgetPageContent() {
   return (
     <TenantLayout>
       <div className="min-h-screen bg-gray-50">
-        <OoliteNavigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <OoliteDigitalBudgetPage />
       </div>
     </TenantLayout>

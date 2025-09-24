@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useOrganizationTheme } from '@/components/carousel/OrganizationThemeContext'
 
 interface ProgressIndicatorProps {
   currentStep: number
@@ -10,6 +11,26 @@ interface ProgressIndicatorProps {
 }
 
 export function ProgressIndicator({ currentStep, totalSteps, className }: ProgressIndicatorProps) {
+  // Get organization theme colors with fallback
+  let themeColors
+  try {
+    const orgTheme = useOrganizationTheme()
+    themeColors = orgTheme?.themeColors
+  } catch (error) {
+    console.warn('OrganizationTheme not available, using fallback colors')
+  }
+
+  // Fallback colors if themeColors is not available
+  const fallbackColors = {
+    primary: '#3b82f6',
+    primaryLight: '#dbeafe',
+    primaryDark: '#1e40af',
+    textPrimary: '#111827',
+    textSecondary: '#6b7280',
+    cardBackground: '#ffffff'
+  }
+
+  const colors = themeColors || fallbackColors
   const progress = ((currentStep + 1) / totalSteps) * 100
   
   return (
@@ -21,18 +42,21 @@ export function ProgressIndicator({ currentStep, totalSteps, className }: Progre
     >
       {/* Progress Text */}
       <div className="flex justify-between items-center text-sm">
-        <span className="text-gray-600 dark:text-gray-400 font-medium">
+        <span className="font-medium" style={{ color: colors.textSecondary }}>
           Question {currentStep + 1} of {totalSteps}
         </span>
-        <span className="text-gray-500 dark:text-gray-500 font-mono">
+        <span className="font-mono" style={{ color: colors.textSecondary }}>
           {Math.round(progress)}% complete
         </span>
       </div>
       
       {/* Progress Bar */}
-      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+      <div className="w-full rounded-full h-2 overflow-hidden" style={{ backgroundColor: colors.primaryLight }}>
         <motion.div
-          className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full relative"
+          className="h-2 rounded-full relative"
+          style={{ 
+            background: `linear-gradient(90deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`
+          }}
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.5, ease: "easeOut" }}
@@ -51,22 +75,64 @@ export function ProgressIndicator({ currentStep, totalSteps, className }: Progre
         </motion.div>
       </div>
       
-      {/* Step Indicators */}
-      <div className="flex justify-center space-x-2">
-        {Array.from({ length: totalSteps }, (_, index) => (
-          <motion.div
-            key={index}
-            className={cn(
-              "w-2 h-2 rounded-full transition-colors duration-300",
-              index <= currentStep 
-                ? "bg-blue-500" 
-                : "bg-gray-300 dark:bg-gray-600"
+      {/* Compact Step Indicators - Only show a few dots for many steps */}
+      <div className="flex justify-center space-x-1">
+        {totalSteps <= 10 ? (
+          // Show all steps if 10 or fewer
+          Array.from({ length: totalSteps }, (_, index) => (
+            <motion.div
+              key={index}
+              className="w-2 h-2 rounded-full transition-colors duration-300"
+              style={{
+                backgroundColor: index <= currentStep ? colors.primary : colors.primaryLight
+              }}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: index * 0.05 }}
+            />
+          ))
+        ) : (
+          // Show compact representation for many steps
+          <>
+            {/* First few steps */}
+            {Array.from({ length: Math.min(3, currentStep + 1) }, (_, index) => (
+              <motion.div
+                key={index}
+                className="w-2 h-2 rounded-full transition-colors duration-300"
+                style={{ backgroundColor: colors.primary }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+              />
+            ))}
+            
+            {/* Ellipsis if we're in the middle */}
+            {currentStep > 2 && currentStep < totalSteps - 3 && (
+              <div className="flex items-center space-x-1">
+                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.primaryLight }} />
+                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.primaryLight }} />
+                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.primaryLight }} />
+              </div>
             )}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-          />
-        ))}
+            
+            {/* Last few steps */}
+            {Array.from({ length: Math.min(3, totalSteps - currentStep) }, (_, index) => {
+              const stepIndex = totalSteps - 3 + index
+              return (
+                <motion.div
+                  key={stepIndex}
+                  className="w-2 h-2 rounded-full transition-colors duration-300"
+                  style={{
+                    backgroundColor: stepIndex <= currentStep ? colors.primary : colors.primaryLight
+                  }}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: (stepIndex - totalSteps + 3) * 0.05 }}
+                />
+              )
+            })}
+          </>
+        )}
       </div>
     </motion.div>
   )
@@ -79,20 +145,129 @@ interface StepIndicatorProps {
 }
 
 export function StepIndicator({ steps, currentStep, className }: StepIndicatorProps) {
+  // Get organization theme colors with fallback
+  let themeColors
+  try {
+    const orgTheme = useOrganizationTheme()
+    themeColors = orgTheme?.themeColors
+  } catch (error) {
+    console.warn('OrganizationTheme not available, using fallback colors')
+  }
+
+  // Fallback colors if themeColors is not available
+  const fallbackColors = {
+    primary: '#3b82f6',
+    primaryLight: '#dbeafe',
+    primaryDark: '#1e40af',
+    textPrimary: '#111827',
+    textSecondary: '#6b7280',
+    cardBackground: '#ffffff'
+  }
+
+  const colors = themeColors || fallbackColors
+  
+  // For many steps, show a more compact version
+  if (steps.length > 8) {
+    return (
+      <div className={cn("flex items-center justify-center space-x-2", className)}>
+        {/* Show first few steps */}
+        {steps.slice(0, 3).map((step, index) => (
+          <div key={index} className="flex flex-col items-center">
+            <motion.div
+              className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-colors duration-300"
+              style={{
+                backgroundColor: index < currentStep 
+                  ? colors.primary 
+                  : index === currentStep 
+                    ? colors.primaryDark 
+                    : colors.primaryLight,
+                color: index <= currentStep ? '#ffffff' : colors.textSecondary
+              }}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              {index < currentStep ? '✓' : index + 1}
+            </motion.div>
+            <span 
+              className="mt-1 text-xs font-medium transition-colors duration-300"
+              style={{ 
+                color: index <= currentStep ? colors.textPrimary : colors.textSecondary 
+              }}
+            >
+              {step.length > 8 ? step.substring(0, 8) + '...' : step}
+            </span>
+          </div>
+        ))}
+        
+        {/* Ellipsis */}
+        <div className="flex flex-col items-center">
+          <div 
+            className="w-6 h-6 rounded-full flex items-center justify-center text-xs"
+            style={{ backgroundColor: colors.primaryLight }}
+          >
+            ...
+          </div>
+          <span 
+            className="mt-1 text-xs font-medium"
+            style={{ color: colors.textSecondary }}
+          >
+            {currentStep + 1} of {steps.length}
+          </span>
+        </div>
+        
+        {/* Show last few steps */}
+        {steps.slice(-2).map((step, index) => {
+          const actualIndex = steps.length - 2 + index
+          return (
+            <div key={actualIndex} className="flex flex-col items-center">
+              <motion.div
+                className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-colors duration-300"
+                style={{
+                  backgroundColor: actualIndex < currentStep 
+                    ? colors.primary 
+                    : actualIndex === currentStep 
+                      ? colors.primaryDark 
+                      : colors.primaryLight,
+                  color: actualIndex <= currentStep ? '#ffffff' : colors.textSecondary
+                }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: (actualIndex - steps.length + 2) * 0.05 }}
+              >
+                {actualIndex < currentStep ? '✓' : actualIndex + 1}
+              </motion.div>
+              <span 
+                className="mt-1 text-xs font-medium transition-colors duration-300"
+                style={{ 
+                  color: actualIndex <= currentStep ? colors.textPrimary : colors.textSecondary 
+                }}
+              >
+                {step.length > 8 ? step.substring(0, 8) + '...' : step}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+  
+  // For fewer steps, show the full version
   return (
     <div className={cn("flex items-center justify-between", className)}>
       {steps.map((step, index) => (
         <div key={index} className="flex items-center">
           <div className="flex flex-col items-center">
             <motion.div
-              className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors duration-300",
-                index < currentStep 
-                  ? "bg-green-500 text-white" 
+              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors duration-300"
+              style={{
+                backgroundColor: index < currentStep 
+                  ? colors.primary 
                   : index === currentStep 
-                    ? "bg-blue-500 text-white" 
-                    : "bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400"
-              )}
+                    ? colors.primaryDark 
+                    : colors.primaryLight,
+                color: index <= currentStep ? '#ffffff' : colors.textSecondary
+              }}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: index * 0.1 }}
@@ -106,24 +281,22 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
               )}
             </motion.div>
             
-            <span className={cn(
-              "mt-2 text-xs font-medium transition-colors duration-300",
-              index <= currentStep 
-                ? "text-gray-900 dark:text-white" 
-                : "text-gray-500 dark:text-gray-400"
-            )}>
+            <span 
+              className="mt-2 text-xs font-medium transition-colors duration-300"
+              style={{ 
+                color: index <= currentStep ? colors.textPrimary : colors.textSecondary 
+              }}
+            >
               {step}
             </span>
           </div>
           
           {index < steps.length - 1 && (
             <motion.div
-              className={cn(
-                "flex-1 h-0.5 mx-4 transition-colors duration-300",
-                index < currentStep 
-                  ? "bg-green-500" 
-                  : "bg-gray-300 dark:bg-gray-600"
-              )}
+              className="flex-1 h-0.5 mx-4 transition-colors duration-300"
+              style={{
+                backgroundColor: index < currentStep ? colors.primary : colors.primaryLight
+              }}
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: index * 0.1 + 0.2 }}

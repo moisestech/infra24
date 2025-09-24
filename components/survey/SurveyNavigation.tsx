@@ -7,6 +7,7 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface SurveyNavigationProps {
   organization: {
@@ -24,14 +25,80 @@ interface SurveyNavigationProps {
 
 export function SurveyNavigation({ organization, survey, className }: SurveyNavigationProps) {
   const router = useRouter()
+  const { resolvedTheme } = useTheme()
+
+  // Debug logging
+  console.log('SurveyNavigation Debug:', {
+    organization,
+    survey,
+    className,
+    resolvedTheme,
+    hasOrganization: !!organization,
+    hasSurvey: !!survey,
+    organizationSlug: organization?.slug,
+    surveyTitle: survey?.title,
+    surveyId: survey?.id
+  })
 
   const handleBackClick = () => {
     router.push(`/o/${organization.slug}`)
   }
 
+  // Organization theme colors (default to Oolite if no organization)
+  const getThemeColors = () => {
+    if (organization?.slug === 'oolite') {
+      return {
+        primary: '#47abc4',
+        primaryLight: '#6bb8d1',
+        primaryDark: '#3a8ba3',
+        primaryAlpha: 'rgba(71, 171, 196, 0.1)',
+        primaryAlphaLight: 'rgba(71, 171, 196, 0.05)',
+        primaryAlphaDark: 'rgba(71, 171, 196, 0.15)',
+      }
+    }
+    // Default theme colors
+    return {
+      primary: '#3b82f6',
+      primaryLight: '#60a5fa',
+      primaryDark: '#2563eb',
+      primaryAlpha: 'rgba(59, 130, 246, 0.1)',
+      primaryAlphaLight: 'rgba(59, 130, 246, 0.05)',
+      primaryAlphaDark: 'rgba(59, 130, 246, 0.15)',
+    }
+  }
+
+  const themeColors = getThemeColors()
+
+  // Theme-aware styles for navigation
+  const getNavStyles = () => {
+    if (resolvedTheme === 'dark') {
+      return {
+        background: `linear-gradient(135deg, ${themeColors.primaryAlphaDark} 0%, #1a1a1a 50%, ${themeColors.primaryAlphaDark} 100%)`,
+        borderColor: themeColors.primary,
+        textPrimary: '#ffffff',
+        textSecondary: '#a0a0a0',
+        hoverBg: themeColors.primaryAlpha,
+      }
+    } else {
+      return {
+        background: `linear-gradient(135deg, ${themeColors.primaryAlphaLight} 0%, #ffffff 50%, ${themeColors.primaryAlphaLight} 100%)`,
+        borderColor: themeColors.primary,
+        textPrimary: '#1a1a1a',
+        textSecondary: '#666666',
+        hoverBg: themeColors.primaryAlpha,
+      }
+    }
+  }
+
+  const navStyles = getNavStyles()
+
   return (
     <motion.nav 
-      className={`bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 ${className}`}
+      className={`sticky top-0 z-50 ${className}`}
+      style={{
+        background: navStyles.background,
+        borderColor: navStyles.borderColor
+      }}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
@@ -43,7 +110,19 @@ export function SurveyNavigation({ organization, survey, className }: SurveyNavi
               variant="ghost"
               size="sm"
               onClick={handleBackClick}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="p-2 transition-colors"
+              style={{
+                color: navStyles.textSecondary,
+                backgroundColor: 'transparent'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = navStyles.hoverBg
+                e.currentTarget.style.color = navStyles.textPrimary
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+                e.currentTarget.style.color = navStyles.textSecondary
+              }}
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -55,7 +134,10 @@ export function SurveyNavigation({ organization, survey, className }: SurveyNavi
             />
             
             <div className="hidden sm:block">
-              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h1 
+                className="text-lg font-semibold"
+                style={{ color: navStyles.textPrimary }}
+              >
                 {survey.title}
               </h1>
             </div>
@@ -63,7 +145,10 @@ export function SurveyNavigation({ organization, survey, className }: SurveyNavi
           
           <div className="flex items-center space-x-3">
             <div className="hidden md:block text-right">
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p 
+                className="text-xs"
+                style={{ color: navStyles.textSecondary }}
+              >
                 Digital Lab Survey
               </p>
             </div>

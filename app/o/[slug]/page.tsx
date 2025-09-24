@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useParams } from 'next/navigation'
-import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList } from 'lucide-react'
-import Navigation from '@/components/ui/Navigation'
+import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck } from 'lucide-react'
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 
@@ -20,13 +20,21 @@ interface Organization {
 interface Announcement {
   id: string
   title: string
-  body: string
-  status: string
+  content: string
+  type: string
   priority: string
+  visibility: string
+  status: string
+  start_date: string | null
+  end_date: string | null
+  location: string | null
+  key_people: any[]
+  metadata: any
+  is_active: boolean
   created_at: string
-  published_at: string | null
-  expires_at: string | null
-  scheduled_at?: string
+  updated_at: string
+  created_by: string
+  updated_by: string
 }
 
 interface User {
@@ -94,12 +102,21 @@ export default function OrganizationPage() {
               {
                 id: '1',
                 title: `Welcome to ${tenantConfig?.name || 'Our Organization'}`,
-                body: 'We are excited to welcome you to our digital platform. Explore our workshops, connect with artists, and discover new opportunities.',
+                content: 'We are excited to welcome you to our digital platform. Explore our workshops, connect with artists, and discover new opportunities.',
+                type: 'general',
                 priority: 'normal',
+                visibility: 'public',
                 status: 'published',
+                start_date: null,
+                end_date: null,
+                location: null,
+                key_people: [],
+                metadata: {},
+                is_active: true,
                 created_at: new Date().toISOString(),
-                published_at: new Date().toISOString(),
-                expires_at: null
+                updated_at: new Date().toISOString(),
+                created_by: 'system',
+                updated_by: 'system'
               }
             ])
           }
@@ -109,12 +126,21 @@ export default function OrganizationPage() {
             {
               id: '1',
               title: `Welcome to ${tenantConfig?.name || 'Our Organization'}`,
-              body: 'We are excited to welcome you to our digital platform. Explore our workshops, connect with artists, and discover new opportunities.',
-               priority: 'normal',
+              content: 'We are excited to welcome you to our digital platform. Explore our workshops, connect with artists, and discover new opportunities.',
+              type: 'general',
+              priority: 'normal',
+              visibility: 'public',
               status: 'published',
+              start_date: null,
+              end_date: null,
+              location: null,
+              key_people: [],
+              metadata: {},
+              is_active: true,
               created_at: new Date().toISOString(),
-              published_at: new Date().toISOString(),
-              expires_at: null
+              updated_at: new Date().toISOString(),
+              created_by: 'system',
+              updated_by: 'system'
             }
           ])
         }
@@ -165,7 +191,7 @@ export default function OrganizationPage() {
   if (!isLoaded || loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-6"></div>
@@ -186,7 +212,7 @@ export default function OrganizationPage() {
   if (!organization) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <Building2 className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -204,7 +230,7 @@ export default function OrganizationPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Navigation />
+      <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
       <div className="max-w-7xl 4xl:max-w-none mx-auto px-4 sm:px-6 lg:px-8 4xl:px-12 py-8 4xl:py-16">
       
       {/* Banner Background */}
@@ -256,32 +282,6 @@ export default function OrganizationPage() {
           </div>
         </div>
 
-        {/* Compact Stats */}
-        <div className="grid grid-cols-2 gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 mb-6 xl:mb-8 2xl:mb-10 3xl:mb-12">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 xl:p-6 2xl:p-8 3xl:p-10">
-            <div className="flex items-center">
-              <Bell className="h-6 w-6 xl:h-8 xl:w-8 2xl:h-10 2xl:w-10 3xl:h-12 3xl:w-12 text-blue-600 dark:text-blue-400" />
-              <div className="ml-3 xl:ml-4 2xl:ml-5 3xl:ml-6">
-                <p className="text-sm xl:text-base 2xl:text-lg 3xl:text-xl font-medium text-gray-600 dark:text-gray-400">Announcements</p>
-                <p className="text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl font-bold text-gray-900 dark:text-white">
-                  {recentAnnouncements.length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 xl:p-6 2xl:p-8 3xl:p-10">
-            <div className="flex items-center">
-              <Users className="h-6 w-6 xl:h-8 xl:w-8 2xl:h-10 2xl:w-10 3xl:h-12 3xl:w-12 text-green-600 dark:text-green-400" />
-              <div className="ml-3 xl:ml-4 2xl:ml-5 3xl:ml-6">
-                <p className="text-sm xl:text-base 2xl:text-lg 3xl:text-xl font-medium text-gray-600 dark:text-gray-400">Members</p>
-                <p className="text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl font-bold text-gray-900 dark:text-white">
-                  {userCount}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Sign In Prompt for Guest Users */}
         {!user && (
@@ -329,6 +329,7 @@ export default function OrganizationPage() {
                 <Bell className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-blue-600 dark:text-blue-400 mr-2" />
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Announcements</p>
+                  <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-gray-500 dark:text-gray-400">{recentAnnouncements.length} active</p>
                 </div>
               </div>
             </a>
@@ -346,17 +347,6 @@ export default function OrganizationPage() {
               </div>
             </a>
 
-            <a
-              href={`/o/${organization.slug}/users`}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center">
-                <Users className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-green-600 dark:text-green-400 mr-2" />
-                <div>
-                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Members</p>
-                </div>
-              </div>
-            </a>
 
             <a
               href={`/o/${organization.slug}/artists`}
@@ -508,8 +498,12 @@ export default function OrganizationPage() {
                   }
                   
                   return (
-                    <div key={announcement.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                      <div className="flex">
+                    <div key={announcement.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
+                      <a 
+                        href={`/o/${organization.slug}/announcements/${announcement.id}`}
+                        className="block"
+                      >
+                        <div className="flex">
                         {/* Calendar Date Column */}
                         <div className="w-16 flex-shrink-0 bg-blue-50 dark:bg-blue-900/20 border-r border-gray-200 dark:border-gray-700 p-2 flex flex-col items-center justify-center">
                           <div className="text-center">
@@ -540,7 +534,7 @@ export default function OrganizationPage() {
                                 {announcement.title}
                               </h3>
               <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
-                {announcement.body ? announcement.body.substring(0, 100) + '...' : announcement.title}
+                {announcement.content ? announcement.content.substring(0, 100) + '...' : announcement.title}
               </p>
                               <div className="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
                                 <span className={`px-2 py-1 rounded-full ${
@@ -559,6 +553,21 @@ export default function OrganizationPage() {
                           </div>
                         </div>
                       </div>
+                      </a>
+                      
+                      {/* Survey Action Button */}
+                      {announcement.title.toLowerCase().includes('survey') && (
+                        <div className="px-3 pb-3">
+                          <a
+                            href="/o/oolite/surveys"
+                            className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <FileCheck className="w-3 h-3 mr-1" />
+                            Take Survey
+                          </a>
+                        </div>
+                      )}
                     </div>
                   )
                 })}

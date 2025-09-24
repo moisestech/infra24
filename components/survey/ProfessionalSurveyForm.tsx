@@ -162,6 +162,7 @@ export function ProfessionalSurveyForm({ survey, organization }: ProfessionalSur
     return (
       <SurveyThankYou 
         organizationName={organization.name}
+        organizationSlug={organization.slug}
         onBackToOrg={() => window.location.href = `/o/${organization.slug}`}
       />
     )

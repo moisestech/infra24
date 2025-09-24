@@ -6,19 +6,44 @@ import { Button } from "@/components/ui/button"
 import { Confetti } from "@/components/magicui/confetti"
 import { AnimatedText, SparkleText } from "@/components/magicui/animated-text"
 import { CheckCircle, Sparkles, Mail, Calendar, ArrowRight } from "lucide-react"
+import { useOrganizationTheme } from "@/components/carousel/OrganizationThemeContext"
 
 interface SurveyThankYouProps {
   organizationName: string
+  organizationSlug?: string
   onBackToOrg?: () => void
   className?: string
 }
 
 export function SurveyThankYou({ 
   organizationName, 
+  organizationSlug,
   onBackToOrg,
   className = "" 
 }: SurveyThankYouProps) {
   const [showConfetti, setShowConfetti] = useState(false)
+  
+  // Get organization theme colors with fallback
+  let themeColors
+  try {
+    const orgTheme = useOrganizationTheme()
+    themeColors = orgTheme?.themeColors
+  } catch (error) {
+    console.warn('OrganizationTheme not available, using fallback colors')
+  }
+
+  const fallbackColors = {
+    primary: '#3b82f6',
+    primaryLight: '#dbeafe',
+    primaryDark: '#1e40af',
+    secondary: '#8b5cf6',
+    accent: '#06b6d4',
+    background: '#ffffff',
+    cardBackground: '#ffffff',
+    textPrimary: '#111827',
+    textSecondary: '#6b7280'
+  }
+  const colors = themeColors || fallbackColors
 
   useEffect(() => {
     // Trigger confetti after a short delay
@@ -27,11 +52,16 @@ export function SurveyThankYou({
   }, [])
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 ${className}`}>
+    <div 
+      className={`min-h-screen ${className}`}
+      style={{
+        background: `linear-gradient(135deg, ${colors.primaryLight} 0%, ${colors.background} 50%, ${colors.primaryLight} 100%)`
+      }}
+    >
       {/* Confetti Effect */}
       {showConfetti && (
         <Confetti 
-          colors={["#3b82f6", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b", "#ef4444"]}
+          colors={[colors.primary, colors.secondary, colors.accent, "#10b981", "#f59e0b", "#ef4444"]}
           particleCount={200}
           duration={4000}
         />
@@ -39,9 +69,24 @@ export function SurveyThankYou({
 
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-purple-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-300/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div 
+          className="absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl animate-pulse"
+          style={{
+            background: `linear-gradient(135deg, ${colors.primary}20 to ${colors.secondary}20)`
+          }}
+        ></div>
+        <div 
+          className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full blur-3xl animate-pulse delay-1000"
+          style={{
+            background: `linear-gradient(45deg, ${colors.secondary}20 to ${colors.accent}20)`
+          }}
+        ></div>
+        <div 
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-3xl animate-pulse delay-500"
+          style={{
+            background: `linear-gradient(90deg, ${colors.primary}10 to ${colors.secondary}10)`
+          }}
+        ></div>
       </div>
 
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
@@ -113,7 +158,10 @@ export function SurveyThankYou({
             >
               <SparkleText 
                 text="Thank You!" 
-                className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent"
+                className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent"
+                style={{
+                  background: `linear-gradient(90deg, ${colors.primary} via ${colors.secondary} to ${colors.primaryDark})`
+                }}
                 sparkleCount={5}
               />
             </motion.div>
@@ -134,7 +182,10 @@ export function SurveyThankYou({
 
           {/* Digital Lab Section */}
           <motion.div
-            className="relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 text-white shadow-2xl"
+            className="relative overflow-hidden rounded-3xl p-8 text-white shadow-2xl"
+            style={{
+              background: `linear-gradient(135deg, ${colors.primary} via ${colors.secondary} to ${colors.primaryDark})`
+            }}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 1.0 }}

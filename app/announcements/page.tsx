@@ -15,7 +15,7 @@ import {
   Edit,
   Play
 } from 'lucide-react'
-import Navigation from '@/components/ui/Navigation'
+import { UnifiedNavigation, ooliteConfig } from '@/components/navigation'
 import { Badge } from '@/components/ui/Badge'
 
 interface Announcement {
@@ -234,7 +234,7 @@ function AnnouncementsPageContent() {
   if (!isLoaded || loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navigation />
+        <UnifiedNavigation config={ooliteConfig} userRole="admin" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
@@ -256,7 +256,7 @@ function AnnouncementsPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Navigation />
+      <UnifiedNavigation config={ooliteConfig} userRole="admin" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -274,14 +274,6 @@ function AnnouncementsPageContent() {
           </div>
           
           <div className="flex space-x-3">
-            <Link
-              href="/announcements/carousel"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
-            >
-              <Play className="h-4 w-4 mr-2" />
-              Carousel View
-            </Link>
-            
             <Link
               href="/announcements/create"
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"

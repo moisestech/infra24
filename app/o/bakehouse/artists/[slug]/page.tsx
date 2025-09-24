@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import Navigation from '@/components/ui/Navigation';
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/Badge';
@@ -144,7 +144,7 @@ export default function ArtistProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
@@ -158,7 +158,7 @@ export default function ArtistProfilePage() {
   if (error || !artist) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navigation />
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Artist Not Found</h1>
@@ -191,7 +191,7 @@ export default function ArtistProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
+      <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
       <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <div className="mb-6">
