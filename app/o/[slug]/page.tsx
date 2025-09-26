@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useParams } from 'next/navigation'
-import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck } from 'lucide-react'
+import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
+import { MiniAnalyticsWidget } from '@/components/analytics/WorkshopAnalyticsWidget'
 
 interface Organization {
   id: string
@@ -48,6 +49,20 @@ interface User {
 export default function OrganizationPage() {
   const { user, isLoaded } = useUser()
   const params = useParams()
+  const slug = params.slug as string
+
+  // Get navigation config based on organization slug
+  const getNavigationConfig = () => {
+    switch (slug) {
+      case 'oolite':
+        return ooliteConfig;
+      case 'bakehouse':
+        return bakehouseConfig;
+      default:
+        return ooliteConfig; // Default fallback
+    }
+  };
+
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [recentAnnouncements, setRecentAnnouncements] = useState<Announcement[]>([])
   const [userCount, setUserCount] = useState(0)
@@ -231,7 +246,7 @@ export default function OrganizationPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
-      <div className="max-w-7xl 4xl:max-w-none mx-auto px-4 sm:px-6 lg:px-8 4xl:px-12 py-8 4xl:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
       {/* Banner Background */}
       {organization?.banner_image && (
@@ -402,24 +417,24 @@ export default function OrganizationPage() {
               className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center">
-                <Calendar className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-pink-600 dark:text-pink-400 mr-2" />
+                <GraduationCap className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-pink-600 dark:text-pink-400 mr-2" />
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Workshops</p>
                 </div>
               </div>
             </a>
 
-            {/* Oolite-specific Digital Lab link */}
+            {/* Oolite-specific Booking link */}
             {organization.slug === 'oolite' && (
               <a
-                href={`/o/${organization.slug}/digital`}
-                className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg shadow-sm p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+                href={`/o/${organization.slug}/bookings`}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center">
-                  <Globe className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-white mr-2" />
+                  <Calendar className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-cyan-600 dark:text-cyan-400 mr-2" />
                   <div>
-                    <p className="font-medium text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Digital Lab</p>
-                    <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-cyan-100">XR & Technology</p>
+                    <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Booking</p>
+                    <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-gray-600 dark:text-gray-400">XR & Technology</p>
                   </div>
                 </div>
               </a>
@@ -497,13 +512,43 @@ export default function OrganizationPage() {
                     }) : null
                   }
                   
+                  // Check if this is a high priority survey announcement
+                  const isHighPrioritySurvey = announcement.title.toLowerCase().includes('survey') && 
+                    (announcement.priority === 'high' || announcement.title.toLowerCase().includes('urgent') || announcement.title.toLowerCase().includes('important'))
+                  
+                  // Generate Unsplash image based on announcement type
+                  const getAnnouncementImage = () => {
+                    const title = announcement.title.toLowerCase()
+                    if (title.includes('survey')) return 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=120&fit=crop&crop=center'
+                    if (title.includes('workshop')) return 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&h=120&fit=crop&crop=center'
+                    if (title.includes('event')) return 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=200&h=120&fit=crop&crop=center'
+                    if (title.includes('digital')) return 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=120&fit=crop&crop=center'
+                    return 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&h=120&fit=crop&crop=center' // Default
+                  }
+
                   return (
-                    <div key={announcement.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow cursor-pointer group">
+                    <div 
+                      key={announcement.id} 
+                      className={`rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow cursor-pointer group ${
+                        isHighPrioritySurvey 
+                          ? 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700' 
+                          : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
                       <a 
                         href={`/o/${organization.slug}/announcements/${announcement.id}`}
                         className="block"
                       >
                         <div className="flex">
+                        {/* Image Column */}
+                        <div className="w-20 flex-shrink-0">
+                          <img 
+                            src={getAnnouncementImage()}
+                            alt={announcement.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+
                         {/* Calendar Date Column */}
                         <div className="w-16 flex-shrink-0 bg-blue-50 dark:bg-blue-900/20 border-r border-gray-200 dark:border-gray-700 p-2 flex flex-col items-center justify-center">
                           <div className="text-center">
@@ -544,6 +589,11 @@ export default function OrganizationPage() {
                                 }`}>
                                   {announcement.status}
                                 </span>
+                                {isHighPrioritySurvey && (
+                                  <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                    High Priority
+                                  </span>
+                                )}
                                 <span>{new Date(announcement.created_at).toLocaleDateString()}</span>
                               </div>
                             </div>
@@ -603,6 +653,13 @@ export default function OrganizationPage() {
             </div>
           </div>
         </div>
+
+        {/* Workshop Analytics Widget */}
+        {organization.slug === 'oolite' && (
+          <div className="mt-8">
+            <MiniAnalyticsWidget organizationId={organization.id} />
+          </div>
+        )}
       </div>
       </div>
     </div>

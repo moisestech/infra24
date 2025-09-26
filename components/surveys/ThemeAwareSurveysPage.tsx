@@ -171,9 +171,9 @@ export function ThemeAwareSurveysPage() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Organization Not Found</h1>
             <p className="text-gray-600 dark:text-gray-400">The organization you're looking for doesn't exist.</p>
+          </div>
         </div>
-      </div>
-    </div>
+      </ThemeBackground>
   )
 }
 

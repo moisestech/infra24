@@ -144,7 +144,7 @@ export default function ArtistProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+        <UnifiedNavigation config={bakehouseConfig} userRole="admin" />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
@@ -158,7 +158,7 @@ export default function ArtistProfilePage() {
   if (error || !artist) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+        <UnifiedNavigation config={bakehouseConfig} userRole="admin" />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Artist Not Found</h1>
@@ -191,7 +191,7 @@ export default function ArtistProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+      <UnifiedNavigation config={bakehouseConfig} userRole="admin" />
       <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <div className="mb-6">

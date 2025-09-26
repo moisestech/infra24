@@ -1,6 +1,7 @@
 'use client';
 
 import React, { Suspense } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
@@ -8,6 +9,12 @@ import OoliteWorkshopsPage from '@/components/page/OoliteWorkshopsPage';
 
 function OoliteWorkshopsPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
+  const { resolvedTheme } = useTheme();
+  
+  // Debug logging
+  console.log('🔧 Oolite Workshops Page Debug:');
+  console.log('resolvedTheme:', resolvedTheme);
+  console.log('tenantId:', tenantId);
 
   if (isLoading) {
     return (
@@ -41,9 +48,12 @@ function OoliteWorkshopsPageContent() {
 
   return (
     <TenantLayout>
-      <div className="min-h-screen bg-gray-50">
-        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
-        <OoliteWorkshopsPage />
+      <div className="min-h-screen">
+        <UnifiedNavigation config={ooliteConfig} userRole="admin" />
+        <OoliteWorkshopsPage 
+          theme={resolvedTheme} 
+          bannerImage={tenantConfig?.theme?.banner}
+        />
       </div>
     </TenantLayout>
   );

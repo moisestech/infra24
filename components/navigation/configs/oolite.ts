@@ -11,7 +11,8 @@ import {
   TrendingUp,
   LineChart,
   Users,
-  Bell
+  Bell,
+  Mail
 } from 'lucide-react'
 import { NavigationConfig } from '../types'
 
@@ -44,6 +45,9 @@ export const ooliteConfig: NavigationConfig = {
     impactRoi: true,
     aiTools: true,
     bookings: true,
+  },
+  quickActions: {
+    highlightActions: false, // Disable highlighting for Oolite
   },
   navigation: {
     userItems: [
@@ -160,6 +164,62 @@ export const ooliteConfig: NavigationConfig = {
         icon: Calendar,
         description: 'Manage workshops and resources',
         category: 'admin'
+      },
+      {
+        name: 'Resource Calendar',
+        href: '/o/oolite/admin/calendar',
+        icon: Calendar,
+        description: 'Admin calendar for resource management',
+        category: 'admin'
+      },
+      {
+        name: 'Booking Demo',
+        href: '/o/oolite/demo-calendar',
+        icon: Calendar,
+        description: 'Demo of the booking system',
+        category: 'admin'
+      },
+      {
+        name: 'Test Booking',
+        href: '/o/oolite/test-booking',
+        icon: Calendar,
+        description: 'Simple booking system test',
+        category: 'admin'
+      },
+            {
+              name: 'Workshop Management',
+              href: '/o/oolite/admin/workshops',
+              icon: GraduationCap,
+              description: 'Create and manage workshops',
+              category: 'admin'
+            },
+            {
+              name: 'Test Email',
+              href: '/o/oolite/admin/test-email',
+              icon: Mail,
+              description: 'Test workshop email templates',
+              category: 'admin'
+            },
+            {
+              name: 'Test Calendar',
+              href: '/o/oolite/admin/test-calendar',
+              icon: Calendar,
+              description: 'Test ICS calendar file generation',
+              category: 'admin'
+            },
+            {
+              name: 'Analytics',
+              href: '/o/oolite/admin/analytics',
+              icon: BarChart3,
+              description: 'Workshop performance analytics',
+              category: 'admin'
+            },
+      {
+        name: 'Workshop Catalog',
+        href: '/o/oolite/workshop-catalog',
+        icon: GraduationCap,
+        description: 'Browse and register for workshops',
+        category: 'user'
       }
     ]
   }

@@ -34,6 +34,7 @@ interface Organization {
   name: string
   slug: string
   logo_url?: string
+  banner_image?: string
 }
 
 interface Survey {
@@ -301,32 +302,67 @@ export default function OrganizationSurveysPage() {
         {/* Navigation */}
         <UnifiedNavigation config={ooliteConfig} userRole="admin" />
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Page Header */}
-        <motion.div 
-          className="mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="flex items-center space-x-4 mb-4">
-            <div 
-              className="p-3 rounded-lg"
-              style={{ backgroundColor: `${ooliteColors.primary}20` }}
-            >
-              <FileText className="w-8 h-8" style={{ color: ooliteColors.primary }} />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold" style={{ color: themeStyles.textPrimary }}>
-                Surveys
-              </h1>
-              <p style={{ color: themeStyles.textSecondary }}>
-                Discover and participate in surveys from {organization.name}
-              </p>
+      {/* Banner Background */}
+      {organization?.banner_image && (
+        <div className="relative h-64 md:h-80 overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${organization.banner_image})`
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white dark:to-gray-900" />
+          <div className="relative z-10 flex items-end h-full">
+            <div className="max-w-7xl mx-auto px-4 pb-8 w-full">
+              <div className="flex items-center space-x-4">
+                <div 
+                  className="p-3 rounded-lg"
+                  style={{ backgroundColor: `${ooliteColors.primary}20` }}
+                >
+                  <FileText className="w-8 h-8" style={{ color: ooliteColors.primary }} />
+                </div>
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-bold" style={{ color: themeStyles.textPrimary }}>
+                    Surveys
+                  </h1>
+                  <p className="text-lg" style={{ color: themeStyles.textSecondary }}>
+                    Discover and participate in surveys from {organization.name}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </motion.div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Page Header (only show if no banner) */}
+        {!organization?.banner_image && (
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="flex items-center space-x-4 mb-4">
+              <div 
+                className="p-3 rounded-lg"
+                style={{ backgroundColor: `${ooliteColors.primary}20` }}
+              >
+                <FileText className="w-8 h-8" style={{ color: ooliteColors.primary }} />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold" style={{ color: themeStyles.textPrimary }}>
+                  Surveys
+                </h1>
+                <p style={{ color: themeStyles.textSecondary }}>
+                  Discover and participate in surveys from {organization.name}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Stats Cards */}
         <motion.div 

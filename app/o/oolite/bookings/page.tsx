@@ -43,29 +43,29 @@ function OoliteBookingsPageContent() {
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      // For now, we'll use mock data since we don't have the actual API set up yet
+      // Equipment booking mock data
       const mockBookings: Booking[] = [
         {
           id: '1',
-          title: 'AI Art Fundamentals Workshop',
-          description: 'Learn the basics of AI-generated art and creative tools',
+          title: 'VR Headset - Oculus Quest 3',
+          description: 'High-end VR headset for immersive experiences and 3D modeling',
           start_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
           end_time: new Date(Date.now() + 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
           status: 'confirmed',
-          capacity: 15,
-          current_participants: 12,
-          price: 50,
+          capacity: 1,
+          current_participants: 1,
+          price: 15,
           currency: 'USD',
-          location: 'Digital Lab',
-          resource_type: 'workshop',
-          resource_id: 'ai-art-fundamentals'
+          location: 'XR Lab',
+          resource_type: 'equipment',
+          resource_id: 'vr-quest-3'
         },
         {
           id: '2',
-          title: '3D Printer Session',
-          description: 'Book time on our 3D printer for your project',
+          title: '3D Printer - Prusa i3 MK3S+',
+          description: 'Professional 3D printer for rapid prototyping and art creation',
           start_time: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-          end_time: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000).toISOString(),
+          end_time: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000).toISOString(),
           status: 'pending',
           capacity: 1,
           current_participants: 1,
@@ -73,22 +73,52 @@ function OoliteBookingsPageContent() {
           currency: 'USD',
           location: 'Fabrication Lab',
           resource_type: 'equipment',
-          resource_id: '3d-printer-1'
+          resource_id: '3d-printer-prusa'
         },
         {
           id: '3',
-          title: 'Creative Coding Lab',
-          description: 'Explore the intersection of programming and art',
+          title: 'AR Development Station',
+          description: 'Complete AR development setup with HoloLens 2 and development tools',
           start_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-          end_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
+          end_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000).toISOString(),
           status: 'confirmed',
-          capacity: 12,
-          current_participants: 8,
+          capacity: 1,
+          current_participants: 1,
+          price: 30,
+          currency: 'USD',
+          location: 'XR Lab',
+          resource_type: 'equipment',
+          resource_id: 'ar-hololens-2'
+        },
+        {
+          id: '4',
+          title: 'Motion Capture System',
+          description: 'Professional motion capture equipment for animation and VR development',
+          start_time: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
+          end_time: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
+          status: 'available',
+          capacity: 1,
+          current_participants: 0,
           price: 40,
           currency: 'USD',
+          location: 'Motion Capture Studio',
+          resource_type: 'equipment',
+          resource_id: 'mocap-system'
+        },
+        {
+          id: '5',
+          title: 'High-End Workstation',
+          description: 'Powerful workstation with RTX 4090 for AI art generation and 3D rendering',
+          start_time: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+          end_time: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000).toISOString(),
+          status: 'available',
+          capacity: 1,
+          current_participants: 0,
+          price: 20,
+          currency: 'USD',
           location: 'Digital Lab',
-          resource_type: 'workshop',
-          resource_id: 'creative-coding'
+          resource_type: 'equipment',
+          resource_id: 'workstation-rtx4090'
         }
       ];
       
@@ -146,23 +176,23 @@ function OoliteBookingsPageContent() {
   return (
     <TenantLayout>
       <div className="min-h-screen bg-gray-50">
-        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+        <UnifiedNavigation config={ooliteConfig} userRole="admin" />
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Booking Management</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Digital Lab Equipment</h1>
             <p className="text-gray-600">
-              Manage workshops, equipment, and space bookings for Oolite Arts
+              Book time on our XR & Technology equipment and resources
             </p>
           </div>
 
-          {/* Quick Stats */}
+          {/* Equipment Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Bookings</p>
+                    <p className="text-sm font-medium text-gray-600">Available Equipment</p>
                     <p className="text-2xl font-bold">{bookings.length}</p>
                   </div>
                   <Calendar className="w-8 h-8 text-blue-600" />
@@ -174,9 +204,9 @@ function OoliteBookingsPageContent() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Confirmed</p>
+                    <p className="text-sm font-medium text-gray-600">Currently Booked</p>
                     <p className="text-2xl font-bold">
-                      {bookings.filter(b => b.status === 'confirmed').length}
+                      {bookings.filter(b => b.status === 'confirmed' || b.status === 'pending').length}
                     </p>
                   </div>
                   <Users className="w-8 h-8 text-green-600" />
@@ -188,9 +218,9 @@ function OoliteBookingsPageContent() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Pending</p>
+                    <p className="text-sm font-medium text-gray-600">Available Now</p>
                     <p className="text-2xl font-bold">
-                      {bookings.filter(b => b.status === 'pending').length}
+                      {bookings.filter(b => b.status === 'available').length}
                     </p>
                   </div>
                   <Clock className="w-8 h-8 text-yellow-600" />
@@ -202,9 +232,9 @@ function OoliteBookingsPageContent() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                    <p className="text-sm font-medium text-gray-600">Hourly Rate Range</p>
                     <p className="text-2xl font-bold">
-                      ${bookings.reduce((sum, b) => sum + (b.price * b.current_participants), 0)}
+                      ${Math.min(...bookings.map(b => b.price))}-${Math.max(...bookings.map(b => b.price))}
                     </p>
                   </div>
                   <MapPin className="w-8 h-8 text-purple-600" />

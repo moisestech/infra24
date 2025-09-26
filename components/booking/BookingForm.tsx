@@ -1,467 +1,322 @@
-'use client';
+'use client'
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
-import { Calendar, Clock, Users, MapPin, User, Mail, Phone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { CalendarIcon, Clock } from 'lucide-react'
+import { format } from 'date-fns'
+import { cn } from '@/lib/utils'
 
-interface Artist {
-  id: string;
-  name: string;
-  avatar_url?: string;
-  bio?: string;
-  skills?: string[];
-  mediums?: string[];
-}
+// Validation schema
+const bookingSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
+  description: z.string().optional(),
+  resourceId: z.string().uuid('Please select a valid resource'),
+  startDate: z.date({
+    message: 'Start date is required'
+  }),
+  startTime: z.string().min(1, 'Start time is required'),
+  endDate: z.date({
+    message: 'End date is required'
+  }),
+  endTime: z.string().min(1, 'End time is required'),
+  status: z.enum(['pending', 'confirmed', 'cancelled'])
+}).refine((data) => {
+  // Check if end date/time is after start date/time
+  const startDateTime = new Date(`${format(data.startDate, 'yyyy-MM-dd')}T${data.startTime}`)
+  const endDateTime = new Date(`${format(data.endDate, 'yyyy-MM-dd')}T${data.endTime}`)
+  return endDateTime > startDateTime
+}, {
+  message: 'End time must be after start time',
+  path: ['endTime']
+})
+
+type BookingFormData = z.infer<typeof bookingSchema>
 
 interface Resource {
-  id: string;
-  title: string;
-  description?: string;
-  type: 'workshop' | 'equipment' | 'space' | 'event';
-  capacity: number;
-  price: number;
-  currency: string;
-  location?: string;
-  duration_minutes?: number;
-  requirements?: string[];
+  id: string
+  title: string
+  type: 'space' | 'equipment' | 'person'
+  capacity: number
+}
+
+interface Booking {
+  id: string
+  resource_id: string
+  title: string
+  description?: string
+  start_time: Date
+  end_time: Date
+  status: 'pending' | 'confirmed' | 'cancelled'
+  created_by_clerk_id: string
 }
 
 interface BookingFormProps {
-  organizationId: string;
-  resourceId?: string;
-  onBookingCreated?: (booking: any) => void;
-  onCancel?: () => void;
-  className?: string;
+  resources: Resource[]
+  onSubmit: (data: Omit<Booking, 'id' | 'created_by_clerk_id'>) => Promise<void>
+  onCancel: () => void
+  initialData?: Partial<Booking>
+  isLoading?: boolean
 }
 
 export function BookingForm({ 
-  organizationId, 
-  resourceId, 
-  onBookingCreated, 
-  onCancel,
-  className 
+  resources, 
+  onSubmit, 
+  onCancel, 
+  initialData,
+  isLoading = false 
 }: BookingFormProps) {
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [artists, setArtists] = useState<Artist[]>([]);
-  const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const [formData, setFormData] = useState({
-    resource_id: resourceId || '',
-    title: '',
-    description: '',
-    start_time: '',
-    end_time: '',
-    capacity: 1,
-    location: '',
-    requirements: [] as string[],
-    notes: '',
-    instructor_id: '',
-    contact_name: '',
-    contact_email: '',
-    contact_phone: ''
-  });
+  const form = useForm<BookingFormData>({
+    resolver: zodResolver(bookingSchema),
+    defaultValues: {
+      title: initialData?.title || '',
+      description: initialData?.description || '',
+      resourceId: initialData?.resource_id || '',
+      startDate: initialData?.start_time ? new Date(initialData.start_time) : new Date(),
+      startTime: initialData?.start_time ? format(new Date(initialData.start_time), 'HH:mm') : '09:00',
+      endDate: initialData?.end_time ? new Date(initialData.end_time) : new Date(),
+      endTime: initialData?.end_time ? format(new Date(initialData.end_time), 'HH:mm') : '10:00',
+      status: (initialData?.status as 'pending' | 'confirmed' | 'cancelled') || 'pending'
+    }
+  })
 
-  useEffect(() => {
-    fetchData();
-  }, [organizationId]);
-
-  const fetchData = async () => {
+  const handleSubmit = async (data: BookingFormData) => {
     try {
-      setLoading(true);
+      setIsSubmitting(true)
       
-      // Fetch real data from Supabase
-      const resourcesResponse = await fetch(`/api/organizations/${organizationId}/resources`);
-      if (resourcesResponse.ok) {
-        const resourcesData = await resourcesResponse.json();
-        setResources(resourcesData.resources || []);
-      } else {
-        console.error('Failed to fetch resources:', resourcesResponse.statusText);
-        // Fallback to empty array
-        setResources([]);
+      // Combine date and time
+      const startDateTime = new Date(`${format(data.startDate, 'yyyy-MM-dd')}T${data.startTime}`)
+      const endDateTime = new Date(`${format(data.endDate, 'yyyy-MM-dd')}T${data.endTime}`)
+
+      const bookingData: Omit<Booking, 'id' | 'created_by_clerk_id'> = {
+        resource_id: data.resourceId,
+        title: data.title,
+        description: data.description,
+        start_time: startDateTime,
+        end_time: endDateTime,
+        status: data.status
       }
 
-      const artistsResponse = await fetch(`/api/organizations/${organizationId}/artists`);
-      if (artistsResponse.ok) {
-        const artistsData = await artistsResponse.json();
-        setArtists(artistsData.artists || []);
-      } else {
-        console.error('Failed to fetch artists:', artistsResponse.statusText);
-        // Fallback to empty array
-        setArtists([]);
-      }
-      
-      // Set selected resource if resourceId is provided
-      if (resourceId) {
-        const resource = resources.find((r: Resource) => r.id === resourceId);
-        if (resource) {
-          setSelectedResource(resource);
-          setFormData(prev => ({
-            ...prev,
-            resource_id: resource.id,
-            title: resource.title,
-            capacity: resource.capacity,
-            location: resource.location || '',
-            requirements: resource.requirements || []
-          }));
-        }
-      }
+      await onSubmit(bookingData)
     } catch (error) {
-      console.error('Error fetching data:', error);
-      // Set empty arrays on error
-      setResources([]);
-      setArtists([]);
+      console.error('Error submitting booking:', error)
     } finally {
-      setLoading(false);
+      setIsSubmitting(false)
     }
-  };
-
-  const handleResourceChange = (resourceId: string) => {
-    const resource = resources.find(r => r.id === resourceId);
-    if (resource) {
-      setSelectedResource(resource);
-      setFormData(prev => ({
-        ...prev,
-        resource_id: resource.id,
-        title: resource.title,
-        capacity: resource.capacity,
-        location: resource.location || '',
-        requirements: resource.requirements || []
-      }));
-    }
-  };
-
-  const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const calculateEndTime = (startTime: string, durationMinutes: number) => {
-    if (!startTime) return '';
-    const start = new Date(startTime);
-    const end = new Date(start.getTime() + durationMinutes * 60000);
-    return end.toISOString().slice(0, 16);
-  };
-
-  const handleStartTimeChange = (startTime: string) => {
-    setFormData(prev => ({
-      ...prev,
-      start_time: startTime,
-      end_time: selectedResource?.duration_minutes 
-        ? calculateEndTime(startTime, selectedResource.duration_minutes)
-        : prev.end_time
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.resource_id || !formData.title || !formData.start_time || !formData.end_time) {
-      alert('Please fill in all required fields');
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-      
-      // For now, simulate booking creation with mock data
-      const mockBooking = {
-        id: `booking-${Date.now()}`,
-        organization_id: organizationId,
-        user_id: 'mock-user-id',
-        resource_type: selectedResource?.type || 'workshop',
-        resource_id: formData.resource_id,
-        title: formData.title,
-        description: formData.description,
-        start_time: formData.start_time,
-        end_time: formData.end_time,
-        status: 'pending',
-        capacity: formData.capacity,
-        current_participants: 0,
-        price: selectedResource?.price || 0,
-        currency: selectedResource?.currency || 'USD',
-        location: formData.location,
-        requirements: formData.requirements,
-        notes: formData.notes,
-        metadata: {
-          instructor_id: formData.instructor_id,
-          contact_name: formData.contact_name,
-          contact_email: formData.contact_email,
-          contact_phone: formData.contact_phone
-        },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      onBookingCreated?.(mockBooking);
-      alert('Booking created successfully! (Mock data - Supabase integration pending)');
-      
-      // TODO: Replace with actual API call once Supabase tables are set up
-      /*
-      const response = await fetch(`/api/organizations/${organizationId}/bookings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          resource_type: selectedResource?.type || 'workshop',
-          resource_id: formData.resource_id,
-          title: formData.title,
-          description: formData.description,
-          start_time: formData.start_time,
-          end_time: formData.end_time,
-          capacity: formData.capacity,
-          location: formData.location,
-          requirements: formData.requirements,
-          notes: formData.notes,
-          metadata: {
-            instructor_id: formData.instructor_id,
-            contact_name: formData.contact_name,
-            contact_email: formData.contact_email,
-            contact_phone: formData.contact_phone
-          }
-        }),
-      });
-
-      if (response.ok) {
-        const booking = await response.json();
-        onBookingCreated?.(booking.booking);
-        alert('Booking created successfully!');
-      } else {
-        const error = await response.json();
-        alert(`Error: ${error.error}`);
-      }
-      */
-    } catch (error) {
-      console.error('Error creating booking:', error);
-      alert('Failed to create booking');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    );
   }
 
+  const generateTimeOptions = () => {
+    const times = []
+    for (let hour = 8; hour < 22; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+        times.push(timeString)
+      }
+    }
+    return times
+  }
+
+  const timeOptions = generateTimeOptions()
+
   return (
-    <Card className={cn('w-full max-w-2xl mx-auto', className)}>
-      <CardHeader>
-        <CardTitle>Create New Booking</CardTitle>
-        <CardDescription>
-          Book a workshop, equipment, or space for your organization
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Resource Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Resource *
-            </label>
-            <select
-              value={formData.resource_id}
-              onChange={(e) => handleResourceChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">Select a resource...</option>
+    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Title */}
+        <div className="md:col-span-2">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+            Booking Title *
+          </label>
+          <Input
+            id="title"
+            {...form.register('title')}
+            placeholder="e.g., Team Meeting, Workshop Session"
+            className={cn(form.formState.errors.title && 'border-red-500')}
+          />
+          {form.formState.errors.title && (
+            <p className="mt-1 text-sm text-red-600">{form.formState.errors.title.message}</p>
+          )}
+        </div>
+
+        {/* Resource Selection */}
+        <div>
+          <label htmlFor="resourceId" className="block text-sm font-medium text-gray-700 mb-2">
+            Resource *
+          </label>
+          <Select
+            value={form.watch('resourceId')}
+            onValueChange={(value) => form.setValue('resourceId', value)}
+          >
+            <SelectTrigger className={cn(form.formState.errors.resourceId && 'border-red-500')}>
+              <SelectValue placeholder="Select a resource" />
+            </SelectTrigger>
+            <SelectContent>
               {resources.map((resource) => (
-                <option key={resource.id} value={resource.id}>
-                  {resource.title} ({resource.type}) - ${resource.price} {resource.currency}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Selected Resource Info */}
-          {selectedResource && (
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h3 className="font-semibold text-lg">{selectedResource.title}</h3>
-                  {selectedResource.description && (
-                    <p className="text-gray-600 text-sm">{selectedResource.description}</p>
-                  )}
-                </div>
-                <Badge variant="default">{selectedResource.type}</Badge>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div className="flex items-center gap-1">
-                  <Users className="w-4 h-4 text-gray-500" />
-                  <span>Capacity: {selectedResource.capacity}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4 text-gray-500" />
-                  <span>{selectedResource.duration_minutes} min</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4 text-gray-500" />
-                  <span>{selectedResource.location || 'TBD'}</span>
-                </div>
-                <div className="font-semibold">
-                  ${selectedResource.price} {selectedResource.currency}
-                </div>
-              </div>
-
-              {selectedResource.requirements && selectedResource.requirements.length > 0 && (
-                <div className="mt-3">
-                  <p className="text-sm font-medium text-gray-700 mb-1">Requirements:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {selectedResource.requirements.map((req, index) => (
-                      <Badge key={index} variant="default" className="text-xs">
-                        {req}
-                      </Badge>
-                    ))}
+                <SelectItem key={resource.id} value={resource.id}>
+                  <div className="flex items-center justify-between w-full">
+                    <span>{resource.title}</span>
+                    <span className="text-sm text-gray-500 ml-2">
+                      ({resource.type} - {resource.capacity} capacity)
+                    </span>
                   </div>
-                </div>
-              )}
-            </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {form.formState.errors.resourceId && (
+            <p className="mt-1 text-sm text-red-600">{form.formState.errors.resourceId.message}</p>
           )}
+        </div>
 
-          {/* Booking Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Start Time *
-              </label>
-              <input
-                type="datetime-local"
-                value={formData.start_time}
-                onChange={(e) => handleStartTimeChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+        {/* Status */}
+        <div>
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+            Status
+          </label>
+          <Select
+            value={form.watch('status')}
+            onValueChange={(value: 'pending' | 'confirmed' | 'cancelled') => form.setValue('status', value)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                End Time *
-              </label>
-              <input
-                type="datetime-local"
-                value={formData.end_time}
-                onChange={(e) => handleInputChange('end_time', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Capacity
-            </label>
-            <input
-              type="number"
-              min="1"
-              max={selectedResource?.capacity || 1}
-              value={formData.capacity}
-              onChange={(e) => handleInputChange('capacity', parseInt(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Instructor Selection */}
-          {selectedResource?.type === 'workshop' && artists.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Instructor
-              </label>
-              <select
-                value={formData.instructor_id}
-                onChange={(e) => handleInputChange('instructor_id', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select an instructor...</option>
-                {artists.map((artist) => (
-                  <option key={artist.id} value={artist.id}>
-                    {artist.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+        {/* Start Date */}
+        <div>
+          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
+            Start Date *
+          </label>
+          <Input
+            type="date"
+            {...form.register('startDate', { 
+              setValueAs: (value) => value ? new Date(value) : new Date()
+            })}
+            className={cn(form.formState.errors.startDate && 'border-red-500')}
+          />
+          {form.formState.errors.startDate && (
+            <p className="mt-1 text-sm text-red-600">{form.formState.errors.startDate.message}</p>
           )}
+        </div>
 
-          {/* Contact Information */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contact Name
-              </label>
-              <input
-                type="text"
-                value={formData.contact_name}
-                onChange={(e) => handleInputChange('contact_name', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+        {/* Start Time */}
+        <div>
+          <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-2">
+            Start Time *
+          </label>
+          <Select
+            value={form.watch('startTime')}
+            onValueChange={(value) => form.setValue('startTime', value)}
+          >
+            <SelectTrigger className={cn(form.formState.errors.startTime && 'border-red-500')}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {timeOptions.map((time) => (
+                <SelectItem key={time} value={time}>
+                  {time}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {form.formState.errors.startTime && (
+            <p className="mt-1 text-sm text-red-600">{form.formState.errors.startTime.message}</p>
+          )}
+        </div>
+
+        {/* End Date */}
+        <div>
+          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
+            End Date *
+          </label>
+          <Input
+            type="date"
+            {...form.register('endDate', { 
+              setValueAs: (value) => value ? new Date(value) : new Date()
+            })}
+            className={cn(form.formState.errors.endDate && 'border-red-500')}
+          />
+          {form.formState.errors.endDate && (
+            <p className="mt-1 text-sm text-red-600">{form.formState.errors.endDate.message}</p>
+          )}
+        </div>
+
+        {/* End Time */}
+        <div>
+          <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-2">
+            End Time *
+          </label>
+          <Select
+            value={form.watch('endTime')}
+            onValueChange={(value) => form.setValue('endTime', value)}
+          >
+            <SelectTrigger className={cn(form.formState.errors.endTime && 'border-red-500')}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {timeOptions.map((time) => (
+                <SelectItem key={time} value={time}>
+                  {time}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {form.formState.errors.endTime && (
+            <p className="mt-1 text-sm text-red-600">{form.formState.errors.endTime.message}</p>
+          )}
+        </div>
+
+        {/* Description */}
+        <div className="md:col-span-2">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            Description
+          </label>
+          <Textarea
+            id="description"
+            {...form.register('description')}
+            placeholder="Optional description for this booking"
+            rows={3}
+          />
+        </div>
+      </div>
+
+      {/* Form Actions */}
+      <div className="flex justify-end space-x-3 pt-6 border-t">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isSubmitting || isLoading}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          disabled={isSubmitting || isLoading}
+          className="min-w-[120px]"
+        >
+          {isSubmitting ? (
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Saving...
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contact Email
-              </label>
-              <input
-                type="email"
-                value={formData.contact_email}
-                onChange={(e) => handleInputChange('contact_email', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contact Phone
-              </label>
-              <input
-                type="tel"
-                value={formData.contact_phone}
-                onChange={(e) => handleInputChange('contact_phone', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Notes
-            </label>
-            <textarea
-              value={formData.notes}
-              onChange={(e) => handleInputChange('notes', e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Any additional notes or special requirements..."
-            />
-          </div>
-
-          {/* Form Actions */}
-          <div className="flex justify-end gap-3 pt-4">
-            {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Cancel
-              </Button>
-            )}
-            <Button type="submit" disabled={submitting}>
-              {submitting ? 'Creating...' : 'Create Booking'}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
-  );
+          ) : (
+            'Save Booking'
+          )}
+        </Button>
+      </div>
+    </form>
+  )
 }

@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
 import { auth } from '@clerk/nextjs/server'
+import { createClient } from '@/lib/supabase'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+)
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await auth()
@@ -12,56 +23,46 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const resolvedParams = await params
-    const supabase = supabaseAdmin
-    
+    const workshopId = params.id
+
     // Get workshop details
-    const { data: workshop, error } = await supabase
-      .from('workshop_details')
+    const { data: workshop, error: workshopError } = await supabase
+      .from('workshops')
       .select('*')
-      .eq('id', resolvedParams.id)
+      .eq('id', workshopId)
       .single()
 
-    if (error) {
-      console.error('Error fetching workshop:', error)
+    if (workshopError || !workshop) {
       return NextResponse.json({ error: 'Workshop not found' }, { status: 404 })
     }
 
-    // Check if user has access to this workshop
-    const { data: memberships, error: membershipError } = await supabase
-      .from('organization_memberships')
-      .select('organization_id')
-      .eq('user_id', userId)
+    // Check if user has access to this workshop's organization
+    const { data: membership, error: membershipError } = await supabase
+      .from('org_memberships')
+      .select('role')
+      .eq('organization_id', workshop.organization_id)
+      .eq('clerk_user_id', userId)
+      .eq('is_active', true)
+      .single()
 
-    if (membershipError) {
-      return NextResponse.json({ error: 'Failed to verify access' }, { status: 500 })
-    }
-
-    const organizationIds = memberships?.map(m => m.organization_id) || []
-    const hasAccess = organizationIds.includes(workshop.organization_id) ||
-      organizationIds.some(orgId => 
-        workshop.id in (supabase
-          .from('workshop_organization_sharing')
-          .select('workshop_id')
-          .eq('target_organization_id', orgId)
-          .eq('is_active', true)
-        )
-      )
-
-    if (!hasAccess) {
+    if (membershipError || !membership) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
-    return NextResponse.json({ workshop })
+    return NextResponse.json({
+      success: true,
+      data: workshop
+    })
+
   } catch (error) {
-    console.error('Error in workshop GET:', error)
+    console.error('Get workshop API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await auth()
@@ -69,59 +70,67 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const workshopId = params.id
     const body = await request.json()
-    const resolvedParams = await params
-    const supabase = supabaseAdmin
 
-    // Get the workshop to check permissions
-    const { data: workshop, error: fetchError } = await supabase
+    // Get workshop details first to check organization
+    const { data: existingWorkshop, error: workshopError } = await supabase
       .from('workshops')
       .select('organization_id')
-      .eq('id', resolvedParams.id)
+      .eq('id', workshopId)
       .single()
 
-    if (fetchError) {
+    if (workshopError || !existingWorkshop) {
       return NextResponse.json({ error: 'Workshop not found' }, { status: 404 })
     }
 
-    // Verify user has admin/staff role in the organization
+    // Check if user is admin of organization
     const { data: membership, error: membershipError } = await supabase
-      .from('organization_memberships')
+      .from('org_memberships')
       .select('role')
-      .eq('user_id', userId)
-      .eq('organization_id', workshop.organization_id)
+      .eq('organization_id', existingWorkshop.organization_id)
+      .eq('clerk_user_id', userId)
+      .eq('is_active', true)
       .single()
 
-    if (membershipError || !membership || !['admin', 'staff'].includes(membership.role)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+    if (membershipError || !membership) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
-    // Update the workshop
-    const { data: updatedWorkshop, error } = await supabase
+    if (!['org_admin', 'super_admin', 'moderator'].includes(membership.role)) {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+    }
+
+    // Update workshop
+    const { data: updatedWorkshop, error: updateError } = await supabase
       .from('workshops')
       .update({
         ...body,
         updated_at: new Date().toISOString()
       })
-      .eq('id', resolvedParams.id)
+      .eq('id', workshopId)
       .select()
       .single()
 
-    if (error) {
-      console.error('Error updating workshop:', error)
+    if (updateError) {
+      console.error('Error updating workshop:', updateError)
       return NextResponse.json({ error: 'Failed to update workshop' }, { status: 500 })
     }
 
-    return NextResponse.json({ workshop: updatedWorkshop })
+    return NextResponse.json({
+      success: true,
+      data: updatedWorkshop
+    })
+
   } catch (error) {
-    console.error('Error in workshop PUT:', error)
+    console.error('Update workshop API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { userId } = await auth()
@@ -129,47 +138,54 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const resolvedParams = await params
-    const supabase = supabaseAdmin
+    const workshopId = params.id
 
-    // Get the workshop to check permissions
-    const { data: workshop, error: fetchError } = await supabase
+    // Get workshop details first to check organization
+    const { data: existingWorkshop, error: workshopError } = await supabase
       .from('workshops')
       .select('organization_id')
-      .eq('id', resolvedParams.id)
+      .eq('id', workshopId)
       .single()
 
-    if (fetchError) {
+    if (workshopError || !existingWorkshop) {
       return NextResponse.json({ error: 'Workshop not found' }, { status: 404 })
     }
 
-    // Verify user has admin/staff role in the organization
+    // Check if user is admin of organization
     const { data: membership, error: membershipError } = await supabase
-      .from('organization_memberships')
+      .from('org_memberships')
       .select('role')
-      .eq('user_id', userId)
-      .eq('organization_id', workshop.organization_id)
+      .eq('organization_id', existingWorkshop.organization_id)
+      .eq('clerk_user_id', userId)
+      .eq('is_active', true)
       .single()
 
-    if (membershipError || !membership || !['admin', 'staff'].includes(membership.role)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+    if (membershipError || !membership) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
-    // Soft delete by setting is_active to false
-    const { error } = await supabase
-      .from('workshops')
-      .update({ is_active: false })
-      .eq('id', resolvedParams.id)
+    if (!['org_admin', 'super_admin', 'moderator'].includes(membership.role)) {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+    }
 
-    if (error) {
-      console.error('Error deleting workshop:', error)
+    // Delete workshop (this will cascade to sessions and bookings)
+    const { error: deleteError } = await supabase
+      .from('workshops')
+      .delete()
+      .eq('id', workshopId)
+
+    if (deleteError) {
+      console.error('Error deleting workshop:', deleteError)
       return NextResponse.json({ error: 'Failed to delete workshop' }, { status: 500 })
     }
 
-    return NextResponse.json({ message: 'Workshop deleted successfully' })
+    return NextResponse.json({
+      success: true,
+      message: 'Workshop deleted successfully'
+    })
+
   } catch (error) {
-    console.error('Error in workshop DELETE:', error)
+    console.error('Delete workshop API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-

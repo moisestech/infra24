@@ -145,7 +145,7 @@ export default function BakehouseMapPage() {
 
   return (
     <div className={`min-h-screen bg-gray-50 ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
-      {!isFullscreen && <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />}
+      {!isFullscreen && <UnifiedNavigation config={bakehouseConfig} userRole="admin" />}
       <div className={`${isFullscreen ? 'h-full' : 'container mx-auto px-4 py-8'}`}>
         {/* Header */}
         {!isFullscreen && (

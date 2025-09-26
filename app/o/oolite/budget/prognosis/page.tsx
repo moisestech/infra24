@@ -42,7 +42,7 @@ function OoliteBudgetPrognosisPageContent() {
   return (
     <TenantLayout>
       <div className="min-h-screen bg-gray-50">
-        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+        <UnifiedNavigation config={ooliteConfig} userRole="admin" />
         <OoliteBudgetPrognosisPage />
       </div>
     </TenantLayout>

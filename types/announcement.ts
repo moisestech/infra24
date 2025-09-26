@@ -3,7 +3,17 @@ import { PatternType } from '@/components/patterns';
 
 export type AnnouncementStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'published';
 
-export type AnnouncementType = 'urgent' | 'event' | 'opportunity' | 'facility' | 'administrative';
+export type AnnouncementType = 
+  | 'urgent' 
+  | 'event' 
+  | 'opportunity' 
+  | 'facility' 
+  | 'administrative'
+  | 'attention_artists'
+  | 'attention_public'
+  | 'fun_fact'
+  | 'promotion'
+  | 'gala_announcement';
 
 export type AnnouncementSubType = 
   | 'closure' 
@@ -15,7 +25,8 @@ export type AnnouncementSubType =
   | 'critique' 
   | 'meeting' 
   | 'deadline' 
-  | 'reminder';
+  | 'reminder'
+  | 'general';
 
 export type VisualTemplate = 
   | 'minimal'      // Clean, typography-focused

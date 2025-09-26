@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { Bell, Plus, Calendar, User, Tag, Eye, EyeOff, Shield, Play, MapPin, Users, Building2, ExternalLink, Clock, Info, FileCheck, Copy } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { AnnouncementIdDisplay } from '@/components/admin/AnnouncementIdDisplay'
+import { BackgroundPattern } from '@/components/BackgroundPattern'
+import { AnnouncementType, AnnouncementSubType } from '@/types/announcement'
 
 interface Announcement {
   id: string
@@ -258,6 +260,41 @@ export default function OrganizationAnnouncementsPage() {
     }
   }
 
+  // Determine announcement type and subtype for pattern selection
+  const getAnnouncementType = (announcement: Announcement): AnnouncementType => {
+    const title = announcement.title.toLowerCase()
+    const type = announcement.type?.toLowerCase()
+    
+    if (title.includes('urgent') || announcement.priority === 'high') return 'urgent'
+    if (title.includes('event') || type === 'event') return 'event'
+    if (title.includes('facility') || type === 'facility') return 'facility'
+    if (title.includes('opportunity') || type === 'opportunity') return 'opportunity'
+    if (title.includes('administrative') || type === 'administrative') return 'administrative'
+    
+    // Organization-specific types
+    if (slug === 'bakehouse') {
+      if (title.includes('attention') && title.includes('artist')) return 'attention_artists'
+      if (title.includes('attention') && title.includes('public')) return 'attention_public'
+      if (title.includes('fun fact')) return 'fun_fact'
+      if (title.includes('promotion')) return 'promotion'
+      if (title.includes('gala')) return 'gala_announcement'
+    }
+    
+    return 'opportunity' // Default fallback
+  }
+
+  const getAnnouncementSubType = (announcement: Announcement): AnnouncementSubType => {
+    const title = announcement.title.toLowerCase()
+    
+    if (title.includes('workshop')) return 'workshop'
+    if (title.includes('exhibition')) return 'exhibition'
+    if (title.includes('meeting')) return 'meeting'
+    if (title.includes('deadline')) return 'deadline'
+    if (title.includes('survey')) return 'survey'
+    
+    return 'general'
+  }
+
   const getTypeBadge = (type?: string) => {
     if (!type) return null;
     
@@ -479,14 +516,24 @@ export default function OrganizationAnnouncementsPage() {
                   )}
                   
                   <div className="flex flex-col md:flex-row">
-                    {/* Event Date Column - Prominent on mobile top, left side on desktop */}
-                    <div className={`md:w-32 flex-shrink-0 md:border-r border-b md:border-b-0 border-gray-200 dark:border-gray-700 p-4 flex flex-row md:flex-col items-center justify-center relative ${
+                    {/* Event Date Column with Background Pattern - Prominent on mobile top, left side on desktop */}
+                    <div className={`md:w-32 flex-shrink-0 md:border-r border-b md:border-b-0 border-gray-200 dark:border-gray-700 p-4 flex flex-row md:flex-col items-center justify-center relative overflow-hidden ${
                       isEventPast 
                         ? 'bg-gray-100 dark:bg-gray-700/50' 
                         : isEventToday 
                           ? 'bg-green-50 dark:bg-green-900/20' 
                           : 'bg-blue-50 dark:bg-blue-900/20'
                     }`}>
+                      {/* Background Pattern */}
+                      <div className="absolute inset-0 opacity-5">
+                        <BackgroundPattern
+                          type={getAnnouncementType(announcement)}
+                          subType={getAnnouncementSubType(announcement)}
+                          width={128}
+                          height={120}
+                          organizationSlug={slug}
+                        />
+                      </div>
                       {/* Today Badge */}
                       {isEventToday && (
                         <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
@@ -494,7 +541,7 @@ export default function OrganizationAnnouncementsPage() {
                         </div>
                       )}
                       
-                      <div className="text-center flex items-center md:flex-col space-x-2 md:space-x-0">
+                      <div className="text-center flex items-center md:flex-col space-x-2 md:space-x-0 relative z-10">
                         <div className={`text-2xl md:text-3xl font-bold ${
                           isEventPast 
                             ? 'text-gray-500 dark:text-gray-400' 

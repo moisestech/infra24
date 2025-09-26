@@ -1,0 +1,120 @@
+{
+  "timestamp": "2025-09-24T17:27:08.738Z",
+  "fileResults": [
+    {
+      "file": "app/o/oolite/workshops/page.tsx",
+      "hasGetNavigationConfig": false,
+      "hasGetNavigationConfigFunction": false,
+      "hasOoliteConfig": true,
+      "hasBakehouseConfig": true,
+      "isOoliteSpecific": true,
+      "isBakehouseSpecific": false,
+      "isDynamic": false
+    },
+    {
+      "file": "app/o/oolite/analytics/page.tsx",
+      "hasGetNavigationConfig": false,
+      "hasGetNavigationConfigFunction": false,
+      "hasOoliteConfig": true,
+      "hasBakehouseConfig": true,
+      "isOoliteSpecific": true,
+      "isBakehouseSpecific": false,
+      "isDynamic": false
+    },
+    {
+      "file": "app/o/bakehouse/workshops/page.tsx",
+      "hasGetNavigationConfig": false,
+      "hasGetNavigationConfigFunction": false,
+      "hasOoliteConfig": true,
+      "hasBakehouseConfig": true,
+      "isOoliteSpecific": false,
+      "isBakehouseSpecific": true,
+      "isDynamic": false
+    },
+    {
+      "file": "app/o/[slug]/workshops/page.tsx",
+      "hasGetNavigationConfig": true,
+      "hasGetNavigationConfigFunction": true,
+      "hasOoliteConfig": true,
+      "hasBakehouseConfig": true,
+      "isOoliteSpecific": false,
+      "isBakehouseSpecific": false,
+      "isDynamic": true
+    },
+    {
+      "file": "app/o/[slug]/page.tsx",
+      "hasGetNavigationConfig": true,
+      "hasGetNavigationConfigFunction": true,
+      "hasOoliteConfig": true,
+      "hasBakehouseConfig": true,
+      "isOoliteSpecific": false,
+      "isBakehouseSpecific": false,
+      "isDynamic": true
+    }
+  ],
+  "responseResults": [
+    {
+      "url": "http://localhost:3001/o/oolite/workshops",
+      "status": 200,
+      "hasError": false
+    },
+    {
+      "url": "http://localhost:3001/o/oolite/analytics",
+      "status": 200,
+      "hasError": false
+    },
+    {
+      "url": "http://localhost:3001/o/oolite/digital-lab",
+      "status": 200,
+      "hasError": false
+    },
+    {
+      "url": "http://localhost:3001/o/oolite/announcements",
+      "status": 200,
+      "hasError": false
+    },
+    {
+      "url": "http://localhost:3001/o/oolite/users",
+      "status": 200,
+      "hasError": false
+    },
+    {
+      "url": "http://localhost:3001/o/bakehouse/workshops",
+      "status": 200,
+      "hasError": false
+    },
+    {
+      "url": "http://localhost:3001/o/bakehouse/artists",
+      "status": 200,
+      "hasError": false
+    },
+    {
+      "url": "http://localhost:3001/o/oolite",
+      "status": 200,
+      "hasError": false
+    },
+    {
+      "url": "http://localhost:3001/o/bakehouse",
+      "status": 200,
+      "hasError": false
+    },
+    {
+      "url": "http://localhost:3001/dashboard",
+      "status": 404,
+      "hasError": false
+    },
+    {
+      "url": "http://localhost:3001/profile",
+      "status": 404,
+      "hasError": false
+    }
+  ],
+  "summary": {
+    "workingPages": 9,
+    "errorPages": 0,
+    "totalPages": 11,
+    "ooliteFilesCorrect": 2,
+    "bakehouseFilesCorrect": 1,
+    "dynamicFilesCorrect": 2
+  }
+}

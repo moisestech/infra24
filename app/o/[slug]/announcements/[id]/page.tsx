@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { ArrowLeft, Calendar, User, Tag, Eye, EyeOff, Shield, Edit, CheckCircle, Clock, ExternalLink, FileCheck } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { useTheme } from '@/contexts/ThemeContext'
+import { BackgroundPattern } from '@/components/BackgroundPattern'
+import { AnnouncementType, AnnouncementSubType } from '@/types/announcement'
 
 interface Announcement {
   id: string
@@ -90,6 +92,45 @@ export default function AnnouncementViewPage() {
   }
 
   const themeColors = getThemeColors()
+
+  // Determine announcement type and subtype for pattern selection
+  const getAnnouncementType = (): AnnouncementType => {
+    if (!announcement) return 'opportunity'
+    
+    const title = announcement.title.toLowerCase()
+    const type = announcement.type?.toLowerCase()
+    
+    if (title.includes('urgent') || announcement.priority === 'high') return 'urgent'
+    if (title.includes('event') || type === 'event') return 'event'
+    if (title.includes('facility') || type === 'facility') return 'facility'
+    if (title.includes('opportunity') || type === 'opportunity') return 'opportunity'
+    if (title.includes('administrative') || type === 'administrative') return 'administrative'
+    
+    // Organization-specific types
+    if (slug === 'bakehouse') {
+      if (title.includes('attention') && title.includes('artist')) return 'attention_artists'
+      if (title.includes('attention') && title.includes('public')) return 'attention_public'
+      if (title.includes('fun fact')) return 'fun_fact'
+      if (title.includes('promotion')) return 'promotion'
+      if (title.includes('gala')) return 'gala_announcement'
+    }
+    
+    return 'opportunity' // Default fallback
+  }
+
+  const getAnnouncementSubType = (): AnnouncementSubType => {
+    if (!announcement) return 'general'
+    
+    const title = announcement.title.toLowerCase()
+    
+    if (title.includes('workshop')) return 'workshop'
+    if (title.includes('exhibition')) return 'exhibition'
+    if (title.includes('meeting')) return 'meeting'
+    if (title.includes('deadline')) return 'deadline'
+    if (title.includes('survey')) return 'survey'
+    
+    return 'general'
+  }
 
   useEffect(() => {
     async function loadData() {
@@ -404,54 +445,68 @@ export default function AnnouncementViewPage() {
             borderColor: themeColors.primary
           }}
         >
-          {/* Event Date Header */}
+          {/* Event Date Header with Background Pattern */}
           <div 
-            className="border-b p-6"
+            className="border-b p-6 relative overflow-hidden"
             style={{ 
               backgroundColor: themeColors.primaryLight,
               borderColor: themeColors.primary
             }}
           >
-            <div className="flex items-center justify-center">
-              <div className="text-center">
-                <div 
-                  className="text-4xl font-bold"
-                  style={{ color: themeColors.primary }}
-                >
-                  {formattedEventDate.day}
-                </div>
-                <div 
-                  className="text-lg font-medium uppercase tracking-wide"
-                  style={{ color: themeColors.primaryDark }}
-                >
-                  {formattedEventDate.month}
-                </div>
-                <div 
-                  className="text-sm"
-                  style={{ color: themeColors.primary }}
-                >
-                  {formattedEventDate.year}
-                </div>
-                {hasTime && (
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <BackgroundPattern
+                type={getAnnouncementType()}
+                subType={getAnnouncementSubType()}
+                width={400}
+                height={200}
+                organizationSlug={slug}
+              />
+            </div>
+            
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="flex items-center justify-center">
+                <div className="text-center">
                   <div 
-                    className="text-lg font-bold mt-2"
+                    className="text-4xl font-bold"
                     style={{ color: themeColors.primary }}
                   >
-                    {formattedEventDate.time}
+                    {formattedEventDate.day}
                   </div>
-                )}
+                  <div 
+                    className="text-lg font-medium uppercase tracking-wide"
+                    style={{ color: themeColors.primaryDark }}
+                  >
+                    {formattedEventDate.month}
+                  </div>
+                  <div 
+                    className="text-sm"
+                    style={{ color: themeColors.primary }}
+                  >
+                    {formattedEventDate.year}
+                  </div>
+                  {hasTime && (
+                    <div 
+                      className="text-lg font-bold mt-2"
+                      style={{ color: themeColors.primary }}
+                    >
+                      {formattedEventDate.time}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="text-center mt-4">
-              <div 
-                className="flex items-center justify-center space-x-1"
-                style={{ color: themeColors.primary }}
-              >
-                <Calendar className="h-5 w-5" />
-                <span className="font-medium">{formattedEventDate.full}</span>
-                {hasTime && (
-                  <span className="ml-2 font-medium">at {formattedEventDate.time}</span>
-                )}
+              <div className="text-center mt-4">
+                <div 
+                  className="flex items-center justify-center space-x-1"
+                  style={{ color: themeColors.primary }}
+                >
+                  <Calendar className="h-5 w-5" />
+                  <span className="font-medium">{formattedEventDate.full}</span>
+                  {hasTime && (
+                    <span className="ml-2 font-medium">at {formattedEventDate.time}</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>

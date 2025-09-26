@@ -256,6 +256,7 @@ export function ReactSelectField({
   examples
 }: ReactSelectFieldProps) {
   const formContext = useFormContext()
+  const orgTheme = useOrganizationTheme()
   
   // Handle case where form context is not available
   if (!formContext) {
@@ -270,13 +271,7 @@ export function ReactSelectField({
   const currentValue = watch(name)
 
   // Get organization theme colors with fallback
-  let themeColors
-  try {
-    const orgTheme = useOrganizationTheme()
-    themeColors = orgTheme?.themeColors
-  } catch (error) {
-    console.warn('OrganizationTheme not available, using fallback colors')
-  }
+  const themeColors = orgTheme?.themeColors
 
   // Fallback colors if themeColors is not available
   const fallbackColors = {

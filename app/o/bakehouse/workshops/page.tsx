@@ -49,7 +49,7 @@ export default function BakehouseWorkshopsPage() {
   return (
     <TenantLayout>
       <div className="min-h-screen bg-gray-50">
-        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+        <UnifiedNavigation config={bakehouseConfig} userRole="admin" />
         <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-100">
           <div className="container mx-auto px-4 py-16">
             {/* Header */}

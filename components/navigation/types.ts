@@ -51,6 +51,16 @@ export interface NavigationConfig {
     adminItems: NavigationItem[]
     customItems?: NavigationItem[]
   }
+  quickActions?: {
+    highlightActions: boolean
+    customActions?: Array<{
+      name: string
+      href: string
+      icon: LucideIcon
+      description?: string
+      highlighted?: boolean
+    }>
+  }
 }
 
 export interface NavigationProps {

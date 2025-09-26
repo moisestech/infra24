@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, MapPin, ClipboardList, Globe, Calendar, Edit } from 'lucide-react'
+import { Bell, MapPin, ClipboardList, Globe, Calendar, Edit, GraduationCap } from 'lucide-react'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 
 interface Organization {
@@ -110,7 +110,7 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
             className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center">
-              <Calendar className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-pink-600 dark:text-pink-400 mr-2" />
+              <GraduationCap className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-pink-600 dark:text-pink-400 mr-2" />
               <div>
                 <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Workshops</p>
               </div>
@@ -118,17 +118,17 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
           </a>
         )}
 
-        {/* Digital Lab link - conditional based on config */}
+        {/* Booking link - conditional based on config */}
         {dashboardConfig?.showDigitalLab !== false && (
           <a
-            href={`/o/${organization.slug}/digital-lab`}
-            className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg shadow-sm p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+            href={`/o/${organization.slug}/bookings`}
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center">
-              <Globe className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-white mr-2" />
+              <Calendar className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-cyan-600 dark:text-cyan-400 mr-2" />
               <div>
-                <p className="font-medium text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Digital Lab</p>
-                <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-cyan-100">XR & Technology</p>
+                <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Booking</p>
+                <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-gray-600 dark:text-gray-400">XR & Technology</p>
               </div>
             </div>
           </a>

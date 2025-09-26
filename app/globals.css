@@ -2,6 +2,9 @@
 
 @plugin "tailwindcss-animate";
 
+/* FullCalendar CSS - using CDN approach */
+/* FullCalendar styles will be loaded dynamically */
+
 @custom-variant dark (&:is(.dark *));
 
 /* Custom breakpoint for navigation at 1280px */

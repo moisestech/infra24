@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
 import { auth } from '@clerk/nextjs/server'
+import { createClient } from '@/lib/supabase'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+)
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,40 +20,107 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const supabase = supabaseAdmin
-    
-    // Get user's organization memberships
-    const { data: memberships, error: membershipError } = await supabase
-      .from('organization_memberships')
-      .select('organization_id, role')
-      .eq('user_id', userId)
+    const { searchParams } = new URL(request.url)
+    const orgId = searchParams.get('orgId')
+    const category = searchParams.get('category')
+    const eventType = searchParams.get('eventType')
+    const eventCategory = searchParams.get('eventCategory')
+    const isActive = searchParams.get('isActive')
+    const isPublic = searchParams.get('isPublic')
+    const featured = searchParams.get('featured')
+    const limit = searchParams.get('limit')
+    const offset = searchParams.get('offset')
 
-    if (membershipError) {
-      return NextResponse.json({ error: 'Failed to fetch memberships' }, { status: 500 })
+    if (!orgId) {
+      return NextResponse.json({ error: 'Organization ID is required' }, { status: 400 })
     }
 
-    const organizationIds = memberships?.map(m => m.organization_id) || []
-
-    if (organizationIds.length === 0) {
-      return NextResponse.json({ workshops: [] })
-    }
-
-    // Get workshops from user's organizations and shared workshops
-    const { data: workshops, error } = await supabase
-      .from('workshop_details')
-      .select('*')
-      .or(`organization_id.in.(${organizationIds.join(',')}),id.in.(select workshop_id from workshop_organization_sharing where target_organization_id.in.(${organizationIds.join(',')}) and is_active = true)`)
+    // Check if user has access to this organization
+    const { data: membership, error: membershipError } = await supabase
+      .from('org_memberships')
+      .select('role')
+      .eq('organization_id', orgId)
+      .eq('clerk_user_id', userId)
       .eq('is_active', true)
-      .order('created_at', { ascending: false })
+      .single()
 
-    if (error) {
-      console.error('Error fetching workshops:', error)
+    if (membershipError || !membership) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+    }
+
+    // Build query
+    let query = supabase
+      .from('workshops')
+      .select(`
+        *,
+        event_materials (
+          id,
+          title,
+          description,
+          file_url,
+          file_type,
+          created_at
+        ),
+        event_feedback (
+          id,
+          rating,
+          feedback_text,
+          created_at
+        )
+      `)
+      .eq('organization_id', orgId)
+
+    // Apply filters
+    if (category) {
+      query = query.eq('category', category)
+    }
+
+    if (eventType) {
+      query = query.eq('event_type', eventType)
+    }
+
+    if (eventCategory) {
+      query = query.eq('event_category', eventCategory)
+    }
+
+    if (isActive !== null && isActive !== undefined) {
+      query = query.eq('is_active', isActive === 'true')
+    }
+
+    if (isPublic !== null && isPublic !== undefined) {
+      query = query.eq('is_public', isPublic === 'true')
+    }
+
+    if (featured !== null && featured !== undefined) {
+      query = query.eq('featured', featured === 'true')
+    }
+
+    // Apply pagination
+    if (limit) {
+      query = query.limit(parseInt(limit))
+    }
+
+    if (offset) {
+      query = query.range(parseInt(offset), parseInt(offset) + (parseInt(limit) || 10) - 1)
+    }
+
+    // Order by creation date
+    query = query.order('created_at', { ascending: false })
+
+    const { data: workshops, error: workshopsError } = await query
+
+    if (workshopsError) {
+      console.error('Error fetching workshops:', workshopsError)
       return NextResponse.json({ error: 'Failed to fetch workshops' }, { status: 500 })
     }
 
-    return NextResponse.json({ workshops })
+    return NextResponse.json({
+      success: true,
+      data: workshops
+    })
+
   } catch (error) {
-    console.error('Error in workshops GET:', error)
+    console.error('Get workshops API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -55,73 +133,113 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const {
-      organization_id,
-      title,
-      description,
-      content,
-      category,
-      type = 'workshop',
-      level = 'beginner',
-      duration_minutes,
-      max_participants,
-      price = 0,
-      instructor,
+    const { 
+      organizationId, 
+      title, 
+      description, 
+      category, 
+      level,
+      eventType = 'workshop',
+      eventCategory,
+      instructorId,
       prerequisites = [],
-      materials = [],
-      outcomes = [],
-      is_shared = false,
-      metadata = {}
+      learningObjectives = [],
+      targetAudience,
+      durationMinutes, 
+      maxParticipants,
+      minParticipants = 1,
+      price = 0,
+      currency = 'USD',
+      registrationDeadline,
+      cancellationPolicy,
+      refundPolicy,
+      equipmentProvided = [],
+      materialsIncluded = [],
+      externalLinks = {},
+      tags = [],
+      featured = false,
+      featuredUntil,
+      isActive = true,
+      isPublic = true,
+      isSeries = false,
+      seriesId
     } = body
 
-    const supabase = supabaseAdmin
-
-    // Verify user has admin/staff role in the organization
-    const { data: membership, error: membershipError } = await supabase
-      .from('organization_memberships')
-      .select('role')
-      .eq('user_id', userId)
-      .eq('organization_id', organization_id)
-      .single()
-
-    if (membershipError || !membership || !['admin', 'staff'].includes(membership.role)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+    // Validate required fields
+    if (!organizationId || !title || !description || !category || !level) {
+      return NextResponse.json({ 
+        error: 'Missing required fields: organizationId, title, description, category, level' 
+      }, { status: 400 })
     }
 
-    // Create the workshop
-    const { data: workshop, error } = await supabase
+    // Check if user is admin of organization
+    const { data: membership, error: membershipError } = await supabase
+      .from('org_memberships')
+      .select('role')
+      .eq('organization_id', organizationId)
+      .eq('clerk_user_id', userId)
+      .eq('is_active', true)
+      .single()
+
+    if (membershipError || !membership) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+    }
+
+    if (!['org_admin', 'super_admin', 'moderator'].includes(membership.role)) {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+    }
+
+    // Create event/workshop
+    const { data: workshop, error: workshopError } = await supabase
       .from('workshops')
       .insert({
-        organization_id,
+        organization_id: organizationId,
         title,
         description,
-        content,
         category,
-        type,
         level,
-        duration_minutes,
-        max_participants,
-        price,
-        instructor,
+        event_type: eventType,
+        event_category: eventCategory,
+        instructor_id: instructorId,
         prerequisites,
-        materials,
-        outcomes,
-        is_shared,
-        metadata,
-        created_by: userId
+        learning_objectives: learningObjectives,
+        target_audience: targetAudience,
+        duration_minutes: durationMinutes || 60,
+        max_participants: maxParticipants || 10,
+        min_participants: minParticipants,
+        price,
+        currency,
+        registration_deadline: registrationDeadline,
+        cancellation_policy: cancellationPolicy,
+        refund_policy: refundPolicy,
+        equipment_provided: equipmentProvided,
+        materials_included: materialsIncluded,
+        external_links: externalLinks,
+        tags,
+        featured,
+        featured_until: featuredUntil,
+        is_active: isActive,
+        is_public: isPublic,
+        is_series: isSeries,
+        series_id: seriesId,
+        created_by: userId,
+        updated_by: userId
       })
       .select()
       .single()
 
-    if (error) {
-      console.error('Error creating workshop:', error)
+    if (workshopError) {
+      console.error('Error creating workshop:', workshopError)
       return NextResponse.json({ error: 'Failed to create workshop' }, { status: 500 })
     }
 
-    return NextResponse.json({ workshop }, { status: 201 })
+    return NextResponse.json({
+      success: true,
+      data: workshop
+    }, { status: 201 })
+
   } catch (error) {
-    console.error('Error in workshops POST:', error)
+    console.error('Create workshop API error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-
