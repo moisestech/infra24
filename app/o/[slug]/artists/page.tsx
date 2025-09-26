@@ -17,7 +17,8 @@ import {
   User,
   GraduationCap,
   Briefcase,
-  Award
+  Award,
+  Globe
 } from 'lucide-react';
 
 interface Artist {
@@ -47,17 +48,17 @@ interface Organization {
 }
 
 const studioTypeIcons = {
-  Studio: Building2,
-  Associate: User,
-  Gallery: Palette,
-  Staff: Briefcase
+  'Studio Resident': Building2,
+  'Live In Art Resident': User,
+  'Cinematic Resident': Palette,
+  'Staff': Briefcase
 };
 
 const studioTypeColors = {
-  Studio: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-  Associate: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-  Gallery: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
-  Staff: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400'
+  'Studio Resident': 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+  'Live In Art Resident': 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+  'Cinematic Resident': 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
+  'Staff': 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400'
 };
 
 export default function ArtistsPage() {
@@ -101,14 +102,14 @@ export default function ArtistsPage() {
   const filteredArtists = artists.filter(artist => {
     const matchesSearch = artist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (artist.bio && artist.bio.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStudioType = !studioTypeFilter || artist.studio_type === studioTypeFilter;
-    const matchesStudioNumber = !studioNumberFilter || artist.studio_number === studioNumberFilter;
+    const matchesStudioType = !studioTypeFilter || artist.metadata?.residency_type === studioTypeFilter;
+    const matchesStudioNumber = !studioNumberFilter || artist.metadata?.studio === studioNumberFilter;
     
     return matchesSearch && matchesStudioType && matchesStudioNumber;
   });
 
-  const uniqueStudioTypes = [...new Set(artists.map(artist => artist.studio_type).filter(Boolean))];
-  const uniqueStudioNumbers = [...new Set(artists.map(artist => artist.studio_number).filter(Boolean))];
+  const uniqueStudioTypes = [...new Set(artists.map(artist => artist.metadata?.residency_type).filter(Boolean))];
+  const uniqueStudioNumbers = [...new Set(artists.map(artist => artist.metadata?.studio).filter(Boolean))];
 
   const getStudioTypeIcon = (studioType: string) => {
     const IconComponent = studioTypeIcons[studioType as keyof typeof studioTypeIcons] || User;
@@ -185,7 +186,7 @@ export default function ArtistsPage() {
               />
             </div>
 
-            {/* Studio Type Filter */}
+            {/* Residency Type Filter */}
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <select
@@ -193,7 +194,7 @@ export default function ArtistsPage() {
                 onChange={(e) => setStudioTypeFilter(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">All Types</option>
+                <option value="">All Residency Types</option>
                 {uniqueStudioTypes.map(type => (
                   <option key={type} value={type}>
                     {type}
@@ -252,12 +253,12 @@ export default function ArtistsPage() {
                 )}
                 
                 {/* Studio Type Badge */}
-                {artist.studio_type && (
+                {artist.metadata?.residency_type && (
                   <div className="absolute top-3 right-3">
-                    <Badge className={`${getStudioTypeColor(artist.studio_type)} flex items-center space-x-1`}>
-                      {getStudioTypeIcon(artist.studio_type)}
+                    <Badge className={`${getStudioTypeColor(artist.metadata.residency_type)} flex items-center space-x-1`}>
+                      {getStudioTypeIcon(artist.metadata.residency_type)}
                       <span className="text-xs font-medium">
-                        {artist.studio_type}
+                        {artist.metadata.residency_type}
                       </span>
                     </Badge>
                   </div>
@@ -270,17 +271,53 @@ export default function ArtistsPage() {
                   {artist.name}
                 </h3>
                 
-                {artist.studio_number && (
+                {artist.metadata?.studio && (
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Studio: {artist.studio_number}
+                    Studio: {artist.metadata.studio}
                   </p>
                 )}
                 
                 {artist.bio && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
                     {artist.bio}
                   </p>
                 )}
+
+                {/* Skills */}
+                {artist.skills && artist.skills.length > 0 && (
+                  <div className="mb-2">
+                    <div className="flex flex-wrap gap-1">
+                      {artist.skills.slice(0, 3).map((skill, index) => (
+                        <span key={index} className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                          {skill}
+                        </span>
+                      ))}
+                      {artist.skills.length > 3 && (
+                        <span className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                          +{artist.skills.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Contact Info */}
+                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                  {artist.website && (
+                    <div className="flex items-center">
+                      <Globe className="h-3 w-3 mr-1" />
+                      <a href={artist.website} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 dark:hover:text-blue-400 truncate">
+                        Website
+                      </a>
+                    </div>
+                  )}
+                  {artist.instagram && (
+                    <div className="flex items-center">
+                      <span className="mr-1">📷</span>
+                      <span className="truncate">{artist.instagram}</span>
+                    </div>
+                  )}
+                </div>
 
                 {/* Actions */}
                 <div className="flex items-center justify-between">
