@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { createClient } from '@/lib/supabase'
 import { format, startOfWeek, endOfWeek } from 'date-fns'
+import { Resource, Booking, CreateBookingRequest } from '@/types/booking'
 
 // Dynamically import FullCalendar to avoid SSR issues
 const FullCalendar = dynamic(() => import('@fullcalendar/react'), { ssr: false })
@@ -13,27 +14,9 @@ import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid'
 import resourceDayGridPlugin from '@fullcalendar/resource-daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 
-interface Resource {
-  id: string
-  title: string
-  type: 'space' | 'equipment' | 'person'
-  capacity: number
-  organization_id: string
-}
-
-interface Booking {
-  id: string
-  resource_id: string
-  title: string
-  start_time: Date
-  end_time: Date
-  status: 'pending' | 'confirmed' | 'cancelled'
-  created_by_clerk_id: string
-}
-
 interface ResourceCalendarProps {
   orgId: string
-  onBookingCreate?: (booking: Omit<Booking, 'id' | 'created_by_clerk_id'>) => Promise<void>
+  onBookingCreate?: (booking: CreateBookingRequest) => Promise<void>
   onBookingUpdate?: (booking: Booking) => Promise<void>
   onBookingDelete?: (bookingId: string) => Promise<void>
 }
@@ -122,11 +105,11 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
     
     try {
       await onBookingCreate({
-        resource_id: resource.id,
+        organizationId: orgId,
+        resourceId: resource.id,
         title: 'New Booking',
-        start_time: start,
-        end_time: end,
-        status: 'pending'
+        startTime: start.toISOString(),
+        endTime: end.toISOString()
       })
       
       // Refresh bookings

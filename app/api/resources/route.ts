@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { createClient } from '@/lib/supabase'
+import { createSuccessResponse, createErrorResponse, HTTP_STATUS, ERROR_MESSAGES } from '@/lib/api-response'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,7 +18,8 @@ export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth()
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      const { response, status } = createErrorResponse(ERROR_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED)
+      return NextResponse.json(response, { status })
     }
 
     const { searchParams } = new URL(request.url)
@@ -26,7 +28,8 @@ export async function GET(request: NextRequest) {
     const isBookable = searchParams.get('isBookable')
 
     if (!orgId) {
-      return NextResponse.json({ error: 'Organization ID is required' }, { status: 400 })
+      const { response, status } = createErrorResponse('Organization ID is required', HTTP_STATUS.BAD_REQUEST)
+      return NextResponse.json(response, { status })
     }
 
     // Check if user is member of organization
@@ -39,7 +42,8 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (membershipError || !membership) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+      const { response, status } = createErrorResponse(ERROR_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN)
+      return NextResponse.json(response, { status })
     }
 
     // Build query
@@ -60,17 +64,16 @@ export async function GET(request: NextRequest) {
 
     if (resourcesError) {
       console.error('Error fetching resources:', resourcesError)
-      return NextResponse.json({ error: 'Failed to fetch resources' }, { status: 500 })
+      const { response, status } = createErrorResponse('Failed to fetch resources', HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return NextResponse.json(response, { status })
     }
 
-    return NextResponse.json({
-      success: true,
-      data: resources
-    })
+    return NextResponse.json(createSuccessResponse(resources))
 
   } catch (error) {
     console.error('Resources API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const { response, status } = createErrorResponse(ERROR_MESSAGES.INTERNAL_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    return NextResponse.json(response, { status })
   }
 }
 
@@ -78,7 +81,8 @@ export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth()
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      const { response, status } = createErrorResponse(ERROR_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED)
+      return NextResponse.json(response, { status })
     }
 
     const body = await request.json()
@@ -94,17 +98,21 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!organizationId || !title || !type) {
-      return NextResponse.json({ 
-        error: 'Missing required fields: organizationId, title, type' 
-      }, { status: 400 })
+      const { response, status } = createErrorResponse(
+        'Missing required fields: organizationId, title, type',
+        HTTP_STATUS.BAD_REQUEST
+      )
+      return NextResponse.json(response, { status })
     }
 
     // Validate type
     const validTypes = ['space', 'equipment', 'person', 'other']
     if (!validTypes.includes(type)) {
-      return NextResponse.json({ 
-        error: `Invalid type. Must be one of: ${validTypes.join(', ')}` 
-      }, { status: 400 })
+      const { response, status } = createErrorResponse(
+        `Invalid type. Must be one of: ${validTypes.join(', ')}`,
+        HTTP_STATUS.BAD_REQUEST
+      )
+      return NextResponse.json(response, { status })
     }
 
     // Check if user is admin of organization
@@ -117,11 +125,13 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (membershipError || !membership) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+      const { response, status } = createErrorResponse(ERROR_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN)
+      return NextResponse.json(response, { status })
     }
 
     if (!['org_admin', 'super_admin', 'moderator'].includes(membership.role)) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+      const { response, status } = createErrorResponse('Admin access required', HTTP_STATUS.FORBIDDEN)
+      return NextResponse.json(response, { status })
     }
 
     // Create resource
@@ -143,16 +153,15 @@ export async function POST(request: NextRequest) {
 
     if (resourceError) {
       console.error('Error creating resource:', resourceError)
-      return NextResponse.json({ error: 'Failed to create resource' }, { status: 500 })
+      const { response, status } = createErrorResponse('Failed to create resource', HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return NextResponse.json(response, { status })
     }
 
-    return NextResponse.json({
-      success: true,
-      data: resource
-    }, { status: 201 })
+    return NextResponse.json(createSuccessResponse(resource, 'Resource created successfully'), { status: HTTP_STATUS.CREATED })
 
   } catch (error) {
     console.error('Create resource API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const { response, status } = createErrorResponse(ERROR_MESSAGES.INTERNAL_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    return NextResponse.json(response, { status })
   }
 }

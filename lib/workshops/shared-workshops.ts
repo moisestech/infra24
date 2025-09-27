@@ -1,10 +1,13 @@
-export interface Workshop {
+import { Workshop, WorkshopLevel } from '@/types/workshop';
+
+// Legacy interface for backward compatibility
+export interface LegacyWorkshop {
   id: string;
   title: string;
   description: string;
   category: string;
   duration: string;
-  level: 'beginner' | 'intermediate' | 'advanced';
+  level: WorkshopLevel;
   maxParticipants: number;
   price: number;
   instructor: string;
@@ -15,7 +18,7 @@ export interface Workshop {
   organization: string;
 }
 
-export const allWorkshops: Workshop[] = [
+export const allWorkshops: LegacyWorkshop[] = [
   {
     id: 'ai-video-basics',
     title: 'AI Video Generation Fundamentals',
@@ -242,7 +245,7 @@ export const allWorkshops: Workshop[] = [
   }
 ];
 
-export function getWorkshopsForOrganization(organization: string): Workshop[] {
+export function getWorkshopsForOrganization(organization: string): LegacyWorkshop[] {
   return allWorkshops.filter(workshop => 
     workshop.organization === organization && workshop.isActive
   );
@@ -253,17 +256,17 @@ export function getWorkshopCategories(): string[] {
   return Array.from(categories).sort();
 }
 
-export function getWorkshopById(id: string): Workshop | undefined {
+export function getWorkshopById(id: string): LegacyWorkshop | undefined {
   return allWorkshops.find(workshop => workshop.id === id);
 }
 
-export function getWorkshopsByCategory(category: string): Workshop[] {
+export function getWorkshopsByCategory(category: string): LegacyWorkshop[] {
   return allWorkshops.filter(workshop => 
     workshop.category === category && workshop.isActive
   );
 }
 
-export function getWorkshopsByLevel(level: string): Workshop[] {
+export function getWorkshopsByLevel(level: string): LegacyWorkshop[] {
   return allWorkshops.filter(workshop => 
     workshop.level === level && workshop.isActive
   );

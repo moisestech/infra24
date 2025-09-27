@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { createClient } from '@/lib/supabase'
+import { createSuccessResponse, createErrorResponse, HTTP_STATUS, ERROR_MESSAGES } from '@/lib/api-response'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,7 +18,8 @@ export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth()
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      const { response, status } = createErrorResponse(ERROR_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED)
+      return NextResponse.json(response, { status })
     }
 
     const { searchParams } = new URL(request.url)
@@ -27,7 +29,8 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate')
 
     if (!orgId) {
-      return NextResponse.json({ error: 'Organization ID is required' }, { status: 400 })
+      const { response, status } = createErrorResponse('Organization ID is required', HTTP_STATUS.BAD_REQUEST)
+      return NextResponse.json(response, { status })
     }
 
     // Check if user is member of organization
@@ -48,21 +51,33 @@ export async function GET(request: NextRequest) {
       .from('bookings')
       .select(`
         id,
+        organization_id,
+        resource_id,
+        user_id,
+        user_name,
+        user_email,
         title,
         description,
-        starts_at,
-        ends_at,
+        start_time,
+        end_time,
         status,
-        created_by_clerk_id,
-        approved_by_clerk_id,
-        is_public,
+        capacity,
+        current_participants,
+        price,
+        currency,
+        location,
+        notes,
+        metadata,
         created_at,
         updated_at,
+        created_by_clerk_id,
+        updated_by_clerk_id,
         resources (
           id,
           title,
           type,
-          capacity
+          capacity,
+          is_bookable
         )
       `)
       .eq('organization_id', orgId)
@@ -72,28 +87,27 @@ export async function GET(request: NextRequest) {
     }
 
     if (startDate) {
-      query = query.gte('starts_at', startDate)
+      query = query.gte('start_time', startDate)
     }
 
     if (endDate) {
-      query = query.lte('ends_at', endDate)
+      query = query.lte('end_time', endDate)
     }
 
-    const { data: bookings, error: bookingsError } = await query.order('starts_at', { ascending: true })
+    const { data: bookings, error: bookingsError } = await query.order('start_time', { ascending: true })
 
     if (bookingsError) {
       console.error('Error fetching bookings:', bookingsError)
-      return NextResponse.json({ error: 'Failed to fetch bookings' }, { status: 500 })
+      const { response, status } = createErrorResponse('Failed to fetch bookings', HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return NextResponse.json(response, { status })
     }
 
-    return NextResponse.json({
-      success: true,
-      data: bookings
-    })
+    return NextResponse.json(createSuccessResponse(bookings))
 
   } catch (error) {
     console.error('Bookings API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const { response, status } = createErrorResponse(ERROR_MESSAGES.INTERNAL_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    return NextResponse.json(response, { status })
   }
 }
 
@@ -101,7 +115,8 @@ export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth()
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      const { response, status } = createErrorResponse(ERROR_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED)
+      return NextResponse.json(response, { status })
     }
 
     const body = await request.json()
@@ -117,9 +132,11 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!organizationId || !resourceId || !title || !startTime || !endTime) {
-      return NextResponse.json({ 
-        error: 'Missing required fields: organizationId, resourceId, title, startTime, endTime' 
-      }, { status: 400 })
+      const { response, status } = createErrorResponse(
+        'Missing required fields: organizationId, resourceId, title, startTime, endTime',
+        HTTP_STATUS.BAD_REQUEST
+      )
+      return NextResponse.json(response, { status })
     }
 
     // Check if user is member of organization
@@ -132,7 +149,8 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (membershipError || !membership) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+      const { response, status } = createErrorResponse(ERROR_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN)
+      return NextResponse.json(response, { status })
     }
 
     // Check for overlapping bookings
@@ -141,17 +159,17 @@ export async function POST(request: NextRequest) {
       .select('id')
       .eq('resource_id', resourceId)
       .eq('status', 'confirmed')
-      .or(`and(starts_at.lt.${endTime},ends_at.gt.${startTime})`)
+      .or(`and(start_time.lt.${endTime},end_time.gt.${startTime})`)
 
     if (overlapError) {
       console.error('Error checking overlaps:', overlapError)
-      return NextResponse.json({ error: 'Failed to check booking conflicts' }, { status: 500 })
+      const { response, status } = createErrorResponse('Failed to check booking conflicts', HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return NextResponse.json(response, { status })
     }
 
     if (overlappingBookings && overlappingBookings.length > 0) {
-      return NextResponse.json({ 
-        error: 'Time slot conflicts with existing confirmed booking' 
-      }, { status: 409 })
+      const { response, status } = createErrorResponse('Time slot conflicts with existing confirmed booking', HTTP_STATUS.CONFLICT)
+      return NextResponse.json(response, { status })
     }
 
     // Create booking
@@ -162,8 +180,8 @@ export async function POST(request: NextRequest) {
         resource_id: resourceId,
         title,
         description,
-        starts_at: startTime,
-        ends_at: endTime,
+        start_time: startTime,
+        end_time: endTime,
         status,
         created_by_clerk_id: userId,
         is_public: false
@@ -172,8 +190,8 @@ export async function POST(request: NextRequest) {
         id,
         title,
         description,
-        starts_at,
-        ends_at,
+        start_time,
+        end_time,
         status,
         created_by_clerk_id,
         created_at,
@@ -188,16 +206,15 @@ export async function POST(request: NextRequest) {
 
     if (bookingError) {
       console.error('Error creating booking:', bookingError)
-      return NextResponse.json({ error: 'Failed to create booking' }, { status: 500 })
+      const { response, status } = createErrorResponse('Failed to create booking', HTTP_STATUS.INTERNAL_SERVER_ERROR)
+      return NextResponse.json(response, { status })
     }
 
-    return NextResponse.json({
-      success: true,
-      data: booking
-    }, { status: 201 })
+    return NextResponse.json(createSuccessResponse(booking, 'Booking created successfully'), { status: HTTP_STATUS.CREATED })
 
   } catch (error) {
     console.error('Create booking API error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const { response, status } = createErrorResponse(ERROR_MESSAGES.INTERNAL_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    return NextResponse.json(response, { status })
   }
 }

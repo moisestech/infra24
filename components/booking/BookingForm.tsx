@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CalendarIcon, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
+import { Resource, Booking, CreateBookingRequest } from '@/types/booking'
 
 // Validation schema
 const bookingSchema = z.object({
@@ -38,33 +39,17 @@ const bookingSchema = z.object({
 
 type BookingFormData = z.infer<typeof bookingSchema>
 
-interface Resource {
-  id: string
-  title: string
-  type: 'space' | 'equipment' | 'person'
-  capacity: number
-}
-
-interface Booking {
-  id: string
-  resource_id: string
-  title: string
-  description?: string
-  start_time: Date
-  end_time: Date
-  status: 'pending' | 'confirmed' | 'cancelled'
-  created_by_clerk_id: string
-}
-
 interface BookingFormProps {
+  organizationId: string
   resources: Resource[]
-  onSubmit: (data: Omit<Booking, 'id' | 'created_by_clerk_id'>) => Promise<void>
+  onSubmit: (data: CreateBookingRequest) => Promise<void>
   onCancel: () => void
   initialData?: Partial<Booking>
   isLoading?: boolean
 }
 
 export function BookingForm({ 
+  organizationId,
   resources, 
   onSubmit, 
   onCancel, 
@@ -95,13 +80,13 @@ export function BookingForm({
       const startDateTime = new Date(`${format(data.startDate, 'yyyy-MM-dd')}T${data.startTime}`)
       const endDateTime = new Date(`${format(data.endDate, 'yyyy-MM-dd')}T${data.endTime}`)
 
-      const bookingData: Omit<Booking, 'id' | 'created_by_clerk_id'> = {
-        resource_id: data.resourceId,
+      const bookingData: CreateBookingRequest = {
+        organizationId,
+        resourceId: data.resourceId,
         title: data.title,
         description: data.description,
-        start_time: startDateTime,
-        end_time: endDateTime,
-        status: data.status
+        startTime: startDateTime.toISOString(),
+        endTime: endDateTime.toISOString()
       }
 
       await onSubmit(bookingData)

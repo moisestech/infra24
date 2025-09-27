@@ -10,8 +10,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/Badge';
 import { Plus, Calendar, Users, Clock, MapPin, X } from 'lucide-react';
+import { Resource, Booking, CreateBookingRequest } from '@/types/booking';
 
-interface Booking {
+interface LocalBooking {
   id: string;
   resource_id: string;
   title: string;
@@ -22,20 +23,12 @@ interface Booking {
   created_by_clerk_id: string;
 }
 
-interface Resource {
-  id: string;
-  title: string;
-  type: 'space' | 'equipment' | 'person';
-  capacity: number;
-  organization_id: string;
-}
-
 function OoliteBookingsPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<LocalBooking[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<LocalBooking | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
 
   useEffect(() => {
@@ -52,43 +45,88 @@ function OoliteBookingsPageContent() {
       const mockResources: Resource[] = [
         {
           id: 'vr-quest-3',
-          title: 'VR Headset - Oculus Quest 3',
+          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831',
           type: 'equipment',
+          title: 'VR Headset - Oculus Quest 3',
+          description: 'High-end VR headset for immersive experiences and 3D modeling',
           capacity: 1,
-          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
+          price: 0,
+          currency: 'USD',
+          is_active: true,
+          is_bookable: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          created_by: 'system',
+          updated_by: 'system'
         },
         {
           id: '3d-printer-prusa',
-          title: '3D Printer - Prusa i3 MK3S+',
+          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831',
           type: 'equipment',
+          title: '3D Printer - Prusa i3 MK3S+',
+          description: 'Professional 3D printer for rapid prototyping and art creation',
           capacity: 1,
-          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
+          price: 0,
+          currency: 'USD',
+          is_active: true,
+          is_bookable: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          created_by: 'system',
+          updated_by: 'system'
         },
         {
           id: 'ar-hololens-2',
-          title: 'AR Development Station',
+          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831',
           type: 'equipment',
+          title: 'AR Development Station',
+          description: 'Complete AR development setup with HoloLens 2 and development tools',
           capacity: 1,
-          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
+          price: 0,
+          currency: 'USD',
+          is_active: true,
+          is_bookable: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          created_by: 'system',
+          updated_by: 'system'
         },
         {
           id: 'mocap-system',
-          title: 'Motion Capture System',
+          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831',
           type: 'equipment',
+          title: 'Motion Capture System',
+          description: 'Professional motion capture equipment for animation and VR development',
           capacity: 1,
-          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
+          price: 0,
+          currency: 'USD',
+          is_active: true,
+          is_bookable: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          created_by: 'system',
+          updated_by: 'system'
         },
         {
           id: 'workstation-rtx4090',
-          title: 'High-End Workstation',
+          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831',
           type: 'equipment',
+          title: 'High-End Workstation',
+          description: 'Powerful workstation with RTX 4090 for AI art generation and 3D rendering',
           capacity: 1,
-          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
+          price: 0,
+          currency: 'USD',
+          is_active: true,
+          is_bookable: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          created_by: 'system',
+          updated_by: 'system'
         }
       ];
       
       // Equipment booking mock data
-      const mockBookings: Booking[] = [
+      const mockBookings: LocalBooking[] = [
         {
           id: '1',
           title: 'VR Headset - Oculus Quest 3',
@@ -154,18 +192,23 @@ function OoliteBookingsPageContent() {
     setShowBookingForm(true);
   };
 
-  const handleBookingCreated = async (booking: Omit<Booking, 'id' | 'created_by_clerk_id'>) => {
+  const handleBookingCreated = async (booking: CreateBookingRequest) => {
     // Create a new booking with a temporary ID
-    const newBooking: Booking = {
-      ...booking,
+    const newBooking: LocalBooking = {
       id: Date.now().toString(),
+      resource_id: booking.resourceId,
+      title: booking.title,
+      description: booking.description,
+      start_time: new Date(booking.startTime),
+      end_time: new Date(booking.endTime),
+      status: 'pending',
       created_by_clerk_id: 'temp-user'
     };
     setBookings(prev => [newBooking, ...prev]);
     setShowBookingForm(false);
   };
 
-  const handleBookingClick = (booking: Booking) => {
+  const handleBookingClick = (booking: LocalBooking) => {
     setSelectedBooking(booking);
   };
 
@@ -272,6 +315,7 @@ function OoliteBookingsPageContent() {
                     </Button>
                   </div>
                   <BookingForm
+                    organizationId="caf2bc8b-8547-4c55-ac9f-5692e93bd831"
                     resources={resources}
                     onSubmit={handleBookingCreated}
                     onCancel={() => setShowBookingForm(false)}

@@ -134,20 +134,8 @@ export const artistsApi = createCrudService<Artist>({
   endpoint: '/api/artists',
 });
 
-// Workshops API service
-export interface Workshop {
-  id: string;
-  title: string;
-  description: string;
-  organization_id: string;
-  instructor: string;
-  duration: number;
-  max_participants?: number;
-  materials_needed?: string[];
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-}
+// Workshops API service - using unified types
+import { Workshop } from '@/types/workshop';
 
 export const workshopsApi = createCrudService<Workshop>({
   endpoint: '/api/workshops',

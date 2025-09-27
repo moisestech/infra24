@@ -24,7 +24,7 @@ export async function GET(
     const { data: resources, error } = await supabase
       .from('resources')
       .select('*')
-      .eq('org_id', orgId)
+      .eq('organization_id', orgId)
       .eq('is_active', true)
       .order('title');
 
@@ -65,7 +65,7 @@ export async function POST(
     const { data: resource, error } = await supabase
       .from('resources')
       .insert({
-        org_id: orgId,
+        organization_id: orgId,
         ...body
       })
       .select()

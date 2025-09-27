@@ -8,20 +8,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Plus, Calendar } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { UnifiedNavigation, ooliteConfig } from '@/components/navigation'
+import { CreateBookingRequest, Booking as UnifiedBooking, Resource as UnifiedResource } from '@/types/booking'
 
-interface Resource {
-  id: string
-  title: string
-  type: 'space' | 'equipment' | 'person'
-  capacity: number
-  organization_id: string
-}
 
 interface Booking {
   id: string
   resource_id: string
-  start_time: Date
-  end_time: Date
+  start_time: string
+  end_time: string
   title: string
   description?: string
   status: 'pending' | 'confirmed' | 'cancelled'
@@ -29,9 +23,9 @@ interface Booking {
 }
 
 export default function AdminCalendarPage() {
-  const [resources, setResources] = useState<Resource[]>([])
+  const [resources, setResources] = useState<UnifiedResource[]>([])
   const [showBookingForm, setShowBookingForm] = useState(false)
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+  const [selectedBooking, setSelectedBooking] = useState<UnifiedBooking | null>(null)
   const [loading, setLoading] = useState(true)
 
   const supabase = createClient(
@@ -65,22 +59,14 @@ export default function AdminCalendarPage() {
     }
   }
 
-  const handleBookingCreate = async (booking: Omit<Booking, 'id' | 'created_by_clerk_id'>) => {
+  const handleBookingCreate = async (booking: CreateBookingRequest) => {
     try {
       const response = await fetch('/api/bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          organizationId: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831',
-          resourceId: booking.resource_id,
-          title: booking.title,
-          description: booking.description || '',
-          startTime: booking.start_time.toISOString(),
-          endTime: booking.end_time.toISOString(),
-          status: booking.status
-        })
+        body: JSON.stringify(booking)
       })
 
       if (!response.ok) {
@@ -100,7 +86,7 @@ export default function AdminCalendarPage() {
     }
   }
 
-  const handleBookingUpdate = async (booking: Booking) => {
+  const handleBookingUpdate = async (booking: UnifiedBooking) => {
     try {
       const response = await fetch(`/api/bookings/${booking.id}`, {
         method: 'PATCH',
@@ -110,8 +96,8 @@ export default function AdminCalendarPage() {
         body: JSON.stringify({
           title: booking.title,
           description: booking.description || '',
-          startTime: booking.start_time.toISOString(),
-          endTime: booking.end_time.toISOString(),
+          startTime: booking.start_time,
+          endTime: booking.end_time,
           status: booking.status
         })
       })
@@ -292,6 +278,7 @@ export default function AdminCalendarPage() {
                 </p>
               </div>
               <BookingForm
+                organizationId="caf2bc8b-8547-4c55-ac9f-5692e93bd831"
                 resources={resources}
                 onSubmit={handleBookingCreate}
                 onCancel={() => {

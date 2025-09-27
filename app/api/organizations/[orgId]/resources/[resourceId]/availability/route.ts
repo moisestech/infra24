@@ -129,8 +129,8 @@ function generateAvailableSlots(
       
       if (!hasConflict) {
         slots.push({
-          starts_at: slotStart.toISOString(),
-          ends_at: slotEnd.toISOString(),
+          start_time: slotStart.toISOString(),
+          end_time: slotEnd.toISOString(),
           duration_hours: actualDuration,
           date: current.toISOString().split('T')[0],
           time: `${hour.toString().padStart(2, '0')}:00 - ${(hour + actualDuration).toString().padStart(2, '0')}:00`
