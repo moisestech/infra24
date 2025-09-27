@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS organizations (
     description TEXT,
     logo_url TEXT,
     website_url TEXT,
-    contact_email VARCHAR(255),
-    contact_phone VARCHAR(50),
+    email TEXT,
+    phone TEXT,
     address TEXT,
     timezone VARCHAR(50) DEFAULT 'UTC',
     settings JSONB DEFAULT '{}',
@@ -200,43 +200,177 @@ CREATE TRIGGER update_org_memberships_updated_at BEFORE UPDATE ON org_membership
 -- SAMPLE DATA FOR TESTING
 -- =============================================
 
--- Insert sample organization (Oolite Arts)
-INSERT INTO organizations (id, name, slug, description, contact_email, is_active) 
+-- Insert sample organization (Oolite Arts) - use existing ID if it exists
+INSERT INTO organizations (name, slug, description, email, is_active) 
 VALUES (
-    'caf2bc8b-8547-4c55-ac9f-5692e93bd831',
     'Oolite Arts',
     'oolite',
     'Miami-based arts organization supporting artists and community',
     'info@oolitearts.org',
     true
-) ON CONFLICT (id) DO UPDATE SET
+) ON CONFLICT (slug) DO UPDATE SET
     name = EXCLUDED.name,
-    slug = EXCLUDED.slug,
     description = EXCLUDED.description,
-    contact_email = EXCLUDED.contact_email,
+    email = EXCLUDED.email,
     is_active = EXCLUDED.is_active;
 
--- Insert sample resources for Oolite
-INSERT INTO resources (organization_id, type, title, description, category, capacity, is_active, is_bookable, created_by, updated_by) VALUES
--- Spaces
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'space', 'Studio A', 'Main studio space for workshops and events', 'Studio', 15, true, true, 'system', 'system'),
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'space', 'Gallery Space', 'Exhibition gallery for art shows', 'Gallery', 50, true, true, 'system', 'system'),
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'space', 'Meeting Room', 'Small meeting room for consultations', 'Meeting', 8, true, true, 'system', 'system'),
-
--- Equipment
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'equipment', 'VR Headset - Oculus Quest 3', 'Virtual reality headset for digital art creation', 'VR Equipment', 1, true, true, 'system', 'system'),
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'equipment', 'Professional Camera', 'Canon EOS R5 for photography workshops', 'Photography', 1, true, true, 'system', 'system'),
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'equipment', '3D Printer', 'Prusa i3 MK3S+ for 3D printing projects', '3D Printing', 1, true, true, 'system', 'system'),
-
--- People
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'person', 'Photography Instructor', 'Professional photographer available for workshops', 'Instructor', 1, true, true, 'system', 'system'),
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'person', 'Digital Art Consultant', 'Expert in digital art techniques and software', 'Consultant', 1, true, true, 'system', 'system'),
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'person', 'Tech Support Specialist', 'Technical support for equipment and software', 'Support', 1, true, true, 'system', 'system'),
-
--- Workshops
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'workshop', 'Digital Photography Workshop', 'Learn professional photography techniques', 'Photography', 12, true, true, 'system', 'system'),
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'workshop', 'VR Art Creation', 'Create art using virtual reality tools', 'Digital Art', 8, true, true, 'system', 'system'),
-('caf2bc8b-8547-4c55-ac9f-5692e93bd831', 'workshop', '3D Printing Basics', 'Introduction to 3D modeling and printing', '3D Printing', 10, true, true, 'system', 'system')
+-- Insert sample resources for Oolite using the actual organization ID
+INSERT INTO resources (organization_id, type, title, description, category, capacity, is_active, is_bookable, created_by, updated_by)
+SELECT 
+    o.id,
+    'space',
+    'Studio A',
+    'Main studio space for workshops and events',
+    'Studio',
+    15,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'space',
+    'Gallery Space',
+    'Exhibition gallery for art shows',
+    'Gallery',
+    50,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'space',
+    'Meeting Room',
+    'Small meeting room for consultations',
+    'Meeting',
+    8,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'equipment',
+    'VR Headset - Oculus Quest 3',
+    'Virtual reality headset for digital art creation',
+    'VR Equipment',
+    1,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'equipment',
+    'Professional Camera',
+    'Canon EOS R5 for photography workshops',
+    'Photography',
+    1,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'equipment',
+    '3D Printer',
+    'Prusa i3 MK3S+ for 3D printing projects',
+    '3D Printing',
+    1,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'person',
+    'Photography Instructor',
+    'Professional photographer available for workshops',
+    'Instructor',
+    1,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'person',
+    'Digital Art Consultant',
+    'Expert in digital art techniques and software',
+    'Consultant',
+    1,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'person',
+    'Tech Support Specialist',
+    'Technical support for equipment and software',
+    'Support',
+    1,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'workshop',
+    'Digital Photography Workshop',
+    'Learn professional photography techniques',
+    'Photography',
+    12,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'workshop',
+    'VR Art Creation',
+    'Create art using virtual reality tools',
+    'Digital Art',
+    8,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
+UNION ALL
+SELECT 
+    o.id,
+    'workshop',
+    '3D Printing Basics',
+    'Introduction to 3D modeling and printing',
+    '3D Printing',
+    10,
+    true,
+    true,
+    'system',
+    'system'
+FROM organizations o WHERE o.slug = 'oolite'
 ON CONFLICT DO NOTHING;
 
 -- =============================================
@@ -338,15 +472,16 @@ CREATE POLICY "Memberships are viewable by organization members" ON org_membersh
 -- MIGRATION COMPLETE
 -- =============================================
 
--- Log successful migration
-INSERT INTO public.migration_log (migration_name, executed_at, status) 
-VALUES ('20241226000001_unified_schema_standardization', NOW(), 'completed')
-ON CONFLICT DO NOTHING;
-
--- Create migration log table if it doesn't exist
+-- Create migration_log table if it doesn't exist
 CREATE TABLE IF NOT EXISTS migration_log (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     migration_name TEXT UNIQUE NOT NULL,
     executed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     status TEXT DEFAULT 'completed'
 );
+
+-- Log successful migration
+INSERT INTO migration_log (migration_name, executed_at, status) 
+VALUES ('20241226000001_unified_schema_standardization', NOW(), 'completed')
+ON CONFLICT DO NOTHING;
+
