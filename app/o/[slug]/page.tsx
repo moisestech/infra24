@@ -28,6 +28,8 @@ interface Announcement {
   status: string
   start_date: string | null
   end_date: string | null
+  scheduled_at?: string
+  expires_at?: string
   location: string | null
   key_people: any[]
   metadata: any

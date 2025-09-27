@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -234,7 +234,7 @@ export default function AdminWorkshopsPage() {
                         {workshop.description}
                       </CardDescription>
                     </div>
-                    <Badge variant={workshop.is_active ? "default" : "secondary"}>
+                    <Badge variant={workshop.is_active ? "default" : "error"}>
                       {workshop.is_active ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>

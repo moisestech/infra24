@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { ThemeManager } from '@/components/admin/ThemeManager';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -92,8 +92,8 @@ export default function ThemeAdminPage() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">{organization.slug}</Badge>
-            <Badge variant="outline">{organization.name}</Badge>
+            <Badge variant="info">{organization.slug}</Badge>
+            <Badge variant="default">{organization.name}</Badge>
           </div>
         </div>
 

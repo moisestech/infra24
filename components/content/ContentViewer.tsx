@@ -3,7 +3,7 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/ui/Badge'
 import { 
   ArrowLeft, 
   Edit, 
@@ -72,13 +72,13 @@ export function ContentViewer({ content, onClose, onEdit }: ContentViewerProps) 
           {/* Content Metadata */}
           <div className="flex flex-wrap items-center gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="flex items-center gap-2">
-              <Badge variant={content.published ? "default" : "secondary"}>
+              <Badge variant={content.published ? "default" : "info"}>
                 {content.published ? "Published" : "Draft"}
               </Badge>
               {content.featured && (
-                <Badge variant="outline">Featured</Badge>
+                <Badge variant="default">Featured</Badge>
               )}
-              <Badge variant="outline">{content.content_type}</Badge>
+              <Badge variant="default">{content.content_type}</Badge>
             </div>
             
             <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-300">
@@ -104,7 +104,7 @@ export function ContentViewer({ content, onClose, onEdit }: ContentViewerProps) 
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Category: 
                 </span>
-                <Badge variant="outline" className="ml-2">
+                <Badge variant="default" className="ml-2">
                   {content.category}
                 </Badge>
               </div>
@@ -117,7 +117,7 @@ export function ContentViewer({ content, onClose, onEdit }: ContentViewerProps) 
                 </span>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {content.tags.map((tag) => (
-                    <Badge key={tag} variant="outline" className="flex items-center gap-1">
+                    <Badge key={tag} variant="default" className="flex items-center gap-1">
                       <Tag className="w-3 h-3" />
                       {tag}
                     </Badge>

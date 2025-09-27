@@ -15,7 +15,7 @@ export function ProgressIndicator({ currentStep, totalSteps, className }: Progre
   let themeColors
   try {
     const orgTheme = useOrganizationTheme()
-    themeColors = orgTheme?.themeColors
+    themeColors = orgTheme?.theme?.colors
   } catch (error) {
     console.warn('OrganizationTheme not available, using fallback colors')
   }
@@ -42,20 +42,20 @@ export function ProgressIndicator({ currentStep, totalSteps, className }: Progre
     >
       {/* Progress Text */}
       <div className="flex justify-between items-center text-sm">
-        <span className="font-medium" style={{ color: colors.textSecondary }}>
+        <span className="font-medium" style={{ color: '#666666' }}>
           Question {currentStep + 1} of {totalSteps}
         </span>
-        <span className="font-mono" style={{ color: colors.textSecondary }}>
+        <span className="font-mono" style={{ color: '#666666' }}>
           {Math.round(progress)}% complete
         </span>
       </div>
       
       {/* Progress Bar */}
-      <div className="w-full rounded-full h-2 overflow-hidden" style={{ backgroundColor: colors.primaryLight }}>
+      <div className="w-full rounded-full h-2 overflow-hidden" style={{ backgroundColor: colors.primary + '20' }}>
         <motion.div
           className="h-2 rounded-full relative"
           style={{ 
-            background: `linear-gradient(90deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`
+            background: `linear-gradient(90deg, ${colors.primary} 0%, ${colors.primary} 100%)`
           }}
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
@@ -84,7 +84,7 @@ export function ProgressIndicator({ currentStep, totalSteps, className }: Progre
               key={index}
               className="w-2 h-2 rounded-full transition-colors duration-300"
               style={{
-                backgroundColor: index <= currentStep ? colors.primary : colors.primaryLight
+                backgroundColor: index <= currentStep ? colors.primary : colors.primary + '40'
               }}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -109,9 +109,9 @@ export function ProgressIndicator({ currentStep, totalSteps, className }: Progre
             {/* Ellipsis if we're in the middle */}
             {currentStep > 2 && currentStep < totalSteps - 3 && (
               <div className="flex items-center space-x-1">
-                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.primaryLight }} />
-                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.primaryLight }} />
-                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.primaryLight }} />
+                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.primary + '40' }} />
+                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.primary + '40' }} />
+                <div className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.primary + '40' }} />
               </div>
             )}
             
@@ -123,7 +123,7 @@ export function ProgressIndicator({ currentStep, totalSteps, className }: Progre
                   key={stepIndex}
                   className="w-2 h-2 rounded-full transition-colors duration-300"
                   style={{
-                    backgroundColor: stepIndex <= currentStep ? colors.primary : colors.primaryLight
+                    backgroundColor: stepIndex <= currentStep ? colors.primary : colors.primary + '40'
                   }}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -149,7 +149,7 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
   let themeColors
   try {
     const orgTheme = useOrganizationTheme()
-    themeColors = orgTheme?.themeColors
+    themeColors = orgTheme?.theme?.colors
   } catch (error) {
     console.warn('OrganizationTheme not available, using fallback colors')
   }
@@ -179,9 +179,9 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
                 backgroundColor: index < currentStep 
                   ? colors.primary 
                   : index === currentStep 
-                    ? colors.primaryDark 
-                    : colors.primaryLight,
-                color: index <= currentStep ? '#ffffff' : colors.textSecondary
+                    ? colors.primary 
+                    : colors.primary + '40',
+                color: index <= currentStep ? '#ffffff' : '#666666'
               }}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -192,7 +192,7 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
             <span 
               className="mt-1 text-xs font-medium transition-colors duration-300"
               style={{ 
-                color: index <= currentStep ? colors.textPrimary : colors.textSecondary 
+                color: index <= currentStep ? '#000000' : '#666666' 
               }}
             >
               {step.length > 8 ? step.substring(0, 8) + '...' : step}
@@ -204,13 +204,13 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
         <div className="flex flex-col items-center">
           <div 
             className="w-6 h-6 rounded-full flex items-center justify-center text-xs"
-            style={{ backgroundColor: colors.primaryLight }}
+            style={{ backgroundColor: colors.primary + '40' }}
           >
             ...
           </div>
           <span 
             className="mt-1 text-xs font-medium"
-            style={{ color: colors.textSecondary }}
+            style={{ color: '#666666' }}
           >
             {currentStep + 1} of {steps.length}
           </span>
@@ -227,9 +227,9 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
                   backgroundColor: actualIndex < currentStep 
                     ? colors.primary 
                     : actualIndex === currentStep 
-                      ? colors.primaryDark 
-                      : colors.primaryLight,
-                  color: actualIndex <= currentStep ? '#ffffff' : colors.textSecondary
+                      ? colors.primary 
+                      : colors.primary + '40',
+                  color: actualIndex <= currentStep ? '#ffffff' : '#666666'
                 }}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -240,7 +240,7 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
               <span 
                 className="mt-1 text-xs font-medium transition-colors duration-300"
                 style={{ 
-                  color: actualIndex <= currentStep ? colors.textPrimary : colors.textSecondary 
+                  color: actualIndex <= currentStep ? '#000000' : '#666666' 
                 }}
               >
                 {step.length > 8 ? step.substring(0, 8) + '...' : step}
@@ -264,9 +264,9 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
                 backgroundColor: index < currentStep 
                   ? colors.primary 
                   : index === currentStep 
-                    ? colors.primaryDark 
-                    : colors.primaryLight,
-                color: index <= currentStep ? '#ffffff' : colors.textSecondary
+                    ? colors.primary 
+                    : colors.primary + '40',
+                color: index <= currentStep ? '#ffffff' : '#666666'
               }}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -284,7 +284,7 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
             <span 
               className="mt-2 text-xs font-medium transition-colors duration-300"
               style={{ 
-                color: index <= currentStep ? colors.textPrimary : colors.textSecondary 
+                color: index <= currentStep ? '#000000' : '#666666' 
               }}
             >
               {step}
@@ -295,7 +295,7 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
             <motion.div
               className="flex-1 h-0.5 mx-4 transition-colors duration-300"
               style={{
-                backgroundColor: index < currentStep ? colors.primary : colors.primaryLight
+                backgroundColor: index < currentStep ? colors.primary : colors.primary + '40'
               }}
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}

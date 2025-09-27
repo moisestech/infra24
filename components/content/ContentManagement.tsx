@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/ui/Badge'
 import { 
   Select, 
   SelectContent, 
@@ -279,13 +279,13 @@ export function ContentManagement() {
                       {item.title}
                     </CardTitle>
                     <div className="flex items-center gap-2 mt-2">
-                      <Badge variant={item.published ? "default" : "secondary"}>
+                      <Badge variant={item.published ? "default" : "info"}>
                         {item.published ? "Published" : "Draft"}
                       </Badge>
                       {item.featured && (
-                        <Badge variant="outline">Featured</Badge>
+                        <Badge variant="default">Featured</Badge>
                       )}
-                      <Badge variant="outline">{item.content_type}</Badge>
+                      <Badge variant="default">{item.content_type}</Badge>
                     </div>
                   </div>
                 </div>
@@ -298,13 +298,13 @@ export function ContentManagement() {
                 {item.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-4">
                     {item.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
+                      <Badge key={tag} variant="default" className="text-xs">
                         <Tag className="w-3 h-3 mr-1" />
                         {tag}
                       </Badge>
                     ))}
                     {item.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="default" className="text-xs">
                         +{item.tags.length - 3} more
                       </Badge>
                     )}

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Badge } from '@/components/ui/Badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   Select, 
@@ -195,14 +195,14 @@ export function ContentEditor({
         </h1>
         <div className="flex items-center space-x-2">
           <Button
-            variant="outline"
+            variant="default"
             onClick={() => setPreviewMode(!previewMode)}
           >
             <Eye className="w-4 h-4 mr-2" />
             {previewMode ? 'Edit' : 'Preview'}
           </Button>
           <Button
-            variant="outline"
+            variant="default"
             onClick={onCancel}
           >
             Cancel
@@ -398,7 +398,7 @@ export function ContentEditor({
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {content.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                    <Badge key={tag} variant="info" className="flex items-center gap-1">
                       {tag}
                       <X 
                         className="w-3 h-3 cursor-pointer" 
@@ -471,7 +471,7 @@ export function ContentEditor({
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {content.seoKeywords.map((keyword) => (
-                    <Badge key={keyword} variant="outline" className="flex items-center gap-1">
+                    <Badge key={keyword} variant="default" className="flex items-center gap-1">
                       {keyword}
                       <X 
                         className="w-3 h-3 cursor-pointer" 

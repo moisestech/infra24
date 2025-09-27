@@ -248,7 +248,7 @@ function WorkshopSharingAdminPageContent() {
           ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
           : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
       }`}>
-        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+        <UnifiedNavigation config={ooliteConfig} userRole="admin" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className={`h-8 rounded w-1/3 mb-6 ${
@@ -290,7 +290,7 @@ function WorkshopSharingAdminPageContent() {
           : 'bg-white/80 backdrop-blur-md border-b border-gray-200'
       }`}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+          <UnifiedNavigation config={ooliteConfig} userRole="admin" />
           <div className="flex items-center gap-4">
             <ThemeToggle />
           </div>

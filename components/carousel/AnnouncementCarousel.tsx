@@ -41,8 +41,8 @@ export function AnnouncementCarousel({ announcements, organizationSlug }: Announ
   // Filter active announcements (show all active announcements, not just future ones)
   const futureAnnouncements = useMemo(() => {
     return announcements.filter(announcement => {
-      // Show all active announcements
-      return announcement.is_active === true;
+      // Show all published announcements
+      return announcement.status === 'published';
     });
   }, [announcements]);
 

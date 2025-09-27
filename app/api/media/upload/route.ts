@@ -204,7 +204,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (offset) {
-      query = query.range(parseInt(offset), parseInt(offset) + (parseInt(limit) || 10) - 1)
+      query = query.range(parseInt(offset), parseInt(offset) + (parseInt(limit || '10')) - 1)
     }
 
     // Order by creation date

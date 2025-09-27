@@ -241,7 +241,7 @@ export default function PublicCoursesPage() {
       <div>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">All Courses</h2>
-          <Badge variant="secondary">
+          <Badge variant="info">
             {filteredCourses.length} courses
           </Badge>
         </div>

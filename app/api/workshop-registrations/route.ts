@@ -19,7 +19,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Organization ID required' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
     // Check if user has access to this organization
     const { data: membership } = await supabase
@@ -110,7 +119,16 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
     // Check if user has access to this organization
     const { data: membership } = await supabase
@@ -240,7 +258,7 @@ export async function POST(request: NextRequest) {
         organizationName: organization?.name || 'Organization',
         participantName: userName,
         workshopDescription: workshopDetails?.description,
-        workshopLocation: workshopDetails?.resources?.title,
+        workshopLocation: workshopDetails?.resources?.[0]?.title,
         maxParticipants: workshopDetails?.max_participants || 10,
         currentParticipants: (currentRegistrations?.length || 0) + 1,
         language: 'en' as const,

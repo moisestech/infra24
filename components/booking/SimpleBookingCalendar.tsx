@@ -95,8 +95,8 @@ export function SimpleBookingCalendar({ orgId, onBookingCreate, onBookingUpdate,
       start_time: startTime,
       end_time: endTime,
       title: `New Booking for ${resources.find(r => r.id === resourceId)?.title}`,
-      // user_id: 'clerk_user_id_placeholder', // TODO: Replace with actual user ID
-      // status: 'pending' as const,
+      user_id: 'clerk_user_id_placeholder', // TODO: Replace with actual user ID
+      status: 'pending' as const,
     }
     onBookingCreate(newBooking)
   }

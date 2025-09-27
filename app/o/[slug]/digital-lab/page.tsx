@@ -88,7 +88,7 @@ function DigitalLabPageContent() {
   let themeColors
   try {
     const orgTheme = useOrganizationTheme()
-    themeColors = orgTheme?.themeColors
+    themeColors = orgTheme?.theme?.colors
   } catch (error) {
     console.warn('OrganizationTheme not available, using fallback colors')
   }
@@ -110,27 +110,27 @@ function DigitalLabPageContent() {
   const getThemeStyles = () => {
     if (resolvedTheme === 'dark') {
       return {
-        background: `linear-gradient(135deg, ${colors.primaryLight}20 0%, #1a1a1a 50%, ${colors.primaryLight}20 100%)`,
+        background: `linear-gradient(135deg, ${colors.primary || '#3b82f6'}20 0%, #1a1a1a 50%, ${colors.primary || '#3b82f6'}20 100%)`,
         headerBg: '#2a2a2a',
         headerBorder: '#404040',
-        cardBg: colors.cardBackground || '#2a2a2a',
+        cardBg: colors.background || '#2a2a2a',
         cardBorder: '#404040',
-        textPrimary: colors.textPrimary || '#ffffff',
-        textSecondary: colors.textSecondary || '#a0a0a0',
+        textPrimary: '#ffffff',
+        textSecondary: '#a0a0a0',
         buttonBg: colors.primary,
-        buttonHover: colors.primaryLight,
+        buttonHover: colors.primary || '#3b82f6',
       }
     } else {
       return {
-        background: `linear-gradient(135deg, ${colors.primaryLight}10 0%, ${colors.background} 50%, ${colors.primaryLight}10 100%)`,
-        headerBg: colors.background,
+        background: `linear-gradient(135deg, ${colors.primary || '#3b82f6'}10 0%, ${colors.background || '#ffffff'} 50%, ${colors.primary || '#3b82f6'}10 100%)`,
+        headerBg: colors.background || '#ffffff',
         headerBorder: '#e5e5e5',
-        cardBg: colors.cardBackground,
+        cardBg: colors.background || '#ffffff',
         cardBorder: '#e5e5e5',
-        textPrimary: colors.textPrimary,
-        textSecondary: colors.textSecondary,
+        textPrimary: '#000000',
+        textSecondary: '#666666',
         buttonBg: colors.primary,
-        buttonHover: colors.primaryLight,
+        buttonHover: colors.primary || '#3b82f6',
       }
     }
   }
@@ -284,12 +284,12 @@ function DigitalLabPageContent() {
   if (loading) {
     return (
       <TenantProvider>
-        <OrganizationThemeProvider organizationSlug={slug}>
+        <OrganizationThemeProvider initialSlug={slug}>
           <div 
             className="min-h-screen"
             style={{ background: themeStyles.background }}
           >
-            <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+            <UnifiedNavigation config={ooliteConfig} userRole="admin" />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="flex items-center justify-center h-64">
                 <div 
@@ -306,12 +306,12 @@ function DigitalLabPageContent() {
 
   return (
     <TenantProvider>
-      <OrganizationThemeProvider organizationSlug={slug}>
+      <OrganizationThemeProvider initialSlug={slug}>
         <div 
           className="min-h-screen"
           style={{ background: themeStyles.background }}
         >
-          <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+          <UnifiedNavigation config={ooliteConfig} userRole="admin" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}

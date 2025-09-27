@@ -16,7 +16,7 @@ import {
   Camera, 
   Globe, 
   Headphones, 
-  VrBox 
+  Box 
 } from 'lucide-react';
 import { getWorkshopsForOrganization, getWorkshopCategories } from '@/lib/workshops/shared-workshops';
 
@@ -88,7 +88,7 @@ export default function OoliteWorkshopsPage({ theme = 'light', bannerImage }: Oo
     'Digital Media': Camera,
     'Web Development': Globe,
     'Audio Production': Headphones,
-    'Immersive Technology': VrBox,
+    'Immersive Technology': Box,
   };
   
   // Debug logging
@@ -203,7 +203,6 @@ export default function OoliteWorkshopsPage({ theme = 'light', bannerImage }: Oo
                       >
                         <IconComponent 
                           className="w-8 h-8" 
-                          style={{ color: ooliteColors.primary }}
                         />
                       </div>
                     </div>
@@ -295,11 +294,6 @@ export default function OoliteWorkshopsPage({ theme = 'light', bannerImage }: Oo
                       <div className="flex items-center justify-between">
                         <Badge 
                           variant="default"
-                          style={{ 
-                            backgroundColor: themeStyles.buttonBg,
-                            color: 'white',
-                            border: 'none'
-                          }}
                         >
                           {workshop.category}
                         </Badge>

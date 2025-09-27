@@ -141,6 +141,15 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       workshops: false,
       calendar: false,
     },
+    dashboard: {
+      showAnnouncements: true,
+      showArtists: true,
+      showInteractiveMap: false,
+      showSurveys: true,
+      showXRExperiences: false,
+      showWorkshops: false,
+      showDigitalLab: false,
+    },
     settings: {
       timezone: 'America/New_York',
       dateFormat: 'MM/DD/YYYY',
@@ -205,6 +214,15 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       analytics: true,
       workshops: true,
       calendar: false,
+    },
+    dashboard: {
+      showAnnouncements: true,
+      showArtists: false,
+      showInteractiveMap: false,
+      showSurveys: false,
+      showXRExperiences: false,
+      showWorkshops: true,
+      showDigitalLab: false,
     },
     settings: {
       timezone: 'America/New_York',

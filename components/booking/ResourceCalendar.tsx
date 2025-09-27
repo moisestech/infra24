@@ -7,9 +7,11 @@ import { format, startOfWeek, endOfWeek } from 'date-fns'
 
 // Dynamically import FullCalendar to avoid SSR issues
 const FullCalendar = dynamic(() => import('@fullcalendar/react'), { ssr: false })
-const resourceTimeGridPlugin = dynamic(() => import('@fullcalendar/resource-timegrid'), { ssr: false })
-const resourceDayGridPlugin = dynamic(() => import('@fullcalendar/resource-daygrid'), { ssr: false })
-const interactionPlugin = dynamic(() => import('@fullcalendar/interaction'), { ssr: false })
+
+// Import FullCalendar plugins directly
+import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid'
+import resourceDayGridPlugin from '@fullcalendar/resource-daygrid'
+import interactionPlugin from '@fullcalendar/interaction'
 
 interface Resource {
   id: string
@@ -196,29 +198,17 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
 
   // Transform bookings for FullCalendar
   const calendarEvents = bookings.map(booking => {
-    const isWorkshop = booking.workshop_sessions && booking.workshop_sessions.length > 0
-    const workshop = isWorkshop ? booking.workshop_sessions[0].workshops : null
-    
     return {
       id: booking.id,
       resourceId: booking.resource_id,
-      title: isWorkshop ? `🎓 ${workshop?.title || booking.title}` : booking.title,
+      title: booking.title,
       start: booking.start_time,
       end: booking.end_time,
-      color: isWorkshop ? '#8b5cf6' : // Purple for workshops
-             booking.status === 'confirmed' ? '#10b981' : 
+      color: booking.status === 'confirmed' ? '#10b981' : 
              booking.status === 'pending' ? '#f59e0b' : '#ef4444',
       extendedProps: {
         status: booking.status,
-        created_by: booking.created_by_clerk_id,
-        isWorkshop,
-        workshop: workshop ? {
-          id: workshop.id,
-          title: workshop.title,
-          category: workshop.category,
-          difficulty_level: workshop.difficulty_level
-        } : null,
-        sessionCapacity: isWorkshop ? booking.workshop_sessions[0].capacity : null
+        created_by: booking.created_by_clerk_id
       }
     }
   })
@@ -308,7 +298,7 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
           slotMaxTime="22:00:00"
           height="auto"
           resourceAreaWidth="200px"
-          resourceLabelText="Resources"
+          resourceLabelContent="Resources"
           resourceOrder="title"
           nowIndicator={true}
           businessHours={{

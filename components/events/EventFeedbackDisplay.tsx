@@ -175,7 +175,7 @@ export function EventFeedbackDisplay({
           <CardTitle className="flex items-center gap-2">
             <MessageSquare className="w-5 h-5" />
             Event Feedback
-            <Badge variant="secondary" className="ml-2">
+            <Badge variant="info" className="ml-2">
               {stats.totalResponses} responses
             </Badge>
           </CardTitle>
@@ -225,7 +225,7 @@ export function EventFeedbackDisplay({
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
                     {renderStarRating(item.rating)}
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="default" className="text-xs">
                       {new Date(item.created_at).toLocaleDateString()}
                     </Badge>
                   </div>
@@ -272,7 +272,7 @@ export function EventFeedbackDisplay({
           
           {feedback.length > 5 && (
             <div className="text-center mt-4">
-              <Badge variant="outline">
+              <Badge variant="default">
                 +{feedback.length - 5} more responses
               </Badge>
             </div>

@@ -14,14 +14,14 @@ const supabase = createClient(
   }
 )
 
-export async function GET(request: NextRequest, { params }: { params: { courseId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ courseId: string }> }) {
   try {
     const { userId } = await auth()
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const courseId = params.courseId
+    const { courseId } = await params
     if (!courseId) {
       return NextResponse.json({ error: 'Course ID is required' }, { status: 400 })
     }
@@ -44,14 +44,14 @@ export async function GET(request: NextRequest, { params }: { params: { courseId
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { courseId: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ courseId: string }> }) {
   try {
     const { userId } = await auth()
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const courseId = params.courseId
+    const { courseId } = await params
     const body = await request.json()
     const { 
       organizationId, 

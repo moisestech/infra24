@@ -23,6 +23,11 @@ const subTypeOptions: Record<AnnouncementType, AnnouncementSubType[]> = {
   event: ["exhibition", "workshop"],
   opportunity: ["open_call"],
   administrative: ["survey", "deadline", "reminder", "meeting", "critique"],
+  attention_artists: ["general"],
+  attention_public: ["general"],
+  fun_fact: ["general"],
+  promotion: ["general"],
+  gala_announcement: ["general"],
 };
 
 function CreateAnnouncementPageContent() {

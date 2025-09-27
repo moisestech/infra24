@@ -22,7 +22,8 @@ import {
   BookOpen,
   FileText,
   Clock,
-  Target
+  Target,
+  Eye
 } from 'lucide-react'
 
 interface AnalyticsData {

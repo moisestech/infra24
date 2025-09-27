@@ -26,7 +26,7 @@ export const oolitePatternConfig: OrganizationPatternConfig = {
   accentColor: '#3a8ba3',
   patterns: {
     urgent: {
-      type: 'geometric',
+      type: 'grid',
       colors: {
         primary: 'rgba(71, 171, 196, 0.15)',
         secondary: 'rgba(107, 184, 209, 0.12)',
@@ -35,7 +35,7 @@ export const oolitePatternConfig: OrganizationPatternConfig = {
       }
     },
     event: {
-      type: 'waves',
+      type: 'stripes',
       colors: {
         primary: 'rgba(71, 171, 196, 0.12)',
         secondary: 'rgba(107, 184, 209, 0.10)',
@@ -44,7 +44,7 @@ export const oolitePatternConfig: OrganizationPatternConfig = {
       }
     },
     facility: {
-      type: 'dots',
+      type: 'polkadot',
       colors: {
         primary: 'rgba(71, 171, 196, 0.10)',
         secondary: 'rgba(107, 184, 209, 0.08)',
@@ -62,7 +62,7 @@ export const oolitePatternConfig: OrganizationPatternConfig = {
       }
     },
     administrative: {
-      type: 'lines',
+      type: 'stripes',
       colors: {
         primary: 'rgba(71, 171, 196, 0.06)',
         secondary: 'rgba(107, 184, 209, 0.04)',
@@ -82,7 +82,7 @@ export const bakehousePatternConfig: OrganizationPatternConfig = {
   accentColor: '#d97706',
   patterns: {
     urgent: {
-      type: 'geometric',
+      type: 'grid',
       colors: {
         primary: 'rgba(245, 158, 11, 0.15)',
         secondary: 'rgba(251, 191, 36, 0.12)',
@@ -91,7 +91,7 @@ export const bakehousePatternConfig: OrganizationPatternConfig = {
       }
     },
     event: {
-      type: 'waves',
+      type: 'stripes',
       colors: {
         primary: 'rgba(245, 158, 11, 0.12)',
         secondary: 'rgba(251, 191, 36, 0.10)',
@@ -100,7 +100,7 @@ export const bakehousePatternConfig: OrganizationPatternConfig = {
       }
     },
     facility: {
-      type: 'dots',
+      type: 'polkadot',
       colors: {
         primary: 'rgba(245, 158, 11, 0.10)',
         secondary: 'rgba(251, 191, 36, 0.08)',
@@ -118,7 +118,7 @@ export const bakehousePatternConfig: OrganizationPatternConfig = {
       }
     },
     administrative: {
-      type: 'lines',
+      type: 'stripes',
       colors: {
         primary: 'rgba(245, 158, 11, 0.06)',
         secondary: 'rgba(251, 191, 36, 0.04)',
@@ -128,7 +128,7 @@ export const bakehousePatternConfig: OrganizationPatternConfig = {
     },
     // Bakehouse-specific announcement types
     attention_artists: {
-      type: 'geometric',
+      type: 'grid',
       colors: {
         primary: 'rgba(245, 158, 11, 0.20)',
         secondary: 'rgba(251, 191, 36, 0.15)',
@@ -137,7 +137,7 @@ export const bakehousePatternConfig: OrganizationPatternConfig = {
       }
     },
     attention_public: {
-      type: 'waves',
+      type: 'stripes',
       colors: {
         primary: 'rgba(245, 158, 11, 0.18)',
         secondary: 'rgba(251, 191, 36, 0.12)',
@@ -146,7 +146,7 @@ export const bakehousePatternConfig: OrganizationPatternConfig = {
       }
     },
     fun_fact: {
-      type: 'dots',
+      type: 'polkadot',
       colors: {
         primary: 'rgba(245, 158, 11, 0.16)',
         secondary: 'rgba(251, 191, 36, 0.10)',
@@ -164,7 +164,7 @@ export const bakehousePatternConfig: OrganizationPatternConfig = {
       }
     },
     gala_announcement: {
-      type: 'geometric',
+      type: 'grid',
       colors: {
         primary: 'rgba(245, 158, 11, 0.22)',
         secondary: 'rgba(251, 191, 36, 0.18)',
@@ -184,7 +184,7 @@ export const defaultPatternConfig: OrganizationPatternConfig = {
   accentColor: '#4b5563',
   patterns: {
     urgent: {
-      type: 'geometric',
+      type: 'grid',
       colors: {
         primary: 'rgba(107, 114, 128, 0.15)',
         secondary: 'rgba(156, 163, 175, 0.12)',
@@ -193,7 +193,7 @@ export const defaultPatternConfig: OrganizationPatternConfig = {
       }
     },
     event: {
-      type: 'waves',
+      type: 'stripes',
       colors: {
         primary: 'rgba(107, 114, 128, 0.12)',
         secondary: 'rgba(156, 163, 175, 0.10)',
@@ -202,7 +202,7 @@ export const defaultPatternConfig: OrganizationPatternConfig = {
       }
     },
     facility: {
-      type: 'dots',
+      type: 'polkadot',
       colors: {
         primary: 'rgba(107, 114, 128, 0.10)',
         secondary: 'rgba(156, 163, 175, 0.08)',
@@ -220,7 +220,7 @@ export const defaultPatternConfig: OrganizationPatternConfig = {
       }
     },
     administrative: {
-      type: 'lines',
+      type: 'stripes',
       colors: {
         primary: 'rgba(107, 114, 128, 0.06)',
         secondary: 'rgba(156, 163, 175, 0.04)',

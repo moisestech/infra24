@@ -15,7 +15,16 @@ export async function GET(request: NextRequest) {
     const workshopId = searchParams.get('workshopId')
     const organizationId = searchParams.get('organizationId') || 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
 
-    const supabase = createClient()
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
     // Calculate date range
     let startDate: Date

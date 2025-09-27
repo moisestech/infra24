@@ -28,7 +28,16 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
     // Check if user has access to this organization
     const { data: membership } = await supabase
@@ -95,8 +104,8 @@ export async function POST(request: NextRequest) {
           workshop_id: workshopId,
           workshop_title: workshop.title,
           workshop_capacity: workshop.capacity,
-          workshop_instructor: workshop.artist_profiles?.name || null,
-          workshop_resource: workshop.resources?.title || null,
+          workshop_instructor: workshop.artist_profiles?.[0]?.name || null,
+          workshop_resource: workshop.resources?.[0]?.title || null,
           registration_open_at: workshop.registration_open_at,
           registration_close_at: workshop.registration_close_at,
           announcement_type: 'workshop_promotion'
@@ -117,8 +126,8 @@ export async function POST(request: NextRequest) {
         title: workshop.title,
         description: workshop.description,
         capacity: workshop.capacity,
-        instructor: workshop.artist_profiles?.name,
-        resource: workshop.resources?.title
+        instructor: workshop.artist_profiles?.[0]?.name,
+        resource: workshop.resources?.[0]?.title
       }
     }, { status: 201 })
   } catch (error) {
@@ -142,7 +151,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Organization ID required' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
     // Check if user has access to this organization
     const { data: membership } = await supabase

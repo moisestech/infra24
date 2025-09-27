@@ -271,7 +271,7 @@ export function ReactSelectField({
   const currentValue = watch(name)
 
   // Get organization theme colors with fallback
-  const themeColors = orgTheme?.themeColors
+  const themeColors = orgTheme?.theme?.colors
 
   // Fallback colors if themeColors is not available
   const fallbackColors = {
@@ -293,7 +293,7 @@ export function ReactSelectField({
     const orgStyles = {
       control: (provided: any, state: any) => ({
         ...provided,
-        backgroundColor: isDarkMode ? colors.cardBackground : '#ffffff',
+        backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
         borderColor: state.isFocused ? colors.primary : (isDarkMode ? '#374151' : '#d1d5db'),
         borderWidth: '1px',
         boxShadow: state.isFocused ? `0 0 0 1px ${colors.primary}` : 'none',
@@ -307,15 +307,15 @@ export function ReactSelectField({
       }),
       singleValue: (provided: any) => ({
         ...provided,
-        color: isDarkMode ? colors.textPrimary : '#111827'
+        color: isDarkMode ? '#ffffff' : '#111827'
       }),
       multiValue: (provided: any) => ({
         ...provided,
-        backgroundColor: colors.primaryLight
+        backgroundColor: colors.primary + '20'
       }),
       multiValueLabel: (provided: any) => ({
         ...provided,
-        color: colors.primaryDark
+        color: colors.primary
       }),
       multiValueRemove: (provided: any) => ({
         ...provided,
@@ -327,7 +327,7 @@ export function ReactSelectField({
       }),
       menu: (provided: any) => ({
         ...provided,
-        backgroundColor: isDarkMode ? colors.cardBackground : '#ffffff',
+        backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
         border: `1px solid ${colors.primary}`,
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
       }),
@@ -336,15 +336,15 @@ export function ReactSelectField({
         backgroundColor: state.isSelected 
           ? colors.primary 
           : state.isFocused 
-            ? colors.primaryLight 
+            ? colors.primary + '20' 
             : 'transparent',
         color: state.isSelected 
           ? '#ffffff' 
           : isDarkMode 
-            ? colors.textPrimary 
+            ? '#ffffff' 
             : '#111827',
         '&:hover': {
-          backgroundColor: state.isSelected ? colors.primary : colors.primaryLight
+          backgroundColor: state.isSelected ? colors.primary : colors.primary + '20'
         }
       }),
       indicatorSeparator: (provided: any) => ({
@@ -371,7 +371,7 @@ export function ReactSelectField({
       }),
       input: (provided: any) => ({
         ...provided,
-        color: isDarkMode ? colors.textPrimary : '#111827'
+        color: isDarkMode ? '#ffffff' : '#111827'
       }),
       menuList: (provided: any) => ({
         ...provided,

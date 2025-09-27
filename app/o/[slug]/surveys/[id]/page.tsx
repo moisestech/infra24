@@ -190,8 +190,8 @@ export default function SurveyPage() {
   const orgSlug = params.slug as string;
 
   return (
-    <OrganizationThemeProvider organizationSlug={orgSlug}>
-      <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+    <OrganizationThemeProvider initialSlug={orgSlug}>
+      <UnifiedNavigation config={ooliteConfig} userRole="admin" />
       <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
@@ -210,7 +210,7 @@ export default function SurveyPage() {
             <p className="text-gray-600 text-lg">{survey.description}</p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <Badge variant={survey.is_active ? 'success' : 'destructive'}>
+            <Badge variant={survey.is_active ? 'success' : 'error'}>
               {survey.is_active ? 'Active' : 'Inactive'}
             </Badge>
             <Badge variant="info">
@@ -225,7 +225,7 @@ export default function SurveyPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-gray-400" />
-                <span>Deadline: {formatDate(survey.submission_deadline)}</span>
+                <span>Deadline: {formatDate(survey.submission_deadline || null)}</span>
               </div>
               <div className="flex items-center gap-2">
                 {survey.is_public ? (

@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     if (eventStatsError) {
       console.error('Error fetching event analytics:', eventStatsError)
       // Fallback to manual queries if RPC function doesn't exist
-      return await getEventAnalyticsFallback(orgId, dateFrom, dateTo, eventType)
+      return await getEventAnalyticsFallback(orgId, dateFrom || undefined, dateTo || undefined, eventType || undefined)
     }
 
     // Get popular events
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
       popularEvents: popularEvents || [],
       eventTypeDistribution: processEventTypeDistribution(eventTypeDistribution || []),
       feedbackAnalytics: processFeedbackAnalytics(feedbackStats || []),
-      trends: await getEventTrends(orgId, dateFrom, dateTo)
+      trends: await getEventTrends(orgId, dateFrom || undefined, dateTo || undefined)
     }
 
     return NextResponse.json({

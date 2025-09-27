@@ -265,7 +265,7 @@ export function ThemeAwareSurveysPage() {
                           {survey.description}
                         </CardDescription>
                       </div>
-                      <Badge variant="secondary" className="ml-2">
+                      <Badge variant="info" className="ml-2">
                         {survey.category}
                       </Badge>
                     </div>
@@ -288,12 +288,12 @@ export function ThemeAwareSurveysPage() {
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-2">
                           {survey.submission_settings.allow_anonymous && (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="default" className="text-xs">
                               Anonymous
                             </Badge>
                           )}
                           {survey.submission_settings.require_authentication && (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="default" className="text-xs">
                               <Shield className="h-3 w-3 mr-1" />
                               Auth Required
                             </Badge>

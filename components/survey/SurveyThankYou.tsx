@@ -27,7 +27,7 @@ export function SurveyThankYou({
   let themeColors
   try {
     const orgTheme = useOrganizationTheme()
-    themeColors = orgTheme?.themeColors
+    themeColors = orgTheme?.theme?.colors
   } catch (error) {
     console.warn('OrganizationTheme not available, using fallback colors')
   }
@@ -44,6 +44,17 @@ export function SurveyThankYou({
     textSecondary: '#6b7280'
   }
   const colors = themeColors || fallbackColors
+  const safeColors = {
+    primary: colors.primary,
+    primaryLight: (colors as any).primaryLight || colors.primary + '20',
+    primaryDark: (colors as any).primaryDark || colors.primary,
+    secondary: (colors as any).secondary || colors.primary,
+    accent: (colors as any).accent || colors.primary,
+    background: (colors as any).background || '#ffffff',
+    cardBackground: (colors as any).cardBackground || '#ffffff',
+    textPrimary: (colors as any).textPrimary || '#111827',
+    textSecondary: (colors as any).textSecondary || '#6b7280'
+  }
 
   useEffect(() => {
     // Trigger confetti after a short delay
@@ -55,13 +66,13 @@ export function SurveyThankYou({
     <div 
       className={`min-h-screen ${className}`}
       style={{
-        background: `linear-gradient(135deg, ${colors.primaryLight} 0%, ${colors.background} 50%, ${colors.primaryLight} 100%)`
+        background: `linear-gradient(135deg, ${safeColors.primaryLight} 0%, ${safeColors.background} 50%, ${safeColors.primaryLight} 100%)`
       }}
     >
       {/* Confetti Effect */}
       {showConfetti && (
         <Confetti 
-          colors={[colors.primary, colors.secondary, colors.accent, "#10b981", "#f59e0b", "#ef4444"]}
+          colors={[safeColors.primary, safeColors.secondary, safeColors.accent, "#10b981", "#f59e0b", "#ef4444"]}
           particleCount={200}
           duration={4000}
         />
@@ -72,19 +83,19 @@ export function SurveyThankYou({
         <div 
           className="absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl animate-pulse"
           style={{
-            background: `linear-gradient(135deg, ${colors.primary}20 to ${colors.secondary}20)`
+            background: `linear-gradient(135deg, ${safeColors.primary}20 to ${safeColors.secondary}20)`
           }}
         ></div>
         <div 
           className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full blur-3xl animate-pulse delay-1000"
           style={{
-            background: `linear-gradient(45deg, ${colors.secondary}20 to ${colors.accent}20)`
+            background: `linear-gradient(45deg, ${safeColors.secondary}20 to ${safeColors.accent}20)`
           }}
         ></div>
         <div 
           className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-3xl animate-pulse delay-500"
           style={{
-            background: `linear-gradient(90deg, ${colors.primary}10 to ${colors.secondary}10)`
+            background: `linear-gradient(90deg, ${safeColors.primary}10 to ${safeColors.secondary}10)`
           }}
         ></div>
       </div>
@@ -156,14 +167,11 @@ export function SurveyThankYou({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <SparkleText 
-                text="Thank You!" 
-                className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent"
-                style={{
-                  background: `linear-gradient(90deg, ${colors.primary} via ${colors.secondary} to ${colors.primaryDark})`
-                }}
-                sparkleCount={5}
-              />
+                <SparkleText
+                  text="Thank You!"
+                  className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent"
+                  sparkleCount={5}
+                />
             </motion.div>
 
             <motion.div
@@ -184,7 +192,7 @@ export function SurveyThankYou({
           <motion.div
             className="relative overflow-hidden rounded-3xl p-8 text-white shadow-2xl"
             style={{
-              background: `linear-gradient(135deg, ${colors.primary} via ${colors.secondary} to ${colors.primaryDark})`
+              background: `linear-gradient(135deg, ${safeColors.primary} via ${safeColors.secondary} to ${safeColors.primaryDark})`
             }}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}

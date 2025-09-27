@@ -1,20 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase';
 import { OrganizationTheme, THEME_TEMPLATES } from '@/lib/themes';
 
 // GET /api/organizations/[orgId]/theme - Get organization theme
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params }: { params: Promise<{ orgId: string }> }
 ) {
   try {
-    const supabase = createClient();
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    );
     
     // Get organization theme from database
     const { data: organization, error } = await supabase
       .from('organizations')
       .select('id, slug, name, theme')
-      .eq('id', params.orgId)
+      .eq('id', (await params).orgId)
       .single();
 
     if (error) {
@@ -45,10 +54,19 @@ export async function GET(
 // PUT /api/organizations/[orgId]/theme - Update organization theme
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params }: { params: Promise<{ orgId: string }> }
 ) {
   try {
-    const supabase = createClient();
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    );
     const body = await request.json();
     
     // Validate theme data
@@ -58,7 +76,7 @@ export async function PUT(
 
     const theme: OrganizationTheme = {
       ...body.theme,
-      id: params.orgId,
+      id: (await params).orgId,
       updatedAt: new Date().toISOString(),
     };
 
@@ -69,7 +87,7 @@ export async function PUT(
         theme: theme,
         updated_at: new Date().toISOString()
       })
-      .eq('id', params.orgId)
+      .eq('id', (await params).orgId)
       .select()
       .single();
 
@@ -88,16 +106,25 @@ export async function PUT(
 // POST /api/organizations/[orgId]/theme/reset - Reset to default theme
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params }: { params: Promise<{ orgId: string }> }
 ) {
   try {
-    const supabase = createClient();
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    );
     
     // Get organization info
     const { data: organization, error: orgError } = await supabase
       .from('organizations')
       .select('id, slug, name')
-      .eq('id', params.orgId)
+      .eq('id', (await params).orgId)
       .single();
 
     if (orgError) {
@@ -122,7 +149,7 @@ export async function POST(
         theme: theme,
         updated_at: new Date().toISOString()
       })
-      .eq('id', params.orgId)
+      .eq('id', (await params).orgId)
       .select()
       .single();
 

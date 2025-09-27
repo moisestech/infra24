@@ -16,7 +16,7 @@ const supabase = createClient(
 // GET - Fetch event materials
 export async function GET(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -24,7 +24,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const eventId = params.eventId
+    const { eventId } = await params
 
     // Fetch event materials
     const { data: materials, error: materialsError } = await supabase
@@ -52,7 +52,7 @@ export async function GET(
 // POST - Create event material
 export async function POST(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -60,7 +60,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const eventId = params.eventId
+    const { eventId } = await params
     const body = await request.json()
     const { 
       title, 

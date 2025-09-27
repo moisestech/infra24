@@ -106,7 +106,7 @@ export function CourseCard({
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
               {getCategoryIcon(course.category)}
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="default" className="text-xs">
                 {course.category}
               </Badge>
               <Badge className={getLevelColor(course.level)}>
@@ -159,12 +159,12 @@ export function CourseCard({
         {course.tags && course.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
             {course.tags.slice(0, 3).map((tag, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
+              <Badge key={index} variant="info" className="text-xs">
                 {tag}
               </Badge>
             ))}
             {course.tags.length > 3 && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="info" className="text-xs">
                 +{course.tags.length - 3} more
               </Badge>
             )}

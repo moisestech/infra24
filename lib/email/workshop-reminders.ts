@@ -11,7 +11,16 @@ interface WorkshopReminderData {
  * Send workshop reminders to registered participants
  */
 export async function sendWorkshopReminders(data: WorkshopReminderData) {
-  const supabase = createClient()
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
   
   try {
     // Get workshop details
@@ -75,16 +84,16 @@ export async function sendWorkshopReminders(data: WorkshopReminderData) {
         const emailData = {
           to: userEmail,
           workshopTitle: workshop.title,
-          organizationName: workshop.organizations?.name || 'Organization',
+          organizationName: workshop.organizations?.[0]?.name || 'Organization',
           participantName: userName,
           workshopDescription: workshop.description,
-          workshopLocation: workshop.resources?.title,
+          workshopLocation: workshop.resources?.[0]?.title,
           maxParticipants: workshop.max_participants || 10,
           currentParticipants,
           language: 'en' as const,
           registrationId: registration.id,
           workshopId: data.workshopId,
-          organizationSlug: workshop.organizations?.slug || 'organization'
+          organizationSlug: workshop.organizations?.[0]?.slug || 'organization'
         }
 
         const emailResult = await sendWorkshopRegistrationEmail(emailData)
@@ -136,7 +145,16 @@ export async function sendWorkshopReminders(data: WorkshopReminderData) {
  * Schedule workshop reminders (to be called by a cron job or scheduled task)
  */
 export async function scheduleWorkshopReminders() {
-  const supabase = createClient()
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  )
   
   try {
     // Find workshops happening in the next 24 hours

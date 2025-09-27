@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
-import { BookingCalendar } from '@/components/booking/BookingCalendar';
+import { ResourceCalendar } from '@/components/booking/ResourceCalendar';
 import { BookingForm } from '@/components/booking/BookingForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,23 +13,27 @@ import { Plus, Calendar, Users, Clock, MapPin, X } from 'lucide-react';
 
 interface Booking {
   id: string;
+  resource_id: string;
   title: string;
   description?: string;
-  start_time: string;
-  end_time: string;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show';
+  start_time: Date;
+  end_time: Date;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  created_by_clerk_id: string;
+}
+
+interface Resource {
+  id: string;
+  title: string;
+  type: 'space' | 'equipment' | 'person';
   capacity: number;
-  current_participants: number;
-  price: number;
-  currency: string;
-  location?: string;
-  resource_type: 'workshop' | 'equipment' | 'space' | 'event';
-  resource_id: string;
+  organization_id: string;
 }
 
 function OoliteBookingsPageContent() {
   const { tenantId, tenantConfig, isLoading, error } = useTenant();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
@@ -43,85 +47,101 @@ function OoliteBookingsPageContent() {
   const fetchBookings = async () => {
     try {
       setLoading(true);
+      
+      // Mock resources data
+      const mockResources: Resource[] = [
+        {
+          id: 'vr-quest-3',
+          title: 'VR Headset - Oculus Quest 3',
+          type: 'equipment',
+          capacity: 1,
+          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
+        },
+        {
+          id: '3d-printer-prusa',
+          title: '3D Printer - Prusa i3 MK3S+',
+          type: 'equipment',
+          capacity: 1,
+          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
+        },
+        {
+          id: 'ar-hololens-2',
+          title: 'AR Development Station',
+          type: 'equipment',
+          capacity: 1,
+          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
+        },
+        {
+          id: 'mocap-system',
+          title: 'Motion Capture System',
+          type: 'equipment',
+          capacity: 1,
+          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
+        },
+        {
+          id: 'workstation-rtx4090',
+          title: 'High-End Workstation',
+          type: 'equipment',
+          capacity: 1,
+          organization_id: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'
+        }
+      ];
+      
       // Equipment booking mock data
       const mockBookings: Booking[] = [
         {
           id: '1',
           title: 'VR Headset - Oculus Quest 3',
           description: 'High-end VR headset for immersive experiences and 3D modeling',
-          start_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-          end_time: new Date(Date.now() + 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
+          start_time: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          end_time: new Date(Date.now() + 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000),
           status: 'confirmed',
-          capacity: 1,
-          current_participants: 1,
-          price: 15,
-          currency: 'USD',
-          location: 'XR Lab',
-          resource_type: 'equipment',
-          resource_id: 'vr-quest-3'
+          resource_id: 'vr-quest-3',
+          created_by_clerk_id: 'user_1'
         },
         {
           id: '2',
           title: '3D Printer - Prusa i3 MK3S+',
           description: 'Professional 3D printer for rapid prototyping and art creation',
-          start_time: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-          end_time: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000).toISOString(),
+          start_time: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+          end_time: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
           status: 'pending',
-          capacity: 1,
-          current_participants: 1,
-          price: 25,
-          currency: 'USD',
-          location: 'Fabrication Lab',
-          resource_type: 'equipment',
-          resource_id: '3d-printer-prusa'
+          resource_id: '3d-printer-prusa',
+          created_by_clerk_id: 'user_2'
         },
         {
           id: '3',
           title: 'AR Development Station',
           description: 'Complete AR development setup with HoloLens 2 and development tools',
-          start_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-          end_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000).toISOString(),
+          start_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+          end_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
           status: 'confirmed',
-          capacity: 1,
-          current_participants: 1,
-          price: 30,
-          currency: 'USD',
-          location: 'XR Lab',
-          resource_type: 'equipment',
-          resource_id: 'ar-hololens-2'
+          resource_id: 'ar-hololens-2',
+          created_by_clerk_id: 'user_3'
         },
         {
           id: '4',
           title: 'Motion Capture System',
           description: 'Professional motion capture equipment for animation and VR development',
-          start_time: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
-          end_time: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
-          status: 'available',
-          capacity: 1,
-          current_participants: 0,
-          price: 40,
-          currency: 'USD',
-          location: 'Motion Capture Studio',
-          resource_type: 'equipment',
-          resource_id: 'mocap-system'
+          start_time: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+          end_time: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000),
+          status: 'pending',
+          resource_id: 'mocap-system',
+          created_by_clerk_id: 'user_4'
         },
         {
           id: '5',
           title: 'High-End Workstation',
           description: 'Powerful workstation with RTX 4090 for AI art generation and 3D rendering',
-          start_time: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-          end_time: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000).toISOString(),
-          status: 'available',
-          capacity: 1,
-          current_participants: 0,
-          price: 20,
-          currency: 'USD',
-          location: 'Digital Lab',
-          resource_type: 'equipment',
-          resource_id: 'workstation-rtx4090'
+          start_time: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+          end_time: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000),
+          status: 'pending',
+          resource_id: 'workstation-rtx4090',
+          created_by_clerk_id: 'user_5'
         }
       ];
       
+      setResources(mockResources);
       setBookings(mockBookings);
     } catch (err) {
       console.error('Error fetching bookings:', err);
@@ -134,8 +154,14 @@ function OoliteBookingsPageContent() {
     setShowBookingForm(true);
   };
 
-  const handleBookingCreated = (booking: Booking) => {
-    setBookings(prev => [booking, ...prev]);
+  const handleBookingCreated = async (booking: Omit<Booking, 'id' | 'created_by_clerk_id'>) => {
+    // Create a new booking with a temporary ID
+    const newBooking: Booking = {
+      ...booking,
+      id: Date.now().toString(),
+      created_by_clerk_id: 'temp-user'
+    };
+    setBookings(prev => [newBooking, ...prev]);
     setShowBookingForm(false);
   };
 
@@ -187,7 +213,7 @@ function OoliteBookingsPageContent() {
           </div>
 
           {/* Equipment Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -220,7 +246,7 @@ function OoliteBookingsPageContent() {
                   <div>
                     <p className="text-sm font-medium text-gray-600">Available Now</p>
                     <p className="text-2xl font-bold">
-                      {bookings.filter(b => b.status === 'available').length}
+                      {bookings.filter(b => b.status === 'pending').length}
                     </p>
                   </div>
                   <Clock className="w-8 h-8 text-yellow-600" />
@@ -228,19 +254,6 @@ function OoliteBookingsPageContent() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Hourly Rate Range</p>
-                    <p className="text-2xl font-bold">
-                      ${Math.min(...bookings.map(b => b.price))}-${Math.max(...bookings.map(b => b.price))}
-                    </p>
-                  </div>
-                  <MapPin className="w-8 h-8 text-purple-600" />
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Booking Form Modal */}
@@ -259,8 +272,8 @@ function OoliteBookingsPageContent() {
                     </Button>
                   </div>
                   <BookingForm
-                    organizationId="oolite"
-                    onBookingCreated={handleBookingCreated}
+                    resources={resources}
+                    onSubmit={handleBookingCreated}
                     onCancel={() => setShowBookingForm(false)}
                   />
                 </div>
@@ -269,13 +282,12 @@ function OoliteBookingsPageContent() {
           )}
 
           {/* Booking Calendar */}
-          <BookingCalendar
-            organizationId="oolite"
-            bookings={bookings}
-            onBookingClick={handleBookingClick}
-            onCreateBooking={handleCreateBooking}
-            className="mb-8"
-          />
+          <div className="mb-8">
+            <ResourceCalendar
+              orgId="caf2bc8b-8547-4c55-ac9f-5692e93bd831"
+              onBookingCreate={handleBookingCreated}
+            />
+          </div>
 
           {/* Selected Booking Details */}
           {selectedBooking && (
@@ -303,19 +315,6 @@ function OoliteBookingsPageContent() {
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-gray-500" />
-                        <span className="text-sm">
-                          {selectedBooking.current_participants}/{selectedBooking.capacity} participants
-                        </span>
-                      </div>
-                      
-                      {selectedBooking.location && (
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-gray-500" />
-                          <span className="text-sm">{selectedBooking.location}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
                   
@@ -328,13 +327,6 @@ function OoliteBookingsPageContent() {
                       }>
                         {selectedBooking.status}
                       </Badge>
-                      <Badge variant="default">
-                        {selectedBooking.resource_type}
-                      </Badge>
-                    </div>
-                    
-                    <div className="text-lg font-semibold">
-                      ${selectedBooking.price} {selectedBooking.currency}
                     </div>
                     
                     <div className="flex gap-2">

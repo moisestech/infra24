@@ -23,7 +23,7 @@ export function SurveyProgress({
   let themeColors
   try {
     const orgTheme = useOrganizationTheme()
-    themeColors = orgTheme?.themeColors
+    themeColors = orgTheme?.theme?.colors
   } catch (error) {
     console.warn('OrganizationTheme not available, using fallback colors')
   }
@@ -39,6 +39,14 @@ export function SurveyProgress({
   }
 
   const colors = themeColors || fallbackColors
+  const safeColors = {
+    primary: colors.primary,
+    primaryLight: (colors as any).primaryLight || colors.primary + '20',
+    primaryDark: (colors as any).primaryDark || colors.primary,
+    textPrimary: (colors as any).textPrimary || '#111827',
+    textSecondary: (colors as any).textSecondary || '#6b7280',
+    cardBackground: (colors as any).cardBackground || '#ffffff'
+  }
   const progressPercentage = ((currentStep + 1) / totalSteps) * 100
 
   // For many steps (>8), show a compact version
@@ -48,19 +56,19 @@ export function SurveyProgress({
         {/* Progress Bar */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium" style={{ color: colors.textPrimary }}>
+            <span className="text-sm font-medium" style={{ color: safeColors.textPrimary || '#111827' }}>
               Step {currentStep + 1} of {totalSteps}
             </span>
-            <span className="text-sm" style={{ color: colors.textSecondary }}>
+            <span className="text-sm" style={{ color: safeColors.textSecondary || '#6b7280' }}>
               {Math.round(progressPercentage)}% complete
             </span>
           </div>
           
-          <div className="w-full rounded-full h-2" style={{ backgroundColor: colors.primaryLight }}>
+          <div className="w-full rounded-full h-2" style={{ backgroundColor: safeColors.primaryLight || safeColors.primary + '20' }}>
             <motion.div
               className="h-2 rounded-full"
               style={{ 
-                background: `linear-gradient(90deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`
+                background: `linear-gradient(90deg, ${safeColors.primary} 0%, ${safeColors.primaryDark || safeColors.primary} 100%)`
               }}
               initial={{ width: 0 }}
               animate={{ width: `${progressPercentage}%` }}
@@ -87,15 +95,15 @@ export function SurveyProgress({
                     >
                       <CheckCircle 
                         className="w-5 h-5" 
-                        style={{ color: colors.primary }}
+                        style={{ color: safeColors.primary }}
                       />
                     </motion.div>
                   ) : (
                     <Circle 
                       className={cn("w-5 h-5")}
                       style={{
-                        color: isCurrent ? colors.primary : colors.primaryLight,
-                        fill: isCurrent ? colors.primary : 'transparent'
+                        color: isCurrent ? safeColors.primary : safeColors.primaryLight || safeColors.primary + '20',
+                        fill: isCurrent ? safeColors.primary : 'transparent'
                       }}
                     />
                   )}
@@ -104,7 +112,7 @@ export function SurveyProgress({
                   {isCurrent && (
                     <motion.div
                       className="absolute inset-0 rounded-full opacity-20"
-                      style={{ backgroundColor: colors.primary }}
+                      style={{ backgroundColor: safeColors.primary }}
                       animate={{ scale: [1, 1.5, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
@@ -115,7 +123,7 @@ export function SurveyProgress({
                   <div 
                     className="text-xs font-medium"
                     style={{ 
-                      color: isCurrent || isCompleted ? colors.textPrimary : colors.textSecondary 
+                      color: isCurrent || isCompleted ? safeColors.textPrimary || '#111827' : safeColors.textSecondary || '#6b7280' 
                     }}
                   >
                     {label.length > 8 ? label.substring(0, 8) + '...' : label}
@@ -129,13 +137,13 @@ export function SurveyProgress({
           <div className="flex flex-col items-center">
             <div 
               className="w-5 h-5 rounded-full flex items-center justify-center text-xs"
-              style={{ backgroundColor: colors.primaryLight }}
+              style={{ backgroundColor: safeColors.primaryLight || safeColors.primary + '20' }}
             >
               ...
             </div>
             <div 
               className="mt-1 text-xs font-medium"
-              style={{ color: colors.textSecondary }}
+              style={{ color: safeColors.textSecondary || '#6b7280' }}
             >
               {currentStep + 1} of {totalSteps}
             </div>
@@ -158,15 +166,15 @@ export function SurveyProgress({
                     >
                       <CheckCircle 
                         className="w-5 h-5" 
-                        style={{ color: colors.primary }}
+                        style={{ color: safeColors.primary }}
                       />
                     </motion.div>
                   ) : (
                     <Circle 
                       className={cn("w-5 h-5")}
                       style={{
-                        color: isCurrent ? colors.primary : colors.primaryLight,
-                        fill: isCurrent ? colors.primary : 'transparent'
+                        color: isCurrent ? safeColors.primary : safeColors.primaryLight || safeColors.primary + '20',
+                        fill: isCurrent ? safeColors.primary : 'transparent'
                       }}
                     />
                   )}
@@ -175,7 +183,7 @@ export function SurveyProgress({
                   {isCurrent && (
                     <motion.div
                       className="absolute inset-0 rounded-full opacity-20"
-                      style={{ backgroundColor: colors.primary }}
+                      style={{ backgroundColor: safeColors.primary }}
                       animate={{ scale: [1, 1.5, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
@@ -186,7 +194,7 @@ export function SurveyProgress({
                   <div 
                     className="text-xs font-medium"
                     style={{ 
-                      color: isCurrent || isCompleted ? colors.textPrimary : colors.textSecondary 
+                      color: isCurrent || isCompleted ? safeColors.textPrimary || '#111827' : safeColors.textSecondary || '#6b7280' 
                     }}
                   >
                     {label.length > 8 ? label.substring(0, 8) + '...' : label}
@@ -206,19 +214,19 @@ export function SurveyProgress({
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium" style={{ color: colors.textPrimary }}>
+          <span className="text-sm font-medium" style={{ color: safeColors.textPrimary || '#111827' }}>
             Step {currentStep + 1} of {totalSteps}
           </span>
-          <span className="text-sm" style={{ color: colors.textSecondary }}>
+          <span className="text-sm" style={{ color: safeColors.textSecondary || '#6b7280' }}>
             {Math.round(progressPercentage)}% complete
           </span>
         </div>
         
-        <div className="w-full rounded-full h-2" style={{ backgroundColor: colors.primaryLight }}>
+        <div className="w-full rounded-full h-2" style={{ backgroundColor: safeColors.primaryLight || safeColors.primary + '20' }}>
           <motion.div
             className="h-2 rounded-full"
             style={{ 
-              background: `linear-gradient(90deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)`
+              background: `linear-gradient(90deg, ${safeColors.primary} 0%, ${safeColors.primaryDark || safeColors.primary} 100%)`
             }}
             initial={{ width: 0 }}
             animate={{ width: `${progressPercentage}%` }}
@@ -241,7 +249,7 @@ export function SurveyProgress({
                   <div 
                     className="w-8 h-0.5 mx-2"
                     style={{
-                      backgroundColor: isCompleted ? colors.primary : colors.primaryLight
+                      backgroundColor: isCompleted ? safeColors.primary : safeColors.primaryLight || safeColors.primary + '20'
                     }}
                   />
                 )}
@@ -256,15 +264,15 @@ export function SurveyProgress({
                     >
                       <CheckCircle 
                         className="w-6 h-6" 
-                        style={{ color: colors.primary }}
+                        style={{ color: safeColors.primary }}
                       />
                     </motion.div>
                   ) : (
                     <Circle 
                       className="w-6 h-6"
                       style={{
-                        color: isCurrent ? colors.primary : colors.primaryLight,
-                        fill: isCurrent ? colors.primary : 'transparent'
+                        color: isCurrent ? safeColors.primary : safeColors.primaryLight || safeColors.primary + '20',
+                        fill: isCurrent ? safeColors.primary : 'transparent'
                       }}
                     />
                   )}
@@ -273,7 +281,7 @@ export function SurveyProgress({
                   {isCurrent && (
                     <motion.div
                       className="absolute inset-0 rounded-full opacity-20"
-                      style={{ backgroundColor: colors.primary }}
+                      style={{ backgroundColor: safeColors.primary }}
                       animate={{ scale: [1, 1.5, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
@@ -286,7 +294,7 @@ export function SurveyProgress({
                 <div 
                   className="text-xs font-medium"
                   style={{ 
-                    color: isCurrent || isCompleted ? colors.textPrimary : colors.textSecondary 
+                    color: isCurrent || isCompleted ? safeColors.textPrimary || '#111827' : safeColors.textSecondary || '#6b7280' 
                   }}
                 >
                   {label}
@@ -294,7 +302,7 @@ export function SurveyProgress({
                 {isCurrent && (
                   <div 
                     className="text-xs font-medium"
-                    style={{ color: colors.primary }}
+                    style={{ color: safeColors.primary }}
                   >
                     Current
                   </div>

@@ -12,7 +12,7 @@ import { UnifiedNavigation, ooliteConfig } from '@/components/navigation'
 interface Resource {
   id: string
   title: string
-  type: string
+  type: 'space' | 'equipment' | 'person'
   capacity: number
   organization_id: string
 }
@@ -23,8 +23,9 @@ interface Booking {
   start_time: Date
   end_time: Date
   title: string
-  user_id: string
+  description?: string
   status: 'pending' | 'confirmed' | 'cancelled'
+  created_by_clerk_id: string
 }
 
 export default function AdminCalendarPage() {
@@ -64,7 +65,7 @@ export default function AdminCalendarPage() {
     }
   }
 
-  const handleBookingCreate = async (booking: Omit<Booking, 'id' | 'user_id'>) => {
+  const handleBookingCreate = async (booking: Omit<Booking, 'id' | 'created_by_clerk_id'>) => {
     try {
       const response = await fetch('/api/bookings', {
         method: 'POST',
@@ -75,7 +76,7 @@ export default function AdminCalendarPage() {
           organizationId: 'caf2bc8b-8547-4c55-ac9f-5692e93bd831',
           resourceId: booking.resource_id,
           title: booking.title,
-          description: booking.description,
+          description: booking.description || '',
           startTime: booking.start_time.toISOString(),
           endTime: booking.end_time.toISOString(),
           status: booking.status
@@ -108,7 +109,7 @@ export default function AdminCalendarPage() {
         },
         body: JSON.stringify({
           title: booking.title,
-          description: booking.description,
+          description: booking.description || '',
           startTime: booking.start_time.toISOString(),
           endTime: booking.end_time.toISOString(),
           status: booking.status

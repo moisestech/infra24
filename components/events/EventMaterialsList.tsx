@@ -139,7 +139,7 @@ export function EventMaterialsList({
             <File className="w-5 h-5" />
             Event Materials
             {materials.length > maxItems && (
-              <Badge variant="secondary" className="ml-2">
+              <Badge variant="info" className="ml-2">
                 {materials.length} total
               </Badge>
             )}

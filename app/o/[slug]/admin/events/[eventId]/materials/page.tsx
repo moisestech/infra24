@@ -161,7 +161,7 @@ export default function EventMaterialsPage() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Badge variant={event.event_type === 'workshop' ? 'default' : 'secondary'}>
+            <Badge variant={event.event_type === 'workshop' ? 'default' : 'info'}>
               {event.event_type}
             </Badge>
             {event.featured && (

@@ -5,7 +5,7 @@ import { generateWorkshopICS, generateWorkshopRegistrationICS, createWorkshopEve
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -13,7 +13,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id: workshopId } = params
+    const { id: workshopId } = await params
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') || 'workshop' // 'workshop', 'registration', 'cancellation'
     const registrationId = searchParams.get('registrationId')
@@ -22,7 +22,16 @@ export async function GET(
       return NextResponse.json({ error: 'Workshop ID required' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
     // Get workshop details
     const { data: workshop, error: workshopError } = await supabase
@@ -112,7 +121,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -120,7 +129,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { id: workshopId } = params
+    const { id: workshopId } = await params
     const body = await request.json()
     const { registrationId, type = 'registration' } = body
 
@@ -128,7 +137,16 @@ export async function POST(
       return NextResponse.json({ error: 'Workshop ID required' }, { status: 400 })
     }
 
-    const supabase = createClient()
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    )
 
     // Get workshop details
     const { data: workshop, error: workshopError } = await supabase

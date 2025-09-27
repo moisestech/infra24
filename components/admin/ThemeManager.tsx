@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/Badge';
 import { Palette, Save, RotateCcw, Eye } from 'lucide-react';
 import { OrganizationTheme, THEME_TEMPLATES, generateThemeCSS } from '@/lib/themes';
 import { toast } from 'sonner';
@@ -273,7 +273,7 @@ export function ThemeManager({ organizationId, organizationSlug, organizationNam
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold">{template.name}</h3>
-                          <Badge variant="secondary">{slug}</Badge>
+                          <Badge variant="info">{slug}</Badge>
                         </div>
                         <div className="flex gap-2">
                           <div

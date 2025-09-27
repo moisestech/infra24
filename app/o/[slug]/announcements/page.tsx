@@ -745,7 +745,7 @@ export default function OrganizationAnnouncementsPage() {
                                           </span>
                                           {isAdmin && (
                                             <button
-                                              onClick={() => handleEditEndDate(announcement.id, announcement.end_date)}
+                                              onClick={() => handleEditEndDate(announcement.id, announcement.end_date || undefined)}
                                               className="text-blue-600 hover:text-blue-500 text-xs font-medium"
                                             >
                                               Edit
@@ -798,7 +798,7 @@ export default function OrganizationAnnouncementsPage() {
                                       </span>
                                       {isAdmin && (
                                         <button
-                                          onClick={() => handleEditEndDate(announcement.id, announcement.end_date)}
+                                          onClick={() => handleEditEndDate(announcement.id, announcement.end_date || undefined)}
                                           className="text-blue-600 hover:text-blue-500 text-xs font-medium"
                                         >
                                           Edit

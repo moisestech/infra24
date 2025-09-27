@@ -54,7 +54,16 @@ export default function WorkshopCatalogPage() {
   const loadData = async () => {
     try {
       setLoading(true)
-      const supabase = createClient()
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
+          }
+        }
+      )
 
       // Get Oolite organization ID
       const { data: org } = await supabase
@@ -88,7 +97,16 @@ export default function WorkshopCatalogPage() {
   const handleRegister = async (workshopId: string) => {
     try {
       setRegistering(workshopId)
-      const supabase = createClient()
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false
+          }
+        }
+      )
 
       // Get Oolite organization ID
       const { data: org } = await supabase

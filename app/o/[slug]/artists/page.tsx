@@ -102,14 +102,14 @@ export default function ArtistsPage() {
   const filteredArtists = artists.filter(artist => {
     const matchesSearch = artist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (artist.bio && artist.bio.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStudioType = !studioTypeFilter || artist.metadata?.residency_type === studioTypeFilter;
-    const matchesStudioNumber = !studioNumberFilter || artist.metadata?.studio === studioNumberFilter;
+    const matchesStudioType = !studioTypeFilter || artist.studio_type === studioTypeFilter;
+    const matchesStudioNumber = !studioNumberFilter || artist.studio_number === studioNumberFilter;
     
     return matchesSearch && matchesStudioType && matchesStudioNumber;
   });
 
-  const uniqueStudioTypes = [...new Set(artists.map(artist => artist.metadata?.residency_type).filter(Boolean))];
-  const uniqueStudioNumbers = [...new Set(artists.map(artist => artist.metadata?.studio).filter(Boolean))];
+  const uniqueStudioTypes = [...new Set(artists.map(artist => artist.studio_type).filter(Boolean))];
+  const uniqueStudioNumbers = [...new Set(artists.map(artist => artist.studio_number).filter(Boolean))];
 
   const getStudioTypeIcon = (studioType: string) => {
     const IconComponent = studioTypeIcons[studioType as keyof typeof studioTypeIcons] || User;
@@ -253,12 +253,12 @@ export default function ArtistsPage() {
                 )}
                 
                 {/* Studio Type Badge */}
-                {artist.metadata?.residency_type && (
+                {artist.studio_type && (
                   <div className="absolute top-3 right-3">
-                    <Badge className={`${getStudioTypeColor(artist.metadata.residency_type)} flex items-center space-x-1`}>
-                      {getStudioTypeIcon(artist.metadata.residency_type)}
+                    <Badge className={`${getStudioTypeColor(artist.studio_type)} flex items-center space-x-1`}>
+                      {getStudioTypeIcon(artist.studio_type)}
                       <span className="text-xs font-medium">
-                        {artist.metadata.residency_type}
+                        {artist.studio_type}
                       </span>
                     </Badge>
                   </div>
@@ -271,9 +271,9 @@ export default function ArtistsPage() {
                   {artist.name}
                 </h3>
                 
-                {artist.metadata?.studio && (
+                {artist.studio_number && (
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    Studio: {artist.metadata.studio}
+                    Studio: {artist.studio_number}
                   </p>
                 )}
                 
@@ -283,41 +283,7 @@ export default function ArtistsPage() {
                   </p>
                 )}
 
-                {/* Skills */}
-                {artist.skills && artist.skills.length > 0 && (
-                  <div className="mb-2">
-                    <div className="flex flex-wrap gap-1">
-                      {artist.skills.slice(0, 3).map((skill, index) => (
-                        <span key={index} className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
-                          {skill}
-                        </span>
-                      ))}
-                      {artist.skills.length > 3 && (
-                        <span className="inline-block px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
-                          +{artist.skills.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
 
-                {/* Contact Info */}
-                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
-                  {artist.website && (
-                    <div className="flex items-center">
-                      <Globe className="h-3 w-3 mr-1" />
-                      <a href={artist.website} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 dark:hover:text-blue-400 truncate">
-                        Website
-                      </a>
-                    </div>
-                  )}
-                  {artist.instagram && (
-                    <div className="flex items-center">
-                      <span className="mr-1">📷</span>
-                      <span className="truncate">{artist.instagram}</span>
-                    </div>
-                  )}
-                </div>
 
                 {/* Actions */}
                 <div className="flex items-center justify-between">

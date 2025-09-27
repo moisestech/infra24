@@ -15,7 +15,7 @@ const supabase = createClient(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -23,7 +23,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const workshopId = params.id
+    const { id: workshopId } = await params
 
     // Get workshop details
     const { data: workshop, error: workshopError } = await supabase
@@ -62,7 +62,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -70,7 +70,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const workshopId = params.id
+    const { id: workshopId } = await params
     const body = await request.json()
 
     // Get workshop details first to check organization
@@ -130,7 +130,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -138,7 +138,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const workshopId = params.id
+    const { id: workshopId } = await params
 
     // Get workshop details first to check organization
     const { data: existingWorkshop, error: workshopError } = await supabase

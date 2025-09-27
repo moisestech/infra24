@@ -4,7 +4,7 @@ import { Button, ButtonProps } from '@/components/ui/button';
 import { useOrganizationTheme } from '@/components/carousel/OrganizationThemeContext';
 import { cn } from '@/lib/utils';
 
-interface ThemeButtonProps extends ButtonProps {
+interface ThemeButtonProps extends Omit<ButtonProps, 'variant'> {
   variant?: 'primary' | 'secondary' | 'accent' | 'default' | 'destructive' | 'outline' | 'ghost' | 'link';
 }
 

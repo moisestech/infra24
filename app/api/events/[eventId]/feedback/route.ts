@@ -16,7 +16,7 @@ const supabase = createClient(
 // GET - Fetch event feedback
 export async function GET(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -24,7 +24,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const eventId = params.eventId
+    const { eventId } = await params
     const { searchParams } = new URL(request.url)
     const sessionId = searchParams.get('sessionId')
 
@@ -61,7 +61,7 @@ export async function GET(
 // POST - Create event feedback
 export async function POST(
   request: NextRequest,
-  { params }: { params: { eventId: string } }
+  { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
     const { userId } = await auth()
@@ -69,7 +69,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const eventId = params.eventId
+    const { eventId } = await params
     const body = await request.json()
     const { 
       sessionId,
