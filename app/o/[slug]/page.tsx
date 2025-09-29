@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useParams } from 'next/navigation'
-import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap } from 'lucide-react'
+import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap, Copy, Check } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 import { MiniAnalyticsWidget } from '@/components/analytics/WorkshopAnalyticsWidget'
+import { PageFooter } from '@/components/common/PageFooter'
 
 interface Organization {
   id: string
@@ -70,8 +71,10 @@ export default function OrganizationPage() {
   const [userCount, setUserCount] = useState(0)
   const [staffCount, setStaffCount] = useState(0)
   const [artistCount, setArtistCount] = useState(0)
+  const [surveyCount, setSurveyCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [userRole, setUserRole] = useState('')
+  const [copiedId, setCopiedId] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadData() {
@@ -193,6 +196,18 @@ export default function OrganizationPage() {
           setArtistCount(0)
         }
 
+        // Get survey count for all users (public information)
+        try {
+          const surveysResponse = await fetch(`/api/organizations/by-slug/${slug}/surveys`)
+          if (surveysResponse.ok) {
+            const surveysData = await surveysResponse.json()
+            setSurveyCount(surveysData.surveys?.length || 0)
+          }
+        } catch (error) {
+          console.log('Failed to fetch survey count:', error)
+          setSurveyCount(0)
+        }
+
       } catch (error) {
         console.error('Error loading organization data:', error)
       } finally {
@@ -242,6 +257,30 @@ export default function OrganizationPage() {
           </div>
         </div>
       </div>
+    )
+  }
+
+  const copyAnnouncementId = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id)
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 2000)
+    } catch (error) {
+      console.error('Failed to copy ID:', error)
+    }
+  }
+
+  const isSurveyAnnouncement = (announcement: Announcement) => {
+    const title = announcement.title.toLowerCase()
+    const content = announcement.content?.toLowerCase() || ''
+    const metadata = announcement.metadata || {}
+    
+    return (
+      title.includes('survey') ||
+      content.includes('survey') ||
+      metadata.survey_type ||
+      metadata.call_to_action === 'Take Survey' ||
+      metadata.action_url?.includes('/surveys')
     )
   }
 
@@ -340,12 +379,12 @@ export default function OrganizationPage() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 xl:gap-4 2xl:gap-5 3xl:gap-6">
             <a
               href={`/o/${organization.slug}/announcements`}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 group"
             >
               <div className="flex items-center">
-                <Bell className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-blue-600 dark:text-blue-400 mr-2" />
+                <Bell className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-blue-600 dark:text-blue-400 mr-2 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Announcements</p>
+                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">Announcements</p>
                   <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-gray-500 dark:text-gray-400">{recentAnnouncements.length} active</p>
                 </div>
               </div>
@@ -367,36 +406,37 @@ export default function OrganizationPage() {
 
             <a
               href={`/o/${organization.slug}/artists`}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-200 group"
             >
               <div className="flex items-center">
-                <ArtistIcon organization={organization} className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-purple-600 dark:text-purple-400 mr-2" />
+                <ArtistIcon organization={organization} className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-purple-600 dark:text-purple-400 mr-2 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Artists</p>
+                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors">Artists</p>
                 </div>
               </div>
             </a>
 
             <a
               href={`/o/${organization.slug}/map`}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-200 group"
             >
               <div className="flex items-center">
-                <MapPin className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-orange-600 dark:text-orange-400 mr-2" />
+                <MapPin className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-orange-600 dark:text-orange-400 mr-2 group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Interactive Map</p>
+                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors">Interactive Map</p>
                 </div>
               </div>
             </a>
 
             <a
               href={`/o/${organization.slug}/surveys`}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-200 group"
             >
               <div className="flex items-center">
-                <ClipboardList className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-indigo-600 dark:text-indigo-400 mr-2" />
+                <ClipboardList className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-indigo-600 dark:text-indigo-400 mr-2 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Surveys</p>
+                  <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors">Surveys</p>
+                  <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-gray-500 dark:text-gray-400">{surveyCount} available</p>
                 </div>
               </div>
             </a>
@@ -514,8 +554,9 @@ export default function OrganizationPage() {
                     }) : null
                   }
                   
-                  // Check if this is a high priority survey announcement
-                  const isHighPrioritySurvey = announcement.title.toLowerCase().includes('survey') && 
+                  // Check if this is a survey announcement using improved detection
+                  const isSurveyAnn = isSurveyAnnouncement(announcement)
+                  const isHighPrioritySurvey = isSurveyAnn && 
                     (announcement.priority === 'high' || announcement.title.toLowerCase().includes('urgent') || announcement.title.toLowerCase().includes('important'))
                   
                   // Generate Unsplash image based on announcement type
@@ -531,10 +572,10 @@ export default function OrganizationPage() {
                   return (
                     <div 
                       key={announcement.id} 
-                      className={`rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow cursor-pointer group ${
+                      className={`rounded-lg shadow-sm border overflow-hidden hover:shadow-lg hover:scale-[1.02] transition-all duration-200 cursor-pointer group ${
                         isHighPrioritySurvey 
-                          ? 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700' 
-                          : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                          ? 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-700 hover:border-yellow-300 dark:hover:border-yellow-600' 
+                          : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
                       }`}
                     >
                       <a 
@@ -577,7 +618,7 @@ export default function OrganizationPage() {
                         <div className="flex-1 p-3">
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-900 dark:text-white mb-1 text-sm truncate">
+                              <h3 className="font-medium text-gray-900 dark:text-white mb-1 text-sm truncate group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
                                 {announcement.title}
                               </h3>
               <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
@@ -597,18 +638,43 @@ export default function OrganizationPage() {
                                   </span>
                                 )}
                                 <span>{new Date(announcement.created_at).toLocaleDateString()}</span>
+                                {announcement.end_date && (
+                                  <span className="text-orange-600 dark:text-orange-400">
+                                    Ends: {new Date(announcement.end_date).toLocaleDateString()}
+                                  </span>
+                                )}
                               </div>
                             </div>
-                            <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ml-2">
-                              <Eye className="h-4 w-4" />
-                            </button>
+                            <div className="flex items-center space-x-1 ml-2">
+                              {/* Dev-only copy ID button */}
+                              {process.env.NODE_ENV === 'development' && (
+                                <button 
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    copyAnnouncementId(announcement.id)
+                                  }}
+                                  className="p-1 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                  title="Copy Announcement ID"
+                                >
+                                  {copiedId === announcement.id ? (
+                                    <Check className="h-4 w-4 text-green-600" />
+                                  ) : (
+                                    <Copy className="h-4 w-4" />
+                                  )}
+                                </button>
+                              )}
+                              <button className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                                <Eye className="h-4 w-4" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
                       </a>
                       
                       {/* Survey Action Button */}
-                      {announcement.title.toLowerCase().includes('survey') && (
+                      {isSurveyAnn && (
                         <div className="px-3 pb-3">
                           <a
                             href="/o/oolite/surveys"
@@ -662,6 +728,14 @@ export default function OrganizationPage() {
             <MiniAnalyticsWidget organizationId={organization.id} />
           </div>
         )}
+
+        {/* Page Footer */}
+        <PageFooter 
+          organizationSlug={slug}
+          showGetStarted={true}
+          showGuidelines={true}
+          showTerms={true}
+        />
       </div>
       </div>
     </div>

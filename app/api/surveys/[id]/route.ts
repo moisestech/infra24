@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { getSupabaseAdmin } from '@/lib/supabase'
 
 // GET /api/surveys/[id] - Get specific survey
 export async function GET(
@@ -12,7 +12,9 @@ export async function GET(
     console.log('🔍 API Route: /api/surveys/[id] - Starting request for survey:', id)
 
     // Get survey details
-    const { data: survey, error: surveyError } = await supabaseAdmin
+    const supabaseAdmin = getSupabaseAdmin()
+
+    const { data: $2, error: $3 } = await supabaseAdmin
       .from('submission_forms')
       .select(`
         id,

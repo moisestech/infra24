@@ -1,17 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET(
   request: NextRequest,
@@ -27,6 +16,8 @@ export async function GET(
 
     const { slug } = await params;
     console.log('📍 Requested slug:', slug);
+
+    const supabase = createClient();
 
     // Get the organization by slug
     console.log('🏢 Looking up organization with slug:', slug);

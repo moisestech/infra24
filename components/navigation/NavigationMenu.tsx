@@ -27,9 +27,9 @@ export function NavigationMenu({
   }
 
   const getItemStyles = (item: NavigationItem, isActiveItem: boolean) => {
-    const baseStyles = "flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors"
+    const baseStyles = "flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors group"
     const activeStyles = "text-white"
-    const inactiveStyles = "text-gray-700 dark:text-gray-300 hover:text-white hover:bg-opacity-80"
+    const inactiveStyles = "text-gray-700 dark:text-gray-300 hover:bg-opacity-10"
     
     if (item.disabled) {
       return `${baseStyles} text-gray-400 dark:text-gray-600 cursor-not-allowed`
@@ -59,6 +59,18 @@ export function NavigationMenu({
             className={getItemStyles(item, isActiveItem)}
             style={{
               backgroundColor: isActiveItem ? colors.primary : 'transparent',
+            }}
+            onMouseEnter={(e) => {
+              if (!isActiveItem && !item.disabled) {
+                e.currentTarget.style.backgroundColor = colors.primary
+                e.currentTarget.style.color = 'white'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActiveItem && !item.disabled) {
+                e.currentTarget.style.backgroundColor = 'transparent'
+                e.currentTarget.style.color = ''
+              }
             }}
             onClick={(e) => {
               if (item.disabled) {

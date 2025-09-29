@@ -7,7 +7,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
-const OOLITE_ORG_ID = '73339522-c672-40ac-a464-e027e9c99d13'
+const OOLITE_ORG_ID = 'e5c13761-bb53-4b74-94ef-aa08de38bdaf'
 
 async function seedDemoData() {
   console.log('🌱 Seeding demo booking data for Oolite Arts...')

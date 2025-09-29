@@ -243,7 +243,7 @@ export default function AdminCalendarPage() {
           <CardContent>
             {resources.length > 0 ? (
               <ResourceCalendar
-                orgId="caf2bc8b-8547-4c55-ac9f-5692e93bd831"
+                orgId="2133fe94-fb12-41f8-ab37-ea4acd4589f6"
                 onBookingCreate={handleBookingCreate}
                 onBookingUpdate={handleBookingUpdate}
                 onBookingDelete={handleBookingDelete}

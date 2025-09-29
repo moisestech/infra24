@@ -44,10 +44,22 @@ export function AdminTools({
     <div className={`relative ${className}`} ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-white hover:bg-opacity-80 transition-colors"
+        className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
         style={{
           backgroundColor: isOpen ? colors.primary : 'transparent',
           color: isOpen ? 'white' : undefined,
+        }}
+        onMouseEnter={(e) => {
+          if (!isOpen) {
+            e.currentTarget.style.backgroundColor = colors.primary
+            e.currentTarget.style.color = 'white'
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isOpen) {
+            e.currentTarget.style.backgroundColor = 'transparent'
+            e.currentTarget.style.color = ''
+          }
         }}
       >
         <Shield className="w-4 h-4 mr-2" />

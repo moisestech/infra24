@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { getSupabaseAdmin } from '@/lib/supabase'
 import { z } from 'zod'
 
 const subscribeSchema = z.object({
@@ -19,6 +19,8 @@ export async function POST(request: NextRequest) {
     console.log('📧 Processing email subscription:', { email, source, organization_id })
 
     // Check if email already exists
+    const supabaseAdmin = getSupabaseAdmin()
+
     const { data: existingSubscription, error: checkError } = await supabaseAdmin
       .from('digital_lab_subscriptions')
       .select('id, email, status, created_at')
@@ -135,6 +137,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Email parameter is required' }, { status: 400 })
     }
 
+    const supabaseAdmin = getSupabaseAdmin()
     const { data: subscription, error } = await supabaseAdmin
       .from('digital_lab_subscriptions')
       .select('id, email, status, created_at, metadata')

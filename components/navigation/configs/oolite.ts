@@ -80,10 +80,17 @@ export const ooliteConfig: NavigationConfig = {
         category: 'user'
       },
       {
-        name: 'Members',
-        href: '/o/oolite/users',
+        name: 'Artists',
+        href: '/o/oolite/artists',
         icon: Users,
-        description: 'Community members and artists',
+        description: 'Community artists and residents',
+        category: 'user'
+      },
+      {
+        name: 'Bookings',
+        href: '/o/oolite/bookings',
+        icon: Calendar,
+        description: 'Book equipment, spaces, and workshops',
         category: 'user'
       },
       {
@@ -103,10 +110,10 @@ export const ooliteConfig: NavigationConfig = {
         category: 'admin'
       },
       {
-        name: 'Members',
-        href: '/o/oolite/users',
+        name: 'Artists',
+        href: '/o/oolite/artists',
         icon: Users,
-        description: 'Manage organization members',
+        description: 'Manage organization artists',
         category: 'admin'
       },
       {

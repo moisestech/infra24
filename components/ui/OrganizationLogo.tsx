@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
@@ -74,7 +74,7 @@ const SIZE_CONFIG = {
   },
 } as const;
 
-export function OrganizationLogo({
+export const OrganizationLogo = memo(function OrganizationLogo({
   organizationSlug,
   variant = 'horizontal',
   size = 'md',
@@ -83,13 +83,6 @@ export function OrganizationLogo({
   alt,
   priority = false,
 }: OrganizationLogoProps) {
-  console.log('🏢 OrganizationLogo called with:', {
-    organizationSlug,
-    variant,
-    size,
-    theme
-  })
-  
   const { theme: currentTheme } = useTheme();
   const [imageError, setImageError] = React.useState(false);
   
@@ -204,7 +197,7 @@ export function OrganizationLogo({
       )}
     </div>
   );
-}
+});
 
 // Utility function to get organization colors
 export function getOrganizationColors(organizationSlug: string) {

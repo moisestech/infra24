@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Bell, MapPin, ClipboardList, Globe, Calendar, Edit, GraduationCap } from 'lucide-react'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 
@@ -25,6 +26,37 @@ interface QuickActionsProps {
 }
 
 export function QuickActions({ organization, recentAnnouncementsCount, userRole, dashboardConfig }: QuickActionsProps) {
+  const [surveyCount, setSurveyCount] = useState(0)
+  const [workshopCount, setWorkshopCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadCounts() {
+      try {
+        // Fetch survey count
+        const surveysResponse = await fetch(`/api/organizations/by-slug/${organization.slug}/surveys`)
+        if (surveysResponse.ok) {
+          const surveysData = await surveysResponse.json()
+          setSurveyCount(surveysData.surveys?.length || 0)
+        }
+
+        // Fetch workshop count (published only)
+        const workshopsResponse = await fetch(`/api/organizations/${organization.id}/workshops`)
+        if (workshopsResponse.ok) {
+          const workshopsData = await workshopsResponse.json()
+          const publishedWorkshops = workshopsData.workshops?.filter((w: any) => w.status === 'published') || []
+          setWorkshopCount(publishedWorkshops.length)
+        }
+      } catch (error) {
+        console.error('Error loading counts:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadCounts()
+  }, [organization.id, organization.slug])
+
   return (
     <div className="mb-6 xl:mb-8 2xl:mb-10 3xl:mb-12">
       <h2 className="text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl font-semibold text-gray-900 dark:text-white mb-3 xl:mb-4 2xl:mb-5 3xl:mb-6">
@@ -85,6 +117,9 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
               <ClipboardList className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-indigo-600 dark:text-indigo-400 mr-2" />
               <div>
                 <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Surveys</p>
+                <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-gray-500 dark:text-gray-400">
+                  {loading ? '...' : `${surveyCount} active`}
+                </p>
               </div>
             </div>
           </a>
@@ -114,6 +149,9 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
               <GraduationCap className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-pink-600 dark:text-pink-400 mr-2" />
               <div>
                 <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Workshops</p>
+                <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-gray-500 dark:text-gray-400">
+                  {loading ? '...' : `${workshopCount} published`}
+                </p>
               </div>
             </div>
           </a>

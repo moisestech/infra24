@@ -235,7 +235,7 @@ async function populateDigitalLabResources() {
         const { data, error } = await supabase
           .from('resources')
           .insert({
-            organization_id: org.id,
+            org_id: org.id,
             ...resource,
             created_by: 'system',
             updated_by: 'system'

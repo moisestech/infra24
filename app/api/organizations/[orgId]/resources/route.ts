@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { getSupabaseAdmin } from '@/lib/supabase'
 
 export async function GET(
   request: NextRequest,
@@ -12,10 +12,13 @@ export async function GET(
     const category = searchParams.get('category')
     const available = searchParams.get('available') === 'true'
 
+    const supabaseAdmin = getSupabaseAdmin()
+
+
     let query = supabaseAdmin
       .from('resources')
       .select('*')
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
       .eq('is_active', true)
       .order('title')
 
@@ -93,7 +96,7 @@ export async function POST(
     const { data: resource, error } = await supabaseAdmin
       .from('resources')
       .insert({
-        organization_id: orgId,
+        org_id: orgId,
         ...body,
         created_by: 'system', // TODO: Get from auth
         updated_by: 'system'

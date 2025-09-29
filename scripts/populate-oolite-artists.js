@@ -16,7 +16,7 @@ const supabase = createClient(
 );
 
 // Oolite organization ID
-const OOLITE_ORG_ID = '73339522-c672-40ac-a464-e027e9c99d13';
+const OOLITE_ORG_ID = '2133fe94-fb12-41f8-ab37-ea4acd4589f6';
 
 // Artist data organized by residency type
 const artistsData = {

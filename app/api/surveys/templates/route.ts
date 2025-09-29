@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 
 // GET /api/surveys/templates - List survey templates

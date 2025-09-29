@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 // Initialize Resend client
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -202,6 +202,7 @@ export class EmailService {
    */
   private async getOrganizationBranding(organizationId: string) {
     try {
+      const supabaseAdmin = getSupabaseAdmin()
       const { data: org, error } = await supabaseAdmin
         .from('organizations')
         .select('name, slug, primary_color, logo_url, website_url, support_email')
@@ -598,6 +599,7 @@ ${branding.organizationName}
 
     try {
       // Store in database for analytics
+      const supabaseAdmin = getSupabaseAdmin()
       await supabaseAdmin
         .from('email_analytics')
         .insert({

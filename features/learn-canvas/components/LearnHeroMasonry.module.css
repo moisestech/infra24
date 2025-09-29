@@ -1,0 +1,10 @@
+.staggeredColumn:first-child {
+  margin-top: 175px;
+}
+
+/* Mobile: Remove staggered effect for 2-column layout */
+@media (max-width: 640px) {
+  .staggeredColumn:first-child {
+    margin-top: 0;
+  }
+} 

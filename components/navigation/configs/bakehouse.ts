@@ -66,10 +66,17 @@ export const bakehouseConfig: NavigationConfig = {
         category: 'user'
       },
       {
-        name: 'Members',
-        href: '/o/bakehouse/users',
+        name: 'Artists',
+        href: '/o/bakehouse/artists',
         icon: Users,
-        description: 'Community members and artists',
+        description: 'Community artists and residents',
+        category: 'user'
+      },
+      {
+        name: 'Bookings',
+        href: '/o/bakehouse/bookings',
+        icon: Calendar,
+        description: 'Book equipment, spaces, and workshops',
         category: 'user'
       }
     ],
@@ -82,10 +89,10 @@ export const bakehouseConfig: NavigationConfig = {
         category: 'admin'
       },
       {
-        name: 'Members',
-        href: '/o/bakehouse/users',
+        name: 'Artists',
+        href: '/o/bakehouse/artists',
         icon: Users,
-        description: 'Manage organization members',
+        description: 'Manage organization artists',
         category: 'admin'
       },
       {

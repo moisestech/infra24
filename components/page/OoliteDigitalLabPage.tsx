@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/Badge';
@@ -20,98 +20,96 @@ import {
   Star,
   Zap
 } from 'lucide-react';
+import EquipmentVoting from '@/components/equipment/EquipmentVoting';
+import { useTenant } from '@/components/tenant/TenantProvider';
+
+interface Equipment {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  category: string;
+  capacity: number;
+  duration_minutes: number;
+  price: number;
+  currency: string;
+  location: string;
+  requirements: string[];
+  availability_rules: any;
+  metadata: any;
+}
 
 export default function OoliteDigitalLabPage() {
+  const { tenantConfig } = useTenant();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [equipment, setEquipment] = useState<Equipment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [organization, setOrganization] = useState<any>(null);
 
-  const equipment = [
-    {
-      id: 'vr-workstation',
-      name: 'VR/AR Workstation',
-      category: 'Immersive Technology',
-      description: 'High-end VR development and content creation station',
-      icon: Monitor,
-      status: 'available',
-      specs: ['RTX 4080 GPU', '32GB RAM', 'VR Headset', 'Motion Controllers'],
-      bookingSlots: ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM'],
-      maxUsers: 2,
-      difficulty: 'Advanced'
-    },
-    {
-      id: '3d-printer',
-      name: '3D Printer (Prusa i3 MK3S+)',
-      category: 'Digital Fabrication',
-      description: 'Professional-grade 3D printer for rapid prototyping',
-      icon: Printer,
-      status: 'in-use',
-      specs: ['0.4mm Nozzle', 'PLA/ABS/PETG', '220x220x250mm Build Volume'],
-      bookingSlots: ['10:00 AM', '1:00 PM', '3:00 PM'],
-      maxUsers: 1,
-      difficulty: 'Intermediate'
-    },
-    {
-      id: 'photo-studio',
-      name: 'Digital Photo Studio',
-      category: 'Photography',
-      description: 'Professional photography setup with lighting and backdrop',
-      icon: Camera,
-      status: 'available',
-      specs: ['Canon EOS R5', 'Studio Lighting', 'Green Screen', 'Tripods'],
-      bookingSlots: ['9:00 AM', '12:00 PM', '3:00 PM', '5:00 PM'],
-      maxUsers: 4,
-      difficulty: 'Beginner'
-    },
-    {
-      id: 'audio-booth',
-      name: 'Audio Recording Booth',
-      category: 'Audio Production',
-      description: 'Sound-isolated recording space with professional equipment',
-      icon: Headphones,
-      status: 'maintenance',
-      specs: ['Audio Interface', 'Condenser Mic', 'Acoustic Treatment', 'DAW Software'],
-      bookingSlots: ['10:00 AM', '2:00 PM', '4:00 PM'],
-      maxUsers: 2,
-      difficulty: 'Intermediate'
-    },
-    {
-      id: 'ai-workstation',
-      name: 'AI Development Station',
-      category: 'AI & Machine Learning',
-      description: 'High-performance workstation for AI model training',
-      icon: Cpu,
-      status: 'available',
-      specs: ['RTX 4090 GPU', '64GB RAM', 'AI Software Suite', 'Cloud Access'],
-      bookingSlots: ['9:00 AM', '11:00 AM', '1:00 PM', '3:00 PM'],
-      maxUsers: 1,
-      difficulty: 'Advanced'
-    },
-    {
-      id: 'collaboration-space',
-      name: 'Collaborative Workspace',
-      category: 'General',
-      description: 'Flexible space for group projects and presentations',
-      icon: Users,
-      status: 'available',
-      specs: ['Large Display', 'Wireless Presentation', 'Whiteboard', 'Seating for 8'],
-      bookingSlots: ['9:00 AM', '12:00 PM', '3:00 PM'],
-      maxUsers: 8,
-      difficulty: 'Beginner'
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      console.log('🔍 Oolite Digital Lab: Loading data...');
+      
+      // Load organization data
+      const orgResponse = await fetch('/api/organizations/by-slug/oolite');
+      console.log('🔍 Oolite Digital Lab: Organization response status:', orgResponse.status);
+      
+      if (orgResponse.ok) {
+        const orgData = await orgResponse.json();
+        console.log('🔍 Oolite Digital Lab: Organization data:', orgData);
+        setOrganization(orgData.organization);
+        
+        // Load Digital Lab resources - get all equipment resources
+        const resourcesResponse = await fetch(`/api/organizations/${orgData.organization.id}/resources`);
+        console.log('🔍 Oolite Digital Lab: Resources response status:', resourcesResponse.status);
+        
+        if (resourcesResponse.ok) {
+          const resourcesData = await resourcesResponse.json();
+          console.log('🔍 Oolite Digital Lab: All resources:', resourcesData.resources);
+          
+          // Filter for equipment type resources
+          const equipmentResources = (resourcesData.resources || []).filter((r: Equipment) => r.type === 'equipment');
+          console.log('🔍 Oolite Digital Lab: Equipment resources:', equipmentResources);
+          console.log('🔍 Oolite Digital Lab: Equipment statuses:', equipmentResources.map(e => ({ name: e.title, status: e.metadata?.status })));
+          setEquipment(equipmentResources);
+        } else {
+          console.error('🔍 Oolite Digital Lab: Resources API error:', resourcesResponse.status);
+        }
+      } else {
+        console.error('🔍 Oolite Digital Lab: Organization API error:', orgResponse.status);
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  const categories = ['all', 'Immersive Technology', 'Digital Fabrication', 'Photography', 'Audio Production', 'AI & Machine Learning', 'General'];
+  // Get unique categories from actual equipment data
+  const categories = ['all', ...Array.from(new Set(equipment.map(item => item.category)))];
 
   const filteredEquipment = selectedCategory === 'all' 
     ? equipment 
     : equipment.filter(item => item.category === selectedCategory);
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (equipment: Equipment) => {
+    const status = equipment.metadata?.status || 'available';
     switch (status) {
       case 'available': return 'bg-green-100 text-green-800';
       case 'in-use': return 'bg-blue-100 text-blue-800';
       case 'maintenance': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const getStatusText = (equipment: Equipment) => {
+    const status = equipment.metadata?.status || 'available';
+    return status.replace('-', ' ');
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -122,6 +120,17 @@ export default function OoliteDigitalLabPage() {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading Digital Lab equipment...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100">
@@ -146,7 +155,7 @@ export default function OoliteDigitalLabPage() {
                   <p className="text-sm font-medium text-gray-600">Total Equipment</p>
                   <p className="text-2xl font-bold text-gray-900">{equipment.length}</p>
                 </div>
-                <Monitor className="w-8 h-8 text-blue-600" />
+                <Monitor className="w-8 h-8" style={{ color: tenantConfig?.theme?.primary || '#47abc4' }} />
               </div>
             </CardContent>
           </Card>
@@ -157,7 +166,7 @@ export default function OoliteDigitalLabPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Available Now</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {equipment.filter(e => e.status === 'available').length}
+                    {equipment.filter(e => e.metadata?.status === 'available').length}
                   </p>
                 </div>
                 <CheckCircle className="w-8 h-8 text-green-600" />
@@ -171,10 +180,10 @@ export default function OoliteDigitalLabPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">In Use</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {equipment.filter(e => e.status === 'in-use').length}
+                    {equipment.filter(e => e.metadata?.status === 'in-use').length}
                   </p>
                 </div>
-                <Users className="w-8 h-8 text-blue-600" />
+                <Users className="w-8 h-8" style={{ color: tenantConfig?.theme?.primary || '#47abc4' }} />
               </div>
             </CardContent>
           </Card>
@@ -185,7 +194,7 @@ export default function OoliteDigitalLabPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">Maintenance</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {equipment.filter(e => e.status === 'maintenance').length}
+                    {equipment.filter(e => e.metadata?.status === 'maintenance').length}
                   </p>
                 </div>
                 <Zap className="w-8 h-8 text-yellow-600" />
@@ -206,6 +215,23 @@ export default function OoliteDigitalLabPage() {
                 variant={selectedCategory === category ? 'default' : 'outline'}
                 onClick={() => setSelectedCategory(category)}
                 className="capitalize"
+                style={selectedCategory === category ? {
+                  backgroundColor: tenantConfig?.theme?.primary || '#47abc4',
+                  color: 'white'
+                } : {
+                  borderColor: tenantConfig?.theme?.primary || '#47abc4',
+                  color: tenantConfig?.theme?.primary || '#47abc4'
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedCategory !== category) {
+                    e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryAlpha || 'rgba(71, 171, 196, 0.1)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedCategory !== category) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
               >
                 {category}
               </Button>
@@ -214,26 +240,34 @@ export default function OoliteDigitalLabPage() {
         </div>
 
         {/* Equipment Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           {filteredEquipment.map((item) => {
-            const Icon = item.icon;
+            const isAvailable = item.metadata?.status === 'available';
             return (
               <Card key={item.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <Icon className="w-6 h-6 text-blue-600" />
+                      <div className="p-2 rounded-lg" style={{ backgroundColor: `${tenantConfig?.theme?.primary || '#47abc4'}20` }}>
+                        <Printer className="w-6 h-6" style={{ color: tenantConfig?.theme?.primary || '#47abc4' }} />
                       </div>
                       <div>
-                        <CardTitle className="text-lg">{item.name}</CardTitle>
-                        <Badge variant="default" className="mt-1">
+                        <CardTitle className="text-lg">{item.title}</CardTitle>
+                        <Badge 
+                          variant="default" 
+                          className="mt-1"
+                          style={{
+                            backgroundColor: `${tenantConfig?.theme?.primary || '#47abc4'}20`,
+                            color: tenantConfig?.theme?.primary || '#47abc4',
+                            borderColor: tenantConfig?.theme?.primary || '#47abc4'
+                          }}
+                        >
                           {item.category}
                         </Badge>
                       </div>
                     </div>
-                    <Badge className={getStatusColor(item.status)}>
-                      {item.status.replace('-', ' ')}
+                    <Badge className={getStatusColor(item)}>
+                      {getStatusText(item)}
                     </Badge>
                   </div>
                   <CardDescription className="text-base">
@@ -242,34 +276,41 @@ export default function OoliteDigitalLabPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {/* Specifications */}
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Specifications</h4>
-                      <div className="space-y-1">
-                        {item.specs.map((spec, index) => (
-                          <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                            <Star className="w-3 h-3 text-blue-500" />
-                            {spec}
-                          </div>
-                        ))}
+                    {/* Equipment Image */}
+                    {item.metadata?.image_url && (
+                      <div className="relative h-48 bg-gray-100 rounded-lg overflow-hidden">
+                        <img 
+                          src={item.metadata.image_url} 
+                          alt={item.title} 
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    </div>
+                    )}
+
+                    {/* Specifications */}
+                    {item.metadata?.specifications && (
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-2">Specifications</h4>
+                        <div className="space-y-1">
+                          {Object.entries(item.metadata.specifications).map(([key, value], index) => (
+                            <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
+                              <Star className="w-3 h-3" style={{ color: tenantConfig?.theme?.primary || '#47abc4' }} />
+                              {key}: {value as string}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Booking Info */}
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Available Slots</h4>
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {item.bookingSlots.map((slot, index) => (
-                          <Badge key={index} variant="default" className="text-xs">
-                            {slot}
-                          </Badge>
-                        ))}
+                      <div className="flex justify-between items-center text-sm mb-2">
+                        <span className="text-gray-600">Capacity: {item.capacity}</span>
+                        <span className="text-gray-600">Duration: {item.duration_minutes} min</span>
                       </div>
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-600">Max Users: {item.maxUsers}</span>
-                        <Badge className={getDifficultyColor(item.difficulty)}>
-                          {item.difficulty}
-                        </Badge>
+                        <span className="text-gray-600">Location: {item.location}</span>
+                        <span className="text-gray-600">Price: ${item.price}</span>
                       </div>
                     </div>
 
@@ -278,12 +319,29 @@ export default function OoliteDigitalLabPage() {
                       <Button 
                         size="sm" 
                         className="flex-1"
-                        disabled={item.status !== 'available'}
+                        disabled={!isAvailable}
+                        style={{
+                          backgroundColor: isAvailable ? (tenantConfig?.theme?.primary || '#47abc4') : '#9ca3af',
+                          color: 'white'
+                        }}
                       >
                         <Calendar className="w-4 h-4 mr-2" />
-                        {item.status === 'available' ? 'Book Now' : 'Unavailable'}
+                        {isAvailable ? 'Book Now' : 'Unavailable'}
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        style={{
+                          borderColor: tenantConfig?.theme?.primary || '#47abc4',
+                          color: tenantConfig?.theme?.primary || '#47abc4'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryAlpha || 'rgba(71, 171, 196, 0.1)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
                         <BookOpen className="w-4 h-4" />
                       </Button>
                     </div>
@@ -293,6 +351,17 @@ export default function OoliteDigitalLabPage() {
             );
           })}
         </div>
+
+        {/* Equipment Voting Section */}
+        {organization && (
+          <div className="mb-16">
+            <Card className="bg-white shadow-lg">
+              <CardContent className="p-6">
+                <EquipmentVoting orgId={organization.id} />
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Lab Guidelines */}
         <div className="bg-white rounded-lg p-8 shadow-lg">

@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import dynamic from 'next/dynamic'
-import { createClient } from '@/lib/supabase'
+import { supabaseClient } from '@/lib/supabase'
 import { format, startOfWeek, endOfWeek } from 'date-fns'
 import { Resource, Booking, CreateBookingRequest } from '@/types/booking'
+import { useTheme } from '@/contexts/ThemeContext'
+import './ResourceCalendar.css'
 
 // Dynamically import FullCalendar to avoid SSR issues
 const FullCalendar = dynamic(() => import('@fullcalendar/react'), { ssr: false })
@@ -26,79 +28,103 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
+  const supabase = supabaseClient
+  const { theme, resolvedTheme } = useTheme()
+  
+  // Debug theme context
   useEffect(() => {
-    fetchResourcesAndBookings()
-  }, [orgId])
+    console.log('🎨 ResourceCalendar: Theme context:', { theme, resolvedTheme })
+    console.log('🎨 ResourceCalendar: Document classes:', document.documentElement.className)
+  }, [theme, resolvedTheme])
 
-  const fetchResourcesAndBookings = async () => {
+  const fetchResourcesAndBookings = useCallback(async () => {
     try {
       setLoading(true)
+      console.log('🔍 ResourceCalendar: Starting fetchResourcesAndBookings')
+      console.log('🔍 ResourceCalendar: orgId =', orgId)
+      console.log('🔍 ResourceCalendar: supabase client =', supabase)
       
       // Fetch resources
+      console.log('🔍 ResourceCalendar: Fetching resources...')
       const { data: resourcesData, error: resourcesError } = await supabase
         .from('resources')
         .select('*')
-        .eq('organization_id', orgId)
+        .eq('org_id', orgId)
         .eq('is_bookable', true)
 
+      console.log('🔍 ResourceCalendar: Resources query result:', { resourcesData, resourcesError })
+      
       if (resourcesError) {
-        console.error('Error fetching resources:', resourcesError)
+        console.error('❌ ResourceCalendar: Error fetching resources:', resourcesError)
+        console.error('❌ ResourceCalendar: Error details:', {
+          code: resourcesError.code,
+          message: resourcesError.message,
+          details: resourcesError.details,
+          hint: resourcesError.hint
+        })
         setError('Failed to fetch resources')
         return
       }
 
+      console.log('✅ ResourceCalendar: Successfully fetched resources:', resourcesData?.length || 0, 'resources')
       setResources(resourcesData || [])
 
       // Fetch bookings for current week
       const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 })
       const weekEnd = endOfWeek(new Date(), { weekStartsOn: 1 })
+      console.log('🔍 ResourceCalendar: Fetching bookings for week:', { weekStart, weekEnd })
 
       const { data: bookingsData, error: bookingsError } = await supabase
         .from('bookings')
         .select(`
           *,
-          workshop_sessions (
+          resources (
             id,
-            workshop_id,
+            title,
+            type,
             capacity,
-            workshops (
-              id,
-              title,
-              category,
-              difficulty_level
-            )
+            location
           )
         `)
-        .eq('organization_id', orgId)
-        .gte('starts_at', weekStart.toISOString())
-        .lte('ends_at', weekEnd.toISOString())
+        .eq('org_id', orgId)
+        .gte('start_time', weekStart.toISOString())
+        .lte('end_time', weekEnd.toISOString())
+
+      console.log('🔍 ResourceCalendar: Bookings query result:', { bookingsData, bookingsError })
 
       if (bookingsError) {
-        console.error('Error fetching bookings:', bookingsError)
+        console.error('❌ ResourceCalendar: Error fetching bookings:', bookingsError)
+        console.error('❌ ResourceCalendar: Bookings error details:', {
+          code: bookingsError.code,
+          message: bookingsError.message,
+          details: bookingsError.details,
+          hint: bookingsError.hint
+        })
         setError('Failed to fetch bookings')
         return
       }
 
+      console.log('✅ ResourceCalendar: Successfully fetched bookings:', bookingsData?.length || 0, 'bookings')
       setBookings(bookingsData?.map(b => ({
         ...b,
-        start_time: new Date(b.starts_at),
-        end_time: new Date(b.ends_at)
+        start_time: new Date(b.start_time),
+        end_time: new Date(b.end_time)
       })) || [])
 
     } catch (err) {
-      console.error('Error:', err)
+      console.error('❌ ResourceCalendar: Unexpected error:', err)
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)
+      console.log('🔍 ResourceCalendar: fetchResourcesAndBookings completed')
     }
-  }
+  }, [orgId, supabase])
 
-  const handleDateSelect = async (selectInfo: any) => {
+  useEffect(() => {
+    fetchResourcesAndBookings()
+  }, [fetchResourcesAndBookings])
+
+  const handleDateSelect = useCallback(async (selectInfo: any) => {
     if (!onBookingCreate) return
 
     const { start, end, resource } = selectInfo
@@ -117,9 +143,9 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
     } catch (error) {
       console.error('Error creating booking:', error)
     }
-  }
+  }, [onBookingCreate, orgId, fetchResourcesAndBookings])
 
-  const handleEventDrop = async (eventInfo: any) => {
+  const handleEventDrop = useCallback(async (eventInfo: any) => {
     if (!onBookingUpdate) return
 
     const booking = bookings.find(b => b.id === eventInfo.event.id)
@@ -139,9 +165,9 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
       // Revert the event
       eventInfo.revert()
     }
-  }
+  }, [onBookingUpdate, bookings, fetchResourcesAndBookings])
 
-  const handleEventResize = async (eventInfo: any) => {
+  const handleEventResize = useCallback(async (eventInfo: any) => {
     if (!onBookingUpdate) return
 
     const booking = bookings.find(b => b.id === eventInfo.event.id)
@@ -161,26 +187,57 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
       // Revert the event
       eventInfo.revert()
     }
-  }
+  }, [onBookingUpdate, bookings, fetchResourcesAndBookings])
 
-  const handleEventClick = (eventInfo: any) => {
+  const handleEventClick = useCallback((eventInfo: any) => {
     const booking = bookings.find(b => b.id === eventInfo.event.id)
     if (booking) {
       // You can add a modal or navigation here
       console.log('Booking clicked:', booking)
     }
-  }
+  }, [bookings])
 
-  // Transform resources for FullCalendar
-  const calendarResources = resources.map(resource => ({
-    id: resource.id,
-    title: resource.title,
-    capacity: resource.capacity,
-    type: resource.type
-  }))
+  // Transform resources for FullCalendar - group by type
+  const calendarResources = useMemo(() => {
+    // Group resources by type
+    const groupedResources = resources.reduce((acc, resource) => {
+      if (!acc[resource.type]) {
+        acc[resource.type] = []
+      }
+      acc[resource.type].push(resource)
+      return acc
+    }, {} as Record<string, Resource[]>)
+
+    // Create a flat list with parent-child relationships
+    const flatResources: any[] = []
+    
+    Object.entries(groupedResources).forEach(([type, typeResources]) => {
+      // Add parent group
+      flatResources.push({
+        id: `group-${type}`,
+        title: `${type.charAt(0).toUpperCase() + type.slice(1)}s (${typeResources.length})`,
+        parentId: null,
+        type: type
+      })
+      
+      // Add children resources
+      typeResources.forEach(resource => {
+        flatResources.push({
+          id: resource.id,
+          title: resource.title,
+          parentId: `group-${type}`,
+          capacity: resource.capacity,
+          type: resource.type
+        })
+      })
+    })
+
+    console.log('🔍 ResourceCalendar: Created calendar resources:', flatResources)
+    return flatResources
+  }, [resources])
 
   // Transform bookings for FullCalendar
-  const calendarEvents = bookings.map(booking => {
+  const calendarEvents = useMemo(() => bookings.map(booking => {
     return {
       id: booking.id,
       resourceId: booking.resource_id,
@@ -194,7 +251,7 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
         created_by: booking.created_by_clerk_id
       }
     }
-  })
+  }), [bookings])
 
   if (loading) {
     return (
@@ -214,7 +271,12 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
           <p className="text-red-600 mb-4">{error}</p>
           <button 
             onClick={fetchResourcesAndBookings}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-4 py-2 text-white rounded transition-colors"
+            style={{ 
+              backgroundColor: '#47abc4'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#3a9bb3'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#47abc4'}
           >
             Retry
           </button>
@@ -258,7 +320,7 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
         </div>
       </div>
       
-      <div className="border rounded-lg overflow-hidden">
+      <div className={`border rounded-lg overflow-hidden ${resolvedTheme === 'dark' ? 'bg-gray-800 border-gray-700 dark-theme' : 'bg-white border-gray-200 light-theme'}`}>
         <FullCalendar
           plugins={[resourceTimeGridPlugin, resourceDayGridPlugin, interactionPlugin]}
           initialView="resourceTimeGridDay"
@@ -280,9 +342,10 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
           slotMinTime="08:00:00"
           slotMaxTime="22:00:00"
           height="auto"
-          resourceAreaWidth="200px"
-          resourceLabelContent="Resources"
+          resourceAreaWidth="300px"
+          resourceLabelContent="Resource Types"
           resourceOrder="title"
+          resourceGroupField="parentId"
           nowIndicator={true}
           businessHours={{
             daysOfWeek: [1, 2, 3, 4, 5], // Monday to Friday
@@ -295,6 +358,7 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
             start: '08:00',
             end: '22:00'
           }}
+          themeSystem="bootstrap5"
         />
       </div>
     </div>

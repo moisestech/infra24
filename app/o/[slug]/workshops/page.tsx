@@ -4,13 +4,16 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import { useUser } from '@clerk/nextjs'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/button'
-import { ThemeToggle } from '@/components/ThemeToggle'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useTenant } from '@/components/tenant/TenantProvider'
 import DecorativeDivider from '@/components/common/DecorativeDivider'
+import { PageFooter } from '@/components/common/PageFooter'
 import { 
   BookOpen, 
   Clock, 
@@ -30,6 +33,7 @@ import {
   Heart,
   Target
 } from 'lucide-react'
+import WorkshopCategoryVoting from '@/components/workshops/WorkshopCategoryVoting'
 
 interface Organization {
   id: string
@@ -47,6 +51,7 @@ interface Workshop {
   category: string
   type: string
   level: 'beginner' | 'intermediate' | 'advanced'
+  status: 'draft' | 'published' | 'archived'
   duration_minutes: number
   max_participants: number
   price: number
@@ -56,6 +61,8 @@ interface Workshop {
   outcomes: string[]
   is_active: boolean
   is_shared: boolean
+  featured: boolean
+  image_url?: string
   organization_id: string
   organization_name: string
   organization_slug: string
@@ -94,17 +101,44 @@ const hoverScale = {
   }
 }
 
-export default function WorkshopsPage() {
+interface WorkshopsPageProps {
+  slug?: string;
+}
+
+export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {}) {
   const params = useParams()
-  const slug = params.slug as string
+  const slug = (params.slug as string) || propSlug || 'oolite'
+  const { user } = useUser()
+  const { tenantConfig } = useTenant()
+
+  // Oolite theme colors
+  const ooliteColors = {
+    primary: '#47abc4',
+    primaryLight: '#6bb8d1',
+    primaryDark: '#3a8ba3',
+    primaryAlpha: 'rgba(71, 171, 196, 0.1)',
+    primaryAlphaLight: 'rgba(71, 171, 196, 0.05)',
+    primaryAlphaDark: 'rgba(71, 171, 196, 0.15)',
+  };
+  
+  console.log('🔧 Oolite Workshops Page Debug:')
+  console.log('params:', params)
+  console.log('propSlug:', propSlug)
+  console.log('final slug:', slug)
+  console.log('user:', user)
+  
   // Get navigation config based on organization slug
   const getNavigationConfig = () => {
+    console.log('🧭 Getting navigation config for slug:', slug)
     switch (slug) {
       case 'oolite':
+        console.log('🧭 Using oolite config')
         return ooliteConfig
       case 'bakehouse':
+        console.log('🧭 Using bakehouse config')
         return bakehouseConfig
       default:
+        console.log('🧭 Using default oolite config')
         return ooliteConfig // Default fallback
     }
   }
@@ -112,6 +146,19 @@ export default function WorkshopsPage() {
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [workshops, setWorkshops] = useState<Workshop[]>([])
   const [loading, setLoading] = useState(true)
+  
+  // Debug workshops state changes
+  useEffect(() => {
+    console.log('📚 Workshops state changed:', workshops.length, 'workshops')
+    if (workshops.length > 0) {
+      console.log('📚 First workshop:', workshops[0])
+    }
+  }, [workshops])
+  
+  // Debug organization state changes
+  useEffect(() => {
+    console.log('🏢 Organization state changed:', organization)
+  }, [organization])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedLevel, setSelectedLevel] = useState('all')
@@ -122,24 +169,52 @@ export default function WorkshopsPage() {
   const [workshopsRef, workshopsInView] = useInView({ threshold: 0.5 })
 
   useEffect(() => {
+    console.log('🔍 useEffect triggered, slug:', slug)
+    
     async function loadData() {
-      if (!params.slug) return
+      console.log('🔍 loadData function called')
+      if (!slug) {
+        console.log('❌ No slug provided, returning early')
+        return
+      }
       
       try {
-        const slug = params.slug as string
+        console.log('🔍 Starting data load for slug:', slug)
 
         // Get organization details
         const orgResponse = await fetch(`/api/organizations/by-slug/${slug}`)
+        let orgData = null
         if (orgResponse.ok) {
-          const orgData = await orgResponse.json()
+          orgData = await orgResponse.json()
           setOrganization(orgData.organization)
         }
 
-        // Get workshops
-        const workshopsResponse = await fetch('/api/workshops')
-        if (workshopsResponse.ok) {
-          const workshopsData = await workshopsResponse.json()
-          setWorkshops(workshopsData.workshops || [])
+        // Get workshops for this organization
+        console.log('🔍 Fetching workshops for organization:', orgData?.organization?.id)
+        if (orgData?.organization?.id) {
+          const workshopsResponse = await fetch(`/api/organizations/${orgData.organization.id}/workshops`)
+          if (workshopsResponse.ok) {
+            const workshopsData = await workshopsResponse.json()
+            console.log('📚 Workshops data received:', workshopsData)
+            console.log('📊 Total workshops fetched:', workshopsData.workshops?.length || 0)
+            
+            // Debug each workshop
+            workshopsData.workshops?.forEach((workshop: any, index: number) => {
+              console.log(`📝 Workshop ${index + 1}:`, {
+                title: workshop.title,
+                status: workshop.status,
+                featured: workshop.featured,
+                is_public: workshop.is_public,
+                is_active: workshop.is_active
+              })
+            })
+            
+            setWorkshops(workshopsData.workshops || [])
+          } else {
+            console.error('❌ Failed to fetch workshops:', workshopsResponse.status, workshopsResponse.statusText)
+          }
+        } else {
+          console.error('❌ No organization ID found for slug:', slug)
         }
 
       } catch (error) {
@@ -149,8 +224,9 @@ export default function WorkshopsPage() {
       }
     }
 
+    console.log('🔍 About to call loadData()')
     loadData()
-  }, [params.slug])
+  }, [slug])
 
   // Reduced motion detection
   useEffect(() => {
@@ -163,6 +239,9 @@ export default function WorkshopsPage() {
   }, [])
 
   // Filter workshops
+  console.log('🔍 Filtering workshops. Total workshops:', workshops.length)
+  console.log('🔍 Search term:', searchTerm, 'Category:', selectedCategory, 'Level:', selectedLevel)
+  
   const filteredWorkshops = workshops.filter(workshop => {
     const matchesSearch = workshop.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          workshop.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -173,6 +252,26 @@ export default function WorkshopsPage() {
     
     return matchesSearch && matchesCategory && matchesLevel
   })
+  
+  console.log('🔍 Filtered workshops count:', filteredWorkshops.length)
+
+  // Separate workshops by status and featured
+  console.log('🔍 Separating workshops by status and featured...')
+  console.log('📊 Total workshops before filtering:', workshops.length)
+  console.log('📊 Filtered workshops:', filteredWorkshops.length)
+  
+  const featuredWorkshops = filteredWorkshops.filter(w => w.featured && w.status === 'published')
+  const publishedWorkshops = filteredWorkshops.filter(w => w.status === 'published' && !w.featured)
+  const unpublishedWorkshops = filteredWorkshops.filter(w => w.status === 'draft')
+  
+  console.log('🌟 Featured workshops (featured=true, status=published):', featuredWorkshops.length)
+  featuredWorkshops.forEach((w, i) => console.log(`  ${i+1}. ${w.title} (featured: ${w.featured}, status: ${w.status})`))
+  
+  console.log('📚 Published workshops (status=published, featured=false):', publishedWorkshops.length)
+  publishedWorkshops.forEach((w, i) => console.log(`  ${i+1}. ${w.title} (featured: ${w.featured}, status: ${w.status})`))
+  
+  console.log('📝 Unpublished workshops (status=draft):', unpublishedWorkshops.length)
+  unpublishedWorkshops.forEach((w, i) => console.log(`  ${i+1}. ${w.title} (featured: ${w.featured}, status: ${w.status})`))
 
   // Get unique categories
   const categories = Array.from(new Set(workshops.map(w => w.category))).sort()
@@ -195,6 +294,144 @@ export default function WorkshopsPage() {
     return `${mins}m`
   }
 
+  const renderWorkshopCard = (workshop: Workshop, index: number) => (
+    <motion.div
+      key={workshop.id}
+      variants={fadeIn}
+      initial="initial"
+      whileInView="animate"
+      viewport={{ once: true }}
+      whileHover={reducedMotion ? {} : hoverScale}
+      className="cursor-pointer"
+    >
+      <Card className={`overflow-hidden transition-all duration-300 ${
+        theme === 'dark' 
+          ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-indigo-500/50 hover:shadow-2xl' 
+          : 'bg-white/50 backdrop-blur-sm border-gray-200 hover:border-indigo-500/50 hover:shadow-2xl'
+      }`}>
+        {/* Workshop Image */}
+        {workshop.image_url && (
+          <div className="relative h-48 overflow-hidden">
+            <img 
+              src={workshop.image_url} 
+              alt={workshop.title}
+              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            />
+            {workshop.featured && (
+              <div className="absolute top-3 right-3">
+                <Badge className="bg-yellow-500 text-yellow-900 dark:bg-yellow-400 dark:text-yellow-900">
+                  <Star className="h-3 w-3 mr-1" />
+                  Featured
+                </Badge>
+              </div>
+            )}
+          </div>
+        )}
+        
+        <CardHeader>
+          <div className="flex items-start justify-between mb-2">
+            <CardTitle className="text-lg line-clamp-2">{workshop.title}</CardTitle>
+            <Badge className={getLevelColor(workshop.level)}>
+              {workshop.level}
+            </Badge>
+          </div>
+          <CardDescription className="line-clamp-3">
+            {workshop.description}
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent className="space-y-4">
+          {/* Workshop Details */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm">
+              <Clock className="h-4 w-4 text-gray-500" />
+              <span>{formatDuration(workshop.duration_minutes)}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Users className="h-4 w-4 text-gray-500" />
+              <span>{workshop.confirmed_bookings}/{workshop.max_participants} participants</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <User className="h-4 w-4 text-gray-500" />
+              <span>{workshop.instructor}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <DollarSign className="h-4 w-4 text-gray-500" />
+              <span>${workshop.price}</span>
+            </div>
+          </div>
+
+          {/* Category */}
+          <div className="flex items-center gap-2">
+            <Badge variant="default" className="text-xs">
+              {workshop.category}
+            </Badge>
+            {workshop.is_shared && (
+              <Badge variant="default" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                Shared
+              </Badge>
+            )}
+            {workshop.status === 'draft' && (
+              <Badge variant="default" className="text-xs bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                Draft
+              </Badge>
+            )}
+          </div>
+
+          {/* Rating */}
+          {workshop.average_rating > 0 && (
+            <div className="flex items-center gap-2">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-4 w-4 ${
+                      i < Math.round(workshop.average_rating)
+                        ? 'text-yellow-400 fill-current'
+                        : 'text-gray-300'
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-sm text-gray-500">
+                ({workshop.total_feedback} reviews)
+              </span>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-2">
+            <Link href={`/o/${slug}/workshops/${workshop.id}`}>
+              <Button 
+                size="sm" 
+                className="flex-1"
+                style={{
+                  backgroundColor: tenantConfig.theme.primaryColor,
+                  borderColor: tenantConfig.theme.primaryColor,
+                  color: 'white'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = tenantConfig.theme.secondaryColor;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = tenantConfig.theme.primaryColor;
+                }}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                View Details
+              </Button>
+            </Link>
+            <Link href={`/o/${slug}/bookings?workshopId=${workshop.id}&type=workshop`}>
+              <Button size="sm" variant="outline">
+                <Calendar className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
+
   if (loading) {
     return (
       <div className={`min-h-screen transition-colors duration-300 ${
@@ -202,7 +439,11 @@ export default function WorkshopsPage() {
           ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
           : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
       }`}>
-        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+        {/* Navigation */}
+        <div className="relative z-50">
+          {console.log('🧭 Loading state - Rendering UnifiedNavigation with config:', getNavigationConfig())}
+          <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+        </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className={`h-8 rounded w-1/3 mb-6 ${
@@ -237,18 +478,11 @@ export default function WorkshopsPage() {
         ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
         : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
     }`}>
+      
       {/* Navigation */}
-      <div className={`fixed top-0 left-0 right-0 z-50 ${
-        theme === 'dark' 
-          ? 'bg-gray-900/80 backdrop-blur-md border-b border-gray-800' 
-          : 'bg-white/80 backdrop-blur-md border-b border-gray-200'
-      }`}>
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-          </div>
-        </div>
+      <div className="relative z-50">
+        {console.log('🧭 Rendering UnifiedNavigation with config:', getNavigationConfig())}
+        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
       </div>
       
       {/* Hero Section */}
@@ -296,7 +530,12 @@ export default function WorkshopsPage() {
                 theme === 'dark' ? 'text-white' : 'text-gray-900'
               }`}>
                 <span className="block">Workshops</span>
-                <span className="block bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500">
+                <span 
+                  className="block bg-clip-text text-transparent"
+                  style={{
+                    backgroundImage: `linear-gradient(to right, ${tenantConfig.theme.primaryColor}, ${tenantConfig.theme.secondaryColor}, ${tenantConfig.theme.accentColor})`
+                  }}
+                >
                   Learn & Create
                 </span>
               </h1>
@@ -413,107 +652,104 @@ export default function WorkshopsPage() {
             </div>
           </div>
 
-          {/* Workshops Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredWorkshops.map((workshop, index) => (
+          {/* Featured Workshops */}
+          {console.log('🎨 Rendering featured workshops section, count:', featuredWorkshops.length)}
+          {featuredWorkshops.length > 0 && (
+            <div className="mb-16">
               <motion.div
-                key={workshop.id}
-                variants={fadeIn}
-                initial="initial"
-                whileInView="animate"
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
                 viewport={{ once: true }}
-                whileHover={reducedMotion ? {} : hoverScale}
-                className="cursor-pointer"
+                className="text-center mb-8"
               >
-                <Card className={`overflow-hidden transition-all duration-300 ${
-                  theme === 'dark' 
-                    ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-indigo-500/50 hover:shadow-2xl' 
-                    : 'bg-white/50 backdrop-blur-sm border-gray-200 hover:border-indigo-500/50 hover:shadow-2xl'
+                <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
                 }`}>
-                  <CardHeader>
-                    <div className="flex items-start justify-between mb-2">
-                      <CardTitle className="text-lg line-clamp-2">{workshop.title}</CardTitle>
-                      <Badge className={getLevelColor(workshop.level)}>
-                        {workshop.level}
-                      </Badge>
-                    </div>
-                    <CardDescription className="line-clamp-3">
-                      {workshop.description}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    {/* Workshop Details */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="h-4 w-4 text-gray-500" />
-                        <span>{formatDuration(workshop.duration_minutes)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Users className="h-4 w-4 text-gray-500" />
-                        <span>{workshop.confirmed_bookings}/{workshop.max_participants} participants</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <User className="h-4 w-4 text-gray-500" />
-                        <span>{workshop.instructor}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <DollarSign className="h-4 w-4 text-gray-500" />
-                        <span>${workshop.price}</span>
-                      </div>
-                    </div>
-
-                    {/* Category */}
-                    <div className="flex items-center gap-2">
-                      <Badge variant="default" className="text-xs">
-                        {workshop.category}
-                      </Badge>
-                      {workshop.is_shared && (
-                        <Badge variant="default" className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                          Shared
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Rating */}
-                    {workshop.average_rating > 0 && (
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-4 w-4 ${
-                                i < Math.round(workshop.average_rating)
-                                  ? 'text-yellow-400 fill-current'
-                                  : 'text-gray-300'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-500">
-                          ({workshop.total_feedback} reviews)
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 pt-2">
-                      <Button size="sm" className="flex-1">
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Details
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Calendar className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <Star className="inline-block h-8 w-8 text-yellow-500 mr-2" />
+                  Featured Workshops
+                </h3>
+                <p className={`text-lg ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>
+                  Our most popular and highly recommended workshops
+                </p>
               </motion.div>
-            ))}
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {featuredWorkshops.map((workshop, index) => renderWorkshopCard(workshop, index))}
+              </div>
+            </div>
+          )}
+
+          {/* Workshop Category Voting */}
+          {organization && (
+            <div className="mb-16">
+              <WorkshopCategoryVoting 
+                organizationId={organization.id} 
+                userId={user?.id}
+              />
+            </div>
+          )}
+
+          {/* Published Workshops */}
+          {console.log('🎨 Rendering published workshops section, count:', publishedWorkshops.length)}
+          {publishedWorkshops.length > 0 && (
+            <div className="mb-16">
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="text-center mb-8"
+              >
+                <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  Available Workshops
+                </h3>
+                <p className={`text-lg ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>
+                  Choose from our curated selection of workshops designed for all skill levels
+                </p>
+              </motion.div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {publishedWorkshops.map((workshop, index) => renderWorkshopCard(workshop, index))}
+              </div>
+            </div>
+          )}
+
+          {/* Unpublished Workshops (Draft) - Only show to admins */}
+          {console.log('🎨 Rendering unpublished workshops section, count:', unpublishedWorkshops.length)}
+          {unpublishedWorkshops.length > 0 && (
+            <div className="mb-16">
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="text-center mb-8"
+              >
+                <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
+                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                }`}>
+                  <Edit className="inline-block h-8 w-8 text-orange-500 mr-2" />
+                  Draft Workshops
+                </h3>
+                <p className={`text-lg ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                }`}>
+                  Workshops currently in development - coming soon!
+                </p>
+              </motion.div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {unpublishedWorkshops.map((workshop, index) => renderWorkshopCard(workshop, index))}
+              </div>
+            </div>
+          )}
 
           {/* Empty State */}
-          {filteredWorkshops.length === 0 && (
+          {workshops.length === 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -544,6 +780,14 @@ export default function WorkshopsPage() {
         }}
         iconColor={theme === 'dark' ? 'text-indigo-400/50' : 'text-indigo-500/50'}
         className="my-16"
+      />
+
+      {/* Page Footer */}
+      <PageFooter 
+        organizationSlug={slug}
+        showGetStarted={true}
+        showGuidelines={true}
+        showTerms={true}
       />
     </div>
   )

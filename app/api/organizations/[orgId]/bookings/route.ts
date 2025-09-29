@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import { auth } from '@clerk/nextjs/server'
 
 export async function GET(
@@ -14,7 +14,9 @@ export async function GET(
     const startDate = searchParams.get('start_date')
     const endDate = searchParams.get('end_date')
 
-    let query = supabaseAdmin
+    const supabase = createClient()
+
+    let query = supabase
       .from('bookings')
       .select(`
         *,
@@ -26,7 +28,7 @@ export async function GET(
           location
         )
       `)
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
       .order('start_time', { ascending: false })
 
     if (status) {
@@ -99,7 +101,9 @@ export async function POST(
     }
 
     // Get resource details to calculate price
-    const { data: resource, error: resourceError } = await supabaseAdmin
+    const supabase = createClient()
+
+    const { data: resource, error: resourceError } = await supabase
       .from('resources')
       .select('price, currency, title')
       .eq('id', resource_id)
@@ -113,7 +117,8 @@ export async function POST(
     }
 
     // Check for conflicts
-    const { data: conflicts, error: conflictError } = await supabaseAdmin
+
+    const { data: conflicts, error: conflictError } = await supabase
       .from('bookings')
       .select('id, title, start_time, end_time')
       .eq('resource_id', resource_id)
@@ -143,10 +148,11 @@ export async function POST(
     }
 
     // Create the booking
-    const { data: booking, error: bookingError } = await supabaseAdmin
+
+    const { data: booking, error: bookingError } = await supabase
       .from('bookings')
       .insert({
-        organization_id: orgId,
+        org_id: orgId,
         resource_id,
         user_id: userId,
         user_name: user_name || 'Guest User',
@@ -222,7 +228,7 @@ export async function POST(
         console.log('Google Calendar event created:', calendarResult.eventId)
         
         // Store calendar event ID in booking metadata
-        await supabaseAdmin
+        await supabase
           .from('bookings')
           .update({ 
             metadata: {

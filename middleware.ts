@@ -8,7 +8,15 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks/clerk(.*)',
   '/api/organizations/by-slug/(.*)/public(.*)',
   '/api/organizations/by-slug/(.*)/announcements/public(.*)',
-  '/api/organizations/by-slug/(.*)', // Temporarily make organization API public for testing
+  '/api/organizations/by-slug/(.*)/announcements(.*)', // Announcements API public for testing
+  '/api/organizations/by-slug/(.*)', // Organization API public for testing
+  '/api/organizations/(.*)/resources(.*)', // Resources API public for testing
+  '/api/organizations/(.*)/workshops(.*)', // Workshops API public for testing
+  '/api/workshops/(.*)', // Individual workshop API public for testing
+  '/api/organizations/(.*)/bookings(.*)', // Bookings API public for testing
+  '/api/organizations/(.*)/equipment-options(.*)', // Equipment options API public for testing
+  '/api/organizations/(.*)/equipment-votes(.*)', // Equipment votes API public for testing
+  '/api/artists(.*)', // Artists API public for testing
   '/api/surveys/templates(.*)',
   '/api/surveys/(.*)/responses(.*)',
   '/api/surveys/(.*)',

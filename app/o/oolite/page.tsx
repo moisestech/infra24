@@ -81,7 +81,7 @@ function OoliteOrganizationPageContent() {
         if (tenantConfig) {
           console.log('✅ Oolite page: Using tenant config:', tenantConfig)
           setOrganization({
-            id: tenantConfig.id,
+            id: '2133fe94-fb12-41f8-ab37-ea4acd4589f6', // Use actual organization ID
             name: tenantConfig.name,
             slug: tenantConfig.slug,
             banner_image: tenantConfig.theme.banner,

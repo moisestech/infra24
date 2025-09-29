@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useUser, SignOutButton } from '@clerk/nextjs'
 import { ChevronDown, User, Settings, LogOut } from 'lucide-react'
 import { ThemeColors } from './types'
-import { ThemeToggle } from '@/components/ThemeToggle'
 
 interface UserMenuProps {
   colors: ThemeColors
@@ -36,7 +35,16 @@ export function UserMenu({ colors, className = '' }: UserMenuProps) {
       <div className={`flex items-center space-x-2 ${className}`}>
         <Link
           href="/sign-in"
-          className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-white hover:bg-opacity-80 transition-colors"
+          className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
+          style={{ color: 'inherit' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = colors.primary
+            e.currentTarget.style.color = 'white'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent'
+            e.currentTarget.style.color = ''
+          }}
         >
           Sign In
         </Link>
@@ -48,10 +56,22 @@ export function UserMenu({ colors, className = '' }: UserMenuProps) {
     <div className={`relative ${className}`} ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-white hover:bg-opacity-80 transition-colors"
+        className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
         style={{
           backgroundColor: isOpen ? colors.primary : 'transparent',
           color: isOpen ? 'white' : undefined,
+        }}
+        onMouseEnter={(e) => {
+          if (!isOpen) {
+            e.currentTarget.style.backgroundColor = colors.primary
+            e.currentTarget.style.color = 'white'
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isOpen) {
+            e.currentTarget.style.backgroundColor = 'transparent'
+            e.currentTarget.style.color = ''
+          }
         }}
       >
         <div className="flex items-center space-x-2">
@@ -100,13 +120,6 @@ export function UserMenu({ colors, className = '' }: UserMenuProps) {
               Settings
             </Link>
 
-            {/* Theme Toggle */}
-            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-700 dark:text-gray-300">Theme</span>
-                <ThemeToggle />
-              </div>
-            </div>
 
             {/* Sign Out */}
             <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">

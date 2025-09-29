@@ -8,6 +8,7 @@ import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/n
 import { AnnouncementIdDisplay } from '@/components/admin/AnnouncementIdDisplay'
 import { BackgroundPattern } from '@/components/BackgroundPattern'
 import { AnnouncementType, AnnouncementSubType } from '@/types/announcement'
+import { PageFooter } from '@/components/common/PageFooter'
 
 interface Announcement {
   id: string
@@ -848,6 +849,14 @@ export default function OrganizationAnnouncementsPage() {
               )
             })
           )}
+
+          {/* Page Footer */}
+          <PageFooter 
+            organizationSlug={slug}
+            showGetStarted={true}
+            showGuidelines={true}
+            showTerms={true}
+          />
         </div>
       </div>
     </div>

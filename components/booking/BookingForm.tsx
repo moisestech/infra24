@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -8,10 +8,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { CalendarIcon, Clock } from 'lucide-react'
+import { CalendarIcon, Clock, Monitor, Building, GraduationCap, User, Info } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { Resource, Booking, CreateBookingRequest } from '@/types/booking'
+import { useTenant } from '@/components/tenant/TenantProvider'
 
 // Validation schema
 const bookingSchema = z.object({
@@ -46,6 +47,8 @@ interface BookingFormProps {
   onCancel: () => void
   initialData?: Partial<Booking>
   isLoading?: boolean
+  bookingType?: 'equipment' | 'space' | 'workshop' | 'person'
+  preSelectedResource?: string | null
 }
 
 export function BookingForm({ 
@@ -53,17 +56,166 @@ export function BookingForm({
   resources, 
   onSubmit, 
   onCancel, 
-  initialData,
-  isLoading = false 
+  initialData, 
+  isLoading = false,
+  bookingType = 'equipment',
+  preSelectedResource = null
 }: BookingFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { tenantConfig } = useTenant()
+
+  // Helper functions for booking type styling and information
+  const getBookingTypeConfig = (type: string) => {
+    switch (type) {
+      case 'equipment':
+        return {
+          icon: <Monitor className="w-5 h-5" />,
+          color: 'blue',
+          bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+          borderColor: 'border-blue-200 dark:border-blue-800',
+          textColor: 'text-blue-900 dark:text-blue-100',
+          iconBg: 'bg-blue-100 dark:bg-blue-900/20',
+          iconColor: 'text-blue-600 dark:text-blue-400',
+          title: 'Equipment Booking',
+          description: 'Book digital lab equipment like VR headsets, 3D printers, cameras, and more'
+        }
+      case 'space':
+        return {
+          icon: <Building className="w-5 h-5" />,
+          color: 'green',
+          bgColor: 'bg-green-50 dark:bg-green-900/20',
+          borderColor: 'border-green-200 dark:border-green-800',
+          textColor: 'text-green-900 dark:text-green-100',
+          iconBg: 'bg-green-100 dark:bg-green-900/20',
+          iconColor: 'text-green-600 dark:text-green-400',
+          title: 'Space Booking',
+          description: 'Reserve collaborative workspaces, meeting rooms, and studio spaces'
+        }
+      case 'workshop':
+        return {
+          icon: <GraduationCap className="w-5 h-5" />,
+          color: 'purple',
+          bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+          borderColor: 'border-purple-200 dark:border-purple-800',
+          textColor: 'text-purple-900 dark:text-purple-100',
+          iconBg: 'bg-purple-100 dark:bg-purple-900/20',
+          iconColor: 'text-purple-600 dark:text-purple-400',
+          title: 'Workshop Booking',
+          description: 'Join workshops, training sessions, and educational programs'
+        }
+      case 'person':
+        return {
+          icon: <User className="w-5 h-5" />,
+          color: 'orange',
+          bgColor: 'bg-orange-50 dark:bg-orange-900/20',
+          borderColor: 'border-orange-200 dark:border-orange-800',
+          textColor: 'text-orange-900 dark:text-orange-100',
+          iconBg: 'bg-orange-100 dark:bg-orange-900/20',
+          iconColor: 'text-orange-600 dark:text-orange-400',
+          title: 'Person Booking',
+          description: 'Book time with artists, mentors, and specialists'
+        }
+      default:
+        return {
+          icon: <CalendarIcon className="w-5 h-5" />,
+          color: 'gray',
+          bgColor: 'bg-gray-50 dark:bg-gray-900/20',
+          borderColor: 'border-gray-200 dark:border-gray-800',
+          textColor: 'text-gray-900 dark:text-gray-100',
+          iconBg: 'bg-gray-100 dark:bg-gray-900/20',
+          iconColor: 'text-gray-600 dark:text-gray-400',
+          title: 'Booking',
+          description: 'Create a new booking'
+        }
+    }
+  }
+
+  const getBookingPolicy = (type: string) => {
+    switch (type) {
+      case 'equipment':
+        return {
+          title: 'Equipment Booking Policy',
+          rules: [
+            'Equipment can be booked up to 2 weeks in advance',
+            'Maximum 4 hours per session',
+            'Cancellations must be made 24 hours in advance',
+            'All users must complete safety training before using equipment',
+            'Follow all posted guidelines and ask staff for assistance when needed'
+          ]
+        }
+      case 'space':
+        return {
+          title: 'Space Booking Policy',
+          rules: [
+            'Spaces can be booked up to 1 month in advance',
+            'Maximum 8 hours per session',
+            'Cancellations must be made 48 hours in advance',
+            'Clean up after yourself and report any issues immediately',
+            'Respect other users and maintain a collaborative environment'
+          ]
+        }
+      case 'workshop':
+        return {
+          title: 'Workshop Booking Policy',
+          rules: [
+            'Workshops can be booked up to 1 month in advance',
+            'Registration closes 24 hours before the workshop',
+            'Cancellations must be made 48 hours in advance',
+            'Arrive 10 minutes early for setup',
+            'Bring required materials as specified in the workshop description'
+          ]
+        }
+      case 'person':
+        return {
+          title: 'Person Booking Policy',
+          rules: [
+            'Mentor sessions can be booked up to 2 weeks in advance',
+            'Maximum 2 hours per session',
+            'Cancellations must be made 24 hours in advance',
+            'Come prepared with specific questions or project goals',
+            'Be respectful of the mentor\'s time and expertise'
+          ]
+        }
+      default:
+        return {
+          title: 'General Booking Policy',
+          rules: [
+            'Bookings can be made up to 2 weeks in advance',
+            'Cancellations must be made 24 hours in advance',
+            'Follow all posted guidelines and policies',
+            'Respect other users and maintain a collaborative environment'
+          ]
+        }
+    }
+  }
+
+  const typeConfig = getBookingTypeConfig(bookingType)
+  const policy = getBookingPolicy(bookingType)
+  
+  // Filter resources based on booking type
+  const filteredResources = React.useMemo(() => {
+    if (bookingType === 'equipment') {
+      return resources.filter(r => r.type === 'equipment')
+    } else if (bookingType === 'space') {
+      return resources.filter(r => r.type === 'space')
+    } else if (bookingType === 'workshop') {
+      return resources.filter(r => r.type === 'workshop')
+    } else if (bookingType === 'person') {
+      return resources.filter(r => r.type === 'person')
+    }
+    return resources
+  }, [resources, bookingType])
+  
+  // Debug logging
+  console.log('🔍 BookingForm: Received resources:', resources)
+  console.log('🔍 BookingForm: Filtered resources for', bookingType, ':', filteredResources)
 
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
       title: initialData?.title || '',
       description: initialData?.description || '',
-      resourceId: initialData?.resource_id || '',
+      resourceId: initialData?.resource_id || preSelectedResource || '',
       startDate: initialData?.start_time ? new Date(initialData.start_time) : new Date(),
       startTime: initialData?.start_time ? format(new Date(initialData.start_time), 'HH:mm') : '09:00',
       endDate: initialData?.end_time ? new Date(initialData.end_time) : new Date(),
@@ -72,8 +224,20 @@ export function BookingForm({
     }
   })
 
+  // Pre-select resource if provided
+  React.useEffect(() => {
+    if (preSelectedResource && filteredResources.length > 0) {
+      const resource = filteredResources.find(r => r.id === preSelectedResource || r.title.toLowerCase().includes(preSelectedResource.toLowerCase()))
+      if (resource) {
+        form.setValue('resourceId', resource.id)
+        console.log('🔍 BookingForm: Pre-selected resource:', resource.title)
+      }
+    }
+  }, [preSelectedResource, filteredResources, form])
+
   const handleSubmit = async (data: BookingFormData) => {
     try {
+      console.log('🔍 BookingForm: Submitting booking data:', data)
       setIsSubmitting(true)
       
       // Combine date and time
@@ -89,9 +253,10 @@ export function BookingForm({
         endTime: endDateTime.toISOString()
       }
 
+      console.log('🔍 BookingForm: Final booking data:', bookingData)
       await onSubmit(bookingData)
     } catch (error) {
-      console.error('Error submitting booking:', error)
+      console.error('❌ BookingForm: Error submitting booking:', error)
     } finally {
       setIsSubmitting(false)
     }
@@ -112,6 +277,47 @@ export function BookingForm({
 
   return (
     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      {/* Booking Type Header */}
+      <div className={`${typeConfig.bgColor} ${typeConfig.borderColor} border rounded-lg p-4`}>
+        <div className="flex items-center space-x-3">
+          <div className={`${typeConfig.iconBg} p-2 rounded-lg`}>
+            <div className={typeConfig.iconColor}>
+              {typeConfig.icon}
+            </div>
+          </div>
+          <div>
+            <h3 className={`font-semibold ${typeConfig.textColor}`}>
+              {typeConfig.title}
+            </h3>
+            <p className={`text-sm ${typeConfig.textColor} opacity-80`}>
+              {typeConfig.description}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Booking Policy */}
+      <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+        <div className="flex items-start space-x-3">
+          <div className="flex-shrink-0">
+            <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+          </div>
+          <div className="flex-1">
+            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+              {policy.title}
+            </h4>
+            <ul className="space-y-1">
+              {policy.rules.map((rule, index) => (
+                <li key={index} className="text-sm text-gray-600 dark:text-gray-400 flex items-start">
+                  <span className="text-blue-600 dark:text-blue-400 mr-2">•</span>
+                  {rule}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Title */}
         <div className="md:col-span-2">
@@ -142,16 +348,19 @@ export function BookingForm({
               <SelectValue placeholder="Select a resource" />
             </SelectTrigger>
             <SelectContent>
-              {resources.map((resource) => (
-                <SelectItem key={resource.id} value={resource.id}>
-                  <div className="flex items-center justify-between w-full">
-                    <span>{resource.title}</span>
-                    <span className="text-sm text-gray-500 ml-2">
-                      ({resource.type} - {resource.capacity} capacity)
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
+              {filteredResources.map((resource) => {
+                console.log('🔍 BookingForm: Rendering resource:', resource)
+                return (
+                  <SelectItem key={resource.id} value={resource.id}>
+                    <div className="flex items-center justify-between w-full">
+                      <span>{resource.title}</span>
+                      <span className="text-sm text-gray-500 ml-2">
+                        ({resource.type} - {resource.capacity} capacity)
+                      </span>
+                    </div>
+                  </SelectItem>
+                )
+              })}
             </SelectContent>
           </Select>
           {form.formState.errors.resourceId && (
@@ -291,6 +500,20 @@ export function BookingForm({
           type="submit"
           disabled={isSubmitting || isLoading}
           className="min-w-[120px]"
+          style={{
+            backgroundColor: tenantConfig?.theme.primaryColor || '#1E40AF',
+            borderColor: tenantConfig?.theme.primaryColor || '#1E40AF',
+          }}
+          onMouseEnter={(e) => {
+            if (tenantConfig?.theme.secondaryColor) {
+              e.currentTarget.style.backgroundColor = tenantConfig.theme.secondaryColor
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (tenantConfig?.theme.primaryColor) {
+              e.currentTarget.style.backgroundColor = tenantConfig.theme.primaryColor
+            }
+          }}
         >
           {isSubmitting ? (
             <div className="flex items-center">

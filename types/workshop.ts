@@ -14,6 +14,7 @@
 
 export type WorkshopLevel = 'beginner' | 'intermediate' | 'advanced';
 export type WorkshopType = 'workshop' | 'course' | 'event' | 'training';
+export type WorkshopStatus = 'draft' | 'published' | 'archived';
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show';
 
 // =============================================
@@ -29,6 +30,7 @@ export interface Workshop {
   category?: string;
   type: WorkshopType;
   level: WorkshopLevel;
+  status: WorkshopStatus;
   duration_minutes?: number;
   max_participants?: number;
   price: number;
@@ -39,6 +41,8 @@ export interface Workshop {
   is_active: boolean;
   is_public: boolean;
   is_shared: boolean;
+  featured: boolean;
+  image_url?: string;
   metadata?: Record<string, any>;
   created_by: string;
   created_at: string;

@@ -28,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UnifiedNavigation, ooliteConfig } from "@/components/navigation"
 import { TenantProvider } from "@/components/tenant/TenantProvider"
+import { PageFooter } from "@/components/common/PageFooter"
 
 interface Organization {
   id: string
@@ -42,11 +43,22 @@ interface Survey {
   title: string
   description: string
   created_at: string
-  form_schema: {
-    questions: any[]
+  survey_schema: {
+    questions?: any[]
   }
-  submission_settings: {
-    require_authentication: boolean
+  settings: {
+    require_authentication?: boolean
+  }
+  template_id?: string
+  survey_templates?: {
+    id: string
+    name: string
+    template_schema: {
+      sections: Array<{
+        title: { en: string; es: string }
+        questions: any[]
+      }>
+    }
   }
 }
 
@@ -70,6 +82,7 @@ interface SurveySubmission {
 
 export default function OrganizationSurveysPage() {
   const params = useParams()
+  const slug = params.slug as string
   const { resolvedTheme } = useTheme()
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [surveys, setSurveys] = useState<Survey[]>([])
@@ -262,6 +275,18 @@ export default function OrganizationSurveysPage() {
     return submission ? submission.status : 'available'
   }
 
+  const getQuestionCount = (survey: Survey) => {
+    // If survey has template, count questions from template sections
+    if (survey.survey_templates?.template_schema?.sections) {
+      return survey.survey_templates.template_schema.sections.reduce((total, section) => {
+        return total + (section.questions?.length || 0)
+      }, 0)
+    }
+    
+    // Fallback to survey_schema questions
+    return survey.survey_schema?.questions?.length || 0
+  }
+
   if (loading) {
     return (
       <div 
@@ -295,10 +320,7 @@ export default function OrganizationSurveysPage() {
 
   return (
     <TenantProvider>
-      <div 
-        className="min-h-screen"
-        style={{ background: themeStyles.background }}
-      >
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         {/* Navigation */}
         <UnifiedNavigation config={ooliteConfig} userRole="admin" />
 
@@ -315,17 +337,14 @@ export default function OrganizationSurveysPage() {
           <div className="relative z-10 flex items-end h-full">
             <div className="max-w-7xl mx-auto px-4 pb-8 w-full">
               <div className="flex items-center space-x-4">
-                <div 
-                  className="p-3 rounded-lg"
-                  style={{ backgroundColor: `${ooliteColors.primary}20` }}
-                >
+                <div className="p-3 rounded-lg" style={{ backgroundColor: ooliteColors.primaryAlpha }}>
                   <FileText className="w-8 h-8" style={{ color: ooliteColors.primary }} />
                 </div>
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold" style={{ color: themeStyles.textPrimary }}>
+                  <h1 className="text-3xl md:text-4xl font-bold text-white">
                     Surveys
                   </h1>
-                  <p className="text-lg" style={{ color: themeStyles.textSecondary }}>
+                  <p className="text-lg text-white/90">
                     Discover and participate in surveys from {organization.name}
                   </p>
                 </div>
@@ -346,17 +365,14 @@ export default function OrganizationSurveysPage() {
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center space-x-4 mb-4">
-              <div 
-                className="p-3 rounded-lg"
-                style={{ backgroundColor: `${ooliteColors.primary}20` }}
-              >
+              <div className="p-3 rounded-lg" style={{ backgroundColor: ooliteColors.primaryAlpha }}>
                 <FileText className="w-8 h-8" style={{ color: ooliteColors.primary }} />
               </div>
               <div>
-                <h1 className="text-3xl font-bold" style={{ color: themeStyles.textPrimary }}>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   Surveys
                 </h1>
-                <p style={{ color: themeStyles.textSecondary }}>
+                <p className="text-gray-600 dark:text-gray-300">
                   Discover and participate in surveys from {organization.name}
                 </p>
               </div>
@@ -371,24 +387,24 @@ export default function OrganizationSurveysPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <Card style={{ backgroundColor: themeStyles.cardBg, borderColor: themeStyles.cardBorder }}>
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium" style={{ color: themeStyles.textSecondary }}>Available Surveys</p>
-                  <p className="text-2xl font-bold" style={{ color: themeStyles.textPrimary }}>{surveys.length}</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Available Surveys</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{surveys.length}</p>
                 </div>
                 <FileText className="h-8 w-8" style={{ color: ooliteColors.primary }} />
               </div>
             </CardContent>
           </Card>
 
-          <Card style={{ backgroundColor: themeStyles.cardBg, borderColor: themeStyles.cardBorder }}>
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium" style={{ color: themeStyles.textSecondary }}>In Progress</p>
-                  <p className="text-2xl font-bold" style={{ color: themeStyles.textPrimary }}>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">In Progress</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {submissions.filter(s => s.status === 'draft').length}
                   </p>
                 </div>
@@ -397,26 +413,26 @@ export default function OrganizationSurveysPage() {
             </CardContent>
           </Card>
 
-          <Card style={{ backgroundColor: themeStyles.cardBg, borderColor: themeStyles.cardBorder }}>
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium" style={{ color: themeStyles.textSecondary }}>Under Review</p>
-                  <p className="text-2xl font-bold" style={{ color: themeStyles.textPrimary }}>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Under Review</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {submissions.filter(s => s.status === 'in_review').length}
                   </p>
                 </div>
-                <Eye className="h-8 w-8 text-blue-600" />
+                <Eye className="h-8 w-8" style={{ color: ooliteColors.primary }} />
               </div>
             </CardContent>
           </Card>
 
-          <Card style={{ backgroundColor: themeStyles.cardBg, borderColor: themeStyles.cardBorder }}>
+          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium" style={{ color: themeStyles.textSecondary }}>Completed</p>
-                  <p className="text-2xl font-bold" style={{ color: themeStyles.textPrimary }}>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {submissions.filter(s => s.status === 'accepted').length}
                   </p>
                 </div>
@@ -433,26 +449,23 @@ export default function OrganizationSurveysPage() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList 
-              className="grid w-full grid-cols-2"
-              style={{ backgroundColor: themeStyles.surfaceBg }}
-            >
+            <TabsList className="grid w-full grid-cols-2 bg-white dark:bg-gray-800">
               <TabsTrigger 
                 value="available" 
-                className="data-[state=active]:text-white"
-                style={{ 
+                className="text-gray-900 dark:text-white"
+                style={{
                   backgroundColor: activeTab === 'available' ? ooliteColors.primary : 'transparent',
-                  color: activeTab === 'available' ? 'white' : themeStyles.textPrimary
+                  color: activeTab === 'available' ? '#ffffff' : undefined
                 }}
               >
                 Available Surveys ({surveys.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="my-submissions" 
-                className="data-[state=active]:text-white"
-                style={{ 
+                className="text-gray-900 dark:text-white"
+                style={{
                   backgroundColor: activeTab === 'my-submissions' ? ooliteColors.primary : 'transparent',
-                  color: activeTab === 'my-submissions' ? 'white' : themeStyles.textPrimary
+                  color: activeTab === 'my-submissions' ? '#ffffff' : undefined
                 }}
               >
                 My Submissions ({submissions.length})
@@ -461,18 +474,12 @@ export default function OrganizationSurveysPage() {
 
             <TabsContent value="available" className="mt-6">
               {surveys.length === 0 ? (
-                <Card 
-                  className="text-center py-12"
-                  style={{ 
-                    backgroundColor: themeStyles.cardBg,
-                    borderColor: themeStyles.cardBorder
-                  }}
-                >
+                <Card className="text-center py-12 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                   <CardHeader>
-                    <CardTitle style={{ color: themeStyles.textPrimary }}>No Surveys Found</CardTitle>
+                    <CardTitle className="text-gray-900 dark:text-white">No Surveys Found</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-lg mb-4" style={{ color: themeStyles.textSecondary }}>
+                    <p className="text-lg mb-4 text-gray-600 dark:text-gray-300">
                       It looks like there are no surveys available for {organization.name} yet.
                     </p>
                   </CardContent>
@@ -486,17 +493,13 @@ export default function OrganizationSurveysPage() {
                     return (
                       <Card 
                         key={survey.id} 
-                        className="h-full"
-                        style={{ 
-                          backgroundColor: themeStyles.cardBg,
-                          borderColor: themeStyles.cardBorder
-                        }}
+                        className="h-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                       >
                         <CardHeader>
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <CardTitle style={{ color: themeStyles.textPrimary }}>{survey.title}</CardTitle>
-                              <CardDescription style={{ color: themeStyles.textSecondary }}>{survey.description}</CardDescription>
+                              <CardTitle className="text-gray-900 dark:text-white">{survey.title}</CardTitle>
+                              <CardDescription className="text-gray-600 dark:text-gray-300">{survey.description}</CardDescription>
                             </div>
                             {surveyStatus !== 'available' && (
                               <Badge className={getStatusColor(surveyStatus)}>
@@ -509,14 +512,14 @@ export default function OrganizationSurveysPage() {
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <div className="space-y-2 text-sm" style={{ color: themeStyles.textSecondary }}>
-                            <div>Questions: {survey.form_schema.questions.length}</div>
+                          <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                            <div>Questions: {getQuestionCount(survey)}</div>
                             <div>Created: {new Date(survey.created_at).toLocaleDateString()}</div>
                             <div>
-                              {survey.submission_settings.require_authentication ? 'Auth Required' : 'Anonymous Allowed'}
+                              {survey.settings?.require_authentication ? 'Auth Required' : 'Anonymous Allowed'}
                             </div>
                             {submission && (
-                              <div className="pt-2 border-t" style={{ borderColor: themeStyles.cardBorder }}>
+                              <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center justify-between text-xs">
                                   <span>Progress: {submission.answeredQuestions}/{submission.totalQuestions}</span>
                                   <span>{submission.progress}%</span>
@@ -542,15 +545,15 @@ export default function OrganizationSurveysPage() {
                             asChild
                             className="w-full"
                             style={{ 
-                              backgroundColor: themeStyles.buttonBg, 
-                              borderColor: themeStyles.buttonBg,
+                              backgroundColor: ooliteColors.primary, 
+                              borderColor: ooliteColors.primary,
                               color: '#ffffff'
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = themeStyles.buttonHover
+                              e.currentTarget.style.backgroundColor = ooliteColors.primaryLight
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = themeStyles.buttonBg
+                              e.currentTarget.style.backgroundColor = ooliteColors.primary
                             }}
                           >
                             <a href={`/submit/${survey.id}`} target="_blank" rel="noopener noreferrer">
@@ -720,6 +723,20 @@ export default function OrganizationSurveysPage() {
               </div>
             </TabsContent>
           </Tabs>
+
+          {/* Page Footer */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <PageFooter 
+              organizationSlug={slug}
+              showGetStarted={true}
+              showGuidelines={true}
+              showTerms={true}
+            />
+          </motion.div>
         </motion.div>
       </div>
       </div>

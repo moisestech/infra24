@@ -1,0 +1,18 @@
+.animate-slide-up-slow {
+  animation: slideUp 12s linear infinite;
+}
+.animate-slide-down-slow {
+  animation: slideDown 12s linear infinite;
+}
+.paused {
+  animation-play-state: paused !important;
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+@keyframes slideDown {
+  0% { transform: translateY(-50%); }
+  100% { transform: translateY(0); }
+} 

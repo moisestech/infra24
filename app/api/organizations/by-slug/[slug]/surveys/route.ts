@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(
   request: NextRequest,
@@ -13,7 +13,9 @@ export async function GET(
     console.log('📍 Requested slug:', slug)
 
     // Get the organization by slug
-    const { data: organization, error: orgError } = await supabaseAdmin
+    const supabase = createClient()
+
+    const { data: organization, error: orgError } = await supabase
       .from('organizations')
       .select('id, name, slug')
       .eq('slug', slug)
@@ -26,24 +28,30 @@ export async function GET(
 
     console.log('🏢 Found organization:', organization.name)
 
-    // Get surveys for this organization
-    const { data: surveys, error: surveysError } = await supabaseAdmin
-      .from('submission_forms')
+    // Get surveys for this organization with template data
+    const { data: surveys, error: surveysError } = await supabase
+      .from('surveys')
       .select(`
         id,
         title,
         description,
-        category,
-        type,
-        form_schema,
-        submission_settings,
-        is_public,
-        requires_authentication,
-        created_at
+        status,
+        is_anonymous,
+        opens_at,
+        closes_at,
+        survey_schema,
+        settings,
+        template_id,
+        survey_templates (
+          id,
+          name,
+          template_schema
+        ),
+        created_at,
+        updated_at
       `)
       .eq('organization_id', organization.id)
-      .eq('type', 'survey')
-      .eq('is_active', true)
+      .eq('status', 'active')
       .order('created_at', { ascending: false })
 
     if (surveysError) {

@@ -6,7 +6,7 @@
 -- You can find this by running: SELECT id, name, slug FROM organizations WHERE slug = 'bakehouse';
 
 -- Insert artist profiles
-INSERT INTO artist_profiles (name, bio, profile_image_url, role, org_id, status, created_at, updated_at) VALUES
+INSERT INTO artist_profiles (name, bio, profile_image, studio_type, organization_id, is_active, created_at, updated_at) VALUES
   ('Daniel Arturo Almeida', 'Artist at Bakehouse Art Complex', 'https://res.cloudinary.com/du1ysiumj/image/upload/v1757336162/bakehouse_daniel_arturo_almeida_associate_lyo5yu.webp', 'associate', '2efcebf3-9750-4ea2-85a0-9501eb698b20', 'active', NOW(), NOW()),
   ('Susan Alvarez', 'Artist at Bakehouse Art Complex', 'https://res.cloudinary.com/du1ysiumj/image/upload/v1757336162/bakehouse_susan_alvarez_kft10t.webp', 'resident', '2efcebf3-9750-4ea2-85a0-9501eb698b20', 'active', NOW(), NOW()),
   ('Alyssa Andrews', 'Artist at Bakehouse Art Complex', 'https://res.cloudinary.com/du1ysiumj/image/upload/v1757336160/bakehouse_alyssa_andrews_h17qcs.webp', 'resident', '2efcebf3-9750-4ea2-85a0-9501eb698b20', 'active', NOW(), NOW()),

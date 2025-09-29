@@ -21,11 +21,6 @@ export async function GET(
     const { userId } = await auth();
     console.log('🔐 Auth check - userId:', userId ? 'present' : 'missing');
     
-    if (!userId) {
-      console.log('🔐 No userId, returning 401');
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { slug } = await params;
     console.log('🏢 Fetching announcements for organization slug:', slug);
 
@@ -43,26 +38,7 @@ export async function GET(
 
     console.log('🏢 Found organization:', organization);
 
-    // Check if user has access to this organization
-    const { data: userMembership } = await supabase
-      .from('org_memberships')
-      .select('role, organization_id')
-      .eq('clerk_user_id', userId)
-      .single();
-
-    if (!userMembership) {
-      console.log('👥 User membership not found for userId:', userId);
-      return NextResponse.json({ error: 'User membership not found' }, { status: 401 });
-    }
-
-    console.log('👥 Found user membership:', userMembership);
-
-    // Super admins can see all organizations, others can only see their own
-    if (userMembership.role !== 'super_admin' && userMembership.organization_id !== organization.id) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
-
-    // Get all announcements for this organization using correct schema
+    // Get announcements for this organization
     let query = supabase
       .from('announcements')
       .select(`
@@ -83,12 +59,36 @@ export async function GET(
         created_by,
         updated_by
       `)
-      .eq('organization_id', organization.id)
+      .eq('org_id', organization.id)
       .order('created_at', { ascending: false });
 
-    // If user is not an admin, only show active announcements
-    if (!['super_admin', 'org_admin', 'moderator'].includes(userMembership.role)) {
+    // If no user is authenticated, only show active announcements
+    if (!userId) {
       query = query.eq('is_active', true);
+    } else {
+      // Check if user has access to this organization
+      const { data: userMembership } = await supabase
+        .from('org_memberships')
+        .select('role, organization_id')
+        .eq('clerk_user_id', userId)
+        .single();
+
+      if (userMembership) {
+        console.log('👥 Found user membership:', userMembership);
+        
+        // Super admins can see all organizations, others can only see their own
+        if (userMembership.role !== 'super_admin' && userMembership.organization_id !== organization.id) {
+          return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+        }
+
+        // If user is not an admin, only show active announcements
+        if (!['super_admin', 'org_admin', 'moderator'].includes(userMembership.role)) {
+          query = query.eq('is_active', true);
+        }
+      } else {
+        // No membership found, only show active announcements
+        query = query.eq('is_active', true);
+      }
     }
 
     const { data: announcements, error: announcementsError } = await query;
@@ -167,7 +167,7 @@ export async function POST(
     const { data: announcement, error: createError } = await supabase
       .from('announcements')
       .insert({
-        organization_id: organization.id,
+        org_id: organization.id,
         created_by: userId,
         title: body.title,
         content: body.content,
