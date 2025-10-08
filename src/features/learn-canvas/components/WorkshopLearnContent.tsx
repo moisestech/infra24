@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useAuth } from '@clerk/nextjs'
+import { useAuth, useUser } from '@clerk/nextjs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
@@ -68,14 +68,14 @@ export function WorkshopLearnContent({
   userProgress = [], 
   isAuthenticated 
 }: WorkshopLearnContentProps) {
-  const { user } = useAuth()
+  const { user } = useUser()
   const router = useRouter()
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   // const { theme } = useOrganizationTheme() // Placeholder
-  const theme = 'dark' // Default theme for now
+  const theme = { primaryColor: '#3b82f6' } // Default theme for now
 
   useEffect(() => {
     if (workshop.has_learn_content) {
@@ -113,7 +113,7 @@ export function WorkshopLearnContent({
   const getChapterStatus = (chapterId: string) => {
     const progress = userProgress.find(p => p.chapter_id === chapterId)
     if (progress?.completed_at) return 'completed'
-    if (progress?.progress_percentage > 0) return 'in-progress'
+    if (progress?.progress_percentage && progress.progress_percentage > 0) return 'in-progress'
     return 'not-started'
   }
 
@@ -161,7 +161,7 @@ export function WorkshopLearnContent({
       <Card>
         <CardContent className="py-12 text-center">
           <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-          <Button onClick={loadChapters} variant="outline">
+          <Button onClick={loadChapters} variant="default">
             Try Again
           </Button>
         </CardContent>
@@ -208,11 +208,11 @@ export function WorkshopLearnContent({
               </p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
+              <Button variant="default" size="sm">
                 <Bookmark className="w-4 h-4 mr-2" />
                 Save
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="default" size="sm">
                 <Share2 className="w-4 h-4 mr-2" />
                 Share
               </Button>
@@ -221,18 +221,18 @@ export function WorkshopLearnContent({
           
           <div className="flex flex-wrap gap-4 mt-4">
             {workshop.estimated_learn_time && (
-              <Badge variant="outline" className="border-gray-400 text-gray-400">
+              <Badge variant="default" className="border-gray-400 text-gray-400">
                 <Clock className="w-4 h-4 mr-2" />
                 {workshop.estimated_learn_time} min total
               </Badge>
             )}
             {workshop.learn_difficulty && (
-              <Badge variant="outline" className={getDifficultyColor(workshop.learn_difficulty)}>
+              <Badge variant="default" className={getDifficultyColor(workshop.learn_difficulty)}>
                 <Target className="w-4 h-4 mr-2" />
                 {workshop.learn_difficulty}
               </Badge>
             )}
-            <Badge variant="outline" className="border-blue-400 text-blue-400">
+            <Badge variant="default" className="border-blue-400 text-blue-400">
               <Users className="w-4 h-4 mr-2" />
               {chapters.length} chapters
             </Badge>
@@ -345,7 +345,7 @@ export function WorkshopLearnContent({
                       </div>
                       <div className="flex items-center gap-3">
                         {chapter.estimated_time && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="default" className="text-xs">
                             <Clock className="w-3 h-3 mr-1" />
                             {chapter.estimated_time} min
                           </Badge>

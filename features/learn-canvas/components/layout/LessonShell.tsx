@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, BookOpen, Clock, CheckCircle, Presentation } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { cn } from '@/shared/lib/utils'
-import { useLanguage } from '@/shared/i18n/LanguageProvider'
+import { cn } from '@/lib/utils'
+// useLanguage not available
 
 interface LessonShellProps {
   children: React.ReactNode
@@ -29,7 +29,8 @@ export function LessonShell({
   onPresentationMode,
   className
 }: LessonShellProps) {
-  const { t } = useLanguage()
+  // Simple fallback for language support
+  const t = (key: string, options?: any) => key
   const [progress, setProgress] = useState(0)
   const [timeSpent, setTimeSpent] = useState(0)
   const [isCompleted, setIsCompleted] = useState(false)

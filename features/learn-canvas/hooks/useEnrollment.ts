@@ -100,7 +100,7 @@ export function useEnrollment() {
       const enrolled = await enrollmentService.autoEnrollUser(userId)
       
       if (enrolled.length > 0) {
-        setEnrolledWorkshops(prev => [...new Set([...prev, ...enrolled])])
+        setEnrolledWorkshops(prev => Array.from(new Set([...prev, ...enrolled])))
         
         // Refresh access map
         const access = await enrollmentService.getAllWorkshopAccess(userId)

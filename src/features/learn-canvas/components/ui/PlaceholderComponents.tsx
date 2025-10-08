@@ -157,14 +157,14 @@ export function DevPlaceholder({ title, description, className = '' }: DevPlaceh
   )
 }
 
-// ExternalLink Component
-interface ExternalLinkProps {
+// ExternalLinkWrapper Component
+interface ExternalLinkWrapperProps {
   href: string
   children: ReactNode
   className?: string
 }
 
-export function ExternalLink({ href, children, className = '' }: ExternalLinkProps) {
+export function ExternalLinkWrapper({ href, children, className = '' }: ExternalLinkWrapperProps) {
   return (
     <a 
       href={href}

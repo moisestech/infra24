@@ -2,7 +2,7 @@
 
 import { ExternalLink, BookOpen, Video, FileText, Code, Globe, Download } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { cn } from '@/shared/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface ResourceItem {
   title: string

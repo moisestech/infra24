@@ -1,8 +1,8 @@
 'use client'
 
-import { cn } from '@/shared/lib/utils'
-import { Card, CardContent } from '@/shared/components/ui/card'
-import { Badge } from '@/shared/components/ui/badge'
+import { cn } from '@/lib/utils'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { ExternalLink as ExternalLinkIcon, Image, Video, FileText, Link as LinkIcon } from 'lucide-react'
 
 // Custom ExternalLink component for research links

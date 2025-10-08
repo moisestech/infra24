@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { cn } from '@/shared/lib/utils'
+import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronRight, CheckCircle, XCircle, Minus } from 'lucide-react'
 
 interface ComparisonItem {

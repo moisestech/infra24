@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { 
   FileText, 
   Users, 
@@ -277,7 +277,7 @@ export default function SubmitProposalPage() {
                         {index + 1}
                       </div>
                       <div>
-                        <Badge variant="info" className="mb-1">{phase.phase}</Badge>
+                        <Badge variant="default" className="mb-1">{phase.phase}</Badge>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                           {phase.title}
                         </h3>

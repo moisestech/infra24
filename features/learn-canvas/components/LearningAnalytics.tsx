@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Badge } from '@/shared/components/ui/badge';
-import { Progress } from '@/shared/components/ui/progress';
-import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { 
   BookOpen, 
   Eye, 
@@ -324,7 +324,7 @@ export function LearningAnalytics() {
             {analytics.topLikedWorkshops.slice(0, 5).map((workshop, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-zinc-800 rounded-lg border border-zinc-700 hover:border-[#00ff00]/50 transition-all duration-200">
                 <div className="flex items-center gap-3">
-                  <Badge variant="outline" className="text-xs border-[#00ff00] text-[#00ff00]">
+                  <Badge variant="default" className="text-xs border-[#00ff00] text-[#00ff00]">
                     #{index + 1}
                   </Badge>
                   <span className="font-medium capitalize text-white">

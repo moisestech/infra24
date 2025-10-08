@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { BarChart3, Vote, CheckCircle, Users } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/shared/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface PollProps {
   question: string

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-// import { Badge } from '@/components/ui/Badge'
+// import { Badge } from '@/components/ui/badge'
 // import { Calendar, Clock, Users, MapPin, Plus, Filter } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { format, addDays, startOfWeek, endOfWeek } from 'date-fns'

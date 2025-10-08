@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { 
   Monitor, 
   Printer, 
@@ -20,7 +20,7 @@ import {
   Star,
   Zap
 } from 'lucide-react';
-import EquipmentVoting from '@/components/equipment/EquipmentVoting';
+import EquipmentVotingUnified from '@/components/equipment/EquipmentVotingUnified';
 import { useTenant } from '@/components/tenant/TenantProvider';
 
 interface Equipment {
@@ -75,7 +75,7 @@ export default function OoliteDigitalLabPage() {
           // Filter for equipment type resources
           const equipmentResources = (resourcesData.resources || []).filter((r: Equipment) => r.type === 'equipment');
           console.log('🔍 Oolite Digital Lab: Equipment resources:', equipmentResources);
-          console.log('🔍 Oolite Digital Lab: Equipment statuses:', equipmentResources.map(e => ({ name: e.title, status: e.metadata?.status })));
+          console.log('🔍 Oolite Digital Lab: Equipment statuses:', equipmentResources.map((e: Equipment) => ({ name: e.title, status: e.metadata?.status })));
           setEquipment(equipmentResources);
         } else {
           console.error('🔍 Oolite Digital Lab: Resources API error:', resourcesResponse.status);
@@ -155,7 +155,7 @@ export default function OoliteDigitalLabPage() {
                   <p className="text-sm font-medium text-gray-600">Total Equipment</p>
                   <p className="text-2xl font-bold text-gray-900">{equipment.length}</p>
                 </div>
-                <Monitor className="w-8 h-8" style={{ color: tenantConfig?.theme?.primary || '#47abc4' }} />
+                <Monitor className="w-8 h-8" style={{ color: tenantConfig?.theme?.primaryColor || '#47abc4' }} />
               </div>
             </CardContent>
           </Card>
@@ -183,7 +183,7 @@ export default function OoliteDigitalLabPage() {
                     {equipment.filter(e => e.metadata?.status === 'in-use').length}
                   </p>
                 </div>
-                <Users className="w-8 h-8" style={{ color: tenantConfig?.theme?.primary || '#47abc4' }} />
+                <Users className="w-8 h-8" style={{ color: tenantConfig?.theme?.primaryColor || '#47abc4' }} />
               </div>
             </CardContent>
           </Card>
@@ -216,15 +216,15 @@ export default function OoliteDigitalLabPage() {
                 onClick={() => setSelectedCategory(category)}
                 className="capitalize"
                 style={selectedCategory === category ? {
-                  backgroundColor: tenantConfig?.theme?.primary || '#47abc4',
+                  backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4',
                   color: 'white'
                 } : {
-                  borderColor: tenantConfig?.theme?.primary || '#47abc4',
-                  color: tenantConfig?.theme?.primary || '#47abc4'
+                  borderColor: tenantConfig?.theme?.primaryColor || '#47abc4',
+                  color: tenantConfig?.theme?.primaryColor || '#47abc4'
                 }}
                 onMouseEnter={(e) => {
                   if (selectedCategory !== category) {
-                    e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryAlpha || 'rgba(71, 171, 196, 0.1)';
+                    e.currentTarget.style.backgroundColor = 'rgba(71, 171, 196, 0.1)';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -248,19 +248,14 @@ export default function OoliteDigitalLabPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg" style={{ backgroundColor: `${tenantConfig?.theme?.primary || '#47abc4'}20` }}>
-                        <Printer className="w-6 h-6" style={{ color: tenantConfig?.theme?.primary || '#47abc4' }} />
+                      <div className="p-2 rounded-lg" style={{ backgroundColor: `${tenantConfig?.theme?.primaryColor || '#47abc4'}20` }}>
+                        <Printer className="w-6 h-6" style={{ color: tenantConfig?.theme?.primaryColor || '#47abc4' }} />
                       </div>
                       <div>
                         <CardTitle className="text-lg">{item.title}</CardTitle>
                         <Badge 
                           variant="default" 
                           className="mt-1"
-                          style={{
-                            backgroundColor: `${tenantConfig?.theme?.primary || '#47abc4'}20`,
-                            color: tenantConfig?.theme?.primary || '#47abc4',
-                            borderColor: tenantConfig?.theme?.primary || '#47abc4'
-                          }}
                         >
                           {item.category}
                         </Badge>
@@ -294,7 +289,7 @@ export default function OoliteDigitalLabPage() {
                         <div className="space-y-1">
                           {Object.entries(item.metadata.specifications).map(([key, value], index) => (
                             <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                              <Star className="w-3 h-3" style={{ color: tenantConfig?.theme?.primary || '#47abc4' }} />
+                              <Star className="w-3 h-3" style={{ color: tenantConfig?.theme?.primaryColor || '#47abc4' }} />
                               {key}: {value as string}
                             </div>
                           ))}
@@ -321,7 +316,7 @@ export default function OoliteDigitalLabPage() {
                         className="flex-1"
                         disabled={!isAvailable}
                         style={{
-                          backgroundColor: isAvailable ? (tenantConfig?.theme?.primary || '#47abc4') : '#9ca3af',
+                          backgroundColor: isAvailable ? (tenantConfig?.theme?.primaryColor || '#47abc4') : '#9ca3af',
                           color: 'white'
                         }}
                       >
@@ -332,11 +327,11 @@ export default function OoliteDigitalLabPage() {
                         size="sm" 
                         variant="outline"
                         style={{
-                          borderColor: tenantConfig?.theme?.primary || '#47abc4',
-                          color: tenantConfig?.theme?.primary || '#47abc4'
+                          borderColor: tenantConfig?.theme?.primaryColor || '#47abc4',
+                          color: tenantConfig?.theme?.primaryColor || '#47abc4'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryAlpha || 'rgba(71, 171, 196, 0.1)';
+                          e.currentTarget.style.backgroundColor = 'rgba(71, 171, 196, 0.1)';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = 'transparent';
@@ -357,7 +352,7 @@ export default function OoliteDigitalLabPage() {
           <div className="mb-16">
             <Card className="bg-white shadow-lg">
               <CardContent className="p-6">
-                <EquipmentVoting orgId={organization.id} />
+                <EquipmentVotingUnified orgId={organization.id} />
               </CardContent>
             </Card>
           </div>

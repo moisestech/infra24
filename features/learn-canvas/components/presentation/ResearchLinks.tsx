@@ -1,7 +1,7 @@
 'use client'
 
 import { ExternalLink, FileText, Video, Code, Globe, Github } from 'lucide-react'
-import { cn } from '@/shared/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface ResearchLink {
   title: string

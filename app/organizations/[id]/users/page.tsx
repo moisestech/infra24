@@ -18,7 +18,7 @@ import {
   MoreHorizontal
 } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 
 interface User {
   id: string
@@ -96,20 +96,20 @@ function OrganizationUsersPageContent() {
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'super_admin': return 'error'
-      case 'org_admin': return 'warning'
-      case 'moderator': return 'info'
-      case 'resident': return 'success'
+      case 'super_admin': return 'destructive'
+      case 'org_admin': return 'secondary'
+      case 'moderator': return 'default'
+      case 'resident': return 'default'
       default: return 'default'
     }
   }
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case 'active': return 'success'
-      case 'cancelled': return 'error'
-      case 'expired': return 'warning'
-      case 'past_due': return 'error'
+      case 'active': return 'default'
+      case 'cancelled': return 'destructive'
+      case 'expired': return 'secondary'
+      case 'past_due': return 'destructive'
       default: return 'default'
     }
   }

@@ -2,22 +2,36 @@
 
 import Link from 'next/link'
 import { BookOpen, Clock, Users, Star, GraduationCap, Heart } from 'lucide-react'
-import { WorkshopSummary, UserWorkshopProgress, DIFFICULTY_LABELS, DIFFICULTY_COLORS } from '@/shared/types/workshop'
-import { Badge } from '@/shared/components/ui/badge'
-import { Card, CardContent, CardHeader } from '@/shared/components/ui/card'
-import { Button } from '@/shared/components/ui/button'
-import ASCIIAnimation from '@/shared/components/ui/ASCIIAnimation'
+import { Workshop } from '@/types/workshop'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+// ASCIIAnimation not available
 import { useState } from 'react'
 import { useLearningTracking } from '../hooks/useLearningTracking'
-import { useLanguage } from '@/shared/i18n/LanguageProvider'
+// useLanguage not available
 
 interface WorkshopCardProps {
-  workshop: WorkshopSummary;
-  user_progress?: UserWorkshopProgress;
+  workshop: Workshop;
+  user_progress?: any; // UserWorkshopProgress type not available
 }
 
 export function WorkshopCard({ workshop, user_progress }: WorkshopCardProps) {
-  const { t } = useLanguage();
+  // Simple fallback for language support
+  const t = (key: string) => key;
+  
+  // Fallback constants for difficulty
+  const DIFFICULTY_LABELS = {
+    beginner: 'Beginner',
+    intermediate: 'Intermediate', 
+    advanced: 'Advanced'
+  };
+  
+  const DIFFICULTY_COLORS = {
+    beginner: 'text-green-600',
+    intermediate: 'text-yellow-600',
+    advanced: 'text-red-600'
+  };
   const progressPercentage = user_progress?.completion_percentage || 0;
   const isInProgress = user_progress && user_progress.chapters_started > 0;
   const isCompleted = user_progress && user_progress.completion_percentage === 100;
@@ -30,16 +44,16 @@ export function WorkshopCard({ workshop, user_progress }: WorkshopCardProps) {
     e.stopPropagation();
     
     if (isLiked) {
-      await unlikeWorkshop(workshop.slug);
+      await unlikeWorkshop(workshop.id);
       setIsLiked(false);
     } else {
-      await likeWorkshop(workshop.slug);
+      await likeWorkshop(workshop.id);
       setIsLiked(true);
     }
   };
 
   return (
-    <Link href={`/learn/${workshop.slug}`}>
+    <Link href={`/learn/${workshop.id}`}>
       <Card 
         className="h-full bg-gray-900/50 border-gray-800 hover:border-lime-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-lime-400/10 group cursor-pointer relative overflow-hidden workshop-card"
         onMouseEnter={() => setIsHovered(true)}
@@ -47,10 +61,10 @@ export function WorkshopCard({ workshop, user_progress }: WorkshopCardProps) {
       >
         <div className="flex flex-col h-full">
           {/* Workshop Image - Top */}
-          {workshop.image && (
+          {workshop.image_url && (
             <div className="relative w-full h-32 overflow-hidden rounded-t-lg flex-shrink-0">
               <img 
-                src={workshop.image} 
+                src={workshop.image_url} 
                 alt={workshop.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
@@ -83,10 +97,10 @@ export function WorkshopCard({ workshop, user_progress }: WorkshopCardProps) {
             {/* Header with difficulty badge */}
             <div className="flex items-start justify-between mb-2">
               <Badge 
-                variant="outline" 
-                className={`${DIFFICULTY_COLORS[workshop.difficulty_level]} border-current text-xs`}
+                variant="default" 
+                className={`${DIFFICULTY_COLORS[workshop.level]} border-current text-xs`}
               >
-                {DIFFICULTY_LABELS[workshop.difficulty_level]}
+                {DIFFICULTY_LABELS[workshop.level]}
               </Badge>
             </div>
             
@@ -96,9 +110,9 @@ export function WorkshopCard({ workshop, user_progress }: WorkshopCardProps) {
             </h3>
             
             {/* Subtitle */}
-            {workshop.subtitle && (
+            {workshop.description && (
               <p className="text-gray-400 text-xs mb-2 learn-body line-clamp-1">
-                {workshop.subtitle}
+                {workshop.description}
               </p>
             )}
 
@@ -111,11 +125,11 @@ export function WorkshopCard({ workshop, user_progress }: WorkshopCardProps) {
             <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
               <div className="flex items-center space-x-2">
                 <Clock className="h-3 w-3" />
-                <span>{workshop.duration_weeks}w</span>
+                <span>{workshop.duration_minutes ? Math.round(workshop.duration_minutes / 60) : 0}h</span>
               </div>
               <div className="flex items-center space-x-1">
                 <GraduationCap className="h-3 w-3" />
-                <span>{workshop.total_chapters}</span>
+                <span>0</span>
               </div>
             </div>
 

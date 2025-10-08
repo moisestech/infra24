@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Play, CheckCircle, Clock, Target } from 'lucide-react'
 
@@ -83,13 +83,13 @@ export function ExerciseCard({
         
         <div className="flex flex-wrap gap-2 mt-4">
           {estimatedTime && (
-            <Badge variant="outline" className="border-gray-400 text-gray-400">
+            <Badge variant="default" className="border-gray-400 text-gray-400">
               <Clock className="w-3 h-3 mr-1" />
               {estimatedTime} min
             </Badge>
           )}
           {difficulty && (
-            <Badge variant="outline" className={getDifficultyColor(difficulty)}>
+            <Badge variant="default" className={getDifficultyColor(difficulty)}>
               <Target className="w-3 h-3 mr-1" />
               {difficulty}
             </Badge>
@@ -118,7 +118,7 @@ export function ExerciseCard({
             </Button>
           )}
           {status === 'completed' && (
-            <Button variant="outline" className="flex-1" disabled>
+            <Button variant="default" className="flex-1" disabled>
               <CheckCircle className="w-4 h-4 mr-2" />
               Completed
             </Button>

@@ -19,6 +19,7 @@ export async function GET(
     const limit = parseInt(searchParams.get('limit') || '50');
     const status = searchParams.get('status');
 
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = supabaseAdmin;
 
     // Get survey to check permissions
@@ -107,6 +108,7 @@ export async function POST(
       return NextResponse.json({ error: 'Invitations array is required' }, { status: 400 });
     }
 
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = supabaseAdmin;
 
     // Get survey to check permissions

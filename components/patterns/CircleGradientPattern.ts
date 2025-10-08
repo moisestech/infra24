@@ -94,7 +94,11 @@ export class CircleGradientPattern implements Pattern {
     const ctx = canvas.getContext('2d')!;
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, 1, 1);
-    const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+    const data = ctx.getImageData(0, 0, 1, 1).data;
+    const r = data[0];
+    const g = data[1];
+    const b = data[2];
+    const a = data[3];
     return { r, g, b, a: a / 255 };
   }
 } 

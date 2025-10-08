@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BookingDrawer } from '@/components/booking/BookingDrawer';
 import { useUser } from '@clerk/nextjs';
@@ -270,7 +270,7 @@ export default function ArtistProfilePage() {
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {artist.specialties.map((specialty, index) => (
-                    <Badge key={index} variant="info" className="flex items-center gap-1">
+                    <Badge key={index} variant="default" className="flex items-center gap-1">
                       {getSpecialtyIcon(specialty)}
                       {specialty}
                     </Badge>
@@ -502,7 +502,7 @@ export default function ArtistProfilePage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Status:</span>
-                      <Badge variant={artist.isActive ? "default" : "info"}>
+                      <Badge variant={artist.isActive ? "default" : "secondary"}>
                         {artist.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </div>

@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = supabaseAdmin;
     const { searchParams } = new URL(request.url);
     const organizationSlug = searchParams.get('organizationId'); // This is actually the slug
@@ -143,6 +144,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Organization ID and title are required' }, { status: 400 });
     }
 
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = supabaseAdmin;
 
     // Handle organization ID (could be slug or UUID)

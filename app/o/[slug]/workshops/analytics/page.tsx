@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useTenant } from '@/components/tenant/TenantProvider'
 import { 

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { 
   ArrowLeft, 
@@ -241,7 +241,7 @@ export default function PublicCoursesPage() {
       <div>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">All Courses</h2>
-          <Badge variant="info">
+          <Badge variant="default">
             {filteredCourses.length} courses
           </Badge>
         </div>

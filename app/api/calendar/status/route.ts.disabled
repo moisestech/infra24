@@ -1,0 +1,73 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { GoogleCalendarService } from '@/lib/calendar/google-calendar'
+import { OutlookCalendarService } from '@/lib/calendar/outlook-calendar'
+import { getSupabaseAdmin } from '@/lib/supabase'
+
+export async function GET(request: NextRequest) {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const supabase = getSupabaseAdmin()
+    
+    // Get user's calendar tokens
+    const { data: tokens, error: tokensError } = await supabase
+      .from('user_calendar_tokens')
+      .select('*')
+      .eq('user_id', userId)
+
+    if (tokensError) {
+      throw tokensError
+    }
+
+    const providers = []
+
+    // Check Google Calendar connection
+    const googleToken = tokens?.find(t => t.provider === 'google')
+    if (googleToken) {
+      const calendars = await GoogleCalendarService.getCalendarList(userId)
+      providers.push({
+        provider: 'google',
+        connected: true,
+        calendars: calendars.success ? calendars.calendars : [],
+        tokenExpiresAt: googleToken.expires_at
+      })
+    } else {
+      providers.push({
+        provider: 'google',
+        connected: false
+      })
+    }
+
+    // Check Microsoft Calendar connection
+    const microsoftToken = tokens?.find(t => t.provider === 'microsoft')
+    if (microsoftToken) {
+      const calendars = await OutlookCalendarService.getCalendarList(userId)
+      providers.push({
+        provider: 'microsoft',
+        connected: true,
+        calendars: calendars.success ? calendars.calendars : [],
+        tokenExpiresAt: microsoftToken.expires_at
+      })
+    } else {
+      providers.push({
+        provider: 'microsoft',
+        connected: false
+      })
+    }
+
+    return NextResponse.json({
+      success: true,
+      providers
+    })
+  } catch (error) {
+    console.error('Calendar status error:', error)
+    return NextResponse.json(
+      { error: 'Failed to get calendar status' },
+      { status: 500 }
+    )
+  }
+}

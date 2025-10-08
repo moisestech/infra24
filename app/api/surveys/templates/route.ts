@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const isPublic = searchParams.get('isPublic');
 
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = supabaseAdmin;
 
     // Build query
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = supabaseAdmin;
 
     // Create template

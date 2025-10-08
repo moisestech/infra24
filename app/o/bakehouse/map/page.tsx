@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { InteractiveStudioMap } from '@/components/maps/InteractiveStudioMap';
 import { ArtistListDrawer } from '@/components/maps/ArtistListDrawer';

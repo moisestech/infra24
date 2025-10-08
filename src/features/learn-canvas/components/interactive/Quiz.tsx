@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { 
   CheckCircle, 
@@ -216,7 +216,7 @@ export function Quiz({
         <div className="flex items-center justify-between mb-4">
           <CardTitle className="text-xl">{title}</CardTitle>
           {timeLimit && (
-            <Badge variant="outline" className="border-[#00ff00] text-[#00ff00]">
+            <Badge variant="default" className="border-[#00ff00] text-[#00ff00]">
               <Clock className="w-4 h-4 mr-2" />
               {formatTime(timeLeft)}
             </Badge>

@@ -7,7 +7,7 @@ import { TenantProvider } from '@/components/tenant/TenantProvider'
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
@@ -483,7 +483,7 @@ export default function SurveyAnalyticsPage() {
                                     <div key={themeIndex} className="border rounded-lg p-4">
                                       <div className="flex items-center justify-between mb-2">
                                         <span className="font-medium">{theme.theme}</span>
-                                        <Badge variant="info">{theme.count} mentions</Badge>
+                                        <Badge variant="default">{theme.count} mentions</Badge>
                                       </div>
                                       <div className="text-sm text-gray-600 dark:text-gray-400">
                                         Examples: {theme.examples.slice(0, 2).join(', ')}

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   ArrowLeft, 
@@ -161,7 +161,7 @@ export default function EventMaterialsPage() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Badge variant={event.event_type === 'workshop' ? 'default' : 'info'}>
+            <Badge variant="default">
               {event.event_type}
             </Badge>
             {event.featured && (

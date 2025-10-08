@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import MuxPlayer from '@mux/mux-player-react'
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react'
-import { cn } from '@/shared/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface SlideVideoProps {
   src?: string

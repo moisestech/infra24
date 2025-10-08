@@ -1,6 +1,6 @@
 'use client'
 
-import { Footer } from '@/shared/components/ui/Footer'
+import { Footer } from '@/components/organization/Footer'
 import LearnHero from '@/features/learn-canvas/components/LearnHero'
 
 export function LearnPageClient({ children }: { children: React.ReactNode }) {

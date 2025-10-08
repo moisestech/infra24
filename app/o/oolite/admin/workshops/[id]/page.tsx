@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Calendar, Users, Clock, MapPin, Edit, Trash2 } from 'lucide-react'
 import Link from 'next/link'
@@ -126,11 +126,11 @@ export default function WorkshopDetailPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{workshop.title}</h1>
               <div className="flex items-center space-x-4 mt-2">
-                <Badge variant={workshop.is_active ? "default" : "error"}>
+                <Badge variant={workshop.is_active ? "default" : "destructive"}>
                   {workshop.is_active ? 'Active' : 'Inactive'}
                 </Badge>
-                <Badge variant="info">{workshop.category}</Badge>
-                <Badge variant="info">{workshop.difficulty_level}</Badge>
+                <Badge variant="default">{workshop.category}</Badge>
+                <Badge variant="default">{workshop.difficulty_level}</Badge>
               </div>
             </div>
             

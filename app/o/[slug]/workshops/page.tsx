@@ -8,7 +8,7 @@ import { useUser } from '@clerk/nextjs'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useTenant } from '@/components/tenant/TenantProvider'
@@ -33,7 +33,7 @@ import {
   Heart,
   Target
 } from 'lucide-react'
-import WorkshopCategoryVoting from '@/components/workshops/WorkshopCategoryVoting'
+import WorkshopCategoryVotingUnified from '@/components/workshops/WorkshopCategoryVotingUnified'
 
 interface Organization {
   id: string
@@ -78,8 +78,7 @@ interface Workshop {
 // Animation variants
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
+  animate: { opacity: 1, y: 0 }
 }
 
 const staggerContainer = {
@@ -301,6 +300,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
       initial="initial"
       whileInView="animate"
       viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
       whileHover={reducedMotion ? {} : hoverScale}
       className="cursor-pointer"
     >
@@ -406,15 +406,15 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                 size="sm" 
                 className="flex-1"
                 style={{
-                  backgroundColor: tenantConfig.theme.primaryColor,
-                  borderColor: tenantConfig.theme.primaryColor,
+                  backgroundColor: tenantConfig?.theme?.primaryColor || '#3b82f6',
+                  borderColor: tenantConfig?.theme?.primaryColor || '#3b82f6',
                   color: 'white'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = tenantConfig.theme.secondaryColor;
+                  e.currentTarget.style.backgroundColor = tenantConfig?.theme?.secondaryColor || '#1d4ed8';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = tenantConfig.theme.primaryColor;
+                  e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryColor || '#3b82f6';
                 }}
               >
                 <Eye className="h-4 w-4 mr-2" />
@@ -441,7 +441,6 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
       }`}>
         {/* Navigation */}
         <div className="relative z-50">
-          {console.log('🧭 Loading state - Rendering UnifiedNavigation with config:', getNavigationConfig())}
           <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -481,7 +480,6 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
       
       {/* Navigation */}
       <div className="relative z-50">
-        {console.log('🧭 Rendering UnifiedNavigation with config:', getNavigationConfig())}
         <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
       </div>
       
@@ -533,7 +531,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                 <span 
                   className="block bg-clip-text text-transparent"
                   style={{
-                    backgroundImage: `linear-gradient(to right, ${tenantConfig.theme.primaryColor}, ${tenantConfig.theme.secondaryColor}, ${tenantConfig.theme.accentColor})`
+                     backgroundImage: `linear-gradient(to right, ${tenantConfig?.theme?.primaryColor || '#3b82f6'}, ${tenantConfig?.theme?.secondaryColor || '#1d4ed8'}, ${tenantConfig?.theme?.accentColor || '#60a5fa'})`
                   }}
                 >
                   Learn & Create
@@ -653,7 +651,6 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
           </div>
 
           {/* Featured Workshops */}
-          {console.log('🎨 Rendering featured workshops section, count:', featuredWorkshops.length)}
           {featuredWorkshops.length > 0 && (
             <div className="mb-16">
               <motion.div
@@ -684,7 +681,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
           {/* Workshop Category Voting */}
           {organization && (
             <div className="mb-16">
-              <WorkshopCategoryVoting 
+              <WorkshopCategoryVotingUnified 
                 organizationId={organization.id} 
                 userId={user?.id}
               />
@@ -692,7 +689,6 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
           )}
 
           {/* Published Workshops */}
-          {console.log('🎨 Rendering published workshops section, count:', publishedWorkshops.length)}
           {publishedWorkshops.length > 0 && (
             <div className="mb-16">
               <motion.div
@@ -720,7 +716,6 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
           )}
 
           {/* Unpublished Workshops (Draft) - Only show to admins */}
-          {console.log('🎨 Rendering unpublished workshops section, count:', unpublishedWorkshops.length)}
           {unpublishedWorkshops.length > 0 && (
             <div className="mb-16">
               <motion.div

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Clock, Play, CheckCircle, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/shared/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface ExerciseStep {
   text: string

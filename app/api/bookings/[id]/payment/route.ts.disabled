@@ -1,0 +1,217 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { StripeService } from '@/lib/stripe/service'
+import { getSupabaseAdmin } from '@/lib/supabase'
+import { z } from 'zod'
+
+const createPaymentSchema = z.object({
+  paymentMethod: z.enum(['checkout', 'payment_intent']).default('checkout'),
+  successUrl: z.string().url().optional(),
+  cancelUrl: z.string().url().optional(),
+})
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { id: bookingId } = await params
+    const body = await request.json()
+    const { paymentMethod, successUrl, cancelUrl } = createPaymentSchema.parse(body)
+
+    // Get booking details
+    const supabase = getSupabaseAdmin()
+    const { data: booking, error: bookingError } = await supabase
+      .from('bookings')
+      .select(`
+        *,
+        resources (
+          id,
+          name,
+          pricing_rules,
+          free_for_roles
+        )
+      `)
+      .eq('id', bookingId)
+      .eq('user_id', userId)
+      .single()
+
+    if (bookingError || !booking) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+    }
+
+    // Check if payment is already completed
+    if (booking.payment_status === 'paid') {
+      return NextResponse.json({ 
+        error: 'Payment already completed',
+        booking 
+      }, { status: 400 })
+    }
+
+    // Get user role for pricing calculation
+    const userRole = await StripeService.getUserRole(userId, booking.organization_id)
+    
+    // Calculate pricing based on user role
+    const pricingRules = booking.resources?.pricing_rules || {}
+    const freeForRoles = booking.resources?.free_for_roles || []
+    
+    let paymentAmount = booking.price || 0
+    
+    // Check if user role gets free access
+    if (freeForRoles.includes(userRole)) {
+      paymentAmount = 0
+    } else if (pricingRules[userRole] !== undefined) {
+      paymentAmount = pricingRules[userRole]
+    }
+
+    // If no payment required, mark as paid and return
+    if (paymentAmount === 0) {
+      const { error: updateError } = await supabase
+        .from('bookings')
+        .update({
+          payment_required: false,
+          payment_amount: 0,
+          payment_status: 'paid',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', bookingId)
+
+      if (updateError) {
+        throw updateError
+      }
+
+      return NextResponse.json({
+        success: true,
+        paymentRequired: false,
+        message: 'No payment required for your user role',
+        booking: {
+          ...booking,
+          payment_status: 'paid',
+          payment_amount: 0
+        }
+      })
+    }
+
+    // Create payment based on method
+    if (paymentMethod === 'checkout') {
+      const result = await StripeService.createCheckoutSession({
+        amount: paymentAmount,
+        currency: 'USD',
+        bookingId,
+        userId,
+        organizationId: booking.organization_id,
+        successUrl: successUrl || `${process.env.NEXT_PUBLIC_APP_URL}/bookings/${bookingId}/success`,
+        cancelUrl: cancelUrl || `${process.env.NEXT_PUBLIC_APP_URL}/bookings/${bookingId}/cancel`,
+        metadata: {
+          resource_name: booking.resources?.name || 'Unknown Resource',
+          user_role: userRole,
+        }
+      })
+
+      if (!result.success) {
+        return NextResponse.json({ error: result.error }, { status: 500 })
+      }
+
+      return NextResponse.json({
+        success: true,
+        paymentRequired: true,
+        checkoutUrl: result.url,
+        sessionId: result.sessionId,
+        amount: paymentAmount,
+        currency: 'USD'
+      })
+    } else {
+      // Payment Intent method
+      const result = await StripeService.createPaymentIntent({
+        amount: paymentAmount,
+        currency: 'USD',
+        bookingId,
+        userId,
+        organizationId: booking.organization_id,
+        metadata: {
+          resource_name: booking.resources?.name || 'Unknown Resource',
+          user_role: userRole,
+        }
+      })
+
+      if (!result.success) {
+        return NextResponse.json({ error: result.error }, { status: 500 })
+      }
+
+      return NextResponse.json({
+        success: true,
+        paymentRequired: true,
+        clientSecret: result.clientSecret,
+        paymentIntentId: result.paymentIntent?.id,
+        amount: paymentAmount,
+        currency: 'USD'
+      })
+    }
+  } catch (error) {
+    console.error('Payment creation error:', error)
+    return NextResponse.json(
+      { error: 'Failed to create payment' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { id: bookingId } = await params
+
+    // Get booking payment status
+    const supabase = getSupabaseAdmin()
+    const { data: booking, error } = await supabase
+      .from('bookings')
+      .select(`
+        id,
+        payment_status,
+        payment_amount,
+        payment_currency,
+        stripe_payment_intent_id,
+        stripe_session_id,
+        refund_amount,
+        refunded_at
+      `)
+      .eq('id', bookingId)
+      .eq('user_id', userId)
+      .single()
+
+    if (error || !booking) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+    }
+
+    return NextResponse.json({
+      success: true,
+      payment: {
+        status: booking.payment_status,
+        amount: booking.payment_amount,
+        currency: booking.payment_currency,
+        paymentIntentId: booking.stripe_payment_intent_id,
+        sessionId: booking.stripe_session_id,
+        refundAmount: booking.refund_amount,
+        refundedAt: booking.refunded_at,
+      }
+    })
+  } catch (error) {
+    console.error('Payment status error:', error)
+    return NextResponse.json(
+      { error: 'Failed to get payment status' },
+      { status: 500 }
+    )
+  }
+}

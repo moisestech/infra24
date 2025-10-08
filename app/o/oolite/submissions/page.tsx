@@ -7,7 +7,7 @@ import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/n
 import { SubmissionFormBuilder } from '@/components/submissions/SubmissionFormBuilder';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Plus, FileText, Users, Clock, CheckCircle, XCircle, Eye } from 'lucide-react';
 
 interface SubmissionForm {

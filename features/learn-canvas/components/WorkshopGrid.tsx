@@ -1,12 +1,12 @@
 'use client'
 
 import { WorkshopCard } from './WorkshopCard'
-import { WorkshopSummary } from '@/shared/types/workshop'
-import ASCIIAnimation from '@/shared/components/ui/ASCIIAnimation'
-import { LiquidLoader } from '@/shared/components/ui/LiquidLoader'
-import { useLanguage } from '@/shared/i18n/LanguageProvider'
+import { Workshop } from '@/types/workshop'
+// ASCIIAnimation not available
+// LiquidLoader not available
+// useLanguage not available
 import { useState, useEffect } from 'react'
-import { Badge } from '@/shared/components/ui/badge'
+import { Badge } from '@/components/ui/badge'
 
 interface WorkshopGridProps {
   filter?: string
@@ -56,8 +56,9 @@ const WORKSHOP_CATEGORIES = {
 };
 
 export function WorkshopGrid({ filter, limit }: WorkshopGridProps) {
-  const { t } = useLanguage();
-  const [allWorkshops, setAllWorkshops] = useState<WorkshopSummary[]>([]);
+  // Simple fallback for language support
+  const t = (key: string) => key;
+  const [allWorkshops, setAllWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [scrollPositions, setScrollPositions] = useState<{ [key: string]: number }>({});
@@ -90,14 +91,14 @@ export function WorkshopGrid({ filter, limit }: WorkshopGridProps) {
   // Organize workshops by category
   const workshopsByCategory = Object.entries(WORKSHOP_CATEGORIES).map(([categoryName, workshopSlugs]) => {
     const workshops = workshopSlugs
-      .map(slug => allWorkshops.find(w => w.slug === slug))
-      .filter((w): w is WorkshopSummary => Boolean(w))
+      .map(slug => allWorkshops.find(w => w.id === slug))
+      .filter((w): w is Workshop => Boolean(w))
       .map(workshop => ({
         ...workshop,
-        featured: FEATURED_WORKSHOPS.includes(workshop.slug) || workshop.featured,
-        total_chapters: workshop.total_chapters ?? 0,
-        published_chapters: workshop.published_chapters ?? 0,
-        avg_chapter_duration: workshop.avg_chapter_duration ?? 0
+        featured: FEATURED_WORKSHOPS.includes(workshop.id) || workshop.featured,
+        total_chapters: 0,
+        published_chapters: 0,
+        avg_chapter_duration: 0
       }));
 
     return {
@@ -142,7 +143,7 @@ export function WorkshopGrid({ filter, limit }: WorkshopGridProps) {
       {/* Workshop Categories */}
       {loading ? (
         <div className="text-center py-12">
-          <LiquidLoader size="md" className="mb-4" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00ff00] mx-auto mb-4"></div>
           <div className="text-lg text-[#00ff00]">{t('learn.workshops.loading')}</div>
         </div>
       ) : error ? (
@@ -152,12 +153,7 @@ export function WorkshopGrid({ filter, limit }: WorkshopGridProps) {
       ) : filteredCategories.length === 0 ? (
         <div className="text-center py-12 relative overflow-hidden">
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none">
-            <ASCIIAnimation 
-              fps={12} 
-              colorOverlay={false} 
-              frameCount={10}
-              className="text-gray-400"
-            />
+            <div className="text-gray-400 text-xs">No workshops found</div>
           </div>
           <div className="relative z-10">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 learn-heading">
@@ -177,7 +173,7 @@ export function WorkshopGrid({ filter, limit }: WorkshopGridProps) {
                 <h3 className="text-xl font-bold text-white learn-heading">
                   {category.categoryName}
                 </h3>
-                <Badge variant="outline" className="text-gray-400 border-gray-600">
+                <Badge variant="default" className="text-gray-400 border-gray-600">
                   {category.totalWorkshops} workshops
                 </Badge>
               </div>
@@ -196,7 +192,7 @@ export function WorkshopGrid({ filter, limit }: WorkshopGridProps) {
                   onScroll={(e) => handleScroll(category.categoryName, e)}
                 >
                   {category.workshops.map((workshop) => (
-                    <div key={workshop.slug} className="flex-shrink-0 w-64 md:w-auto md:flex-shrink">
+                    <div key={workshop.id} className="flex-shrink-0 w-64 md:w-auto md:flex-shrink">
                       <WorkshopCard
                         workshop={workshop}
                       />
@@ -236,7 +232,7 @@ export function WorkshopGrid({ filter, limit }: WorkshopGridProps) {
               {/* Show more indicator if there are more than 5 workshops */}
               {category.totalWorkshops > 5 && (
                 <div className="text-center mt-4">
-                  <Badge variant="outline" className="text-gray-400 border-gray-600 text-sm">
+                  <Badge variant="default" className="text-gray-400 border-gray-600 text-sm">
                     +{category.totalWorkshops - 5} more workshops available
                   </Badge>
                 </div>
@@ -249,12 +245,7 @@ export function WorkshopGrid({ filter, limit }: WorkshopGridProps) {
       {/* Quick Stats */}
       <div className="relative overflow-hidden rounded-lg bg-gray-900/30 p-6 border border-gray-800">
         <div className="absolute bottom-4 left-4 opacity-10 pointer-events-none">
-          <ASCIIAnimation 
-            fps={15} 
-            colorOverlay={false} 
-            frameCount={10}
-            className="text-gray-400 text-xs"
-          />
+          <div className="text-gray-400 text-xs">Learning Statistics</div>
         </div>
         <div className="relative z-10">
           <h3 className="text-lg font-semibold text-white learn-heading mb-4 text-center">Learning Statistics</h3>

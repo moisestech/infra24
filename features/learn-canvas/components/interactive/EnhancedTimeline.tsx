@@ -3,12 +3,12 @@
 import { useState, useMemo } from 'react'
 import { Calendar, Clock, Search, Filter, ExternalLink, Play, Image as ImageIcon, FileText, Github, Video } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/shared/lib/utils'
-import { Button } from '@/shared/components/ui/button'
-import { Input } from '@/shared/components/ui/input'
-import { Badge } from '@/shared/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 interface TimelineSource {
   title: string
@@ -165,7 +165,7 @@ export function EnhancedTimeline({
             <Calendar className="w-4 h-4 text-lime-400" />
           </div>
           <h3 className="text-lg font-semibold text-white">{title}</h3>
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="default" className="text-xs">
             {filteredEvents.length} events
           </Badge>
         </div>
@@ -271,14 +271,14 @@ export function EnhancedTimeline({
                           <div className="flex-1">
                             <CardTitle className="text-white text-lg mb-2">{event.title}</CardTitle>
                             <div className="flex items-center gap-2 mb-2">
-                              <Badge variant="outline" className={cn("text-xs", config.textColor, config.borderColor)}>
+                              <Badge variant="default" className={cn("text-xs", config.textColor, config.borderColor)}>
                                 {event.year}
                               </Badge>
-                              <Badge variant="secondary" className="text-xs">
+                              <Badge variant="default" className="text-xs">
                                 {event.importance}
                               </Badge>
                               {event.tags.map(tag => (
-                                <Badge key={tag} variant="outline" className="text-xs text-gray-400">
+                                <Badge key={tag} variant="default" className="text-xs text-gray-400">
                                   {tag}
                                 </Badge>
                               ))}
@@ -318,13 +318,13 @@ export function EnhancedTimeline({
                           <div className="mb-4">
                             <div className="flex gap-2">
                               {event.media.image && (
-                                <Button size="sm" variant="outline" className="text-xs">
+                                <Button size="sm" variant="default" className="text-xs">
                                   <ImageIcon className="w-3 h-3 mr-1" />
                                   Image
                                 </Button>
                               )}
                               {event.media.video && (
-                                <Button size="sm" variant="outline" className="text-xs">
+                                <Button size="sm" variant="default" className="text-xs">
                                   <Video className="w-3 h-3 mr-1" />
                                   Video
                                 </Button>

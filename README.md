@@ -1,113 +1,123 @@
-# Infra24 Platform
+# Infra24 - Multi-Tenant Platform
 
-**The infrastructure that scales digital arts education across cultural organizations.**
-
-A sophisticated multi-tenant SaaS platform that powers digital arts education, community management, and cultural infrastructure. Built on the foundation of the Bakehouse Smart Sign system, Infra24 transforms how art communities communicate, learn, and collaborate.
+A comprehensive multi-tenant platform for workshops, digital labs, artist profiles, and announcements with integrated booking system.
 
 ## 🚀 Quick Start
 
+### Prerequisites
+- Node.js 18+
+- PostgreSQL (via Supabase)
+- Clerk authentication
+
+### Installation
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
-npm run dev
-
-# Open http://localhost:3000
 ```
 
-## ✅ Current Status
+### Database Setup
+```bash
+# Start Supabase
+npx supabase start
 
-**🎉 BUILD SUCCESSFUL** - The application is now fully functional and ready for deployment!
+# Setup database schema
+psql postgresql://postgres:postgres@localhost:54322/postgres -f scripts/setup-complete-database-schema.sql
 
-### 🏆 Recent Achievements
-- ✅ **Phase 2 Complete**: All event management, content system, and analytics features implemented
-- ✅ **Build Fixed**: All TypeScript compilation errors resolved
-- ✅ **Artist Database**: Populated with 27 Oolite artists (Studio, Live In Art, Cinematic Residents)
-- ✅ **Multi-tenant Ready**: Full organization support with theme customization
-- ✅ **Production Ready**: Optimized build with 101 static pages generated
+# Create booking resources
+node scripts/create-booking-resources.js
+```
+
+### Development
+```bash
+npm run dev
+```
 
 ## 📚 Documentation
 
-Comprehensive documentation is available in the `/docs` directory:
+### Core Features
+- **Workshops**: MDX-based learning content with analytics
+- **Digital Lab**: Equipment management and booking
+- **Artist Profiles**: Portfolio and profile management
+- **Announcements**: Event and news management
+- **Booking System**: Calendar integration with ICS files
 
-- **[📖 Main Documentation](/docs/README.md)** - Complete project overview
-- **[🎯 Strategy & Business](/docs/strategy/)** - Strategic leverage plans and business models
-- **[👥 LLM Roles](/docs/roles/)** - Role-based collaboration framework
-- **[🔧 Technical Docs](/docs/technical/)** - Architecture and implementation details
-- **[📖 User Guides](/docs/user-guides/)** - Implementation and usage guides
+### Key Documentation
+- [Booking System Documentation](./docs/BOOKING_SYSTEM_INDEX.md) - Complete booking system guide
+- [Database Testing Guide](./docs/DATABASE_TESTING_GUIDE.md) - Database testing procedures
+- [Scripts Reference](./docs/SCRIPTS_REFERENCE.md) - All available scripts
 
-### 🚀 **Infra24 Platform**
+## 🛠️ Key Scripts
 
-- **[📋 Platform Overview](/docs/INFRA24_PLATFORM.md)** - Complete platform architecture and modules
-- **[💾 Database Schema](/docs/technical/INFRA24_DATABASE_SCHEMA.sql)** - Multi-tenant database design with RLS
-- **[🔌 API Specification](/docs/technical/INFRA24_API_SPECIFICATION.md)** - RESTful API documentation
-- **[🤝 Partnerships](/docs/strategy/INFRA24_PARTNERSHIPS.md)** - Partnership strategy and integration framework
+```bash
+# Database testing
+node scripts/test-database-connection.js
 
-### 🏗️ **Legacy Documentation**
+# Populate sample data
+node scripts/populate-artists.js
 
-- **[📋 Technical Roadmap](/docs/technical/CULTURAL_INFRASTRUCTURE_ROADMAP.md)** - Original technical architecture
-- **[💾 Database Schema](/docs/technical/DATABASE_SCHEMA.sql)** - Original database design
-- **[🔌 API Specification](/docs/technical/API_SPECIFICATION.md)** - Original API documentation
-- **[💰 Business Model](/docs/strategy/BUSINESS_MODEL.md)** - Original business model
+# Database synchronization
+node scripts/database-sync.js
+```
 
-## 🎭 LLM Role System
+## 🏗️ Architecture
 
-This project uses a role-based approach for AI collaboration:
-
-- **[UI Engineer](/docs/roles/UI_ENGINEER.md)** - Frontend development and user experience
-- **[Backend Engineer](/docs/roles/BACKEND_ENGINEER.md)** - Data management and system architecture
-- **[DevOps Engineer](/docs/roles/DEVOPS_ENGINEER.md)** - Deployment and infrastructure
-- **[Product Manager](/docs/roles/PRODUCT_MANAGER.md)** - Feature planning and user research
-- **[Designer](/docs/roles/DESIGNER.md)** - Visual design and user interface
-
-## 🎯 Platform Overview
-
-Infra24 is more than a digital signage system—it's a **comprehensive digital arts education platform** that:
-
-- **Scales Education**: Multi-tenant platform for digital arts workshops and courses
-- **Manages Communities**: Booking systems, event management, and community submissions
-- **Powers Signage**: Smart displays and kiosks for real-time information
-- **Generates Revenue**: Subscription models and transaction fees across multiple organizations
-- **Builds Networks**: Connects arts organizations and creates partnership opportunities
-
-## 🛠️ Technology Stack
-
-- **Frontend**: Next.js 15, TypeScript, Tailwind CSS, PWA
+### Tech Stack
+- **Frontend**: Next.js 14, React, Tailwind CSS
 - **Backend**: Next.js API routes, Supabase
-- **Database**: PostgreSQL with Row-Level Security (RLS)
-- **Authentication**: Clerk (JWT tokens)
-- **Styling**: Framer Motion, Custom Patterns, Radix UI
-- **Deployment**: Vercel, Cloudflare
-- **Devices**: Raspberry Pi 4/5, ChromeOS kiosks
+- **Database**: PostgreSQL
+- **Authentication**: Clerk
+- **Styling**: Tailwind CSS with dynamic theming
 
-## 📈 Success Metrics
+### Key Features
+- Multi-tenant architecture with organization-specific theming
+- MDX-based content system for workshops
+- Real-time booking system with calendar integration
+- Unified voting system for workshops and equipment
+- Mobile-first responsive design
 
-### Platform Growth
-- **Month 1**: 4 founding partners, $2,000+ MRR
-- **Month 6**: 8-10 partners, $5,000+ MRR  
-- **Year 1**: 15+ partners, $10,000+ MRR
+## 📊 Current Status
 
-### User Engagement
-- **Utilization**: ≥60-70% of residents book lab time monthly
-- **Programming**: 24-30 workshops/year, 8-10 talks/year
-- **Documentation**: 100% events documented, ≥12 MDX modules published
+### ✅ Completed
+- Core booking system with calendar integration
+- Workshop learning system with MDX content
+- Digital lab equipment management
+- Artist profile system
+- Announcement management
+- Multi-tenant theming system
 
-## 🔗 Key Resources
+### 🚧 In Progress
+- Email notifications via Resend API
+- Advanced booking features
 
-- **[Infra24 Platform Overview](/docs/INFRA24_PLATFORM.md)** - Complete platform documentation
-- **[Partnership Strategy](/docs/strategy/INFRA24_PARTNERSHIPS.md)** - Partnership and integration framework
-- **[API Documentation](/docs/technical/INFRA24_API_SPECIFICATION.md)** - Complete API reference
-- **[Database Schema](/docs/technical/INFRA24_DATABASE_SCHEMA.sql)** - Multi-tenant database design
+### 📋 Planned
+- Google Meet integration
+- Booking analytics dashboard
+- Advanced workshop features
 
-## 🚀 Deployment
+## 🔧 Development
 
-The easiest way to deploy is using [Vercel](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
+### Environment Variables
+```bash
+# .env.local
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
 
-## 📄 License
+### Database Schema
+- `organizations` - Multi-tenant organization data
+- `workshops` - Workshop content and metadata
+- `workshop_chapters` - MDX-based learning content
+- `bookings` - Booking system data
+- `resources` - Available resources for booking
+- `artist_profiles` - Artist portfolio data
+- `announcements` - Event and news management
 
-This project is proprietary and confidential.
+## 📞 Support
+
+For detailed documentation, see the [docs](./docs/) directory.
 
 ---
 
-**Infra24** - Building the digital infrastructure that empowers cultural organizations to scale their impact and reach. From digital signage to comprehensive arts education, we're creating the platform that connects communities and drives innovation in the arts.
+*Last updated: September 30, 2025*

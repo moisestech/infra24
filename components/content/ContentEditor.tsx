@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   Select, 
@@ -398,7 +398,7 @@ export function ContentEditor({
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {content.tags.map((tag) => (
-                    <Badge key={tag} variant="info" className="flex items-center gap-1">
+                    <Badge key={tag} variant="default" className="flex items-center gap-1">
                       {tag}
                       <X 
                         className="w-3 h-3 cursor-pointer" 

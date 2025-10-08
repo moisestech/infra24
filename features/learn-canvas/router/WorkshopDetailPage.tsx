@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams } from 'next/navigation';
 import { WorkshopDetail } from '../components/WorkshopDetail';
-import { WorkshopWithChapters } from '@/shared/types/workshop';
-import { ChapterNavigation } from '@/shared/types/workshop';
-import { LiquidLoader } from '@/shared/components/ui/LiquidLoader';
+import { Workshop } from '@/types/workshop';
+// LiquidLoader not available
 
 export default function WorkshopDetailPage() {
   const { workshopSlug } = useParams();
-  const [workshop, setWorkshop] = useState<WorkshopWithChapters | null>(null);
+  const [workshop, setWorkshop] = useState<Workshop | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +42,7 @@ export default function WorkshopDetailPage() {
   if (loading) return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
       <div className="text-center">
-        <LiquidLoader size="md" className="mb-4" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00ff00] mx-auto mb-4"></div>
         <p className="text-[#00ff00]">Loading workshop...</p>
       </div>
     </div>
@@ -56,7 +55,7 @@ export default function WorkshopDetailPage() {
       <div className="max-w-4xl mx-auto">
         <WorkshopDetail 
           workshop={workshop}
-          chapters={(workshop.chapters || []).map(ch => ({ ...ch, workshop_slug: workshop.slug }))}
+          chapters={[]}
           user_progress={undefined}
         />
       </div>

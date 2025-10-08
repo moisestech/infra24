@@ -275,8 +275,8 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
             style={{ 
               backgroundColor: '#47abc4'
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#3a9bb3'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#47abc4'}
+            onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#3a9bb3'}
+            onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#47abc4'}
           >
             Retry
           </button>

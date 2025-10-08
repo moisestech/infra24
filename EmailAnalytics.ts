@@ -239,16 +239,16 @@ export class EmailAnalytics {
       const dateFrom = this.getDateFromPeriod(period);
       
       // Get organization info
-      const supabaseAdmin = getSupabaseAdmin()
-      const { data: org } = await supabaseAdmin
+      const supabaseAdminOrg = getSupabaseAdmin()
+      const { data: org } = await supabaseAdminOrg
         .from('organizations')
         .select('name')
         .eq('id', organizationId)
         .single();
 
       // Get email events for the period
-      const supabaseAdmin = getSupabaseAdmin()
-      const { data: events, error } = await supabaseAdmin
+      const supabaseAdminEvents = getSupabaseAdmin()
+      const { data: events, error } = await supabaseAdminEvents
         .from('email_analytics')
         .select('*')
         .eq('organization_id', organizationId)
@@ -290,8 +290,8 @@ export class EmailAnalytics {
       const dateFrom = this.getDateFromPeriod(period);
       
       // Get all organizations with email activity
-      const supabaseAdmin = getSupabaseAdmin()
-      const { data: events, error } = await supabaseAdmin
+      const supabaseAdminAll = getSupabaseAdmin()
+      const { data: events, error } = await supabaseAdminAll
         .from('email_analytics')
         .select(`
           *,
@@ -319,7 +319,7 @@ export class EmailAnalytics {
 
       // Calculate stats for each organization
       const stats: OrganizationEmailStats[] = [];
-      for (const [orgId, orgEventList] of orgEvents) {
+      for (const [orgId, orgEventList] of Array.from(orgEvents)) {
         const org = orgEventList[0]?.organizations;
         const metrics = this.calculateMetrics(orgEventList);
         const topTemplates = this.getTopTemplates(orgEventList);
@@ -449,6 +449,7 @@ export class EmailAnalytics {
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
 
+      const supabaseAdmin = getSupabaseAdmin();
       const { error } = await supabaseAdmin
         .from('email_analytics')
         .delete()

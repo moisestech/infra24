@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { CalendarIcon, Clock, Monitor, Building, GraduationCap, User, Info } from 'lucide-react'
+import { CalendarIcon, Clock, Monitor, Building, GraduationCap, User, Info, AlertTriangle, Wrench, CheckCircle } from 'lucide-react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import { Resource, Booking, CreateBookingRequest } from '@/types/booking'
@@ -191,6 +191,49 @@ export function BookingForm({
 
   const typeConfig = getBookingTypeConfig(bookingType)
   const policy = getBookingPolicy(bookingType)
+
+  // Helper function to get equipment status
+  const getEquipmentStatus = (resource: Resource) => {
+    const status = resource.metadata?.status || 'available'
+    const isBookable = resource.is_bookable !== false
+    
+    if (!isBookable) {
+      return {
+        status: 'unavailable',
+        label: 'Unavailable',
+        icon: <AlertTriangle className="w-3 h-3" />,
+        color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+        description: 'This equipment is currently unavailable for booking'
+      }
+    }
+    
+    switch (status) {
+      case 'maintenance':
+        return {
+          status: 'maintenance',
+          label: 'Maintenance',
+          icon: <Wrench className="w-3 h-3" />,
+          color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+          description: 'This equipment is currently under maintenance'
+        }
+      case 'available':
+        return {
+          status: 'available',
+          label: 'Available',
+          icon: <CheckCircle className="w-3 h-3" />,
+          color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+          description: 'This equipment is available for booking'
+        }
+      default:
+        return {
+          status: 'unknown',
+          label: 'Unknown',
+          icon: <AlertTriangle className="w-3 h-3" />,
+          color: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+          description: 'Status unknown'
+        }
+    }
+  }
   
   // Filter resources based on booking type
   const filteredResources = React.useMemo(() => {
@@ -239,6 +282,17 @@ export function BookingForm({
     try {
       console.log('🔍 BookingForm: Submitting booking data:', data)
       setIsSubmitting(true)
+      
+      // Check if selected resource is available for booking
+      const selectedResource = filteredResources.find(r => r.id === data.resourceId)
+      if (selectedResource) {
+        const equipmentStatus = getEquipmentStatus(selectedResource)
+        if (equipmentStatus.status === 'unavailable' || equipmentStatus.status === 'maintenance') {
+          alert(`Cannot book ${selectedResource.title} - ${equipmentStatus.description}`)
+          setIsSubmitting(false)
+          return
+        }
+      }
       
       // Combine date and time
       const startDateTime = new Date(`${format(data.startDate, 'yyyy-MM-dd')}T${data.startTime}`)
@@ -350,10 +404,24 @@ export function BookingForm({
             <SelectContent>
               {filteredResources.map((resource) => {
                 console.log('🔍 BookingForm: Rendering resource:', resource)
+                const equipmentStatus = getEquipmentStatus(resource)
+                const isDisabled = equipmentStatus.status === 'unavailable' || equipmentStatus.status === 'maintenance'
+                
                 return (
-                  <SelectItem key={resource.id} value={resource.id}>
+                  <SelectItem 
+                    key={resource.id} 
+                    value={resource.id}
+                    disabled={isDisabled}
+                    className={isDisabled ? 'opacity-50 cursor-not-allowed' : ''}
+                  >
                     <div className="flex items-center justify-between w-full">
-                      <span>{resource.title}</span>
+                      <div className="flex items-center space-x-2">
+                        <span>{resource.title}</span>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full flex items-center space-x-1 ${equipmentStatus.color}`}>
+                          {equipmentStatus.icon}
+                          <span>{equipmentStatus.label}</span>
+                        </span>
+                      </div>
                       <span className="text-sm text-gray-500 ml-2">
                         ({resource.type} - {resource.capacity} capacity)
                       </span>
@@ -367,6 +435,35 @@ export function BookingForm({
             <p className="mt-1 text-sm text-red-600">{form.formState.errors.resourceId.message}</p>
           )}
         </div>
+
+        {/* Equipment Status Information */}
+        {form.watch('resourceId') && bookingType === 'equipment' && (() => {
+          const selectedResource = filteredResources.find(r => r.id === form.watch('resourceId'))
+          if (!selectedResource) return null
+          
+          const equipmentStatus = getEquipmentStatus(selectedResource)
+          
+          return (
+            <div className="md:col-span-2">
+              <div className={`p-3 rounded-lg border ${equipmentStatus.status === 'available' ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800' : 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800'}`}>
+                <div className="flex items-center space-x-2">
+                  {equipmentStatus.icon}
+                  <span className={`font-medium ${equipmentStatus.status === 'available' ? 'text-green-800 dark:text-green-200' : 'text-yellow-800 dark:text-yellow-200'}`}>
+                    {equipmentStatus.label}
+                  </span>
+                </div>
+                <p className={`text-sm mt-1 ${equipmentStatus.status === 'available' ? 'text-green-700 dark:text-green-300' : 'text-yellow-700 dark:text-yellow-300'}`}>
+                  {equipmentStatus.description}
+                </p>
+                {equipmentStatus.status === 'maintenance' && (
+                  <p className="text-xs mt-2 text-yellow-600 dark:text-yellow-400">
+                    Please check back later or contact staff for estimated availability.
+                  </p>
+                )}
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Status */}
         <div>
@@ -498,7 +595,12 @@ export function BookingForm({
         </Button>
         <Button
           type="submit"
-          disabled={isSubmitting || isLoading}
+          disabled={isSubmitting || isLoading || (() => {
+            const selectedResource = filteredResources.find(r => r.id === form.watch('resourceId'))
+            if (!selectedResource) return false
+            const equipmentStatus = getEquipmentStatus(selectedResource)
+            return equipmentStatus.status === 'unavailable' || equipmentStatus.status === 'maintenance'
+          })()}
           className="min-w-[120px]"
           style={{
             backgroundColor: tenantConfig?.theme.primaryColor || '#1E40AF',

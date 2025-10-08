@@ -3,7 +3,7 @@
 import { ReactNode } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Play, CheckCircle, Clock, Users, TrendingUp } from 'lucide-react'
 
 // Activity Component
@@ -54,13 +54,13 @@ export function Activity({
         
         <div className="flex flex-wrap gap-2">
           {estimatedTime && (
-            <Badge variant="outline" className="border-gray-400 text-gray-400">
+            <Badge variant="default" className="border-gray-400 text-gray-400">
               <Clock className="w-3 h-3 mr-1" />
               {estimatedTime} min
             </Badge>
           )}
           {difficulty && (
-            <Badge variant="outline" className={getDifficultyColor(difficulty)}>
+            <Badge variant="default" className={getDifficultyColor(difficulty)}>
               {difficulty}
             </Badge>
           )}
@@ -129,7 +129,7 @@ export function Poll({ question, options, onVote, results, className = '' }: Pol
             return (
               <div key={index} className="space-y-2">
                 <Button
-                  variant="outline"
+                  variant="default"
                   className="w-full justify-start"
                   onClick={() => onVote?.(index)}
                   disabled={!!results}

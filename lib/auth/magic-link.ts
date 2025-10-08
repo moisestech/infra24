@@ -88,8 +88,8 @@ export async function validateMagicLink(token: string): Promise<{
     }
 
     // Mark as used
-    const supabaseAdmin = getSupabaseAdmin()
-      await supabaseAdmin
+    const supabaseAdminUpdate = getSupabaseAdmin()
+      await supabaseAdminUpdate
       .from('magic_links')
       .update({ used: true, used_at: new Date().toISOString() })
       .eq('token', token);
@@ -113,8 +113,8 @@ export async function validateMagicLink(token: string): Promise<{
  */
 export async function trackMagicLinkUsage(token: string, action: 'opened' | 'started' | 'completed') {
   try {
-    const supabaseAdmin = getSupabaseAdmin()
-      await supabaseAdmin
+    const supabaseAdminTrack = getSupabaseAdmin()
+      await supabaseAdminTrack
       .from('magic_link_analytics')
       .insert({
         token,
@@ -134,8 +134,8 @@ export async function trackMagicLinkUsage(token: string, action: 'opened' | 'sta
 export async function findOrCreateSurveyUser(email: string, organizationId: string, metadata?: any) {
   try {
     // First, try to find existing user
-    const supabaseAdmin = getSupabaseAdmin()
-    const { data: existingUser, error: findError } = await supabaseAdmin
+    const supabaseAdminFind = getSupabaseAdmin()
+    const { data: existingUser, error: findError } = await supabaseAdminFind
       .from('users')
       .select('*')
       .eq('email', email.toLowerCase())
@@ -148,7 +148,7 @@ export async function findOrCreateSurveyUser(email: string, organizationId: stri
     }
 
     // Create new user
-    const { data: newUser, error: createError } = await supabaseAdmin
+    const { data: newUser, error: createError } = await supabaseAdminFind
       .from('users')
       .insert({
         email: email.toLowerCase(),
@@ -180,7 +180,8 @@ export async function findOrCreateSurveyUser(email: string, organizationId: stri
  */
 async function ensureUserOrganizationAccess(userId: string, organizationId: string) {
   try {
-    const { error } = await supabaseAdmin
+    const supabaseAdminAccess = getSupabaseAdmin()
+    const { error } = await supabaseAdminAccess
       .from('org_memberships')
       .upsert({
         user_id: userId,

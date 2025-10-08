@@ -1,0 +1,20 @@
+# Global owners
+* @your-org/infra24-team
+
+# Documentation
+/docs/ @your-org/infra24-team
+
+# API routes
+/app/api/ @your-org/infra24-team
+
+# Database scripts
+/scripts/ @your-org/infra24-team
+
+# Configuration files
+*.json @your-org/infra24-team
+*.js @your-org/infra24-team
+*.ts @your-org/infra24-team
+*.tsx @your-org/infra24-team
+
+
+

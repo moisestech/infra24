@@ -1,0 +1,41 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { GoogleCalendarService } from '@/lib/calendar/google-calendar'
+import { OutlookCalendarService } from '@/lib/calendar/outlook-calendar'
+import { z } from 'zod'
+
+const connectRequestSchema = z.object({
+  provider: z.enum(['google', 'microsoft'])
+})
+
+export async function POST(request: NextRequest) {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { provider } = connectRequestSchema.parse(body)
+
+    let authUrl: string
+
+    if (provider === 'google') {
+      authUrl = GoogleCalendarService.getAuthUrl(userId)
+    } else {
+      authUrl = await OutlookCalendarService.getAuthUrl(userId)
+    }
+
+    return NextResponse.json({
+      success: true,
+      authUrl,
+      provider
+    })
+  } catch (error) {
+    console.error('Calendar connect error:', error)
+    return NextResponse.json(
+      { error: 'Failed to generate auth URL' },
+      { status: 500 }
+    )
+  }
+}

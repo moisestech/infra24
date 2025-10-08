@@ -1,15 +1,15 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { cn } from '@/shared/lib/utils'
-import { Badge } from '@/shared/components/ui/badge'
-import { Card, CardContent } from '@/shared/components/ui/card'
+import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import { ExternalLink, Building2, User, Calendar, Globe } from 'lucide-react'
 import { FaRedditAlien } from 'react-icons/fa'
 import { FaMeta } from 'react-icons/fa6'
 import { FaGoogle } from 'react-icons/fa'
 import { AiFillOpenAI } from 'react-icons/ai'
-import { MidjourneyIcon } from '@/shared/icons'
+// MidjourneyIcon not available
 
 interface KeyFigureProps {
   name: string
@@ -56,7 +56,7 @@ export function KeyFigure({
         case 'AiFillOpenAI':
           return <AiFillOpenAI className="w-3 h-3 text-green-500" />
         case 'MidjourneyIcon':
-          return <MidjourneyIcon className="w-3 h-3 text-purple-500" />
+          return <div className="w-3 h-3 bg-purple-500 rounded" />
         default:
           return <span className="w-3 h-3 flex items-center justify-center">{icon}</span>
       }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { UnifiedNavigation, bakehouseConfig } from '@/components/navigation';
 import { 
   Users, 
@@ -120,8 +120,8 @@ export default function BakehouseArtistsPage() {
     return matchesSearch && matchesStudioType && matchesStudioNumber;
   });
 
-  const uniqueStudioTypes = [...new Set(artists.map(artist => artist.studio_type).filter(Boolean))];
-  const uniqueStudioNumbers = [...new Set(artists.map(artist => artist.studio_location).filter(Boolean))];
+  const uniqueStudioTypes = Array.from(new Set(artists.map(artist => artist.studio_type).filter(Boolean)));
+  const uniqueStudioNumbers = Array.from(new Set(artists.map(artist => artist.studio_location).filter(Boolean)));
 
   const getStudioTypeIcon = (studioType: string) => {
     const IconComponent = studioTypeIcons[studioType as keyof typeof studioTypeIcons] || User;

@@ -2,7 +2,7 @@
 
 import { Calendar, Clock } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { cn } from '@/shared/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface TimelineEvent {
   year: string

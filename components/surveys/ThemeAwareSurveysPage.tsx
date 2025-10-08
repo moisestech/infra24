@@ -5,7 +5,7 @@ import { useParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/Badge"
+import { Badge } from "@/components/ui/badge"
 import { OrganizationLogo } from "@/components/ui/OrganizationLogo"
 import { ThemeBackground } from "@/components/theme/ThemeBackground"
 import { useOrganizationTheme } from "@/components/carousel/OrganizationThemeContext"
@@ -265,7 +265,7 @@ export function ThemeAwareSurveysPage() {
                           {survey.description}
                         </CardDescription>
                       </div>
-                      <Badge variant="info" className="ml-2">
+                      <Badge variant="default" className="ml-2">
                         {survey.category}
                       </Badge>
                     </div>

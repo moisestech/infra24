@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, Play, CheckCircle } from 'lucide-react'
-import { Card, CardContent } from '@/shared/components/ui/card'
-import { Button } from '@/shared/components/ui/button'
-import { Badge } from '@/shared/components/ui/badge'
-import { useLanguage } from '@/shared/i18n/LanguageProvider'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 
 interface ChapterCardProps {
@@ -31,16 +30,15 @@ function Spinner() {
 export function ChapterCard({ chapter, workshopSlug, isCompleted = false, isAccessible = true }: ChapterCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { language, t } = useLanguage();
+  // Simple fallback for language support
+  const t = (key: string) => key;
   const isFree = chapter.is_free ?? (chapter.chapter_number === 1) // First chapter is free by default
 
   const handleNavigate = (e: React.MouseEvent) => {
     if (!isAccessible || isLoading) return;
     e.preventDefault();
     setIsLoading(true);
-    const url = language && language !== 'en' 
-      ? `/learn/${workshopSlug}/${chapter.slug}?lang=${language}`
-      : `/learn/${workshopSlug}/${chapter.slug}`;
+    const url = `/learn/${workshopSlug}/${chapter.slug}`;
     router.push(url);
   };
 
@@ -76,11 +74,11 @@ export function ChapterCard({ chapter, workshopSlug, isCompleted = false, isAcce
                 {chapter.estimated_duration_minutes} min
               </span>
               {isFree ? (
-                <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                <Badge variant="default" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                   Free
                 </Badge>
               ) : (
-                <Badge variant="outline" className="flex items-center gap-1">
+                <Badge variant="default" className="flex items-center gap-1">
                   <Lock className="w-3 h-3" />
                   Premium
                 </Badge>

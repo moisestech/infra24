@@ -1,8 +1,8 @@
 // src/features/learn-canvas/services/workshop.client.service.ts
-import { Workshop, WorkshopSummary } from '@/shared/types/workshop';
+import { Workshop } from '@/types/workshop';
 
 class WorkshopClientService {
-  async getWorkshops(): Promise<WorkshopSummary[]> {
+  async getWorkshops(): Promise<Workshop[]> {
     // This will be implemented to fetch from /api/workshops
     console.log('Fetching workshops from API...');
     return [];

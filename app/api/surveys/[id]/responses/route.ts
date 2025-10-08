@@ -20,6 +20,7 @@ export async function GET(
     const status = searchParams.get('status');
     const role = searchParams.get('role');
 
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = supabaseAdmin;
 
     // Get survey to check permissions
@@ -128,6 +129,7 @@ export async function POST(
       return NextResponse.json({ error: 'Responses are required' }, { status: 400 });
     }
 
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = supabaseAdmin;
 
     // Get survey details

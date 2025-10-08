@@ -292,7 +292,7 @@ In this chapter, we covered:
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-green-600 border-green-600">
+              <Badge variant="default" className="text-green-600 border-green-600">
                 <Zap className="h-3 w-3 mr-1" />
                 Learn Canvas
               </Badge>
@@ -348,7 +348,7 @@ In this chapter, we covered:
                               {workshop.description}
                             </p>
                             <div className="flex items-center gap-2 mt-2">
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="default" className="text-xs">
                                 {workshop.learn_difficulty || 'beginner'}
                               </Badge>
                               <span className="text-xs text-gray-500">

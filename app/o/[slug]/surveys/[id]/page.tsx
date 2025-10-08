@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
   ArrowLeft,
@@ -210,10 +210,10 @@ export default function SurveyPage() {
             <p className="text-gray-600 text-lg">{survey.description}</p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <Badge variant={survey.is_active ? 'success' : 'error'}>
+            <Badge variant="default">
               {survey.is_active ? 'Active' : 'Inactive'}
             </Badge>
-            <Badge variant="info">
+            <Badge variant="default">
               {survey.category || 'Custom'}
             </Badge>
           </div>

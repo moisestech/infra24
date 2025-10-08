@@ -323,6 +323,7 @@ export class EmailMonitoring {
     limit: number = 10
   ): Promise<MonitoringAlert[]> {
     try {
+      const supabaseAdmin = getSupabaseAdmin();
       const { data: alerts, error } = await supabaseAdmin
         .from('email_alerts')
         .select('*')
@@ -467,8 +468,8 @@ export class EmailMonitoring {
       cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
 
       // Clean up monitoring data
-      const { error: monitoringError } = const supabaseAdmin = getSupabaseAdmin()
-      await supabaseAdmin
+      const supabaseAdmin = getSupabaseAdmin()
+      const { error: monitoringError } = await supabaseAdmin
         .from('email_monitoring')
         .delete()
         .lt('created_at', cutoffDate.toISOString());
@@ -478,8 +479,7 @@ export class EmailMonitoring {
       }
 
       // Clean up alerts
-      const { error: alertsError } = const supabaseAdmin = getSupabaseAdmin()
-      await supabaseAdmin
+      const { error: alertsError } = await supabaseAdmin
         .from('email_alerts')
         .delete()
         .lt('created_at', cutoffDate.toISOString());
@@ -510,8 +510,8 @@ export class EmailMonitoring {
         };
       } else {
         // Get data for all organizations
-        const { data: orgs } = const supabaseAdmin = getSupabaseAdmin()
-      await supabaseAdmin
+        const supabaseAdmin = getSupabaseAdmin();
+        const { data: orgs } = await supabaseAdmin
           .from('organizations')
           .select('id, name');
 

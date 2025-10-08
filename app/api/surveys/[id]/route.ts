@@ -14,7 +14,7 @@ export async function GET(
     // Get survey details
     const supabaseAdmin = getSupabaseAdmin()
 
-    const { data: $2, error: $3 } = await supabaseAdmin
+    const { data: survey, error: surveyError } = await supabaseAdmin
       .from('submission_forms')
       .select(`
         id,
@@ -78,6 +78,7 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = supabaseAdmin;
 
     // Get current survey to check permissions
@@ -140,6 +141,7 @@ export async function DELETE(
 
     const { id } = await params;
 
+    const supabaseAdmin = getSupabaseAdmin();
     const supabase = supabaseAdmin;
 
     // Get current survey to check permissions

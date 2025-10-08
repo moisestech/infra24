@@ -43,7 +43,7 @@ export function FilmstripTimeline({
       if (!m.has(y)) m.set(y, [])
       m.get(y)!.push(e)
     }
-    return [...m.entries()]
+    return Array.from(m.entries())
   }, [sorted])
 
   const scrollByCards = (dir: -1|1) => {

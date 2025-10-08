@@ -16,8 +16,7 @@ interface DecorativeDividerProps {
 
 const sectionDivider = {
   initial: { opacity: 0, scale: 0.8 },
-  animate: { opacity: 1, scale: 1 },
-  transition: { duration: 0.5 }
+  animate: { opacity: 1, scale: 1 }
 };
 
 export default function DecorativeDivider({ 
@@ -29,6 +28,7 @@ export default function DecorativeDivider({
   return (
     <motion.div
       variants={sectionDivider}
+      transition={{ duration: 0.5 }}
       className={`relative py-12 flex justify-center ${className}`}
     >
       <div className="absolute inset-0 flex items-center justify-center">

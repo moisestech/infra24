@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { TipButton } from '@/components/ui/TipButton';
 import { 
   MapPin, 
@@ -205,7 +205,7 @@ export default function ArtistProfilePage() {
                     {artist.is_claimed ? 'Claimed' : 'Unclaimed'}
                   </Badge>
                   {artist.studio_number && (
-                    <Badge variant="info">
+                    <Badge variant="default">
                       Studio {artist.studio_number}
                     </Badge>
                   )}
@@ -348,7 +348,7 @@ export default function ArtistProfilePage() {
                         <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Media</h4>
                         <div className="flex flex-wrap gap-2">
                           {artist.media.map((media, index) => (
-                            <Badge key={index} variant="info" className="flex items-center space-x-1">
+                            <Badge key={index} variant="default" className="flex items-center space-x-1">
                               {getMediaIcon(media)}
                               <span>{media}</span>
                             </Badge>

@@ -9,7 +9,7 @@ import { ResourceCalendar } from '@/components/booking/ResourceCalendar';
 import { BookingForm } from '@/components/booking/BookingForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Plus, Calendar, Users, Clock, MapPin, X, Monitor, Building, GraduationCap, User, Globe } from 'lucide-react';
 import { Resource, Booking, CreateBookingRequest } from '@/types/booking';
 import { PageFooter } from '@/components/common/PageFooter';
@@ -174,9 +174,9 @@ function OoliteBookingsPageContent() {
     } catch (err) {
       console.error('❌ Error in fetchBookings:', err);
       console.error('❌ Error details:', {
-        message: err.message,
-        stack: err.stack,
-        name: err.name
+        message: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined,
+        name: err instanceof Error ? err.name : 'Unknown'
       });
     } finally {
       setLoading(false);
@@ -297,7 +297,6 @@ function OoliteBookingsPageContent() {
                     : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
                 style={{
-                  ringColor: bookingType === 'equipment' ? ooliteColors.primary : undefined,
                   backgroundColor: bookingType === 'equipment' ? ooliteColors.primaryAlpha : undefined
                 }}
                 onClick={() => handleBookingTypeSelect('equipment')}
@@ -322,7 +321,6 @@ function OoliteBookingsPageContent() {
                     : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
                 style={{
-                  ringColor: bookingType === 'space' ? ooliteColors.primary : undefined,
                   backgroundColor: bookingType === 'space' ? ooliteColors.primaryAlpha : undefined
                 }}
                 onClick={() => handleBookingTypeSelect('space')}
@@ -347,7 +345,6 @@ function OoliteBookingsPageContent() {
                     : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
                 style={{
-                  ringColor: bookingType === 'workshop' ? ooliteColors.primary : undefined,
                   backgroundColor: bookingType === 'workshop' ? ooliteColors.primaryAlpha : undefined
                 }}
                 onClick={() => handleBookingTypeSelect('workshop')}
@@ -372,7 +369,6 @@ function OoliteBookingsPageContent() {
                     : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
                 style={{
-                  ringColor: bookingType === 'person' ? ooliteColors.primary : undefined,
                   backgroundColor: bookingType === 'person' ? ooliteColors.primaryAlpha : undefined
                 }}
                 onClick={() => handleBookingTypeSelect('person')}
@@ -478,8 +474,8 @@ function OoliteBookingsPageContent() {
               style={{ 
                 backgroundColor: '#47abc4'
               }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#3a9bb3'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#47abc4'}
+              onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#3a9bb3'}
+              onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#47abc4'}
             >
               <Plus className="w-4 h-4 mr-2" />
               Create Booking
@@ -541,8 +537,8 @@ function OoliteBookingsPageContent() {
                         style={{ 
                           backgroundColor: '#47abc4'
                         }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#3a9bb3'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = '#47abc4'}
+                        onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#3a9bb3'}
+                        onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#47abc4'}
                       >
                         Edit
                       </Button>
@@ -555,14 +551,14 @@ function OoliteBookingsPageContent() {
                           color: '#47abc4'
                         }}
                         onMouseEnter={(e) => {
-                          e.target.style.backgroundColor = '#f0f9ff';
-                          e.target.style.borderColor = '#3a9bb3';
-                          e.target.style.color = '#3a9bb3';
+                          (e.target as HTMLElement).style.backgroundColor = '#f0f9ff';
+                          (e.target as HTMLElement).style.borderColor = '#3a9bb3';
+                          (e.target as HTMLElement).style.color = '#3a9bb3';
                         }}
                         onMouseLeave={(e) => {
-                          e.target.style.backgroundColor = 'transparent';
-                          e.target.style.borderColor = '#47abc4';
-                          e.target.style.color = '#47abc4';
+                          (e.target as HTMLElement).style.backgroundColor = 'transparent';
+                          (e.target as HTMLElement).style.borderColor = '#47abc4';
+                          (e.target as HTMLElement).style.color = '#47abc4';
                         }}
                       >
                         Cancel

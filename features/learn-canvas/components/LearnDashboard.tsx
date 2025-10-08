@@ -1,9 +1,9 @@
 // src/features/learn-canvas/components/LearnDashboard.tsx
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Progress } from '@/shared/components/ui/progress';
-import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { GraduationCap, BookOpen, CheckCircle, ListChecks, Trophy, PlayCircle } from 'lucide-react';
 

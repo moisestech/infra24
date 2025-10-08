@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card'
-import { Button } from '@/shared/components/ui/button'
-import { Badge } from '@/shared/components/ui/badge'
-import { Alert, AlertDescription } from '@/shared/components/ui/alert'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useEnrollment } from '../hooks/useEnrollment'
 import { useUser } from '@clerk/nextjs'
 import { 
@@ -17,7 +17,7 @@ import {
   Star,
   Zap
 } from 'lucide-react'
-import { cn } from '@/shared/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface WorkshopEnrollmentCardProps {
   workshopSlug: string
@@ -120,7 +120,7 @@ export function WorkshopEnrollmentCard({
   const getActionButton = () => {
     if (!user) {
       return (
-        <Button variant="outline" className="w-full">
+        <Button variant="default" className="w-full">
           Sign In to Enroll
         </Button>
       )
@@ -137,7 +137,7 @@ export function WorkshopEnrollmentCard({
 
     if (!canAccess) {
       return (
-        <Button variant="outline" disabled className="w-full">
+        <Button variant="default" disabled className="w-full">
           <Lock className="w-4 h-4 mr-2" />
           {requiresSubscription ? 'Upgrade Required' : 'Access Denied'}
         </Button>
@@ -182,16 +182,16 @@ export function WorkshopEnrollmentCard({
         
         <div className="flex items-center gap-2 mt-3">
           <Badge 
-            variant="secondary" 
+            variant="default" 
             className={cn("text-xs", difficultyInfo.color.replace('bg-', 'text-'))}
           >
             {difficultyInfo.label}
           </Badge>
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="default" className="text-xs">
             <Clock className="w-3 h-3 mr-1" />
             {duration}
           </Badge>
-          <Badge variant="outline" className="text-xs capitalize">
+          <Badge variant="default" className="text-xs capitalize">
             {category}
           </Badge>
         </div>

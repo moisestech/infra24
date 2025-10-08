@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { WorkshopSummary, Chapter, WorkshopProgress, Workshop } from '@/shared/types/workshop'
+import { Workshop } from '@/types/workshop'
 
 export function useWorkshops() {
-  const [workshops, setWorkshops] = useState<WorkshopSummary[]>([])
+  const [workshops, setWorkshops] = useState<Workshop[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -33,7 +33,7 @@ export function useWorkshops() {
 }
 
 export function useChapter(workshopSlug: string, chapterSlug: string) {
-  const [chapter, setChapter] = useState<Chapter | null>(null)
+  const [chapter, setChapter] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 

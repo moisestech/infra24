@@ -1,4 +1,4 @@
-import { getAdminSupabase } from '@/shared/lib/supabase/client';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 export interface DatabaseWorkshop {
   id: string;
@@ -60,7 +60,7 @@ export interface DatabaseUserSubscription {
 }
 
 class DatabaseService {
-  private supabase = getAdminSupabase();
+  private supabase = getSupabaseAdmin();
 
   // Workshop operations
   async getWorkshops(filters?: {

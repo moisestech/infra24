@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { cn } from '@/shared/lib/utils'
+import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronRight, CheckCircle, Clock, ArrowRight, Play, Pause } from 'lucide-react'
 
 interface ProcessStep {

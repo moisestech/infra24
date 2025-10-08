@@ -1,220 +1,395 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getSupabaseAdmin } from '@/lib/supabase'
+import { generateScheduledGoogleMeetLink } from '@/lib/google-meet'
+import { sendBookingConfirmationEmail, sendHostNotificationEmail, BookingEmailData } from '@/lib/email/email-service'
 import { auth } from '@clerk/nextjs/server'
-import { createClient } from '@/lib/supabase'
-import { createSuccessResponse, createErrorResponse, HTTP_STATUS, ERROR_MESSAGES } from '@/lib/api-response'
+import crypto from 'crypto'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-)
+interface CreateBookingRequest {
+  org_id: string
+  resource_id: string
+  start_time: string
+  end_time: string
+  artist_name: string
+  artist_email: string
+  goal_text?: string
+  consent_recording?: boolean
+}
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      const { response, status } = createErrorResponse(ERROR_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED)
-      return NextResponse.json(response, { status })
-    }
-
     const { searchParams } = new URL(request.url)
-    const orgId = searchParams.get('organizationId')
-    const resourceId = searchParams.get('resourceId')
-    const startDate = searchParams.get('startDate')
-    const endDate = searchParams.get('endDate')
+    const orgId = searchParams.get('org_id')
+    const when = searchParams.get('when') || 'today'
+    const owner = searchParams.get('owner') || 'team'
+    const resourceId = searchParams.get('resource_id')
+    const status = searchParams.get('status')
 
     if (!orgId) {
-      const { response, status } = createErrorResponse('Organization ID is required', HTTP_STATUS.BAD_REQUEST)
-      return NextResponse.json(response, { status })
+      return NextResponse.json(
+        { error: 'Missing org_id parameter' },
+        { status: 400 }
+      )
     }
 
-    // Check if user is member of organization
-    const { data: membership, error: membershipError } = await supabase
-      .from('org_memberships')
-      .select('role')
-      .eq('organization_id', orgId)
-      .eq('clerk_user_id', userId)
-      .eq('is_active', true)
-      .single()
+    const supabaseAdmin = getSupabaseAdmin()
 
-    if (membershipError || !membership) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+    // Build date range based on 'when' parameter
+    let startDate: Date
+    let endDate: Date
+
+    switch (when) {
+      case 'today':
+        startDate = new Date()
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date()
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'week':
+        startDate = new Date()
+        startDate.setHours(0, 0, 0, 0)
+        endDate = new Date()
+        endDate.setDate(endDate.getDate() + 7)
+        endDate.setHours(23, 59, 59, 999)
+        break
+      case 'range':
+        const start = searchParams.get('start')
+        const end = searchParams.get('end')
+        if (!start || !end) {
+          return NextResponse.json(
+            { error: 'Missing start and end dates for range' },
+            { status: 400 }
+          )
+        }
+        startDate = new Date(start)
+        endDate = new Date(end)
+        break
+      default:
+        return NextResponse.json(
+          { error: 'Invalid when parameter. Use: today, week, or range' },
+          { status: 400 }
+        )
     }
 
     // Build query
-    let query = supabase
+    let query = supabaseAdmin
       .from('bookings')
       .select(`
-        id,
-        organization_id,
-        resource_id,
-        user_id,
-        user_name,
-        user_email,
-        title,
-        description,
-        start_time,
-        end_time,
-        status,
-        capacity,
-        current_participants,
-        price,
-        currency,
-        location,
-        notes,
-        metadata,
-        created_at,
-        updated_at,
-        created_by_clerk_id,
-        updated_by_clerk_id,
-        resources (
-          id,
-          title,
-          type,
-          capacity,
-          is_bookable
+        *,
+        booking_participants (
+          user_id,
+          status
         )
       `)
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
+      .gte('start_time', startDate.toISOString())
+      .lte('start_time', endDate.toISOString())
+      .order('start_time', { ascending: true })
 
     if (resourceId) {
       query = query.eq('resource_id', resourceId)
     }
 
-    if (startDate) {
-      query = query.gte('start_time', startDate)
+    if (status) {
+      query = query.eq('status', status)
     }
 
-    if (endDate) {
-      query = query.lte('end_time', endDate)
+    const { data: bookings, error } = await query
+
+    if (error) {
+      console.error('Error fetching bookings:', error)
+      return NextResponse.json(
+        { error: 'Failed to fetch bookings' },
+        { status: 500 }
+      )
     }
 
-    const { data: bookings, error: bookingsError } = await query.order('start_time', { ascending: true })
-
-    if (bookingsError) {
-      console.error('Error fetching bookings:', bookingsError)
-      const { response, status } = createErrorResponse('Failed to fetch bookings', HTTP_STATUS.INTERNAL_SERVER_ERROR)
-      return NextResponse.json(response, { status })
-    }
-
-    return NextResponse.json(createSuccessResponse(bookings))
+    return NextResponse.json({ bookings })
 
   } catch (error) {
-    console.error('Bookings API error:', error)
-    const { response, status } = createErrorResponse(ERROR_MESSAGES.INTERNAL_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR)
-    return NextResponse.json(response, { status })
+    console.error('Error in bookings GET API:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      const { response, status } = createErrorResponse(ERROR_MESSAGES.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED)
-      return NextResponse.json(response, { status })
-    }
-
-    const body = await request.json()
-    const { 
-      organizationId, 
-      resourceId, 
-      title, 
-      description, 
-      startTime, 
-      endTime, 
-      status = 'pending' 
+    const body: CreateBookingRequest = await request.json()
+    
+    const {
+      org_id,
+      resource_id,
+      start_time,
+      end_time,
+      artist_name,
+      artist_email,
+      goal_text,
+      consent_recording = false
     } = body
 
     // Validate required fields
-    if (!organizationId || !resourceId || !title || !startTime || !endTime) {
-      const { response, status } = createErrorResponse(
-        'Missing required fields: organizationId, resourceId, title, startTime, endTime',
-        HTTP_STATUS.BAD_REQUEST
+    if (!org_id || !resource_id || !start_time || !end_time || !artist_name || !artist_email) {
+      return NextResponse.json(
+        { error: 'Missing required fields: org_id, resource_id, start_time, end_time, artist_name, artist_email' },
+        { status: 400 }
       )
-      return NextResponse.json(response, { status })
     }
 
-    // Check if user is member of organization
-    const { data: membership, error: membershipError } = await supabase
-      .from('org_memberships')
-      .select('role')
-      .eq('organization_id', organizationId)
-      .eq('clerk_user_id', userId)
+    const supabaseAdmin = getSupabaseAdmin()
+
+    // Get resource details
+    const { data: resource, error: resourceError } = await supabaseAdmin
+      .from('resources')
+      .select('*')
+      .eq('id', resource_id)
+      .eq('org_id', org_id)
       .eq('is_active', true)
+      .eq('is_bookable', true)
       .single()
 
-    if (membershipError || !membership) {
-      const { response, status } = createErrorResponse(ERROR_MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN)
-      return NextResponse.json(response, { status })
+    if (resourceError || !resource) {
+      return NextResponse.json(
+        { error: 'Resource not found or not bookable' },
+        { status: 404 }
+      )
     }
 
-    // Check for overlapping bookings
-    const { data: overlappingBookings, error: overlapError } = await supabase
-      .from('bookings')
-      .select('id')
-      .eq('resource_id', resourceId)
-      .eq('status', 'confirmed')
-      .or(`and(start_time.lt.${endTime},end_time.gt.${startTime})`)
+    // Validate slot availability
+    const slotAvailable = await validateSlotAvailability(
+      supabaseAdmin,
+      resource_id,
+      start_time,
+      end_time,
+      resource.availability_rules
+    )
 
-    if (overlapError) {
-      console.error('Error checking overlaps:', overlapError)
-      const { response, status } = createErrorResponse('Failed to check booking conflicts', HTTP_STATUS.INTERNAL_SERVER_ERROR)
-      return NextResponse.json(response, { status })
+    if (!slotAvailable.available) {
+      return NextResponse.json(
+        { error: slotAvailable.reason || 'Slot no longer available' },
+        { status: 409 }
+      )
     }
 
-    if (overlappingBookings && overlappingBookings.length > 0) {
-      const { response, status } = createErrorResponse('Time slot conflicts with existing confirmed booking', HTTP_STATUS.CONFLICT)
-      return NextResponse.json(response, { status })
+    // Generate reschedule/cancel token
+    const rescheduleToken = crypto.randomBytes(32).toString('hex')
+
+    // Determine host (from availability or default)
+    const host = slotAvailable.host || resource.metadata?.default_hosts?.[0] || 'mo@oolite.org'
+
+    // Generate Google Meet link for remote visits
+    let meetingUrl: string | undefined
+    let meetingCode: string | undefined
+    
+    if (resource.metadata?.meeting_platform === 'google_meet' || 
+        resource.metadata?.booking_type === 'remote_visit') {
+      const meetConfig = {
+        meetingTitle: `${resource.title} — ${artist_name}`,
+        description: goal_text || 'Remote consultation via Google Meet',
+        startTime: new Date(start_time),
+        endTime: new Date(end_time),
+        hostEmail: host,
+        attendeeEmails: [artist_email]
+      }
+      
+      const meetResult = generateScheduledGoogleMeetLink(meetConfig)
+      meetingUrl = meetResult.meetUrl
+      meetingCode = meetResult.meetingCode
     }
 
     // Create booking
-    const { data: booking, error: bookingError } = await supabase
+    const { data: booking, error: bookingError } = await supabaseAdmin
       .from('bookings')
       .insert({
-        organization_id: organizationId,
-        resource_id: resourceId,
-        title,
-        description,
-        start_time: startTime,
-        end_time: endTime,
-        status,
-        created_by_clerk_id: userId,
-        is_public: false
+        org_id: org_id,
+        user_id: artist_email, // Using email as user identifier for public bookings
+        resource_type: 'space',
+        resource_id: resource_id,
+        title: `${resource.title} — ${artist_name}`,
+        description: goal_text || '',
+        start_time: start_time,
+        end_time: end_time,
+        status: 'confirmed',
+        capacity: 1,
+        current_participants: 1,
+        price: resource.price || 0,
+        currency: resource.currency || 'USD',
+        location: meetingUrl || resource.location || 'TBD',
+        notes: 'Booked via Infra24',
+        metadata: {
+          reschedule_token: rescheduleToken,
+          host: host,
+          source: 'infra24',
+          artist_name: artist_name,
+          artist_email: artist_email,
+          consent_recording: consent_recording,
+          meeting_url: meetingUrl,
+          meeting_code: meetingCode,
+          meeting_platform: resource.metadata?.meeting_platform || 'google_meet'
+        },
+        created_by_clerk_id: 'public_booking',
+        updated_by_clerk_id: 'public_booking'
       })
-      .select(`
-        id,
-        title,
-        description,
-        start_time,
-        end_time,
-        status,
-        created_by_clerk_id,
-        created_at,
-        resources (
-          id,
-          title,
-          type,
-          capacity
-        )
-      `)
+      .select()
       .single()
 
     if (bookingError) {
       console.error('Error creating booking:', bookingError)
-      const { response, status } = createErrorResponse('Failed to create booking', HTTP_STATUS.INTERNAL_SERVER_ERROR)
-      return NextResponse.json(response, { status })
+      return NextResponse.json(
+        { error: 'Failed to create booking' },
+        { status: 500 }
+      )
     }
 
-    return NextResponse.json(createSuccessResponse(booking, 'Booking created successfully'), { status: HTTP_STATUS.CREATED })
+    // Create participants
+    const participants = [
+      { booking_id: booking.id, user_id: artist_email, status: 'registered' },
+      { booking_id: booking.id, user_id: host, status: 'confirmed' }
+    ]
+
+    const { error: participantsError } = await supabaseAdmin
+      .from('booking_participants')
+      .insert(participants)
+
+    if (participantsError) {
+      console.error('Error creating participants:', participantsError)
+      // Continue anyway - booking is created
+    }
+
+    // Create announcement
+    const announcementTitle = `${resource.title} — ${artist_name} with ${host.split('@')[0]}`
+    const announcementBody = goal_text ? goal_text.substring(0, 240) : ''
+
+    const { error: announcementError } = await supabaseAdmin
+      .from('announcements')
+      .insert({
+        organization_id: org_id,
+        org_id: org_id,
+        author_clerk_id: 'system',
+        created_by: 'system',
+        updated_by: 'system',
+        title: announcementTitle,
+        body: announcementBody,
+        status: 'approved',
+        visibility: 'internal',
+        starts_at: start_time,
+        ends_at: end_time,
+        location: resource.location || 'TBD',
+        type: 'booking',
+        sub_type: resource.metadata?.booking_type || 'consultation',
+        event_state: 'scheduled',
+        primary_link: resource.location || 'TBD',
+        payload: {
+          booking_id: booking.id,
+          resource_id: resource_id,
+          hosts: [host],
+          artist: {
+            name: artist_name,
+            email: artist_email
+          },
+          duration_minutes: Math.round((new Date(end_time).getTime() - new Date(start_time).getTime()) / 60000)
+        },
+        timezone: resource.availability_rules?.timezone || 'America/New_York',
+        priority: 0
+      })
+
+    if (announcementError) {
+      console.error('Error creating announcement:', announcementError)
+      // Continue anyway - booking is created
+    }
+
+    // Generate URLs
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const confirmationUrl = `${baseUrl}/bookings/confirmation/${booking.id}`
+    const rescheduleUrl = `${baseUrl}/bookings/reschedule/${booking.id}?token=${rescheduleToken}`
+    const cancelUrl = `${baseUrl}/bookings/cancel/${booking.id}?token=${rescheduleToken}`
+    const icsUrl = `${baseUrl}/api/bookings/${booking.id}/ics`
+    const calendarUrls = {
+      google: `${baseUrl}/api/bookings/${booking.id}/calendar-urls?provider=google`,
+      outlook: `${baseUrl}/api/bookings/${booking.id}/calendar-urls?provider=outlook`
+    }
+
+    // Send email notifications
+    try {
+      const emailData: BookingEmailData = {
+        bookingId: booking.id,
+        artistName: artist_name,
+        artistEmail: artist_email,
+        hostName: host.split('@')[0],
+        hostEmail: host,
+        resourceTitle: resource.title,
+        startTime: new Date(start_time),
+        endTime: new Date(end_time),
+        location: meetingUrl || resource.location || 'TBD',
+        meetingUrl: meetingUrl,
+        meetingCode: meetingCode,
+        organizationName: 'Oolite Arts', // TODO: Get from organization data
+        rescheduleUrl: rescheduleUrl,
+        cancelUrl: cancelUrl,
+        icsUrl: icsUrl,
+        calendarUrls: calendarUrls
+      }
+
+      // Send confirmation email to artist
+      const confirmationResult = await sendBookingConfirmationEmail(emailData)
+      console.log('Booking confirmation email result:', confirmationResult)
+
+      // Send notification email to host
+      const hostNotificationResult = await sendHostNotificationEmail(emailData)
+      console.log('Host notification email result:', hostNotificationResult)
+
+    } catch (emailError) {
+      console.error('Error sending booking emails:', emailError)
+      // Don't fail the booking creation if emails fail
+    }
+
+    return NextResponse.json({
+      booking_id: booking.id,
+      confirmation_url: confirmationUrl,
+      reschedule_url: rescheduleUrl,
+      cancel_url: cancelUrl,
+      booking: booking
+    }, { status: 201 })
 
   } catch (error) {
-    console.error('Create booking API error:', error)
-    const { response, status } = createErrorResponse(ERROR_MESSAGES.INTERNAL_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR)
-    return NextResponse.json(response, { status })
+    console.error('Error in bookings POST API:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+async function validateSlotAvailability(
+  supabaseAdmin: any,
+  resourceId: string,
+  startTime: string,
+  endTime: string,
+  availabilityRules: any
+): Promise<{ available: boolean; reason?: string; host?: string }> {
+  try {
+    // Check for existing bookings in the same time slot
+    const { data: conflictingBookings } = await supabaseAdmin
+      .from('bookings')
+      .select('start_time, end_time, metadata')
+      .eq('resource_id', resourceId)
+      .eq('status', 'confirmed')
+      .or(`and(start_time.lt.${endTime},end_time.gt.${startTime})`)
+
+    if (conflictingBookings && conflictingBookings.length > 0) {
+      return { available: false, reason: 'Time slot is already booked' }
+    }
+
+    // For now, return the first available host
+    // In a more sophisticated implementation, you'd check availability rules
+    const defaultHost = availabilityRules?.windows?.[0]?.host || 'mo@oolite.org'
+    
+    return { available: true, host: defaultHost }
+
+  } catch (error) {
+    console.error('Error validating slot availability:', error)
+    return { available: false, reason: 'Error checking availability' }
   }
 }

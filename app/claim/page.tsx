@@ -13,7 +13,7 @@ import {
   Users
 } from 'lucide-react'
 import PublicNavigation from '@/components/ui/PublicNavigation'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 
 interface ClaimToken {
   id: string

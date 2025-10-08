@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Heart, Target, Users, CheckCircle, Palette, Camera, Video, Mic, Box, Brain, Link } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useTenant } from '@/components/tenant/TenantProvider';
 
@@ -214,7 +214,7 @@ export default function WorkshopCategoryVoting({ organizationId, userId }: Works
                             {category.description}
                           </CardDescription>
                         </div>
-                        <Badge variant="secondary" className="text-sm px-3 py-1">
+                        <Badge variant="default" className="text-sm px-3 py-1">
                           {votes} votes
                         </Badge>
                       </div>

@@ -1,6 +1,6 @@
-@import "tailwindcss";
-
-@plugin "tailwindcss-animate";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* FullCalendar CSS - using CDN approach */
 /* FullCalendar styles will be loaded dynamically */
@@ -158,9 +158,9 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-gray-200;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white text-gray-900;
   }
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { UnifiedNavigation, ooliteConfig } from '@/components/navigation';
@@ -276,7 +276,7 @@ export default function ArtistDetailPage() {
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Skills</h4>
                       <div className="flex flex-wrap gap-2">
                         {artist.skills.map((skill, index) => (
-                          <Badge key={index} variant="secondary" className="text-sm">
+                          <Badge key={index} variant="default" className="text-sm">
                             {skill}
                           </Badge>
                         ))}
@@ -288,7 +288,7 @@ export default function ArtistDetailPage() {
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Mediums</h4>
                       <div className="flex flex-wrap gap-2">
                         {artist.mediums.map((medium, index) => (
-                          <Badge key={index} variant="outline" className="text-sm">
+                          <Badge key={index} variant="default" className="text-sm">
                             {medium}
                           </Badge>
                         ))}

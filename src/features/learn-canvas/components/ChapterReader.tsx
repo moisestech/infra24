@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@clerk/nextjs'
 import { MDXClient } from 'next-mdx-remote-client/csr'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 // import { Separator } from '../../../../components/ui/separator' // Component doesn't exist
 import { ArrowLeft, ArrowRight, Clock, BookOpen, Target, CheckCircle } from 'lucide-react'
@@ -19,7 +19,7 @@ import { BeforeAfterSlider } from './interactive/PlaceholderComponents'
 import { Callout } from './ui/Callout'
 import { VideoEmbed } from './ui/VideoEmbed'
 import { ExerciseCard } from './ui/ExerciseCard'
-import { ResourceList, IconDivider, ReflectionPrompt, VisualEnhancer, DevPlaceholder, ExternalLink, Figure, DevFigure, KeyFigure, InlineKeyFigure } from './ui/PlaceholderComponents'
+import { ResourceList, IconDivider, ReflectionPrompt, VisualEnhancer, DevPlaceholder, ExternalLinkWrapper, Figure, DevFigure, KeyFigure, InlineKeyFigure } from './ui/PlaceholderComponents'
 import { FeatureList, TimelineList, ChecklistList, AccordionList, ComparisonList, ProcessList } from './ui/ListComponents'
 
 interface ChapterReaderProps {
@@ -134,7 +134,7 @@ export function ChapterReader({
     ReflectionPrompt,
     VisualEnhancer,
     DevPlaceholder,
-    ExternalLink,
+    ExternalLink: ExternalLinkWrapper,
     Figure,
     DevFigure,
     KeyFigure,
@@ -177,19 +177,19 @@ export function ChapterReader({
           
           <div className="flex flex-wrap gap-4 mb-6">
             {chapter.estimatedTime && (
-              <Badge variant="outline" className="border-blue-500 text-blue-500">
+              <Badge variant="default" className="border-blue-500 text-blue-500">
                 <Clock className="w-4 h-4 mr-2" />
                 {chapter.estimatedTime} min
               </Badge>
             )}
             {chapter.difficulty && (
-              <Badge variant="outline" className="border-green-500 text-green-500">
+              <Badge variant="default" className="border-green-500 text-green-500">
                 <Target className="w-4 h-4 mr-2" />
                 {chapter.difficulty}
               </Badge>
             )}
             {chapter.progress === 1 && (
-              <Badge variant="outline" className="border-green-500 text-green-500">
+              <Badge variant="default" className="border-green-500 text-green-500">
                 <CheckCircle className="w-4 h-4 mr-2" />
                 Completed
               </Badge>
@@ -199,7 +199,7 @@ export function ChapterReader({
 
         <div className="prose prose-lg max-w-none">
           <MDXClient 
-            source={mdxSource} 
+            compiledSource={mdxSource} 
             components={mdxComponents}
           />
         </div>

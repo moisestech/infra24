@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { 
   Select, 
   SelectContent, 
@@ -279,7 +279,7 @@ export function ContentManagement() {
                       {item.title}
                     </CardTitle>
                     <div className="flex items-center gap-2 mt-2">
-                      <Badge variant={item.published ? "default" : "info"}>
+                      <Badge variant={item.published ? "default" : "secondary"}>
                         {item.published ? "Published" : "Draft"}
                       </Badge>
                       {item.featured && (

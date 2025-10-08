@@ -7,7 +7,7 @@ import { TenantProvider } from '@/components/tenant/TenantProvider'
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -725,7 +725,7 @@ export default function DigitalLabBudgetPage() {
                                 </div>
                               </td>
                               <td className="p-3">
-                                <Badge variant="info">
+                                <Badge variant="default">
                                   {getCategoryIcon(item.category)} {item.category}
                                 </Badge>
                               </td>

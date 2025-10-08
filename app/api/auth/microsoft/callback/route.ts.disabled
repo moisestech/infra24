@@ -1,0 +1,44 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { OutlookCalendarService } from '@/lib/calendar/outlook-calendar'
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const code = searchParams.get('code')
+    const state = searchParams.get('state') // This should contain the user ID
+    const error = searchParams.get('error')
+
+    if (error) {
+      console.error('Microsoft OAuth error:', error)
+      return NextResponse.redirect(
+        `${process.env.NEXT_PUBLIC_APP_URL}/bookings?error=microsoft_auth_failed`
+      )
+    }
+
+    if (!code || !state) {
+      return NextResponse.redirect(
+        `${process.env.NEXT_PUBLIC_APP_URL}/bookings?error=missing_auth_data`
+      )
+    }
+
+    // Exchange code for tokens
+    const result = await OutlookCalendarService.exchangeCodeForTokens(code, state)
+
+    if (!result.success) {
+      console.error('Token exchange failed:', result.error)
+      return NextResponse.redirect(
+        `${process.env.NEXT_PUBLIC_APP_URL}/bookings?error=token_exchange_failed`
+      )
+    }
+
+    // Redirect back to bookings page with success
+    return NextResponse.redirect(
+      `${process.env.NEXT_PUBLIC_APP_URL}/bookings?calendar_connected=microsoft`
+    )
+  } catch (error) {
+    console.error('Microsoft callback error:', error)
+    return NextResponse.redirect(
+      `${process.env.NEXT_PUBLIC_APP_URL}/bookings?error=callback_failed`
+    )
+  }
+}

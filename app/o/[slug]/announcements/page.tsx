@@ -9,6 +9,7 @@ import { AnnouncementIdDisplay } from '@/components/admin/AnnouncementIdDisplay'
 import { BackgroundPattern } from '@/components/BackgroundPattern'
 import { AnnouncementType, AnnouncementSubType } from '@/types/announcement'
 import { PageFooter } from '@/components/common/PageFooter'
+import { useTenant } from '@/components/tenant/TenantProvider'
 
 interface Announcement {
   id: string
@@ -38,11 +39,15 @@ interface Organization {
 export default function OrganizationAnnouncementsPage() {
   const params = useParams()
   const slug = params.slug as string
+  const { tenantConfig } = useTenant()
+  
+  // Debug tenant config
+  console.log('🎨 Announcements Page - Tenant Config:', tenantConfig)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [filter, setFilter] = useState<'all' | 'active' | 'inactive' | 'public' | 'internal' | 'members_only'>('all')
+  const [filter, setFilter] = useState<'all' | 'current' | 'expired' | 'active' | 'inactive' | 'public' | 'internal' | 'members_only'>('all')
   const [userRole, setUserRole] = useState<string>('')
   const [editingEndDate, setEditingEndDate] = useState<string | null>(null)
   const [tempEndDate, setTempEndDate] = useState<string>('')
@@ -130,6 +135,14 @@ export default function OrganizationAnnouncementsPage() {
 
   const filteredAnnouncements = announcements.filter(announcement => {
     if (filter === 'all') return true
+    if (filter === 'current') {
+      const hasEndDate = announcement.end_date
+      return hasEndDate ? new Date(announcement.end_date!) > new Date() : true
+    }
+    if (filter === 'expired') {
+      const hasEndDate = announcement.end_date
+      return hasEndDate ? new Date(announcement.end_date!) <= new Date() : false
+    }
     if (filter === 'active') return announcement.is_active
     if (filter === 'inactive') return !announcement.is_active
     if (filter === 'public') return announcement.visibility === 'public'
@@ -244,14 +257,14 @@ export default function OrganizationAnnouncementsPage() {
 
   const getStatusColor = (isActive: boolean) => {
     return isActive 
-      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+      ? 'text-white'
       : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
   }
 
   const getVisibilityColor = (visibility: string) => {
     switch (visibility) {
       case 'public':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+        return 'text-white'
       case 'internal':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
       case 'members_only':
@@ -369,7 +382,16 @@ export default function OrganizationAnnouncementsPage() {
             <div className="flex space-x-3">
               <Link
                 href={`/o/${slug}/announcements/display`}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                className="text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                style={{
+                  background: `linear-gradient(135deg, ${tenantConfig?.theme?.primaryColor || '#47abc4'}, ${tenantConfig?.theme?.primaryColor || '#3a8ba3'})`
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = `linear-gradient(135deg, ${tenantConfig?.theme?.primaryColor || '#3a8ba3'}, ${tenantConfig?.theme?.primaryColor || '#47abc4'})`
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = `linear-gradient(135deg, ${tenantConfig?.theme?.primaryColor || '#47abc4'}, ${tenantConfig?.theme?.primaryColor || '#3a8ba3'})`
+                }}
               >
                 <Eye className="h-4 w-4" />
                 <span>Display Mode</span>
@@ -377,7 +399,16 @@ export default function OrganizationAnnouncementsPage() {
               
               <Link
                 href={`/o/${slug}/announcements/create`}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                className="text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                style={{
+                  backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryColor || '#3a8ba3'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryColor || '#47abc4'
+                }}
               >
                 <Plus className="h-4 w-4" />
                 <span>New Announcement</span>
@@ -433,6 +464,14 @@ export default function OrganizationAnnouncementsPage() {
           <div className="flex flex-wrap gap-2">
             {[
               { key: 'all', label: 'All', count: announcements.length },
+              { key: 'current', label: 'Current', count: announcements.filter(a => {
+                const hasEndDate = a.end_date
+                return hasEndDate ? new Date(a.end_date!) > new Date() : true
+              }).length },
+              { key: 'expired', label: 'Expired', count: announcements.filter(a => {
+                const hasEndDate = a.end_date
+                return hasEndDate ? new Date(a.end_date!) <= new Date() : false
+              }).length },
               { key: 'active', label: 'Active', count: announcements.filter(a => a.is_active).length },
               { key: 'inactive', label: 'Inactive', count: announcements.filter(a => !a.is_active).length },
               { key: 'public', label: 'Public', count: announcements.filter(a => a.visibility === 'public').length },
@@ -444,9 +483,24 @@ export default function OrganizationAnnouncementsPage() {
                 onClick={() => setFilter(key as any)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   filter === key
-                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                    ? 'text-white'
                     : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
+                style={filter === key ? {
+                  backgroundColor: `${tenantConfig?.theme?.primaryColor || '#47abc4'} !important`
+                } : {}}
+                onMouseEnter={(e) => {
+                  if (filter !== key) {
+                    e.currentTarget.style.setProperty('backgroundColor', tenantConfig?.theme?.primaryColor ? `${tenantConfig.theme.primaryColor}20` : 'rgba(71, 171, 196, 0.1)', 'important');
+                    e.currentTarget.style.setProperty('color', tenantConfig?.theme?.primaryColor || '#47abc4', 'important');
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (filter !== key) {
+                    e.currentTarget.style.removeProperty('backgroundColor');
+                    e.currentTarget.style.removeProperty('color');
+                  }
+                }}
               >
                 {label} ({count})
               </button>
@@ -478,24 +532,28 @@ export default function OrganizationAnnouncementsPage() {
             </div>
           ) : (
             sortedAnnouncements.map((announcement) => {
-              // Determine the event date - use created_at
-              const eventDate = announcement.created_at
+              // Determine the event date - prioritize end_date, then start_date, then created_at
+              const eventDate = announcement.end_date || announcement.start_date || announcement.created_at
               const formattedEventDate = formatEventDate(eventDate)
               
               // Get time information if available
               const hasTime = false // No scheduled_at field available
               const timeInfo = null
 
-              // Determine date status
+              // Determine date status based on the appropriate date
               const isEventToday = isToday(eventDate)
               const isEventPast = isPast(eventDate)
               const isEventUpcoming = isUpcoming(eventDate)
+              
+              // Additional logic: if announcement has end_date, check if it's still active
+              const hasEndDate = announcement.end_date
+              const isStillActive = hasEndDate ? new Date(announcement.end_date!) > new Date() : true
               
               return (
                 <div
                   key={announcement.id}
                   className={`rounded-lg border transition-shadow ${
-                    isEventPast 
+                    !isStillActive 
                       ? 'bg-gray-50 dark:bg-gray-800/50 border-gray-300 dark:border-gray-600 opacity-75' 
                       : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-md'
                   }`}
@@ -518,13 +576,18 @@ export default function OrganizationAnnouncementsPage() {
                   
                   <div className="flex flex-col md:flex-row">
                     {/* Event Date Column with Background Pattern - Prominent on mobile top, left side on desktop */}
-                    <div className={`md:w-32 flex-shrink-0 md:border-r border-b md:border-b-0 border-gray-200 dark:border-gray-700 p-4 flex flex-row md:flex-col items-center justify-center relative overflow-hidden ${
-                      isEventPast 
-                        ? 'bg-gray-100 dark:bg-gray-700/50' 
-                        : isEventToday 
-                          ? 'bg-green-50 dark:bg-green-900/20' 
-                          : 'bg-blue-50 dark:bg-blue-900/20'
-                    }`}>
+                    <div 
+                      className={`md:w-32 flex-shrink-0 md:border-r border-b md:border-b-0 border-gray-200 dark:border-gray-700 p-4 flex flex-row md:flex-col items-center justify-center relative overflow-hidden ${
+                        !isStillActive 
+                          ? 'bg-gray-100 dark:bg-gray-700/50' 
+                          : isEventToday 
+                            ? 'bg-green-50 dark:bg-green-900/20' 
+                            : ''
+                      }`}
+                      style={isStillActive && !isEventToday ? {
+                        backgroundColor: tenantConfig?.theme?.primaryColor ? `${tenantConfig.theme.primaryColor}20` : 'rgba(71, 171, 196, 0.1)'
+                      } : {}}
+                    >
                       {/* Background Pattern */}
                       <div className="absolute inset-0 opacity-5">
                         <BackgroundPattern
@@ -543,42 +606,62 @@ export default function OrganizationAnnouncementsPage() {
                       )}
                       
                       <div className="text-center flex items-center md:flex-col space-x-2 md:space-x-0 relative z-10">
-                        <div className={`text-2xl md:text-3xl font-bold ${
-                          isEventPast 
-                            ? 'text-gray-500 dark:text-gray-400' 
-                            : isEventToday 
-                              ? 'text-green-600 dark:text-green-400' 
-                              : 'text-blue-600 dark:text-blue-400'
-                        }`}>
-                          {formattedEventDate.day}
-                        </div>
-                        <div className="md:block">
-                          <div className={`text-sm font-medium uppercase tracking-wide ${
-                            isEventPast 
+                        <div 
+                          className={`text-2xl md:text-3xl font-bold ${
+                            !isStillActive 
                               ? 'text-gray-500 dark:text-gray-400' 
                               : isEventToday 
                                 ? 'text-green-600 dark:text-green-400' 
-                                : 'text-blue-600 dark:text-blue-400'
-                          }`}>
+                                : ''
+                          }`}
+                          style={isStillActive && !isEventToday ? {
+                            color: tenantConfig?.theme?.primaryColor || '#47abc4'
+                          } : {}}
+                        >
+                          {formattedEventDate.day}
+                        </div>
+                        <div className="md:block">
+                          <div 
+                            className={`text-sm font-medium uppercase tracking-wide ${
+                              !isStillActive 
+                                ? 'text-gray-500 dark:text-gray-400' 
+                                : isEventToday 
+                                  ? 'text-green-600 dark:text-green-400' 
+                                  : ''
+                            }`}
+                            style={isStillActive && !isEventToday ? {
+                              color: tenantConfig?.theme?.primaryColor || '#47abc4'
+                            } : {}}
+                          >
                             {formattedEventDate.month}
                           </div>
-                          <div className={`text-xs ${
-                            isEventPast 
-                              ? 'text-gray-400 dark:text-gray-500' 
-                              : isEventToday 
-                                ? 'text-green-500 dark:text-green-300' 
-                                : 'text-blue-500 dark:text-blue-300'
-                          }`}>
-                            {formattedEventDate.year}
-                          </div>
-                          {timeInfo && (
-                            <div className={`text-xs mt-1 font-medium ${
-                              isEventPast 
+                          <div 
+                            className={`text-xs ${
+                              !isStillActive 
                                 ? 'text-gray-400 dark:text-gray-500' 
                                 : isEventToday 
                                   ? 'text-green-500 dark:text-green-300' 
-                                  : 'text-blue-500 dark:text-blue-300'
-                            }`}>
+                                  : ''
+                            }`}
+                            style={isStillActive && !isEventToday ? {
+                              color: tenantConfig?.theme?.primaryColor || '#6bb8d1'
+                            } : {}}
+                          >
+                            {formattedEventDate.year}
+                          </div>
+                          {timeInfo && (
+                            <div 
+                              className={`text-xs mt-1 font-medium ${
+                                !isStillActive 
+                                  ? 'text-gray-400 dark:text-gray-500' 
+                                  : isEventToday 
+                                    ? 'text-green-500 dark:text-green-300' 
+                                    : ''
+                              }`}
+                              style={isStillActive && !isEventToday ? {
+                                color: tenantConfig?.theme?.primaryColor || '#6bb8d1'
+                              } : {}}
+                            >
                               {timeInfo}
                             </div>
                           )}
@@ -598,10 +681,20 @@ export default function OrganizationAnnouncementsPage() {
                             }`}>
                               {announcement.title}
                             </h3>
-                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(announcement.is_active)}`}>
+                            <span 
+                              className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(announcement.is_active)}`}
+                              style={announcement.is_active ? {
+                                backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4'
+                              } : {}}
+                            >
                               {announcement.is_active ? 'Active' : 'Inactive'}
                             </span>
-                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getVisibilityColor(announcement.visibility)}`}>
+                            <span 
+                              className={`px-2 py-1 text-xs font-medium rounded-full ${getVisibilityColor(announcement.visibility)}`}
+                              style={announcement.visibility === 'public' ? {
+                                backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4'
+                              } : {}}
+                            >
                               {announcement.visibility}
                             </span>
                             {announcement.priority !== 'normal' && (
@@ -615,7 +708,7 @@ export default function OrganizationAnnouncementsPage() {
                                 {announcement.priority}
                               </span>
                             )}
-                            {isEventPast && (
+                            {!isStillActive && (
                               <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-full">
                                 Past Event
                               </span>
@@ -624,7 +717,7 @@ export default function OrganizationAnnouncementsPage() {
                           </div>
                           
                           <p className={`mb-4 line-clamp-3 ${
-                            isEventPast 
+                            !isStillActive 
                               ? 'text-gray-400 dark:text-gray-500' 
                               : 'text-gray-600 dark:text-gray-400'
                           }`}>
@@ -816,7 +909,16 @@ export default function OrganizationAnnouncementsPage() {
                         <div className="flex items-center space-x-2 md:ml-4">
                           <Link
                             href={`/o/${slug}/announcements/${announcement.id}`}
-                            className="text-blue-600 hover:text-blue-500 text-sm font-medium"
+                            className="text-sm font-medium transition-colors"
+                            style={{
+                              color: `${tenantConfig?.theme?.primaryColor || '#47abc4'} !important`
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.setProperty('color', tenantConfig?.theme?.primaryColor || '#3a8ba3', 'important');
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.setProperty('color', tenantConfig?.theme?.primaryColor || '#47abc4', 'important');
+                            }}
                           >
                             View
                           </Link>

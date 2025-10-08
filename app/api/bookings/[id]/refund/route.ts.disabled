@@ -1,0 +1,218 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { StripeService } from '@/lib/stripe/service'
+import { getSupabaseAdmin } from '@/lib/supabase'
+import { z } from 'zod'
+
+const refundSchema = z.object({
+  amount: z.number().positive().optional(),
+  reason: z.enum(['duplicate', 'fraudulent', 'requested_by_customer']).default('requested_by_customer'),
+  notes: z.string().optional(),
+})
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { id: bookingId } = await params
+    const body = await request.json()
+    const { amount, reason, notes } = refundSchema.parse(body)
+
+    // Get booking details
+    const supabase = getSupabaseAdmin()
+    const { data: booking, error: bookingError } = await supabase
+      .from('bookings')
+      .select(`
+        *,
+        payment_transactions (
+          id,
+          stripe_payment_intent_id,
+          amount,
+          status
+        )
+      `)
+      .eq('id', bookingId)
+      .eq('user_id', userId)
+      .single()
+
+    if (bookingError || !booking) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+    }
+
+    // Check if booking is eligible for refund
+    if (booking.payment_status !== 'paid') {
+      return NextResponse.json({ 
+        error: 'Booking is not paid and cannot be refunded' 
+      }, { status: 400 })
+    }
+
+    if (booking.refund_amount && booking.refund_amount >= booking.payment_amount) {
+      return NextResponse.json({ 
+        error: 'Booking has already been fully refunded' 
+      }, { status: 400 })
+    }
+
+    // Get the payment transaction
+    const paymentTransaction = booking.payment_transactions?.[0]
+    if (!paymentTransaction || !paymentTransaction.stripe_payment_intent_id) {
+      return NextResponse.json({ 
+        error: 'No payment transaction found for this booking' 
+      }, { status: 400 })
+    }
+
+    // Calculate refund amount
+    const refundAmount = amount || (booking.payment_amount - (booking.refund_amount || 0))
+    
+    if (refundAmount <= 0) {
+      return NextResponse.json({ 
+        error: 'Invalid refund amount' 
+      }, { status: 400 })
+    }
+
+    if (refundAmount > booking.payment_amount) {
+      return NextResponse.json({ 
+        error: 'Refund amount cannot exceed payment amount' 
+      }, { status: 400 })
+    }
+
+    // Process refund with Stripe
+    const refundResult = await StripeService.processRefund({
+      paymentIntentId: paymentTransaction.stripe_payment_intent_id,
+      amount: refundAmount,
+      reason,
+    })
+
+    if (!refundResult.success) {
+      return NextResponse.json({ 
+        error: refundResult.error || 'Failed to process refund' 
+      }, { status: 500 })
+    }
+
+    const refund = refundResult.refund!
+
+    // Update booking with refund information
+    const newRefundAmount = (booking.refund_amount || 0) + refundAmount
+    const isFullyRefunded = newRefundAmount >= booking.payment_amount
+
+    const { error: updateError } = await supabase
+      .from('bookings')
+      .update({
+        refund_amount: newRefundAmount,
+        refund_reason: reason,
+        refunded_at: new Date().toISOString(),
+        payment_status: isFullyRefunded ? 'refunded' : 'partially_refunded',
+        status: isFullyRefunded ? 'cancelled' : booking.status,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', bookingId)
+
+    if (updateError) {
+      console.error('Error updating booking refund status:', updateError)
+      // Note: Refund was successful in Stripe, but database update failed
+      // This should be handled by a background job or manual intervention
+    }
+
+    // Create refund record
+    const { error: refundRecordError } = await supabase
+      .from('refunds')
+      .insert({
+        booking_id: bookingId,
+        payment_transaction_id: paymentTransaction.id,
+        stripe_refund_id: refund.id,
+        amount: refundAmount,
+        currency: 'USD',
+        reason: reason,
+        status: refund.status,
+      })
+
+    if (refundRecordError) {
+      console.error('Error creating refund record:', refundRecordError)
+    }
+
+    return NextResponse.json({
+      success: true,
+      refund: {
+        id: refund.id,
+        amount: refundAmount,
+        currency: 'USD',
+        reason: reason,
+        status: refund.status,
+        totalRefunded: newRefundAmount,
+        isFullyRefunded,
+        bookingStatus: isFullyRefunded ? 'cancelled' : booking.status,
+      }
+    })
+  } catch (error) {
+    console.error('Refund processing error:', error)
+    return NextResponse.json(
+      { error: 'Failed to process refund' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { id: bookingId } = await params
+
+    // Get booking refund information
+    const supabase = getSupabaseAdmin()
+    const { data: booking, error } = await supabase
+      .from('bookings')
+      .select(`
+        id,
+        payment_amount,
+        payment_status,
+        refund_amount,
+        refund_reason,
+        refunded_at,
+        refunds (
+          id,
+          stripe_refund_id,
+          amount,
+          currency,
+          reason,
+          status,
+          created_at
+        )
+      `)
+      .eq('id', bookingId)
+      .eq('user_id', userId)
+      .single()
+
+    if (error || !booking) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+    }
+
+    return NextResponse.json({
+      success: true,
+      refunds: {
+        totalPaid: booking.payment_amount,
+        totalRefunded: booking.refund_amount || 0,
+        remainingAmount: (booking.payment_amount || 0) - (booking.refund_amount || 0),
+        refundHistory: booking.refunds || [],
+        canRefund: (booking.payment_amount || 0) > (booking.refund_amount || 0),
+      }
+    })
+  } catch (error) {
+    console.error('Refund status error:', error)
+    return NextResponse.json(
+      { error: 'Failed to get refund status' },
+      { status: 500 }
+    )
+  }
+}

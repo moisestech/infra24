@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { 
   File, 
   Image, 
@@ -139,7 +139,7 @@ export function EventMaterialsList({
             <File className="w-5 h-5" />
             Event Materials
             {materials.length > maxItems && (
-              <Badge variant="info" className="ml-2">
+              <Badge variant="default" className="ml-2">
                 {materials.length} total
               </Badge>
             )}

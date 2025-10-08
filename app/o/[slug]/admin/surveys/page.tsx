@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 // Using custom implementations instead of missing shadcn components
 import { 
@@ -195,7 +195,7 @@ export default function AdminSurveysPage() {
     };
 
     return (
-      <Badge variant={variants[status as keyof typeof variants] || 'secondary'}>
+      <Badge variant="default">
         {icons[status as keyof typeof icons]}
         <span className="ml-1 capitalize">{status}</span>
       </Badge>
@@ -384,7 +384,7 @@ export default function AdminSurveysPage() {
                           {getStatusBadge(survey)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <Badge variant="info">
+                          <Badge variant="default">
                             {survey.survey_templates?.category || 'Custom'}
                           </Badge>
                         </td>
@@ -467,7 +467,7 @@ export default function AdminSurveysPage() {
                           <h3 className="font-medium">{template.name}</h3>
                           <p className="text-sm text-gray-600">{template.description}</p>
                           <div className="flex gap-2 mt-2">
-                            <Badge variant="info">{template.category}</Badge>
+                            <Badge variant="default">{template.category}</Badge>
                             {template.is_public && (
                               <Badge variant="default">Public</Badge>
                             )}

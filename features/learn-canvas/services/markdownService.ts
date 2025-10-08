@@ -6,7 +6,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import rehypeToc from 'rehype-toc';
 import matter from 'gray-matter';
-import { devLog } from '@/shared/lib/utils/log';
+// console.log not available
 
 // Types for markdown processing
 export interface WorkshopMetadata {
@@ -318,7 +318,7 @@ class MarkdownService {
    */
   async readWorkshop(workshopSlug: string): Promise<ProcessedWorkshop> {
     if (typeof window !== 'undefined') {
-      devLog('readWorkshop can only be called on the server side', { level: 'error', prefix: 'markdownService' });
+      console.log('readWorkshop can only be called on the server side', { level: 'error', prefix: 'markdownService' });
       throw new Error('readWorkshop can only be called on the server side');
     }
 
@@ -335,7 +335,7 @@ class MarkdownService {
    */
   async readChapter(workshopSlug: string, chapterSlug: string): Promise<ProcessedChapter> {
     if (typeof window !== 'undefined') {
-      devLog('readChapter can only be called on the server side', { level: 'error', prefix: 'markdownService' });
+      console.log('readChapter can only be called on the server side', { level: 'error', prefix: 'markdownService' });
       throw new Error('readChapter can only be called on the server side');
     }
 
@@ -427,7 +427,7 @@ class MarkdownService {
    */
   async getWorkshopSlugs(): Promise<string[]> {
     if (typeof window !== 'undefined') {
-      devLog('getWorkshopSlugs can only be called on the server side', { level: 'error', prefix: 'markdownService' });
+      console.log('getWorkshopSlugs can only be called on the server side', { level: 'error', prefix: 'markdownService' });
       throw new Error('getWorkshopSlugs can only be called on the server side');
     }
 
@@ -441,7 +441,7 @@ class MarkdownService {
         .filter(entry => entry.isDirectory())
         .map(entry => entry.name);
     } catch (error) {
-      devLog('Workshops directory not found', { level: 'warn', prefix: 'markdownService' }, error);
+      console.log('Workshops directory not found', { level: 'warn', prefix: 'markdownService' }, error);
       return [];
     }
   }
@@ -451,7 +451,7 @@ class MarkdownService {
    */
   async getChapterSlugs(workshopSlug: string): Promise<string[]> {
     if (typeof window !== 'undefined') {
-      devLog('getChapterSlugs can only be called on the server side', { level: 'error', prefix: 'markdownService' });
+      console.log('getChapterSlugs can only be called on the server side', { level: 'error', prefix: 'markdownService' });
       throw new Error('getChapterSlugs can only be called on the server side');
     }
 
@@ -465,7 +465,7 @@ class MarkdownService {
         .filter(entry => entry.isFile() && entry.name.endsWith('.md'))
         .map(entry => entry.name.replace('.md', ''));
     } catch (error) {
-      devLog(`Chapters directory not found for ${workshopSlug}:`, { level: 'warn', prefix: 'markdownService' }, error);
+      console.log(`Chapters directory not found for ${workshopSlug}:`, { level: 'warn', prefix: 'markdownService' }, error);
       return [];
     }
   }

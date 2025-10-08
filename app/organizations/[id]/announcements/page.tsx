@@ -22,7 +22,7 @@ import {
   MoreHorizontal
 } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 
 interface Announcement {
   id: string
@@ -85,7 +85,7 @@ function OrganizationAnnouncementsPageContent() {
         setAnnouncements(announcementsData.announcements || [])
 
         // Load author information for all announcements
-        const authorIds = [...new Set(announcementsData.announcements?.map((a: Announcement) => a.author_clerk_id).filter(Boolean) || [])] as string[]
+        const authorIds = Array.from(new Set(announcementsData.announcements?.map((a: Announcement) => a.author_clerk_id).filter(Boolean) || [])) as string[]
         const authorsMap: Record<string, AuthorInfo> = {}
         
         await Promise.all(
@@ -159,11 +159,11 @@ function OrganizationAnnouncementsPageContent() {
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case 'published': return 'success'
-      case 'pending': return 'warning'
-      case 'rejected': return 'error'
+      case 'published': return 'default'
+      case 'pending': return 'secondary'
+      case 'rejected': return 'destructive'
       case 'draft': return 'default'
-      case 'approved': return 'info'
+      case 'approved': return 'default'
       default: return 'default'
     }
   }
@@ -355,7 +355,7 @@ function OrganizationAnnouncementsPageContent() {
                           {announcement.status}
                         </Badge>
                         {announcement.priority > 0 && (
-                          <Badge variant="error">
+                          <Badge variant="destructive">
                             Priority {announcement.priority}
                           </Badge>
                         )}

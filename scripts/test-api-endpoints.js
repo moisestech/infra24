@@ -1,299 +1,335 @@
 #!/usr/bin/env node
 
 /**
- * API Endpoint Testing Script
- * Tests critical API endpoints to identify issues before deployment
+ * API Endpoints Test Script
+ * Tests all API endpoints with various scenarios
  */
 
-const https = require('https');
-const http = require('http');
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-// Configuration
-const BASE_URL = process.env.TEST_BASE_URL || 'http://localhost:3000';
-const TEST_ORG_ID = process.env.TEST_ORG_ID || 'caf2bc8b-8547-4c55-ac9f-5692e93bd831'; // Oolite org ID
-const TEST_TOKEN = process.env.TEST_TOKEN || 'test-token';
+// Test utilities
+const log = (message, type = 'info') => {
+  const timestamp = new Date().toISOString()
+  const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : '🔍'
+  console.log(`${prefix} [${timestamp}] ${message}`)
+}
 
-// Test results tracking
-const testResults = {
-  passed: 0,
-  failed: 0,
-  errors: []
-};
+const testResult = (testName, passed, details = '') => {
+  const status = passed ? 'PASS' : 'FAIL'
+  const icon = passed ? '✅' : '❌'
+  console.log(`${icon} ${testName}: ${status}${details ? ` - ${details}` : ''}`)
+  return passed
+}
 
-// Helper function to make HTTP requests
-function makeRequest(url, options = {}) {
-  return new Promise((resolve, reject) => {
-    const isHttps = url.startsWith('https://');
-    const client = isHttps ? https : http;
-    
-    const requestOptions = {
-      method: options.method || 'GET',
+// Test data
+const testOrgId = '2133fe94-fb12-41f8-ab37-ea4acd4589f6'
+const testResourceId = '67e52569-d67d-4352-8ca3-c3bcbde8c43f' // Print Room Consult
+
+// API Test functions
+async function testAvailabilityEndpoint() {
+  log('Testing /api/availability endpoint...')
+  
+  const testCases = [
+    {
+      name: 'Valid request',
+      params: `resource_id=${testResourceId}&start_date=2025-01-15&end_date=2025-01-15`,
+      expectedStatus: 200
+    },
+    {
+      name: 'Missing resource_id',
+      params: 'start_date=2025-01-15&end_date=2025-01-15',
+      expectedStatus: 400
+    },
+    {
+      name: 'Missing dates',
+      params: `resource_id=${testResourceId}`,
+      expectedStatus: 400
+    },
+    {
+      name: 'Invalid resource_id',
+      params: 'resource_id=invalid-id&start_date=2025-01-15&end_date=2025-01-15',
+      expectedStatus: 404
+    }
+  ]
+  
+  let passed = 0
+  for (const testCase of testCases) {
+    try {
+      const response = await fetch(`${BASE_URL}/api/availability?${testCase.params}`)
+      const passed_test = response.status === testCase.expectedStatus
+      testResult(`${testCase.name}`, passed_test, `Status: ${response.status}`)
+      if (passed_test) passed++
+    } catch (error) {
+      testResult(`${testCase.name}`, false, error.message)
+    }
+  }
+  
+  return passed === testCases.length
+}
+
+async function testBookingsEndpoint() {
+  log('Testing /api/bookings endpoint...')
+  
+  // Generate unique timestamps for each test run
+  const now = new Date()
+  const uniqueId = now.getTime()
+  const startTime = new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)) // Next week
+  const endTime = new Date(startTime.getTime() + (30 * 60 * 1000)) // 30 minutes later
+  
+  const validBookingData = {
+    org_id: testOrgId,
+    resource_id: testResourceId,
+    start_time: startTime.toISOString(),
+    end_time: endTime.toISOString(),
+    artist_name: 'Test Artist',
+    artist_email: `test-${uniqueId}@example.com`,
+    goal_text: 'Portfolio review'
+  }
+  
+  const testCases = [
+    {
+      name: 'Valid booking creation',
+      data: validBookingData,
+      expectedStatus: 201
+    },
+    {
+      name: 'Missing required fields',
+      data: { org_id: testOrgId },
+      expectedStatus: 400
+    },
+    {
+      name: 'Invalid email format',
+      data: { ...validBookingData, artist_email: 'invalid-email', start_time: new Date(now.getTime() + (24 * 60 * 60 * 1000) + (3 * 60 * 60 * 1000)).toISOString(), end_time: new Date(now.getTime() + (24 * 60 * 60 * 1000) + (3.5 * 60 * 60 * 1000)).toISOString() },
+      expectedStatus: 400
+    },
+    {
+      name: 'Invalid resource_id',
+      data: { ...validBookingData, resource_id: 'invalid-resource' },
+      expectedStatus: 404
+    }
+  ]
+  
+  let passed = 0
+  for (const testCase of testCases) {
+    try {
+      const response = await fetch(`${BASE_URL}/api/bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(testCase.data)
+      })
+      
+      const passed_test = response.status === testCase.expectedStatus
+      testResult(`${testCase.name}`, passed_test, `Status: ${response.status}`)
+      if (passed_test) passed++
+    } catch (error) {
+      testResult(`${testCase.name}`, false, error.message)
+    }
+  }
+  
+  return passed === testCases.length
+}
+
+async function testCalendarURLsEndpoint() {
+  log('Testing /api/bookings/[id]/calendar-urls endpoint...')
+  
+  // First create a booking to test with
+  const now = new Date()
+  const uniqueId = now.getTime() + 1
+  const startTime = new Date(now.getTime() + (24 * 60 * 60 * 1000) + (60 * 60 * 1000)) // Tomorrow + 1 hour
+  const endTime = new Date(startTime.getTime() + (30 * 60 * 1000)) // 30 minutes later
+  
+  const bookingData = {
+    org_id: testOrgId,
+    resource_id: testResourceId,
+    start_time: startTime.toISOString(),
+    end_time: endTime.toISOString(),
+    artist_name: 'Test Artist',
+    artist_email: `test-${uniqueId}@example.com`,
+    goal_text: 'Portfolio review'
+  }
+  
+  try {
+    const bookingResponse = await fetch(`${BASE_URL}/api/bookings`, {
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${TEST_TOKEN}`,
-        ...options.headers
-      }
-    };
-
-    const req = client.request(url, requestOptions, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          const jsonData = data ? JSON.parse(data) : {};
-          resolve({
-            status: res.statusCode,
-            headers: res.headers,
-            data: jsonData
-          });
-        } catch (e) {
-          resolve({
-            status: res.statusCode,
-            headers: res.headers,
-            data: data
-          });
-        }
-      });
-    });
-
-    req.on('error', reject);
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(bookingData)
+    })
     
-    if (options.body) {
-      req.write(JSON.stringify(options.body));
+    if (!bookingResponse.ok) {
+      return testResult('Calendar URLs - Setup', false, 'Failed to create test booking')
     }
     
-    req.end();
-  });
+    const bookingResult = await bookingResponse.json()
+    const bookingId = bookingResult.booking_id
+    
+    // Test calendar URLs
+    const response = await fetch(`${BASE_URL}/api/bookings/${bookingId}/calendar-urls`)
+    
+    if (!response.ok) {
+      return testResult('Calendar URLs', false, `Status: ${response.status}`)
+    }
+    
+    const data = await response.json()
+    const urls = data.calendar_urls || data
+    
+    const requiredUrls = ['google', 'outlook', 'ics']
+    const hasAllUrls = requiredUrls.every(url => urls[url])
+    
+    return testResult('Calendar URLs', hasAllUrls, hasAllUrls ? 'All providers available' : 'Missing some providers')
+  } catch (error) {
+    return testResult('Calendar URLs', false, error.message)
+  }
 }
 
-// Test functions
-async function testResourcesAPI() {
-  console.log('\n🧪 Testing Resources API...');
+async function testICSEndpoint() {
+  log('Testing /api/bookings/[id]/ics endpoint...')
+  
+  // Create a test booking
+  const now = new Date()
+  const uniqueId = now.getTime() + 2
+  const startTime = new Date(now.getTime() + (24 * 60 * 60 * 1000) + (2 * 60 * 60 * 1000)) // Tomorrow + 2 hours
+  const endTime = new Date(startTime.getTime() + (30 * 60 * 1000)) // 30 minutes later
+  
+  const bookingData = {
+    org_id: testOrgId,
+    resource_id: testResourceId,
+    start_time: startTime.toISOString(),
+    end_time: endTime.toISOString(),
+    artist_name: 'Test Artist',
+    artist_email: `test-${uniqueId}@example.com`,
+    goal_text: 'Portfolio review'
+  }
   
   try {
-    // Test GET resources
-    console.log('  Testing GET /api/resources...');
-    const getResponse = await makeRequest(`${BASE_URL}/api/resources?organizationId=${TEST_ORG_ID}`);
-    
-    if (getResponse.status === 200) {
-      console.log('  ✅ GET /api/resources - PASSED');
-      testResults.passed++;
-    } else {
-      console.log(`  ❌ GET /api/resources - FAILED (Status: ${getResponse.status})`);
-      console.log(`     Response: ${JSON.stringify(getResponse.data)}`);
-      testResults.failed++;
-      testResults.errors.push(`GET /api/resources failed with status ${getResponse.status}`);
-    }
-
-    // Test POST resource (create)
-    console.log('  Testing POST /api/resources...');
-    const postResponse = await makeRequest(`${BASE_URL}/api/resources`, {
+    const bookingResponse = await fetch(`${BASE_URL}/api/bookings`, {
       method: 'POST',
-      body: {
-        organizationId: TEST_ORG_ID,
-        title: 'Test Studio',
-        type: 'space',
-        capacity: 10,
-        description: 'Test studio for API testing'
-      }
-    });
-
-    if (postResponse.status === 201) {
-      console.log('  ✅ POST /api/resources - PASSED');
-      testResults.passed++;
-      return postResponse.data.data?.id; // Return created resource ID
-    } else {
-      console.log(`  ❌ POST /api/resources - FAILED (Status: ${postResponse.status})`);
-      console.log(`     Response: ${JSON.stringify(postResponse.data)}`);
-      testResults.failed++;
-      testResults.errors.push(`POST /api/resources failed with status ${postResponse.status}`);
-      return null;
-    }
-
-  } catch (error) {
-    console.log(`  ❌ Resources API - ERROR: ${error.message}`);
-    testResults.failed++;
-    testResults.errors.push(`Resources API error: ${error.message}`);
-    return null;
-  }
-}
-
-async function testBookingsAPI(resourceId) {
-  console.log('\n🧪 Testing Bookings API...');
-  
-  if (!resourceId) {
-    console.log('  ⚠️  Skipping bookings test - no resource ID available');
-    return;
-  }
-
-  try {
-    // Test GET bookings
-    console.log('  Testing GET /api/bookings...');
-    const getResponse = await makeRequest(`${BASE_URL}/api/bookings?organizationId=${TEST_ORG_ID}`);
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(bookingData)
+    })
     
-    if (getResponse.status === 200) {
-      console.log('  ✅ GET /api/bookings - PASSED');
-      testResults.passed++;
-    } else {
-      console.log(`  ❌ GET /api/bookings - FAILED (Status: ${getResponse.status})`);
-      console.log(`     Response: ${JSON.stringify(getResponse.data)}`);
-      testResults.failed++;
-      testResults.errors.push(`GET /api/bookings failed with status ${getResponse.status}`);
+    if (!bookingResponse.ok) {
+      return testResult('ICS Generation - Setup', false, 'Failed to create test booking')
     }
-
-    // Test POST booking (create)
-    console.log('  Testing POST /api/bookings...');
-    const startTime = new Date();
-    startTime.setHours(startTime.getHours() + 1); // 1 hour from now
-    const endTime = new Date(startTime.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
-
-    const postResponse = await makeRequest(`${BASE_URL}/api/bookings`, {
-      method: 'POST',
-      body: {
-        organizationId: TEST_ORG_ID,
-        resourceId: resourceId,
-        title: 'Test Booking',
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString(),
-        description: 'Test booking for API testing'
-      }
-    });
-
-    if (postResponse.status === 201) {
-      console.log('  ✅ POST /api/bookings - PASSED');
-      testResults.passed++;
-    } else {
-      console.log(`  ❌ POST /api/bookings - FAILED (Status: ${postResponse.status})`);
-      console.log(`     Response: ${JSON.stringify(postResponse.data)}`);
-      testResults.failed++;
-      testResults.errors.push(`POST /api/bookings failed with status ${postResponse.status}`);
+    
+    const bookingResult = await bookingResponse.json()
+    const bookingId = bookingResult.booking_id
+    
+    // Test ICS generation
+    const response = await fetch(`${BASE_URL}/api/bookings/${bookingId}/ics`)
+    
+    if (!response.ok) {
+      return testResult('ICS Generation', false, `Status: ${response.status}`)
     }
-
+    
+    const icsContent = await response.text()
+    const isValidICS = icsContent.includes('BEGIN:VCALENDAR') && icsContent.includes('END:VCALENDAR')
+    
+    return testResult('ICS Generation', isValidICS, isValidICS ? 'Valid ICS format' : 'Invalid ICS format')
   } catch (error) {
-    console.log(`  ❌ Bookings API - ERROR: ${error.message}`);
-    testResults.failed++;
-    testResults.errors.push(`Bookings API error: ${error.message}`);
+    return testResult('ICS Generation', false, error.message)
   }
 }
 
-async function testWorkshopsAPI() {
-  console.log('\n🧪 Testing Workshops API...');
+async function testResourcesEndpoint() {
+  log('Testing /api/organizations/[orgId]/resources endpoint...')
   
   try {
-    // Test GET workshops
-    console.log('  Testing GET /api/workshops...');
-    const getResponse = await makeRequest(`${BASE_URL}/api/workshops?organizationId=${TEST_ORG_ID}`);
+    const response = await fetch(`${BASE_URL}/api/organizations/${testOrgId}/resources`)
     
-    if (getResponse.status === 200) {
-      console.log('  ✅ GET /api/workshops - PASSED');
-      testResults.passed++;
-    } else {
-      console.log(`  ❌ GET /api/workshops - FAILED (Status: ${getResponse.status})`);
-      console.log(`     Response: ${JSON.stringify(getResponse.data)}`);
-      testResults.failed++;
-      testResults.errors.push(`GET /api/workshops failed with status ${getResponse.status}`);
+    if (!response.ok) {
+      return testResult('Resources Endpoint', false, `Status: ${response.status}`)
     }
-
+    
+    const data = await response.json()
+    const resources = data.resources || data
+    const hasResources = Array.isArray(resources) && resources.length > 0
+    
+    return testResult('Resources Endpoint', hasResources, hasResources ? `Found ${resources.length} resources` : 'No resources found')
   } catch (error) {
-    console.log(`  ❌ Workshops API - ERROR: ${error.message}`);
-    testResults.failed++;
-    testResults.errors.push(`Workshops API error: ${error.message}`);
+    return testResult('Resources Endpoint', false, error.message)
   }
 }
 
-async function testOrganizationsAPI() {
-  console.log('\n🧪 Testing Organizations API...');
+async function testOrganizationEndpoint() {
+  log('Testing /api/organizations/by-slug/[slug] endpoint...')
   
   try {
-    // Test GET organizations
-    console.log('  Testing GET /api/organizations...');
-    const getResponse = await makeRequest(`${BASE_URL}/api/organizations`);
+    const response = await fetch(`${BASE_URL}/api/organizations/by-slug/oolite`)
     
-    if (getResponse.status === 200) {
-      console.log('  ✅ GET /api/organizations - PASSED');
-      testResults.passed++;
-    } else {
-      console.log(`  ❌ GET /api/organizations - FAILED (Status: ${getResponse.status})`);
-      console.log(`     Response: ${JSON.stringify(getResponse.data)}`);
-      testResults.failed++;
-      testResults.errors.push(`GET /api/organizations failed with status ${getResponse.status}`);
+    if (!response.ok) {
+      return testResult('Organization Endpoint', false, `Status: ${response.status}`)
     }
-
+    
+    const data = await response.json()
+    const org = data.organization || data
+    const hasValidOrg = org.id && org.name && org.slug
+    
+    return testResult('Organization Endpoint', hasValidOrg, hasValidOrg ? `Found: ${org.name}` : 'Invalid organization data')
   } catch (error) {
-    console.log(`  ❌ Organizations API - ERROR: ${error.message}`);
-    testResults.failed++;
-    testResults.errors.push(`Organizations API error: ${error.message}`);
+    return testResult('Organization Endpoint', false, error.message)
   }
 }
 
-async function testSurveysAPI() {
-  console.log('\n🧪 Testing Surveys API...');
+// Main test runner
+async function runAPITests() {
+  log('Starting API endpoints tests...', 'info')
+  console.log('='.repeat(60))
   
-  try {
-    // Test GET surveys
-    console.log('  Testing GET /api/surveys...');
-    const getResponse = await makeRequest(`${BASE_URL}/api/surveys?organizationId=${TEST_ORG_ID}`);
-    
-    if (getResponse.status === 200) {
-      console.log('  ✅ GET /api/surveys - PASSED');
-      testResults.passed++;
-    } else {
-      console.log(`  ❌ GET /api/surveys - FAILED (Status: ${getResponse.status})`);
-      console.log(`     Response: ${JSON.stringify(getResponse.data)}`);
-      testResults.failed++;
-      testResults.errors.push(`GET /api/surveys failed with status ${getResponse.status}`);
+  const tests = [
+    { name: 'Organization Endpoint', fn: testOrganizationEndpoint },
+    { name: 'Resources Endpoint', fn: testResourcesEndpoint },
+    { name: 'Availability Endpoint', fn: testAvailabilityEndpoint },
+    { name: 'Bookings Endpoint', fn: testBookingsEndpoint },
+    { name: 'Calendar URLs Endpoint', fn: testCalendarURLsEndpoint },
+    { name: 'ICS Endpoint', fn: testICSEndpoint }
+  ]
+  
+  let passed = 0
+  let total = tests.length
+  
+  for (const test of tests) {
+    try {
+      log(`Running ${test.name} tests...`)
+      const result = await test.fn()
+      if (result) passed++
+      console.log('') // Add spacing between test suites
+    } catch (error) {
+      log(`${test.name} failed with error: ${error.message}`, 'error')
     }
-
-  } catch (error) {
-    console.log(`  ❌ Surveys API - ERROR: ${error.message}`);
-    testResults.failed++;
-    testResults.errors.push(`Surveys API error: ${error.message}`);
   }
-}
-
-// Main test execution
-async function runTests() {
-  console.log('🚀 Starting API Endpoint Tests...');
-  console.log(`📍 Base URL: ${BASE_URL}`);
-  console.log(`🏢 Test Organization ID: ${TEST_ORG_ID}`);
-  console.log(`🔑 Test Token: ${TEST_TOKEN.substring(0, 10)}...`);
-
-  // Run all tests
-  const resourceId = await testResourcesAPI();
-  await testBookingsAPI(resourceId);
-  await testWorkshopsAPI();
-  await testOrganizationsAPI();
-  await testSurveysAPI();
-
-  // Print results
-  console.log('\n📊 Test Results Summary:');
-  console.log(`✅ Passed: ${testResults.passed}`);
-  console.log(`❌ Failed: ${testResults.failed}`);
-  console.log(`📈 Success Rate: ${((testResults.passed / (testResults.passed + testResults.failed)) * 100).toFixed(1)}%`);
-
-  if (testResults.errors.length > 0) {
-    console.log('\n🚨 Errors Found:');
-    testResults.errors.forEach((error, index) => {
-      console.log(`  ${index + 1}. ${error}`);
-    });
-  }
-
-  // Exit with appropriate code
-  if (testResults.failed > 0) {
-    console.log('\n❌ Tests completed with failures. Review errors above.');
-    process.exit(1);
+  
+  console.log('='.repeat(60))
+  log(`API Test Results: ${passed}/${total} test suites passed`, passed === total ? 'success' : 'error')
+  
+  if (passed === total) {
+    log('🎉 All API tests passed!', 'success')
+    process.exit(0)
   } else {
-    console.log('\n✅ All tests passed! API endpoints are working correctly.');
-    process.exit(0);
+    log('❌ Some API tests failed. Please check the errors above.', 'error')
+    process.exit(1)
   }
 }
 
 // Run tests if this script is executed directly
 if (require.main === module) {
-  runTests().catch(error => {
-    console.error('💥 Test execution failed:', error);
-    process.exit(1);
-  });
+  runAPITests().catch((error) => {
+    log(`API test runner failed: ${error.message}`, 'error')
+    process.exit(1)
+  })
 }
 
-module.exports = { runTests, testResults };
+module.exports = {
+  runAPITests,
+  testAvailabilityEndpoint,
+  testBookingsEndpoint,
+  testCalendarURLsEndpoint,
+  testICSEndpoint,
+  testResourcesEndpoint,
+  testOrganizationEndpoint
+}

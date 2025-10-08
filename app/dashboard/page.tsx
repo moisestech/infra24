@@ -17,7 +17,7 @@ import {
   Settings
 } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 
 interface UserProfile {
@@ -204,11 +204,11 @@ function DashboardPageContent() {
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400">{userProfile?.email}</p>
                 <div className="flex items-center space-x-2 mt-2">
-                  <Badge variant={getRoleBadgeColor(userProfile?.role || '')}>
+                  <Badge variant="default">
                     {userProfile?.role?.replace('_', ' ') || 'User'}
                   </Badge>
                   {organization && (
-                    <Badge variant="info">
+                    <Badge variant="default">
                       {organization.name}
                     </Badge>
                   )}
@@ -441,7 +441,7 @@ function DashboardPageContent() {
                             {announcement.author && (
                               <span>by {announcement.author.name}</span>
                             )}
-                            <Badge variant={getStatusBadgeColor(announcement.status)}>
+                            <Badge variant="default">
                               {announcement.status}
                             </Badge>
                             {announcement.priority > 0 && (

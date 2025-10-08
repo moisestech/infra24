@@ -9,7 +9,7 @@ import rehypeToc from 'rehype-toc'
 import matter from 'gray-matter'
 import { visit } from 'unist-util-visit'
 import { toString } from 'mdast-util-to-string'
-import { devLog } from '@/shared/lib/utils/log'
+// console.log not available
 
 // Types for MDX processing
 export interface MDXComponent {
@@ -232,7 +232,7 @@ class MDXProcessor {
   async processChapter(workshopSlug: string, chapterSlug: string): Promise<ProcessedMDX | null> {
     // Only run on server side
     if (typeof window !== 'undefined') {
-      devLog('processChapter can only be called on the server side', { level: 'warn', prefix: 'mdxProcessor' })
+      console.log('processChapter can only be called on the server side', { level: 'warn', prefix: 'mdxProcessor' })
       return null
     }
 
@@ -245,7 +245,7 @@ class MDXProcessor {
       
       return this.processMDX(content)
     } catch (error) {
-      devLog(`Error processing chapter ${chapterSlug} for workshop ${workshopSlug}:`, { level: 'error', prefix: 'mdxProcessor' }, error)
+      console.log(`Error processing chapter ${chapterSlug} for workshop ${workshopSlug}:`, { level: 'error', prefix: 'mdxProcessor' }, error)
       return null
     }
   }
@@ -256,7 +256,7 @@ class MDXProcessor {
   async getWorkshopComponents(workshopSlug: string): Promise<MDXComponent[]> {
     // Only run on server side
     if (typeof window !== 'undefined') {
-      devLog('getWorkshopComponents can only be called on the server side', { level: 'warn', prefix: 'mdxProcessor' })
+      console.log('getWorkshopComponents can only be called on the server side', { level: 'warn', prefix: 'mdxProcessor' })
       return []
     }
 
@@ -281,7 +281,7 @@ class MDXProcessor {
       
       return allComponents
     } catch (error) {
-      devLog(`Error getting components for workshop ${workshopSlug}:`, { level: 'error', prefix: 'mdxProcessor' }, error)
+      console.log(`Error getting components for workshop ${workshopSlug}:`, { level: 'error', prefix: 'mdxProcessor' }, error)
       return []
     }
   }

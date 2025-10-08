@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { 
   Star, 
   ThumbsUp, 
@@ -175,7 +175,7 @@ export function EventFeedbackDisplay({
           <CardTitle className="flex items-center gap-2">
             <MessageSquare className="w-5 h-5" />
             Event Feedback
-            <Badge variant="info" className="ml-2">
+            <Badge variant="default" className="ml-2">
               {stats.totalResponses} responses
             </Badge>
           </CardTitle>

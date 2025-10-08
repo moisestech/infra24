@@ -1,0 +1,222 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getStripeClient, STRIPE_WEBHOOK_SECRET } from '@/lib/stripe/config'
+import { StripeService } from '@/lib/stripe/service'
+import { getSupabaseAdmin } from '@/lib/supabase'
+import Stripe from 'stripe'
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.text()
+    const signature = request.headers.get('stripe-signature')
+
+    if (!signature) {
+      console.error('No Stripe signature found')
+      return NextResponse.json({ error: 'No signature' }, { status: 400 })
+    }
+
+    let event: Stripe.Event
+
+    try {
+      const stripe = getStripeClient()
+      event = stripe.webhooks.constructEvent(
+        body,
+        signature,
+        STRIPE_WEBHOOK_SECRET
+      )
+    } catch (err) {
+      console.error('Webhook signature verification failed:', err)
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
+    }
+
+    console.log('Received Stripe webhook:', event.type)
+
+    // Handle the event
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent)
+        break
+
+      case 'payment_intent.payment_failed':
+        await handlePaymentIntentFailed(event.data.object as Stripe.PaymentIntent)
+        break
+
+      case 'payment_intent.canceled':
+        await handlePaymentIntentCanceled(event.data.object as Stripe.PaymentIntent)
+        break
+
+      case 'checkout.session.completed':
+        await handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session)
+        break
+
+      case 'charge.dispute.created':
+        await handleChargeDisputeCreated(event.data.object as Stripe.Dispute)
+        break
+
+      default:
+        console.log(`Unhandled event type: ${event.type}`)
+    }
+
+    return NextResponse.json({ received: true })
+  } catch (error) {
+    console.error('Webhook error:', error)
+    return NextResponse.json(
+      { error: 'Webhook handler failed' },
+      { status: 500 }
+    )
+  }
+}
+
+async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+  try {
+    const bookingId = paymentIntent.metadata.booking_id
+    const amount = paymentIntent.amount / 100 // Convert from cents
+
+    if (!bookingId) {
+      console.error('No booking_id in payment intent metadata')
+      return
+    }
+
+    // Update booking payment status
+    await StripeService.updateBookingPaymentStatus(
+      bookingId,
+      paymentIntent.id,
+      'succeeded',
+      amount
+    )
+
+    // Update booking status to confirmed
+    const supabase = getSupabaseAdmin()
+    await supabase
+      .from('bookings')
+      .update({ 
+        status: 'confirmed',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', bookingId)
+
+    console.log(`Payment succeeded for booking ${bookingId}`)
+  } catch (error) {
+    console.error('Error handling payment intent succeeded:', error)
+  }
+}
+
+async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
+  try {
+    const bookingId = paymentIntent.metadata.booking_id
+
+    if (!bookingId) {
+      console.error('No booking_id in payment intent metadata')
+      return
+    }
+
+    // Update booking payment status
+    await StripeService.updateBookingPaymentStatus(
+      bookingId,
+      paymentIntent.id,
+      'failed'
+    )
+
+    // Update booking status to cancelled
+    const supabase = getSupabaseAdmin()
+    await supabase
+      .from('bookings')
+      .update({ 
+        status: 'cancelled',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', bookingId)
+
+    console.log(`Payment failed for booking ${bookingId}`)
+  } catch (error) {
+    console.error('Error handling payment intent failed:', error)
+  }
+}
+
+async function handlePaymentIntentCanceled(paymentIntent: Stripe.PaymentIntent) {
+  try {
+    const bookingId = paymentIntent.metadata.booking_id
+
+    if (!bookingId) {
+      console.error('No booking_id in payment intent metadata')
+      return
+    }
+
+    // Update booking payment status
+    await StripeService.updateBookingPaymentStatus(
+      bookingId,
+      paymentIntent.id,
+      'canceled'
+    )
+
+    // Update booking status to cancelled
+    const supabase = getSupabaseAdmin()
+    await supabase
+      .from('bookings')
+      .update({ 
+        status: 'cancelled',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', bookingId)
+
+    console.log(`Payment canceled for booking ${bookingId}`)
+  } catch (error) {
+    console.error('Error handling payment intent canceled:', error)
+  }
+}
+
+async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+  try {
+    const bookingId = session.metadata?.booking_id
+
+    if (!bookingId) {
+      console.error('No booking_id in checkout session metadata')
+      return
+    }
+
+    // Retrieve the payment intent to get the amount
+    const stripe = getStripeClient()
+    const paymentIntent = await stripe.paymentIntents.retrieve(
+      session.payment_intent as string
+    )
+
+    const amount = paymentIntent.amount / 100 // Convert from cents
+
+    // Update booking payment status
+    await StripeService.updateBookingPaymentStatus(
+      bookingId,
+      paymentIntent.id,
+      'succeeded',
+      amount
+    )
+
+    // Update booking status to confirmed
+    const supabase = getSupabaseAdmin()
+    await supabase
+      .from('bookings')
+      .update({ 
+        status: 'confirmed',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', bookingId)
+
+    console.log(`Checkout session completed for booking ${bookingId}`)
+  } catch (error) {
+    console.error('Error handling checkout session completed:', error)
+  }
+}
+
+async function handleChargeDisputeCreated(dispute: Stripe.Dispute) {
+  try {
+    // Log dispute for manual review
+    console.log(`Charge dispute created: ${dispute.id}`)
+    
+    // You might want to:
+    // 1. Send notification to admin
+    // 2. Update booking status
+    // 3. Create support ticket
+    // 4. Freeze related bookings if needed
+    
+  } catch (error) {
+    console.error('Error handling charge dispute:', error)
+  }
+}

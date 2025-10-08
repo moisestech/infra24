@@ -3,7 +3,7 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { 
   ArrowLeft, 
   Edit, 
@@ -72,7 +72,7 @@ export function ContentViewer({ content, onClose, onEdit }: ContentViewerProps) 
           {/* Content Metadata */}
           <div className="flex flex-wrap items-center gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="flex items-center gap-2">
-              <Badge variant={content.published ? "default" : "info"}>
+              <Badge variant={content.published ? "default" : "secondary"}>
                 {content.published ? "Published" : "Draft"}
               </Badge>
               {content.featured && (

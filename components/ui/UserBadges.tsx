@@ -1,6 +1,6 @@
 'use client'
 
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Shield, User, Palette, Building2, Users } from 'lucide-react'
 
 interface MemberType {

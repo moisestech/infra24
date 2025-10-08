@@ -7,7 +7,7 @@ import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/n
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Clock, Users, Calendar, ArrowRight } from 'lucide-react';
 import { getWorkshopsForOrganization, getWorkshopCategories } from '@/lib/workshops/shared-workshops';
 

@@ -1,0 +1,72 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getSupabaseAdmin } from '@/lib/supabase';
+import { StripeService } from '@/lib/stripe/service';
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id: paymentId } = params;
+    const { amount, reason } = await req.json();
+
+    if (!paymentId) {
+      return NextResponse.json({ error: 'Payment ID is required' }, { status: 400 });
+    }
+
+    // Get payment details
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data: payment, error: paymentError } = await supabaseAdmin
+      .from('bookings')
+      .select('payment_intent_id, amount_total, currency, booking_id')
+      .eq('id', paymentId)
+      .single();
+
+    if (paymentError || !payment) {
+      console.error('Error fetching payment:', paymentError);
+      return NextResponse.json({ error: 'Payment not found' }, { status: 404 });
+    }
+
+    if (!payment.payment_intent_id) {
+      return NextResponse.json({ error: 'No payment intent found for this booking' }, { status: 400 });
+    }
+
+    // Process refund through Stripe
+    const refundAmount = amount ? Math.round(amount * 100) : undefined; // Convert to cents
+    const refund = await StripeService.processRefund({
+      paymentIntentId: payment.payment_intent_id,
+      amount: refundAmount,
+      reason: reason || 'requested_by_customer'
+    });
+
+    // Update booking status
+    const { error: updateError } = await supabaseAdmin
+      .from('bookings')
+      .update({
+        payment_status: 'refunded',
+        refund_id: refund.refund?.id,
+        refund_reason: reason || 'Admin refund',
+        status: 'cancelled'
+      })
+      .eq('id', paymentId);
+
+    if (updateError) {
+      console.error('Error updating booking after refund:', updateError);
+      return NextResponse.json({ error: 'Refund processed but failed to update booking status' }, { status: 500 });
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      refund: {
+        id: refund.refund?.id,
+        amount: refund.refund?.amount,
+        status: refund.refund?.status,
+        reason: refund.refund?.reason
+      }
+    });
+
+  } catch (error: any) {
+    console.error('Error processing refund:', error);
+    return NextResponse.json({ error: error.message || 'Failed to process refund' }, { status: 500 });
+  }
+}

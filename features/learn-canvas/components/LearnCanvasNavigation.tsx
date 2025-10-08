@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useLanguage } from '@/shared/i18n/LanguageProvider';
+// useLanguage not available
 import { ChevronDown, ChevronRight, BookOpen, Lock, Play, Pause } from 'lucide-react';
 
 interface NavNode {
@@ -25,7 +25,9 @@ export function LearnCanvasNavigation({
   expandedPath = [], 
   workshopSlug = "" 
 }: LearnCanvasNavigationProps) {
-  const { t, language } = useLanguage();
+  // Simple fallback for language support
+  const t = (key: string) => key;
+  const language: string = 'en';
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);

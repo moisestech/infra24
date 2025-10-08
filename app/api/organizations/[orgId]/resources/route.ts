@@ -92,6 +92,7 @@ export async function POST(
   try {
     const { orgId } = await params
     const body = await request.json()
+    const supabaseAdmin = getSupabaseAdmin()
 
     const { data: resource, error } = await supabaseAdmin
       .from('resources')

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+// useParams not available - using Next.js router instead
+import { useParams } from 'next/navigation';
 import { ChapterReader } from '../components/ChapterReader';
 import { useEnrollment } from '../hooks/useEnrollment';
 import { workshopClientService } from '../services/workshop.client.service';
@@ -10,7 +11,7 @@ import { aiLiteracyCurriculum } from '../curriculum/ai-literacy-digital-citizens
 import { aiArtFundamentalsCurriculum } from '../curriculum/ai-art-fundamentals';
 import { vibecodingCurriculum } from '../curriculum/vibecoding';
 import { aiVideoProductionCurriculum } from '../curriculum/ai-video-production';
-import { LiquidLoader } from '@/shared/components/ui/LiquidLoader';
+// LiquidLoader not available
 
 const curriculumMap: Record<string, any> = {
   'ai-filmmaking': aiFilmmakingCurriculum,
@@ -66,7 +67,7 @@ export default function ChapterPage() {
   if (loading) return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
       <div className="text-center">
-        <LiquidLoader size="md" className="mb-4" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00ff00] mx-auto mb-4"></div>
         <p className="text-[#00ff00]">Loading chapter...</p>
       </div>
     </div>

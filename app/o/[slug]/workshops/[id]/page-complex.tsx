@@ -21,7 +21,6 @@ import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/n
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { motion } from 'framer-motion'
 
 interface Workshop {
@@ -53,10 +52,13 @@ interface Organization {
   name: string
   slug: string
   theme: {
-    primary: string
-    primaryLight: string
-    primaryDark: string
-    primaryAlpha: string
+    primaryColor: string
+    secondaryColor: string
+    accentColor: string
+    logo: string
+    favicon: string
+    banner?: string
+    customCSS?: string
   }
 }
 
@@ -199,7 +201,7 @@ function WorkshopPageContent() {
         body: JSON.stringify({
           resource_id: workshopResource.id,
           start_time: new Date().toISOString(),
-          end_time: new Date(Date.now() + (workshop?.duration_minutes || 120) * 60 * 1000).toISOString(),
+          end_time: new Date(Date.now() + (workshop?.duration || 120) * 60 * 1000).toISOString(),
           type: 'workshop',
           notes: `Workshop booking: ${workshop?.title}`,
           organization_id: organization?.id
@@ -331,22 +333,19 @@ function WorkshopPageContent() {
                           Featured
                         </Badge>
                       )}
-                      <Badge 
-                        variant="outline"
-                        style={{
-                          borderColor: organization?.theme.primary,
-                          color: organization?.theme.primary
-                        }}
-                      >
+                        <Badge 
+                          variant="default"
+                          className="border-2"
+                        >
                         {workshop.category}
                       </Badge>
-                      <Badge variant="secondary">
+                      <Badge variant="default">
                         {workshop.level}
                       </Badge>
                     </div>
                     <CardTitle 
                       className="text-3xl font-bold mb-2"
-                      style={{ color: organization?.theme.primary }}
+                      style={{ color: organization?.theme.primaryColor || '#47abc4' }}
                     >
                       {workshop.title}
                     </CardTitle>
@@ -365,7 +364,7 @@ function WorkshopPageContent() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <BookOpen className="w-5 h-5" style={{ color: organization?.theme.primary }} />
+                      <BookOpen className="w-5 h-5" style={{ color: organization?.theme.primaryColor || '#47abc4' }} />
                       Workshop Details
                     </CardTitle>
                   </CardHeader>
@@ -374,7 +373,7 @@ function WorkshopPageContent() {
                     {workshop.learning_objectives && workshop.learning_objectives.length > 0 && (
                       <div>
                         <h4 className="font-semibold mb-3 flex items-center gap-2">
-                          <Target className="w-4 h-4" style={{ color: organization?.theme.primary }} />
+                          <Target className="w-4 h-4" style={{ color: organization?.theme.primaryColor || '#47abc4' }} />
                           What You'll Learn
                         </h4>
                         <ul className="space-y-2">
@@ -503,15 +502,15 @@ function WorkshopPageContent() {
                           disabled={claimingSpot}
                           className="w-full"
                           style={{
-                            backgroundColor: organization?.theme.primary,
-                            borderColor: organization?.theme.primary,
+                            backgroundColor: organization?.theme.primaryColor || '#47abc4',
+                            borderColor: organization?.theme.primaryColor || '#47abc4',
                             color: 'white'
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = organization?.theme.primaryLight
+                            e.currentTarget.style.backgroundColor = organization?.theme.primaryColor || '#6bb8d1'
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = organization?.theme.primary
+                            e.currentTarget.style.backgroundColor = organization?.theme.primaryColor || '#47abc4'
                           }}
                         >
                           {claimingSpot ? (
@@ -537,7 +536,7 @@ function WorkshopPageContent() {
                           This workshop has already started
                         </p>
                         <Button 
-                          variant="outline"
+                          variant="default"
                           onClick={() => router.push(`/o/${slug}/bookings`)}
                           className="w-full"
                         >

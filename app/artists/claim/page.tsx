@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useUser } from '@clerk/nextjs';
 // import { ClerkService } from '@/lib/clerk';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Search, MapPin, Users, Calendar, Mail, Globe, Instagram, UserPlus, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface ArtistProfile {

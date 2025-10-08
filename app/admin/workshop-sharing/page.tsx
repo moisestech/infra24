@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -69,8 +69,7 @@ interface SharingRelation {
 // Animation variants
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
+  animate: { opacity: 1, y: 0 }
 }
 
 const staggerContainer = {
@@ -375,6 +374,7 @@ function WorkshopSharingAdminPageContent() {
                 initial="initial"
                 whileInView="animate"
                 viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
                 whileHover={reducedMotion ? {} : hoverScale}
                 className="cursor-pointer"
                 onClick={() => {

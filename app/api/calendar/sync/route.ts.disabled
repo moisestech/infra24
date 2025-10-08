@@ -1,0 +1,302 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { GoogleCalendarService } from '@/lib/calendar/google-calendar'
+import { OutlookCalendarService } from '@/lib/calendar/outlook-calendar'
+import { getSupabaseAdmin } from '@/lib/supabase'
+import { z } from 'zod'
+
+const syncRequestSchema = z.object({
+  provider: z.enum(['google', 'microsoft']),
+  calendarId: z.string().optional(), // For Google Calendar
+  startTime: z.string().datetime(),
+  endTime: z.string().datetime(),
+  action: z.enum(['check_availability', 'create_event', 'update_event', 'delete_event']).default('check_availability'),
+  eventId: z.string().optional(), // For update/delete operations
+  event: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    location: z.string().optional(),
+    attendees: z.array(z.object({
+      email: z.string().email(),
+      name: z.string().optional(),
+    })).optional(),
+  }).optional(), // For create/update operations
+})
+
+export async function POST(request: NextRequest) {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { provider, calendarId, startTime, endTime, action, eventId, event } = syncRequestSchema.parse(body)
+
+    const start = new Date(startTime)
+    const end = new Date(endTime)
+
+    switch (action) {
+      case 'check_availability':
+        return await handleCheckAvailability(userId, provider, calendarId, start, end)
+      
+      case 'create_event':
+        if (!event) {
+          return NextResponse.json({ error: 'Event data required for create action' }, { status: 400 })
+        }
+        return await handleCreateEvent(userId, provider, calendarId, start, end, event)
+      
+      case 'update_event':
+        if (!eventId || !event) {
+          return NextResponse.json({ error: 'Event ID and event data required for update action' }, { status: 400 })
+        }
+        return await handleUpdateEvent(userId, provider, calendarId, eventId, event)
+      
+      case 'delete_event':
+        if (!eventId) {
+          return NextResponse.json({ error: 'Event ID required for delete action' }, { status: 400 })
+        }
+        return await handleDeleteEvent(userId, provider, calendarId, eventId)
+      
+      default:
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+    }
+  } catch (error) {
+    console.error('Calendar sync error:', error)
+    return NextResponse.json(
+      { error: 'Calendar sync failed' },
+      { status: 500 }
+    )
+  }
+}
+
+async function handleCheckAvailability(
+  userId: string,
+  provider: 'google' | 'microsoft',
+  calendarId: string | undefined,
+  startTime: Date,
+  endTime: Date
+) {
+  try {
+    let availability
+
+    if (provider === 'google') {
+      if (!calendarId) {
+        return NextResponse.json({ error: 'Calendar ID required for Google Calendar' }, { status: 400 })
+      }
+      availability = await GoogleCalendarService.checkAvailability(userId, calendarId, startTime, endTime)
+    } else {
+      availability = await OutlookCalendarService.checkAvailability(userId, startTime, endTime)
+    }
+
+    // Cache the availability data
+    const supabase = getSupabaseAdmin()
+    for (const slot of availability) {
+      await supabase.rpc('cache_calendar_availability', {
+        p_user_id: userId,
+        p_provider: provider,
+        p_calendar_id: calendarId || 'default',
+        p_start_time: slot.startTime.toISOString(),
+        p_end_time: slot.endTime.toISOString(),
+        p_is_available: slot.isAvailable,
+        p_reason: slot.reason || null
+      })
+    }
+
+    return NextResponse.json({
+      success: true,
+      availability,
+      provider,
+      cached: true
+    })
+  } catch (error) {
+    console.error('Error checking availability:', error)
+    return NextResponse.json(
+      { error: 'Failed to check availability' },
+      { status: 500 }
+    )
+  }
+}
+
+async function handleCreateEvent(
+  userId: string,
+  provider: 'google' | 'microsoft',
+  calendarId: string | undefined,
+  startTime: Date,
+  endTime: Date,
+  eventData: any
+) {
+  try {
+    let result
+
+    if (provider === 'google') {
+      if (!calendarId) {
+        return NextResponse.json({ error: 'Calendar ID required for Google Calendar' }, { status: 400 })
+      }
+      result = await GoogleCalendarService.createEvent(userId, calendarId, {
+        title: eventData.title,
+        description: eventData.description,
+        startTime,
+        endTime,
+        location: eventData.location,
+        attendees: eventData.attendees
+      })
+    } else {
+      result = await OutlookCalendarService.createEvent(userId, {
+        title: eventData.title,
+        description: eventData.description,
+        startTime,
+        endTime,
+        location: eventData.location,
+        attendees: eventData.attendees
+      })
+    }
+
+    if (!result.success) {
+      return NextResponse.json({ error: result.error }, { status: 500 })
+    }
+
+    // Store calendar event in database
+    const supabase = getSupabaseAdmin()
+    const { error: dbError } = await supabase
+      .from('calendar_events')
+      .insert({
+        user_id: userId,
+        provider,
+        external_event_id: result.eventId!,
+        calendar_id: calendarId || 'default',
+        title: eventData.title,
+        description: eventData.description,
+        start_time: startTime.toISOString(),
+        end_time: endTime.toISOString(),
+        location: eventData.location,
+        attendees: eventData.attendees || []
+      })
+
+    if (dbError) {
+      console.error('Error storing calendar event:', dbError)
+    }
+
+    return NextResponse.json({
+      success: true,
+      eventId: result.eventId,
+      provider
+    })
+  } catch (error) {
+    console.error('Error creating calendar event:', error)
+    return NextResponse.json(
+      { error: 'Failed to create calendar event' },
+      { status: 500 }
+    )
+  }
+}
+
+async function handleUpdateEvent(
+  userId: string,
+  provider: 'google' | 'microsoft',
+  calendarId: string | undefined,
+  eventId: string,
+  eventData: any
+) {
+  try {
+    let result
+
+    if (provider === 'google') {
+      if (!calendarId) {
+        return NextResponse.json({ error: 'Calendar ID required for Google Calendar' }, { status: 400 })
+      }
+      result = await GoogleCalendarService.updateEvent(userId, calendarId, eventId, eventData)
+    } else {
+      result = await OutlookCalendarService.updateEvent(userId, eventId, eventData)
+    }
+
+    if (!result.success) {
+      return NextResponse.json({ error: result.error }, { status: 500 })
+    }
+
+    // Update calendar event in database
+    const supabase = getSupabaseAdmin()
+    const updateData: any = {}
+    
+    if (eventData.title) updateData.title = eventData.title
+    if (eventData.description) updateData.description = eventData.description
+    if (eventData.location) updateData.location = eventData.location
+    if (eventData.attendees) updateData.attendees = eventData.attendees
+    if (eventData.startTime) updateData.start_time = eventData.startTime.toISOString()
+    if (eventData.endTime) updateData.end_time = eventData.endTime.toISOString()
+    
+    updateData.updated_at = new Date().toISOString()
+
+    const { error: dbError } = await supabase
+      .from('calendar_events')
+      .update(updateData)
+      .eq('user_id', userId)
+      .eq('provider', provider)
+      .eq('external_event_id', eventId)
+
+    if (dbError) {
+      console.error('Error updating calendar event:', dbError)
+    }
+
+    return NextResponse.json({
+      success: true,
+      eventId,
+      provider
+    })
+  } catch (error) {
+    console.error('Error updating calendar event:', error)
+    return NextResponse.json(
+      { error: 'Failed to update calendar event' },
+      { status: 500 }
+    )
+  }
+}
+
+async function handleDeleteEvent(
+  userId: string,
+  provider: 'google' | 'microsoft',
+  calendarId: string | undefined,
+  eventId: string
+) {
+  try {
+    let result
+
+    if (provider === 'google') {
+      if (!calendarId) {
+        return NextResponse.json({ error: 'Calendar ID required for Google Calendar' }, { status: 400 })
+      }
+      result = await GoogleCalendarService.deleteEvent(userId, calendarId, eventId)
+    } else {
+      result = await OutlookCalendarService.deleteEvent(userId, eventId)
+    }
+
+    if (!result.success) {
+      return NextResponse.json({ error: result.error }, { status: 500 })
+    }
+
+    // Remove calendar event from database
+    const supabase = getSupabaseAdmin()
+    const { error: dbError } = await supabase
+      .from('calendar_events')
+      .delete()
+      .eq('user_id', userId)
+      .eq('provider', provider)
+      .eq('external_event_id', eventId)
+
+    if (dbError) {
+      console.error('Error deleting calendar event:', dbError)
+    }
+
+    return NextResponse.json({
+      success: true,
+      eventId,
+      provider
+    })
+  } catch (error) {
+    console.error('Error deleting calendar event:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete calendar event' },
+      { status: 500 }
+    )
+  }
+}

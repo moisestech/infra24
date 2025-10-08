@@ -16,7 +16,7 @@ import {
   Play
 } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig } from '@/components/navigation'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 
 interface Announcement {
   id: string
@@ -104,7 +104,7 @@ function AnnouncementsPageContent() {
           setAnnouncements(announcementsData.announcements || [])
 
           // Load author information for all announcements
-          const authorIds = [...new Set(announcementsData.announcements?.map((a: Announcement) => a.author_clerk_id).filter(Boolean) || [])] as string[]
+          const authorIds = Array.from(new Set(announcementsData.announcements?.map((a: Announcement) => a.author_clerk_id).filter(Boolean) || [])) as string[]
           const authorsMap: Record<string, AuthorInfo> = {}
           
           await Promise.all(
@@ -194,11 +194,11 @@ function AnnouncementsPageContent() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'published': return <Badge variant="success">Published</Badge>
-      case 'pending': return <Badge variant="warning">Pending</Badge>
-      case 'rejected': return <Badge variant="error">Rejected</Badge>
+      case 'published': return <Badge variant="default">Published</Badge>
+      case 'pending': return <Badge variant="secondary">Pending</Badge>
+      case 'rejected': return <Badge variant="destructive">Rejected</Badge>
       case 'draft': return <Badge variant="default">Draft</Badge>
-      case 'approved': return <Badge variant="info">Approved</Badge>
+      case 'approved': return <Badge variant="default">Approved</Badge>
       default: return <Badge variant="default">{status}</Badge>
     }
   }
@@ -298,7 +298,7 @@ function AnnouncementsPageContent() {
           
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
             <div className="flex items-center">
-              <Badge variant="success" className="h-8 w-8">
+              <Badge variant="default" className="h-8 w-8">
                 <span className="text-2xl font-bold">{announcements.filter(a => a.status === 'published').length}</span>
               </Badge>
               <div className="ml-4">
@@ -312,7 +312,7 @@ function AnnouncementsPageContent() {
           
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
             <div className="flex items-center">
-              <Badge variant="warning" className="h-8 w-8">
+              <Badge variant="secondary" className="h-8 w-8">
                 <span className="text-2xl font-bold">{announcements.filter(a => a.status === 'pending').length}</span>
               </Badge>
               <div className="ml-4">
@@ -430,17 +430,17 @@ function AnnouncementsPageContent() {
                           {announcement.title}
                         </h3>
                         {announcement.priority > 0 && (
-                          <Badge variant="error">
+                          <Badge variant="destructive">
                             Priority {announcement.priority}
                           </Badge>
                         )}
                         {isEventToday && (
-                          <Badge variant="success" className="bg-green-500 text-white">
+                          <Badge variant="default" className="bg-green-500 text-white">
                             TODAY
                           </Badge>
                         )}
                         {isEventTomorrow && (
-                          <Badge variant="info" className="bg-blue-500 text-white">
+                          <Badge variant="default" className="bg-blue-500 text-white">
                             TOMORROW
                           </Badge>
                         )}
@@ -489,7 +489,7 @@ function AnnouncementsPageContent() {
                         
                         {announcement.published_at && (
                           <div className="flex items-center space-x-1">
-                            <Badge variant="success" className="h-4 w-4">✓</Badge>
+                            <Badge variant="default" className="h-4 w-4">✓</Badge>
                             <span>Published {formatDate(announcement.published_at)}</span>
                           </div>
                         )}

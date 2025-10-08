@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { OrbitingCircles } from '@/components/magicui/orbiting-circles';
 import { SparklesText } from '@/components/magicui/sparkles-text';
 import PublicNavigation from '@/components/ui/PublicNavigation';
@@ -20,7 +20,7 @@ import {
   Eye,
   Palette,
   Paintbrush,
-  Handshake,
+  Users2,
   User,
   Brush,
   Image,
@@ -258,7 +258,7 @@ function HomePageContent() {
                   className="bg-gray-50 dark:bg-gray-700 rounded-lg xl:rounded-xl p-6 xl:p-8 2xl:p-10 hover:shadow-md xl:hover:shadow-lg transition-shadow cursor-pointer block"
                 >
                   <div className="flex items-center justify-between mb-3 xl:mb-4">
-                    <Badge variant="success">
+                    <Badge variant="default">
                       {announcement.organization.name}
                     </Badge>
                     <span className="text-sm xl:text-base 2xl:text-lg text-gray-500 dark:text-gray-400">
@@ -322,7 +322,7 @@ function HomePageContent() {
               {[
                 { icon: Palette, color: 'from-pink-500 to-rose-500', link: '/o/bakehouse/announcements' },
                 { icon: Paintbrush, color: 'from-blue-500 to-cyan-500', link: '/o/bakehouse/artists' },
-                { icon: Handshake, color: 'from-green-500 to-emerald-500', link: '/o/bakehouse/users' },
+                { icon: Users2, color: 'from-green-500 to-emerald-500', link: '/o/bakehouse/users' },
                 { icon: User, color: 'from-purple-500 to-violet-500', link: '/o/bakehouse' },
                 { icon: Brush, color: 'from-orange-500 to-red-500', link: '/o/bakehouse/announcements' },
                 { icon: Image, color: 'from-indigo-500 to-blue-500', link: '/o/bakehouse/artists' },
@@ -627,7 +627,7 @@ function HomePageContent() {
                     style={isEventPast ? { pointerEvents: 'none' } : {}}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <Badge variant="success">
+                      <Badge variant="default">
                         {announcement.organization.name}
                       </Badge>
                       <div className="flex items-center space-x-2">

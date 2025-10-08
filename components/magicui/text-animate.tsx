@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion, MotionProps, Variants } from "motion/react";
+import { AnimatePresence, motion, MotionProps, Variants } from "framer-motion";
 import { ElementType } from "react";
 
 type AnimationType = "text" | "word" | "character" | "line";
@@ -311,7 +311,7 @@ export function TextAnimate({
   animation = "fadeIn",
   ...props
 }: TextAnimateProps) {
-  const MotionComponent = motion.create(Component);
+  const MotionComponent = motion(Component);
 
   let segments: string[] = [];
   switch (by) {

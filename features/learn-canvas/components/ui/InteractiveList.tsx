@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { cn } from '@/shared/lib/utils'
+import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronRight, CheckCircle, XCircle, Info, AlertTriangle, Star, Zap, Target, Clock, Users, Settings, Video, Monitor, Smartphone, Globe, Shield, Award, TrendingUp, Cpu, Database, Layers } from 'lucide-react'
 
 // Base list item interface

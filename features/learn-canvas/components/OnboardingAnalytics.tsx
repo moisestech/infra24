@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Badge } from '@/shared/components/ui/badge';
-import { Progress } from '@/shared/components/ui/progress';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
 interface OnboardingAnalytics {
   formCompletionRate: number;
@@ -170,7 +170,7 @@ export function OnboardingAnalytics() {
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex flex-wrap gap-1">
                   {combination.interests.map((interest, i) => (
-                    <Badge key={i} variant="secondary" className="text-xs">
+                    <Badge key={i} variant="default" className="text-xs">
                       {interest}
                     </Badge>
                   ))}

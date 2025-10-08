@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/shared/components/ui/button'
-import { Badge } from '@/shared/components/ui/badge'
-import { Card, CardContent } from '@/shared/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import { 
   Play, 
   Pause, 
@@ -20,8 +20,8 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react'
-import { useLanguage } from '@/shared/i18n/LanguageProvider'
-import { cn } from '@/shared/lib/utils'
+// useLanguage not available
+import { cn } from '@/lib/utils'
 import { LanguageSelector } from '@/features/learn-canvas/components/LanguageSelector'
 import { SlideImage } from './SlideImage'
 import { SlideVideo } from './SlideVideo'
@@ -81,7 +81,10 @@ export function ChapterPresentationMode({
   const [showNotes, setShowNotes] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const { t, language, setLanguage } = useLanguage()
+  // Simple fallback for language support
+  const t = (key: string) => key;
+  const language: string = 'en';
+  const setLanguage = (lang: string) => {}; // No-op function
 
   const currentSlideData = slides[currentSlide]
 
@@ -196,7 +199,7 @@ export function ChapterPresentationMode({
       {/* Header Controls */}
       <div className="flex items-center justify-between p-4 bg-black/80 border-b border-gray-800">
         <div className="flex items-center gap-4">
-          <Badge variant="outline" className="bg-[#00ff00]/20 text-[#00ff00] border-[#00ff00]/30">
+          <Badge variant="default" className="bg-[#00ff00]/20 text-[#00ff00] border-[#00ff00]/30">
             <Presentation className="w-3 h-3 mr-1" />
             {t('workshop.presentation_mode')}
           </Badge>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { UnifiedNavigation, ooliteConfig } from '@/components/navigation';
 import { PageFooter } from '@/components/common/PageFooter';
 import { useUser } from '@clerk/nextjs';
@@ -39,6 +39,7 @@ interface Artist {
   created_at: string;
   updated_at: string;
   organization_id: string;
+  metadata?: Record<string, any>;
   organizations: {
     id: string;
     name: string;
@@ -139,8 +140,8 @@ export default function ArtistsPage() {
     return matchesSearch && matchesStudioType && matchesStudioNumber;
   });
 
-  const uniqueStudioTypes = [...new Set(artists.map(artist => artist.studio_type).filter(Boolean))];
-  const uniqueStudioNumbers = [...new Set(artists.map(artist => artist.studio_location).filter(Boolean))];
+  const uniqueStudioTypes = Array.from(new Set(artists.map(artist => artist.studio_type).filter(Boolean)));
+  const uniqueStudioNumbers = Array.from(new Set(artists.map(artist => artist.studio_location).filter(Boolean)));
 
   const getStudioTypeIcon = (studioType: string) => {
     const IconComponent = studioTypeIcons[studioType as keyof typeof studioTypeIcons] || User;

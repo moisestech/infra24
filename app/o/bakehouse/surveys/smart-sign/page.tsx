@@ -6,7 +6,7 @@ import { TenantLayout } from '@/components/tenant/TenantLayout';
 import { SurveyForm } from '@/components/survey/SurveyForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Clock, Users, BarChart3, FileText, Monitor } from 'lucide-react';
 
 interface SurveyResponse {

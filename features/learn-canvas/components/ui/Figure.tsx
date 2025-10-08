@@ -1,8 +1,8 @@
 'use client'
 
-import { cn } from '@/shared/lib/utils'
-import { Card, CardContent } from '@/shared/components/ui/card'
-import { Badge } from '@/shared/components/ui/badge'
+import { cn } from '@/lib/utils'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { ExternalLink, Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/Badge';
+import { Badge } from '@/components/ui/badge';
 import { Heart, TrendingUp, DollarSign, Users, MessageSquare } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useTenant } from '@/components/tenant/TenantProvider';
@@ -49,12 +49,12 @@ export default function EquipmentVoting({ orgId }: EquipmentVotingProps) {
   
   // Use tenant theme colors with fallback to Oolite colors
   const themeColors = {
-    primary: tenantConfig?.theme?.primary || '#47abc4',
-    primaryLight: tenantConfig?.theme?.primaryLight || '#6bb8d1',
-    primaryDark: tenantConfig?.theme?.primaryDark || '#3a8ba3',
-    primaryAlpha: tenantConfig?.theme?.primaryAlpha || 'rgba(71, 171, 196, 0.1)',
-    primaryAlphaLight: tenantConfig?.theme?.primaryAlphaLight || 'rgba(71, 171, 196, 0.05)',
-    primaryAlphaDark: tenantConfig?.theme?.primaryAlphaDark || 'rgba(71, 171, 196, 0.15)',
+    primary: tenantConfig?.theme?.primaryColor || '#47abc4',
+    primaryLight: tenantConfig?.theme?.secondaryColor || '#6bb8d1',
+    primaryDark: tenantConfig?.theme?.accentColor || '#3a8ba3',
+    primaryAlpha: 'rgba(71, 171, 196, 0.1)',
+    primaryAlphaLight: 'rgba(71, 171, 196, 0.05)',
+    primaryAlphaDark: 'rgba(71, 171, 196, 0.15)',
   };
   const [equipmentOptions, setEquipmentOptions] = useState<EquipmentOption[]>([]);
   const [votingResults, setVotingResults] = useState<VotingResult[]>([]);
@@ -215,19 +215,8 @@ export default function EquipmentVoting({ orgId }: EquipmentVotingProps) {
                       {option.name}
                     </CardTitle>
                     <Badge 
-                      variant="outline" 
-                      className="text-xs mt-1 transition-colors"
-                      style={{
-                        borderColor: 'inherit'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = themeColors.primaryAlpha
-                        e.currentTarget.style.borderColor = themeColors.primary
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent'
-                        e.currentTarget.style.borderColor = 'inherit'
-                      }}
+                      variant="default" 
+                      className="text-xs mt-1 transition-colors border"
                     >
                       {option.category}
                     </Badge>

@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/shared/components/ui/button'
-import { Input } from '@/shared/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { 
   Search, 
   Grid3X3, 
@@ -14,7 +14,7 @@ import {
   Users,
   Clock
 } from 'lucide-react'
-import { WorkshopSummary } from '@/shared/types/workshop'
+import { Workshop } from '@/types/workshop'
 
 const categories = [
   { value: 'all', label: 'All Categories', icon: Grid3X3 },
@@ -48,7 +48,7 @@ export interface WorkshopFilters {
 interface WorkshopFiltersProps {
   filters?: WorkshopFilters
   onFiltersChange: (filters: WorkshopFilters) => void
-  workshops: WorkshopSummary[]
+  workshops: Workshop[]
   totalEnrolled: number
   accessibleWorkshops: number
 }
@@ -86,7 +86,7 @@ export function WorkshopFilters({
                          (workshop.description || '').toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesCategory = selectedCategory === 'all' || workshop.category === selectedCategory
-    const matchesDifficulty = selectedDifficulty === 'all' || workshop.difficulty_level === selectedDifficulty
+    const matchesDifficulty = selectedDifficulty === 'all' || workshop.level === selectedDifficulty
 
     return matchesSearch && matchesCategory && matchesDifficulty
   })
@@ -202,7 +202,7 @@ export function WorkshopFilters({
 }
 
 // Export the filter function for use in other components
-export function filterWorkshops(workshops: WorkshopSummary[], filters: WorkshopFilters): WorkshopSummary[] {
+export function filterWorkshops(workshops: Workshop[], filters: WorkshopFilters): Workshop[] {
   const { searchTerm, selectedCategory, selectedDifficulty } = filters
   
   return workshops.filter(workshop => {
@@ -210,7 +210,7 @@ export function filterWorkshops(workshops: WorkshopSummary[], filters: WorkshopF
                          (workshop.description || '').toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesCategory = selectedCategory === 'all' || workshop.category === selectedCategory
-    const matchesDifficulty = selectedDifficulty === 'all' || workshop.difficulty_level === selectedDifficulty
+    const matchesDifficulty = selectedDifficulty === 'all' || workshop.level === selectedDifficulty
 
     return matchesSearch && matchesCategory && matchesDifficulty
   })

@@ -1,4 +1,4 @@
-import { WorkshopSummary, Workshop, Chapter, WorkshopProgress, Resource, Assignment, WorkshopWithChapters } from '@/shared/types/workshop'
+import { Workshop } from '@/types/workshop'
 
 interface WorkshopFilters {
   category?: string
@@ -22,7 +22,7 @@ class WorkshopService {
   /**
    * Get all workshops with optional filtering
    */
-  async getWorkshops(filters?: WorkshopFilters): Promise<WorkshopSummary[]> {
+  async getWorkshops(filters?: WorkshopFilters): Promise<Workshop[]> {
     // Mock implementation for tests
     return []
   }
@@ -38,7 +38,7 @@ class WorkshopService {
   /**
    * Get chapters for a workshop
    */
-  async getWorkshopChapters(workshopSlug: string): Promise<Chapter[]> {
+  async getWorkshopChapters(workshopSlug: string): Promise<any[]> {
     // Mock implementation for tests
     return []
   }
@@ -46,7 +46,7 @@ class WorkshopService {
   /**
    * Get a specific chapter
    */
-  async getChapter(workshopSlug: string, chapterSlug: string): Promise<Chapter | null> {
+  async getChapter(workshopSlug: string, chapterSlug: string): Promise<any | null> {
     // Mock implementation for tests
     return null
   }
@@ -54,7 +54,7 @@ class WorkshopService {
   /**
    * Get user progress for a workshop
    */
-  async getUserProgress(userId: string, workshopSlug: string): Promise<WorkshopProgress | null> {
+  async getUserProgress(userId: string, workshopSlug: string): Promise<any | null> {
     // Mock implementation for tests
     return null
   }
@@ -69,7 +69,7 @@ class WorkshopService {
   /**
    * Search workshops
    */
-  async searchWorkshops(query: string): Promise<WorkshopSummary[]> {
+  async searchWorkshops(query: string): Promise<Workshop[]> {
     // Mock implementation for tests
     return []
   }

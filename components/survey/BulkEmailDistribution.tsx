@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { 
   Mail, 
   Users, 
@@ -237,12 +237,12 @@ export function BulkEmailDistribution({ survey, organizationId, onClose }: BulkE
                           </p>
                           <div className="mt-1 flex flex-wrap gap-1">
                             {invalidEmails.slice(0, 5).map((email, index) => (
-                              <Badge key={index} variant="error" className="text-xs">
+                              <Badge key={index} variant="destructive" className="text-xs">
                                 {email}
                               </Badge>
                             ))}
                             {invalidEmails.length > 5 && (
-                              <Badge variant="error" className="text-xs">
+                              <Badge variant="destructive" className="text-xs">
                                 +{invalidEmails.length - 5} more
                               </Badge>
                             )}
