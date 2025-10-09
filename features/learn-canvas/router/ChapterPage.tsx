@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { ChapterReader } from '../components/ChapterReader';
 import { useEnrollment } from '../hooks/useEnrollment';
 import { workshopClientService } from '../services/workshop.client.service';
-import { serialize } from 'next-mdx-remote-client/serialize';
+import { serialize } from 'next-mdx-remote/serialize';
 import { findChapterContext } from '../utils/curriculumTree';
 import { aiFilmmakingCurriculum } from '../curriculum/ai-filmmaking';
 import { aiLiteracyCurriculum } from '../curriculum/ai-literacy-digital-citizenship';

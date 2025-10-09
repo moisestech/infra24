@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { useAuth } from '@clerk/nextjs'
 
 // MDX & Content
-import { MDXClient } from 'next-mdx-remote-client/csr'
+import { MDXRemote } from 'next-mdx-remote'
 
 // Shared UI Components
 import { Button } from '@/components/ui/button'
@@ -492,7 +492,7 @@ export function ChapterReader({ workshopSlug, chapterSlug, chapter, chapterConte
           </div>
         )}
         
-        <MDXClient {...mdxSource} components={mdxComponents} />
+        <MDXRemote {...mdxSource} components={mdxComponents} />
         
         {/* Additional Visual Elements */}
         {workshopSlug === 'ai-video-production' && (

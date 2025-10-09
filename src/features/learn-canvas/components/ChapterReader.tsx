@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@clerk/nextjs'
-import { MDXClient } from 'next-mdx-remote-client/csr'
+import { MDXRemote } from 'next-mdx-remote'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -198,8 +198,8 @@ export function ChapterReader({
         </div>
 
         <div className="prose prose-lg max-w-none">
-          <MDXClient 
-            compiledSource={mdxSource} 
+          <MDXRemote 
+            {...mdxSource} 
             components={mdxComponents}
           />
         </div>
