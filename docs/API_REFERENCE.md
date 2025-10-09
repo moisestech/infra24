@@ -371,3 +371,5 @@ curl "http://localhost:3000/api/bookings/{booking_id}/ics" -o booking.ics
 
 
 
+
+

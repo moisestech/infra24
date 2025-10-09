@@ -1,109 +1,120 @@
-const { createClient } = require('@supabase/supabase-js')
+#!/usr/bin/env node
 
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+/**
+ * Quick Database Test
+ * Simple test to check if database is working
+ * Run with: node scripts/quick-test.js
+ */
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Missing Supabase environment variables')
-  process.exit(1)
+console.log('🚀 Quick Database Test Starting...');
+
+// Test 1: Check if we can require Supabase
+let createClient;
+try {
+  const supabaseModule = require('@supabase/supabase-js');
+  createClient = supabaseModule.createClient;
+  console.log('✅ Supabase client loaded successfully');
+} catch (error) {
+  console.log('❌ Failed to load Supabase client:', error.message);
+  process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey)
+// Test 2: Create client
+const supabase = createClient(
+  'http://127.0.0.1:54321',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+);
 
-async function quickTest() {
-  console.log('🧪 Quick Learn Canvas Test...\n')
+console.log('✅ Supabase client created');
 
+// Test 3: Try to connect with timeout
+async function testConnection() {
+  console.log('🔍 Testing database connection...');
+  
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Connection timeout after 5 seconds')), 5000);
+  });
+  
+  const connectionPromise = supabase
+    .from('organizations')
+    .select('count')
+    .limit(1);
+  
   try {
-    // Test 1: Check organizations
-    console.log('1️⃣ Testing organizations...')
-    const { data: orgs, error: orgError } = await supabase
-      .from('organizations')
-      .select('id, name, slug')
-      .limit(3)
-
-    if (orgError) {
-      console.error('❌ Organizations error:', orgError.message)
-      return
-    }
-    console.log(`✅ Found ${orgs?.length || 0} organizations`)
-
-    // Test 2: Check workshops with learn content
-    console.log('\n2️⃣ Testing workshops...')
-    const { data: workshops, error: workshopError } = await supabase
-      .from('workshops')
-      .select('id, title, has_learn_content, learning_objectives')
-      .eq('has_learn_content', true)
-      .limit(5)
-
-    if (workshopError) {
-      console.error('❌ Workshops error:', workshopError.message)
-      return
-    }
-    console.log(`✅ Found ${workshops?.length || 0} workshops with learn content`)
-    workshops?.forEach(w => console.log(`   - ${w.title}`))
-
-    // Test 3: Check chapters
-    console.log('\n3️⃣ Testing chapters...')
-    const { data: chapters, error: chapterError } = await supabase
-      .from('workshop_chapters')
-      .select('id, title, chapter_slug, order_index')
-      .limit(10)
-
-    if (chapterError) {
-      console.error('❌ Chapters error:', chapterError.message)
-      return
-    }
-    console.log(`✅ Found ${chapters?.length || 0} chapters`)
-    chapters?.forEach(c => console.log(`   - ${c.title} (Ch. ${c.order_index})`))
-
-    // Test 4: Check content files
-    console.log('\n4️⃣ Testing content files...')
-    const fs = require('fs')
-    const path = require('path')
-    
-    const contentDirs = [
-      'content/workshops/oolite/seo-workshop/chapters',
-      'content/workshops/oolite/digital-presence-workshop/chapters'
-    ]
-
-    let totalFiles = 0
-    contentDirs.forEach(dir => {
-      try {
-        const fullPath = path.join(process.cwd(), dir)
-        if (fs.existsSync(fullPath)) {
-          const files = fs.readdirSync(fullPath).filter(f => f.endsWith('.md'))
-          console.log(`✅ ${dir}: ${files.length} files`)
-          totalFiles += files.length
-        } else {
-          console.log(`❌ ${dir}: Not found`)
-        }
-      } catch (error) {
-        console.log(`❌ ${dir}: Error`)
-      }
-    })
-
-    // Summary
-    console.log('\n🎯 Test Summary:')
-    console.log(`✅ Organizations: ${orgs?.length || 0}`)
-    console.log(`✅ Workshops with learn content: ${workshops?.length || 0}`)
-    console.log(`✅ Chapters: ${chapters?.length || 0}`)
-    console.log(`✅ Content files: ${totalFiles}`)
-
-    if (orgs && orgs.length > 0 && workshops && workshops.length > 0 && chapters && chapters.length > 0 && totalFiles > 0) {
-      console.log('\n🎉 Learn Canvas System is ready!')
-      console.log('\n📋 Next steps:')
-      console.log('1. Start your development server: npm run dev')
-      console.log('2. Navigate to /content to test content management')
-      console.log('3. Visit a workshop page to test Learn tab integration')
-    } else {
-      console.log('\n⚠️  Some components need attention. Check the errors above.')
-    }
-
+    const result = await Promise.race([connectionPromise, timeoutPromise]);
+    console.log('✅ Database connection successful');
+    return result;
   } catch (error) {
-    console.error('❌ Unexpected error:', error.message)
+    console.log('❌ Database connection failed:', error.message);
+    return null;
   }
 }
 
+// Test 4: Check data
+async function checkData() {
+  console.log('📊 Checking existing data...');
+  
+  const tables = ['organizations', 'workshops', 'artists', 'announcements'];
+  const results = {};
+  
+  for (const table of tables) {
+    try {
+      const { data, error } = await supabase
+        .from(table)
+        .select('count')
+        .limit(1);
+      
+      if (error) {
+        console.log(`❌ ${table}: ${error.message}`);
+        results[table] = 0;
+      } else {
+        results[table] = data.length;
+        console.log(`✅ ${table}: ${data.length} records`);
+      }
+    } catch (err) {
+      console.log(`❌ ${table}: ${err.message}`);
+      results[table] = 0;
+    }
+  }
+  
+  return results;
+}
+
+// Main test
+async function runTest() {
+  const connection = await testConnection();
+  
+  if (!connection) {
+    console.log('\n❌ Cannot proceed - database connection failed');
+    console.log('💡 Make sure Supabase is running: supabase start');
+    process.exit(1);
+  }
+  
+  const data = await checkData();
+  
+  console.log('\n📋 SUMMARY:');
+  console.log('============');
+  Object.entries(data).forEach(([table, count]) => {
+    console.log(`${table}: ${count} records`);
+  });
+  
+  if (data.organizations === 0) {
+    console.log('\n💡 No organizations found. Run: node scripts/populate-organizations.js');
+  }
+  
+  if (data.workshops === 0) {
+    console.log('💡 No workshops found. Run: node scripts/populate-sample-workshops.js');
+  }
+  
+  if (data.artists === 0) {
+    console.log('💡 No artists found. Run: node scripts/populate-oolite-artists.js');
+  }
+  
+  console.log('\n🎉 Test complete!');
+}
+
 // Run the test
-quickTest()
+runTest().catch(error => {
+  console.error('💥 Test failed:', error);
+  process.exit(1);
+});

@@ -144,3 +144,5 @@ COMMENT ON COLUMN waitlist_entries.booking_id IS 'ID of the booking created from
 
 
 
+
+
