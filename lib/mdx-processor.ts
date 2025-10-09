@@ -19,7 +19,7 @@ export class MDXProcessor {
   private rehypeProcessor = rehype()
     .use(rehypeHighlight)
     .use(rehypeSlug)
-    .use(rehypeToc, {
+    .use(rehypeToc as any, {
       headings: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
       cssClasses: {
         toc: 'toc',
