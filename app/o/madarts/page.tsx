@@ -101,12 +101,48 @@ export default function MadArtsPage() {
         // Load workshops
         try {
           const workshopsResponse = await fetch('/api/organizations/01e09cce-83da-4b0f-94ce-b227e949414a/workshops')
+          console.log('🎓 Workshops API Response Status:', workshopsResponse.status)
           if (workshopsResponse.ok) {
             const workshopsData = await workshopsResponse.json()
+            console.log('🎓 Workshops API Response Data:', workshopsData)
+            console.log('🎓 Number of workshops found:', workshopsData.workshops?.length || 0)
+            
+            // Log each workshop details
+            if (workshopsData.workshops && workshopsData.workshops.length > 0) {
+              workshopsData.workshops.forEach((workshop: any, index: number) => {
+                console.log(`🎓 Workshop ${index + 1}:`, {
+                  id: workshop.id,
+                  title: workshop.title,
+                  description: workshop.description,
+                  level: workshop.level,
+                  duration: workshop.duration,
+                  image_url: workshop.image_url,
+                  created_at: workshop.created_at
+                })
+              })
+              
+              // Check specifically for Video Performance workshop
+              const videoPerformanceWorkshop = workshopsData.workshops.find((w: any) => 
+                w.title.toLowerCase().includes('video') || 
+                w.title.toLowerCase().includes('performance') ||
+                w.title.toLowerCase().includes('tere')
+              )
+              
+              if (videoPerformanceWorkshop) {
+                console.log('🎬 Video Performance Workshop Found:', videoPerformanceWorkshop)
+              } else {
+                console.log('❌ Video Performance Workshop NOT found in results')
+              }
+            } else {
+              console.log('❌ No workshops found for MadArts organization')
+            }
+            
             setWorkshops(workshopsData.workshops || [])
+          } else {
+            console.error('❌ Failed to fetch workshops:', workshopsResponse.status, workshopsResponse.statusText)
           }
         } catch (error) {
-          console.log('Failed to fetch workshops:', error)
+          console.error('❌ Error fetching workshops:', error)
           setWorkshops([])
         }
 
