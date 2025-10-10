@@ -175,6 +175,30 @@ export default function MadArtsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-purple-900">
       <UnifiedNavigation config={madartsConfig} />
+      
+      {/* Banner Background */}
+      {organization?.banner_image && (
+        <div className="relative h-64 md:h-80 overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${organization.banner_image})`
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-900/60 to-purple-900/60" />
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+            <div className="text-white">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                {organization.name}
+              </h1>
+              <p className="text-xl md:text-2xl text-pink-100 max-w-2xl">
+                {organization.description}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
         {/* Organization Header */}

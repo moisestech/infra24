@@ -8,6 +8,8 @@ interface OrganizationLogoProps {
   organization: {
     name: string
     logo_url?: string
+    logo_url_light?: string
+    logo_url_dark?: string
     settings?: {
       logos?: {
         light_mode?: string
@@ -48,8 +50,8 @@ export function OrganizationLogo({
   // Determine which logo to use based on theme
   const isDarkMode = resolvedTheme === 'dark'
   const logoUrl = isDarkMode 
-    ? organization.settings?.logos?.dark_mode || organization.logo_url
-    : organization.settings?.logos?.light_mode || organization.logo_url
+    ? organization.logo_url_dark || organization.settings?.logos?.dark_mode || organization.logo_url
+    : organization.logo_url_light || organization.settings?.logos?.light_mode || organization.logo_url
 
   if (!logoUrl) {
     // Fallback to organization name if no logo
