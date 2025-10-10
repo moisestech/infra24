@@ -6,6 +6,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Calendar, BookOpen, ExternalLink, Clock, Users, Wifi, FileText, Shield, HelpCircle, Sparkles } from 'lucide-react'
 import DecorativeDivider from '@/components/common/DecorativeDivider'
+import { useTenant } from '@/components/tenant/TenantProvider'
+import { useTheme } from 'next-themes'
 
 interface PageFooterProps {
   organizationSlug?: string
@@ -22,11 +24,22 @@ export function PageFooter({
   showTerms = true,
   customActions
 }: PageFooterProps) {
-  // Oolite theme colors
-  const ooliteColors = {
+  const { tenantConfig } = useTenant()
+  const { theme } = useTheme()
+  
+  // Get organization colors from tenant config or fallback to Oolite colors
+  const orgColors = tenantConfig ? {
+    primary: tenantConfig.theme.primaryColor,
+    secondary: tenantConfig.theme.secondaryColor,
+    accent: tenantConfig.theme.accentColor,
+    primaryAlpha: `${tenantConfig.theme.primaryColor}1a`, // 10% opacity
+    primaryAlphaLight: `${tenantConfig.theme.primaryColor}0d`, // 5% opacity
+    primaryAlphaDark: `${tenantConfig.theme.primaryColor}26`, // 15% opacity
+  } : {
+    // Fallback to Oolite colors if no tenant config
     primary: '#47abc4',
-    primaryLight: '#6bb8d1',
-    primaryDark: '#3a8ba3',
+    secondary: '#6bb8d1',
+    accent: '#3a8ba3',
     primaryAlpha: 'rgba(71, 171, 196, 0.1)',
     primaryAlphaLight: 'rgba(71, 171, 196, 0.05)',
     primaryAlphaDark: 'rgba(71, 171, 196, 0.15)',
@@ -43,14 +56,14 @@ export function PageFooter({
           <Button 
             size="lg" 
             style={{ 
-              backgroundColor: ooliteColors.primary,
-              borderColor: ooliteColors.primary
+              backgroundColor: orgColors.primary,
+              borderColor: orgColors.primary
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = ooliteColors.primaryLight
+              e.currentTarget.style.backgroundColor = orgColors.secondary
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = ooliteColors.primary
+              e.currentTarget.style.backgroundColor = orgColors.primary
             }}
           >
             <Calendar className="w-5 h-5 mr-2" />
@@ -62,11 +75,11 @@ export function PageFooter({
             size="lg" 
             variant="outline"
             style={{ 
-              borderColor: ooliteColors.primary,
-              color: ooliteColors.primary
+              borderColor: orgColors.primary,
+              color: orgColors.primary
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = ooliteColors.primaryAlpha
+              e.currentTarget.style.backgroundColor = orgColors.primaryAlpha
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent'
@@ -81,11 +94,11 @@ export function PageFooter({
             size="lg" 
             variant="outline"
             style={{ 
-              borderColor: ooliteColors.primary,
-              color: ooliteColors.primary
+              borderColor: orgColors.primary,
+              color: orgColors.primary
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = ooliteColors.primaryAlpha
+              e.currentTarget.style.backgroundColor = orgColors.primaryAlpha
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent'
@@ -112,9 +125,9 @@ export function PageFooter({
               <div className="text-center">
                 <div 
                   className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
-                  style={{ backgroundColor: ooliteColors.primaryAlpha }}
+                  style={{ backgroundColor: orgColors.primaryAlpha }}
                 >
-                  <Clock className="w-8 h-8" style={{ color: ooliteColors.primary }} />
+                  <Clock className="w-8 h-8" style={{ color: orgColors.primary }} />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Booking Policy</h3>
                 <p className="text-gray-600 dark:text-gray-300">
@@ -125,9 +138,9 @@ export function PageFooter({
               <div className="text-center">
                 <div 
                   className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
-                  style={{ backgroundColor: ooliteColors.primaryAlpha }}
+                  style={{ backgroundColor: orgColors.primaryAlpha }}
                 >
-                  <Users className="w-8 h-8" style={{ color: ooliteColors.primary }} />
+                  <Users className="w-8 h-8" style={{ color: orgColors.primary }} />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Safety First</h3>
                 <p className="text-gray-600 dark:text-gray-300">
@@ -138,9 +151,9 @@ export function PageFooter({
               <div className="text-center">
                 <div 
                   className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
-                  style={{ backgroundColor: ooliteColors.primaryAlpha }}
+                  style={{ backgroundColor: orgColors.primaryAlpha }}
                 >
-                  <Wifi className="w-8 h-8" style={{ color: ooliteColors.primary }} />
+                  <Wifi className="w-8 h-8" style={{ color: orgColors.primary }} />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Community Use</h3>
                 <p className="text-gray-600 dark:text-gray-300">
@@ -158,11 +171,11 @@ export function PageFooter({
         <DecorativeDivider 
           icon={Sparkles}
           gradientColors={{
-            from: 'rgba(71, 171, 196, 0.1)',
-            via: 'rgba(107, 184, 209, 0.1)',
-            to: 'rgba(71, 171, 196, 0.1)'
+            from: orgColors.primaryAlpha,
+            via: `${orgColors.secondary}1a`,
+            to: orgColors.primaryAlpha
           }}
-          iconColor="text-[#47abc4]/50"
+          iconColor={`text-[${orgColors.primary}]/50`}
           className="my-8"
         />
       )}
@@ -178,9 +191,9 @@ export function PageFooter({
               <div className="text-center">
                 <div 
                   className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
-                  style={{ backgroundColor: ooliteColors.primaryAlpha }}
+                  style={{ backgroundColor: orgColors.primaryAlpha }}
                 >
-                  <FileText className="w-8 h-8" style={{ color: ooliteColors.primary }} />
+                  <FileText className="w-8 h-8" style={{ color: orgColors.primary }} />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Usage Agreement</h3>
                 <p className="text-gray-600 dark:text-gray-300">
@@ -191,9 +204,9 @@ export function PageFooter({
               <div className="text-center">
                 <div 
                   className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
-                  style={{ backgroundColor: ooliteColors.primaryAlpha }}
+                  style={{ backgroundColor: orgColors.primaryAlpha }}
                 >
-                  <Shield className="w-8 h-8" style={{ color: ooliteColors.primary }} />
+                  <Shield className="w-8 h-8" style={{ color: orgColors.primary }} />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Liability</h3>
                 <p className="text-gray-600 dark:text-gray-300">
@@ -204,9 +217,9 @@ export function PageFooter({
               <div className="text-center">
                 <div 
                   className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
-                  style={{ backgroundColor: ooliteColors.primaryAlpha }}
+                  style={{ backgroundColor: orgColors.primaryAlpha }}
                 >
-                  <HelpCircle className="w-8 h-8" style={{ color: ooliteColors.primary }} />
+                  <HelpCircle className="w-8 h-8" style={{ color: orgColors.primary }} />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Support</h3>
                 <p className="text-gray-600 dark:text-gray-300">
@@ -224,11 +237,11 @@ export function PageFooter({
         <DecorativeDivider 
           icon={Sparkles}
           gradientColors={{
-            from: 'rgba(71, 171, 196, 0.1)',
-            via: 'rgba(107, 184, 209, 0.1)',
-            to: 'rgba(71, 171, 196, 0.1)'
+            from: orgColors.primaryAlpha,
+            via: `${orgColors.secondary}1a`,
+            to: orgColors.primaryAlpha
           }}
-          iconColor="text-[#47abc4]/50"
+          iconColor={`text-[${orgColors.primary}]/50`}
           className="my-8"
         />
       )}

@@ -359,37 +359,67 @@ export default function OoliteDigitalLabPage() {
         )}
 
         {/* Lab Guidelines */}
-        <div className="bg-white rounded-lg p-8 shadow-lg">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-8 shadow-lg border border-gray-200 dark:border-gray-700">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">
             Lab Guidelines & Policies
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="p-4 bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Clock className="w-8 h-8 text-blue-600" />
+              <div 
+                className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
+                style={{ 
+                  backgroundColor: tenantConfig ? `${tenantConfig.theme.primaryColor}1a` : 'rgba(59, 130, 246, 0.1)'
+                }}
+              >
+                <Clock 
+                  className="w-8 h-8" 
+                  style={{ 
+                    color: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
+                  }} 
+                />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Booking Policy</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Booking Policy</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Equipment can be booked up to 2 weeks in advance. 
                 Maximum 4 hours per session. Cancellations must be made 24 hours in advance.
               </p>
             </div>
             <div className="text-center">
-              <div className="p-4 bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Users className="w-8 h-8 text-blue-600" />
+              <div 
+                className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
+                style={{ 
+                  backgroundColor: tenantConfig ? `${tenantConfig.theme.primaryColor}1a` : 'rgba(59, 130, 246, 0.1)'
+                }}
+              >
+                <Users 
+                  className="w-8 h-8" 
+                  style={{ 
+                    color: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
+                  }} 
+                />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Safety First</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Safety First</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 All users must complete safety training before using equipment. 
                 Follow all posted guidelines and ask staff for assistance when needed.
               </p>
             </div>
             <div className="text-center">
-              <div className="p-4 bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Wifi className="w-8 h-8 text-blue-600" />
+              <div 
+                className="p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center"
+                style={{ 
+                  backgroundColor: tenantConfig ? `${tenantConfig.theme.primaryColor}1a` : 'rgba(59, 130, 246, 0.1)'
+                }}
+              >
+                <Wifi 
+                  className="w-8 h-8" 
+                  style={{ 
+                    color: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
+                  }} 
+                />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Community Use</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Community Use</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Respect other users and maintain a collaborative environment. 
                 Clean up after yourself and report any equipment issues immediately.
               </p>
@@ -399,22 +429,60 @@ export default function OoliteDigitalLabPage() {
 
         {/* Quick Actions */}
         <div className="mt-12 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
             Ready to Get Started?
           </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
             Join our community of digital artists and start creating with cutting-edge technology.
           </p>
           <div className="flex justify-center gap-4">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Button 
+              size="lg" 
+              style={{
+                backgroundColor: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6',
+                borderColor: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = tenantConfig ? tenantConfig.theme.secondaryColor : '#2563eb'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
+              }}
+            >
               <Calendar className="w-5 h-5 mr-2" />
               Book Equipment
             </Button>
-            <Button size="lg" variant="outline">
+            <Button 
+              size="lg" 
+              variant="outline"
+              style={{
+                borderColor: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6',
+                color: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = tenantConfig ? `${tenantConfig.theme.primaryColor}1a` : 'rgba(59, 130, 246, 0.1)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+              }}
+            >
               <BookOpen className="w-5 h-5 mr-2" />
               View Workshops
             </Button>
-            <Button size="lg" variant="outline">
+            <Button 
+              size="lg" 
+              variant="outline"
+              style={{
+                borderColor: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6',
+                color: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = tenantConfig ? `${tenantConfig.theme.primaryColor}1a` : 'rgba(59, 130, 246, 0.1)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+              }}
+            >
               <ExternalLink className="w-5 h-5 mr-2" />
               Lab Tour
             </Button>
