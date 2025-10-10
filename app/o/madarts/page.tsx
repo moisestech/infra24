@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap, Copy, Check } from 'lucide-react'
-import { UnifiedNavigation } from '@/components/navigation'
+import { UnifiedNavigation, madartsConfig } from '@/components/navigation'
 import { OrganizationLogo } from '@/components/organization/OrganizationLogo'
 import { PageFooter } from '@/components/common/PageFooter'
 
@@ -52,7 +52,7 @@ export default function MadArtsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-purple-900">
-        <UnifiedNavigation />
+        <UnifiedNavigation config={madartsConfig} />
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
@@ -66,7 +66,7 @@ export default function MadArtsPage() {
   if (!organization) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-purple-900">
-        <UnifiedNavigation />
+        <UnifiedNavigation config={madartsConfig} />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">

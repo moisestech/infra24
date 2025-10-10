@@ -20,3 +20,4 @@ export type {
 // Configurations
 export { ooliteConfig } from './configs/oolite'
 export { bakehouseConfig } from './configs/bakehouse'
+export { madartsConfig } from './configs/madarts'
