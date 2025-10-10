@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap, Copy, Check } from 'lucide-react'
-import { UnifiedNavigation, madartsConfig } from '@/components/navigation'
+import { UnifiedNavigation } from '@/components/navigation'
+import { madartsConfig } from '@/components/navigation/configs/madarts'
 
 // Debug: Log the config to see if it's being imported correctly
 console.log('MadArts config:', madartsConfig)
@@ -53,6 +54,7 @@ export default function MadArtsPage() {
   }, [])
 
   if (loading) {
+    console.log('Loading state - madartsConfig:', madartsConfig)
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-purple-900">
         <UnifiedNavigation config={madartsConfig} />
@@ -84,9 +86,10 @@ export default function MadArtsPage() {
     )
   }
 
+  console.log('Main render - madartsConfig:', madartsConfig)
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-purple-900">
-      <UnifiedNavigation />
+      <UnifiedNavigation config={madartsConfig} />
       
       <div className="container mx-auto px-4 py-8">
         {/* Organization Header */}
