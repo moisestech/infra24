@@ -77,8 +77,7 @@ export default function MadArtsPage() {
           console.log('🎨 MadArts Organization Data:', orgData)
           console.log('🖼️ Banner Image URL:', orgData.banner_image)
           console.log('🎨 Logo URL:', orgData.logo_url)
-          console.log('🎨 Logo URL Light:', orgData.logo_url_light)
-          console.log('🎨 Logo URL Dark:', orgData.logo_url_dark)
+          console.log('🎨 Available fields:', Object.keys(orgData))
           setOrganization(orgData)
         }
 
@@ -226,12 +225,21 @@ export default function MadArtsPage() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               <div className="flex-shrink-0">
-                <OrganizationLogo 
-                  organization={organization}
-                  width={200}
-                  height={80}
-                  className="rounded-lg"
-                />
+                {organization.logo_url ? (
+                  <img 
+                    src={organization.logo_url}
+                    alt={`${organization.name} Logo`}
+                    width={200}
+                    height={80}
+                    className="rounded-lg object-contain"
+                  />
+                ) : (
+                  <div className="w-[200px] h-[80px] bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500 dark:text-gray-400 font-semibold">
+                      {organization.name}
+                    </span>
+                  </div>
+                )}
               </div>
               
               <div className="flex-1 text-center md:text-left">
