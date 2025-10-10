@@ -23,7 +23,7 @@ export async function GET(
     console.log('🏢 Looking up organization with slug:', slug);
     const { data: organization, error: orgError } = await supabase
       .from('organizations')
-      .select('id, name, slug, logo_url, favicon_url, created_at')
+      .select('id, name, slug, description, logo_url, logo_url_light, logo_url_dark, banner_image, favicon_url, website, email, phone, address, city, state, zip_code, country, settings, theme, created_at')
       .eq('slug', slug)
       .single();
 

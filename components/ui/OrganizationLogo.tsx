@@ -47,6 +47,21 @@ const LOGO_CONFIG = {
       },
     },
   },
+  madarts: {
+    name: 'MadArts',
+    colors: {
+      primary: '#E91E63', // Pink
+      secondary: '#C2185B', // Dark Pink
+      accent: '#FF4081', // Light Pink
+    },
+    logos: {
+      horizontal: {
+        light: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1760055343/smart-sign/orgs/madarts/madarts-logo-pink_nb5pgx.png',
+        dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1760055342/smart-sign/orgs/madarts/madarts-logo-white_cy1tt9.png',
+        highContrast: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1760055343/smart-sign/orgs/madarts/madarts-logo-pink_nb5pgx.png',
+      },
+    },
+  },
   // Add more organizations as needed
 } as const;
 
