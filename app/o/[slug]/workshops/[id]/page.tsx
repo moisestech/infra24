@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useTenant } from '@/components/tenant/TenantProvider'
 import { TenantLayout } from '@/components/tenant/TenantLayout'
-import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig, madartsConfig } from '@/components/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -389,6 +389,7 @@ export default function WorkshopDetailPage() {
   const getNavigationConfig = () => {
     if (tenantId === 'oolite') return ooliteConfig
     if (tenantId === 'bakehouse') return bakehouseConfig
+    if (tenantId === 'madarts') return madartsConfig
     return ooliteConfig // fallback
   }
 

@@ -231,6 +231,44 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       language: 'en',
     },
   },
+  madarts: {
+    id: 'madarts',
+    name: 'MadArts',
+    slug: 'madarts',
+    domain: 'madarts.infra24.com',
+    subdomain: 'madarts',
+    theme: {
+      primaryColor: '#E91E63',
+      secondaryColor: '#C2185B',
+      accentColor: '#FF4081',
+      logo: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1760055343/smart-sign/orgs/madarts/madarts-logo-pink_nb5pgx.png',
+      favicon: '/favicons/madarts-favicon.ico',
+      banner: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1760057763/smart-sign/orgs/madarts/madarts-banner_symngx.jpg',
+    },
+    features: {
+      smartSign: true,
+      bookings: true,
+      submissions: true,
+      analytics: true,
+      workshops: true,
+      calendar: true,
+    },
+    dashboard: {
+      showAnnouncements: true,
+      showArtists: true,
+      showInteractiveMap: true,
+      showSurveys: true,
+      showXRExperiences: true,
+      showWorkshops: true,
+      showDigitalLab: true,
+    },
+    settings: {
+      timezone: 'America/New_York',
+      dateFormat: 'MM/DD/YYYY',
+      currency: 'USD',
+      language: 'en',
+    },
+  },
 };
 
 /**
