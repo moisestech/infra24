@@ -192,17 +192,35 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
         console.log('🔍 Starting data load for slug:', slug)
 
         // Get organization details
+        console.log('🔍 Fetching organization data from:', `/api/organizations/by-slug/${slug}`)
         const orgResponse = await fetch(`/api/organizations/by-slug/${slug}`)
+        console.log('🔍 Organization API response status:', orgResponse.status)
+        
         let orgData = null
         if (orgResponse.ok) {
           orgData = await orgResponse.json()
+          console.log('🔍 Organization data received:', orgData)
+          console.log('🔍 Organization data structure:', {
+            hasOrganization: !!orgData.organization,
+            organizationId: orgData.organization?.id,
+            organizationName: orgData.organization?.name,
+            organizationSlug: orgData.organization?.slug
+          })
           setOrganization(orgData.organization)
+        } else {
+          console.error('❌ Failed to fetch organization:', orgResponse.status, orgResponse.statusText)
+          const errorText = await orgResponse.text()
+          console.error('❌ Organization API error response:', errorText)
         }
 
         // Get workshops for this organization
         console.log('🔍 Fetching workshops for organization:', orgData?.organization?.id)
         if (orgData?.organization?.id) {
-          const workshopsResponse = await fetch(`/api/organizations/${orgData.organization.id}/workshops`)
+          const workshopsUrl = `/api/organizations/${orgData.organization.id}/workshops`
+          console.log('🔍 Fetching workshops from:', workshopsUrl)
+          const workshopsResponse = await fetch(workshopsUrl)
+          console.log('🔍 Workshops API response status:', workshopsResponse.status)
+          
           if (workshopsResponse.ok) {
             const workshopsData = await workshopsResponse.json()
             console.log('📚 Workshops data received:', workshopsData)
@@ -256,9 +274,12 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
             setWorkshops(workshopsData.workshops || [])
           } else {
             console.error('❌ Failed to fetch workshops:', workshopsResponse.status, workshopsResponse.statusText)
+            const errorText = await workshopsResponse.text()
+            console.error('❌ Workshops API error response:', errorText)
           }
         } else {
           console.error('❌ No organization ID found for slug:', slug)
+          console.error('❌ Organization data:', orgData)
         }
 
       } catch (error) {
