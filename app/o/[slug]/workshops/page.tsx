@@ -164,6 +164,20 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
       console.log('📚 First workshop:', workshops[0])
     }
   }, [workshops])
+
+  // Clear loading state when component unmounts or navigation completes
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      setLoadingWorkshopId(null)
+    }
+    
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      setLoadingWorkshopId(null)
+    }
+  }, [])
   
   // Debug organization state changes
   useEffect(() => {
@@ -173,6 +187,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedLevel, setSelectedLevel] = useState('all')
   const [reducedMotion, setReducedMotion] = useState(false)
+  const [loadingWorkshopId, setLoadingWorkshopId] = useState<string | null>(null)
 
   // Intersection observer for sections
   const [heroRef, heroInView] = useInView({ threshold: 0.5 })
@@ -467,24 +482,42 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
 
           {/* Action Buttons */}
           <div className="flex gap-2 pt-2">
-            <Link href={`/o/${slug}/workshops/${workshop.id}`}>
+            <Link 
+              href={`/o/${slug}/workshops/${workshop.id}`}
+              onClick={() => setLoadingWorkshopId(workshop.id)}
+            >
               <Button 
                 size="sm" 
                 className="flex-1"
+                disabled={loadingWorkshopId === workshop.id}
                 style={{
                   backgroundColor: tenantConfig?.theme?.primaryColor || '#3b82f6',
                   borderColor: tenantConfig?.theme?.primaryColor || '#3b82f6',
-                  color: 'white'
+                  color: 'white',
+                  opacity: loadingWorkshopId === workshop.id ? 0.7 : 1
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = tenantConfig?.theme?.secondaryColor || '#1d4ed8';
+                  if (loadingWorkshopId !== workshop.id) {
+                    e.currentTarget.style.backgroundColor = tenantConfig?.theme?.secondaryColor || '#1d4ed8';
+                  }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryColor || '#3b82f6';
+                  if (loadingWorkshopId !== workshop.id) {
+                    e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryColor || '#3b82f6';
+                  }
                 }}
               >
-                <Eye className="h-4 w-4 mr-2" />
-                View Details
+                {loadingWorkshopId === workshop.id ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Details
+                  </>
+                )}
               </Button>
             </Link>
             <Link href={`/o/${slug}/bookings?workshopId=${workshop.id}&type=workshop`}>
