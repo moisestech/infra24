@@ -12,6 +12,18 @@ export function UnifiedNavigation({
   userRole = 'user', 
   className = '' 
 }: NavigationProps) {
+  // Safety check for undefined config
+  if (!config) {
+    console.error('UnifiedNavigation: config is undefined', { config, userRole, className })
+    return (
+      <nav className={`bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 ${className}`}>
+        <div className="container mx-auto px-4 py-2">
+          <div className="text-red-500 text-sm">Navigation Error: Config not provided</div>
+        </div>
+      </nav>
+    )
+  }
+
   const { organization, colors, features, navigation } = config
 
   // Filter navigation items based on feature flags

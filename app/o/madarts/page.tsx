@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap, Copy, Check } from 'lucide-react'
 import { UnifiedNavigation, madartsConfig } from '@/components/navigation'
+
+// Debug: Log the config to see if it's being imported correctly
+console.log('MadArts config:', madartsConfig)
 import { OrganizationLogo } from '@/components/organization/OrganizationLogo'
 import { PageFooter } from '@/components/common/PageFooter'
 
