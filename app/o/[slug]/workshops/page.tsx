@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { useUser } from '@clerk/nextjs'
-import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
+import { UnifiedNavigation, ooliteConfig, bakehouseConfig, madartsConfig } from '@/components/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -120,7 +120,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
     primaryAlphaDark: 'rgba(71, 171, 196, 0.15)',
   };
   
-  console.log('🔧 Oolite Workshops Page Debug:')
+  console.log('🔧 Workshops Page Debug:')
   console.log('params:', params)
   console.log('propSlug:', propSlug)
   console.log('final slug:', slug)
@@ -136,11 +136,22 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
       case 'bakehouse':
         console.log('🧭 Using bakehouse config')
         return bakehouseConfig
+      case 'madarts':
+        console.log('🧭 Using madarts config')
+        return madartsConfig
       default:
         console.log('🧭 Using default oolite config')
         return ooliteConfig // Default fallback
     }
   }
+  
+  // Debug navigation config selection
+  const navigationConfig = getNavigationConfig()
+  console.log('🧭 Selected Navigation Config:', {
+    organizationName: navigationConfig.organization.name,
+    slug: navigationConfig.organization.slug,
+    logoUrl: navigationConfig.organization.logo_url
+  })
   const { theme } = useTheme()
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [workshops, setWorkshops] = useState<Workshop[]>([])
@@ -200,13 +211,47 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
             // Debug each workshop
             workshopsData.workshops?.forEach((workshop: any, index: number) => {
               console.log(`📝 Workshop ${index + 1}:`, {
+                id: workshop.id,
                 title: workshop.title,
+                instructor: workshop.instructor,
                 status: workshop.status,
                 featured: workshop.featured,
                 is_public: workshop.is_public,
-                is_active: workshop.is_active
+                is_active: workshop.is_active,
+                level: workshop.level,
+                duration_minutes: workshop.duration_minutes,
+                category: workshop.category
               })
             })
+            
+            // Check specifically for Video Performance workshop by Tere Garcia
+            const videoPerformanceWorkshop = workshopsData.workshops?.find((w: any) => 
+              w.title.toLowerCase().includes('video') || 
+              w.title.toLowerCase().includes('performance') ||
+              w.instructor?.toLowerCase().includes('tere') ||
+              w.instructor?.toLowerCase().includes('garcia')
+            )
+            
+            if (videoPerformanceWorkshop) {
+              console.log('🎬 ✅ Video Performance Workshop by Tere Garcia Found!')
+              console.log('🎬 Workshop Details:', {
+                id: videoPerformanceWorkshop.id,
+                title: videoPerformanceWorkshop.title,
+                instructor: videoPerformanceWorkshop.instructor,
+                status: videoPerformanceWorkshop.status,
+                featured: videoPerformanceWorkshop.featured,
+                level: videoPerformanceWorkshop.level,
+                duration: videoPerformanceWorkshop.duration_minutes,
+                category: videoPerformanceWorkshop.category,
+                organization_id: videoPerformanceWorkshop.organization_id
+              })
+            } else {
+              console.log('❌ Video Performance Workshop by Tere Garcia NOT found')
+              console.log('🔍 Available workshops:')
+              workshopsData.workshops?.forEach((w: any, i: number) => {
+                console.log(`   ${i + 1}. "${w.title}" by ${w.instructor}`)
+              })
+            }
             
             setWorkshops(workshopsData.workshops || [])
           } else {
@@ -441,7 +486,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
       }`}>
         {/* Navigation */}
         <div className="relative z-50">
-          <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+          <UnifiedNavigation config={navigationConfig} userRole="admin" />
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
@@ -480,7 +525,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
       
       {/* Navigation */}
       <div className="relative z-50">
-        <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
+        <UnifiedNavigation config={navigationConfig} userRole="admin" />
       </div>
       
       {/* Hero Section */}
