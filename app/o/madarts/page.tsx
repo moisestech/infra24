@@ -73,11 +73,16 @@ export default function MadArtsPage() {
         // Load organization data
         const orgResponse = await fetch('/api/organizations/by-slug/madarts')
         if (orgResponse.ok) {
-          const orgData = await orgResponse.json()
+          const responseData = await orgResponse.json()
+          console.log('🎨 API Response Data:', responseData)
+          console.log('🎨 Available fields:', Object.keys(responseData))
+          
+          // Extract organization data from the response
+          const orgData = responseData.organization
           console.log('🎨 MadArts Organization Data:', orgData)
-          console.log('🖼️ Banner Image URL:', orgData.banner_image)
-          console.log('🎨 Logo URL:', orgData.logo_url)
-          console.log('🎨 Available fields:', Object.keys(orgData))
+          console.log('🖼️ Banner Image URL:', orgData?.banner_image)
+          console.log('🎨 Logo URL:', orgData?.logo_url)
+          console.log('🎨 Organization fields:', Object.keys(orgData || {}))
           setOrganization(orgData)
         }
 
