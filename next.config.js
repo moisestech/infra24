@@ -1,7 +1,29 @@
 
 // Configuration to handle deprecated packages
 const nextConfig = {
-  // ... existing config ...
+  // Image configuration for external domains
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+        port: '',
+        pathname: '/**',
+      }
+    ],
+  },
   
   // Handle deprecated packages
   webpack: (config, { isServer }) => {
