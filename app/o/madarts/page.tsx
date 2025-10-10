@@ -74,6 +74,11 @@ export default function MadArtsPage() {
         const orgResponse = await fetch('/api/organizations/by-slug/madarts')
         if (orgResponse.ok) {
           const orgData = await orgResponse.json()
+          console.log('🎨 MadArts Organization Data:', orgData)
+          console.log('🖼️ Banner Image URL:', orgData.banner_image)
+          console.log('🎨 Logo URL:', orgData.logo_url)
+          console.log('🎨 Logo URL Light:', orgData.logo_url_light)
+          console.log('🎨 Logo URL Dark:', orgData.logo_url_dark)
           setOrganization(orgData)
         }
 
@@ -172,32 +177,47 @@ export default function MadArtsPage() {
     return 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&h=120&fit=crop&crop=center'
   }
 
+  // Debug logging for navigation config
+  console.log('🧭 Navigation Config Debug:', madartsConfig)
+  console.log('🧭 Navigation Organization Logo URLs:', {
+    logo_url: madartsConfig.organization.logo_url,
+    logo_url_light: madartsConfig.organization.logo_url_light,
+    logo_url_dark: madartsConfig.organization.logo_url_dark
+  })
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-900 dark:to-purple-900">
       <UnifiedNavigation config={madartsConfig} />
       
       {/* Banner Background */}
-      {organization?.banner_image && (
-        <div className="relative h-64 md:h-80 overflow-hidden">
-          <div 
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${organization.banner_image})`
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-900/60 to-purple-900/60" />
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-            <div className="text-white">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                {organization.name}
-              </h1>
-              <p className="text-xl md:text-2xl text-pink-100 max-w-2xl">
-                {organization.description}
-              </p>
+      {(() => {
+        console.log('🖼️ Banner Debug:', {
+          hasOrganization: !!organization,
+          bannerImage: organization?.banner_image,
+          willShowBanner: !!(organization?.banner_image)
+        })
+        return organization?.banner_image && (
+          <div className="relative h-64 md:h-80 overflow-hidden">
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${organization.banner_image})`
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-pink-900/60 to-purple-900/60" />
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+              <div className="text-white">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                  {organization.name}
+                </h1>
+                <p className="text-xl md:text-2xl text-pink-100 max-w-2xl">
+                  {organization.description}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       

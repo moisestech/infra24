@@ -53,6 +53,17 @@ export function OrganizationLogo({
     ? organization.logo_url_dark || organization.settings?.logos?.dark_mode || organization.logo_url
     : organization.logo_url_light || organization.settings?.logos?.light_mode || organization.logo_url
 
+  // Debug logging
+  console.log('🎨 OrganizationLogo Debug:', {
+    organizationName: organization.name,
+    isDarkMode,
+    resolvedTheme,
+    logo_url: organization.logo_url,
+    logo_url_light: organization.logo_url_light,
+    logo_url_dark: organization.logo_url_dark,
+    selectedLogoUrl: logoUrl
+  })
+
   if (!logoUrl) {
     // Fallback to organization name if no logo
     return (
