@@ -149,5 +149,3 @@ export const madartsConfig: NavigationConfig = {
     ]
   }
 }
-
-export { madartsConfig }
