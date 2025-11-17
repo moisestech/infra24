@@ -66,64 +66,98 @@ export function BookingForm({
 
   // Helper functions for booking type styling and information
   const getBookingTypeConfig = (type: string) => {
+    const primaryColor = tenantConfig?.theme.primaryColor || '#3b82f6'
+    const primaryAlpha = (tenantConfig?.theme as any)?.primaryAlpha || 'rgba(59, 130, 246, 0.1)'
+    
+    // Create different shades of the primary color for visual distinction
+    const getColorVariants = (baseColor: string, alpha: string) => {
+      return {
+        bgColor: `bg-opacity-10`,
+        borderColor: `border-opacity-20`,
+        textColor: 'text-gray-900 dark:text-white',
+        iconBg: `bg-opacity-20`,
+        iconColor: baseColor,
+        bgStyle: { backgroundColor: alpha },
+        borderStyle: { borderColor: `${baseColor}33` },
+        iconBgStyle: { backgroundColor: `${baseColor}20` }
+      }
+    }
+    
+    const colors = getColorVariants(primaryColor, primaryAlpha)
+    
     switch (type) {
       case 'equipment':
         return {
           icon: <Monitor className="w-5 h-5" />,
-          color: 'blue',
-          bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-          borderColor: 'border-blue-200 dark:border-blue-800',
-          textColor: 'text-blue-900 dark:text-blue-100',
-          iconBg: 'bg-blue-100 dark:bg-blue-900/20',
-          iconColor: 'text-blue-600 dark:text-blue-400',
+          color: 'primary',
+          bgColor: colors.bgColor,
+          borderColor: colors.borderColor,
+          textColor: colors.textColor,
+          iconBg: colors.iconBg,
+          iconColor: colors.iconColor,
+          bgStyle: colors.bgStyle,
+          borderStyle: colors.borderStyle,
+          iconBgStyle: colors.iconBgStyle,
           title: 'Equipment Booking',
           description: 'Book digital lab equipment like VR headsets, 3D printers, cameras, and more'
         }
       case 'space':
         return {
           icon: <Building className="w-5 h-5" />,
-          color: 'green',
-          bgColor: 'bg-green-50 dark:bg-green-900/20',
-          borderColor: 'border-green-200 dark:border-green-800',
-          textColor: 'text-green-900 dark:text-green-100',
-          iconBg: 'bg-green-100 dark:bg-green-900/20',
-          iconColor: 'text-green-600 dark:text-green-400',
+          color: 'primary',
+          bgColor: colors.bgColor,
+          borderColor: colors.borderColor,
+          textColor: colors.textColor,
+          iconBg: colors.iconBg,
+          iconColor: colors.iconColor,
+          bgStyle: colors.bgStyle,
+          borderStyle: colors.borderStyle,
+          iconBgStyle: colors.iconBgStyle,
           title: 'Space Booking',
           description: 'Reserve collaborative workspaces, meeting rooms, and studio spaces'
         }
       case 'workshop':
         return {
           icon: <GraduationCap className="w-5 h-5" />,
-          color: 'purple',
-          bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-          borderColor: 'border-purple-200 dark:border-purple-800',
-          textColor: 'text-purple-900 dark:text-purple-100',
-          iconBg: 'bg-purple-100 dark:bg-purple-900/20',
-          iconColor: 'text-purple-600 dark:text-purple-400',
+          color: 'primary',
+          bgColor: colors.bgColor,
+          borderColor: colors.borderColor,
+          textColor: colors.textColor,
+          iconBg: colors.iconBg,
+          iconColor: colors.iconColor,
+          bgStyle: colors.bgStyle,
+          borderStyle: colors.borderStyle,
+          iconBgStyle: colors.iconBgStyle,
           title: 'Workshop Booking',
           description: 'Join workshops, training sessions, and educational programs'
         }
       case 'person':
         return {
           icon: <User className="w-5 h-5" />,
-          color: 'orange',
-          bgColor: 'bg-orange-50 dark:bg-orange-900/20',
-          borderColor: 'border-orange-200 dark:border-orange-800',
-          textColor: 'text-orange-900 dark:text-orange-100',
-          iconBg: 'bg-orange-100 dark:bg-orange-900/20',
-          iconColor: 'text-orange-600 dark:text-orange-400',
+          color: 'primary',
+          bgColor: colors.bgColor,
+          borderColor: colors.borderColor,
+          textColor: colors.textColor,
+          iconBg: colors.iconBg,
+          iconColor: colors.iconColor,
+          bgStyle: colors.bgStyle,
+          borderStyle: colors.borderStyle,
+          iconBgStyle: colors.iconBgStyle,
           title: 'Person Booking',
           description: 'Book time with artists, mentors, and specialists'
         }
       default:
         return {
           icon: <CalendarIcon className="w-5 h-5" />,
-          color: 'gray',
-          bgColor: 'bg-gray-50 dark:bg-gray-900/20',
-          borderColor: 'border-gray-200 dark:border-gray-800',
-          textColor: 'text-gray-900 dark:text-gray-100',
-          iconBg: 'bg-gray-100 dark:bg-gray-900/20',
-          iconColor: 'text-gray-600 dark:text-gray-400',
+          color: 'primary',
+          bgColor: colors.bgColor,
+          borderColor: colors.borderColor,
+          textColor: colors.textColor,
+          iconBg: colors.iconBg,
+          iconColor: colors.iconColor,
+          bgStyle: colors.bgStyle,
+          borderStyle: colors.borderStyle,
+          iconBgStyle: colors.iconBgStyle,
           title: 'Booking',
           description: 'Create a new booking'
         }
@@ -332,10 +366,19 @@ export function BookingForm({
   return (
     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
       {/* Booking Type Header */}
-      <div className={`${typeConfig.bgColor} ${typeConfig.borderColor} border rounded-lg p-4`}>
+      <div 
+        className="border rounded-lg p-4"
+        style={{
+          ...typeConfig.bgStyle,
+          ...typeConfig.borderStyle
+        }}
+      >
         <div className="flex items-center space-x-3">
-          <div className={`${typeConfig.iconBg} p-2 rounded-lg`}>
-            <div className={typeConfig.iconColor}>
+          <div 
+            className="p-2 rounded-lg"
+            style={typeConfig.iconBgStyle}
+          >
+            <div style={{ color: typeConfig.iconColor }}>
               {typeConfig.icon}
             </div>
           </div>
@@ -354,7 +397,10 @@ export function BookingForm({
       <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0">
-            <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+            <Info 
+              className="w-5 h-5 mt-0.5" 
+              style={{ color: tenantConfig?.theme.primaryColor || '#3b82f6' }}
+            />
           </div>
           <div className="flex-1">
             <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
@@ -363,7 +409,10 @@ export function BookingForm({
             <ul className="space-y-1">
               {policy.rules.map((rule, index) => (
                 <li key={index} className="text-sm text-gray-600 dark:text-gray-400 flex items-start">
-                  <span className="text-blue-600 dark:text-blue-400 mr-2">•</span>
+                  <span 
+                    className="mr-2"
+                    style={{ color: tenantConfig?.theme.primaryColor || '#3b82f6' }}
+                  >•</span>
                   {rule}
                 </li>
               ))}
@@ -375,33 +424,39 @@ export function BookingForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Title */}
         <div className="md:col-span-2">
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Booking Title *
           </label>
           <Input
             id="title"
             {...form.register('title')}
             placeholder="e.g., Team Meeting, Workshop Session"
-            className={cn(form.formState.errors.title && 'border-red-500')}
+            className={cn(
+              "text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400",
+              form.formState.errors.title && 'border-red-500'
+            )}
           />
           {form.formState.errors.title && (
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.title.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{form.formState.errors.title.message}</p>
           )}
         </div>
 
         {/* Resource Selection */}
         <div>
-          <label htmlFor="resourceId" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="resourceId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Resource *
           </label>
           <Select
             value={form.watch('resourceId')}
             onValueChange={(value) => form.setValue('resourceId', value)}
           >
-            <SelectTrigger className={cn(form.formState.errors.resourceId && 'border-red-500')}>
+            <SelectTrigger className={cn(
+              "text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400",
+              form.formState.errors.resourceId && 'border-red-500'
+            )}>
               <SelectValue placeholder="Select a resource" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
               {filteredResources.map((resource) => {
                 console.log('🔍 BookingForm: Rendering resource:', resource)
                 const equipmentStatus = getEquipmentStatus(resource)
@@ -432,7 +487,7 @@ export function BookingForm({
             </SelectContent>
           </Select>
           {form.formState.errors.resourceId && (
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.resourceId.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{form.formState.errors.resourceId.message}</p>
           )}
         </div>
 
@@ -467,27 +522,27 @@ export function BookingForm({
 
         {/* Status */}
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Status
           </label>
           <Select
             value={form.watch('status')}
             onValueChange={(value: 'pending' | 'confirmed' | 'cancelled') => form.setValue('status', value)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="confirmed">Confirmed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+              <SelectItem value="pending" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">Pending</SelectItem>
+              <SelectItem value="confirmed" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">Confirmed</SelectItem>
+              <SelectItem value="cancelled" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">Cancelled</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Start Date */}
         <div>
-          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Start Date *
           </label>
           <Input
@@ -495,41 +550,47 @@ export function BookingForm({
             {...form.register('startDate', { 
               setValueAs: (value) => value ? new Date(value) : new Date()
             })}
-            className={cn(form.formState.errors.startDate && 'border-red-500')}
+            className={cn(
+              "text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400",
+              form.formState.errors.startDate && 'border-red-500'
+            )}
           />
           {form.formState.errors.startDate && (
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.startDate.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{form.formState.errors.startDate.message}</p>
           )}
         </div>
 
         {/* Start Time */}
         <div>
-          <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Start Time *
           </label>
           <Select
             value={form.watch('startTime')}
             onValueChange={(value) => form.setValue('startTime', value)}
           >
-            <SelectTrigger className={cn(form.formState.errors.startTime && 'border-red-500')}>
+            <SelectTrigger className={cn(
+              "text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400",
+              form.formState.errors.startTime && 'border-red-500'
+            )}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
               {timeOptions.map((time) => (
-                <SelectItem key={time} value={time}>
+                <SelectItem key={time} value={time} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
                   {time}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           {form.formState.errors.startTime && (
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.startTime.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{form.formState.errors.startTime.message}</p>
           )}
         </div>
 
         {/* End Date */}
         <div>
-          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             End Date *
           </label>
           <Input
@@ -537,41 +598,47 @@ export function BookingForm({
             {...form.register('endDate', { 
               setValueAs: (value) => value ? new Date(value) : new Date()
             })}
-            className={cn(form.formState.errors.endDate && 'border-red-500')}
+            className={cn(
+              "text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400",
+              form.formState.errors.endDate && 'border-red-500'
+            )}
           />
           {form.formState.errors.endDate && (
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.endDate.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{form.formState.errors.endDate.message}</p>
           )}
         </div>
 
         {/* End Time */}
         <div>
-          <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             End Time *
           </label>
           <Select
             value={form.watch('endTime')}
             onValueChange={(value) => form.setValue('endTime', value)}
           >
-            <SelectTrigger className={cn(form.formState.errors.endTime && 'border-red-500')}>
+            <SelectTrigger className={cn(
+              "text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400",
+              form.formState.errors.endTime && 'border-red-500'
+            )}>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
               {timeOptions.map((time) => (
-                <SelectItem key={time} value={time}>
+                <SelectItem key={time} value={time} className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
                   {time}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           {form.formState.errors.endTime && (
-            <p className="mt-1 text-sm text-red-600">{form.formState.errors.endTime.message}</p>
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{form.formState.errors.endTime.message}</p>
           )}
         </div>
 
         {/* Description */}
         <div className="md:col-span-2">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Description
           </label>
           <Textarea
@@ -579,6 +646,7 @@ export function BookingForm({
             {...form.register('description')}
             placeholder="Optional description for this booking"
             rows={3}
+            className="text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400"
           />
         </div>
       </div>
@@ -590,6 +658,7 @@ export function BookingForm({
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting || isLoading}
+          className="text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
         >
           Cancel
         </Button>
@@ -601,19 +670,23 @@ export function BookingForm({
             const equipmentStatus = getEquipmentStatus(selectedResource)
             return equipmentStatus.status === 'unavailable' || equipmentStatus.status === 'maintenance'
           })()}
-          className="min-w-[120px]"
+          className="min-w-[120px] text-white border-0"
           style={{
-            backgroundColor: tenantConfig?.theme.primaryColor || '#1E40AF',
-            borderColor: tenantConfig?.theme.primaryColor || '#1E40AF',
+            backgroundColor: tenantConfig?.theme.primaryColor || '#47abc4',
+            borderColor: tenantConfig?.theme.primaryColor || '#47abc4',
           }}
           onMouseEnter={(e) => {
             if (tenantConfig?.theme.secondaryColor) {
               e.currentTarget.style.backgroundColor = tenantConfig.theme.secondaryColor
+            } else {
+              e.currentTarget.style.backgroundColor = '#3a9bb3' // Same hover as Create Booking button
             }
           }}
           onMouseLeave={(e) => {
             if (tenantConfig?.theme.primaryColor) {
               e.currentTarget.style.backgroundColor = tenantConfig.theme.primaryColor
+            } else {
+              e.currentTarget.style.backgroundColor = '#47abc4' // Same as Create Booking button
             }
           }}
         >

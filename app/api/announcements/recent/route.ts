@@ -48,6 +48,8 @@ export async function GET() {
         updated_at,
         created_by,
         organization_id,
+        image_url,
+        image_layout,
         organizations!inner(id, name, slug)
       `)
       .eq('is_active', true)

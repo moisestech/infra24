@@ -50,7 +50,9 @@ export async function GET() {
         expires_at,
         priority,
         tags,
-        org_id
+        org_id,
+        image_url,
+        image_layout
       `)
       .is('deleted_at', null)
       .order('created_at', { ascending: false });

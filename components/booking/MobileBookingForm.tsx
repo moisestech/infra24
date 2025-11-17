@@ -346,19 +346,6 @@ export function MobileBookingForm({
           )}
         </div>
         
-        <div>
-          <label className="block text-sm font-medium mb-2">Phone (Optional)</label>
-          <Input
-            type="tel"
-            placeholder="+1 (555) 123-4567"
-            value={watchedValues.contactPhone}
-            onChange={(e) => setValue('contactPhone', e.target.value)}
-            className="w-full"
-          />
-          {errors.contactPhone && (
-            <p className="text-sm text-red-600 mt-1">{errors.contactPhone.message}</p>
-          )}
-        </div>
       </div>
     </div>
   );
@@ -403,9 +390,6 @@ export function MobileBookingForm({
               <h4 className="font-medium text-sm">Contact</h4>
               <p className="text-sm text-gray-600">{watchedValues.contactName}</p>
               <p className="text-sm text-gray-600">{watchedValues.contactEmail}</p>
-              {watchedValues.contactPhone && (
-                <p className="text-sm text-gray-600">{watchedValues.contactPhone}</p>
-              )}
             </div>
           </CardContent>
         </Card>

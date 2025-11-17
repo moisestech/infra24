@@ -38,20 +38,63 @@ export default function AnnouncementDisplayPage() {
         }
         const announcementsData = await announcementsResponse.json();
         
+        // Log raw API response for debugging
+        console.log('📡 Raw API Response:', {
+          totalAnnouncements: announcementsData.announcements?.length || 0,
+          sampleAnnouncement: announcementsData.announcements?.[0] ? {
+            title: announcementsData.announcements[0].title,
+            hasImageUrl: !!announcementsData.announcements[0].image_url,
+            imageUrl: announcementsData.announcements[0].image_url,
+            hasImageLayout: !!announcementsData.announcements[0].image_layout,
+            imageLayout: announcementsData.announcements[0].image_layout,
+            allKeys: Object.keys(announcementsData.announcements[0])
+          } : null
+        });
+        
         // Set organization data from the announcements response
         setOrganization(announcementsData.organization);
         
         // Filter for active announcements and add type inference
         const publishedAnnouncements = (announcementsData.announcements || [])
           .filter((announcement: any) => announcement.is_active === true)
-          .map((announcement: any) => ({
-            ...announcement,
-            // Add status field for compatibility
-            status: 'published',
-            // Infer type from existing data if not set
-            type: announcement.type || inferAnnouncementType(announcement),
-            sub_type: announcement.sub_type || inferAnnouncementSubType(announcement),
-          }));
+          .map((announcement: any) => {
+            const mapped = {
+              ...announcement,
+              // Use body if available, otherwise fall back to content
+              body: announcement.body || announcement.content || '',
+              // Add status field for compatibility
+              status: announcement.status || 'published',
+              // Infer type from existing data if not set
+              type: announcement.type || inferAnnouncementType(announcement),
+              sub_type: announcement.sub_type || inferAnnouncementSubType(announcement),
+              // Ensure image_url and image_layout are preserved - check multiple possible field names
+              image_url: announcement.image_url || announcement.imageUrl || null,
+              image_layout: announcement.image_layout || announcement.imageLayout || null,
+              // Map people fields
+              people: announcement.people || announcement.key_people || [],
+            };
+            
+            // Log each announcement's image status
+            if (!mapped.image_url) {
+              console.warn('⚠️ Announcement missing image_url:', {
+                title: mapped.title,
+                rawImageUrl: announcement.image_url,
+                rawImageLayout: announcement.image_layout,
+                allKeys: Object.keys(announcement)
+              });
+            }
+            
+            return mapped;
+          });
+        
+        // Log announcements with images for debugging
+        const announcementsWithImages = publishedAnnouncements.filter((a: any) => a.image_url);
+        console.log('📸 Announcements with images:', announcementsWithImages.length, 'out of', publishedAnnouncements.length);
+        console.log('📸 Image details:', announcementsWithImages.map((a: any) => ({
+          title: a.title,
+          image_url: a.image_url,
+          image_layout: a.image_layout
+        })));
         
         setAnnouncements(publishedAnnouncements);
       } catch (error) {

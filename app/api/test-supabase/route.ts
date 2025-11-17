@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     
     // Debug the Supabase client
     console.log('🔧 Supabase client created');
-    console.log('🔧 Supabase URL:', supabase.supabaseUrl);
-    console.log('🔧 Supabase service role key present:', !!supabase.supabaseKey);
+    console.log('🔧 Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log('🔧 Supabase service role key present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
     
     // Test a simple query
     console.log('🧪 Testing simple query...');
@@ -47,8 +47,8 @@ export async function GET(request: NextRequest) {
         serviceRoleKeySet: !!process.env.SUPABASE_SERVICE_ROLE_KEY
       },
       supabaseClient: {
-        url: supabase.supabaseUrl,
-        serviceRoleKeyPresent: !!supabase.supabaseKey
+        url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        serviceRoleKeyPresent: !!process.env.SUPABASE_SERVICE_ROLE_KEY
       },
       testQuery: {
         organization: testData,
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('❌ Test Supabase API error:', error);
     return NextResponse.json(
-      { error: 'Test failed', details: error.message },
+      { error: 'Test failed', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

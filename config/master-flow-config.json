@@ -1,0 +1,27 @@
+{
+  "organization": {
+    "id": "cf088ac1-39a5-4948-a72c-d8059c1ab739",
+    "name": "Oolite Arts",
+    "slug": "oolite"
+  },
+  "integration": {
+    "google_calendar": {
+      "enabled": false,
+      "api_key": "YOUR_GOOGLE_CALENDAR_API_KEY",
+      "client_id": "YOUR_GOOGLE_CLIENT_ID",
+      "client_secret": "YOUR_GOOGLE_CLIENT_SECRET"
+    },
+    "appsheet": {
+      "enabled": false,
+      "app_id": "YOUR_APPSHEET_APP_ID",
+      "api_key": "YOUR_APPSHEET_API_KEY"
+    }
+  },
+  "features": {
+    "conflict_detection": true,
+    "ai_digests": true,
+    "external_requests": true,
+    "calendar_sync": true
+  },
+  "created_at": "2025-10-13T16:29:11.375Z"
+}

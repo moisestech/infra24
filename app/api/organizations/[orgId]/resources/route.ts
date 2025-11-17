@@ -1,85 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSupabaseAdmin } from '@/lib/supabase'
+import { supabaseClient } from '@/lib/supabase'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ orgId: string }> }
+  { params }: { params: { orgId: string } }
 ) {
   try {
-    const { orgId } = await params
-    const { searchParams } = new URL(request.url)
-    const type = searchParams.get('type')
-    const category = searchParams.get('category')
-    const available = searchParams.get('available') === 'true'
-
-    const supabaseAdmin = getSupabaseAdmin()
-
-
-    let query = supabaseAdmin
+    console.log('🔍 Resources API: Starting GET request')
+    console.log('🔍 Resources API: orgId =', params.orgId)
+    
+    const { data: resources, error } = await supabaseClient
       .from('resources')
       .select('*')
-      .eq('org_id', orgId)
-      .eq('is_active', true)
+      .eq('org_id', params.orgId)
+      .eq('is_bookable', true)
       .order('title')
 
-    if (type) {
-      query = query.eq('type', type)
-    }
-
-    if (category) {
-      query = query.eq('category', category)
-    }
-
-    const { data: resources, error } = await query
+    console.log('🔍 Resources API: Query result:', { resources, error })
 
     if (error) {
-      console.error('Error fetching resources:', error)
+      console.error('❌ Resources API: Error fetching resources:', error)
       return NextResponse.json(
-        { error: 'Failed to fetch resources' },
+        { 
+          error: 'Failed to fetch resources',
+          details: error.message 
+        },
         { status: 500 }
       )
     }
 
-    // If checking availability, filter out resources with no available slots
-    if (available) {
-      const now = new Date()
-      const futureDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+    console.log('✅ Resources API: Successfully fetched', resources?.length || 0, 'resources')
+    
+    return NextResponse.json({
+      resources: resources || [],
+      count: resources?.length || 0
+    })
 
-      const resourcesWithAvailability = await Promise.all(
-        resources.map(async (resource) => {
-          const { data: bookings } = await supabaseAdmin
-            .from('bookings')
-            .select('start_time, end_time')
-            .eq('resource_id', resource.id)
-            .eq('status', 'confirmed')
-            .gte('start_time', now.toISOString())
-            .lte('start_time', futureDate.toISOString())
-
-          // Simple availability check - if less than 80% booked, consider available
-          const totalSlots = 30 * 8 // 30 days * 8 hours per day
-          const bookedSlots = bookings?.length || 0
-          const availabilityPercentage = ((totalSlots - bookedSlots) / totalSlots) * 100
-
-          return {
-            ...resource,
-            availability: {
-              percentage: Math.round(availabilityPercentage),
-              has_slots: availabilityPercentage > 20
-            }
-          }
-        })
-      )
-
-      return NextResponse.json({
-        resources: resourcesWithAvailability.filter(r => r.availability.has_slots)
-      })
-    }
-
-    return NextResponse.json({ resources })
-  } catch (error) {
-    console.error('Error in resources API:', error)
+  } catch (err) {
+    console.error('❌ Resources API: Unexpected error:', err)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: err instanceof Error ? err.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
@@ -87,37 +50,51 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ orgId: string }> }
+  { params }: { params: { orgId: string } }
 ) {
   try {
-    const { orgId } = await params
+    console.log('🔍 Resources API: Starting POST request')
+    console.log('🔍 Resources API: orgId =', params.orgId)
+    
     const body = await request.json()
-    const supabaseAdmin = getSupabaseAdmin()
+    console.log('🔍 Resources API: Request body:', body)
 
-    const { data: resource, error } = await supabaseAdmin
+    const { data: resource, error } = await supabaseClient
       .from('resources')
       .insert({
-        org_id: orgId,
         ...body,
-        created_by: 'system', // TODO: Get from auth
-        updated_by: 'system'
+        org_id: params.orgId
       })
       .select()
       .single()
 
+    console.log('🔍 Resources API: Insert result:', { resource, error })
+
     if (error) {
-      console.error('Error creating resource:', error)
+      console.error('❌ Resources API: Error creating resource:', error)
       return NextResponse.json(
-        { error: 'Failed to create resource' },
+        { 
+          error: 'Failed to create resource',
+          details: error.message 
+        },
         { status: 500 }
       )
     }
 
-    return NextResponse.json({ resource }, { status: 201 })
-  } catch (error) {
-    console.error('Error in create resource API:', error)
+    console.log('✅ Resources API: Successfully created resource:', resource?.id)
+    
+    return NextResponse.json({
+      resource,
+      message: 'Resource created successfully'
+    }, { status: 201 })
+
+  } catch (err) {
+    console.error('❌ Resources API: Unexpected error:', err)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: err instanceof Error ? err.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

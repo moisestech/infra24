@@ -20,6 +20,9 @@ interface AnnouncementDateDisplayProps {
     endDate: string;
     duration: string;
   };
+  iconSizeMultiplier?: number;
+  screenMetrics?: any;
+  responsiveSizes?: any;
 }
 
 export function AnnouncementDateDisplay({ 
@@ -37,8 +40,37 @@ export function AnnouncementDateDisplay({
     startDate: 'text-3xl',
     endDate: 'text-3xl',
     duration: 'text-3xl'
-  }
+  },
+  iconSizeMultiplier = 1,
+  screenMetrics,
+  responsiveSizes
 }: AnnouncementDateDisplayProps) {
+  
+  // Get responsive icon size for date display icons
+  const getDateIconSize = () => {
+    if (!screenMetrics) {
+      return 24; // Default size
+    }
+    
+    const { isLargeDisplay, isConstrained, orientation: screenOrientation, pixelRatio } = screenMetrics;
+    
+    // Base size for date icons (medium size)
+    let baseSize = isLargeDisplay
+      ? (screenOrientation === 'portrait' ? 32 : 40)
+      : isConstrained
+      ? (screenOrientation === 'portrait' ? 20 : 24)
+      : (screenOrientation === 'portrait' ? 24 : 32);
+    
+    // Adjust for pixel ratio
+    const pixelRatioAdjustment = pixelRatio > 2 ? 0.95 : pixelRatio > 1.5 ? 0.98 : 1;
+    const adjustedSize = Math.round(baseSize * pixelRatioAdjustment);
+    
+    // Always use the iconSizeMultiplier prop - it's explicitly passed and should take precedence
+    const multiplier = iconSizeMultiplier;
+    return Math.round(adjustedSize * multiplier);
+  };
+  
+  const dateIconSize = getDateIconSize();
   
   const getDateStatus = (dateStr: string) => {
     const today = new Date();
@@ -170,7 +202,7 @@ export function AnnouncementDateDisplay({
 
   return (
     <motion.div 
-      className="absolute top-16 right-8 md:right-12 text-right z-20"
+      className="absolute top-16 right-8 md:right-12 text-right z-30"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -355,7 +387,7 @@ export function AnnouncementDateDisplay({
                   </div>
                 )}
               </div>
-              <Calendar className="w-6 h-6 text-white/70" />
+              <Calendar size={dateIconSize} className="text-white/70" />
             </motion.div>
           )}
 
@@ -380,7 +412,7 @@ export function AnnouncementDateDisplay({
                   </div>
                 )}
               </div>
-              <Clock className="w-6 h-6 text-white/70" />
+              <Clock size={dateIconSize} className="text-white/70" />
             </motion.div>
           )}
 
@@ -401,7 +433,7 @@ export function AnnouncementDateDisplay({
                   {formatDetailedDateRange(announcement.starts_at, announcement.ends_at)}
                 </div>
               </div>
-              <Calendar className="w-6 h-6 text-white/70" />
+              <Calendar size={dateIconSize} className="text-white/70" />
             </motion.div>
           )}
         </motion.div>

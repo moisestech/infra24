@@ -2,8 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Minus, RotateCcw, Settings, X, Tag } from 'lucide-react';
+import { Plus, Minus, RotateCcw, Settings, X, Tag, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ImageLayoutType } from '@/types/announcement';
+
+interface ImageSettings {
+  layout?: ImageLayoutType;
+  scale?: number;
+  splitPercentage?: number;
+  opacity?: number;
+}
 
 interface TextSizeControlsProps {
   onTextSizeChange: (element: string, size: string) => void;
@@ -12,18 +20,62 @@ interface TextSizeControlsProps {
   onShowTagsChange?: (show: boolean) => void;
   onShowPriorityBadgeChange?: (show: boolean) => void;
   onShowVisibilityBadgeChange?: (show: boolean) => void;
+  onShowQRCodeButtonChange?: (show: boolean) => void;
+  onShowLearnMoreChange?: (show: boolean) => void;
+  currentAnnouncementId?: string;
+  currentAnnouncementTitle?: string;
+  onImageLayoutChange?: (announcementId: string, layout: ImageLayoutType) => void;
+  onImageSettingsChange?: (announcementId: string, settings: Partial<ImageSettings>) => void;
+  onDurationChange?: (announcementId: string, duration: number) => void;
+  currentDuration?: number;
   className?: string;
 }
 
-export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarSizeChange, onShowTagsChange, onShowPriorityBadgeChange, onShowVisibilityBadgeChange, className }: TextSizeControlsProps) {
+export function TextSizeControls({ 
+  onTextSizeChange, 
+  onIconSizeChange, 
+  onAvatarSizeChange, 
+  onShowTagsChange, 
+  onShowPriorityBadgeChange, 
+  onShowVisibilityBadgeChange,
+  onShowQRCodeButtonChange,
+  onShowLearnMoreChange,
+  currentAnnouncementId,
+  currentAnnouncementTitle,
+  onImageLayoutChange,
+  onImageSettingsChange,
+  onDurationChange,
+  currentDuration = 5000,
+  className 
+}: TextSizeControlsProps) {
   const [screenDimensions, setScreenDimensions] = useState({ width: 0, height: 0, ratio: 0 });
   const [iconSizeMultiplier, setIconSizeMultiplier] = useState(1);
   const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(5);
   const [showTags, setShowTags] = useState(false);
   const [showPriorityBadge, setShowPriorityBadge] = useState(false);
   const [showVisibilityBadge, setShowVisibilityBadge] = useState(false);
+  const [showQRCodeButton, setShowQRCodeButton] = useState(true);
+  const [showLearnMore, setShowLearnMore] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  
+  // Image settings state
+  const [imageLayout, setImageLayout] = useState<ImageLayoutType>('card');
+  const [imageScale, setImageScale] = useState(1);
+  const [splitPercentage, setSplitPercentage] = useState(40);
+  const [imageOpacity, setImageOpacity] = useState(100);
+
+  // Reset image settings when announcement changes
+  useEffect(() => {
+    if (currentAnnouncementId) {
+      // Reset to defaults when switching announcements
+      setImageLayout('card');
+      setImageScale(1);
+      setSplitPercentage(40);
+      setImageOpacity(100);
+    }
+  }, [currentAnnouncementId]);
   
   // Individual text size controls for each element
   const [textSizes, setTextSizes] = useState({
@@ -66,6 +118,37 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
     'text-9xl', 'text-10xl', 'text-11xl', 'text-12xl', 'text-13xl', 'text-14xl', 
     'text-15xl', 'text-16xl', 'text-17xl', 'text-18xl'
   ];
+
+  // Image layout options
+  const imageLayoutOptions: ImageLayoutType[] = [
+    'hero', 'split-left', 'split-right', 'card', 'masonry', 'overlay', 'side-panel', 'background'
+  ];
+
+  // Handle image layout change
+  const handleImageLayoutChange = (layout: ImageLayoutType) => {
+    setImageLayout(layout);
+    if (currentAnnouncementId && onImageLayoutChange) {
+      onImageLayoutChange(currentAnnouncementId, layout);
+    }
+  };
+
+  // Update settings when values change
+  useEffect(() => {
+    if (currentAnnouncementId && onImageSettingsChange) {
+      onImageSettingsChange(currentAnnouncementId, {
+        scale: imageScale,
+        splitPercentage: splitPercentage,
+        opacity: imageOpacity
+      });
+    }
+  }, [imageScale, splitPercentage, imageOpacity, currentAnnouncementId, onImageSettingsChange]);
+
+  // Handle duration change
+  const handleDurationChange = (duration: number) => {
+    if (currentAnnouncementId && onDurationChange) {
+      onDurationChange(currentAnnouncementId, duration);
+    }
+  };
 
   const handleTextSizeChange = (element: string, newSize: string) => {
     setTextSizes(prev => ({ ...prev, [element]: newSize }));
@@ -179,6 +262,22 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
     setIsMinimized(!isMinimized);
   };
 
+  const toggleQRCodeButton = () => {
+    const newValue = !showQRCodeButton;
+    setShowQRCodeButton(newValue);
+    if (onShowQRCodeButtonChange) {
+      onShowQRCodeButtonChange(newValue);
+    }
+  };
+
+  const toggleLearnMore = () => {
+    const newValue = !showLearnMore;
+    setShowLearnMore(newValue);
+    if (onShowLearnMoreChange) {
+      onShowLearnMoreChange(newValue);
+    }
+  };
+
   // Don't render if not visible
   if (!isVisible) {
     return (
@@ -243,10 +342,115 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
               Ratio: {screenDimensions.ratio.toFixed(2)} ({screenDimensions.ratio < 1 ? 'Portrait' : 'Landscape'})
             </div>
           </div>
+
+          {/* Section: Visibility Controls */}
+          <div className="space-y-2 border-t border-white/20 pt-2">
+            <div className="text-white text-xs font-semibold uppercase tracking-wide">Visibility</div>
+            
+            {/* QR Code Button Toggle */}
+            {onShowQRCodeButtonChange && (
+              <div className="flex items-center justify-between">
+                <div className="text-white text-xs">QR Code Button</div>
+                <motion.button
+                  onClick={toggleQRCodeButton}
+                  className={cn(
+                    "px-3 py-1 rounded text-xs font-medium transition-colors",
+                    showQRCodeButton 
+                      ? "bg-green-500/80 hover:bg-green-500 text-white" 
+                      : "bg-white/10 hover:bg-white/20 text-white/70"
+                  )}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {showQRCodeButton ? 'ON' : 'OFF'}
+                </motion.button>
+              </div>
+            )}
+
+            {/* Learn More Button Toggle */}
+            {onShowLearnMoreChange && (
+              <div className="flex items-center justify-between">
+                <div className="text-white text-xs">Learn More Button</div>
+                <motion.button
+                  onClick={toggleLearnMore}
+                  className={cn(
+                    "px-3 py-1 rounded text-xs font-medium transition-colors",
+                    showLearnMore 
+                      ? "bg-green-500/80 hover:bg-green-500 text-white" 
+                      : "bg-white/10 hover:bg-white/20 text-white/70"
+                  )}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {showLearnMore ? 'ON' : 'OFF'}
+                </motion.button>
+              </div>
+            )}
+
+            {/* Priority Badge Toggle */}
+            {onShowPriorityBadgeChange && (
+              <div className="flex items-center justify-between">
+                <div className="text-white text-xs">Priority Badge</div>
+                <motion.button
+                  onClick={togglePriorityBadge}
+                  className={cn(
+                    "px-3 py-1 rounded text-xs font-medium transition-colors",
+                    showPriorityBadge 
+                      ? "bg-green-500/80 hover:bg-green-500 text-white" 
+                      : "bg-white/10 hover:bg-white/20 text-white/70"
+                  )}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {showPriorityBadge ? 'ON' : 'OFF'}
+                </motion.button>
+              </div>
+            )}
+
+            {/* Visibility Badge Toggle */}
+            {onShowVisibilityBadgeChange && (
+              <div className="flex items-center justify-between">
+                <div className="text-white text-xs">Visibility Badge</div>
+                <motion.button
+                  onClick={toggleVisibilityBadge}
+                  className={cn(
+                    "px-3 py-1 rounded text-xs font-medium transition-colors",
+                    showVisibilityBadge 
+                      ? "bg-green-500/80 hover:bg-green-500 text-white" 
+                      : "bg-white/10 hover:bg-white/20 text-white/70"
+                  )}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {showVisibilityBadge ? 'ON' : 'OFF'}
+                </motion.button>
+              </div>
+            )}
+
+            {/* Tags Toggle */}
+            {onShowTagsChange && (
+              <div className="flex items-center justify-between">
+                <div className="text-white text-xs">Tags</div>
+                <motion.button
+                  onClick={toggleTags}
+                  className={cn(
+                    "px-3 py-1 rounded text-xs font-medium transition-colors",
+                    showTags 
+                      ? "bg-green-500/80 hover:bg-green-500 text-white" 
+                      : "bg-white/10 hover:bg-white/20 text-white/70"
+                  )}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {showTags ? 'ON' : 'OFF'}
+                </motion.button>
+              </div>
+            )}
+          </div>
           
-          {/* Individual Text Size Controls */}
-          <div className="space-y-2">
-            <div className="text-white text-xs font-medium">Text Elements</div>
+          {/* Section: Text Size Controls */}
+          <div className="space-y-2 border-t border-white/20 pt-2">
+            <div className="text-white text-xs font-semibold uppercase tracking-wide">Text Elements</div>
             {Object.entries(textSizes).map(([element, currentSize]) => (
               <div key={element} className="flex items-center gap-2">
                 <div className="text-white text-xs w-20 capitalize">{element}:</div>
@@ -312,7 +516,7 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
           {/* Avatar Size Controls */}
           {onAvatarSizeChange && (
             <div className="space-y-2">
-              <div className="text-white text-xs font-medium">Avatar Size</div>
+              <div className="text-white text-xs">Avatar Size</div>
               <div className="flex items-center gap-2">
                 <motion.button
                   onClick={decreaseAvatarSize}
@@ -341,65 +545,196 @@ export function TextSizeControls({ onTextSizeChange, onIconSizeChange, onAvatarS
             </div>
           )}
 
-          {/* Priority Badge Toggle */}
-          {onShowPriorityBadgeChange && (
-            <div className="space-y-2">
-              <div className="text-white text-xs font-medium">Priority Badge</div>
-              <motion.button
-                onClick={togglePriorityBadge}
-                className={cn(
-                  "px-3 py-1 rounded text-xs font-medium transition-colors",
-                  showPriorityBadge 
-                    ? "bg-red-500/80 hover:bg-red-500 text-white" 
-                    : "bg-white/10 hover:bg-white/20 text-white/70"
-                )}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {showPriorityBadge ? 'ON' : 'OFF'}
-              </motion.button>
-            </div>
-          )}
 
-          {/* Visibility Badge Toggle */}
-          {onShowVisibilityBadgeChange && (
-            <div className="space-y-2">
-              <div className="text-white text-xs font-medium">Visibility Badge</div>
-              <motion.button
-                onClick={toggleVisibilityBadge}
-                className={cn(
-                  "px-3 py-1 rounded text-xs font-medium transition-colors",
-                  showVisibilityBadge 
-                    ? "bg-blue-500/80 hover:bg-blue-500 text-white" 
-                    : "bg-white/10 hover:bg-white/20 text-white/70"
-                )}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {showVisibilityBadge ? 'ON' : 'OFF'}
-              </motion.button>
-            </div>
-          )}
+          {/* Section: Image Settings */}
+          {currentAnnouncementId && (onImageLayoutChange || onImageSettingsChange) && (
+            <div className="space-y-3 border-t border-white/20 pt-3">
+              <div className="flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-white" />
+                <div className="text-white text-xs font-semibold uppercase tracking-wide">Image Settings</div>
+              </div>
+              
+              {currentAnnouncementTitle && (
+                <div className="text-white/70 text-xs truncate" title={currentAnnouncementTitle}>
+                  {currentAnnouncementTitle}
+                </div>
+              )}
 
-          {/* Tags Toggle */}
-          {onShowTagsChange && (
-            <div className="space-y-2">
-              <div className="text-white text-xs font-medium">Show Tags</div>
-              <motion.button
-                onClick={toggleTags}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded transition-colors text-white text-xs font-medium",
-                  showTags 
-                    ? "bg-green-500/80 hover:bg-green-500" 
-                    : "bg-gray-500/80 hover:bg-gray-500"
-                )}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                title={showTags ? "Hide tags" : "Show tags"}
-              >
-                <Tag className="w-3 h-3" />
-                {showTags ? "ON" : "OFF"}
-              </motion.button>
+              {/* Image Layout Selector */}
+              {onImageLayoutChange && (
+                <div className="space-y-2">
+                  <div className="text-white text-xs font-medium">Layout</div>
+                  <select
+                    value={imageLayout}
+                    onChange={(e) => handleImageLayoutChange(e.target.value as ImageLayoutType)}
+                    className="w-full px-2 py-1 bg-white/10 rounded text-white text-xs border border-white/20 focus:outline-none focus:border-white/40"
+                  >
+                    {imageLayoutOptions.map((layout) => (
+                      <option key={layout} value={layout} className="bg-black">
+                        {layout.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Image Scale */}
+              {onImageSettingsChange && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-white text-xs font-medium">Scale</div>
+                    <div className="text-white text-xs font-mono bg-white/10 rounded px-2 py-1">
+                      {imageScale.toFixed(1)}x
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <motion.button
+                      onClick={() => setImageScale(Math.max(0.5, imageScale - 0.1))}
+                      className="p-1 bg-orange-500/80 hover:bg-orange-500 rounded transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Minus className="w-3 h-3 text-white" />
+                    </motion.button>
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="2"
+                      step="0.1"
+                      value={imageScale}
+                      onChange={(e) => setImageScale(Number(e.target.value))}
+                      className="flex-1"
+                    />
+                    <motion.button
+                      onClick={() => setImageScale(Math.min(2, imageScale + 0.1))}
+                      className="p-1 bg-cyan-500/80 hover:bg-cyan-500 rounded transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Plus className="w-3 h-3 text-white" />
+                    </motion.button>
+                  </div>
+                </div>
+              )}
+
+              {/* Split Percentage (for split layouts) */}
+              {onImageSettingsChange && (imageLayout === 'split-left' || imageLayout === 'split-right') && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-white text-xs font-medium">Split %</div>
+                    <div className="text-white text-xs font-mono bg-white/10 rounded px-2 py-1">
+                      {splitPercentage}%
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <motion.button
+                      onClick={() => setSplitPercentage(Math.max(20, splitPercentage - 5))}
+                      className="p-1 bg-purple-500/80 hover:bg-purple-500 rounded transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Minus className="w-3 h-3 text-white" />
+                    </motion.button>
+                    <input
+                      type="range"
+                      min="20"
+                      max="60"
+                      step="5"
+                      value={splitPercentage}
+                      onChange={(e) => setSplitPercentage(Number(e.target.value))}
+                      className="flex-1"
+                    />
+                    <motion.button
+                      onClick={() => setSplitPercentage(Math.min(60, splitPercentage + 5))}
+                      className="p-1 bg-pink-500/80 hover:bg-pink-500 rounded transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Plus className="w-3 h-3 text-white" />
+                    </motion.button>
+                  </div>
+                </div>
+              )}
+
+              {/* Image Opacity */}
+              {onImageSettingsChange && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-white text-xs font-medium">Opacity</div>
+                    <div className="text-white text-xs font-mono bg-white/10 rounded px-2 py-1">
+                      {imageOpacity}%
+                    </div>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="5"
+                    value={imageOpacity}
+                    onChange={(e) => setImageOpacity(Number(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+              )}
+
+              {/* Duration Control */}
+              {onDurationChange && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-white text-xs font-medium">Duration</div>
+                    <div className="text-white text-xs font-mono bg-white/10 rounded px-2 py-1">
+                      {Math.round(currentDuration / 1000)}s
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <motion.button
+                      onClick={() => handleDurationChange(Math.max(2000, currentDuration - 1000))}
+                      className="p-1 bg-yellow-500/80 hover:bg-yellow-500 rounded transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Minus className="w-3 h-3 text-white" />
+                    </motion.button>
+                    <input
+                      type="range"
+                      min="2000"
+                      max="30000"
+                      step="1000"
+                      value={currentDuration}
+                      onChange={(e) => handleDurationChange(Number(e.target.value))}
+                      className="flex-1"
+                    />
+                    <motion.button
+                      onClick={() => handleDurationChange(Math.min(30000, currentDuration + 1000))}
+                      className="p-1 bg-green-500/80 hover:bg-green-500 rounded transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Plus className="w-3 h-3 text-white" />
+                    </motion.button>
+                  </div>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => handleDurationChange(3000)}
+                      className="flex-1 px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-white text-xs transition-colors"
+                    >
+                      3s
+                    </button>
+                    <button
+                      onClick={() => handleDurationChange(5000)}
+                      className="flex-1 px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-white text-xs transition-colors"
+                    >
+                      5s
+                    </button>
+                    <button
+                      onClick={() => handleDurationChange(10000)}
+                      className="flex-1 px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-white text-xs transition-colors"
+                    >
+                      10s
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           

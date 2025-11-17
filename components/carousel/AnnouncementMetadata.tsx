@@ -26,6 +26,9 @@ interface AnnouncementMetadataProps {
     duration: string;
   };
   className?: string;
+  iconSizeMultiplier?: number;
+  screenMetrics?: any;
+  responsiveSizes?: any;
 }
 
 export function AnnouncementMetadata({ 
@@ -44,8 +47,37 @@ export function AnnouncementMetadata({
     endDate: 'text-3xl',
     duration: 'text-3xl'
   },
-  className 
+  className,
+  iconSizeMultiplier = 1,
+  screenMetrics,
+  responsiveSizes
 }: AnnouncementMetadataProps) {
+  
+  // Get responsive icon size for metadata icons (smaller utility icons)
+  const getMetadataIconSize = () => {
+    if (!screenMetrics) {
+      return 16; // Default small size
+    }
+    
+    const { isLargeDisplay, isConstrained, orientation: screenOrientation, pixelRatio } = screenMetrics;
+    
+    // Base size for small metadata icons
+    let baseSize = isLargeDisplay
+      ? (screenOrientation === 'portrait' ? 20 : 24)
+      : isConstrained
+      ? (screenOrientation === 'portrait' ? 14 : 16)
+      : (screenOrientation === 'portrait' ? 16 : 20);
+    
+    // Adjust for pixel ratio
+    const pixelRatioAdjustment = pixelRatio > 2 ? 0.95 : pixelRatio > 1.5 ? 0.98 : 1;
+    const adjustedSize = Math.round(baseSize * pixelRatioAdjustment);
+    
+    // Always use the iconSizeMultiplier prop - it's explicitly passed and should take precedence
+    const multiplier = iconSizeMultiplier;
+    return Math.round(adjustedSize * multiplier);
+  };
+  
+  const metadataIconSize = getMetadataIconSize();
   
 
   const getPriorityColor = (priority: number) => {
@@ -69,11 +101,12 @@ export function AnnouncementMetadata({
   };
 
   const getVisibilityIcon = (visibility: string) => {
+    const iconSize = metadataIconSize;
     switch (visibility) {
-      case 'internal': return <Users className="w-4 h-4" />;
-      case 'external': return <ExternalLink className="w-4 h-4" />;
-      case 'both': return <Info className="w-4 h-4" />;
-      default: return <Info className="w-4 h-4" />;
+      case 'internal': return <Users size={iconSize} />;
+      case 'external': return <ExternalLink size={iconSize} />;
+      case 'both': return <Info size={iconSize} />;
+      default: return <Info size={iconSize} />;
     }
   };
 
@@ -127,10 +160,10 @@ export function AnnouncementMetadata({
 
 
 
-      {/* Additional Info */}
-      {announcement.additional_info && (
+      {/* Additional Info - Hidden in display mode (data kept for other uses) */}
+      {/* {announcement.additional_info && (
         <div className="flex items-start gap-3 p-3 bg-white/5 rounded-lg">
-          <Info className="w-5 h-5 text-white/70 mt-0.5" />
+          <Info size={metadataIconSize} className="text-white/70 mt-0.5" />
           <div className="flex-1">
             <div className="text-white/90 text-sm font-medium mb-1">
               Additional Information
@@ -140,7 +173,7 @@ export function AnnouncementMetadata({
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </motion.div>
   );
 }

@@ -41,6 +41,16 @@ export type VisualTemplate =
 export type Visibility = 'internal' | 'external' | 'both';
 export type ApprovalStatus = 'draft' | 'pending' | 'approved' | 'rejected';
 
+export type ImageLayoutType = 
+  | 'hero'           // Large image as background with content overlay
+  | 'split-left'     // Image on left (40%), content on right (60%)
+  | 'split-right'    // Image on right (40%), content on left (60%)
+  | 'card'           // Image as prominent card element with content flowing around it
+  | 'masonry'        // Image and content in asymmetric grid layout
+  | 'overlay'        // Image with semi-transparent overlay, content on top
+  | 'side-panel'     // Narrow image panel on one side, full content area
+  | 'background';    // Image as subtle background with strong content foreground
+
 export interface KeyPerson {
   name: string;
   role: string;
@@ -93,6 +103,7 @@ export interface Announcement {
   rsvp_label?: string;
   rsvp_url?: string;
   event_state?: 'scheduled' | 'postponed' | 'canceled';
+  image_layout?: ImageLayoutType;
 }
 
 export interface AnnouncementAudienceMemberType {

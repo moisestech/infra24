@@ -12,6 +12,17 @@ import { AnnouncementPartnerOrgs } from './AnnouncementPartnerOrgs';
 import { LearnMoreButton } from './LearnMoreButton';
 import { TypeStyle } from './announcement-styles';
 import { LucideIcon } from 'lucide-react';
+import { ImageLayout } from './ImageLayouts';
+import { ImageLayoutType } from '@/types/announcement';
+import { LayoutDebugOverlay } from './LayoutDebugOverlay';
+import { type ScreenMetrics, type ResponsiveSizes } from './ResponsiveSizing';
+
+interface ImageSettings {
+  layout?: ImageLayoutType;
+  scale?: number;
+  splitPercentage?: number;
+  opacity?: number;
+}
 
 interface PatternTemplateProps {
   announcement: any;
@@ -38,6 +49,12 @@ interface PatternTemplateProps {
   showTags?: boolean;
   showPriorityBadge?: boolean;
   showVisibilityBadge?: boolean;
+  showQRCodeButton?: boolean;
+  showLearnMore?: boolean;
+  imageSettings?: ImageSettings;
+  screenMetrics?: ScreenMetrics;
+  responsiveSizes?: ResponsiveSizes;
+  isActive?: boolean;
 }
 
 export function PatternTemplate({ 
@@ -64,7 +81,13 @@ export function PatternTemplate({
   avatarSizeMultiplier = 5,
   showTags = false,
   showPriorityBadge = false,
-  showVisibilityBadge = false
+  showVisibilityBadge = false,
+  showQRCodeButton = true,
+  showLearnMore = true,
+  imageSettings,
+  screenMetrics,
+  responsiveSizes,
+  isActive = false
 }: PatternTemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
@@ -83,25 +106,35 @@ export function PatternTemplate({
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
-  return (
-    <div className="relative w-full h-full">
-      {/* Base gradient background */}
-      <div className={cn("absolute inset-0", styles.gradient)} />
+  // Check if announcement has an image and determine layout
+  const hasImage = announcement.image_url && announcement.image_url.trim() !== '';
+  // Use custom image settings layout if provided, otherwise use announcement's layout or default
+  const imageLayout = hasImage 
+    ? (imageSettings?.layout || announcement.image_layout || 'hero' as ImageLayoutType)
+    : null;
 
-      {/* Pattern overlay */}
-      {isMounted && (
-        <div className="absolute inset-0 z-10">
-          <BackgroundPattern 
-            type={announcement.type || 'event'} 
-            subType={announcement.sub_type || 'exhibition'}
-            width={dimensions.width}
-            height={dimensions.height}
-            organizationSlug={organizationSlug}
-            organizationTheme={organizationTheme}
-          />
-        </div>
-      )}
+  // Log image information for Oolite announcements
+  if (organizationSlug === 'oolite') {
+    console.log('🎨 Oolite Announcement Image Check:', {
+      title: announcement.title,
+      hasImage: hasImage,
+      imageUrl: announcement.image_url || 'NO IMAGE',
+      imageLayout: imageLayout || 'NO LAYOUT',
+      type: announcement.type,
+      subType: announcement.sub_type,
+      styles: {
+        gradient: styles.gradient,
+        text: styles.text,
+        backgroundPattern: styles.backgroundPattern
+      },
+      imageSettings: imageSettings,
+      contentWrapper: 'ContentWrapper will render inside ImageLayout children'
+    });
+  }
 
+  // Content wrapper component
+  const ContentWrapper = () => (
+    <>
       {/* Date Display */}
       <AnnouncementDateDisplay
         announcement={announcement}
@@ -109,6 +142,9 @@ export function PatternTemplate({
         organizationTheme={organizationTheme}
         showDetailedMetadata={true}
         textSizes={textSizes}
+        iconSizeMultiplier={iconSizeMultiplier}
+        screenMetrics={screenMetrics}
+        responsiveSizes={responsiveSizes}
       />
 
       {/* People with Avatars - right under date display */}
@@ -117,7 +153,7 @@ export function PatternTemplate({
         orientation={orientation}
         avatarSizeMultiplier={avatarSizeMultiplier}
         organizationSlug={organizationSlug}
-        className="absolute top-80 right-8 md:right-12 z-20"
+        className="absolute top-80 right-8 md:right-12 z-30"
       />
 
       {/* Partner Organizations */}
@@ -125,7 +161,7 @@ export function PatternTemplate({
         externalOrgs={announcement.external_orgs || []}
         orientation={orientation}
         textSizes={textSizes}
-        className="absolute top-96 right-8 md:right-12 z-20"
+        className="absolute top-96 right-8 md:right-12 z-30"
       />
 
       {/* Main Content */}
@@ -141,16 +177,22 @@ export function PatternTemplate({
         iconSizeMultiplier={iconSizeMultiplier}
         showPriorityBadge={showPriorityBadge}
         showVisibilityBadge={showVisibilityBadge}
+        showQRCodeButton={showQRCodeButton}
+        showLearnMore={showLearnMore}
+        layoutType={imageLayout}
+        screenMetrics={screenMetrics}
+        responsiveSizes={responsiveSizes}
+        isActive={isActive}
       />
-
-
 
       {/* Learn More Button */}
-      <LearnMoreButton
-        primaryLink={announcement.primary_link}
-        orientation={orientation}
-        className="absolute bottom-8 right-8 md:right-12 z-20"
-      />
+      {showLearnMore && (
+        <LearnMoreButton
+          primaryLink={announcement.primary_link}
+          orientation={orientation}
+          className="absolute bottom-8 right-8 md:right-12 z-30"
+        />
+      )}
 
       {/* Tags */}
       {showTags && (
@@ -160,6 +202,99 @@ export function PatternTemplate({
           textSizes={textSizes}
         />
       )}
-    </div>
+    </>
+  );
+
+  // If image exists, use ImageLayout component
+  if (hasImage && imageLayout) {
+    console.log('🖼️ Rendering Image Layout:', {
+      layout: imageLayout,
+      title: announcement.title,
+      imageUrl: announcement.image_url,
+      imageSettings: imageSettings,
+      splitPercentage: imageSettings?.splitPercentage || 40,
+      scale: imageSettings?.scale || 1,
+      opacity: imageSettings?.opacity || 100
+    });
+
+    return (
+      <>
+        <LayoutDebugOverlay 
+          imageLayout={imageLayout}
+          hasImage={hasImage}
+          organizationSlug={organizationSlug}
+        />
+        <ImageLayout
+          layout={imageLayout}
+          announcement={announcement}
+          imageUrl={announcement.image_url}
+          orientation={orientation}
+          textSizes={textSizes}
+          styles={styles}
+          IconComponent={IconComponent}
+          imageSettings={imageSettings}
+          screenMetrics={screenMetrics}
+          responsiveSizes={responsiveSizes}
+        >
+          {/* Pattern overlay - only show if not using image background and not solid pattern */}
+          {isMounted && 
+           imageLayout !== 'hero' && 
+           imageLayout !== 'overlay' && 
+           imageLayout !== 'background' && 
+           styles.backgroundPattern !== 'solid' && (
+            <div className="absolute inset-0 z-10 pointer-events-none">
+              <BackgroundPattern 
+                type={announcement.type || 'event'} 
+                subType={announcement.sub_type || 'exhibition'}
+                width={dimensions.width}
+                height={dimensions.height}
+                organizationSlug={organizationSlug}
+                organizationTheme={organizationTheme}
+              />
+            </div>
+          )}
+          <ContentWrapper />
+        </ImageLayout>
+      </>
+    );
+  }
+
+  // Default layout (no image)
+  console.log('📄 Rendering Default Layout (no image):', {
+    title: announcement.title,
+    hasImage: hasImage
+  });
+
+  return (
+    <>
+      <LayoutDebugOverlay 
+        imageLayout={null}
+        hasImage={false}
+        organizationSlug={organizationSlug}
+      />
+      <div className="relative w-full h-full">
+        {/* Base gradient background */}
+        <div 
+          className={cn("absolute inset-0", typeof styles.gradient === 'string' ? styles.gradient : '')}
+          style={styles.gradientStyle || (typeof styles.gradient === 'object' ? styles.gradient.style : undefined)}
+        />
+
+        {/* Pattern overlay - skip if solid pattern for Oolite */}
+        {isMounted && styles.backgroundPattern !== 'solid' && (
+          <div className="absolute inset-0 z-10">
+            <BackgroundPattern 
+              type={announcement.type || 'event'} 
+              subType={announcement.sub_type || 'exhibition'}
+              width={dimensions.width}
+              height={dimensions.height}
+              organizationSlug={organizationSlug}
+              organizationTheme={organizationTheme}
+            />
+          </div>
+        )}
+
+        <ContentWrapper />
+      </div>
+    </>
   );
 }

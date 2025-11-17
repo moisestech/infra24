@@ -158,9 +158,30 @@
 
 @layer base {
   * {
-    @apply border-gray-200;
+    @apply border-gray-200 dark:border-gray-700;
   }
   body {
-    @apply bg-white text-gray-900;
+    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+  }
+}
+
+/* Fix calendar icon visibility in dark mode */
+@layer utilities {
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0);
+  }
+  
+  .dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+  
+  input[type="date"]::-webkit-inner-spin-button,
+  input[type="date"]::-webkit-clear-button {
+    filter: invert(0);
+  }
+  
+  .dark input[type="date"]::-webkit-inner-spin-button,
+  .dark input[type="date"]::-webkit-clear-button {
+    filter: invert(1);
   }
 }

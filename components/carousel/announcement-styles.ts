@@ -1,3 +1,4 @@
+import React from 'react';
 import { 
   AlertTriangle,
   Building2,
@@ -30,7 +31,7 @@ import { Announcement } from '@/types/announcement';
 
 // Type style interface
 export interface TypeStyle {
-  gradient: string;
+  gradient: string | { className: string; style: React.CSSProperties };
   overlay?: string;
   accent: string;
   badge?: string;
@@ -38,6 +39,7 @@ export interface TypeStyle {
   dateStyle?: string;
   icon?: LucideIcon;
   backgroundPattern?: string;
+  gradientStyle?: React.CSSProperties; // For inline styles when gradient is an object
 }
 
 export interface TypeStyles {
@@ -240,11 +242,164 @@ export const getIconForAnnouncement = (announcement: Announcement): LucideIcon =
   }
 };
 
+// Helper function to convert hex to RGB
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : { r: 71, g: 171, b: 196 }; // Default to Oolite color
+}
+
+// Helper function to create solid background for Oolite (no gradient, just solid cyan)
+// Returns an object with both className and inline style for maximum compatibility
+function createOoliteSolidBackground(baseColor: string = '#47abc4'): { className: string; style: React.CSSProperties } {
+  return {
+    className: '', // Empty className, we'll use inline style
+    style: { backgroundColor: baseColor } as React.CSSProperties
+  };
+}
+
 // Helper function to get styles for announcement type
-export const getStylesForAnnouncement = (announcement: Announcement): TypeStyle => {
+export const getStylesForAnnouncement = (announcement: Announcement, organizationSlug?: string): TypeStyle => {
   const type = announcement.type || 'event';
   const subType = announcement.sub_type || '';
+  const isOolite = organizationSlug === 'oolite';
+  const oolitePrimary = '#47abc4';
   
+  // Oolite-specific color scheme using their primary color (#47abc4)
+  if (isOolite) {
+    // Special handling for specific type/subtype combinations with Oolite colors
+    // Oolite uses solid cyan backgrounds with white text
+    const ooliteGradient = createOoliteSolidBackground(oolitePrimary);
+    if (type === 'event' && subType === 'exhibition') {
+      return {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent", // No overlay for solid backgrounds
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: Palette,
+        backgroundPattern: "solid" // Solid background, no pattern
+      };
+    }
+    
+    if (type === 'event' && subType === 'workshop') {
+      return {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent",
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: Palette,
+        backgroundPattern: "solid"
+      };
+    }
+    
+    if (type === 'event' && subType === 'meeting') {
+      return {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent",
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: Crown,
+        backgroundPattern: "solid"
+      };
+    }
+    
+    // Oolite-specific styles for all types using solid cyan background with white text
+    const ooliteTypeStyles: TypeStyles = {
+      urgent: {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent",
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: AlertTriangle,
+        backgroundPattern: "solid"
+      },
+      facility: {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent",
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: Building2,
+        backgroundPattern: "solid"
+      },
+      event: {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent",
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: PartyPopper,
+        backgroundPattern: "solid"
+      },
+      opportunity: {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent",
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: Sparkles,
+        backgroundPattern: "solid"
+      },
+      administrative: {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent",
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: FileText,
+        backgroundPattern: "solid"
+      },
+      news: {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent",
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: FileText,
+        backgroundPattern: "solid"
+      },
+      general: {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent",
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: FileText,
+        backgroundPattern: "solid"
+      }
+    };
+    
+    return ooliteTypeStyles[type] || ooliteTypeStyles['event'];
+  }
+  
+  // Default behavior for non-Oolite organizations
   // Special handling for specific type/subtype combinations
   if (type === 'event' && subType === 'exhibition') {
     return {

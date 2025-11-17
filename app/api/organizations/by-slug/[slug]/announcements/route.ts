@@ -39,25 +39,41 @@ export async function GET(
     console.log('🏢 Found organization:', organization);
 
     // Get announcements for this organization
+    // Include both old schema (content) and new schema (body) fields for compatibility
     let query = supabase
       .from('announcements')
       .select(`
         id,
         title,
         content,
+        body,
         type,
+        sub_type,
         priority,
         visibility,
         start_date,
         end_date,
+        starts_at,
+        ends_at,
+        scheduled_at,
+        expires_at,
         location,
         key_people,
+        people,
+        external_orgs,
         metadata,
         is_active,
+        status,
+        tags,
+        primary_link,
+        additional_info,
         created_at,
         updated_at,
         created_by,
-        updated_by
+        updated_by,
+        author_clerk_id,
+        image_url,
+        image_layout
       `)
       .eq('org_id', organization.id)
       .order('created_at', { ascending: false });
@@ -164,22 +180,38 @@ export async function POST(
     }
 
     // Create the announcement using correct schema
+    // Support both old schema (content, created_by) and new schema (body, author_clerk_id)
+    const announcementData: any = {
+      org_id: organization.id,
+      title: body.title,
+      is_active: body.is_active !== false, // Default to true
+      priority: body.priority || 'normal',
+      visibility: body.visibility || 'internal',
+      start_date: body.start_date || null,
+      end_date: body.end_date || null,
+      location: body.location || null,
+      key_people: body.key_people || [],
+      metadata: body.metadata || {},
+      image_url: body.image_url || null,
+      image_layout: body.image_layout || null
+    };
+
+    // Use new schema fields if provided, otherwise fall back to old schema
+    if (body.body !== undefined) {
+      announcementData.body = body.body;
+      announcementData.author_clerk_id = userId;
+      announcementData.status = body.status || 'draft';
+      announcementData.tags = body.tags || [];
+      announcementData.scheduled_at = body.scheduled_at || null;
+      announcementData.expires_at = body.expires_at || null;
+    } else {
+      announcementData.content = body.content;
+      announcementData.created_by = userId;
+    }
+
     const { data: announcement, error: createError } = await supabase
       .from('announcements')
-      .insert({
-        org_id: organization.id,
-        created_by: userId,
-        title: body.title,
-        content: body.content,
-        is_active: body.is_active !== false, // Default to true
-        priority: body.priority || 'normal',
-        visibility: body.visibility || 'internal',
-        start_date: body.start_date || null,
-        end_date: body.end_date || null,
-        location: body.location || null,
-        key_people: body.key_people || [],
-        metadata: body.metadata || {}
-      })
+      .insert(announcementData)
       .select()
       .single();
 

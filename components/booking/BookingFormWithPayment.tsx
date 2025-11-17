@@ -328,14 +328,6 @@ export function BookingFormWithPayment({
                   <p className="text-sm text-red-600">{errors.contactEmail.message}</p>
                 )}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="contactPhone">Contact Phone</Label>
-                <Input
-                  id="contactPhone"
-                  type="tel"
-                  {...register('contactPhone')}
-                />
-              </div>
             </div>
 
             <div className="space-y-2">

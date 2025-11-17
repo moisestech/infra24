@@ -51,100 +51,86 @@ export const madartsConfig: NavigationConfig = {
   },
   quickActions: {
     highlightActions: true,
-    primaryAction: {
-      label: 'Book Studio',
-      href: '/o/madarts/bookings',
-      icon: Calendar,
-      color: 'primary'
-    },
-    secondaryActions: [
+    customActions: [
       {
-        label: 'Workshops',
-        href: '/o/madarts/workshops',
-        icon: GraduationCap,
-        color: 'secondary'
+        name: 'Book Studio',
+        href: '/o/madarts/bookings',
+        icon: Calendar,
+        description: 'Reserve studio space',
+        highlighted: true
       },
       {
-        label: 'Community',
+        name: 'Workshops',
+        href: '/o/madarts/workshops',
+        icon: GraduationCap,
+        description: 'View available workshops'
+      },
+      {
+        name: 'Community',
         href: '/o/madarts/members',
         icon: Users,
-        color: 'secondary'
+        description: 'Connect with members'
       }
     ]
   },
   navigation: {
     userItems: [
       {
-        label: 'Home',
+        name: 'Home',
         href: '/o/madarts',
-        icon: Home,
-        exact: true
+        icon: Home
       },
       {
-        label: 'Workshops',
+        name: 'Workshops',
         href: '/o/madarts/workshops',
         icon: GraduationCap,
         badge: 'New'
       },
       {
-        label: 'Bookings',
+        name: 'Bookings',
         href: '/o/madarts/bookings',
         icon: Calendar
       },
       {
-        label: 'Community',
+        name: 'Community',
         href: '/o/madarts/members',
         icon: Users
       },
       {
-        label: 'Announcements',
+        name: 'Announcements',
         href: '/o/madarts/announcements',
         icon: Bell
       },
       {
-        label: 'Analytics',
+        name: 'Analytics',
         href: '/o/madarts/analytics',
         icon: BarChart3
       }
     ],
     adminItems: [
       {
-        label: 'Admin Dashboard',
+        name: 'Admin Dashboard',
         href: '/o/madarts/admin',
         icon: BarChart3,
-        adminOnly: true
+        category: 'admin'
       },
       {
-        label: 'User Management',
+        name: 'User Management',
         href: '/o/madarts/admin/users',
         icon: Users,
-        adminOnly: true
+        category: 'admin'
       },
       {
-        label: 'Workshop Management',
+        name: 'Workshop Management',
         href: '/o/madarts/admin/workshops',
         icon: GraduationCap,
-        adminOnly: true
+        category: 'admin'
       },
       {
-        label: 'Booking Management',
+        name: 'Booking Management',
         href: '/o/madarts/admin/bookings',
         icon: Calendar,
-        adminOnly: true
-      }
-    ],
-    footerItems: [
-      {
-        label: 'About',
-        href: '/o/madarts/about'
-      },
-      {
-        label: 'Contact',
-        href: '/o/madarts/contact'
-      },
-      {
-        label: 'Privacy',
-        href: '/o/madarts/privacy'
+        category: 'admin'
       }
     ]
   }

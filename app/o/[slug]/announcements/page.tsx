@@ -15,6 +15,7 @@ interface Announcement {
   id: string
   title: string
   content: string
+  body?: string
   type: string
   priority: string
   visibility: string
@@ -28,6 +29,8 @@ interface Announcement {
   updated_at: string
   created_by: string
   updated_by: string
+  image_url?: string | null
+  image_layout?: string | null
 }
 
 interface Organization {
@@ -134,6 +137,11 @@ export default function OrganizationAnnouncementsPage() {
   }, [slug])
 
   const filteredAnnouncements = announcements.filter(announcement => {
+    // Only show announcements with images
+    if (!announcement.image_url || announcement.image_url.trim() === '') {
+      return false
+    }
+    
     if (filter === 'all') return true
     if (filter === 'current') {
       const hasEndDate = announcement.end_date
@@ -151,12 +159,32 @@ export default function OrganizationAnnouncementsPage() {
     return true
   })
 
+  // Remove duplicates by ID (in case API returns duplicates)
+  const uniqueAnnouncements = filteredAnnouncements.reduce((acc, announcement) => {
+    if (!acc.find(a => a.id === announcement.id)) {
+      acc.push(announcement)
+    }
+    return acc
+  }, [] as Announcement[])
+
+  // Debug: Log if duplicates were found
+  if (filteredAnnouncements.length !== uniqueAnnouncements.length) {
+    console.log('🔍 Found duplicates:', {
+      before: filteredAnnouncements.length,
+      after: uniqueAnnouncements.length,
+      removed: filteredAnnouncements.length - uniqueAnnouncements.length
+    })
+  }
+
   // Sort announcements by date (latest first)
-  const sortedAnnouncements = filteredAnnouncements.sort((a, b) => {
+  const sortedAnnouncements = uniqueAnnouncements.sort((a, b) => {
     const dateA = new Date(a.created_at)
     const dateB = new Date(b.created_at)
     return dateB.getTime() - dateA.getTime()
   })
+  
+  // Debug: Log final count
+  console.log('📋 Final announcements count:', sortedAnnouncements.length, 'unique announcements')
 
   // Utility functions for date handling
   const isToday = (dateString: string) => {
@@ -575,6 +603,21 @@ export default function OrganizationAnnouncementsPage() {
                   )}
                   
                   <div className="flex flex-col md:flex-row">
+                    {/* Image Preview Column - Left side on desktop, top on mobile */}
+                    {announcement.image_url && (
+                      <div className="md:w-48 flex-shrink-0 md:border-r border-b md:border-b-0 border-gray-200 dark:border-gray-700 p-2 md:p-4 relative overflow-hidden">
+                        <img 
+                          src={announcement.image_url} 
+                          alt={announcement.title}
+                          className="w-full h-full min-h-[200px] md:min-h-[150px] object-cover rounded-lg"
+                          onError={(e) => {
+                            // Hide image if it fails to load
+                            e.currentTarget.style.display = 'none'
+                          }}
+                        />
+                      </div>
+                    )}
+                    
                     {/* Event Date Column with Background Pattern - Prominent on mobile top, left side on desktop */}
                     <div 
                       className={`md:w-32 flex-shrink-0 md:border-r border-b md:border-b-0 border-gray-200 dark:border-gray-700 p-4 flex flex-row md:flex-col items-center justify-center relative overflow-hidden ${
@@ -721,8 +764,23 @@ export default function OrganizationAnnouncementsPage() {
                               ? 'text-gray-400 dark:text-gray-500' 
                               : 'text-gray-600 dark:text-gray-400'
                           }`}>
-                            {announcement.content}
+                            {announcement.body || announcement.content}
                           </p>
+                          
+                          {/* Image Preview */}
+                          {announcement.image_url && (
+                            <div className="mb-4">
+                              <img 
+                                src={announcement.image_url} 
+                                alt={announcement.title}
+                                className="w-full max-w-md h-48 object-cover rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm"
+                                onError={(e) => {
+                                  // Hide image if it fails to load
+                                  e.currentTarget.style.display = 'none'
+                                }}
+                              />
+                            </div>
+                          )}
                           
                           {/* Admin-only information with distinct styling */}
                           {isAdmin && (

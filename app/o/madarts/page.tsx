@@ -7,25 +7,7 @@ import { UnifiedNavigation } from '@/components/navigation'
 import { madartsConfig } from '@/components/navigation/configs/madarts'
 import { OrganizationLogo } from '@/components/organization/OrganizationLogo'
 import { PageFooter } from '@/components/common/PageFooter'
-
-interface Organization {
-  id: string
-  name: string
-  slug: string
-  description?: string
-  logo_url?: string
-  website?: string
-  email?: string
-  phone?: string
-  address?: string
-  city?: string
-  state?: string
-  zip_code?: string
-  country?: string
-  settings?: any
-  theme?: any
-  created_at: string
-}
+import { Organization } from '@/types/organization'
 
 interface Announcement {
   id: string
@@ -220,9 +202,7 @@ export default function MadArtsPage() {
   // Debug logging for navigation config
   console.log('🧭 Navigation Config Debug:', madartsConfig)
   console.log('🧭 Navigation Organization Logo URLs:', {
-    logo_url: madartsConfig.organization.logo_url,
-    logo_url_light: madartsConfig.organization.logo_url_light,
-    logo_url_dark: madartsConfig.organization.logo_url_dark
+    logo_url: madartsConfig.organization.logo_url
   })
 
   return (
@@ -251,7 +231,7 @@ export default function MadArtsPage() {
                   {organization.name}
                 </h1>
                 <p className="text-xl md:text-2xl text-pink-100 max-w-2xl">
-                  {organization.description}
+                  {(organization as any).description || 'Creative organization focused on video performance, digital storytelling, and multimedia arts education.'}
                 </p>
               </div>
             </div>
@@ -288,13 +268,13 @@ export default function MadArtsPage() {
                   {organization.name}
                 </h1>
                 <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
-                  {organization.description}
+                  {(organization as any).description || 'Creative organization focused on video performance, digital storytelling, and multimedia arts education.'}
                 </p>
                 
                 <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                  {organization.website && (
+                  {(organization as any).website && (
                     <a 
-                      href={organization.website} 
+                      href={(organization as any).website} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 transition-colors"
@@ -303,19 +283,19 @@ export default function MadArtsPage() {
                       Website
                     </a>
                   )}
-                  {organization.email && (
+                  {(organization as any).email && (
                     <a 
-                      href={`mailto:${organization.email}`}
+                      href={`mailto:${(organization as any).email}`}
                       className="flex items-center gap-2 text-pink-600 dark:text-pink-400 hover:text-pink-700 dark:hover:text-pink-300 transition-colors"
                     >
                       <Bell className="w-4 h-4" />
                       Contact
                     </a>
                   )}
-                  {organization.address && (
+                  {(organization as any).address && (
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                       <MapPin className="w-4 h-4" />
-                      {organization.city}, {organization.state}
+                      {(organization as any).city}, {(organization as any).state}
                     </div>
                   )}
                 </div>

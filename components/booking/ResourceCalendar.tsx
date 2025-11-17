@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { supabaseClient } from '@/lib/supabase'
 import { format, startOfWeek, endOfWeek } from 'date-fns'
@@ -28,6 +28,7 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const calendarRef = useRef<any>(null)
   const supabase = supabaseClient
   const { theme, resolvedTheme } = useTheme()
   
@@ -69,10 +70,17 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
       console.log('✅ ResourceCalendar: Successfully fetched resources:', resourcesData?.length || 0, 'resources')
       setResources(resourcesData || [])
 
-      // Fetch bookings for current week
+      // Fetch bookings for current week and next 2 weeks to catch confirmed bookings
       const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 })
       const weekEnd = endOfWeek(new Date(), { weekStartsOn: 1 })
-      console.log('🔍 ResourceCalendar: Fetching bookings for week:', { weekStart, weekEnd })
+      const extendedEnd = new Date(weekEnd)
+      extendedEnd.setDate(extendedEnd.getDate() + 14) // Add 2 more weeks
+      
+      console.log('🔍 ResourceCalendar: Fetching bookings for extended period:', { 
+        weekStart, 
+        weekEnd, 
+        extendedEnd 
+      })
 
       const { data: bookingsData, error: bookingsError } = await supabase
         .from('bookings')
@@ -88,9 +96,39 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
         `)
         .eq('org_id', orgId)
         .gte('start_time', weekStart.toISOString())
-        .lte('end_time', weekEnd.toISOString())
+        .lte('end_time', extendedEnd.toISOString())
 
       console.log('🔍 ResourceCalendar: Bookings query result:', { bookingsData, bookingsError })
+      
+      // Log detailed booking information
+      if (bookingsData) {
+        console.log('📅 ResourceCalendar: All bookings found:', bookingsData.length)
+        bookingsData.forEach((booking, index) => {
+          console.log(`📅 Booking ${index + 1}:`, {
+            id: booking.id,
+            title: booking.title,
+            status: booking.status,
+            start_time: booking.start_time,
+            end_time: booking.end_time,
+            resource_title: booking.resources?.title,
+            user_name: booking.user_name,
+            user_email: booking.user_email
+          })
+        })
+        
+        // Log confirmed bookings specifically
+        const confirmedBookings = bookingsData.filter(b => b.status === 'confirmed')
+        console.log('✅ ResourceCalendar: Confirmed bookings:', confirmedBookings.length)
+        confirmedBookings.forEach((booking, index) => {
+          console.log(`✅ Confirmed Booking ${index + 1}:`, {
+            id: booking.id,
+            title: booking.title,
+            start_time: booking.start_time,
+            end_time: booking.end_time,
+            resource_title: booking.resources?.title
+          })
+        })
+      }
 
       if (bookingsError) {
         console.error('❌ ResourceCalendar: Error fetching bookings:', bookingsError)
@@ -123,6 +161,14 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
   useEffect(() => {
     fetchResourcesAndBookings()
   }, [fetchResourcesAndBookings])
+
+  // Expose refresh function for external use
+  const refreshCalendar = useCallback(() => {
+    console.log('🔄 ResourceCalendar: Manual refresh triggered')
+    fetchResourcesAndBookings()
+  }, [fetchResourcesAndBookings])
+
+
 
   const handleDateSelect = useCallback(async (selectInfo: any) => {
     if (!onBookingCreate) return
@@ -237,21 +283,106 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
   }, [resources])
 
   // Transform bookings for FullCalendar
-  const calendarEvents = useMemo(() => bookings.map(booking => {
-    return {
-      id: booking.id,
-      resourceId: booking.resource_id,
-      title: booking.title,
-      start: booking.start_time,
-      end: booking.end_time,
-      color: booking.status === 'confirmed' ? '#10b981' : 
-             booking.status === 'pending' ? '#f59e0b' : '#ef4444',
-      extendedProps: {
-        status: booking.status,
-        created_by: booking.created_by_clerk_id
+  const calendarEvents = useMemo(() => {
+    console.log('🎯 ResourceCalendar: Creating calendar events from bookings:', bookings.length)
+    
+    // Filter to only show confirmed bookings in the calendar
+    const confirmedBookings = bookings.filter(booking => booking.status === 'confirmed')
+    console.log('🎯 ResourceCalendar: Filtering to confirmed bookings only:', confirmedBookings.length)
+    
+    // Log available resource IDs for debugging
+    const availableResourceIds = resources.map(r => r.id)
+    console.log('🎯 ResourceCalendar: Available resource IDs:', availableResourceIds)
+    
+    const events = confirmedBookings.map(booking => {
+      // Check if the booking's resource_id exists in our resources
+      const resourceExists = resources.find(r => r.id === booking.resource_id)
+      console.log(`🎯 ResourceCalendar: Checking resource mapping for booking ${booking.id}:`, {
+        booking_resource_id: booking.resource_id,
+        resource_exists: !!resourceExists,
+        resource_title: resourceExists?.title || 'NOT FOUND'
+      })
+      
+      const event = {
+        id: booking.id,
+        resourceId: booking.resource_id,
+        title: booking.title,
+        start: booking.start_time,
+        end: booking.end_time,
+        color: '#10b981', // Green for confirmed bookings
+        allDay: false, // Ensure it's not treated as all-day
+        extendedProps: {
+          status: booking.status,
+          created_by: booking.created_by_clerk_id,
+          user_name: booking.user_name,
+          user_email: booking.user_email
+        }
       }
-    }
-  }), [bookings])
+      
+      console.log(`🎯 Confirmed Calendar Event ${booking.id}:`, {
+        title: event.title,
+        status: booking.status,
+        start: event.start,
+        end: event.end,
+        resourceId: event.resourceId,
+        user_name: booking.user_name,
+        user_email: booking.user_email,
+        resource_matches: !!resourceExists
+      })
+      
+      return event
+    })
+    
+    console.log('🎯 ResourceCalendar: Total confirmed calendar events created:', events.length)
+    
+    return events
+  }, [bookings, resources])
+
+    // Debug what FullCalendar is receiving
+    useEffect(() => {
+      console.log('🎯 ResourceCalendar: FullCalendar Props Debug:', {
+        resources_count: calendarResources.length,
+        events_count: calendarEvents.length,
+        resources: calendarResources.map(r => ({ id: r.id, title: r.title })),
+        events: calendarEvents.map(e => ({ id: e.id, title: e.title, resourceId: e.resourceId, start: e.start, end: e.end }))
+      })
+      
+      // Additional debugging for the specific confirmed booking
+      if (calendarEvents.length > 0) {
+        console.log('🎯 ResourceCalendar: First Event Details:', {
+          event: calendarEvents[0],
+          start_date: new Date(calendarEvents[0].start).toLocaleString(),
+          end_date: new Date(calendarEvents[0].end).toLocaleString(),
+          resource_id: calendarEvents[0].resourceId,
+          color: calendarEvents[0].color
+        })
+      }
+    }, [calendarResources, calendarEvents])
+
+    // Add refresh to window for debugging
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
+        (window as any).refreshCalendar = refreshCalendar
+        ;(window as any).debugCalendar = function() {
+          console.log('🔍 Calendar Debug Info:')
+          console.log('  - Resources:', resources.length)
+          console.log('  - Bookings:', bookings.length)
+          console.log('  - Loading:', loading)
+        }
+        ;(window as any).forceCalendarRefresh = function() {
+          console.log('🔄 Force refreshing calendar...')
+          refreshCalendar()
+        }
+        console.log('🗓️ To navigate to October 16, 2025:')
+        console.log('  1. Use the calendar navigation arrows')
+        console.log('  2. Or click "Today" then navigate to Oct 16')
+        console.log('🔄 ResourceCalendar: Debug functions available:')
+        console.log('  - window.refreshCalendar() - refresh calendar data')
+        console.log('  - window.debugCalendar() - show calendar debug info')
+        console.log('  - window.forceCalendarRefresh() - force calendar refresh')
+        console.log('  - Use calendar navigation to go to October 16, 2025')
+      }
+    }, [refreshCalendar, resources, bookings, loading])
 
   if (loading) {
     return (
@@ -322,6 +453,7 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
       
       <div className={`border rounded-lg overflow-hidden ${resolvedTheme === 'dark' ? 'bg-gray-800 border-gray-700 dark-theme' : 'bg-white border-gray-200 light-theme'}`}>
         <FullCalendar
+          key={`calendar-${calendarEvents.length}-${calendarResources.length}`} // Force re-render when data changes
           plugins={[resourceTimeGridPlugin, resourceDayGridPlugin, interactionPlugin]}
           initialView="resourceTimeGridDay"
           headerToolbar={{
@@ -347,6 +479,9 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
           resourceOrder="title"
           resourceGroupField="parentId"
           nowIndicator={true}
+          timeZone="local"
+          displayEventTime={true}
+          displayEventEnd={true}
           businessHours={{
             daysOfWeek: [1, 2, 3, 4, 5], // Monday to Friday
             startTime: '09:00',

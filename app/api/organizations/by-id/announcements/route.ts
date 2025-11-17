@@ -77,6 +77,7 @@ export async function GET(
         primary_link,
         additional_info,
         image_url,
+        image_layout,
         people,
         external_orgs,
         style,
@@ -180,7 +181,9 @@ export async function POST(
         visibility: body.visibility || 'internal',
         scheduled_at: body.scheduled_at || null,
         expires_at: body.expires_at || null,
-        published_at: body.status === 'published' ? new Date().toISOString() : null
+        published_at: body.status === 'published' ? new Date().toISOString() : null,
+        image_url: body.image_url || null,
+        image_layout: body.image_layout || null
       })
       .select()
       .single();

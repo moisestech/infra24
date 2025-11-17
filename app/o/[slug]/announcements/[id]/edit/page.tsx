@@ -7,6 +7,7 @@ import { ArrowLeft, Save, X } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { UserPicker } from '@/components/ui/UserPicker'
 import { AnnouncementPerson } from '@/types/people'
+import { ImageLayoutType } from '@/types/announcement'
 
 interface Announcement {
   id: string
@@ -64,7 +65,9 @@ export default function AnnouncementEditPage() {
     scheduled_time: '',
     expires_at: '',
     expires_time: '',
-    author_clerk_id: ''
+    author_clerk_id: '',
+    image_url: '',
+    image_layout: '' as ImageLayoutType | ''
   })
   
   const [selectedPeople, setSelectedPeople] = useState<AnnouncementPerson[]>([])
@@ -112,7 +115,9 @@ export default function AnnouncementEditPage() {
             scheduled_time: scheduledDate ? scheduledDate.toTimeString().slice(0, 5) : '',
             expires_at: expiresDate ? expiresDate.toISOString().split('T')[0] : '',
             expires_time: expiresDate ? expiresDate.toTimeString().slice(0, 5) : '',
-            author_clerk_id: ann.author_clerk_id || ''
+            author_clerk_id: ann.author_clerk_id || '',
+            image_url: ann.image_url || '',
+            image_layout: ann.image_layout || ''
           })
           
           // Set selected people
@@ -159,7 +164,9 @@ export default function AnnouncementEditPage() {
       const { scheduled_time, expires_time, ...apiData } = updateData
       const apiDataWithPeople = {
         ...apiData,
-        key_people: selectedPeople
+        key_people: selectedPeople,
+        image_url: formData.image_url.trim() || null,
+        image_layout: formData.image_layout || (formData.image_url.trim() ? 'hero' : null) // Default to 'hero' if image exists but no layout selected
       }
       
       const response = await fetch(`/api/announcements/${id}`, {
@@ -374,6 +381,52 @@ export default function AnnouncementEditPage() {
                 </p>
               </div>
             </div>
+
+            {/* Image URL */}
+            <div>
+              <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Image URL
+              </label>
+              <input
+                type="url"
+                id="image_url"
+                value={formData.image_url}
+                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://example.com/image.jpg"
+              />
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Optional: Add an image URL to display with this announcement
+              </p>
+            </div>
+
+            {/* Image Layout - Only show if image_url is provided */}
+            {formData.image_url && formData.image_url.trim() !== '' && (
+              <div>
+                <label htmlFor="image_layout" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Image Layout
+                </label>
+                <select
+                  id="image_layout"
+                  value={formData.image_layout}
+                  onChange={(e) => setFormData({ ...formData, image_layout: e.target.value as ImageLayoutType | '' })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Default (Hero)</option>
+                  <option value="hero">Hero - Large background with content overlay</option>
+                  <option value="split-left">Split Left - Image left (40%), content right (60%)</option>
+                  <option value="split-right">Split Right - Image right (40%), content left (60%)</option>
+                  <option value="card">Card - Image as prominent card element</option>
+                  <option value="masonry">Masonry - Asymmetric grid layout</option>
+                  <option value="overlay">Overlay - Image with semi-transparent overlay</option>
+                  <option value="side-panel">Side Panel - Narrow image panel on side</option>
+                  <option value="background">Background - Subtle background image</option>
+                </select>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Choose how the image should be displayed in the smart sign
+                </p>
+              </div>
+            )}
 
             {/* People */}
             <div>
