@@ -2,6 +2,30 @@
 
 A comprehensive multi-tenant platform for workshops, digital labs, artist profiles, and announcements with integrated booking system.
 
+## 📑 Table of Contents
+
+- [Quick Start](#-quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Database Setup](#database-setup)
+  - [Development](#development)
+- [Documentation](#-documentation)
+  - [Core Features](#core-features)
+  - [Key Documentation](#key-documentation)
+- [User Interface Pages](#-user-interface-pages)
+  - [Home Page](#home-page)
+  - [Camera Tracking Page](#camera-tracking-page)
+  - [After Capturing](#after-capturing)
+- [Key Scripts](#-key-scripts)
+- [Architecture](#-architecture)
+  - [Tech Stack](#tech-stack)
+  - [Key Features](#key-features)
+- [Current Status](#-current-status)
+- [Development](#-development)
+  - [Environment Variables](#environment-variables)
+  - [Database Schema](#database-schema)
+- [Support](#-support)
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -44,6 +68,17 @@ npm run dev
 - [Booking System Documentation](./docs/BOOKING_SYSTEM_INDEX.md) - Complete booking system guide
 - [Database Testing Guide](./docs/DATABASE_TESTING_GUIDE.md) - Database testing procedures
 - [Scripts Reference](./docs/SCRIPTS_REFERENCE.md) - All available scripts
+
+## 📱 User Interface Pages
+
+### Home Page
+<!-- TODO: Add documentation for the Home Page -->
+
+### Camera Tracking Page
+<!-- TODO: Add documentation for the Camera Tracking Page -->
+
+### After Capturing
+<!-- TODO: Add documentation for the After Capturing flow -->
 
 ## 🛠️ Key Scripts
 
