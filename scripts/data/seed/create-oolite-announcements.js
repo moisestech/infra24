@@ -33,7 +33,12 @@ const IMAGES = {
   edsonJean: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1763017440/oolite-edson-jean_qca9r3.jpg',
   educationGonzalo: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1763017440/oolite-education-gonzalo_wgsw8r.jpg',
   digitalLab: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1763017446/oolite-digital-lab_pmvgbc.png',
-  figureDrawing: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1763017440/oolite-fall-art-classes_xff9cg.jpg'
+  figureDrawing: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1763017440/oolite-fall-art-classes_xff9cg.jpg',
+  exhibitionPoster: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1763566614/matt-oolite-limited-edition-print-artweek-exhibition-2025_bhhvbi.jpg',
+  noVacancyLee: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1763570105/lee-no-vacancy-nov19th-2025_fji677.jpg',
+  noVacancyFabiola: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1763570104/fabiola-no-vacancy-nov19th-2025_xyykbq.jpg',
+  noVacancyAmanda: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1763570104/amanda-no-vacancy-nov19th-2025_ivloz6.jpg',
+  noVacancyEdison: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1763570104/edison-no-vacancy-nov19th-2025_hgb2rc.jpg',
 };
 
 // Helper function for avatar placeholders (keeping these as placeholders since we don't have individual photos)
@@ -90,7 +95,7 @@ async function createOoliteAnnouncements() {
         type: 'news',
         sub_type: 'general',
         image_url: IMAGES.ceoMessage,
-        image_layout: 'split-left', // News type - split-left layout
+        image_layout: 'card', // News type - card layout
         primary_link: '#', // Placeholder - would link to audio/podcast
         people: [
           {
@@ -152,6 +157,33 @@ async function createOoliteAnnouncements() {
         org_id: organization.id,
         author_clerk_id: 'system_oolite',
         created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Oolite Exhibition Poster : Two Are Many More Curated by Gean Moreno',
+        body: 'A hand-silkscreened 36 x 24-inch poster produced in the Oolite Print Lab, celebrating the exhibition curated by Gean Moreno.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['exhibition', 'poster', 'print-lab', 'merchandise', '40th-anniversary'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'general',
+        image_url: IMAGES.exhibitionPoster,
+        image_layout: 'card',
+        primary_link: '#', // Placeholder for Bloomerang form link
+        people: [
+          {
+            name: 'Gean Moreno',
+            role: 'curator',
+            avatar_url: placeholderImage(150, 150, 'GM')
+          }
+        ],
+        additional_info: 'Edition of 30. $50.00.',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
         updated_by: 'system_oolite',        title: 'Miami Art Week Highlights',
         body: 'As Miami Art Week approaches, Oolite Arts invites you to experience an amazing lineup of exhibitions and activations that celebrate the city\'s creative spirit. From the thought-provoking group show "One Is Two and Two Are Many More" to the public art series Windows @ Walgreens, and events showcasing the creativity of current and past residents whose works will be on view at various locations. This season offers an inspiring glimpse into our ever-evolving cultural landscape.',
         status: 'published',
@@ -164,7 +196,7 @@ async function createOoliteAnnouncements() {
         ends_at: dec20_2025.toISOString(),
         location: 'Various locations, Miami Beach',
         image_url: IMAGES.miamiArtWeek,
-        image_layout: 'split-left', // Event highlights - split-left layout for better visibility
+        image_layout: 'card', // Event highlights - card layout
         primary_link: '#',
         published_at: now.toISOString()
       },
@@ -206,7 +238,7 @@ async function createOoliteAnnouncements() {
         ends_at: dec20_2025.toISOString(),
         location: 'NADA Art Fair, Miami Beach',
         image_url: IMAGES.nadaFair,
-        image_layout: 'split-right', // Exhibition - split-right layout
+        image_layout: 'card', // Exhibition - card layout
         primary_link: '#',
         people: [
           {
@@ -234,7 +266,7 @@ async function createOoliteAnnouncements() {
         ends_at: dec20_2025.toISOString(),
         location: 'Untitled Art Fair, Miami Beach',
         image_url: IMAGES.untitledFair,
-        image_layout: 'split-right', // Exhibition - split-right layout
+        image_layout: 'card', // Exhibition - card layout
         primary_link: '#',
         people: [
           {
@@ -268,7 +300,7 @@ async function createOoliteAnnouncements() {
         starts_at: nov13_2025.toISOString(),
         ends_at: dec20_2025.toISOString(),
         location: 'The Catalina Hotel & Beach Club, 1732 Collins Avenue, Miami Beach, FL',
-        image_url: IMAGES.noVacancy,
+        image_url: IMAGES.noVacancyEdison,
         image_layout: 'card',
         primary_link: '#',
         people: [
@@ -298,7 +330,7 @@ async function createOoliteAnnouncements() {
         starts_at: nov13_2025.toISOString(),
         ends_at: dec20_2025.toISOString(),
         location: 'The Miami Beach EDITION, 2901 Collins Ave, Miami Beach, FL',
-        image_url: IMAGES.noVacancy,
+        image_url: IMAGES.noVacancyAmanda,
         image_layout: 'card',
         primary_link: '#',
         people: [
@@ -328,7 +360,7 @@ async function createOoliteAnnouncements() {
         starts_at: nov13_2025.toISOString(),
         ends_at: dec20_2025.toISOString(),
         location: 'Riviera Suites Miami Beach, 318 20th Street, Miami Beach, FL',
-        image_url: IMAGES.noVacancy,
+        image_url: IMAGES.noVacancyFabiola,
         image_layout: 'card',
         primary_link: '#',
         people: [
@@ -358,7 +390,7 @@ async function createOoliteAnnouncements() {
         starts_at: nov13_2025.toISOString(),
         ends_at: dec20_2025.toISOString(),
         location: 'The Shelborne by Proper, 1801 Collins Avenue, Miami Beach, FL',
-        image_url: IMAGES.noVacancy,
+        image_url: IMAGES.noVacancyLee,
         image_layout: 'card',
         primary_link: '#',
         people: [
@@ -388,7 +420,7 @@ async function createOoliteAnnouncements() {
         ends_at: jan9_2026.toISOString(),
         location: 'Collins Avenue at 67th and 74th Streets, Miami Beach',
         image_url: IMAGES.windowsWalgreens,
-        image_layout: 'split-right', // Event - split-right layout for better visibility
+        image_layout: 'card', // Event - card layout
         primary_link: '#',
         people: [
           {
@@ -445,7 +477,7 @@ async function createOoliteAnnouncements() {
         type: 'event',
         sub_type: 'meeting',
         image_url: IMAGES.futurePast,
-        image_layout: 'split-left', // Event conversation - split-left layout for better visibility
+        image_layout: 'card', // Event conversation - card layout
         primary_link: '#', // Placeholder for audio link
         people: [
           {
@@ -485,7 +517,7 @@ async function createOoliteAnnouncements() {
         type: 'news',
         sub_type: 'general',
         image_url: IMAGES.media,
-        image_layout: 'split-left', // News - split-left layout
+        image_layout: 'card', // News - card layout
         primary_link: '#', // Placeholder for podcast link
         people: [
           {
@@ -529,7 +561,7 @@ async function createOoliteAnnouncements() {
         type: 'news',
         sub_type: 'general',
         image_url: IMAGES.alumniHighlights,
-        image_layout: 'split-left', // News - split-left layout
+        image_layout: 'card', // News - card layout
         primary_link: '#',
         people: [
           {
@@ -555,7 +587,7 @@ async function createOoliteAnnouncements() {
         type: 'news',
         sub_type: 'general',
         image_url: IMAGES.cinematicKnowMe,
-        image_layout: 'split-right', // News - split-right layout
+        image_layout: 'card', // News - card layout
         primary_link: '#',
         people: [
           {
@@ -672,7 +704,7 @@ async function createOoliteAnnouncements() {
         starts_at: new Date('2025-11-19T10:00:00').toISOString(),
         location: '924 Lincoln Rd., Studio 105, Miami Beach, FL 33139',
         image_url: IMAGES.digitalLab,
-        image_layout: 'split-right', // Facility - split-right layout
+        image_layout: 'card', // Facility - card layout
         primary_link: '#',
         additional_info: 'Visit the Digital Lab Tuesdays and Thursdays from 10 a.m. to 5 p.m., where instructors Fabiola Larios and Moises Sanabria will offer classes to Oolite Arts residents in English and Spanish. Evening and weekends hours also are available. The space will be accessible Nov. 19, 2025.',
         people: [
@@ -712,7 +744,7 @@ async function createOoliteAnnouncements() {
         ends_at: new Date('2025-12-31T23:59:59').toISOString(),
         location: 'Oolite Arts, 924 Lincoln Rd., Miami Beach, FL',
         image_url: IMAGES.figureDrawing,
-        image_layout: 'split-right', // Event/Workshop - split-right layout for better visibility
+        image_layout: 'card', // Event/Workshop - card layout
         primary_link: '#', // Placeholder for registration
         additional_info: 'Mondays, 7-9 p.m. and Thursdays, 6-8 p.m. (Except Holidays)',
         published_at: now.toISOString()
@@ -726,6 +758,7 @@ async function createOoliteAnnouncements() {
       org_id: announcement.org_id || organization.id,
       created_by: announcement.created_by || 'system_oolite',
       updated_by: announcement.updated_by || 'system_oolite',
+      is_active: true, // Ensure all announcements are active so they display
     }));
 
     // Insert announcements
