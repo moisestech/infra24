@@ -4,11 +4,13 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
+import { useUser } from '@clerk/nextjs'
 import { NavigationItem, ThemeColors } from './types'
 import { NavigationBrand } from './NavigationBrand'
 import { AdminTools } from './AdminTools'
 import { UserMenu } from './UserMenu'
 import { Organization } from './types'
+import { hasAdminAccess } from '@/lib/utils/admin-access'
 
 interface MobileMenuProps {
   organization: Organization
@@ -29,6 +31,13 @@ export function MobileMenu({
 }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const { user } = useUser()
+  
+  // Get user email from Clerk
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress
+  
+  // Check if user has admin access (either by role or email)
+  const hasAccess = hasAdminAccess(userRole, userEmail)
 
   const isActive = (href: string) => {
     if (href === '/o/oolite' || href === '/o/bakehouse') {
@@ -112,7 +121,7 @@ export function MobileMenu({
                   </div>
 
                   {/* Admin Navigation */}
-                  {userRole !== 'user' && adminItems.length > 0 && (
+                  {hasAccess && adminItems.length > 0 && (
                     <div className="mb-6">
                       <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Administration

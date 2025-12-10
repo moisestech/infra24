@@ -3,7 +3,9 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { ChevronDown, Shield } from 'lucide-react'
+import { useUser } from '@clerk/nextjs'
 import { NavigationItem, ThemeColors } from './types'
+import { hasAdminAccess } from '@/lib/utils/admin-access'
 
 interface AdminToolsProps {
   items: NavigationItem[]
@@ -20,6 +22,10 @@ export function AdminTools({
 }: AdminToolsProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const { user } = useUser()
+  
+  // Get user email from Clerk
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -35,8 +41,11 @@ export function AdminTools({
     }
   }, [])
 
+  // Check if user has admin access (either by role or email)
+  const hasAccess = hasAdminAccess(userRole, userEmail)
+
   // Don't render if user doesn't have admin access
-  if (userRole === 'user' || items.length === 0) {
+  if (!hasAccess || items.length === 0) {
     return null
   }
 
