@@ -55,6 +55,7 @@ interface PatternTemplateProps {
   screenMetrics?: ScreenMetrics;
   responsiveSizes?: ResponsiveSizes;
   isActive?: boolean;
+  animationsPaused?: boolean;
 }
 
 export function PatternTemplate({ 
@@ -82,12 +83,13 @@ export function PatternTemplate({
   showTags = false,
   showPriorityBadge = false,
   showVisibilityBadge = false,
-  showQRCodeButton = true,
+  showQRCodeButton = false, // Disabled until QR code is fully tested
   showLearnMore = true,
   imageSettings,
   screenMetrics,
   responsiveSizes,
-  isActive = false
+  isActive = false,
+  animationsPaused = false
 }: PatternTemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
@@ -113,24 +115,7 @@ export function PatternTemplate({
     ? (imageSettings?.layout || announcement.image_layout || 'hero' as ImageLayoutType)
     : null;
 
-  // Log image information for Oolite announcements
-  if (organizationSlug === 'oolite') {
-    console.log('🎨 Oolite Announcement Image Check:', {
-      title: announcement.title,
-      hasImage: hasImage,
-      imageUrl: announcement.image_url || 'NO IMAGE',
-      imageLayout: imageLayout || 'NO LAYOUT',
-      type: announcement.type,
-      subType: announcement.sub_type,
-      styles: {
-        gradient: styles.gradient,
-        text: styles.text,
-        backgroundPattern: styles.backgroundPattern
-      },
-      imageSettings: imageSettings,
-      contentWrapper: 'ContentWrapper will render inside ImageLayout children'
-    });
-  }
+  // Image information logging removed to reduce console noise
 
   // Content wrapper component
   const ContentWrapper = () => (
@@ -183,6 +168,7 @@ export function PatternTemplate({
         screenMetrics={screenMetrics}
         responsiveSizes={responsiveSizes}
         isActive={isActive}
+        animationsPaused={animationsPaused}
       />
 
       {/* Learn More Button */}
@@ -207,15 +193,7 @@ export function PatternTemplate({
 
   // If image exists, use ImageLayout component
   if (hasImage && imageLayout) {
-    console.log('🖼️ Rendering Image Layout:', {
-      layout: imageLayout,
-      title: announcement.title,
-      imageUrl: announcement.image_url,
-      imageSettings: imageSettings,
-      splitPercentage: imageSettings?.splitPercentage || 40,
-      scale: imageSettings?.scale || 1,
-      opacity: imageSettings?.opacity || 100
-    });
+    // Image layout rendering log removed to reduce console noise
 
     return (
       <>
@@ -259,11 +237,7 @@ export function PatternTemplate({
     );
   }
 
-  // Default layout (no image)
-  console.log('📄 Rendering Default Layout (no image):', {
-    title: announcement.title,
-    hasImage: hasImage
-  });
+  // Default layout (no image) - logging removed to reduce console noise
 
   return (
     <>

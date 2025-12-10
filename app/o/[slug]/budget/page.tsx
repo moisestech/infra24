@@ -20,7 +20,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { TenantProvider } from '@/components/tenant/TenantProvider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -85,9 +85,22 @@ interface BudgetItem {
 
 export default function DigitalLabBudgetPage() {
   const params = useParams()
+  const searchParams = useSearchParams()
+  const router = useRouter()
   const slug = params.slug as string
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'
+  
+  // Get initial tab from query param, default to 'overview'
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview')
+  
+  // Sync tab with query param when it changes
+  useEffect(() => {
+    const tab = searchParams.get('tab') || 'overview'
+    if (tab !== activeTab) {
+      setActiveTab(tab)
+    }
+  }, [searchParams, activeTab])
   
   
   // Get navigation config based on organization slug
@@ -625,7 +638,10 @@ export default function DigitalLabBudgetPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            <Tabs defaultValue="overview" className="w-full">
+            <Tabs value={activeTab} onValueChange={(value) => {
+              setActiveTab(value)
+              router.push(`/o/${slug}/budget?tab=${value}`, { scroll: false })
+            }} className="w-full">
               <TabsList className={`grid w-full grid-cols-3 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
                 <TabsTrigger 
                   value="overview" 

@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useParams } from 'next/navigation'
-import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap, Copy, Check } from 'lucide-react'
+import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap, Copy, Check, Grid3x3, ArrowRight } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 import { MiniAnalyticsWidget } from '@/components/analytics/WorkshopAnalyticsWidget'
 import { PageFooter } from '@/components/common/PageFooter'
+import { BackgroundPattern } from '@/components/BackgroundPattern'
+import { AnnouncementType, AnnouncementSubType } from '@/types/announcement'
 
 interface Organization {
   id: string
@@ -39,6 +41,7 @@ interface Announcement {
   updated_at: string
   created_by: string
   updated_by: string
+  image_url?: string
 }
 
 interface User {
@@ -371,6 +374,34 @@ export default function OrganizationPage() {
           </div>
         )}
 
+        {/* Featured 360 Section */}
+        <div className="mb-6 xl:mb-8 2xl:mb-10 3xl:mb-12">
+          <a
+            href={`/o/${organization.slug}/360`}
+            className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-xl shadow-lg p-6 xl:p-8 2xl:p-10 hover:shadow-xl transition-all duration-300 group"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="h-16 w-16 xl:h-20 xl:w-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Grid3x3 className="h-8 w-8 xl:h-10 xl:w-10 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold text-white mb-2">
+                    Explore 360 Interactive Experiences
+                  </h2>
+                  <p className="text-indigo-100 text-base xl:text-lg 2xl:text-xl">
+                    Discover interactive web applications, data visualizations, and immersive tools
+                  </p>
+                </div>
+              </div>
+              <div className="hidden md:flex items-center gap-2 text-white group-hover:translate-x-2 transition-transform duration-300">
+                <span className="font-medium">Explore</span>
+                <ArrowRight className="h-5 w-5" />
+              </div>
+            </div>
+          </a>
+        </div>
+
         {/* Quick Actions */}
         <div className="mb-6 xl:mb-8 2xl:mb-10 3xl:mb-12">
           <h2 className="text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl font-semibold text-gray-900 dark:text-white mb-3 xl:mb-4 2xl:mb-5 3xl:mb-6">
@@ -450,6 +481,19 @@ export default function OrganizationPage() {
                 <div>
                   <p className="font-medium text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">XR Experiences</p>
                   <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-purple-100">VR & Maquettes</p>
+                </div>
+              </div>
+            </a>
+
+            <a
+              href={`/o/${organization.slug}/360`}
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-sm p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center">
+                <Grid3x3 className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-white mr-2" />
+                <div>
+                  <p className="font-medium text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">360 Experiences</p>
+                  <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-indigo-100">Interactive Apps</p>
                 </div>
               </div>
             </a>
@@ -559,14 +603,30 @@ export default function OrganizationPage() {
                   const isHighPrioritySurvey = isSurveyAnn && 
                     (announcement.priority === 'high' || announcement.title.toLowerCase().includes('urgent') || announcement.title.toLowerCase().includes('important'))
                   
-                  // Generate Unsplash image based on announcement type
-                  const getAnnouncementImage = () => {
+                  // Determine announcement type and subtype for pattern selection
+                  const getAnnouncementType = (): AnnouncementType => {
                     const title = announcement.title.toLowerCase()
-                    if (title.includes('survey')) return 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=120&fit=crop&crop=center'
-                    if (title.includes('workshop')) return 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&h=120&fit=crop&crop=center'
-                    if (title.includes('event')) return 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=200&h=120&fit=crop&crop=center'
-                    if (title.includes('digital')) return 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=120&fit=crop&crop=center'
-                    return 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&h=120&fit=crop&crop=center' // Default
+                    const type = announcement.type?.toLowerCase()
+                    
+                    if (title.includes('urgent') || announcement.priority === 'high') return 'urgent'
+                    if (title.includes('event') || type === 'event') return 'event'
+                    if (title.includes('facility') || type === 'facility') return 'facility'
+                    if (title.includes('opportunity') || type === 'opportunity') return 'opportunity'
+                    if (title.includes('administrative') || type === 'administrative') return 'administrative'
+                    
+                    return 'opportunity' // Default fallback
+                  }
+
+                  const getAnnouncementSubType = (): AnnouncementSubType => {
+                    const title = announcement.title.toLowerCase()
+                    
+                    if (title.includes('workshop')) return 'workshop'
+                    if (title.includes('exhibition')) return 'exhibition'
+                    if (title.includes('meeting')) return 'meeting'
+                    if (title.includes('deadline')) return 'deadline'
+                    if (title.includes('survey')) return 'survey'
+                    
+                    return 'general'
                   }
 
                   return (
@@ -583,13 +643,23 @@ export default function OrganizationPage() {
                         className="block"
                       >
                         <div className="flex">
-                        {/* Image Column */}
-                        <div className="w-20 flex-shrink-0">
-                          <img 
-                            src={getAnnouncementImage()}
-                            alt={announcement.title}
-                            className="w-full h-full object-cover"
-                          />
+                        {/* Image Column - Show image if available, otherwise show pattern */}
+                        <div className="w-20 flex-shrink-0 relative overflow-hidden">
+                          {announcement.image_url ? (
+                            <img 
+                              src={announcement.image_url}
+                              alt={announcement.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <BackgroundPattern
+                              type={getAnnouncementType()}
+                              subType={getAnnouncementSubType()}
+                              width={80}
+                              height={120}
+                              organizationSlug={organization.slug}
+                            />
+                          )}
                         </div>
 
                         {/* Calendar Date Column */}

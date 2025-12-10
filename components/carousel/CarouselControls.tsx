@@ -15,6 +15,7 @@ interface CarouselControlsProps {
   currentAnnouncementDuration?: number;
   onDurationChange?: (duration: number) => void;
   timeRemaining?: number | null;
+  cleanViewMode?: boolean;
 }
 
 export function CarouselControls({ 
@@ -26,7 +27,8 @@ export function CarouselControls({
   totalItems,
   currentAnnouncementDuration = 5000,
   onDurationChange,
-  timeRemaining
+  timeRemaining,
+  cleanViewMode = false
 }: CarouselControlsProps) {
   const [showDurationControls, setShowDurationControls] = useState(false);
   const [tempDuration, setTempDuration] = useState(currentAnnouncementDuration);
@@ -42,6 +44,11 @@ export function CarouselControls({
       onDurationChange(newDuration);
     }
   };
+
+  // Don't render anything in clean view mode
+  if (cleanViewMode) {
+    return null;
+  }
 
   return (
     <>
@@ -59,9 +66,9 @@ export function CarouselControls({
         ))}
       </div>
 
-      {/* Countdown Timer */}
+      {/* Countdown Timer - Moved to bottom-center */}
       {timeRemaining !== null && timeRemaining !== undefined && !isPaused && (
-        <div className="fixed top-4 right-4 z-40 flex items-center gap-2 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg" style={{ zIndex: 40 }}>
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40 flex items-center gap-2 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg" style={{ zIndex: 40 }}>
           <Clock className="w-4 h-4 text-white" />
           <span className="text-white text-sm font-mono">
             {formatTime(timeRemaining)}

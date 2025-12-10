@@ -1,8 +1,6 @@
 'use client';
 
-import { motion } from "framer-motion";
 import { MapPin, ExternalLink } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
 import { TypeStyle } from './announcement-styles';
@@ -37,6 +35,7 @@ interface AnnouncementContentProps {
   screenMetrics?: any;
   responsiveSizes?: any;
   isActive?: boolean;
+  animationsPaused?: boolean;
 }
 
 export function AnnouncementContent({ 
@@ -61,12 +60,13 @@ export function AnnouncementContent({
   iconSizeMultiplier = 1,
   showPriorityBadge = false,
   showVisibilityBadge = false,
-  showQRCodeButton = true,
+  showQRCodeButton = false, // Disabled until QR code is fully tested
   showLearnMore = true,
   layoutType = null,
   screenMetrics,
   responsiveSizes,
-  isActive = false
+  isActive = false,
+  animationsPaused = false
 }: AnnouncementContentProps) {
   
   // Helper function to get responsive base icon size
@@ -122,20 +122,7 @@ export function AnnouncementContent({
     const multiplier = iconSizeMultiplier;
     const finalSize = Math.round(baseSize * multiplier);
     
-    console.log('🎯 getIconSize:', {
-      sizeType,
-      baseSize,
-      multiplier,
-      finalSize,
-      screenMetrics: screenMetrics ? {
-        width: screenMetrics.width,
-        height: screenMetrics.height,
-        orientation: screenMetrics.orientation
-      } : 'none',
-      responsiveSizes: responsiveSizes ? {
-        iconMultiplier: responsiveSizes.iconMultiplier
-      } : 'none'
-    });
+    // getIconSize log removed to reduce console noise
     
     return finalSize;
   };
@@ -172,52 +159,7 @@ export function AnnouncementContent({
     }
   };
 
-  console.log('📝 AnnouncementContent rendering:', {
-    title: announcement.title,
-    layoutType: layoutType || 'default',
-    paddingClass: getPaddingClass(),
-    hasTitle: !!announcement.title,
-    hasBody: !!announcement.body,
-    isActive,
-    showQRCodeButton,
-    primaryLink: announcement.primary_link,
-    iconSizeMultiplier,
-    screenMetrics: screenMetrics ? {
-      width: screenMetrics.width,
-      height: screenMetrics.height,
-      pixelRatio: screenMetrics.pixelRatio,
-      orientation: screenMetrics.orientation,
-      isLargeDisplay: screenMetrics.isLargeDisplay,
-      isConstrained: screenMetrics.isConstrained
-    } : 'none',
-    responsiveSizes: responsiveSizes ? {
-      iconMultiplier: responsiveSizes.iconMultiplier
-    } : 'none'
-  });
-
-  // Use animation key to force re-animation on slide change
-  // When slide becomes active, generate a new unique key to force animations to restart
-  const [animationKey, setAnimationKey] = useState(`inactive-${announcement.id}`);
-  const prevIsActiveRef = useRef(false);
-  
-  useEffect(() => {
-    if (isActive && !prevIsActiveRef.current) {
-      // Slide just became active - generate new key to trigger animations
-      const newKey = `active-${announcement.id}-${performance.now()}`;
-      setAnimationKey(newKey);
-      prevIsActiveRef.current = true;
-      console.log('🎬 Animation triggered for active slide:', {
-        announcementId: announcement.id,
-        title: announcement.title,
-        animationKey: newKey,
-        isActive
-      });
-    } else if (!isActive) {
-      // Slide is inactive
-      setAnimationKey(`inactive-${announcement.id}`);
-      prevIsActiveRef.current = false;
-    }
-  }, [isActive, announcement.id, announcement.title]);
+  // Rendering log removed to reduce console noise
 
   // Calculate max width for card layouts to ensure text wraps
   const getContentMaxWidth = () => {
@@ -236,21 +178,13 @@ export function AnnouncementContent({
       let maxWidth: number;
       if (is1080x1808) {
         maxWidth = 900;
-        console.log('📏 1080x1808 detected - using fixed 900px max-width');
       } else {
         // Estimate: image card takes ~30-35% of width, padding takes ~10-15%
         // So content gets ~50-60% of total width
         maxWidth = Math.floor(availableWidth * 0.6);
       }
       
-      console.log('📏 getContentMaxWidth:', {
-        layoutType,
-        availableWidth,
-        height,
-        aspectRatio,
-        is1080x1808,
-        calculatedMaxWidth: maxWidth
-      });
+      // getContentMaxWidth log removed to reduce console noise
       
       return `${maxWidth}px`;
     }
@@ -258,17 +192,13 @@ export function AnnouncementContent({
   };
 
   return (
-    <motion.div 
-      key={animationKey}
+    <div 
       className={cn(
         "relative z-30 h-full flex flex-col w-full min-w-0",
         layoutType === 'card' ? "justify-between" : "justify-center",
         getPaddingClass()
       )}
       style={{ maxWidth: '100%', width: '100%', boxSizing: 'border-box' }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <div className={cn(
         "w-full min-w-0 flex flex-col",
@@ -283,12 +213,8 @@ export function AnnouncementContent({
       }}
       >
         {/* Type Badge */}
-        <motion.div 
-          key={`badge-${animationKey}`}
+        <div 
           className="inline-flex items-center gap-4 xl:gap-6 px-8 xl:px-12 py-4 xl:py-6 rounded-full bg-white/10 backdrop-blur-sm flex-wrap"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
         >
           <IconComponent 
             className={cn(styles.text || "text-white", "flex-shrink-0")} 
@@ -304,52 +230,39 @@ export function AnnouncementContent({
               </span>
             )}
           </div>
-        </motion.div>
+        </div>
 
         {/* Title */}
-        <motion.h1 
-          key={`title-${animationKey}`}
+        <h1 
           className={cn("font-black leading-tight break-words whitespace-normal", styles.text || "text-white", textSizes.title)}
           style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
         >
           {announcement.title}
-        </motion.h1>
+        </h1>
 
         {/* Description - First sentence only */}
         {announcement.body && (
-          <motion.p 
-            key={`description-${animationKey}`}
+          <p 
             className={cn("font-medium leading-relaxed opacity-90 break-words whitespace-normal text-black", textSizes.description)}
             style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
           >
             {(() => {
               // Extract first sentence (ending with . ! or ?)
               const firstSentenceMatch = announcement.body.match(/^[^.!?]+[.!?]/);
               return firstSentenceMatch ? firstSentenceMatch[0].trim() : announcement.body.split('.')[0] + '.';
             })()}
-          </motion.p>
+          </p>
         )}
 
         {/* Location */}
         {announcement.location && (
-          <motion.div 
-            key={`location-${animationKey}`}
+          <div 
             className={cn(
               "flex items-center gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 flex-wrap",
               orientation === 'portrait'
                 ? "text-8xl xl:text-10xl 2xl:text-12xl 3xl:text-14xl 4xl:text-16xl"
                 : "text-10xl xl:text-12xl 2xl:text-14xl 3xl:text-16xl 4xl:text-18xl"
             )}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
-            whileHover={{ scale: 1.05 }}
           >
             <MapPin 
               className="opacity-80 flex-shrink-0 text-black"
@@ -358,30 +271,16 @@ export function AnnouncementContent({
             <span className={cn("opacity-80 font-medium break-words whitespace-normal text-black", textSizes.location)} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
               {announcement.location}
             </span>
-          </motion.div>
+          </div>
         )}
 
-        {/* QR Code Display - Always Visible at Bottom for Card Layout */}
-        {(() => {
-          const shouldShowQR = showQRCodeButton && announcement.primary_link && announcement.primary_link !== '#';
-          console.log('📱 QR Code visibility check:', {
-            showQRCodeButton,
-            hasPrimaryLink: !!announcement.primary_link,
-            primaryLink: announcement.primary_link,
-            primaryLinkIsHash: announcement.primary_link === '#',
-            shouldShowQR,
-            announcementTitle: announcement.title
-          });
-          return shouldShowQR;
-        })() && (
-          <motion.div
+        {/* QR Code Display - Disabled until fully tested */}
+        {false && showQRCodeButton && announcement.primary_link && announcement.primary_link !== '#' && (
+          <div
             className={cn(
               "flex flex-col items-start gap-4 xl:gap-6",
               layoutType === 'card' ? "mt-auto" : ""
             )}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
           >
             <div className={cn(
               "bg-white shadow-2xl flex items-center justify-center p-2",
@@ -430,16 +329,11 @@ export function AnnouncementContent({
             )}>
               Scan to view event
             </p>
-          </motion.div>
+          </div>
         )}
 
         {/* Metadata Display */}
-        <motion.div
-          key={`metadata-${animationKey}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
-        >
+        <div>
           <AnnouncementMetadata 
             announcement={announcement}
             orientation={orientation}
@@ -451,17 +345,12 @@ export function AnnouncementContent({
             screenMetrics={screenMetrics}
             responsiveSizes={responsiveSizes}
           />
-        </motion.div>
+        </div>
 
         {/* Learn More Button */}
         {showLearnMore && (
-          <motion.div
-            key={`learn-more-${animationKey}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6, ease: "easeOut" }}
-          >
-            <motion.a
+          <div>
+            <a
               href={organizationSlug ? `/o/${organizationSlug}/announcements/${announcement.id}` : `/announcements/${announcement.id}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -472,18 +361,16 @@ export function AnnouncementContent({
                   ? "text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl 4xl:text-8xl"
                   : "text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl 4xl:text-9xl"
               )}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               <span>Learn More</span>
               <ExternalLink 
                 className={cn(styles.text || "text-white")}
                 size={getIconSize('small')} 
               />
-            </motion.a>
-          </motion.div>
+            </a>
+          </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

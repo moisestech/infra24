@@ -24,6 +24,7 @@ interface Announcement {
   updated_by: string
   scheduled_at?: string
   expires_at?: string
+  image_url?: string
 }
 
 interface AnnouncementCardProps {
@@ -99,15 +100,23 @@ export function AnnouncementCard({
       }`}
     >
       <div className="flex">
-        {/* Background Pattern Column */}
+        {/* Image Column - Show image if available, otherwise show pattern */}
         <div className="w-20 flex-shrink-0 relative overflow-hidden">
-          <BackgroundPattern
-            type={getAnnouncementType()}
-            subType={getAnnouncementSubType()}
-            width={80}
-            height={120}
-            organizationSlug={organizationSlug}
-          />
+          {announcement.image_url ? (
+            <img 
+              src={announcement.image_url}
+              alt={announcement.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <BackgroundPattern
+              type={getAnnouncementType()}
+              subType={getAnnouncementSubType()}
+              width={80}
+              height={120}
+              organizationSlug={organizationSlug}
+            />
+          )}
         </div>
 
         {/* Calendar Date Column */}

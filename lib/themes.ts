@@ -76,8 +76,8 @@ export const THEME_TEMPLATES: Record<string, Partial<OrganizationTheme>> = {
       info: '#47abc4',
     },
     typography: {
-      fontFamily: 'Inter, system-ui, sans-serif',
-      headingFont: 'Inter, system-ui, sans-serif',
+      fontFamily: 'AtlasGrotesk, system-ui, sans-serif',
+      headingFont: 'AtlasGrotesk, system-ui, sans-serif',
       fontSize: {
         xs: '0.75rem',
         sm: '0.875rem',

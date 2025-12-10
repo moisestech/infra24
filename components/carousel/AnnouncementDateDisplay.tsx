@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from "framer-motion";
 import { cn } from '@/lib/utils';
 import { Calendar, Clock } from 'lucide-react';
 
@@ -201,110 +200,91 @@ export function AnnouncementDateDisplay({
   const shouldShowDate = !isFunFact;
 
   return (
-    <motion.div 
+    <div 
       className="absolute top-16 right-8 md:right-12 text-right z-30"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
     >
       {/* Day of Week - only show for non-historical fun facts */}
       {shouldShowDate && (
-        <motion.div 
+        <div 
           className="text-4xl xl:text-6xl 2xl:text-8xl 3xl:text-10xl font-bold text-white/80 mb-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
         >
           {formatDateWithDay(eventDate).dayOfWeek}
-        </motion.div>
+        </div>
       )}
 
       {/* Special Historical Fun Fact Day Display */}
       {isHistoricalFunFact && (
-        <motion.div 
+        <div 
           className="text-4xl xl:text-6xl 2xl:text-8xl 3xl:text-10xl font-bold mb-2"
           style={{
             color: organizationTheme?.dateTextColor || '#fbbf24'
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
         >
           HISTORY
-        </motion.div>
+        </div>
       )}
 
       {/* Date - only show for non-historical fun facts */}
       {shouldShowDate && (
-        <motion.div className="text-[10rem] md:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] 3xl:text-[24rem] font-black text-white tracking-tighter leading-none">
+        <div className="text-[10rem] md:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] 3xl:text-[24rem] font-black text-white tracking-tighter leading-none">
           {formatDateWithDay(eventDate).date}
-        </motion.div>
+        </div>
       )}
 
       {/* Special Historical Fun Fact Date Display */}
       {isHistoricalFunFact && (
-        <motion.div 
+        <div 
           className="text-[10rem] md:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] 3xl:text-[24rem] font-black tracking-tighter leading-none"
           style={{
             color: organizationTheme?.dateTextColor || '#fbbf24'
           }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
         >
           📚
-        </motion.div>
+        </div>
       )}
 
       {/* Time if available - only show for non-historical fun facts */}
       {shouldShowDate && formatTime(eventDate) && (
-        <motion.div className="text-3xl xl:text-5xl 2xl:text-6xl 3xl:text-8xl text-white/60 font-medium tracking-tight mt-2">
+        <div className="text-3xl xl:text-5xl 2xl:text-6xl 3xl:text-8xl text-white/60 font-medium tracking-tight mt-2">
           {formatTime(eventDate)}
-        </motion.div>
+        </div>
       )}
 
       {/* End Date/Time if available - only show for non-historical fun facts */}
       {shouldShowDate && announcement.ends_at && (
-        <motion.div 
+        <div 
           className="text-2xl xl:text-4xl 2xl:text-5xl 3xl:text-7xl text-white/50 font-medium tracking-tight mt-1"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
         >
           {formatEndDate(eventDate, announcement.ends_at) && (
             <span>Until {formatEndDate(eventDate, announcement.ends_at)}</span>
           )}
-        </motion.div>
+        </div>
       )}
 
       {/* Date Range if multi-day event */}
       {shouldShowDate && getDateRange(eventDate, announcement.ends_at) && (
-        <motion.div 
+        <div 
           className="text-xl xl:text-3xl 2xl:text-4xl 3xl:text-6xl text-white/40 font-medium tracking-tight mt-1"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
         >
           {getDateRange(eventDate, announcement.ends_at)}
-        </motion.div>
+        </div>
       )}
 
       {/* Special Historical Fun Fact Badge */}
       {isHistoricalFunFact && (
-        <motion.div 
+        <div 
           className="text-3xl xl:text-5xl 2xl:text-6xl 3xl:text-8xl font-medium tracking-tight mt-2"
           style={{
             color: organizationTheme?.dateTextColor || '#fbbf24'
           }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
         >
           📚 Historical Fact
-        </motion.div>
+        </div>
       )}
 
       {/* Days Left Badge - only show for non-historical fun facts */}
       {shouldShowDate && (
-        <motion.div 
+        <div 
           className={cn(
             `inline-flex items-center rounded-full mt-4 font-bold ${
               orientation === 'portrait'
@@ -318,9 +298,6 @@ export function AnnouncementDateDisplay({
           style={{
             color: organizationTheme?.dateTextColor || '#ffffff'
           }}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.05 }}
         >
           <span className="flex items-center gap-2">
             {dateStatus.type === 'today' ? (
@@ -331,12 +308,12 @@ export function AnnouncementDateDisplay({
               <>📅 {dateStatus.message}</>
             )}
           </span>
-        </motion.div>
+        </div>
       )}
 
       {/* Special Fun Fact Badge for Historical Facts */}
       {isHistoricalFunFact && (
-        <motion.div 
+        <div 
           className={cn(
             `inline-flex items-center rounded-full mt-4 font-bold ${
               orientation === 'portrait'
@@ -348,31 +325,22 @@ export function AnnouncementDateDisplay({
           style={{
             color: organizationTheme?.dateTextColor || '#ffffff'
           }}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.05 }}
         >
           <span className="flex items-center gap-2">
             <>💡 Fun Fact</>
           </span>
-        </motion.div>
+        </div>
       )}
 
       {/* Detailed Date and Time Information for Metadata Section */}
       {showDetailedMetadata && shouldShowDate && (
-        <motion.div 
+        <div 
           className="mt-6 space-y-4 text-right"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
         >
           {/* Start Date/Time */}
           {announcement.starts_at && (
-            <motion.div 
+            <div 
               className="flex items-center justify-end gap-3 p-4 bg-white/5 rounded-lg"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 }}
             >
               <div className="text-right flex-1">
                 <div className="text-white/60 text-xs font-medium uppercase tracking-wide mb-1">
@@ -388,16 +356,13 @@ export function AnnouncementDateDisplay({
                 )}
               </div>
               <Calendar size={dateIconSize} className="text-white/70" />
-            </motion.div>
+            </div>
           )}
 
           {/* End Date/Time */}
           {announcement.ends_at && (
-            <motion.div 
+            <div 
               className="flex items-center justify-end gap-3 p-4 bg-white/5 rounded-lg"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 }}
             >
               <div className="text-right flex-1">
                 <div className="text-white/60 text-xs font-medium uppercase tracking-wide mb-1">
@@ -413,17 +378,14 @@ export function AnnouncementDateDisplay({
                 )}
               </div>
               <Clock size={dateIconSize} className="text-white/70" />
-            </motion.div>
+            </div>
           )}
 
           {/* Date Range (if multi-day) */}
           {announcement.starts_at && announcement.ends_at && 
            formatDetailedDateRange(announcement.starts_at, announcement.ends_at) && (
-            <motion.div 
+            <div 
               className="flex items-center justify-end gap-3 p-4 bg-white/5 rounded-lg"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.7 }}
             >
               <div className="text-right flex-1">
                 <div className="text-white/60 text-xs font-medium uppercase tracking-wide mb-1">
@@ -434,10 +396,10 @@ export function AnnouncementDateDisplay({
                 </div>
               </div>
               <Calendar size={dateIconSize} className="text-white/70" />
-            </motion.div>
+            </div>
           )}
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 }

@@ -272,36 +272,29 @@ function getSplitPercentage(isConstrained: boolean): number {
  * Get icon size multiplier
  */
 function getIconMultiplier(isPortrait: boolean, isLargeDisplay: boolean, width?: number, height?: number): number {
-  console.log('🔍 getIconMultiplier called:', { isPortrait, isLargeDisplay, width, height });
-  
   // Check for specific ratio: 1080px x 1808px (approximately 0.597 aspect ratio) - use 2.0x
   if (width && height) {
     const aspectRatio = width / height;
-    console.log('📐 Aspect ratio calculated:', aspectRatio, 'target:', 1080/1808);
     
     // Check if it's close to 1080/1808 ≈ 0.597
     if (Math.abs(aspectRatio - (1080/1808)) < 0.05 && width >= 1050 && width <= 1110 && height >= 1750 && height <= 1850) {
-      console.log('✅ Matched 1080x1808 ratio - returning 2.0x');
       return 2.0;
     }
     
     // Check for specific ratio: 1028px x 1998px (approximately 0.51 aspect ratio) - use 2.0x
     if (Math.abs(aspectRatio - (1028/1998)) < 0.05 && width >= 1000 && width <= 1100 && height >= 1900 && height <= 2100) {
-      console.log('✅ Matched 1028x1998 ratio - returning 2.0x');
       return 2.0;
     }
   }
   
   // Check for width 1028px or less (but not the specific ratios above) - use 1.5x
   if (width && width <= 1028) {
-    console.log('✅ Width <= 1028px - returning 1.5x');
     return 1.5;
   }
   
   const defaultMultiplier = isLargeDisplay 
     ? (isPortrait ? 6 : 4)
     : (isPortrait ? 5 : 3);
-  console.log('✅ Using default multiplier:', defaultMultiplier);
   return defaultMultiplier;
 }
 

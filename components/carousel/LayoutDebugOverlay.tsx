@@ -73,7 +73,7 @@ export function LayoutDebugOverlay({
             className={cn(
               "p-1 rounded transition-colors",
               showOverlay 
-                ? "bg-green-500/80 hover:bg-green-500" 
+                ? "bg-transparent border-transparent hover:bg-white/5" 
                 : "bg-gray-500/80 hover:bg-gray-500"
             )}
             title={showOverlay ? "Hide overlay" : "Show overlay"}

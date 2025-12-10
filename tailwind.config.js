@@ -23,6 +23,8 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        atlas: ['AtlasGrotesk', 'system-ui', 'sans-serif'],
+        organization: ['var(--font-organization)', 'Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
@@ -49,6 +51,7 @@ module.exports = {
   },
   plugins: [],
 }
+
 
 
 

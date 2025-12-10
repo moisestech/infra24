@@ -22,6 +22,7 @@ interface Announcement {
   updated_by: string
   scheduled_at?: string
   expires_at?: string
+  image_url?: string
 }
 
 interface Organization {

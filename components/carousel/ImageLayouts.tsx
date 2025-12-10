@@ -72,14 +72,7 @@ export function SplitLeftImageLayout({ announcement, imageUrl, orientation, chil
   const imageScale = imageSettings?.scale || 1;
   const imageOpacity = imageSettings?.opacity !== undefined ? imageSettings.opacity / 100 : 1;
   
-  console.log('📐 SplitLeftImageLayout rendering:', {
-    title: announcement.title,
-    splitPercentage: `${splitPercentage}%`,
-    contentPercentage: `${100 - splitPercentage}%`,
-    imageScale,
-    imageOpacity,
-    hasChildren: !!children
-  });
+  // SplitLeftImageLayout rendering log removed to reduce console noise
   
   return (
     <div className="relative w-full h-full flex">
@@ -109,8 +102,8 @@ export function SplitLeftImageLayout({ announcement, imageUrl, orientation, chil
             src={imageUrl}
             alt={announcement.title || 'Announcement image'}
             className="w-full h-full object-cover"
-            onLoad={() => console.log('✅ Image loaded:', imageUrl)}
-            onError={() => console.error('❌ Image failed to load:', imageUrl)}
+            onLoad={() => {}} // Image load logging removed
+            onError={() => console.error('❌ Image failed to load:', imageUrl)} // Keep errors
           />
         </div>
       </div>
@@ -132,14 +125,7 @@ export function SplitRightImageLayout({ announcement, imageUrl, orientation, chi
   const imageScale = imageSettings?.scale || 1;
   const imageOpacity = imageSettings?.opacity !== undefined ? imageSettings.opacity / 100 : 1;
   
-  console.log('📐 SplitRightImageLayout rendering:', {
-    title: announcement.title,
-    splitPercentage: `${splitPercentage}%`,
-    contentPercentage: `${100 - splitPercentage}%`,
-    imageScale,
-    imageOpacity,
-    hasChildren: !!children
-  });
+  // SplitRightImageLayout rendering log removed to reduce console noise
   
   return (
     <div className="relative w-full h-full flex">
@@ -177,8 +163,8 @@ export function SplitRightImageLayout({ announcement, imageUrl, orientation, chi
             src={imageUrl}
             alt={announcement.title || 'Announcement image'}
             className="w-full h-full object-cover"
-            onLoad={() => console.log('✅ Image loaded:', imageUrl)}
-            onError={() => console.error('❌ Image failed to load:', imageUrl)}
+            onLoad={() => {}} // Image load logging removed
+            onError={() => console.error('❌ Image failed to load:', imageUrl)} // Keep errors
           />
         </div>
       </div>
@@ -222,15 +208,7 @@ export function CardImageLayout({ announcement, imageUrl, orientation, children,
     );
   }
   
-  console.log('📐 CardImageLayout rendering:', {
-    title: announcement.title,
-    imageScale,
-    imageOpacity,
-    orientation,
-    hasChildren: !!children,
-    isConstrained: screenMetrics?.isConstrained,
-    responsiveScale: responsiveSizes?.imageScale
-  });
+  // CardImageLayout rendering log removed to reduce console noise
   
   return (
     <div className="relative w-full h-full">

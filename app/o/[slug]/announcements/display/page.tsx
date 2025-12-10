@@ -25,6 +25,7 @@ export default function AnnouncementDisplayPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showNavigation, setShowNavigation] = useState(true);
+  const [cleanViewMode, setCleanViewMode] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -38,18 +39,7 @@ export default function AnnouncementDisplayPage() {
         }
         const announcementsData = await announcementsResponse.json();
         
-        // Log raw API response for debugging
-        console.log('📡 Raw API Response:', {
-          totalAnnouncements: announcementsData.announcements?.length || 0,
-          sampleAnnouncement: announcementsData.announcements?.[0] ? {
-            title: announcementsData.announcements[0].title,
-            hasImageUrl: !!announcementsData.announcements[0].image_url,
-            imageUrl: announcementsData.announcements[0].image_url,
-            hasImageLayout: !!announcementsData.announcements[0].image_layout,
-            imageLayout: announcementsData.announcements[0].image_layout,
-            allKeys: Object.keys(announcementsData.announcements[0])
-          } : null
-        });
+        // Raw API response log removed to reduce console noise
         
         // Set organization data from the announcements response
         setOrganization(announcementsData.organization);
@@ -87,14 +77,12 @@ export default function AnnouncementDisplayPage() {
             return mapped;
           });
         
-        // Log announcements with images for debugging
+        // Summary log only
         const announcementsWithImages = publishedAnnouncements.filter((a: any) => a.image_url);
-        console.log('📸 Announcements with images:', announcementsWithImages.length, 'out of', publishedAnnouncements.length);
-        console.log('📸 Image details:', announcementsWithImages.map((a: any) => ({
-          title: a.title,
-          image_url: a.image_url,
-          image_layout: a.image_layout
-        })));
+        console.log('📋 Display Page:', {
+          total: publishedAnnouncements.length,
+          withImages: announcementsWithImages.length
+        });
         
         setAnnouncements(publishedAnnouncements);
       } catch (error) {
@@ -229,7 +217,7 @@ export default function AnnouncementDisplayPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header with navigation */}
       <div className={`absolute top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm transition-all duration-300 ${
-        showNavigation ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'
+        showNavigation && !cleanViewMode ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -268,24 +256,29 @@ export default function AnnouncementDisplayPage() {
         </div>
       </div>
 
-      {/* Navigation Toggle Button */}
+      {/* Clean View Toggle Button */}
       <button
-        onClick={() => setShowNavigation(!showNavigation)}
+        onClick={() => {
+          setCleanViewMode(!cleanViewMode);
+          if (!cleanViewMode) {
+            setShowNavigation(false);
+          }
+        }}
         className={`fixed top-4 right-4 z-50 inline-flex items-center justify-center w-12 h-12 bg-black/60 backdrop-blur-md text-white hover:bg-black/80 transition-all duration-300 rounded-lg border border-white/20 ${
-          showNavigation ? 'opacity-100' : 'opacity-70 hover:opacity-100'
+          cleanViewMode ? 'opacity-100' : 'opacity-70 hover:opacity-100'
         }`}
-        title={showNavigation ? "Hide navigation" : "Show navigation"}
+        title={cleanViewMode ? "Exit clean view" : "Enter clean view"}
       >
-        {showNavigation ? (
-          <X className="w-5 h-5" />
+        {cleanViewMode ? (
+          <Eye className="w-5 h-5" />
         ) : (
-          <Menu className="w-5 h-5" />
+          <EyeOff className="w-5 h-5" />
         )}
       </button>
 
       {/* Carousel */}
       <OrganizationThemeProvider initialSlug={params.slug as string}>
-        <AnnouncementCarousel announcements={announcements} organizationSlug={params.slug as string} />
+        <AnnouncementCarousel announcements={announcements} organizationSlug={params.slug as string} cleanViewMode={cleanViewMode} />
       </OrganizationThemeProvider>
     </div>
   );

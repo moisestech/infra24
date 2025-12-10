@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { 
   MapPin, 
   ExternalLink, 
@@ -121,14 +120,11 @@ export function AnnouncementMetadata({
 
 
   return (
-    <motion.div 
+    <div 
       className={cn(
         "space-y-3",
         className
       )}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.7 }}
     >
       {/* Type and Priority Row */}
       <div className="flex items-center gap-3 flex-wrap">
@@ -174,6 +170,6 @@ export function AnnouncementMetadata({
           </div>
         </div>
       )} */}
-    </motion.div>
+    </div>
   );
 }
