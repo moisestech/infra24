@@ -81,6 +81,7 @@ interface BudgetItem {
   participant: string
   phase: number
   priority: 'high' | 'medium' | 'low'
+  date?: string // Optional date in YYYY-MM-DD format for proper month allocation
 }
 
 export default function DigitalLabBudgetPage() {
@@ -138,13 +139,10 @@ export default function DigitalLabBudgetPage() {
     { id: 'Furniture & Fixtures', name: 'Furniture & Fixtures', emoji: '🪑' },
     { id: 'Compute', name: 'Compute', emoji: '💻' },
     { id: 'Displays & Projection', name: 'Displays & Projection', emoji: '📺' },
-    { id: 'Peripherals & Creation', name: 'Peripherals & Creation', emoji: '🧰' },
+    { id: 'Virtual and Augmented Reality', name: 'Virtual and Augmented Reality', emoji: '🥽' },
+    { id: '3D Printing', name: '3D Printing', emoji: '🖨️' },
     { id: 'Streaming', name: 'Streaming', emoji: '📡' },
-    { id: 'Audio', name: 'Audio', emoji: '🎙️' },
-    { id: 'Networking & Storage', name: 'Networking & Storage', emoji: '🔌' },
-    { id: 'Large Format Printer', name: 'Large Format Printer', emoji: '🖨️' },
-    { id: 'Signage', name: 'Signage', emoji: '🪧' },
-    { id: 'Contingency', name: 'Contingency', emoji: '🧮' }
+    { id: 'Large Format Printer', name: 'Large Format Printer', emoji: '🖨️' }
   ]
 
 
@@ -291,13 +289,38 @@ export default function DigitalLabBudgetPage() {
     return getTotalCost() - getSpentAmount()
   }
 
+  // Format date to show month/year badge
+  const formatDateBadge = (dateStr?: string): string | null => {
+    if (!dateStr) return null
+    try {
+      const date = new Date(dateStr)
+      const month = date.toLocaleDateString('en-US', { month: 'short' })
+      const year = date.getFullYear()
+      return `${month} ${year}`
+    } catch {
+      return null
+    }
+  }
+
+  // Get month from date for sorting/grouping
+  const getMonthFromDate = (dateStr?: string): string | null => {
+    if (!dateStr) return null
+    try {
+      const date = new Date(dateStr)
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      return `${year}-${month}`
+    } catch {
+      return null
+    }
+  }
+
   // Map dashboard category IDs to display category names
   const mapDashboardCategoryToDisplay = (dashboardCategoryId: string): string => {
     const categoryMap: Record<string, string> = {
       'room-build-out': 'Room Build-Out',
       'hardware-materials': 'Hardware & Materials',
-      'equipment-maintenance': 'Equipment Maintenance',
-      'contingency': 'Contingency'
+      'equipment-maintenance': 'Equipment Maintenance'
     }
     return categoryMap[dashboardCategoryId] || dashboardCategoryId
   }
@@ -317,9 +340,7 @@ export default function DigitalLabBudgetPage() {
         'Room Build-Out': 'room-build-out',
         'Hardware & Materials': 'hardware-materials',
         'Equipment Maintenance': 'equipment-maintenance',
-        'Streaming': 'streaming',
-        'Audio': 'audio',
-        'Contingency': 'contingency'
+        'Streaming': 'streaming'
       }).find(([display]) => display === category)?.[1]
       
       if (dashboardCategoryId) {
@@ -396,13 +417,10 @@ export default function DigitalLabBudgetPage() {
       'Furniture & Fixtures': '#10B981',
       'Compute': '#8B5CF6',
       'Displays & Projection': '#F59E0B',
-      'Peripherals & Creation': '#EF4444',
+      'Virtual and Augmented Reality': '#8B5CF6',
+      '3D Printing': '#EC4899',
       'Streaming': '#06B6D4',
-      'Audio': '#EC4899',
-      'Networking & Storage': '#84CC16',
-      'Large Format Printer': '#F97316',
-      'Signage': '#14B8A6',
-      'Contingency': '#6B7280'
+      'Large Format Printer': '#F97316'
     }
     return colors[categoryId as keyof typeof colors] || '#6B7280'
   }
@@ -531,10 +549,23 @@ export default function DigitalLabBudgetPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-purple-100 text-sm">Spent</p>
-                    <p className="text-3xl font-bold">{formatCurrency(getSpentAmount())}</p>
-                    <p className="text-purple-200 text-xs mt-1">
-                      {((getSpentAmount() / getTotalCost()) * 100).toFixed(1)}% of budget
-                    </p>
+                    {showPercentageInChart ? (
+                      <>
+                        <p className="text-3xl font-bold">
+                          {((getSpentAmount() / getTotalCost()) * 100).toFixed(1)}%
+                        </p>
+                        <p className="text-purple-200 text-xs mt-1">
+                          {formatCurrency(getSpentAmount())} of budget
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-3xl font-bold">{formatCurrency(getSpentAmount())}</p>
+                        <p className="text-purple-200 text-xs mt-1">
+                          {((getSpentAmount() / getTotalCost()) * 100).toFixed(1)}% of budget
+                        </p>
+                      </>
+                    )}
                   </div>
                   <TrendingUp className="h-8 w-8 text-purple-200" />
                 </div>
@@ -546,10 +577,23 @@ export default function DigitalLabBudgetPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-orange-100 text-sm">Remaining</p>
-                    <p className="text-3xl font-bold">{formatCurrency(getRemainingBudget())}</p>
-                    <p className="text-orange-200 text-xs mt-1">
-                      {((getRemainingBudget() / getTotalCost()) * 100).toFixed(1)}% available
-                    </p>
+                    {showPercentageInChart ? (
+                      <>
+                        <p className="text-3xl font-bold">
+                          {((getRemainingBudget() / getTotalCost()) * 100).toFixed(1)}%
+                        </p>
+                        <p className="text-orange-200 text-xs mt-1">
+                          {formatCurrency(getRemainingBudget())} available
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-3xl font-bold">{formatCurrency(getRemainingBudget())}</p>
+                        <p className="text-orange-200 text-xs mt-1">
+                          {((getRemainingBudget() / getTotalCost()) * 100).toFixed(1)}% available
+                        </p>
+                      </>
+                    )}
                   </div>
                   <Wallet className="h-8 w-8 text-orange-200" />
                 </div>
@@ -988,39 +1032,78 @@ export default function DigitalLabBudgetPage() {
                                     Items in {category.name}:
                                   </h5>
                                   <div className="space-y-2 max-h-96 overflow-y-auto">
-                                    {categoryItems.map((item, idx) => (
-                                      <div 
-                                        key={idx}
-                                        className={`flex items-center justify-between p-2 rounded ${isDark ? 'bg-gray-700/50 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'}`}
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                          <span className="text-lg">{item.emoji}</span>
-                                          <div className="flex-1 min-w-0">
-                                            <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                              {item.lineItem}
-                                            </p>
-                                            {item.notes && (
-                                              <p className={`text-xs truncate ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                {item.notes}
+                                    {categoryItems.map((item, idx) => {
+                                      // Try to get date from item, or find it in budgetMonths
+                                      let itemDate = item.date
+                                      if (!itemDate && budgetMonths.length > 0) {
+                                        // Find the item in budgetMonths to get its date
+                                        for (const month of budgetMonths) {
+                                          const foundItem = month.lineItems.find(li => 
+                                            li.name === item.lineItem && li.amount === item.subtotal
+                                          )
+                                          if (foundItem?.date) {
+                                            itemDate = foundItem.date
+                                            break
+                                          }
+                                        }
+                                      }
+                                      
+                                      const dateBadge = formatDateBadge(itemDate)
+                                      const monthStr = getMonthFromDate(itemDate)
+                                      
+                                      return (
+                                        <div 
+                                          key={idx}
+                                          className={`flex items-center justify-between p-2 rounded ${isDark ? 'bg-gray-700/50 hover:bg-gray-700' : 'bg-gray-50 hover:bg-gray-100'}`}
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                            <span className="text-lg">{item.emoji}</span>
+                                            <div className="flex-1 min-w-0">
+                                              <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                {item.lineItem}
                                               </p>
-                                            )}
+                                              <div className="mt-1">
+                                                {dateBadge ? (
+                                                  <Badge 
+                                                    variant="outline" 
+                                                    className={`text-xs font-medium ${isDark ? 'bg-gray-800 border-gray-500 text-gray-200' : 'bg-white border-gray-400 text-gray-700'}`}
+                                                    title={`Purchased: ${dateBadge}`}
+                                                  >
+                                                    📅 {dateBadge}
+                                                  </Badge>
+                                                ) : (
+                                                  <Badge 
+                                                    variant="outline" 
+                                                    className={`text-xs font-medium opacity-50 ${isDark ? 'bg-gray-800 border-gray-600 text-gray-400' : 'bg-white border-gray-300 text-gray-500'}`}
+                                                    title="Date not specified"
+                                                  >
+                                                    No date
+                                                  </Badge>
+                                                )}
+                                              </div>
+                                              {item.notes && (
+                                                <p className={`text-xs truncate mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                  {item.notes}
+                                                </p>
+                                              )}
+                                            </div>
                                           </div>
+                                          {showCosts && (
+                                            <div className="text-right ml-4">
+                                              <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                {formatCurrency(item.subtotal)}
+                                              </p>
+                                              {item.qty > 1 && (
+                                                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                  {item.qty} × {formatCurrency(item.unitCost)}
+                                                </p>
+                                              )}
+                                            </div>
+                                          )}
                                         </div>
-                                        {showCosts && (
-                                          <div className="text-right ml-4">
-                                            <p className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                              {formatCurrency(item.subtotal)}
-                                            </p>
-                                            {item.qty > 1 && (
-                                              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                {item.qty} × {formatCurrency(item.unitCost)}
-                                              </p>
-                                            )}
-                                          </div>
-                                        )}
-                                      </div>
-                                    ))}
+                                      )
+                                    })}
                                   </div>
                                   <div className={`mt-3 pt-3 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'} flex justify-between items-center`}>
                                     <span className={`text-sm font-semibold ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -1043,7 +1126,12 @@ export default function DigitalLabBudgetPage() {
               
               <TabsContent value="dashboard" className="mt-6">
                 {budgetMonths.length > 0 ? (
-                  <BudgetDashboard months={budgetMonths} organizationSlug={slug} />
+                  <BudgetDashboard 
+                    months={budgetMonths} 
+                    organizationSlug={slug}
+                    categories={categories}
+                    getCategoryColor={getCategoryColor}
+                  />
                 ) : (
                   <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     <p>Loading dashboard data...</p>
@@ -1165,16 +1253,6 @@ function categorizeItem(itemName: string, itemNotes: string, csvCategory: string
   const notesLower = (itemNotes || '').toLowerCase()
   const combined = `${nameLower} ${notesLower}`
   
-  // Contingency - check first as it's most specific
-  if (
-    csvCategory === 'contingency' ||
-    nameLower.includes('contingency') ||
-    nameLower.includes('unallocated') ||
-    nameLower.includes('buffer')
-  ) {
-    return 'Contingency'
-  }
-  
   // Large Format Printer keywords - check early as it's specific
   if (
     nameLower.includes('epson p-8000') ||
@@ -1188,10 +1266,14 @@ function categorizeItem(itemName: string, itemNotes: string, csvCategory: string
     nameLower.includes('paper thickness sensor') ||
     nameLower.includes('llk') ||
     nameLower.includes('light light black') ||
+    (nameLower.includes('light pad') && (nameLower.includes('a1') || nameLower.includes('35.4') || nameLower.includes('diamond') || nameLower.includes('led light board'))) ||
+    (nameLower.includes('light box') && nameLower.includes('diamond')) ||
+    (nameLower.includes('lightboard') && nameLower.includes('diamond')) ||
     notesLower.includes('epson p-8000') ||
     notesLower.includes('large format') ||
     notesLower.includes('image pro international') ||
-    notesLower.includes('large format printer')
+    notesLower.includes('large format printer') ||
+    notesLower.includes('light pad')
   ) {
     return 'Large Format Printer'
   }
@@ -1253,8 +1335,9 @@ function categorizeItem(itemName: string, itemNotes: string, csvCategory: string
     nameLower.includes('furniture') ||
     nameLower.includes('whiteboard') ||
     nameLower.includes('storage organizer') ||
-    nameLower.includes('organizer') ||
-    (nameLower.includes('rack') && !nameLower.includes('printer')) ||
+    (nameLower.includes('organizer') && !nameLower.includes('metal storage')) ||
+    nameLower.includes('metal storage organizer') ||
+    (nameLower.includes('rack') && !nameLower.includes('printer') && !nameLower.includes('3d')) ||
     (nameLower.includes('rack') && notesLower.includes('storage'))
   ) {
     return 'Furniture & Fixtures'
@@ -1273,20 +1356,6 @@ function categorizeItem(itemName: string, itemNotes: string, csvCategory: string
     nameLower.includes('card reader')
   ) {
     return 'Compute'
-  }
-  
-  // Audio keywords - check before Streaming
-  if (
-    nameLower.includes('mic') ||
-    nameLower.includes('microphone') ||
-    nameLower.includes('lavalier') ||
-    nameLower.includes('audio interface') ||
-    nameLower.includes('mixer') && (nameLower.includes('audio') || nameLower.includes('pa') || notesLower.includes('audio')) ||
-    nameLower.includes('speaker') ||
-    nameLower.includes('pa') ||
-    (nameLower.includes('audio') && !nameLower.includes('video'))
-  ) {
-    return 'Audio'
   }
   
   // Streaming keywords - lighting equipment for video
@@ -1311,75 +1380,51 @@ function categorizeItem(itemName: string, itemNotes: string, csvCategory: string
     return 'Streaming'
   }
   
-  // Peripherals & Creation keywords
+  // Virtual and Augmented Reality keywords
   if (
-    nameLower.includes('3d printer') ||
-    (nameLower.includes('printer') && !nameLower.includes('rack') && !nameLower.includes('epson') && !nameLower.includes('canon') && !nameLower.includes('large format')) ||
-    nameLower.includes('filament') ||
-    nameLower.includes('resin') ||
     nameLower.includes('quest') ||
     nameLower.includes('vr') ||
     nameLower.includes('headset') ||
-    nameLower.includes('ipad') ||
-    nameLower.includes('pencil') ||
-    nameLower.includes('wacom') ||
-    nameLower.includes('tablet') ||
-    nameLower.includes('camera') ||
-    nameLower.includes('mirrorless') ||
-    nameLower.includes('creation') ||
-    nameLower.includes('peripheral') ||
-    (nameLower.includes('dock') && (nameLower.includes('quest') || nameLower.includes('charging'))) ||
-    (nameLower.includes('rack') && (nameLower.includes('printing') || nameLower.includes('3d'))) ||
-    nameLower.includes('enclosure') && nameLower.includes('resin')
+    nameLower.includes('ar') ||
+    nameLower.includes('augmented') ||
+    nameLower.includes('virtual') ||
+    nameLower.includes('metaverse') ||
+    nameLower.includes('xr') ||
+    (nameLower.includes('dock') && (nameLower.includes('quest') || nameLower.includes('charging')))
   ) {
-    return 'Peripherals & Creation'
+    return 'Virtual and Augmented Reality'
   }
   
-  // Networking & Storage keywords
+  // 3D Printing keywords
   if (
-    nameLower.includes('nas') ||
-    (nameLower.includes('storage') && !nameLower.includes('organizer')) ||
-    nameLower.includes('drive') ||
-    nameLower.includes('tb') ||
-    nameLower.includes('wifi') ||
-    nameLower.includes('router') ||
-    nameLower.includes('switch') ||
-    (nameLower.includes('cable') && nameLower.includes('cat')) ||
-    nameLower.includes('networking') ||
-    nameLower.includes('access point')
+    nameLower.includes('3d printer') ||
+    (nameLower.includes('printer') && !nameLower.includes('epson') && !nameLower.includes('canon') && !nameLower.includes('large format')) ||
+    nameLower.includes('filament') ||
+    nameLower.includes('resin') ||
+    (nameLower.includes('rack') && (nameLower.includes('printing') || nameLower.includes('3d'))) ||
+    (nameLower.includes('enclosure') && nameLower.includes('resin'))
   ) {
-    return 'Networking & Storage'
+    return '3D Printing'
   }
   
   // Safety & Device Security keywords - map to other categories
-  // Cable locks and lockboxes → Peripherals & Creation
+  // Cable locks and lockboxes → 3D Printing (general hardware)
   // Charging stations/carts → Furniture & Fixtures
-  // Security items → Room Build-Out (if related to room) or Peripherals & Creation
+  // Security items → Room Build-Out (if related to room) or 3D Printing
   if (nameLower.includes('charging station') || nameLower.includes('charging cart')) {
     return 'Furniture & Fixtures'
   }
   if (nameLower.includes('cable lock') || nameLower.includes('lockbox')) {
-    return 'Peripherals & Creation'
-  }
-  
-  // Signage keywords
-  if (
-    nameLower.includes('sign') ||
-    nameLower.includes('signage') ||
-    nameLower.includes('wayfinding') ||
-    (nameLower.includes('qr') && nameLower.includes('display')) ||
-    nameLower.includes('smartsign')
-  ) {
-    return 'Signage'
+    return '3D Printing'
   }
   
   // Default fallback - try to infer from CSV category
   if (csvCategory === 'equipment-maintenance') {
-    return 'Peripherals & Creation'
+    return '3D Printing'
   }
   
-  // If we can't categorize, default to Peripherals & Creation (most general hardware category)
-  return 'Peripherals & Creation'
+  // If we can't categorize, default to 3D Printing (most general hardware category)
+  return '3D Printing'
 }
 
 // Convert budget config from CSV to BudgetItem format
@@ -1390,13 +1435,10 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
     'Furniture & Fixtures': '🪑',
     'Compute': '💻',
     'Displays & Projection': '📺',
-    'Peripherals & Creation': '🧰',
+    'Virtual and Augmented Reality': '🥽',
+    '3D Printing': '🖨️',
     'Streaming': '📡',
-    'Audio': '🎙️',
-    'Networking & Storage': '🔌',
     'Large Format Printer': '🖨️',
-    'Signage': '🪧',
-    'Contingency': '🧮',
     'Equipment Maintenance': '🔧',
     'Hardware & Materials': '🧰' // Fallback
   }
@@ -1407,13 +1449,10 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
     'Furniture & Fixtures',
     'Compute',
     'Displays & Projection',
-    'Peripherals & Creation',
+    'Virtual and Augmented Reality',
+    '3D Printing',
     'Streaming',
-    'Audio',
-    'Networking & Storage',
-    'Large Format Printer',
-    'Signage',
-    'Contingency'
+    'Large Format Printer'
   ]
   
   console.log('\n🔍 Starting Item Categorization Process:')
@@ -1433,7 +1472,7 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
     let displayCategory = categorizeItem(item.name, item.notes || '', item.category)
     
     // Log categorization decision for debugging
-    if (displayCategory !== 'Peripherals & Creation' || originalCsvCategory === 'contingency') {
+    if (displayCategory !== '3D Printing') {
       console.log(`  ✓ Item ${index + 1}: "${item.name}"`)
       console.log(`    CSV Category: ${originalCsvCategory}`)
       console.log(`    Assigned Category: ${displayCategory}`)
@@ -1442,10 +1481,10 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
       }
     }
     
-    // Ensure category is valid, fallback to Peripherals & Creation if not
+    // Ensure category is valid, fallback to 3D Printing if not
     if (!validDisplayCategories.includes(displayCategory)) {
-      console.warn(`⚠️ Invalid category "${displayCategory}" for item "${item.name}", remapping to "Peripherals & Creation"`)
-      displayCategory = 'Peripherals & Creation'
+      console.warn(`⚠️ Invalid category "${displayCategory}" for item "${item.name}", remapping to "3D Printing"`)
+      displayCategory = '3D Printing'
     }
     
     const emoji = categoryEmojiMap[displayCategory] || '📦'
@@ -1464,7 +1503,8 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
       phase: index < Math.floor(config.items.length * 0.4) ? 1 : 
             index < Math.floor(config.items.length * 0.75) ? 2 :
             index < Math.floor(config.items.length * 0.9) ? 3 : 4,
-      priority: (index < 5 ? 'high' : index < 15 ? 'medium' : 'low') as 'low' | 'medium' | 'high'
+      priority: (index < 5 ? 'high' : index < 15 ? 'medium' : 'low') as 'low' | 'medium' | 'high',
+      date: item.date // Pass through date if provided
     }
   })
   
@@ -1509,9 +1549,9 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
   console.log('\n📈 Categorization Summary:')
   console.log(`  Total items processed: ${convertedItems.length}`)
   console.log(`  Categories used: ${Object.keys(categoryBreakdown).length}`)
-  const uncategorizedCount = categoryBreakdown['Peripherals & Creation']?.count || 0
+  const uncategorizedCount = categoryBreakdown['3D Printing']?.count || 0
   if (uncategorizedCount > 0) {
-    console.log(`  ⚠️ Items defaulted to "Peripherals & Creation": ${uncategorizedCount}`)
+    console.log(`  ⚠️ Items defaulted to "3D Printing": ${uncategorizedCount}`)
   }
   
   return convertedItems
@@ -1524,40 +1564,113 @@ function createMonthsFromBudgetItems(budgetItems: BudgetItem[], totalBudget: num
   const months: BudgetMonth[] = []
   const monthNames = ['2025-09', '2025-10', '2025-11', '2025-12']
   
-  // Distribute items across these 4 months evenly
-  const itemsPerMonth = Math.ceil(budgetItems.length / 4)
-  
-  monthNames.forEach((monthStr, index) => {
-    const startIdx = index * itemsPerMonth
-    const endIdx = Math.min(startIdx + itemsPerMonth, budgetItems.length)
-    const monthItems = budgetItems.slice(startIdx, endIdx)
-    
-    // Convert BudgetItem to BudgetLineItem format
-    const lineItems: BudgetLineItem[] = monthItems.map((item, idx) => ({
-      id: `${monthStr}-${idx}`,
-      name: item.lineItem,
-      category: item.category,
-      amount: item.subtotal,
-      imageUrl: '',
-      date: `${monthStr}-${String(Math.floor(1 + (idx * 7))).padStart(2, '0')}`,
-      vendor: item.links || '',
-      notes: item.notes || ''
-    }))
-    
-    const spent = monthItems.reduce((sum, item) => sum + item.subtotal, 0)
-    // Distribute budget proportionally: Sep-Dec gets more, but cap at spent amount
-    const budget = Math.max(spent, Math.floor(totalBudget * 0.25)) // 25% per month
-    
+  // Initialize months
+  monthNames.forEach((monthStr) => {
     months.push({
       month: monthStr,
-      budget,
-      spent,
-      lineItems
+      budget: 0,
+      spent: 0,
+      lineItems: []
     })
+  })
+  
+  // Group items by month based on date field
+  const itemsWithoutDate: BudgetItem[] = []
+  
+  budgetItems.forEach((item, idx) => {
+    if (item.date) {
+      // Parse date to determine month - handle YYYY-MM-DD format explicitly to avoid timezone issues
+      let itemMonthStr: string | null = null
+      
+      // Try parsing as YYYY-MM-DD format first (most reliable)
+      if (typeof item.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
+        const [year, month] = item.date.split('-')
+        itemMonthStr = `${year}-${month}`
+      } else {
+        // Fallback to Date parsing (may have timezone issues)
+        const itemDate = new Date(item.date)
+        // Check if date is valid
+        if (!isNaN(itemDate.getTime())) {
+          const itemYear = itemDate.getFullYear()
+          const itemMonth = String(itemDate.getMonth() + 1).padStart(2, '0')
+          itemMonthStr = `${itemYear}-${itemMonth}`
+        }
+      }
+      
+      if (itemMonthStr) {
+        // Find the corresponding month
+        const monthIndex = months.findIndex(m => m.month === itemMonthStr)
+        if (monthIndex !== -1) {
+          const month = months[monthIndex]
+          // Debug logging for Room Build-Out Construction Materials
+          if (item.lineItem.includes('Room Build-Out - Construction Materials')) {
+            console.log(`📅 Room Build-Out Construction Materials: date=${item.date}, parsed month=${itemMonthStr}, assigned to month=${month.month}`)
+          }
+          const lineItem: BudgetLineItem = {
+            id: `${itemMonthStr}-${month.lineItems.length}`,
+            name: item.lineItem,
+            category: item.category,
+            amount: item.subtotal,
+            imageUrl: '',
+            date: item.date,
+            vendor: item.links || '',
+            notes: item.notes || ''
+          }
+          month.lineItems.push(lineItem)
+          month.spent += item.subtotal
+        } else {
+          // Date is outside Sep-Dec 2025 range, add to itemsWithoutDate
+          console.warn(`⚠️ Item "${item.lineItem}" with date ${item.date} (parsed as ${itemMonthStr}) is outside Sep-Dec 2025 range, adding to itemsWithoutDate`)
+          itemsWithoutDate.push(item)
+        }
+      } else {
+        // Invalid date format, add to itemsWithoutDate
+        console.warn(`⚠️ Item "${item.lineItem}" has invalid date format: ${item.date}, adding to itemsWithoutDate`)
+        itemsWithoutDate.push(item)
+      }
+    } else {
+      // No date specified, add to itemsWithoutDate for even distribution
+      itemsWithoutDate.push(item)
+    }
+  })
+  
+  // Distribute items without dates evenly across months (skip September and October - nothing purchased)
+  // Only distribute to November and December
+  if (itemsWithoutDate.length > 0) {
+    const monthsWithPurchases = monthNames.filter(m => m !== '2025-09' && m !== '2025-10') // Skip September and October
+    const itemsPerMonth = Math.ceil(itemsWithoutDate.length / monthsWithPurchases.length)
+    monthsWithPurchases.forEach((monthStr, index) => {
+      const startIdx = index * itemsPerMonth
+      const endIdx = Math.min(startIdx + itemsPerMonth, itemsWithoutDate.length)
+      const monthItems = itemsWithoutDate.slice(startIdx, endIdx)
+      const month = months.find(m => m.month === monthStr)!
+      
+      monthItems.forEach((item, idx) => {
+        const lineItem: BudgetLineItem = {
+          id: `${monthStr}-${month.lineItems.length}`,
+          name: item.lineItem,
+          category: item.category,
+          amount: item.subtotal,
+          imageUrl: '',
+          date: `${monthStr}-${String(Math.floor(1 + (idx * 7))).padStart(2, '0')}`,
+          vendor: item.links || '',
+          notes: item.notes || ''
+        }
+        month.lineItems.push(lineItem)
+        month.spent += item.subtotal
+      })
+    })
+  }
+  
+  // Set budget for each month (at least equal to spent)
+  months.forEach(month => {
+    month.budget = Math.max(month.spent, Math.floor(totalBudget * 0.25)) // 25% per month minimum
   })
   
   console.log('📊 Created months from budgetItems:', {
     totalItems: budgetItems.length,
+    itemsWithDates: budgetItems.filter(i => i.date).length,
+    itemsWithoutDates: itemsWithoutDate.length,
     monthsCreated: months.length,
     totalSpent: months.reduce((sum, m) => sum + m.spent, 0),
     totalBudget: months.reduce((sum, m) => sum + m.budget, 0)
@@ -1598,7 +1711,7 @@ function getMockBudgetData(): BudgetItem[] {
 
     // Displays & Projection
     { emoji: '📺', lineItem: '65" 4K displays', category: 'Displays & Projection', qty: 2, unitCost: 900, subtotal: 1800, notes: 'Class/critique', comments: '', links: '', participant: '', phase: 1, priority: 'medium' },
-    { emoji: '📺', lineItem: 'Short-throw projector (1080p/4K-ready)', category: 'Displays & Projection', qty: 1, unitCost: 1600, subtotal: 1600, notes: 'Workshops & pop-ups', comments: '', links: '', participant: '', phase: 1, priority: 'medium' },
+    { emoji: '📺', lineItem: 'Laset Portable (1080p/4K-ready)', category: 'Displays & Projection', qty: 1, unitCost: 600, subtotal: 1600, notes: 'Workshops & pop-ups', comments: '', links: '', participant: '', phase: 1, priority: 'medium' },
     { emoji: '📺', lineItem: 'Projector screen / paint', category: 'Displays & Projection', qty: 1, unitCost: 400, subtotal: 400, notes: 'Matte white', comments: '', links: '', participant: '', phase: 1, priority: 'medium' },
     { emoji: '📺', lineItem: 'Portable 15" USB-C monitors', category: 'Displays & Projection', qty: 2, unitCost: 200, subtotal: 400, notes: 'Demos/livestream notes', comments: '', links: '', participant: '', phase: 1, priority: 'medium' },
     { emoji: '📺', lineItem: 'Color-accurate reference monitor (27")', category: 'Displays & Projection', qty: 1, unitCost: 1500, subtotal: 1500, notes: 'Grading/proofing', comments: '', links: '', participant: '', phase: 1, priority: 'medium' },
