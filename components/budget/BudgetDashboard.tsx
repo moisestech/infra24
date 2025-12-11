@@ -271,13 +271,13 @@ export function BudgetDashboard({ months, organizationSlug, categories, getCateg
                     const monthData = monthlyCategoryData.find(m => {
                       const monthTotal = Object.entries(m)
                         .filter(([key]) => key !== 'month' && key !== 'monthKey')
-                        .reduce((sum, [, val]) => sum + (val as number), 0)
+                        .reduce((sum, [, val]) => sum + Number(val), 0)
                       return monthTotal > 0 && (value / monthTotal) * 100 <= 100
                     })
                     if (monthData) {
                       const monthTotal = Object.entries(monthData)
                         .filter(([key]) => key !== 'month' && key !== 'monthKey')
-                        .reduce((sum, [, val]) => sum + (val as number), 0)
+                        .reduce((sum, [, val]) => sum + Number(val), 0)
                       return monthTotal > 0 ? `${((value / monthTotal) * 100).toFixed(0)}%` : '0%'
                     }
                     return '0%'
