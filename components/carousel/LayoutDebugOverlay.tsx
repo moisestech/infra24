@@ -10,13 +10,15 @@ interface LayoutDebugOverlayProps {
   hasImage: boolean;
   organizationSlug?: string;
   className?: string;
+  disabled?: boolean;
 }
 
 export function LayoutDebugOverlay({ 
   imageLayout, 
   hasImage, 
   organizationSlug,
-  className 
+  className,
+  disabled = false
 }: LayoutDebugOverlayProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
@@ -38,6 +40,10 @@ export function LayoutDebugOverlay({
   const toggleOverlay = () => {
     setShowOverlay(!showOverlay);
   };
+
+  if (disabled) {
+    return null;
+  }
 
   if (!isVisible) {
     return (

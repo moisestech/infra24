@@ -76,15 +76,25 @@ export default function AnnouncementDisplayPage() {
             
             return mapped;
           });
+
+        // Limit to the last 30 days of content for display
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - 30);
+        const recentAnnouncements = publishedAnnouncements.filter((announcement: any) => {
+          const rawDate = announcement.created_at || announcement.starts_at || announcement.scheduled_at;
+          if (!rawDate) return false;
+          const announcementDate = new Date(rawDate);
+          return !Number.isNaN(announcementDate.getTime()) && announcementDate >= cutoffDate;
+        });
         
         // Summary log only
-        const announcementsWithImages = publishedAnnouncements.filter((a: any) => a.image_url);
+        const announcementsWithImages = recentAnnouncements.filter((a: any) => a.image_url);
         console.log('📋 Display Page:', {
-          total: publishedAnnouncements.length,
+          total: recentAnnouncements.length,
           withImages: announcementsWithImages.length
         });
         
-        setAnnouncements(publishedAnnouncements);
+        setAnnouncements(recentAnnouncements);
       } catch (error) {
         console.error('Error loading data:', error);
         setError(error instanceof Error ? error.message : 'Failed to load data');

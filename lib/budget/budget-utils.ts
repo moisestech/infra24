@@ -1,4 +1,4 @@
-import { Briefcase, Package, Cloud, Shield, Wrench, Building, Radio, Mic, Users } from 'lucide-react'
+import { Users, Briefcase, Package, Cloud, Shield } from 'lucide-react'
 
 export interface BudgetLineItem {
   id: string
@@ -28,11 +28,18 @@ export interface BudgetCategory {
 
 export const BUDGET_CATEGORIES: BudgetCategory[] = [
   {
-    id: 'room-build-out',
-    name: 'Room Build-Out',
-    icon: Building,
+    id: 'program-salaries',
+    name: 'Program Salaries & Wages',
+    icon: Users,
+    color: '#10B981', // green
+    description: 'Part-time staff salaries and wages'
+  },
+  {
+    id: 'contracted-services',
+    name: 'Contracted Services',
+    icon: Briefcase,
     color: '#3B82F6', // blue
-    description: 'Renovation, construction, and space preparation work'
+    description: 'One-off tech work and professional services'
   },
   {
     id: 'hardware-materials',
@@ -42,25 +49,11 @@ export const BUDGET_CATEGORIES: BudgetCategory[] = [
     description: 'Hardware fleet including equipment and materials'
   },
   {
-    id: 'equipment-maintenance',
-    name: 'Equipment Maintenance',
-    icon: Wrench,
-    color: '#10B981', // green
-    description: 'Maintenance, repairs, and upkeep of equipment'
-  },
-  {
-    id: 'streaming',
-    name: 'Streaming',
-    icon: Radio,
+    id: 'cloud-admin',
+    name: 'Cloud & Admin Costs',
+    icon: Cloud,
     color: '#06B6D4', // cyan
-    description: 'Streaming infrastructure, cabling, and IT services'
-  },
-  {
-    id: 'audio',
-    name: 'Audio',
-    icon: Mic,
-    color: '#EC4899', // pink
-    description: 'Audio equipment, microphones, and sound systems'
+    description: 'Cloud services and administrative costs'
   },
   {
     id: 'contingency',
@@ -74,11 +67,10 @@ export const BUDGET_CATEGORIES: BudgetCategory[] = [
 // Generate Unsplash image URL based on category and item name
 export function getBudgetItemImage(category: string, itemName: string): string {
   const searchTerms: Record<string, string> = {
-    'room-build-out': 'construction+renovation',
+    'program-salaries': 'office+team',
+    'contracted-services': 'technology+development',
     'hardware-materials': 'computer+equipment',
-    'equipment-maintenance': 'tools+repair',
-    'streaming': 'cabling+network',
-    'audio': 'microphone+audio',
+    'cloud-admin': 'cloud+server',
     'contingency': 'tools+equipment'
   }
   
@@ -244,61 +236,6 @@ export function generateMockBudgetData(year: string = '2025', orgSlug: string = 
     }
   }
   
-  // Add specific month-assigned items (invoices, contracts, etc.)
-  // November 2025: Digital Lab Paint Floor Space Renovation Contractors - $1200
-  const november2025 = months.find(m => m.month === '2025-11')
-  if (november2025) {
-    const renovationItem: BudgetLineItem = {
-      id: '2025-11-renovation',
-      name: 'Digital Lab Paint Floor Space Renovation Contractors',
-      category: 'room-build-out', // Changed to room-build-out category
-      amount: 1200,
-      imageUrl: getBudgetItemImage('room-build-out', 'renovation'),
-      date: '2025-11-15',
-      vendor: 'Contractors',
-      notes: 'Paint and floor space renovation work'
-    }
-    november2025.lineItems.push(renovationItem)
-    november2025.spent += 1200
-    november2025.budget = Math.max(november2025.budget, november2025.spent)
-    console.log('✅ Added November 2025 renovation item:', renovationItem)
-  }
-  
-  // December 2025: Digital Lab Surface Touch-ups - $360
-  const december2025 = months.find(m => m.month === '2025-12')
-  if (december2025) {
-    const touchupItem: BudgetLineItem = {
-      id: '2025-12-touchups',
-      name: 'Digital Lab Surface Touch-ups',
-      category: 'room-build-out', // Changed to room-build-out category
-      amount: 360,
-      imageUrl: getBudgetItemImage('room-build-out', 'touch-ups'),
-      date: '2025-12-10',
-      vendor: 'Contractors',
-      notes: 'Surface touch-ups and finishing work'
-    }
-    december2025.lineItems.push(touchupItem)
-    december2025.spent += 360
-    december2025.budget = Math.max(december2025.budget, december2025.spent)
-    console.log('✅ Added December 2025 touch-ups item:', touchupItem)
-    
-    // December 2025: Verity IT - Cabling Service - $4,941
-    const verityItem: BudgetLineItem = {
-      id: '2025-12-verity-cabling',
-      name: 'Verity IT - Cabling Service',
-      category: 'streaming',
-      amount: 4941,
-      imageUrl: getBudgetItemImage('streaming', 'cabling'),
-      date: '2025-12-15',
-      vendor: 'Verity',
-      notes: 'Install the conduit and rub fiver line. Labor. Install 130 ft or EMT conduit. Clean up 3 old cables'
-    }
-    december2025.lineItems.push(verityItem)
-    december2025.spent += 4941
-    december2025.budget = Math.max(december2025.budget, december2025.spent)
-    console.log('✅ Added December 2025 Verity IT cabling item:', verityItem)
-  }
-  
   const finalTotal = months.reduce((sum: number, m: BudgetMonth) => sum + m.budget, 0)
   const finalSpent = months.reduce((sum: number, m: BudgetMonth) => sum + m.spent, 0)
   const totalItems = months.reduce((sum: number, m: BudgetMonth) => sum + m.lineItems.length, 0)
@@ -346,7 +283,7 @@ export function getTotalSpent(months: BudgetMonth[]): number {
 export function getCategoryTotal(months: BudgetMonth[], categoryId: string): number {
   return months.reduce((sum: number, month: BudgetMonth) => {
     return sum + month.lineItems
-      .filter((item: BudgetLineItem) => item.category === categoryId)
+      .filter(item => item.category === categoryId)
       .reduce((itemSum: number, item: BudgetLineItem) => itemSum + item.amount, 0)
   }, 0)
 }

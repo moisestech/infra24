@@ -201,6 +201,7 @@ export function PatternTemplate({
           imageLayout={imageLayout}
           hasImage={hasImage}
           organizationSlug={organizationSlug}
+          disabled={animationsPaused}
         />
         <ImageLayout
           layout={imageLayout}
@@ -245,6 +246,7 @@ export function PatternTemplate({
         imageLayout={null}
         hasImage={false}
         organizationSlug={organizationSlug}
+        disabled={animationsPaused}
       />
       <div className="relative w-full h-full">
         {/* Base gradient background */}

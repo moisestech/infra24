@@ -139,10 +139,13 @@ export default function DigitalLabBudgetPage() {
     { id: 'Furniture & Fixtures', name: 'Furniture & Fixtures', emoji: '🪑' },
     { id: 'Compute', name: 'Compute', emoji: '💻' },
     { id: 'Displays & Projection', name: 'Displays & Projection', emoji: '📺' },
-    { id: 'Virtual and Augmented Reality', name: 'Virtual and Augmented Reality', emoji: '🥽' },
-    { id: '3D Printing', name: '3D Printing', emoji: '🖨️' },
+    { id: 'Peripherals & Creation', name: 'Peripherals & Creation', emoji: '🧰' },
     { id: 'Streaming', name: 'Streaming', emoji: '📡' },
-    { id: 'Large Format Printer', name: 'Large Format Printer', emoji: '🖨️' }
+    { id: 'Audio', name: 'Audio', emoji: '🎙️' },
+    { id: 'Networking & Storage', name: 'Networking & Storage', emoji: '🔌' },
+    { id: 'Large Format Printer', name: 'Large Format Printer', emoji: '🖨️' },
+    { id: 'Signage', name: 'Signage', emoji: '🪧' },
+    { id: 'Contingency', name: 'Contingency', emoji: '🧮' }
   ]
 
 
@@ -320,7 +323,8 @@ export default function DigitalLabBudgetPage() {
     const categoryMap: Record<string, string> = {
       'room-build-out': 'Room Build-Out',
       'hardware-materials': 'Hardware & Materials',
-      'equipment-maintenance': 'Equipment Maintenance'
+      'equipment-maintenance': 'Equipment Maintenance',
+      'contingency': 'Contingency'
     }
     return categoryMap[dashboardCategoryId] || dashboardCategoryId
   }
@@ -340,7 +344,9 @@ export default function DigitalLabBudgetPage() {
         'Room Build-Out': 'room-build-out',
         'Hardware & Materials': 'hardware-materials',
         'Equipment Maintenance': 'equipment-maintenance',
-        'Streaming': 'streaming'
+        'Streaming': 'streaming',
+        'Audio': 'audio',
+        'Contingency': 'contingency'
       }).find(([display]) => display === category)?.[1]
       
       if (dashboardCategoryId) {
@@ -417,10 +423,13 @@ export default function DigitalLabBudgetPage() {
       'Furniture & Fixtures': '#10B981',
       'Compute': '#8B5CF6',
       'Displays & Projection': '#F59E0B',
-      'Virtual and Augmented Reality': '#8B5CF6',
-      '3D Printing': '#EC4899',
+      'Peripherals & Creation': '#EF4444',
       'Streaming': '#06B6D4',
-      'Large Format Printer': '#F97316'
+      'Audio': '#EC4899',
+      'Networking & Storage': '#84CC16',
+      'Large Format Printer': '#F97316',
+      'Signage': '#14B8A6',
+      'Contingency': '#6B7280'
     }
     return colors[categoryId as keyof typeof colors] || '#6B7280'
   }
@@ -1126,12 +1135,7 @@ export default function DigitalLabBudgetPage() {
               
               <TabsContent value="dashboard" className="mt-6">
                 {budgetMonths.length > 0 ? (
-                  <BudgetDashboard 
-                    months={budgetMonths} 
-                    organizationSlug={slug}
-                    categories={categories}
-                    getCategoryColor={getCategoryColor}
-                  />
+                  <BudgetDashboard months={budgetMonths} organizationSlug={slug} />
                 ) : (
                   <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     <p>Loading dashboard data...</p>
@@ -1253,6 +1257,16 @@ function categorizeItem(itemName: string, itemNotes: string, csvCategory: string
   const notesLower = (itemNotes || '').toLowerCase()
   const combined = `${nameLower} ${notesLower}`
   
+  // Contingency - check first as it's most specific
+  if (
+    csvCategory === 'contingency' ||
+    nameLower.includes('contingency') ||
+    nameLower.includes('unallocated') ||
+    nameLower.includes('buffer')
+  ) {
+    return 'Contingency'
+  }
+  
   // Large Format Printer keywords - check early as it's specific
   if (
     nameLower.includes('epson p-8000') ||
@@ -1266,14 +1280,10 @@ function categorizeItem(itemName: string, itemNotes: string, csvCategory: string
     nameLower.includes('paper thickness sensor') ||
     nameLower.includes('llk') ||
     nameLower.includes('light light black') ||
-    (nameLower.includes('light pad') && (nameLower.includes('a1') || nameLower.includes('35.4') || nameLower.includes('diamond') || nameLower.includes('led light board'))) ||
-    (nameLower.includes('light box') && nameLower.includes('diamond')) ||
-    (nameLower.includes('lightboard') && nameLower.includes('diamond')) ||
     notesLower.includes('epson p-8000') ||
     notesLower.includes('large format') ||
     notesLower.includes('image pro international') ||
-    notesLower.includes('large format printer') ||
-    notesLower.includes('light pad')
+    notesLower.includes('large format printer')
   ) {
     return 'Large Format Printer'
   }
@@ -1335,9 +1345,8 @@ function categorizeItem(itemName: string, itemNotes: string, csvCategory: string
     nameLower.includes('furniture') ||
     nameLower.includes('whiteboard') ||
     nameLower.includes('storage organizer') ||
-    (nameLower.includes('organizer') && !nameLower.includes('metal storage')) ||
-    nameLower.includes('metal storage organizer') ||
-    (nameLower.includes('rack') && !nameLower.includes('printer') && !nameLower.includes('3d')) ||
+    nameLower.includes('organizer') ||
+    (nameLower.includes('rack') && !nameLower.includes('printer')) ||
     (nameLower.includes('rack') && notesLower.includes('storage'))
   ) {
     return 'Furniture & Fixtures'
@@ -1356,6 +1365,20 @@ function categorizeItem(itemName: string, itemNotes: string, csvCategory: string
     nameLower.includes('card reader')
   ) {
     return 'Compute'
+  }
+  
+  // Audio keywords - check before Streaming
+  if (
+    nameLower.includes('mic') ||
+    nameLower.includes('microphone') ||
+    nameLower.includes('lavalier') ||
+    nameLower.includes('audio interface') ||
+    nameLower.includes('mixer') && (nameLower.includes('audio') || nameLower.includes('pa') || notesLower.includes('audio')) ||
+    nameLower.includes('speaker') ||
+    nameLower.includes('pa') ||
+    (nameLower.includes('audio') && !nameLower.includes('video'))
+  ) {
+    return 'Audio'
   }
   
   // Streaming keywords - lighting equipment for video
@@ -1380,51 +1403,75 @@ function categorizeItem(itemName: string, itemNotes: string, csvCategory: string
     return 'Streaming'
   }
   
-  // Virtual and Augmented Reality keywords
+  // Peripherals & Creation keywords
   if (
+    nameLower.includes('3d printer') ||
+    (nameLower.includes('printer') && !nameLower.includes('rack') && !nameLower.includes('epson') && !nameLower.includes('canon') && !nameLower.includes('large format')) ||
+    nameLower.includes('filament') ||
+    nameLower.includes('resin') ||
     nameLower.includes('quest') ||
     nameLower.includes('vr') ||
     nameLower.includes('headset') ||
-    nameLower.includes('ar') ||
-    nameLower.includes('augmented') ||
-    nameLower.includes('virtual') ||
-    nameLower.includes('metaverse') ||
-    nameLower.includes('xr') ||
-    (nameLower.includes('dock') && (nameLower.includes('quest') || nameLower.includes('charging')))
+    nameLower.includes('ipad') ||
+    nameLower.includes('pencil') ||
+    nameLower.includes('wacom') ||
+    nameLower.includes('tablet') ||
+    nameLower.includes('camera') ||
+    nameLower.includes('mirrorless') ||
+    nameLower.includes('creation') ||
+    nameLower.includes('peripheral') ||
+    (nameLower.includes('dock') && (nameLower.includes('quest') || nameLower.includes('charging'))) ||
+    (nameLower.includes('rack') && (nameLower.includes('printing') || nameLower.includes('3d'))) ||
+    nameLower.includes('enclosure') && nameLower.includes('resin')
   ) {
-    return 'Virtual and Augmented Reality'
+    return 'Peripherals & Creation'
   }
   
-  // 3D Printing keywords
+  // Networking & Storage keywords
   if (
-    nameLower.includes('3d printer') ||
-    (nameLower.includes('printer') && !nameLower.includes('epson') && !nameLower.includes('canon') && !nameLower.includes('large format')) ||
-    nameLower.includes('filament') ||
-    nameLower.includes('resin') ||
-    (nameLower.includes('rack') && (nameLower.includes('printing') || nameLower.includes('3d'))) ||
-    (nameLower.includes('enclosure') && nameLower.includes('resin'))
+    nameLower.includes('nas') ||
+    (nameLower.includes('storage') && !nameLower.includes('organizer')) ||
+    nameLower.includes('drive') ||
+    nameLower.includes('tb') ||
+    nameLower.includes('wifi') ||
+    nameLower.includes('router') ||
+    nameLower.includes('switch') ||
+    (nameLower.includes('cable') && nameLower.includes('cat')) ||
+    nameLower.includes('networking') ||
+    nameLower.includes('access point')
   ) {
-    return '3D Printing'
+    return 'Networking & Storage'
   }
   
   // Safety & Device Security keywords - map to other categories
-  // Cable locks and lockboxes → 3D Printing (general hardware)
+  // Cable locks and lockboxes → Peripherals & Creation
   // Charging stations/carts → Furniture & Fixtures
-  // Security items → Room Build-Out (if related to room) or 3D Printing
+  // Security items → Room Build-Out (if related to room) or Peripherals & Creation
   if (nameLower.includes('charging station') || nameLower.includes('charging cart')) {
     return 'Furniture & Fixtures'
   }
   if (nameLower.includes('cable lock') || nameLower.includes('lockbox')) {
-    return '3D Printing'
+    return 'Peripherals & Creation'
+  }
+  
+  // Signage keywords
+  if (
+    nameLower.includes('sign') ||
+    nameLower.includes('signage') ||
+    nameLower.includes('wayfinding') ||
+    (nameLower.includes('qr') && nameLower.includes('display')) ||
+    nameLower.includes('smartsign')
+  ) {
+    return 'Signage'
   }
   
   // Default fallback - try to infer from CSV category
   if (csvCategory === 'equipment-maintenance') {
-    return '3D Printing'
+    return 'Peripherals & Creation'
   }
   
-  // If we can't categorize, default to 3D Printing (most general hardware category)
-  return '3D Printing'
+  // If we can't categorize, default to Peripherals & Creation (most general hardware category)
+  return 'Peripherals & Creation'
 }
 
 // Convert budget config from CSV to BudgetItem format
@@ -1435,10 +1482,13 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
     'Furniture & Fixtures': '🪑',
     'Compute': '💻',
     'Displays & Projection': '📺',
-    'Virtual and Augmented Reality': '🥽',
-    '3D Printing': '🖨️',
+    'Peripherals & Creation': '🧰',
     'Streaming': '📡',
+    'Audio': '🎙️',
+    'Networking & Storage': '🔌',
     'Large Format Printer': '🖨️',
+    'Signage': '🪧',
+    'Contingency': '🧮',
     'Equipment Maintenance': '🔧',
     'Hardware & Materials': '🧰' // Fallback
   }
@@ -1449,10 +1499,13 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
     'Furniture & Fixtures',
     'Compute',
     'Displays & Projection',
-    'Virtual and Augmented Reality',
-    '3D Printing',
+    'Peripherals & Creation',
     'Streaming',
-    'Large Format Printer'
+    'Audio',
+    'Networking & Storage',
+    'Large Format Printer',
+    'Signage',
+    'Contingency'
   ]
   
   console.log('\n🔍 Starting Item Categorization Process:')
@@ -1472,7 +1525,7 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
     let displayCategory = categorizeItem(item.name, item.notes || '', item.category)
     
     // Log categorization decision for debugging
-    if (displayCategory !== '3D Printing') {
+    if (displayCategory !== 'Peripherals & Creation' || originalCsvCategory === 'contingency') {
       console.log(`  ✓ Item ${index + 1}: "${item.name}"`)
       console.log(`    CSV Category: ${originalCsvCategory}`)
       console.log(`    Assigned Category: ${displayCategory}`)
@@ -1481,10 +1534,10 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
       }
     }
     
-    // Ensure category is valid, fallback to 3D Printing if not
+    // Ensure category is valid, fallback to Peripherals & Creation if not
     if (!validDisplayCategories.includes(displayCategory)) {
-      console.warn(`⚠️ Invalid category "${displayCategory}" for item "${item.name}", remapping to "3D Printing"`)
-      displayCategory = '3D Printing'
+      console.warn(`⚠️ Invalid category "${displayCategory}" for item "${item.name}", remapping to "Peripherals & Creation"`)
+      displayCategory = 'Peripherals & Creation'
     }
     
     const emoji = categoryEmojiMap[displayCategory] || '📦'
@@ -1549,9 +1602,9 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
   console.log('\n📈 Categorization Summary:')
   console.log(`  Total items processed: ${convertedItems.length}`)
   console.log(`  Categories used: ${Object.keys(categoryBreakdown).length}`)
-  const uncategorizedCount = categoryBreakdown['3D Printing']?.count || 0
+  const uncategorizedCount = categoryBreakdown['Peripherals & Creation']?.count || 0
   if (uncategorizedCount > 0) {
-    console.log(`  ⚠️ Items defaulted to "3D Printing": ${uncategorizedCount}`)
+    console.log(`  ⚠️ Items defaulted to "Peripherals & Creation": ${uncategorizedCount}`)
   }
   
   return convertedItems
@@ -1579,53 +1632,30 @@ function createMonthsFromBudgetItems(budgetItems: BudgetItem[], totalBudget: num
   
   budgetItems.forEach((item, idx) => {
     if (item.date) {
-      // Parse date to determine month - handle YYYY-MM-DD format explicitly to avoid timezone issues
-      let itemMonthStr: string | null = null
+      // Parse date to determine month
+      const itemDate = new Date(item.date)
+      const itemYear = itemDate.getFullYear()
+      const itemMonth = String(itemDate.getMonth() + 1).padStart(2, '0')
+      const itemMonthStr = `${itemYear}-${itemMonth}`
       
-      // Try parsing as YYYY-MM-DD format first (most reliable)
-      if (typeof item.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
-        const [year, month] = item.date.split('-')
-        itemMonthStr = `${year}-${month}`
-      } else {
-        // Fallback to Date parsing (may have timezone issues)
-        const itemDate = new Date(item.date)
-        // Check if date is valid
-        if (!isNaN(itemDate.getTime())) {
-          const itemYear = itemDate.getFullYear()
-          const itemMonth = String(itemDate.getMonth() + 1).padStart(2, '0')
-          itemMonthStr = `${itemYear}-${itemMonth}`
+      // Find the corresponding month
+      const monthIndex = months.findIndex(m => m.month === itemMonthStr)
+      if (monthIndex !== -1) {
+        const month = months[monthIndex]
+        const lineItem: BudgetLineItem = {
+          id: `${itemMonthStr}-${month.lineItems.length}`,
+          name: item.lineItem,
+          category: item.category,
+          amount: item.subtotal,
+          imageUrl: '',
+          date: item.date,
+          vendor: item.links || '',
+          notes: item.notes || ''
         }
-      }
-      
-      if (itemMonthStr) {
-        // Find the corresponding month
-        const monthIndex = months.findIndex(m => m.month === itemMonthStr)
-        if (monthIndex !== -1) {
-          const month = months[monthIndex]
-          // Debug logging for Room Build-Out Construction Materials
-          if (item.lineItem.includes('Room Build-Out - Construction Materials')) {
-            console.log(`📅 Room Build-Out Construction Materials: date=${item.date}, parsed month=${itemMonthStr}, assigned to month=${month.month}`)
-          }
-          const lineItem: BudgetLineItem = {
-            id: `${itemMonthStr}-${month.lineItems.length}`,
-            name: item.lineItem,
-            category: item.category,
-            amount: item.subtotal,
-            imageUrl: '',
-            date: item.date,
-            vendor: item.links || '',
-            notes: item.notes || ''
-          }
-          month.lineItems.push(lineItem)
-          month.spent += item.subtotal
-        } else {
-          // Date is outside Sep-Dec 2025 range, add to itemsWithoutDate
-          console.warn(`⚠️ Item "${item.lineItem}" with date ${item.date} (parsed as ${itemMonthStr}) is outside Sep-Dec 2025 range, adding to itemsWithoutDate`)
-          itemsWithoutDate.push(item)
-        }
+        month.lineItems.push(lineItem)
+        month.spent += item.subtotal
       } else {
-        // Invalid date format, add to itemsWithoutDate
-        console.warn(`⚠️ Item "${item.lineItem}" has invalid date format: ${item.date}, adding to itemsWithoutDate`)
+        // Date is outside Sep-Dec 2025 range, add to itemsWithoutDate
         itemsWithoutDate.push(item)
       }
     } else {
@@ -1634,12 +1664,10 @@ function createMonthsFromBudgetItems(budgetItems: BudgetItem[], totalBudget: num
     }
   })
   
-  // Distribute items without dates evenly across months (skip September and October - nothing purchased)
-  // Only distribute to November and December
+  // Distribute items without dates evenly across months
   if (itemsWithoutDate.length > 0) {
-    const monthsWithPurchases = monthNames.filter(m => m !== '2025-09' && m !== '2025-10') // Skip September and October
-    const itemsPerMonth = Math.ceil(itemsWithoutDate.length / monthsWithPurchases.length)
-    monthsWithPurchases.forEach((monthStr, index) => {
+    const itemsPerMonth = Math.ceil(itemsWithoutDate.length / 4)
+    monthNames.forEach((monthStr, index) => {
       const startIdx = index * itemsPerMonth
       const endIdx = Math.min(startIdx + itemsPerMonth, itemsWithoutDate.length)
       const monthItems = itemsWithoutDate.slice(startIdx, endIdx)

@@ -296,8 +296,8 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
     emblaApi.on('select', onSelect);
     onSelect(); // Set initial index
 
-    // Add smooth transition to the carousel container (the flex div)
-    const container = (emblaRef as any)?.current?.querySelector?.('.flex') as HTMLElement | undefined;
+    // Add smooth transition to the carousel container
+    const container = emblaApi?.containerNode?.();
     if (container) {
       container.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     }
@@ -305,7 +305,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
     return () => {
       emblaApi.off('select', onSelect);
     };
-  }, [emblaApi, emblaRef, currentIndex, futureAnnouncements, isPaused]);
+  }, [emblaApi, currentIndex, futureAnnouncements, isPaused]);
 
   // Track if user has manually changed icon/avatar sizes
   const [hasManualIconSize, setHasManualIconSize] = useState(false);
