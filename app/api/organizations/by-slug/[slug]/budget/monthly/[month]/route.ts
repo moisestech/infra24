@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateMockBudgetData, BudgetMonth } from '@/lib/budget/budget-utils'
+import { generateMockBudgetData } from '@/lib/budget/budget-utils'
+import { fetchBudgetFromAirtable } from '@/lib/airtable/budget-service'
+import { getBudgetConfig } from '@/lib/budget/budget-data'
 
 export async function GET(
   request: NextRequest,
@@ -16,10 +18,15 @@ export async function GET(
       )
     }
     
-    // In the future, this would fetch from database
-    // For now, return mock data and find the specific month
+    // For Oolite, try Airtable first; otherwise use static config
+    let budgetConfig = getBudgetConfig(slug)
+    if (slug === 'oolite') {
+      const airtableConfig = await fetchBudgetFromAirtable(slug, 'digital-lab')
+      if (airtableConfig) budgetConfig = airtableConfig
+    }
+    
     const year = month.split('-')[0]
-    const months = generateMockBudgetData(year)
+    const months = generateMockBudgetData(year, slug, budgetConfig)
     const monthData = months.find(m => m.month === month)
     
     if (!monthData) {

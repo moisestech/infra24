@@ -82,17 +82,27 @@ export function getBudgetItemImage(category: string, itemName: string): string {
   return `https://source.unsplash.com/${width}x${height}/?${term}&sig=${seed}`
 }
 
+// Budget config shape for optional injection (e.g. from Airtable)
+export interface BudgetConfigForGeneration {
+  totalBudget: number
+  items: { name: string; category: string; amount: number; vendor?: string; notes?: string; date?: string }[]
+}
+
 // Generate budget data using organization-specific budget configurations
-// Data source: lib/budget/budget-data.ts
+// Data source: lib/budget/budget-data.ts or injected config (e.g. from Airtable)
 // Generates months from September 2025 to September 2026 (13 months)
-export function generateMockBudgetData(year: string = '2025', orgSlug: string = 'oolite'): BudgetMonth[] {
-  console.log('📊 generateMockBudgetData() called:', { year, orgSlug })
+export function generateMockBudgetData(
+  year: string = '2025',
+  orgSlug: string = 'oolite',
+  configOverride?: BudgetConfigForGeneration
+): BudgetMonth[] {
+  console.log('📊 generateMockBudgetData() called:', { year, orgSlug, hasConfigOverride: !!configOverride })
   
   const months: BudgetMonth[] = []
   
-  // Import organization-specific budget config
+  // Use injected config (e.g. from Airtable) or fall back to static config
   const { getBudgetConfig } = require('./budget-data')
-  const budgetConfig = getBudgetConfig(orgSlug)
+  const budgetConfig = configOverride ?? getBudgetConfig(orgSlug)
   const totalBudget = budgetConfig.totalBudget
   const allItems = budgetConfig.items
   

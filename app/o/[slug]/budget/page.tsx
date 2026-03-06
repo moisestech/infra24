@@ -53,12 +53,13 @@ import {
   ChevronDown,
   ChevronRight,
   Wallet,
-  TrendingDown
+  TrendingDown,
+  LayoutDashboard
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useTheme } from '@/contexts/ThemeContext'
-import { getBudgetConfig } from '@/lib/budget/budget-data'
+import { getBudgetConfig, type OoliteBudgetType } from '@/lib/budget/budget-data'
 
 interface Organization {
   id: string
@@ -78,10 +79,15 @@ interface BudgetItem {
   notes: string
   comments: string
   links: string
+  vendor?: string
   participant: string
   phase: number
   priority: 'high' | 'medium' | 'low'
-  date?: string // Optional date in YYYY-MM-DD format for proper month allocation
+  date?: string
+  purpose?: string
+  phaseLabel?: string // Equipment Acquisition | Renovation / Setup
+  programPillar?: string // Infrastructure | Programming Support | etc.
+  spendType?: string // Purchased Actual | Planned
 }
 
 export default function DigitalLabBudgetPage() {
@@ -132,6 +138,9 @@ export default function DigitalLabBudgetPage() {
   const [selectedCategoryForSort, setSelectedCategoryForSort] = useState<string | null>(null)
   const [currentDateTime, setCurrentDateTime] = useState(new Date())
   const [showRemainingInChart, setShowRemainingInChart] = useState(true)
+  const [budgetType, setBudgetType] = useState<OoliteBudgetType>('digital-lab')
+  const [syncPurposeLoading, setSyncPurposeLoading] = useState(false)
+  const [syncPurposeResult, setSyncPurposeResult] = useState<{ updated: number; errors: string[] } | null>(null)
 
   const categories = [
     { id: 'all', name: 'All Categories', emoji: '📊' },
@@ -145,7 +154,16 @@ export default function DigitalLabBudgetPage() {
     { id: 'Networking & Storage', name: 'Networking & Storage', emoji: '🔌' },
     { id: 'Large Format Printer', name: 'Large Format Printer', emoji: '🖨️' },
     { id: 'Signage', name: 'Signage', emoji: '🪧' },
-    { id: 'Contingency', name: 'Contingency', emoji: '🧮' }
+    { id: 'Contingency', name: 'Contingency', emoji: '🧮' },
+    // Summit/Event budget categories
+    { id: 'Speakers & Program', name: 'Speakers & Program', emoji: '🎤' },
+    { id: 'Production & AV', name: 'Production & AV', emoji: '🎬' },
+    { id: 'Hospitality', name: 'Hospitality', emoji: '☕' },
+    { id: 'Marketing', name: 'Marketing', emoji: '📣' },
+    { id: 'Publishing', name: 'Publishing', emoji: '📚' },
+    { id: 'Archiving', name: 'Archiving', emoji: '📦' },
+    { id: 'Operations', name: 'Operations', emoji: '⚙️' },
+    { id: 'Community Event', name: 'Community Event', emoji: '🎤' }
   ]
 
 
@@ -155,7 +173,7 @@ export default function DigitalLabBudgetPage() {
     } else {
       console.warn('⚠️ Budget Page - No slug available, skipping loadData')
     }
-  }, [slug])
+  }, [slug, budgetType])
 
   useEffect(() => {
     filterItems()
@@ -186,8 +204,26 @@ export default function DigitalLabBudgetPage() {
         console.warn('⚠️ Budget Page - Failed to load organization:', orgResponse.status)
       }
 
-      // Load budget data from CSV source (lib/budget/budget-data.ts)
-      const budgetConfig = getBudgetConfig(slug)
+      // Load budget data: for Oolite, fetch from API (Airtable when configured); otherwise use static config
+      const effectiveBudgetType = slug === 'oolite' ? budgetType : undefined
+      let budgetConfig: ReturnType<typeof getBudgetConfig>
+
+      if (slug === 'oolite') {
+        try {
+          const res = await fetch(
+            `/api/organizations/by-slug/${slug}/budget/config?budgetType=${effectiveBudgetType || 'digital-lab'}`
+          )
+          if (res.ok) {
+            budgetConfig = await res.json()
+          } else {
+            budgetConfig = getBudgetConfig(slug, effectiveBudgetType)
+          }
+        } catch {
+          budgetConfig = getBudgetConfig(slug, effectiveBudgetType)
+        }
+      } else {
+        budgetConfig = getBudgetConfig(slug, effectiveBudgetType)
+      }
       
       console.log('📊 Budget Page - Budget config loaded:')
       console.log('  - Organization:', slug)
@@ -418,7 +454,7 @@ export default function DigitalLabBudgetPage() {
   }
 
   const getCategoryColor = (categoryId: string) => {
-    const colors = {
+    const colors: Record<string, string> = {
       'Room Build-Out': '#3B82F6',
       'Furniture & Fixtures': '#10B981',
       'Compute': '#8B5CF6',
@@ -429,9 +465,17 @@ export default function DigitalLabBudgetPage() {
       'Networking & Storage': '#84CC16',
       'Large Format Printer': '#F97316',
       'Signage': '#14B8A6',
-      'Contingency': '#6B7280'
+      'Contingency': '#6B7280',
+      'Speakers & Program': '#6366F1',
+      'Production & AV': '#8B5CF6',
+      'Hospitality': '#10B981',
+      'Marketing': '#F59E0B',
+      'Publishing': '#06B6D4',
+      'Archiving': '#64748B',
+      'Operations': '#94A3B8',
+      'Community Event': '#6366F1'
     }
-    return colors[categoryId as keyof typeof colors] || '#6B7280'
+    return colors[categoryId] || '#6B7280'
   }
 
   const toggleCategoryExpansion = (categoryId: string) => {
@@ -460,6 +504,58 @@ export default function DigitalLabBudgetPage() {
   const getCategoryIcon = (category: string) => {
     const categoryData = categories.find(c => c.id === category)
     return categoryData?.emoji || '📦'
+  }
+
+  const syncPurposeToAirtable = async () => {
+    if (slug !== 'oolite') return
+    setSyncPurposeLoading(true)
+    setSyncPurposeResult(null)
+    try {
+      const res = await fetch(`/api/organizations/by-slug/${slug}/budget/sync-purpose`, { method: 'POST' })
+      const data = await res.json()
+      setSyncPurposeResult({ updated: data.updated ?? 0, errors: data.errors ?? [] })
+      if (data.success) loadData()
+    } catch {
+      setSyncPurposeResult({ updated: 0, errors: ['Request failed'] })
+    } finally {
+      setSyncPurposeLoading(false)
+    }
+  }
+
+  const exportToCSV = () => {
+    const itemsToExport = selectedCategory !== 'all' || searchTerm ? filteredItems : budgetItems
+    const escapeCSV = (val: string | number | undefined): string => {
+      if (val === undefined || val === null) return ''
+      const str = String(val)
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`
+      }
+      return str
+    }
+    const headers = ['Name', 'Category', 'Purpose', 'Amount', 'Vendor', 'Notes', 'Date', 'Qty', 'Unit Cost', 'Subtotal', 'Phase', 'Program Pillar', 'Spend Type']
+    const rows = itemsToExport.map(item => [
+      escapeCSV(item.lineItem),
+      escapeCSV(item.category),
+      escapeCSV(item.purpose),
+      escapeCSV(item.subtotal),
+      escapeCSV(item.vendor),
+      escapeCSV(item.notes),
+      escapeCSV(item.date),
+      escapeCSV(item.qty),
+      escapeCSV(item.unitCost),
+      escapeCSV(item.subtotal),
+      escapeCSV(item.phaseLabel),
+      escapeCSV(item.programPillar),
+      escapeCSV(item.spendType)
+    ])
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${slug}-budget-export-${new Date().toISOString().slice(0, 10)}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
   }
 
   if (loading) {
@@ -493,10 +589,10 @@ export default function DigitalLabBudgetPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className={`text-3xl md:text-4xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  Digital Lab Budget
+                  {slug === 'oolite' && budgetType === 'summit' ? 'Summit / Event Budget' : 'Digital Lab Budget'}
                 </h1>
                 <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  September 2025 - September 2026
+                  {slug === 'oolite' && budgetType === 'summit' ? '$25,000 strategic split — projected through November 2026' : 'September 2025 - November 2026'}
                 </p>
               </div>
               <div className="hidden md:block">
@@ -674,14 +770,49 @@ export default function DigitalLabBudgetPage() {
 
             </div>
 
+            <div className="flex flex-col gap-2">
             <div className="flex gap-2">
+              {slug === 'oolite' && (
+                <Select value={budgetType} onValueChange={(v) => setBudgetType(v as OoliteBudgetType)}>
+                  <SelectTrigger className={`w-48 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
+                    <SelectItem value="digital-lab">Digital Lab</SelectItem>
+                    <SelectItem value="summit">Summit / Event</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+              {slug === 'oolite' && (
+                <Button
+                  variant="outline"
+                  className={`flex items-center ${isDark ? 'bg-gray-800 border-gray-600 text-white hover:bg-gray-700' : 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50'}`}
+                  onClick={syncPurposeToAirtable}
+                  disabled={syncPurposeLoading}
+                >
+                  {syncPurposeLoading ? (
+                    <span className="animate-spin mr-2">⏳</span>
+                  ) : (
+                    <Wrench className="h-4 w-4 mr-2" />
+                  )}
+                  Sync Purpose
+                </Button>
+              )}
               <Button 
                 variant="outline" 
                 className={`flex items-center ${isDark ? 'bg-gray-800 border-gray-600 text-white hover:bg-gray-700' : 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50'}`}
+                onClick={exportToCSV}
               >
                 <Download className="h-4 w-4 mr-2" />
-                Export
+                Export CSV
               </Button>
+            </div>
+            {syncPurposeResult && (
+              <p className={`text-sm ${syncPurposeResult.errors.length > 0 ? 'text-amber-600' : 'text-green-600'}`}>
+                {syncPurposeResult.updated} record(s) updated.
+                {syncPurposeResult.errors.length > 0 && ` ${syncPurposeResult.errors.length} error(s).`}
+              </p>
+            )}
             </div>
           </motion.div>
 
@@ -695,12 +826,18 @@ export default function DigitalLabBudgetPage() {
               setActiveTab(value)
               router.push(`/o/${slug}/budget?tab=${value}`, { scroll: false })
             }} className="w-full">
-              <TabsList className={`grid w-full grid-cols-3 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+              <TabsList className={`grid w-full grid-cols-4 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
                 <TabsTrigger 
                   value="overview" 
                   className={`data-[state=active]:bg-blue-600 data-[state=active]:text-white ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
                 >
                   Overview
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="presentation" 
+                  className={`data-[state=active]:bg-blue-600 data-[state=active]:text-white ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
+                >
+                  Presentation
                 </TabsTrigger>
                 <TabsTrigger 
                   value="dashboard" 
@@ -1091,6 +1228,11 @@ export default function DigitalLabBudgetPage() {
                                                   </Badge>
                                                 )}
                                               </div>
+                                              {item.purpose && (
+                                                <p className={`text-xs mt-1 ${isDark ? 'text-blue-300' : 'text-blue-600'}`} title={item.purpose}>
+                                                  {item.purpose}
+                                                </p>
+                                              )}
                                               {item.notes && (
                                                 <p className={`text-xs truncate mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                                                   {item.notes}
@@ -1133,9 +1275,22 @@ export default function DigitalLabBudgetPage() {
                 </div>
               </TabsContent>
               
+              <TabsContent value="presentation" className="mt-6">
+                <PresentationView 
+                  budgetItems={budgetItems} 
+                  totalBudget={totalBudget}
+                  getTotalCost={getTotalCost}
+                  getSpentAmount={getSpentAmount}
+                  getRemainingBudget={getRemainingBudget}
+                  formatCurrency={formatCurrency}
+                  isDark={isDark}
+                  budgetType={budgetType}
+                />
+              </TabsContent>
+              
               <TabsContent value="dashboard" className="mt-6">
                 {budgetMonths.length > 0 ? (
-                  <BudgetDashboard months={budgetMonths} organizationSlug={slug} />
+                  <BudgetDashboard months={budgetMonths} organizationSlug={slug} totalBudget={totalBudget} />
                 ) : (
                   <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     <p>Loading dashboard data...</p>
@@ -1158,6 +1313,7 @@ export default function DigitalLabBudgetPage() {
                           <tr className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
                             <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-900'}`}>Item</th>
                             <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-900'}`}>Category</th>
+                            <th className={`text-left p-3 max-w-[220px] ${isDark ? 'text-gray-300' : 'text-gray-900'}`}>Purpose</th>
                             <th className={`text-center p-3 ${isDark ? 'text-gray-300' : 'text-gray-900'}`}>Qty</th>
                             {showCosts && (
                               <>
@@ -1182,6 +1338,13 @@ export default function DigitalLabBudgetPage() {
                                 <Badge variant="default">
                                   {getCategoryIcon(item.category)} {item.category}
                                 </Badge>
+                              </td>
+                              <td className={`p-3 text-sm max-w-[220px] ${isDark ? 'text-gray-400' : 'text-gray-600'}`} title={item.purpose}>
+                                {item.purpose ? (
+                                  <span className="line-clamp-2">{item.purpose}</span>
+                                ) : (
+                                  <span className="italic opacity-60">—</span>
+                                )}
                               </td>
                               <td className={`p-3 text-center ${isDark ? 'text-gray-300' : 'text-gray-900'}`}>{item.qty}</td>
                               {showCosts && (
@@ -1222,7 +1385,7 @@ export default function DigitalLabBudgetPage() {
                         {showCosts && (
                           <tfoot>
                             <tr className={`border-t-2 ${isDark ? 'border-gray-600' : 'border-gray-300'}`}>
-                              <td colSpan={4} className={`p-3 text-right font-bold text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                              <td colSpan={5} className={`p-3 text-right font-bold text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>
                                 {selectedCategory !== 'all' || searchTerm 
                                   ? 'Filtered Total:' 
                                   : 'Total Budget:'}
@@ -1251,8 +1414,215 @@ export default function DigitalLabBudgetPage() {
   )
 }
 
+// Presentation view for stakeholder meetings (Knight Foundation, etc.)
+function PresentationView({
+  budgetItems,
+  totalBudget,
+  getTotalCost,
+  getSpentAmount,
+  getRemainingBudget,
+  formatCurrency,
+  isDark,
+  budgetType
+}: {
+  budgetItems: BudgetItem[]
+  totalBudget: number
+  getTotalCost: () => number
+  getSpentAmount: () => number
+  getRemainingBudget: () => number
+  formatCurrency: (n: number) => string
+  isDark: boolean
+  budgetType: OoliteBudgetType
+}) {
+  const total = getTotalCost()
+  const spent = getSpentAmount()
+  const remaining = getRemainingBudget()
+  const spentPct = total > 0 ? (spent / total) * 100 : 0
+
+  // Group by Program Pillar
+  const byPillar = budgetItems.reduce((acc, item) => {
+    const pillar = item.programPillar || 'Programming Support'
+    if (!acc[pillar]) acc[pillar] = { items: [], total: 0 }
+    acc[pillar].items.push(item)
+    acc[pillar].total += item.subtotal
+    return acc
+  }, {} as Record<string, { items: BudgetItem[]; total: number }>)
+
+  // Group by Phase (Equipment vs Renovation)
+  const byPhase = budgetItems.reduce((acc, item) => {
+    const phase = item.phaseLabel || 'Equipment Acquisition'
+    if (!acc[phase]) acc[phase] = { items: [], total: 0 }
+    acc[phase].items.push(item)
+    acc[phase].total += item.subtotal
+    return acc
+  }, {} as Record<string, { items: BudgetItem[]; total: number }>)
+
+  // Group by Spend Type (Purchased vs Planned)
+  const purchased = budgetItems.filter(i => 
+    i.spendType === 'Purchased Actual' || (!i.spendType && i.date)
+  )
+  const planned = budgetItems.filter(i => 
+    i.spendType === 'Planned' || (!i.spendType && !i.date)
+  )
+  const purchasedTotal = purchased.reduce((s, i) => s + i.subtotal, 0)
+  const plannedTotal = planned.reduce((s, i) => s + i.subtotal, 0)
+
+  const pillarOrder = ['Programming Support', 'Infrastructure', 'Documentation + Archive', 'Public Engagement', 'Smart Sign']
+  const sortedPillars = Object.entries(byPillar).sort((a, b) => {
+    const ai = pillarOrder.indexOf(a[0])
+    const bi = pillarOrder.indexOf(b[0])
+    if (ai >= 0 && bi >= 0) return ai - bi
+    if (ai >= 0) return -1
+    if (bi >= 0) return 1
+    return b[1].total - a[1].total
+  })
+
+  return (
+    <div className="space-y-8">
+      {/* Executive Summary */}
+      <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+        <CardHeader>
+          <CardTitle className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <LayoutDashboard className="h-5 w-5" />
+            Digital Lab — Spending Overview
+          </CardTitle>
+          <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+            Categorized overview for programming impact and long-term infrastructure
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Total Budget</p>
+              <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{formatCurrency(total)}</p>
+            </div>
+            <div className={`p-4 rounded-lg ${isDark ? 'bg-green-900/30' : 'bg-green-50'}`}>
+              <p className={`text-sm ${isDark ? 'text-green-300' : 'text-green-700'}`}>Spent to Date</p>
+              <p className={`text-2xl font-bold ${isDark ? 'text-green-400' : 'text-green-700'}`}>{formatCurrency(spent)}</p>
+              <p className={`text-xs mt-1 ${isDark ? 'text-green-300' : 'text-green-600'}`}>{spentPct.toFixed(1)}% of budget</p>
+            </div>
+            <div className={`p-4 rounded-lg ${isDark ? 'bg-orange-900/30' : 'bg-orange-50'}`}>
+              <p className={`text-sm ${isDark ? 'text-orange-300' : 'text-orange-700'}`}>Remaining</p>
+              <p className={`text-2xl font-bold ${isDark ? 'text-orange-400' : 'text-orange-700'}`}>{formatCurrency(remaining)}</p>
+            </div>
+            <div className={`p-4 rounded-lg ${isDark ? 'bg-blue-900/30' : 'bg-blue-50'}`}>
+              <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>Line Items</p>
+              <p className={`text-2xl font-bold ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>{budgetItems.length}</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Phase Split: Equipment vs Renovation */}
+      <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+        <CardHeader>
+          <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Spending by Phase</CardTitle>
+          <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+            Equipment acquisition vs. setup and renovation
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {Object.entries(byPhase).map(([phase, { total: phaseTotal }]) => (
+              <div key={phase} className={`p-4 rounded-lg border ${isDark ? 'border-gray-600 bg-gray-700/30' : 'border-gray-200 bg-gray-50'}`}>
+                <p className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{phase}</p>
+                <p className={`text-xl font-bold mt-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{formatCurrency(phaseTotal)}</p>
+                <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {total > 0 ? ((phaseTotal / total) * 100).toFixed(1) : 0}% of total
+                </p>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Purchased vs Planned */}
+      <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+        <CardHeader>
+          <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Current vs. Planned</CardTitle>
+          <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+            Purchased actuals and forward-looking planned expenditures
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className={`p-4 rounded-lg ${isDark ? 'bg-green-900/20 border border-green-700/50' : 'bg-green-50 border border-green-200'}`}>
+              <p className={`font-medium ${isDark ? 'text-green-300' : 'text-green-800'}`}>Purchased Actual</p>
+              <p className={`text-xl font-bold mt-1 ${isDark ? 'text-green-400' : 'text-green-700'}`}>{formatCurrency(purchasedTotal)}</p>
+              <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{purchased.length} items</p>
+            </div>
+            <div className={`p-4 rounded-lg ${isDark ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'}`}>
+              <p className={`font-medium ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>Planned</p>
+              <p className={`text-xl font-bold mt-1 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>{formatCurrency(plannedTotal)}</p>
+              <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{planned.length} items — upcoming needs</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* By Program Pillar with Purpose */}
+      <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+        <CardHeader>
+          <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>By Program Pillar</CardTitle>
+          <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+            How each category supports programming and artist access
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {sortedPillars.map(([pillar, { items, total: pillarTotal }]) => (
+            <div key={pillar} className={`rounded-lg border ${isDark ? 'border-gray-600' : 'border-gray-200'}`}>
+              <div className={`p-4 flex justify-between items-center ${isDark ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <h4 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{pillar}</h4>
+                <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{formatCurrency(pillarTotal)}</span>
+              </div>
+              <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                {items.slice(0, 12).map((item, idx) => (
+                  <div key={idx} className={`p-3 flex justify-between items-start gap-4 ${isDark ? 'hover:bg-gray-700/30' : 'hover:bg-gray-50'}`}>
+                    <div className="min-w-0 flex-1">
+                      <p className={`font-medium text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>{item.lineItem}</p>
+                      {item.purpose && (
+                        <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{item.purpose}</p>
+                      )}
+                    </div>
+                    <span className={`font-mono text-sm font-medium shrink-0 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {formatCurrency(item.subtotal)}
+                    </span>
+                  </div>
+                ))}
+                {items.length > 12 && (
+                  <div className={`p-3 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    +{items.length - 12} more items
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
 // Intelligently categorize items based on name and notes
 function categorizeItem(itemName: string, itemNotes: string, csvCategory: string): string {
+  // Summit/Event budget categories - pass through
+  const summitCategoryMap: Record<string, string> = {
+    speakers: 'Speakers & Program',
+    'production-av': 'Production & AV',
+    hospitality: 'Hospitality',
+    marketing: 'Marketing',
+    publishing: 'Publishing',
+    archiving: 'Archiving',
+    operations: 'Operations'
+  }
+  if (summitCategoryMap[csvCategory]) {
+    return summitCategoryMap[csvCategory]
+  }
+  // Airtable/CSV: Community Event (Digital Conference items)
+  if (csvCategory === 'Community Event') {
+    return 'Community Event'
+  }
+
   const nameLower = itemName.toLowerCase()
   const notesLower = (itemNotes || '').toLowerCase()
   const combined = `${nameLower} ${notesLower}`
@@ -1490,7 +1860,15 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
     'Signage': '🪧',
     'Contingency': '🧮',
     'Equipment Maintenance': '🔧',
-    'Hardware & Materials': '🧰' // Fallback
+    'Hardware & Materials': '🧰', // Fallback
+    'Speakers & Program': '🎤',
+    'Production & AV': '🎬',
+    'Hospitality': '☕',
+    'Marketing': '📣',
+    'Publishing': '📚',
+    'Archiving': '📦',
+    'Operations': '⚙️',
+    'Community Event': '🎤'
   }
   
   // Valid display categories (must match the categories array in the component)
@@ -1505,7 +1883,15 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
     'Networking & Storage',
     'Large Format Printer',
     'Signage',
-    'Contingency'
+    'Contingency',
+    'Speakers & Program',
+    'Production & AV',
+    'Hospitality',
+    'Marketing',
+    'Publishing',
+    'Archiving',
+    'Operations',
+    'Community Event'
   ]
   
   console.log('\n🔍 Starting Item Categorization Process:')
@@ -1541,23 +1927,50 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
     }
     
     const emoji = categoryEmojiMap[displayCategory] || '📦'
+    const purposeFallback: Record<string, string> = {
+      'Displays & Projection': 'Display and presentation equipment for exhibitions and workshops',
+      'Peripherals & Creation': 'Creation tools and peripherals for programming',
+      'Furniture & Fixtures': 'Furniture and workspace fixtures',
+      'Room Build-Out': 'Space renovation and build-out',
+      'Streaming': 'Streaming and video infrastructure',
+      'Compute': 'Computing and hardware',
+      'Audio': 'Audio equipment',
+      'Networking & Storage': 'Networking and storage infrastructure',
+      'Large Format Printer': 'Large format printing and fabrication',
+      'Signage': 'Signage and wayfinding',
+      'Contingency': 'Contingency and buffer',
+      'Speakers & Program': 'Speakers and program for Digital Conference',
+      'Production & AV': 'Production and AV for events',
+      'Hospitality': 'Hospitality for attendees',
+      'Marketing': 'Marketing and outreach',
+      'Publishing': 'Publishing and documentation',
+      'Archiving': 'Archiving and preservation',
+      'Operations': 'Operations support',
+      'Community Event': 'Digital Conference programming and public engagement'
+    }
+    const purpose = item.purpose || purposeFallback[displayCategory] || 'General programming support'
     
     return {
       emoji,
       lineItem: item.name,
       category: displayCategory,
-      qty: 1, // Default quantity, could be parsed from item name if needed
+      qty: 1,
       unitCost: item.amount,
       subtotal: item.amount,
       notes: item.notes || '',
       comments: '',
       links: item.vendor && item.vendor.startsWith('http') ? item.vendor : '',
+      vendor: item.vendor || '',
       participant: '',
       phase: index < Math.floor(config.items.length * 0.4) ? 1 : 
             index < Math.floor(config.items.length * 0.75) ? 2 :
             index < Math.floor(config.items.length * 0.9) ? 3 : 4,
       priority: (index < 5 ? 'high' : index < 15 ? 'medium' : 'low') as 'low' | 'medium' | 'high',
-      date: item.date // Pass through date if provided
+      date: item.date,
+      purpose,
+      phaseLabel: item.phase,
+      programPillar: item.programPillar,
+      spendType: item.spendType
     }
   })
   
@@ -1612,12 +2025,19 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
 
 // Helper function to create months from budgetItems for dashboard consistency
 // Uses the same budgetItems data source as the overview tab
+// Month range: Sep 2025 through Nov 2026 (15 months) - covers Digital Lab spend + Summit projected through November
 function createMonthsFromBudgetItems(budgetItems: BudgetItem[], totalBudget: number): BudgetMonth[] {
-  // Create months from September 2025 to December 2025 (4 months only)
   const months: BudgetMonth[] = []
-  const monthNames = ['2025-09', '2025-10', '2025-11', '2025-12']
-  
-  // Initialize months
+  const monthNames: string[] = []
+  for (let y = 2025; y <= 2026; y++) {
+    const startM = y === 2025 ? 9 : 1
+    const endM = y === 2026 ? 11 : 12
+    for (let m = startM; m <= endM; m++) {
+      monthNames.push(`${y}-${String(m).padStart(2, '0')}`)
+    }
+  }
+  // Result: 2025-09..12 (4) + 2026-01..11 (11) = 15 months
+
   monthNames.forEach((monthStr) => {
     months.push({
       month: monthStr,
@@ -1655,7 +2075,7 @@ function createMonthsFromBudgetItems(budgetItems: BudgetItem[], totalBudget: num
         month.lineItems.push(lineItem)
         month.spent += item.subtotal
       } else {
-        // Date is outside Sep-Dec 2025 range, add to itemsWithoutDate
+        // Date is outside month range, add to itemsWithoutDate for distribution
         itemsWithoutDate.push(item)
       }
     } else {
@@ -1666,7 +2086,7 @@ function createMonthsFromBudgetItems(budgetItems: BudgetItem[], totalBudget: num
   
   // Distribute items without dates evenly across months
   if (itemsWithoutDate.length > 0) {
-    const itemsPerMonth = Math.ceil(itemsWithoutDate.length / 4)
+    const itemsPerMonth = Math.ceil(itemsWithoutDate.length / monthNames.length)
     monthNames.forEach((monthStr, index) => {
       const startIdx = index * itemsPerMonth
       const endIdx = Math.min(startIdx + itemsPerMonth, itemsWithoutDate.length)
@@ -1691,8 +2111,9 @@ function createMonthsFromBudgetItems(budgetItems: BudgetItem[], totalBudget: num
   }
   
   // Set budget for each month (at least equal to spent)
+  const monthlyBudgetFloor = Math.floor(totalBudget / monthNames.length)
   months.forEach(month => {
-    month.budget = Math.max(month.spent, Math.floor(totalBudget * 0.25)) // 25% per month minimum
+    month.budget = Math.max(month.spent, monthlyBudgetFloor)
   })
   
   console.log('📊 Created months from budgetItems:', {

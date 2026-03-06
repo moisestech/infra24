@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateMockBudgetData, BudgetMonth } from '@/lib/budget/budget-utils'
+import { fetchBudgetFromAirtable } from '@/lib/airtable/budget-service'
+import { getBudgetConfig } from '@/lib/budget/budget-data'
 
 export async function GET(
   request: NextRequest,
@@ -9,23 +11,17 @@ export async function GET(
     const { slug } = await params
     
     console.log('🌐 API - Budget route called:', { slug })
-    console.log('🌐 API - Request URL:', request.url)
-    console.log('🌐 API - Request method:', request.method)
-    console.log('🌐 API - Request headers:', Object.fromEntries(request.headers.entries()))
     
-    // In the future, this would fetch from database
-    // For now, return mock data based on organization
-    // Budget period: September 2025 to September 2026
+    // For Oolite, try Airtable first; otherwise use static config
+    let budgetConfig = getBudgetConfig(slug)
+    if (slug === 'oolite') {
+      const airtableConfig = await fetchBudgetFromAirtable(slug, 'digital-lab')
+      if (airtableConfig) budgetConfig = airtableConfig
+    }
+    
     const year = '2025'
-    console.log('🌐 API - Generating budget data for year:', year, '(Sep 2025 - Sep 2026)')
-    
-    const months = generateMockBudgetData(year, slug)
-    console.log('🌐 API - Generated months:', months.length)
-    
-    // Use the config totalBudget ($80k) instead of summing months
-    const { getBudgetConfig } = require('@/lib/budget/budget-data')
-    const budgetConfig = getBudgetConfig(slug)
-    const totalBudget = budgetConfig.totalBudget // Use $80k from config
+    const months = generateMockBudgetData(year, slug, budgetConfig)
+    const totalBudget = budgetConfig.totalBudget
     const totalSpent = months.reduce((sum, m) => sum + m.spent, 0)
     
     console.log('🌐 API - Budget response:', {

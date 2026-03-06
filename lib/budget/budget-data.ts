@@ -6,7 +6,13 @@ import { BudgetLineItem } from './budget-utils'
 // Organization-specific budget configurations
 export interface OrganizationBudgetConfig {
   totalBudget: number
-  items: (Omit<BudgetLineItem, 'id' | 'date' | 'imageUrl'> & { date?: string })[]
+  items: (Omit<BudgetLineItem, 'id' | 'date' | 'imageUrl'> & {
+    date?: string
+    purpose?: string
+    phase?: string
+    programPillar?: string
+    spendType?: string
+  })[]
   description?: string
 }
 
@@ -227,6 +233,271 @@ export const OOLITE_BUDGET_CONFIG: OrganizationBudgetConfig = {
       vendor: 'Amazon',
       notes: 'Light pad for large format printing and art work',
       date: '2025-11-22'
+    },
+    // Fabric Printer - Image Pro International (Estimate #277807, Due 3/7/2026)
+    {
+      name: 'Epson SureColor F6470H 44" Dye-Sublimation Printer',
+      category: 'large-format-printer',
+      amount: 7995,
+      vendor: 'Image Pro International',
+      notes: 'SCF6470HPE - Rebate of $700 (original $8,695). 7640 NW 25 St STE 113, Miami, FL 33122',
+      date: '2026-02-05'
+    },
+    {
+      name: 'Epson T53K UltraChrome DS Ink (10 color packs @ $402)',
+      category: 'large-format-printer',
+      amount: 4020,
+      vendor: 'Image Pro International',
+      notes: 'Cyan, Magenta, Yellow, Light Cyan, Light Magenta, Fluorescent Yellow, Fluorescent Pink, High Density Black, Orange, Violet - 2/Pack each',
+      date: '2026-02-05'
+    },
+    {
+      name: 'Beaver TexPrint XP 105 Dye-Sublimation Print Paper',
+      category: 'large-format-printer',
+      amount: 186,
+      vendor: 'Image Pro International',
+      notes: 'Beaver TexPrint XP 105 - 44" dye-sub paper, sku TPXP-R-105-44-393-3',
+      date: '2026-02-05'
+    },
+    {
+      name: 'Beaver TexPrint Sports THERMAL TACK Dye-Sublimation Print Paper',
+      category: 'large-format-printer',
+      amount: 135,
+      vendor: 'Image Pro International',
+      notes: 'Beaver TexPrint Sports THERMAL TACK - sku TPSP+-R-72-44-575-3',
+      date: '2026-02-05'
+    },
+    {
+      name: '3 Year Maintenance Agreement - Epson/Canon 36"-64"',
+      category: 'large-format-printer',
+      amount: 1295,
+      vendor: 'Image Pro International',
+      notes: 'IPRSM3 - Labor only. 1 visit every 6 months, 20% discount on MSRP for parts, No labor charges for repair, Priority Service',
+      date: '2026-02-05'
+    },
+    {
+      name: 'Geo Knight Digital Knight 16x20 SWINGER Heat Press',
+      category: 'large-format-printer',
+      amount: 1850,
+      vendor: 'Image Pro International',
+      notes: 'Heat press for dye-sublimation printing',
+      date: '2026-02-05'
+    },
+    {
+      name: 'Geo Knight Heat Press - Shipping and Handling',
+      category: 'large-format-printer',
+      amount: 290,
+      vendor: 'Image Pro International',
+      notes: 'Delivery shipping for Geo Knight heat press',
+      date: '2026-02-05'
+    },
+    // March 2026
+    {
+      name: 'Bambu Laser Cutter Combo Printer',
+      category: 'hardware-materials',
+      amount: 5000,
+      vendor: 'TBD',
+      notes: 'Laser cutter combo printer - March 2026 purchase',
+      date: '2026-03-15'
+    }
+  ]
+}
+
+// Oolite Summit/Event Budget - $25,000 strategic split
+export const OOLITE_SUMMIT_BUDGET_CONFIG: OrganizationBudgetConfig = {
+  totalBudget: 25000,
+  description: '$25,000 Budget (strategic split) - Event/Summit',
+  items: [
+    // 1) Speakers & Program Curation — $7,500 (30%) — projected Mar–Apr 2026
+    {
+      name: 'Speaker honorariums (2 signal speakers @ $1,500)',
+      category: 'speakers',
+      amount: 3000,
+      vendor: 'TBD',
+      notes: '12% - Aim high, get at least 1–2 names with national pull',
+      date: '2026-03-15'
+    },
+    {
+      name: 'Panelist honorariums (4–6 @ $500 avg)',
+      category: 'speakers',
+      amount: 2500,
+      vendor: 'TBD',
+      notes: '10%',
+      date: '2026-03-20'
+    },
+    {
+      name: 'Moderator / host honorarium',
+      category: 'speakers',
+      amount: 750,
+      vendor: 'TBD',
+      notes: '3%',
+      date: '2026-04-01'
+    },
+    {
+      name: 'Speaker handling costs (gift, green room needs, local transport)',
+      category: 'speakers',
+      amount: 1250,
+      vendor: 'TBD',
+      notes: '5%',
+      date: '2026-04-15'
+    },
+    // 2) Production & AV — $5,000 (20%) — projected May–Jun 2026
+    {
+      name: 'AV tech / room engineer / day-of support',
+      category: 'production-av',
+      amount: 2000,
+      vendor: 'TBD',
+      notes: '8% - Make it feel polished and frictionless',
+      date: '2026-05-01'
+    },
+    {
+      name: 'Livestream / recording support (operator + basic gear rentals if needed)',
+      category: 'production-av',
+      amount: 1500,
+      vendor: 'TBD',
+      notes: '6%',
+      date: '2026-05-15'
+    },
+    {
+      name: 'Stage/set dressing + signage + wayfinding (simple but premium)',
+      category: 'production-av',
+      amount: 750,
+      vendor: 'TBD',
+      notes: '3%',
+      date: '2026-06-01'
+    },
+    {
+      name: 'Mic pack / backup media / cables / contingencies',
+      category: 'production-av',
+      amount: 750,
+      vendor: 'TBD',
+      notes: '3%',
+      date: '2026-06-15'
+    },
+    // 3) Hospitality & Relationship Infrastructure — $4,250 (17%) — projected Jul 2026
+    {
+      name: 'Coffee + water + light breakfast',
+      category: 'hospitality',
+      amount: 1250,
+      vendor: 'TBD',
+      notes: '5% - Networking is the product',
+      date: '2026-07-01'
+    },
+    {
+      name: 'Lunch/snacks (simple, not fancy)',
+      category: 'hospitality',
+      amount: 2000,
+      vendor: 'TBD',
+      notes: '8%',
+      date: '2026-07-10'
+    },
+    {
+      name: 'Speaker green room hospitality',
+      category: 'hospitality',
+      amount: 500,
+      vendor: 'TBD',
+      notes: '2%',
+      date: '2026-07-15'
+    },
+    {
+      name: 'Staff hospitality / volunteer meals',
+      category: 'hospitality',
+      amount: 500,
+      vendor: 'TBD',
+      notes: '2%',
+      date: '2026-07-20'
+    },
+    // 4) Marketing & Targeted Outreach — $3,000 (12%) — projected Aug 2026
+    {
+      name: 'Targeted social ads (geo + interest + job titles where possible)',
+      category: 'marketing',
+      amount: 1500,
+      vendor: 'TBD',
+      notes: '6% - Invitation-first outreach',
+      date: '2026-08-01'
+    },
+    {
+      name: 'Design support / motion teaser / key art polish',
+      category: 'marketing',
+      amount: 1000,
+      vendor: 'TBD',
+      notes: '4%',
+      date: '2026-08-15'
+    },
+    {
+      name: 'Print invites / small VIP mailers',
+      category: 'marketing',
+      amount: 500,
+      vendor: 'TBD',
+      notes: '2%',
+      date: '2026-08-25'
+    },
+    // 5) Publishing & Post-Event Assets — $1,750 (7%) — projected Sep 2026
+    {
+      name: 'Zine/catalog prototype print run (small, high quality)',
+      category: 'publishing',
+      amount: 1250,
+      vendor: 'TBD',
+      notes: '5% - Reusable outputs for Development + Comms',
+      date: '2026-09-01'
+    },
+    {
+      name: 'Photo selects + captioning + web packaging support',
+      category: 'publishing',
+      amount: 500,
+      vendor: 'TBD',
+      notes: '2%',
+      date: '2026-09-15'
+    },
+    // 6) Archiving (lean, capped) — $1,250 (5%) — projected Oct 2026
+    {
+      name: 'Hard drives / redundant storage for deliverables',
+      category: 'archiving',
+      amount: 400,
+      vendor: 'TBD',
+      notes: '1.6% - Institutional memory proof',
+      date: '2026-10-01'
+    },
+    {
+      name: 'Transcription + captions for 2–3 highlight clips',
+      category: 'archiving',
+      amount: 450,
+      vendor: 'TBD',
+      notes: '1.8%',
+      date: '2026-10-10'
+    },
+    {
+      name: 'Archive packaging: metadata template + upload labor (light)',
+      category: 'archiving',
+      amount: 400,
+      vendor: 'TBD',
+      notes: '1.6%',
+      date: '2026-10-20'
+    },
+    // 7) Operations, Travel, and Contingency — $2,250 (9%) — projected Nov 2026 (event month)
+    {
+      name: 'Speaker local travel / parking / rides',
+      category: 'operations',
+      amount: 750,
+      vendor: 'TBD',
+      notes: '3%',
+      date: '2026-11-01'
+    },
+    {
+      name: 'Volunteer support / staffing misc',
+      category: 'operations',
+      amount: 500,
+      vendor: 'TBD',
+      notes: '2%',
+      date: '2026-11-05'
+    },
+    {
+      name: 'Contingency buffer (last-minute changes)',
+      category: 'operations',
+      amount: 1000,
+      vendor: 'TBD',
+      notes: '4%',
+      date: '2026-11-15'
     }
   ]
 }
@@ -262,8 +533,17 @@ export const DEFAULT_BUDGET_CONFIG: OrganizationBudgetConfig = {
   ]
 }
 
+// Budget type for Oolite (supports multiple budgets)
+export type OoliteBudgetType = 'digital-lab' | 'summit'
+
 // Get budget config for an organization
-export function getBudgetConfig(orgSlug: string): OrganizationBudgetConfig {
+export function getBudgetConfig(
+  orgSlug: string,
+  budgetType?: OoliteBudgetType
+): OrganizationBudgetConfig {
+  if (orgSlug === 'oolite' && budgetType === 'summit') {
+    return OOLITE_SUMMIT_BUDGET_CONFIG
+  }
   switch (orgSlug) {
     case 'oolite':
       return OOLITE_BUDGET_CONFIG
