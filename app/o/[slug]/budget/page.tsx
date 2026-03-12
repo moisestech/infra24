@@ -30,8 +30,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
-import { BudgetDashboard } from '@/components/budget/BudgetDashboard'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { BudgetDashboard, type CategoryChartItem } from '@/components/budget/BudgetDashboard'
 import { BudgetMonth, BudgetLineItem } from '@/lib/budget/budget-utils'
 import { 
   DollarSign, 
@@ -51,10 +52,16 @@ import {
   Users,
   Building,
   ChevronDown,
+  ChevronUp,
+  ChevronLeft,
   ChevronRight,
   Wallet,
   TrendingDown,
-  LayoutDashboard
+  LayoutDashboard,
+  HelpCircle,
+  CheckCircle2,
+  AlertTriangle,
+  FileSpreadsheet
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
@@ -85,9 +92,18 @@ interface BudgetItem {
   priority: 'high' | 'medium' | 'low'
   date?: string
   purpose?: string
-  phaseLabel?: string // Equipment Acquisition | Renovation / Setup
-  programPillar?: string // Infrastructure | Programming Support | etc.
-  spendType?: string // Purchased Actual | Planned
+  phaseLabel?: string
+  programPillar?: string
+  spendType?: string
+  budgetBucket?: string
+  targetMonth?: string
+  vendorGroup?: string
+  printSystem?: string
+  expenseType?: string
+  emailTitle?: string
+  emailDate?: string
+  emailPeople?: string
+  evidenceMetadata?: string
 }
 
 export default function DigitalLabBudgetPage() {
@@ -98,8 +114,8 @@ export default function DigitalLabBudgetPage() {
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'
   
-  // Get initial tab from query param, default to 'overview'
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview')
+  // Get initial tab from query param; for Oolite default to 'reconciliation' (Spent To Date)
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || (slug === 'oolite' ? 'reconciliation' : 'overview'))
   
   // Sync tab with query param when it changes
   useEffect(() => {
@@ -139,8 +155,86 @@ export default function DigitalLabBudgetPage() {
   const [currentDateTime, setCurrentDateTime] = useState(new Date())
   const [showRemainingInChart, setShowRemainingInChart] = useState(true)
   const [budgetType, setBudgetType] = useState<OoliteBudgetType>('digital-lab')
+  const [activeView, setActiveView] = useState<'all' | 'actuals' | 'planned' | 'digital-conference' | 'surface-renovation' | 'printers' | 'verity-it'>('all')
   const [syncPurposeLoading, setSyncPurposeLoading] = useState(false)
   const [syncPurposeResult, setSyncPurposeResult] = useState<{ updated: number; errors: string[] } | null>(null)
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
+  const [selectedVendorGroup, setSelectedVendorGroup] = useState<string>('all')
+  const [selectedExpenseType, setSelectedExpenseType] = useState<string>('all')
+  const [selectedProgramPillar, setSelectedProgramPillar] = useState<string>('all')
+  const [selectedBudgetBucket, setSelectedBudgetBucket] = useState<string>('all')
+  const [selectedTargetMonth, setSelectedTargetMonth] = useState<string | null>(null)
+  const [selectedPeople, setSelectedPeople] = useState<string>('')
+  const [groupBy, setGroupBy] = useState<'category' | 'programPillar'>('category')
+  const [selectedPillarForSort, setSelectedPillarForSort] = useState<string | null>(null)
+
+  const BUDGET_CAP = 80000
+  const PILLAR_ORDER = ['Infrastructure', 'Programming Support', 'Programming + Archive', 'Documentation + Archive', 'Public Engagement', 'Smart Sign']
+  const KNIGHT_BUCKETS = ['Digital Lab', 'Digital Conference']
+
+  const vendorGroups = React.useMemo(() => {
+    if (slug !== 'oolite') return []
+    const set = new Set<string>()
+    budgetItems.forEach(i => { if (i.vendorGroup) set.add(i.vendorGroup) })
+    return Array.from(set).sort()
+  }, [budgetItems, slug])
+
+  const expenseTypes = React.useMemo(() => {
+    if (slug !== 'oolite') return []
+    const set = new Set<string>()
+    budgetItems.forEach(i => { if (i.expenseType) set.add(i.expenseType) })
+    return Array.from(set).sort()
+  }, [budgetItems, slug])
+
+  const programPillars = React.useMemo(() => {
+    if (slug !== 'oolite') return []
+    const set = new Set<string>()
+    budgetItems.forEach(i => { if (i.programPillar) set.add(i.programPillar) })
+    return PILLAR_ORDER.filter(p => set.has(p)).concat(Array.from(set).filter(p => !PILLAR_ORDER.includes(p)).sort())
+  }, [budgetItems, slug])
+
+  const budgetBuckets = React.useMemo(() => {
+    if (slug !== 'oolite') return []
+    const set = new Set<string>()
+    budgetItems.forEach(i => { if (i.budgetBucket) set.add(i.budgetBucket) })
+    return Array.from(set).sort()
+  }, [budgetItems, slug])
+
+  const targetMonths = React.useMemo(() => {
+    if (slug !== 'oolite') return []
+    const parseTargetMonth = (s?: string): string | null => {
+      if (!s) return null
+      try {
+        const d = new Date(s)
+        if (isNaN(d.getTime())) return null
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+      } catch { return null }
+    }
+    const set = new Set<string>()
+    budgetItems.forEach(i => {
+      const m = parseTargetMonth(i.targetMonth)
+      if (m) set.add(m)
+    })
+    return Array.from(set).sort()
+  }, [budgetItems, slug])
+
+  const dataQualityIssues = React.useMemo(() => {
+    if (slug !== 'oolite') return []
+    return budgetItems.filter(
+      i => i.spendType === 'Purchased Actual' && (!i.date || !i.subtotal || i.subtotal <= 0)
+    )
+  }, [budgetItems, slug])
+
+  const budgetBucketBreakdown = React.useMemo(() => {
+    if (slug !== 'oolite') return null
+    const lab = budgetItems.filter(i => (i.budgetBucket || 'Digital Lab') === 'Digital Lab')
+    const conf = budgetItems.filter(i => i.budgetBucket === 'Digital Conference')
+    const labActual = lab.filter(i => i.spendType === 'Purchased Actual' && i.date && i.subtotal > 0).reduce((s, i) => s + i.subtotal, 0)
+    const labPlanned = lab.filter(i => i.spendType === 'Planned' || (!i.spendType && !i.date)).reduce((s, i) => s + i.subtotal, 0)
+    const confActual = conf.filter(i => i.spendType === 'Purchased Actual' && i.date && i.subtotal > 0).reduce((s, i) => s + i.subtotal, 0)
+    const confPlanned = conf.filter(i => i.spendType === 'Planned' || (!i.spendType && !i.date)).reduce((s, i) => s + i.subtotal, 0)
+    return { labActual, labPlanned, confActual, confPlanned }
+  }, [budgetItems, slug])
 
   const categories = [
     { id: 'all', name: 'All Categories', emoji: '📊' },
@@ -173,11 +267,11 @@ export default function DigitalLabBudgetPage() {
     } else {
       console.warn('⚠️ Budget Page - No slug available, skipping loadData')
     }
-  }, [slug, budgetType])
+  }, [slug])
 
   useEffect(() => {
     filterItems()
-  }, [budgetItems, searchTerm, selectedCategory])
+  }, [budgetItems, searchTerm, selectedCategory, selectedMonth, selectedVendorGroup, selectedExpenseType, selectedProgramPillar, selectedBudgetBucket, selectedTargetMonth, selectedPeople, activeView])
 
   // Update date/time every minute for live dashboard feel
   useEffect(() => {
@@ -210,9 +304,7 @@ export default function DigitalLabBudgetPage() {
 
       if (slug === 'oolite') {
         try {
-          const res = await fetch(
-            `/api/organizations/by-slug/${slug}/budget/config?budgetType=${effectiveBudgetType || 'digital-lab'}`
-          )
+          const res = await fetch(`/api/organizations/by-slug/${slug}/budget/config`)
           if (res.ok) {
             budgetConfig = await res.json()
           } else {
@@ -295,14 +387,73 @@ export default function DigitalLabBudgetPage() {
     }
   }
 
+  // View filter: mirrors Airtable views
+  const viewFilteredItems = React.useMemo(() => {
+    let items = budgetItems
+    if (slug !== 'oolite') return items
+    switch (activeView) {
+      case 'actuals':
+        items = items.filter(i =>
+          i.spendType === 'Purchased Actual' && i.date && i.subtotal > 0 &&
+          KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab')
+        )
+        break
+      case 'planned':
+        items = items.filter(i =>
+          (i.spendType === 'Planned' || (!i.spendType && !i.date)) &&
+          KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab')
+        )
+        break
+      case 'digital-conference':
+        items = items.filter(i => i.budgetBucket === 'Digital Conference')
+        break
+      case 'surface-renovation':
+        items = items.filter(i =>
+          (i.phaseLabel || '').toLowerCase().includes('renovation') ||
+          (i.phaseLabel || '').toLowerCase().includes('setup')
+        )
+        break
+      case 'printers':
+        items = items.filter(i => {
+          const v = (i.vendor || '').toLowerCase()
+          const vg = (i.vendorGroup || '').toLowerCase()
+          const ps = (i.printSystem || '').toLowerCase()
+          return v.includes('image pro') || vg.includes('image pro') || ps.includes('p-8000') ||
+            ps.includes('f6470h') || v.includes('epson') || v.includes('printer')
+        })
+        break
+      case 'verity-it':
+        items = items.filter(i => (i.vendorGroup || '').toLowerCase().includes('verity'))
+        break
+      default:
+        break
+    }
+    return items
+  }, [budgetItems, activeView, slug])
+
+  // Parse targetMonth (e.g. "November 26, 2026") to YYYY-MM for filtering
+  const getMonthFromTargetMonth = (targetMonthStr?: string): string | null => {
+    if (!targetMonthStr) return null
+    try {
+      const date = new Date(targetMonthStr)
+      if (isNaN(date.getTime())) return null
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      return `${year}-${month}`
+    } catch {
+      return null
+    }
+  }
+
   const filterItems = () => {
-    let filtered = budgetItems
+    let filtered = viewFilteredItems
 
     if (searchTerm) {
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter(item =>
         item.lineItem.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.notes.toLowerCase().includes(searchTerm.toLowerCase())
+        item.notes.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.evidenceMetadata || '').toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
@@ -310,21 +461,87 @@ export default function DigitalLabBudgetPage() {
       filtered = filtered.filter(item => item.category === selectedCategory)
     }
 
+    if (selectedMonth && slug === 'oolite') {
+      filtered = filtered.filter(item => {
+        const itemMonth = item.date ? getMonthFromDate(item.date) : getMonthFromTargetMonth(item.targetMonth)
+        return itemMonth === selectedMonth
+      })
+    }
+
+    if (selectedVendorGroup !== 'all' && slug === 'oolite') {
+      filtered = filtered.filter(item => (item.vendorGroup || '') === selectedVendorGroup)
+    }
+
+    if (selectedExpenseType !== 'all' && slug === 'oolite') {
+      filtered = filtered.filter(item => (item.expenseType || '') === selectedExpenseType)
+    }
+
+    if (selectedProgramPillar !== 'all' && slug === 'oolite') {
+      filtered = filtered.filter(item => (item.programPillar || 'Programming Support') === selectedProgramPillar)
+    }
+
+    if (selectedBudgetBucket !== 'all' && slug === 'oolite') {
+      filtered = filtered.filter(item => (item.budgetBucket || '') === selectedBudgetBucket)
+    }
+
+    if (selectedTargetMonth && slug === 'oolite') {
+      filtered = filtered.filter(item => getMonthFromTargetMonth(item.targetMonth) === selectedTargetMonth)
+    }
+
+    if (selectedPeople.trim() && slug === 'oolite') {
+      const terms = selectedPeople.split(',').map(t => t.trim().toLowerCase()).filter(Boolean)
+      if (terms.length > 0) {
+        filtered = filtered.filter(item => {
+          const people = (item.emailPeople || '').toLowerCase()
+          return terms.some(t => people.includes(t))
+        })
+      }
+    }
+
     setFilteredItems(filtered)
   }
 
   const getTotalCost = () => {
-    // Use the config totalBudget ($80k) instead of calculating from items
+    if (slug === 'oolite') return BUDGET_CAP
     return totalBudget || budgetItems.reduce((sum, item) => sum + item.subtotal, 0)
   }
 
-  const getSpentAmount = () => {
-    // Calculate total spent from all budget items
-    return budgetItems.reduce((sum, item) => sum + item.subtotal, 0)
+  const getItemAmount = (i: BudgetItem) => (i.subtotal ?? i.unitCost ?? 0)
+
+  const getActualSpent = () => {
+    if (slug !== 'oolite') return budgetItems.reduce((sum, item) => sum + getItemAmount(item), 0)
+    return budgetItems
+      .filter(i => i.spendType === 'Purchased Actual' && i.date && getItemAmount(i) > 0)
+      .filter(i => KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab'))
+      .reduce((s, i) => s + getItemAmount(i), 0)
   }
 
+  const getRequestedPending = () => {
+    if (slug !== 'oolite') return 0
+    return budgetItems
+      .filter(i =>
+        i.spendType === 'Purchased Actual' &&
+        !i.date &&
+        i.emailDate &&
+        i.emailTitle &&
+        i.emailPeople &&
+        KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab')
+      )
+      .reduce((s, i) => s + getItemAmount(i), 0)
+  }
+
+  const getPlannedTotal = () => {
+    if (slug !== 'oolite') return 0
+    return budgetItems
+      .filter(i => i.spendType === 'Planned' || (!i.spendType && !i.date))
+      .filter(i => KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab'))
+      .reduce((s, i) => s + getItemAmount(i), 0)
+  }
+
+  const getSpentAmount = () => getActualSpent()
+
   const getRemainingBudget = () => {
-    // Remaining = Total Budget - Spent
+    if (slug === 'oolite') return BUDGET_CAP - getActualSpent()
     return getTotalCost() - getSpentAmount()
   }
 
@@ -366,10 +583,11 @@ export default function DigitalLabBudgetPage() {
   }
 
   const getCategoryTotal = (category: string) => {
-    // Use filteredItems when a filter is active, otherwise use all budgetItems
-    const itemsToUse = selectedCategory !== 'all' || searchTerm 
-      ? filteredItems 
-      : budgetItems
+    const hasFilters = selectedCategory !== 'all' || searchTerm || (slug === 'oolite' && selectedMonth) ||
+      (slug === 'oolite' && selectedVendorGroup !== 'all') || (slug === 'oolite' && selectedExpenseType !== 'all') ||
+      (slug === 'oolite' && selectedProgramPillar !== 'all') || (slug === 'oolite' && selectedBudgetBucket !== 'all') || (slug === 'oolite' && selectedTargetMonth) ||
+      (slug === 'oolite' && selectedPeople.trim())
+    const itemsToUse = hasFilters ? filteredItems : viewFilteredItems
     let total = itemsToUse
       .filter(item => item.category === category)
       .reduce((sum, item) => sum + item.subtotal, 0)
@@ -400,23 +618,37 @@ export default function DigitalLabBudgetPage() {
 
 
   const getPieChartData = () => {
-    // Calculate category totals - use same logic as category breakdown for consistency
-    const categoryTotals = categories.slice(1).map(category => {
-      // Use budgetItems directly (same as category breakdown base calculation)
-      let total = budgetItems
-        .filter(item => item.category === category.id)
-        .reduce((sum, item) => sum + item.subtotal, 0)
-      
-      // Note: We're NOT including budgetMonths here to match the main data source
-      // If you want dashboard data included, add it here too
-      
-      return {
-        name: category.name,
-        value: total,
-        color: getCategoryColor(category.id),
-        percentage: total > 0 ? (total / getTotalCost()) * 100 : 0
-      }
-    }).filter(item => item.value > 0)
+    const itemsForChart = viewFilteredItems
+    let segmentTotals: { name: string; value: number; color: string; percentage: number }[]
+
+    if (groupBy === 'programPillar' && slug === 'oolite') {
+      const pillarTotals = itemsForChart.reduce((acc, item) => {
+        const pillar = item.programPillar || 'Programming Support'
+        if (!acc[pillar]) acc[pillar] = 0
+        acc[pillar] += item.subtotal
+        return acc
+      }, {} as Record<string, number>)
+      segmentTotals = PILLAR_ORDER.filter(p => (pillarTotals[p] ?? 0) > 0).map(pillar => ({
+        name: pillar,
+        value: pillarTotals[pillar],
+        color: getPillarColor(pillar),
+        percentage: pillarTotals[pillar] > 0 ? (pillarTotals[pillar] / getTotalCost()) * 100 : 0
+      }))
+    } else {
+      segmentTotals = categories.slice(1).map(category => {
+        const total = itemsForChart
+          .filter(item => item.category === category.id)
+          .reduce((sum, item) => sum + item.subtotal, 0)
+        return {
+          name: category.name,
+          value: total,
+          color: getCategoryColor(category.id),
+          percentage: total > 0 ? (total / getTotalCost()) * 100 : 0
+        }
+      }).filter(item => item.value > 0)
+    }
+
+    const categoryTotals = segmentTotals
 
     // Add remaining budget or spent amount based on toggle
     if (showRemainingInChart) {
@@ -445,12 +677,53 @@ export default function DigitalLabBudgetPage() {
     return categoryTotals
   }
 
+  // Spend by month for bar chart (Overview tab)
+  const monthlySpendData = React.useMemo(() => {
+    const monthTotals: Record<string, number> = {}
+    const monthOrder = [
+      ...Array.from({ length: 4 }, (_, i) => `2025-${String(9 + i).padStart(2, '0')}`),
+      ...Array.from({ length: 11 }, (_, i) => `2026-${String(1 + i).padStart(2, '0')}`)
+    ]
+    monthOrder.forEach(m => { monthTotals[m] = 0 })
+    viewFilteredItems.forEach(item => {
+      const monthStr = item.date ? getMonthFromDate(item.date) : getMonthFromTargetMonth(item.targetMonth)
+      if (monthStr && monthTotals.hasOwnProperty(monthStr)) {
+        monthTotals[monthStr] += item.subtotal
+      }
+    })
+    return monthOrder.map(monthStr => ({
+      month: new Date(monthStr).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      monthKey: monthStr,
+      spend: monthTotals[monthStr]
+    }))
+  }, [viewFilteredItems])
+
   const resetFilters = () => {
     setSelectedCategory('all')
     setSearchTerm('')
+    setSelectedMonth(null)
+    setSelectedVendorGroup('all')
+    setSelectedExpenseType('all')
+    setSelectedProgramPillar('all')
+    setSelectedBudgetBucket('all')
+    setSelectedTargetMonth(null)
+    setSelectedPeople('')
     setSelectedSegment(null)
     setSelectedCategoryForSort(null)
+    setSelectedPillarForSort(null)
     setExpandedCategories(new Set())
+  }
+
+  const getPillarColor = (pillar: string) => {
+    const colors: Record<string, string> = {
+      'Infrastructure': '#3B82F6',
+      'Programming Support': '#10B981',
+      'Programming + Archive': '#10B981',
+      'Documentation + Archive': '#8B5CF6',
+      'Public Engagement': '#F59E0B',
+      'Smart Sign': '#06B6D4'
+    }
+    return colors[pillar] || '#6B7280'
   }
 
   const getCategoryColor = (categoryId: string) => {
@@ -478,18 +751,23 @@ export default function DigitalLabBudgetPage() {
     return colors[categoryId] || '#6B7280'
   }
 
-  const toggleCategoryExpansion = (categoryId: string) => {
+  const toggleCategoryExpansion = (categoryIdOrPillar: string) => {
     setExpandedCategories(prev => {
       const newSet = new Set(prev)
-      if (newSet.has(categoryId)) {
-        newSet.delete(categoryId)
+      if (newSet.has(categoryIdOrPillar)) {
+        newSet.delete(categoryIdOrPillar)
       } else {
-        newSet.add(categoryId)
+        newSet.add(categoryIdOrPillar)
       }
       return newSet
     })
-    // When expanding a category, bring it to the top
-    setSelectedCategoryForSort(categoryId)
+    if (PILLAR_ORDER.includes(categoryIdOrPillar)) {
+      setSelectedPillarForSort(categoryIdOrPillar)
+      setSelectedCategoryForSort(null)
+    } else {
+      setSelectedCategoryForSort(categoryIdOrPillar)
+      setSelectedPillarForSort(null)
+    }
   }
 
   const formatCurrency = (amount: number) => {
@@ -500,6 +778,21 @@ export default function DigitalLabBudgetPage() {
       maximumFractionDigits: 0
     }).format(amount)
   }
+
+  // Category pie data for Dashboard tab (Oolite/Airtable) - uses display categories from lineItems
+  const dashboardCategoryChartData = React.useMemo((): CategoryChartItem[] | undefined => {
+    if (slug !== 'oolite' || budgetMonths.length === 0) return undefined
+    const totals: Record<string, number> = {}
+    budgetMonths.forEach(month => {
+      month.lineItems.forEach(item => {
+        const cat = item.category || 'Other'
+        totals[cat] = (totals[cat] ?? 0) + item.amount
+      })
+    })
+    return Object.entries(totals)
+      .filter(([, v]) => v > 0)
+      .map(([name, value]) => ({ name, value, color: getCategoryColor(name) }))
+  }, [slug, budgetMonths])
 
   const getCategoryIcon = (category: string) => {
     const categoryData = categories.find(c => c.id === category)
@@ -523,7 +816,11 @@ export default function DigitalLabBudgetPage() {
   }
 
   const exportToCSV = () => {
-    const itemsToExport = selectedCategory !== 'all' || searchTerm ? filteredItems : budgetItems
+    const exportHasFilters = selectedCategory !== 'all' || searchTerm || (slug === 'oolite' && selectedMonth) ||
+      (slug === 'oolite' && selectedVendorGroup !== 'all') || (slug === 'oolite' && selectedExpenseType !== 'all') ||
+      (slug === 'oolite' && selectedProgramPillar !== 'all') || (slug === 'oolite' && selectedBudgetBucket !== 'all') || (slug === 'oolite' && selectedTargetMonth) ||
+      (slug === 'oolite' && selectedPeople.trim())
+    const itemsToExport = exportHasFilters ? filteredItems : budgetItems
     const escapeCSV = (val: string | number | undefined): string => {
       if (val === undefined || val === null) return ''
       const str = String(val)
@@ -532,7 +829,7 @@ export default function DigitalLabBudgetPage() {
       }
       return str
     }
-    const headers = ['Name', 'Category', 'Purpose', 'Amount', 'Vendor', 'Notes', 'Date', 'Qty', 'Unit Cost', 'Subtotal', 'Phase', 'Program Pillar', 'Spend Type']
+    const headers = ['Name', 'Category', 'Purpose', 'Amount', 'Vendor', 'Notes', 'Date', 'Qty', 'Unit Cost', 'Subtotal', 'Phase', 'Program Pillar', 'Spend Type', 'Budget Bucket', 'Vendor Group', 'Email Title', 'Email Date', 'Email People', 'Evidence Metadata']
     const rows = itemsToExport.map(item => [
       escapeCSV(item.lineItem),
       escapeCSV(item.category),
@@ -546,7 +843,13 @@ export default function DigitalLabBudgetPage() {
       escapeCSV(item.subtotal),
       escapeCSV(item.phaseLabel),
       escapeCSV(item.programPillar),
-      escapeCSV(item.spendType)
+      escapeCSV(item.spendType),
+      escapeCSV(item.budgetBucket),
+      escapeCSV(item.vendorGroup),
+      escapeCSV(item.emailTitle),
+      escapeCSV(item.emailDate),
+      escapeCSV(item.emailPeople),
+      escapeCSV(item.evidenceMetadata)
     ])
     const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
@@ -589,10 +892,10 @@ export default function DigitalLabBudgetPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className={`text-3xl md:text-4xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  {slug === 'oolite' && budgetType === 'summit' ? 'Summit / Event Budget' : 'Digital Lab Budget'}
+                  {slug === 'oolite' ? 'Digital Lab Budget' : 'Budget'}
                 </h1>
                 <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {slug === 'oolite' && budgetType === 'summit' ? '$25,000 strategic split — projected through November 2026' : 'September 2025 - November 2026'}
+                  {slug === 'oolite' ? 'Digital Lab + Digital Conference ($80k combined) · September 2025 - November 2026' : 'Budget overview'}
                 </p>
               </div>
               <div className="hidden md:block">
@@ -641,10 +944,26 @@ export default function DigitalLabBudgetPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-100 text-sm">Equipment Items</p>
-                    <p className="text-3xl font-bold">{budgetItems.length}</p>
+                    <p className="text-green-100 text-sm">Actual Spent</p>
+                    {showPercentageInChart ? (
+                      <>
+                        <p className="text-3xl font-bold">
+                          {((getActualSpent() / getTotalCost()) * 100).toFixed(1)}%
+                        </p>
+                        <p className="text-green-200 text-xs mt-1">
+                          {formatCurrency(getActualSpent())} to date
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-3xl font-bold">{formatCurrency(getActualSpent())}</p>
+                        <p className="text-green-200 text-xs mt-1">
+                          {((getActualSpent() / getTotalCost()) * 100).toFixed(1)}% of budget
+                        </p>
+                      </>
+                    )}
                   </div>
-                  <Package className="h-8 w-8 text-green-200" />
+                  <TrendingUp className="h-8 w-8 text-green-200" />
                 </div>
               </CardContent>
             </Card>
@@ -653,26 +972,17 @@ export default function DigitalLabBudgetPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-purple-100 text-sm">Spent</p>
-                    {showPercentageInChart ? (
+                    <p className="text-purple-100 text-sm">{slug === 'oolite' ? 'Planned' : 'Equipment Items'}</p>
+                    {slug === 'oolite' ? (
                       <>
-                        <p className="text-3xl font-bold">
-                          {((getSpentAmount() / getTotalCost()) * 100).toFixed(1)}%
-                        </p>
-                        <p className="text-purple-200 text-xs mt-1">
-                          {formatCurrency(getSpentAmount())} of budget
-                        </p>
+                        <p className="text-3xl font-bold">{formatCurrency(getPlannedTotal())}</p>
+                        <p className="text-purple-200 text-xs mt-1">forecast</p>
                       </>
                     ) : (
-                      <>
-                        <p className="text-3xl font-bold">{formatCurrency(getSpentAmount())}</p>
-                        <p className="text-purple-200 text-xs mt-1">
-                          {((getSpentAmount() / getTotalCost()) * 100).toFixed(1)}% of budget
-                        </p>
-                      </>
+                      <p className="text-3xl font-bold">{budgetItems.length}</p>
                     )}
                   </div>
-                  <TrendingUp className="h-8 w-8 text-purple-200" />
+                  <Package className="h-8 w-8 text-purple-200" />
                 </div>
               </CardContent>
             </Card>
@@ -706,6 +1016,69 @@ export default function DigitalLabBudgetPage() {
             </Card>
           </motion.div>
 
+          {/* Data Quality Alert */}
+          {slug === 'oolite' && dataQualityIssues.length > 0 && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertDescription>
+                <strong>{dataQualityIssues.length} item(s)</strong> marked Purchased Actual are missing Date or Subtotal.
+                These are excluded from Actual Spent. Fix in Airtable: {dataQualityIssues.map(i => i.lineItem).join(', ')}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Budget Bucket Breakdown (Oolite) */}
+          {slug === 'oolite' && budgetBucketBreakdown && (
+            <motion.div
+              className="mb-6 p-4 rounded-lg border"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              style={{ borderColor: isDark ? '#374151' : '#E5E7EB' }}
+            >
+              <p className={`text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>By Budget Bucket</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className={`p-3 rounded ${isDark ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Digital Lab</p>
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Actual: {formatCurrency(budgetBucketBreakdown.labActual)} / Planned: {formatCurrency(budgetBucketBreakdown.labPlanned)}
+                  </p>
+                </div>
+                <div className={`p-3 rounded ${isDark ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Digital Conference</p>
+                  <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Actual: {formatCurrency(budgetBucketBreakdown.confActual)} / Planned: {formatCurrency(budgetBucketBreakdown.confPlanned)}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* View switcher (Oolite / Airtable views) */}
+          {slug === 'oolite' && (
+            <motion.div
+              className="mb-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            >
+              <Label className={`text-sm mb-2 block ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>View</Label>
+              <Select value={activeView} onValueChange={(v: typeof activeView) => setActiveView(v)}>
+                <SelectTrigger className={`w-full sm:w-64 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Items</SelectItem>
+                  <SelectItem value="actuals">Purchased / Actuals</SelectItem>
+                  <SelectItem value="planned">Planned / Not Yet Purchased</SelectItem>
+                  <SelectItem value="digital-conference">Digital Conference</SelectItem>
+                  <SelectItem value="surface-renovation">Surface Renovation</SelectItem>
+                  <SelectItem value="printers">Printers / Image Pro</SelectItem>
+                  <SelectItem value="verity-it">Verity IT</SelectItem>
+                </SelectContent>
+              </Select>
+            </motion.div>
+          )}
+
           {/* Controls */}
           <motion.div 
             className="flex flex-col lg:flex-row gap-4 mb-8"
@@ -717,7 +1090,7 @@ export default function DigitalLabBudgetPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                  placeholder="Search equipment, categories, or notes..."
+                  placeholder="Search name, category, notes, or evidence..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className={`pl-10 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
@@ -768,21 +1141,111 @@ export default function DigitalLabBudgetPage() {
                 </SelectContent>
               </Select>
 
+              {slug === 'oolite' && (
+                <Select
+                  value={selectedMonth ?? 'all'}
+                  onValueChange={(v) => setSelectedMonth(v === 'all' ? null : v)}
+                >
+                  <SelectTrigger className={`w-full sm:w-48 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+                    <SelectValue placeholder="All months" />
+                  </SelectTrigger>
+                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
+                    <SelectItem value="all">All months</SelectItem>
+                    {[
+                      ...Array.from({ length: 4 }, (_, i) => ({ y: 2025, m: 9 + i })),
+                      ...Array.from({ length: 11 }, (_, i) => ({ y: 2026, m: 1 + i }))
+                    ].map(({ y, m }) => {
+                      const val = `${y}-${String(m).padStart(2, '0')}`
+                      const label = new Date(y, m - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                      return (
+                        <SelectItem key={val} value={val}>
+                          {label}
+                        </SelectItem>
+                      )
+                    })}
+                  </SelectContent>
+                </Select>
+              )}
+              {slug === 'oolite' && vendorGroups.length > 0 && (
+                <Select value={selectedVendorGroup} onValueChange={setSelectedVendorGroup}>
+                  <SelectTrigger className={`w-full sm:w-40 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+                    <SelectValue placeholder="Vendor Group" />
+                  </SelectTrigger>
+                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
+                    <SelectItem value="all">All Vendors</SelectItem>
+                    {vendorGroups.map(vg => (
+                      <SelectItem key={vg} value={vg}>{vg}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {slug === 'oolite' && expenseTypes.length > 0 && (
+                <Select value={selectedExpenseType} onValueChange={setSelectedExpenseType}>
+                  <SelectTrigger className={`w-full sm:w-40 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+                    <SelectValue placeholder="Expense Type" />
+                  </SelectTrigger>
+                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
+                    <SelectItem value="all">All Types</SelectItem>
+                    {expenseTypes.map(et => (
+                      <SelectItem key={et} value={et}>{et}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {slug === 'oolite' && programPillars.length > 0 && (
+                <Select value={selectedProgramPillar} onValueChange={setSelectedProgramPillar}>
+                  <SelectTrigger className={`w-full sm:w-48 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+                    <SelectValue placeholder="Program Pillar" />
+                  </SelectTrigger>
+                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
+                    <SelectItem value="all">All Pillars</SelectItem>
+                    {programPillars.map(p => (
+                      <SelectItem key={p} value={p}>{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {slug === 'oolite' && budgetBuckets.length > 0 && (
+                <Select value={selectedBudgetBucket} onValueChange={setSelectedBudgetBucket}>
+                  <SelectTrigger className={`w-full sm:w-44 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+                    <SelectValue placeholder="Budget Bucket" />
+                  </SelectTrigger>
+                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
+                    <SelectItem value="all">All Buckets</SelectItem>
+                    {budgetBuckets.map(b => (
+                      <SelectItem key={b} value={b}>{b}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {slug === 'oolite' && targetMonths.length > 0 && (
+                <Select value={selectedTargetMonth ?? 'all'} onValueChange={(v) => setSelectedTargetMonth(v === 'all' ? null : v)}>
+                  <SelectTrigger className={`w-full sm:w-48 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+                    <SelectValue placeholder="Target Month (Planned)" />
+                  </SelectTrigger>
+                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
+                    <SelectItem value="all">All Target Months</SelectItem>
+                    {targetMonths.map(m => {
+                      const [y, mo] = m.split('-')
+                      const label = new Date(parseInt(y || '2025'), parseInt(mo || '1') - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                      return <SelectItem key={m} value={m}>{label}</SelectItem>
+                    })}
+                  </SelectContent>
+                </Select>
+              )}
+              {slug === 'oolite' && (
+                <Input
+                  placeholder="People (Email People)..."
+                  value={selectedPeople}
+                  onChange={(e) => setSelectedPeople(e.target.value)}
+                  className={`w-full sm:w-48 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                  title="Comma-separated names to filter by Email People"
+                />
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
             <div className="flex gap-2">
-              {slug === 'oolite' && (
-                <Select value={budgetType} onValueChange={(v) => setBudgetType(v as OoliteBudgetType)}>
-                  <SelectTrigger className={`w-48 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
-                    <SelectItem value="digital-lab">Digital Lab</SelectItem>
-                    <SelectItem value="summit">Summit / Event</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
               {slug === 'oolite' && (
                 <Button
                   variant="outline"
@@ -816,6 +1279,16 @@ export default function DigitalLabBudgetPage() {
             </div>
           </motion.div>
 
+          {/* Item count indicator */}
+          <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            {selectedCategory !== 'all' || searchTerm || (slug === 'oolite' && selectedMonth) ||
+              (slug === 'oolite' && selectedVendorGroup !== 'all') || (slug === 'oolite' && selectedExpenseType !== 'all') ||
+              (slug === 'oolite' && selectedProgramPillar !== 'all') || (slug === 'oolite' && selectedBudgetBucket !== 'all') || (slug === 'oolite' && selectedTargetMonth) ||
+              (slug === 'oolite' && selectedPeople.trim())
+              ? `Showing ${filteredItems.length} of ${viewFilteredItems.length} items`
+              : `${viewFilteredItems.length} items`}
+          </p>
+
           {/* Budget Breakdown */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -826,7 +1299,24 @@ export default function DigitalLabBudgetPage() {
               setActiveTab(value)
               router.push(`/o/${slug}/budget?tab=${value}`, { scroll: false })
             }} className="w-full">
-              <TabsList className={`grid w-full grid-cols-4 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+              <TabsList className={`grid w-full ${slug === 'oolite' ? 'grid-cols-6' : 'grid-cols-4'} ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+                {slug === 'oolite' && (
+                  <TabsTrigger 
+                    value="reconciliation" 
+                    className={`data-[state=active]:bg-blue-600 data-[state=active]:text-white ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
+                  >
+                    <FileSpreadsheet className="h-4 w-4 mr-1 inline" />
+                    Spent To Date
+                  </TabsTrigger>
+                )}
+                {slug === 'oolite' && (
+                  <TabsTrigger 
+                    value="report" 
+                    className={`data-[state=active]:bg-blue-600 data-[state=active]:text-white ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
+                  >
+                    Report
+                  </TabsTrigger>
+                )}
                 <TabsTrigger 
                   value="overview" 
                   className={`data-[state=active]:bg-blue-600 data-[state=active]:text-white ${isDark ? 'text-gray-300' : 'text-gray-700'}`}
@@ -853,6 +1343,46 @@ export default function DigitalLabBudgetPage() {
                 </TabsTrigger>
               </TabsList>
               
+              {slug === 'oolite' && (
+                <TabsContent value="reconciliation" className="mt-6">
+                  <ReconciliationView
+                    budgetItems={budgetItems}
+                    filteredItems={filteredItems}
+                    activeView={activeView}
+                    viewFilteredItems={viewFilteredItems}
+                    getActualSpent={getActualSpent}
+                    getRequestedPending={getRequestedPending}
+                    getPlannedTotal={getPlannedTotal}
+                    getRemainingBudget={getRemainingBudget}
+                    BUDGET_CAP={BUDGET_CAP}
+                    formatCurrency={formatCurrency}
+                    formatDateBadge={formatDateBadge}
+                    getCategoryIcon={getCategoryIcon}
+                    isDark={isDark}
+                    slug={slug}
+                    selectedMonth={selectedMonth}
+                    getMonthFromDate={getMonthFromDate}
+                    getMonthFromTargetMonth={getMonthFromTargetMonth}
+                    monthlySpendData={monthlySpendData}
+                  />
+                </TabsContent>
+              )}
+              {slug === 'oolite' && (
+                <TabsContent value="report" className="mt-6">
+                  <ReportView
+                    budgetItems={budgetItems}
+                    getActualSpent={getActualSpent}
+                    getRequestedPending={getRequestedPending}
+                    getPlannedTotal={getPlannedTotal}
+                    getRemainingBudget={getRemainingBudget}
+                    BUDGET_CAP={BUDGET_CAP}
+                    formatCurrency={formatCurrency}
+                    getCategoryIcon={getCategoryIcon}
+                    isDark={isDark}
+                  />
+                </TabsContent>
+              )}
+              
               <TabsContent value="overview" className="mt-6">
                 <div className="space-y-8">
                   {/* Circle Chart - Full Width */}
@@ -865,11 +1395,14 @@ export default function DigitalLabBudgetPage() {
                             Budget Distribution
                           </CardTitle>
                           <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
-                            Click on segments to highlight and expand category
+                            Click segments to highlight. Toggle Values (% or $) and Show (Remaining or Spent) to switch views.
                           </CardDescription>
                         </div>
                         <div className="flex items-center space-x-2 flex-wrap gap-2">
-                          {(selectedCategory !== 'all' || searchTerm) && (
+                          {(selectedCategory !== 'all' || searchTerm || (slug === 'oolite' && selectedMonth) ||
+                            (slug === 'oolite' && selectedVendorGroup !== 'all') || (slug === 'oolite' && selectedExpenseType !== 'all') ||
+                            (slug === 'oolite' && selectedProgramPillar !== 'all') || (slug === 'oolite' && selectedBudgetBucket !== 'all') || (slug === 'oolite' && selectedTargetMonth) ||
+                            (slug === 'oolite' && selectedPeople.trim())) && (
                             <Button
                               variant="outline"
                               size="sm"
@@ -900,6 +1433,29 @@ export default function DigitalLabBudgetPage() {
                               $
                             </Button>
                           </div>
+                          {slug === 'oolite' && (
+                            <div className="flex items-center space-x-2 border-l pl-2 ml-2 border-gray-600">
+                              <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Group by:
+                              </span>
+                              <Button
+                                variant={groupBy === 'category' ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => { setGroupBy('category'); setSelectedPillarForSort(null) }}
+                                className={groupBy === 'category' ? '' : (isDark ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50')}
+                              >
+                                Category
+                              </Button>
+                              <Button
+                                variant={groupBy === 'programPillar' ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => { setGroupBy('programPillar'); setSelectedCategoryForSort(null) }}
+                                className={groupBy === 'programPillar' ? '' : (isDark ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50')}
+                              >
+                                Program Pillar
+                              </Button>
+                            </div>
+                          )}
                           <div className="flex items-center space-x-2 border-l pl-2 ml-2 border-gray-600">
                             <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                               Show:
@@ -952,18 +1508,25 @@ export default function DigitalLabBudgetPage() {
                             onClick={(data) => {
                               if (data && data.name && data.name !== 'Remaining Budget' && data.name !== 'Total Spent') {
                                 setSelectedSegment(data.name)
-                                const categoryId = categories.find(c => c.name === data.name)?.id
-                                if (categoryId) {
-                                  // Don't filter - just highlight and expand
-                                  // setSelectedCategory(categoryId) // Commented out to prevent filtering
-                                  // Set the selected category for sorting
-                                  setSelectedCategoryForSort(categoryId)
-                                  // Also expand the category in the breakdown
+                                if (groupBy === 'programPillar' && slug === 'oolite') {
+                                  setSelectedPillarForSort(data.name)
+                                  setSelectedCategoryForSort(null)
                                   setExpandedCategories(prev => {
                                     const newSet = new Set(prev)
-                                    newSet.add(categoryId)
+                                    newSet.add(data.name)
                                     return newSet
                                   })
+                                } else {
+                                  const categoryId = categories.find(c => c.name === data.name)?.id
+                                  if (categoryId) {
+                                    setSelectedCategoryForSort(categoryId)
+                                    setSelectedPillarForSort(null)
+                                    setExpandedCategories(prev => {
+                                      const newSet = new Set(prev)
+                                      newSet.add(categoryId)
+                                      return newSet
+                                    })
+                                  }
                                 }
                               }
                             }}
@@ -974,10 +1537,11 @@ export default function DigitalLabBudgetPage() {
                               const isRemaining = entry.name === 'Remaining Budget'
                               const isSpent = entry.name === 'Total Spent'
                               const isSummarySegment = isRemaining || isSpent
-                              const isSelected = !isSummarySegment && (selectedSegment === entry.name || 
+                              const isSelected = !isSummarySegment && (selectedSegment === entry.name ||
                                 selectedCategoryForSort === categoryId ||
+                                selectedPillarForSort === entry.name ||
                                 (selectedCategory !== 'all' && selectedCategory === categoryId))
-                              const hasSelection = selectedSegment || selectedCategoryForSort || (selectedCategory !== 'all')
+                              const hasSelection = selectedSegment || selectedCategoryForSort || selectedPillarForSort || (selectedCategory !== 'all')
                               return (
                                 <Cell 
                                   key={`cell-${index}`} 
@@ -1016,7 +1580,7 @@ export default function DigitalLabBudgetPage() {
                                       {formatCurrency(data.value as number)}
                                     </p>
                                     <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                      {((data.value as number / getTotalCost()) * 100).toFixed(1)}%
+                                      {(((data.value as number) / getTotalCost()) * 100).toFixed(1)}%
                                     </p>
                                     {isRemaining && (
                                       <p className={`text-xs mt-1 italic ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -1045,57 +1609,169 @@ export default function DigitalLabBudgetPage() {
                     </CardContent>
                   </Card>
 
-                  {/* Category Overview - Full Width */}
+                  {/* Spend by Month Bar Chart */}
+                  <Card className={`${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                    <CardHeader>
+                      <CardTitle className={`flex items-center ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <TrendingUp className="h-5 w-5 mr-2" />
+                        Spend by Month
+                      </CardTitle>
+                      <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+                        Actual and planned spend per month
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={monthlySpendData} margin={{ top: 10, right: 10, left: 10, bottom: 60 }}>
+                          <CartesianGrid strokeDasharray="3 3" className={isDark ? 'stroke-gray-600' : 'stroke-gray-200'} />
+                          <XAxis
+                            dataKey="month"
+                            tick={{ fill: isDark ? '#9CA3AF' : '#6B7280', fontSize: 11 }}
+                            angle={-45}
+                            textAnchor="end"
+                            height={60}
+                          />
+                          <YAxis
+                            tick={{ fill: isDark ? '#9CA3AF' : '#6B7280', fontSize: 11 }}
+                            tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
+                          />
+                          <Tooltip
+                            content={({ active, payload }) => {
+                              if (active && payload?.[0]) {
+                                const d = payload[0].payload
+                                return (
+                                  <div className={`p-3 rounded-lg shadow-lg border ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}>
+                                    <p className="font-semibold">{d.month}</p>
+                                    <p className="text-sm">{formatCurrency(d.spend)}</p>
+                                  </div>
+                                )
+                              }
+                              return null
+                            }}
+                          />
+                          <Bar dataKey="spend" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+
+                  {/* Category / Pillar Overview - Full Width */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Category Breakdown</h3>
-                      {selectedCategoryForSort && (
+                      <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        {groupBy === 'programPillar' && slug === 'oolite' ? 'Program Pillar Breakdown' : 'Category Breakdown'}
+                      </h3>
+                      {(selectedCategoryForSort || selectedPillarForSort) && (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => {
                             setSelectedCategoryForSort(null)
+                            setSelectedPillarForSort(null)
                             setSelectedSegment(null)
                           }}
                           className={isDark ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}
                         >
-                          Show All Categories
+                          Show All
                         </Button>
                       )}
                     </div>
                     {(() => {
-                      // Calculate category totals - use SAME logic as pie chart for consistency
-                      // Always show all categories in breakdown (like pie chart), but highlight selected
+                      if (groupBy === 'programPillar' && slug === 'oolite') {
+                        // Pillar breakdown
+                        const pillarData = PILLAR_ORDER.map(pillar => {
+                          const pillarItems = viewFilteredItems
+                            .filter(item => (item.programPillar || 'Programming Support') === pillar)
+                            .sort((a, b) => b.subtotal - a.subtotal)
+                          const pillarTotal = pillarItems.reduce((sum, item) => sum + item.subtotal, 0)
+                          const percentage = pillarTotal > 0 ? (pillarTotal / getTotalCost()) * 100 : 0
+                          return { pillar, pillarItems, pillarTotal, percentage }
+                        }).filter(p => p.pillarTotal > 0)
+
+                        const sortedPillars = [...pillarData].sort((a, b) => {
+                          const aSel = selectedPillarForSort === a.pillar
+                          const bSel = selectedPillarForSort === b.pillar
+                          if (aSel && !bSel) return -1
+                          if (bSel && !aSel) return 1
+                          return b.pillarTotal - a.pillarTotal
+                        })
+
+                        return sortedPillars.map(({ pillar, pillarItems, pillarTotal, percentage }) => {
+                          const isExpanded = expandedCategories.has(pillar)
+                          return (
+                            <div
+                              key={pillar}
+                              className={`rounded-lg border ${isDark ? 'border-gray-600' : 'border-gray-200'} ${
+                                selectedPillarForSort === pillar ? (isDark ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-500') : ''
+                              }`}
+                            >
+                              <button
+                                type="button"
+                                className={`w-full flex items-center justify-between p-4 text-left ${isDark ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'} rounded-t-lg`}
+                                onClick={() => toggleCategoryExpansion(pillar)}
+                              >
+                                <div className="flex items-center gap-2">
+                                  {isExpanded ? (
+                                    <ChevronDown className="h-4 w-4" />
+                                  ) : (
+                                    <ChevronRight className="h-4 w-4" />
+                                  )}
+                                  <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{pillar}</span>
+                                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    ({pillarItems.length} items)
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className={`font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {formatCurrency(pillarTotal)}
+                                  </span>
+                                  <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    ({percentage.toFixed(1)}%)
+                                  </span>
+                                </div>
+                              </button>
+                              {isExpanded && (
+                                <div className={`border-t ${isDark ? 'border-gray-600' : 'border-gray-200'} divide-y ${isDark ? 'divide-gray-600' : 'divide-gray-200'}`}>
+                                  {pillarItems.map((item, idx) => (
+                                    <div key={idx} className={`p-3 flex flex-col gap-1 ${isDark ? 'hover:bg-gray-700/30' : 'hover:bg-gray-50'}`}>
+                                      <div className="flex justify-between items-start gap-2">
+                                        <span className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>{item.lineItem}</span>
+                                        <span className={`text-sm font-medium shrink-0 ${isDark ? 'text-white' : 'text-gray-900'}`}>{formatCurrency(item.subtotal)}</span>
+                                      </div>
+                                      {item.purpose && (
+                                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`} title={item.purpose}>
+                                          {item.purpose}
+                                        </p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })
+                      }
+
+                      // Category breakdown
                       const categoryData = categories.slice(1).map((category) => {
-                        // Use budgetItems ONLY (same as pie chart) - no dashboard items to ensure consistency
-                        let categoryItems = budgetItems.filter(item => item.category === category.id)
-                        
-                        // REMOVED: budgetMonths inclusion to match pie chart data source
-                        // Both pie chart and breakdown now use ONLY budgetItems for consistency
-                        
-                        // Calculate total from categoryItems (budgetItems only)
+                        let categoryItems = viewFilteredItems.filter(item => item.category === category.id)
                         const categoryTotal = categoryItems.reduce((sum, item) => sum + item.subtotal, 0)
                         const percentage = categoryTotal > 0 ? (categoryTotal / getTotalCost()) * 100 : 0
-                        
                         return {
                           category,
-                          categoryItems: categoryItems.sort((a, b) => b.subtotal - a.subtotal), // Sort items within category by cost
+                          categoryItems: categoryItems.sort((a, b) => b.subtotal - a.subtotal),
                           categoryTotal,
                           percentage
                         }
                       })
                       
-                      // Sort categories: selected category first, then by total cost (most to least expensive)
                       const sortedCategories = categoryData.sort((a, b) => {
-                        // If a category is selected (from dropdown or pie chart), bring it to the top
                         const aIsSelected = selectedCategoryForSort === a.category.id || 
                           (selectedCategory !== 'all' && selectedCategory === a.category.id)
                         const bIsSelected = selectedCategoryForSort === b.category.id || 
                           (selectedCategory !== 'all' && selectedCategory === b.category.id)
-                        
                         if (aIsSelected && !bIsSelected) return -1
                         if (bIsSelected && !aIsSelected) return 1
-                        // Otherwise sort by total cost
                         return b.categoryTotal - a.categoryTotal
                       })
                       
@@ -1290,7 +1966,7 @@ export default function DigitalLabBudgetPage() {
               
               <TabsContent value="dashboard" className="mt-6">
                 {budgetMonths.length > 0 ? (
-                  <BudgetDashboard months={budgetMonths} organizationSlug={slug} totalBudget={totalBudget} />
+                  <BudgetDashboard months={budgetMonths} organizationSlug={slug} totalBudget={totalBudget} categoryChartData={dashboardCategoryChartData} />
                 ) : (
                   <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     <p>Loading dashboard data...</p>
@@ -1414,6 +2090,853 @@ export default function DigitalLabBudgetPage() {
   )
 }
 
+// Report view: 3-slide story flow for leadership presentations
+function ReportView({
+  budgetItems,
+  getActualSpent,
+  getRequestedPending,
+  getPlannedTotal,
+  getRemainingBudget,
+  BUDGET_CAP,
+  formatCurrency,
+  getCategoryIcon,
+  isDark
+}: {
+  budgetItems: BudgetItem[]
+  getActualSpent: () => number
+  getRequestedPending: () => number
+  getPlannedTotal: () => number
+  getRemainingBudget: () => number
+  BUDGET_CAP: number
+  formatCurrency: (n: number) => string
+  getCategoryIcon: (c: string) => string
+  isDark: boolean
+}) {
+  const [reportSlide, setReportSlide] = useState(0)
+  const [accountingRemaining, setAccountingRemaining] = useState('22000')
+
+  const spent = getActualSpent()
+  const requestedPending = getRequestedPending()
+  const planned = getPlannedTotal()
+  const remaining = getRemainingBudget()
+  const spentPct = BUDGET_CAP > 0 ? (spent / BUDGET_CAP) * 100 : 0
+  const remainingPct = BUDGET_CAP > 0 ? (remaining / BUDGET_CAP) * 100 : 0
+  const remainingAfterPlanned = Math.max(0, BUDGET_CAP - spent - planned)
+  const gap = accountingRemaining ? parseFloat(accountingRemaining.replace(/[^0-9.-]/g, '')) - remaining : null
+
+  const KNIGHT_BUCKETS = ['Digital Lab', 'Digital Conference']
+  const allActualsForProof = budgetItems.filter(
+    i => i.spendType === 'Purchased Actual' && (i.subtotal > 0 || i.unitCost > 0) &&
+    KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab')
+  )
+  const hasProofForMeter = (i: BudgetItem) => Boolean(i.emailTitle && i.emailDate && i.emailPeople)
+  const proofCoveragePct = allActualsForProof.length > 0
+    ? (allActualsForProof.filter(hasProofForMeter).length / allActualsForProof.length) * 100
+    : 100
+
+  const PILLAR_ORDER = ['Infrastructure', 'Programming Support', 'Documentation + Archive', 'Public Engagement']
+  const PILLAR_OUTCOMES: Record<string, string> = {
+    'Infrastructure': 'Renovation + readiness',
+    'Programming Support': 'Resident + alumni support',
+    'Documentation + Archive': '360 captures + cataloging',
+    'Public Engagement': 'Monthly Digital Presence Sprint rotation'
+  }
+  const byPillar = budgetItems.reduce((acc, item) => {
+    const pillar = item.programPillar || 'Programming Support'
+    if (!acc[pillar]) acc[pillar] = 0
+    acc[pillar] += item.subtotal
+    return acc
+  }, {} as Record<string, number>)
+
+  return (
+    <div className="space-y-6">
+      {/* Slide content */}
+      <Card className={`min-h-[400px] ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <CardContent className="p-8">
+          {reportSlide === 0 && (
+            <div className="space-y-6">
+              <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Where we are + what Knight gets</h2>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className={`p-4 rounded-lg ${isDark ? 'bg-blue-900/30' : 'bg-blue-50'}`}>
+                  <p className={`text-sm ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>Total Cap (Knight)</p>
+                  <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-blue-900'}`}>{formatCurrency(BUDGET_CAP)}</p>
+                </div>
+                <div className={`p-4 rounded-lg ${isDark ? 'bg-green-900/30' : 'bg-green-50'}`}>
+                  <p className={`text-sm ${isDark ? 'text-green-200' : 'text-green-800'}`}>Spent to Date (Actuals)</p>
+                  <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-green-900'}`}>{formatCurrency(spent)}</p>
+                  <p className={`text-xs ${isDark ? 'text-green-300' : 'text-green-600'}`}>{spentPct.toFixed(1)}%</p>
+                  <div className="mt-2 flex items-center gap-2">
+                    <Badge variant="outline" className={`text-[10px] ${isDark ? 'border-cyan-400/50 text-cyan-300' : 'border-cyan-600 text-cyan-700'}`}>
+                      Proof Coverage: {proofCoveragePct.toFixed(0)}%
+                    </Badge>
+                  </div>
+                </div>
+                <div className={`p-4 rounded-lg ${isDark ? 'bg-amber-900/30' : 'bg-amber-50'}`}>
+                  <p className={`text-sm ${isDark ? 'text-amber-200' : 'text-amber-800'}`}>Requested / Pending</p>
+                  <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-amber-900'}`}>{formatCurrency(requestedPending)}</p>
+                </div>
+                <div className={`p-4 rounded-lg ${isDark ? 'bg-purple-900/30' : 'bg-purple-50'}`}>
+                  <p className={`text-sm ${isDark ? 'text-purple-200' : 'text-purple-800'}`}>Planned (Forecast)</p>
+                  <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-purple-900'}`}>{formatCurrency(planned)}</p>
+                </div>
+                <div className={`p-4 rounded-lg ${isDark ? 'bg-orange-900/30' : 'bg-orange-50'}`}>
+                  <p className={`text-sm ${isDark ? 'text-orange-200' : 'text-orange-800'}`}>Remaining (after Actuals)</p>
+                  <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-orange-900'}`}>{formatCurrency(remaining)}</p>
+                  <p className={`text-xs ${isDark ? 'text-orange-300' : 'text-orange-600'}`}>{remainingPct.toFixed(1)}%</p>
+                </div>
+              </div>
+              <p className={`text-base italic ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                Every line item is tied to an email request trail.
+              </p>
+            </div>
+          )}
+          {reportSlide === 1 && (
+            <div className="space-y-6">
+              <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Knight Pillars → Spend → Outcomes</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {PILLAR_ORDER.map(pillar => (
+                  <div key={pillar} className={`p-6 rounded-lg border ${isDark ? 'border-gray-600 bg-gray-700/30' : 'border-gray-200 bg-gray-50'}`}>
+                    <p className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{pillar}</p>
+                    <p className={`text-2xl font-bold mt-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>{formatCurrency(byPillar[pillar] || 0)}</p>
+                    <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      → {PILLAR_OUTCOMES[pillar] || '— artists served, workshops, captures'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {reportSlide === 2 && (
+            <div className="space-y-6">
+              <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Reconciliation + governance</h2>
+              <div className="space-y-4">
+                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Our tracker is built from the Digital Lab email request/receipt trail and shows:
+                </p>
+                <ul className={`list-disc list-inside text-sm space-y-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <li>Spent to Date (Actuals): {formatCurrency(spent)}</li>
+                  <li>Remaining (after Actuals): {formatCurrency(remaining)}</li>
+                </ul>
+                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  A separate figure referenced in recent correspondence is:
+                </p>
+                <div className="flex items-center gap-1">
+                  <Label className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Remaining (Accounting claim):</Label>
+                  <Input
+                    placeholder="e.g. 22000"
+                    value={accountingRemaining}
+                    onChange={(e) => setAccountingRemaining(e.target.value)}
+                    className={`max-w-[140px] ${isDark ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+                  />
+                </div>
+                {gap !== null && !Number.isNaN(gap) && (
+                  <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Difference to reconcile: {formatCurrency(gap)}
+                  </p>
+                )}
+                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Next step: match Bill.com/GL export used for the claim against this tracker, line-by-line, and confirm the reporting basis (included/excluded items).
+                </p>
+                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Approval process: Rina approves → Accounting posts → tracker updated.
+                </p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Navigation */}
+      <div className="flex items-center justify-between">
+        <Button
+          variant="outline"
+          onClick={() => setReportSlide(s => Math.max(0, s - 1))}
+          disabled={reportSlide === 0}
+          className={isDark ? 'bg-gray-800 border-gray-600 text-white' : ''}
+        >
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          Previous
+        </Button>
+        <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+          {reportSlide + 1} of 3
+        </span>
+        <Button
+          variant="outline"
+          onClick={() => setReportSlide(s => Math.min(2, s + 1))}
+          disabled={reportSlide === 2}
+          className={isDark ? 'bg-gray-800 border-gray-600 text-white' : ''}
+        >
+          Next
+          <ChevronRight className="h-4 w-4 ml-1" />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+// Reconciliation view: Spent To Date table, audit tabs, proof trail, gap detector
+function ReconciliationView({
+  budgetItems,
+  filteredItems,
+  activeView,
+  viewFilteredItems,
+  getActualSpent,
+  getRequestedPending,
+  getPlannedTotal,
+  getRemainingBudget,
+  BUDGET_CAP,
+  formatCurrency,
+  formatDateBadge,
+  getCategoryIcon,
+  isDark,
+  slug,
+  selectedMonth,
+  getMonthFromDate,
+  getMonthFromTargetMonth,
+  monthlySpendData
+}: {
+  budgetItems: BudgetItem[]
+  filteredItems: BudgetItem[]
+  activeView: string
+  viewFilteredItems: BudgetItem[]
+  getActualSpent: () => number
+  getRequestedPending: () => number
+  getPlannedTotal: () => number
+  getRemainingBudget: () => number
+  BUDGET_CAP: number
+  formatCurrency: (n: number) => string
+  formatDateBadge: (d?: string) => string | null
+  getCategoryIcon: (c: string) => string
+  isDark: boolean
+  slug: string
+  selectedMonth: string | null
+  getMonthFromDate: (d?: string) => string | null
+  getMonthFromTargetMonth: (d?: string) => string | null
+  monthlySpendData: { month: string; monthKey: string; spend: number }[]
+}) {
+  const spent = getActualSpent()
+  const requestedPending = getRequestedPending()
+  const planned = getPlannedTotal()
+  const remaining = getRemainingBudget()
+  const spentPct = BUDGET_CAP > 0 ? (spent / BUDGET_CAP) * 100 : 0
+  const remainingPct = BUDGET_CAP > 0 ? (remaining / BUDGET_CAP) * 100 : 0
+  const remainingAfterPlanned = Math.max(0, BUDGET_CAP - spent - planned)
+
+  const KNIGHT_BUCKETS = ['Digital Lab', 'Digital Conference']
+  // Use filteredItems so Reconciliation table respects View (Printers/Verity) + category/month/search filters
+  const baseItems = filteredItems
+  const actualsItems = baseItems.filter(
+    i => i.spendType === 'Purchased Actual' && (i.subtotal > 0 || i.unitCost > 0) &&
+    KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab')
+  ).sort((a, b) => {
+    const dateA = a.date || a.emailDate || ''
+    const dateB = b.date || b.emailDate || ''
+    return dateB.localeCompare(dateA)
+  })
+
+  const hasProof = (i: BudgetItem) =>
+    Boolean(i.emailTitle && i.emailDate && i.emailPeople && i.evidenceMetadata)
+  const hasProofForMeter = (i: BudgetItem) =>
+    Boolean(i.emailTitle && i.emailDate && i.emailPeople)
+  const missingProofItems = actualsItems.filter(i => !hasProof(i))
+  const missingDateItems = actualsItems.filter(i => !i.date)
+  const plannedWithDateItems = baseItems.filter(
+    i => i.spendType === 'Planned' && i.date
+  )
+  const allActualsForProof = budgetItems.filter(
+    i => i.spendType === 'Purchased Actual' && (i.subtotal > 0 || i.unitCost > 0) &&
+    KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab')
+  )
+  const proofCoveragePct = allActualsForProof.length > 0
+    ? (allActualsForProof.filter(hasProofForMeter).length / allActualsForProof.length) * 100
+    : 100
+
+  const [auditTab, setAuditTab] = useState<'spent' | 'missing-proof' | 'missing-dates' | 'planned-with-date'>('spent')
+  const [accountingRemaining, setAccountingRemaining] = useState<string>('22000')
+  const [tableSort, setTableSort] = useState<{ column: 'date' | 'item' | 'subtotal' | 'vendorGroup' | 'programPillar' | 'category'; direction: 'asc' | 'desc' }>({ column: 'date', direction: 'desc' })
+  const [checklistExpanded, setChecklistExpanded] = useState(false)
+  const gap = accountingRemaining ? parseFloat(accountingRemaining.replace(/[^0-9.-]/g, '')) - remaining : null
+
+  const applyMonthFilter = (items: BudgetItem[]) => {
+    if (!selectedMonth) return items
+    return items.filter(i => {
+      const m = i.date ? getMonthFromDate(i.date) : getMonthFromTargetMonth(i.targetMonth)
+      return m === selectedMonth
+    })
+  }
+
+  const rawTableItems = applyMonthFilter(
+    auditTab === 'spent' ? actualsItems
+    : auditTab === 'missing-proof' ? missingProofItems
+    : auditTab === 'missing-dates' ? missingDateItems
+    : plannedWithDateItems
+  )
+
+  const tableItems = [...rawTableItems].sort((a, b) => {
+    const { column, direction } = tableSort
+    const mult = direction === 'asc' ? 1 : -1
+    let cmp = 0
+    switch (column) {
+      case 'date':
+        cmp = (a.date || a.emailDate || '').localeCompare(b.date || b.emailDate || '')
+        break
+      case 'item':
+        cmp = (a.lineItem || '').localeCompare(b.lineItem || '')
+        break
+      case 'subtotal':
+        cmp = (a.subtotal ?? 0) - (b.subtotal ?? 0)
+        break
+      case 'vendorGroup':
+        cmp = (a.vendorGroup || '').localeCompare(b.vendorGroup || '')
+        break
+      case 'programPillar':
+        cmp = (a.programPillar || '').localeCompare(b.programPillar || '')
+        break
+      case 'category':
+        cmp = (a.category || '').localeCompare(b.category || '')
+        break
+      default:
+        break
+    }
+    return mult * cmp
+  })
+
+  const handleSort = (col: typeof tableSort.column) => {
+    setTableSort(prev =>
+      prev.column === col ? { column: col, direction: prev.direction === 'asc' ? 'desc' : 'asc' } : { column: col, direction: col === 'date' ? 'desc' : 'asc' }
+    )
+  }
+
+  // Planned for selected month (when month is selected)
+  const plannedForMonthItems = selectedMonth
+    ? baseItems.filter(
+        i => (i.spendType === 'Planned' || (!i.spendType && !i.date)) &&
+        KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab') &&
+        getMonthFromTargetMonth(i.targetMonth) === selectedMonth
+      ).sort((a, b) => (a.lineItem || '').localeCompare(b.lineItem || ''))
+    : []
+
+  const formatMonthLabel = (ym: string) => {
+    const [y, m] = ym.split('-')
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    return `${monthNames[parseInt(m || '1', 10) - 1]} ${y}`
+  }
+
+  // Printers view: group by Print System → Expense Type
+  const printersGrouped = activeView === 'printers' ? (() => {
+    const bySystem: Record<string, Record<string, { items: BudgetItem[]; total: number }>> = {}
+    baseItems.forEach(i => {
+      const sys = i.printSystem || 'Other'
+      if (!bySystem[sys]) bySystem[sys] = {}
+      const et = i.expenseType || 'Other'
+      if (!bySystem[sys][et]) bySystem[sys][et] = { items: [], total: 0 }
+      bySystem[sys][et].items.push(i)
+      bySystem[sys][et].total += i.subtotal
+    })
+    return bySystem
+  })() : null
+
+  return (
+    <div className="space-y-6">
+      {/* Presentation Checklist (collapsible) */}
+      <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+        <CardHeader
+          className={`py-4 cursor-pointer select-none ${isDark ? 'hover:bg-gray-700/30' : 'hover:bg-gray-50'}`}
+          onClick={() => setChecklistExpanded(!checklistExpanded)}
+        >
+          <div className="flex items-center justify-between">
+            <CardTitle className={`text-base flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <LayoutDashboard className="h-4 w-4" />
+              Presentation Checklist — What we have, what matters most
+            </CardTitle>
+            {checklistExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </div>
+        </CardHeader>
+        {checklistExpanded && (
+          <CardContent className="pt-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className={`border-b ${isDark ? 'border-gray-600' : 'border-gray-200'}`}>
+                    <th className={`text-left p-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Feature</th>
+                    <th className={`text-left p-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Status</th>
+                    <th className={`text-left p-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Notes</th>
+                  </tr>
+                </thead>
+                <tbody className={`${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <tr><td className="p-2">Executive KPI strip (5 blocks)</td><td className="p-2">Done</td><td className="p-2">Cap, Spent, Requested/Pending, Planned, Remaining</td></tr>
+                  <tr><td className="p-2">Proof Coverage meter</td><td className="p-2">Done</td><td className="p-2">Badge under Spent to Date</td></tr>
+                  <tr><td className="p-2">Accounting Reconciliation panel</td><td className="p-2">Done</td><td className="p-2">Discrepancy explainer</td></tr>
+                  <tr><td className="p-2">Spent To Date table</td><td className="p-2">Done</td><td className="p-2">Default view, sortable by column</td></tr>
+                  <tr><td className="p-2">Audit tabs (Missing Proof, Dates, etc.)</td><td className="p-2">Done</td><td className="p-2">4 tabs</td></tr>
+                  <tr><td className="p-2">Month filter</td><td className="p-2">Done</td><td className="p-2">Sep 2025–Nov 2026</td></tr>
+                  <tr><td className="p-2">Category, Program Pillar, Budget Bucket, Target Month, People filters</td><td className="p-2">Done</td><td className="p-2">—</td></tr>
+                  <tr><td className="p-2">Spent by Month chart</td><td className="p-2">Done</td><td className="p-2">Bar chart</td></tr>
+                  <tr><td className="p-2">Spent by Program Pillar chart</td><td className="p-2">Done</td><td className="p-2">In Reconciliation</td></tr>
+                  <tr><td className="p-2">Planned for [Month] list</td><td className="p-2">Done</td><td className="p-2">When month selected</td></tr>
+                  <tr><td className="p-2">Planned burn-down</td><td className="p-2">Done</td><td className="p-2">Projected Remaining after planned</td></tr>
+                  <tr><td className="p-2">Printers / Verity story views</td><td className="p-2">Done</td><td className="p-2">View filter</td></tr>
+                  <tr><td className="p-2">Export to CSV</td><td className="p-2">Done</td><td className="p-2">—</td></tr>
+                  <tr><td className="p-2 font-medium">Table column sorting</td><td className="p-2 font-medium">Done</td><td className="p-2">Click headers to sort</td></tr>
+                  <tr><td className="p-2 font-medium">Report / Story flow</td><td className="p-2 font-medium">Done</td><td className="p-2">Report tab with 3 slides</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        )}
+      </Card>
+
+      {/* Executive KPI strip (5 blocks + Proof Coverage) */}
+      <div className="flex flex-wrap items-start gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 flex-1 min-w-0">
+          <Card className={`${isDark ? 'bg-blue-900/30 border-blue-700' : 'bg-blue-50 border-blue-200'}`} title="Total Knight Foundation budget cap for Digital Lab + Digital Conference combined (excluding honoraria if treated separately in Accounting).">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-1">
+                <p className={`text-sm font-medium ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>Total Cap (Knight)</p>
+                <span title="Total Knight Foundation budget cap for Digital Lab + Digital Conference combined (excluding honoraria if treated separately in Accounting)."><HelpCircle className="h-3.5 w-3.5 text-blue-400" /></span>
+              </div>
+              <p className={`text-2xl font-bold mt-1 ${isDark ? 'text-white' : 'text-blue-900'}`}>{formatCurrency(BUDGET_CAP)}</p>
+            </CardContent>
+          </Card>
+          <Card className={`${isDark ? 'bg-green-900/30 border-green-700' : 'bg-green-50 border-green-200'}`} title="Sum of Purchased Actual line items that have a confirmed spend date. This is the most conservative posted spend view until Bill.com dates are added.">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-1">
+                <p className={`text-sm font-medium ${isDark ? 'text-green-200' : 'text-green-800'}`}>Spent to Date (Actuals)</p>
+                <span title="Sum of Purchased Actual line items that have a confirmed spend date. This is the most conservative posted spend view until Bill.com dates are added."><HelpCircle className="h-3.5 w-3.5 text-green-400" /></span>
+              </div>
+              <p className={`text-2xl font-bold mt-1 ${isDark ? 'text-white' : 'text-green-900'}`}>{formatCurrency(spent)}</p>
+              <p className={`text-xs mt-0.5 ${isDark ? 'text-green-300' : 'text-green-600'}`}>{spentPct.toFixed(1)}%</p>
+              <div className="mt-2 flex items-center gap-2" title="This indicates audit readiness. It does not confirm Bill.com posting—only that the email request trail is documented.">
+                <span className={`text-[10px] ${isDark ? 'text-green-300/80' : 'text-green-600/80'}`}>Proof Coverage:</span>
+                <Badge variant="outline" className={`text-[10px] ${isDark ? 'border-cyan-400/50 text-cyan-300' : 'border-cyan-600 text-cyan-700'}`}>
+                  {proofCoveragePct.toFixed(0)}%
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className={`${isDark ? 'bg-amber-900/30 border-amber-700' : 'bg-amber-50 border-amber-200'}`} title="Items requested/approved via email trail (Email Date + proof fields present) but not yet confirmed with a posted/paid date. Used to track obligations and prevent surprise remaining funds discrepancies.">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-1">
+                <p className={`text-sm font-medium ${isDark ? 'text-amber-200' : 'text-amber-800'}`}>Requested / Pending (Email-proven)</p>
+                <span title="Items requested/approved via email trail (Email Date + proof fields present) but not yet confirmed with a posted/paid date. Used to track obligations and prevent surprise remaining funds discrepancies."><HelpCircle className="h-3.5 w-3.5 text-amber-400" /></span>
+              </div>
+              <p className={`text-2xl font-bold mt-1 ${isDark ? 'text-white' : 'text-amber-900'}`}>{formatCurrency(requestedPending)}</p>
+              <p className={`text-[10px] mt-0.5 ${isDark ? 'text-amber-300/80' : 'text-amber-600/80'}`}>Email Date = request timeline · Date = posted/paid timeline</p>
+            </CardContent>
+          </Card>
+          <Card className={`${isDark ? 'bg-purple-900/30 border-purple-700' : 'bg-purple-50 border-purple-200'}`} title="Forecast items not yet purchased. Organized by Target Month for projection and pacing.">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-1">
+                <p className={`text-sm font-medium ${isDark ? 'text-purple-200' : 'text-purple-800'}`}>Planned (Forecast)</p>
+                <span title="Forecast items not yet purchased. Organized by Target Month for projection and pacing."><HelpCircle className="h-3.5 w-3.5 text-purple-400" /></span>
+              </div>
+              <p className={`text-2xl font-bold mt-1 ${isDark ? 'text-white' : 'text-purple-900'}`}>{formatCurrency(planned)}</p>
+            </CardContent>
+          </Card>
+          <Card className={`${isDark ? 'bg-orange-900/30 border-orange-700' : 'bg-orange-50 border-orange-200'}`} title="Remaining budget using conservative Actuals only definition. Does not subtract Requested/Pending or Planned.">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-1">
+                <p className={`text-sm font-medium ${isDark ? 'text-orange-200' : 'text-orange-800'}`}>Remaining (after Actuals)</p>
+                <span title="Remaining budget using conservative Actuals only definition. Does not subtract Requested/Pending or Planned."><HelpCircle className="h-3.5 w-3.5 text-orange-400" /></span>
+              </div>
+              <p className={`text-2xl font-bold mt-1 ${isDark ? 'text-white' : 'text-orange-900'}`}>{formatCurrency(remaining)}</p>
+              <p className={`text-xs mt-0.5 ${isDark ? 'text-orange-300' : 'text-orange-600'}`}>{remainingPct.toFixed(1)}%</p>
+              <p className={`text-[10px] mt-1 ${isDark ? 'text-orange-300/80' : 'text-orange-600/80'}`} title="Remaining budget if all planned items are executed.">Remaining after Planned: {formatCurrency(remainingAfterPlanned)}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Accounting Reconciliation (Knight Reporting) — directly below KPI strip */}
+      <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+        <CardHeader>
+          <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Accounting Reconciliation (Knight Reporting)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            Our tracker is built from the Digital Lab email request/receipt trail and shows:
+          </p>
+          <ul className={`list-disc list-inside text-sm space-y-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            <li>Spent to Date (Actuals): {formatCurrency(spent)}</li>
+            <li>Remaining (after Actuals): {formatCurrency(remaining)}</li>
+          </ul>
+          <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            A separate figure referenced in recent correspondence is:
+          </p>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Label htmlFor="accounting-remaining" className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Remaining (Accounting claim):</Label>
+              <Input
+                id="accounting-remaining"
+                placeholder="e.g. 22000"
+                value={accountingRemaining}
+                onChange={(e) => setAccountingRemaining(e.target.value)}
+                title="Enter the remaining funds number provided by Accounting/Leadership so the app can compute the variance."
+                className={`max-w-[140px] ${isDark ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+              />
+            </div>
+          </div>
+          {gap !== null && !Number.isNaN(gap) && (
+            <>
+              <p className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`} title="A non-zero difference usually indicates coding differences, excluded categories, honoraria treatment, or posted items not currently represented in the request trail.">
+                Difference to reconcile: {formatCurrency(gap)}
+              </p>
+              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                Next step: match Bill.com/GL export used for the claim against this tracker, line-by-line, and confirm the reporting basis (included/excluded items).
+              </p>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Printers: grouped by Print System → Expense Type */}
+      {activeView === 'printers' && printersGrouped && Object.keys(printersGrouped).length > 0 && (
+        <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+          <CardHeader>
+            <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Printers by Print System & Expense Type</CardTitle>
+            <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+              Totals grouped by Print System, then by Expense Type
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {Object.entries(printersGrouped).map(([system, byExpense]) => {
+                const systemTotal = Object.values(byExpense).reduce((s, x) => s + x.total, 0)
+                return (
+                  <div key={system} className={`rounded-lg p-4 ${isDark ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <p className={`font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      {system} — {formatCurrency(systemTotal)}
+                    </p>
+                    <div className="ml-4 space-y-1">
+                      {Object.entries(byExpense).map(([expType, { total }]) => (
+                        <div key={expType} className="flex justify-between text-sm">
+                          <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{expType}</span>
+                          <span className="font-medium">{formatCurrency(total)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Spent by Month chart */}
+      {monthlySpendData.length > 0 && (
+        <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+          <CardHeader>
+            <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Spent by Month</CardTitle>
+            <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+              Actual and planned spend per month
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={monthlySpendData} margin={{ top: 10, right: 10, left: 10, bottom: 60 }}>
+                <CartesianGrid strokeDasharray="3 3" className={isDark ? 'stroke-gray-600' : 'stroke-gray-200'} />
+                <XAxis
+                  dataKey="month"
+                  tick={{ fill: isDark ? '#9CA3AF' : '#6B7280', fontSize: 10 }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
+                />
+                <YAxis
+                  tick={{ fill: isDark ? '#9CA3AF' : '#6B7280', fontSize: 10 }}
+                  tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
+                />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload?.[0]) {
+                      const d = payload[0].payload
+                      return (
+                        <div className={`p-2 rounded border text-sm ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <p className="font-semibold">{d.month}</p>
+                          <p>{formatCurrency(d.spend)}</p>
+                        </div>
+                      )
+                    }
+                    return null
+                  }}
+                />
+                <Bar dataKey="spend" fill="#06B6D4" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Spent by Program Pillar — Reconciliation */}
+      {(() => {
+        const PILLAR_ORDER = ['Infrastructure', 'Programming Support', 'Programming + Archive', 'Documentation + Archive', 'Public Engagement', 'Smart Sign']
+        const itemsForPillar = applyMonthFilter(actualsItems)
+        const pillarChartData = PILLAR_ORDER.map(pillar => ({
+          pillar,
+          spend: itemsForPillar
+            .filter(i => (i.programPillar || 'Programming Support') === pillar)
+            .reduce((s, i) => s + i.subtotal, 0)
+        })).filter(d => d.spend > 0)
+        if (pillarChartData.length === 0) return null
+        return (
+          <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+            <CardHeader>
+              <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Spent by Program Pillar</CardTitle>
+              <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+                {selectedMonth ? `Actuals for ${formatMonthLabel(selectedMonth)}` : 'All actuals'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={pillarChartData} margin={{ top: 10, right: 10, left: 10, bottom: 60 }}>
+                  <CartesianGrid strokeDasharray="3 3" className={isDark ? 'stroke-gray-600' : 'stroke-gray-200'} />
+                  <XAxis
+                    dataKey="pillar"
+                    tick={{ fill: isDark ? '#9CA3AF' : '#6B7280', fontSize: 10 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis
+                    tick={{ fill: isDark ? '#9CA3AF' : '#6B7280', fontSize: 10 }}
+                    tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`}
+                  />
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (active && payload?.[0]) {
+                        const d = payload[0].payload
+                        return (
+                          <div className={`p-2 rounded border text-sm ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                            <p className="font-semibold">{d.pillar}</p>
+                            <p>{formatCurrency(d.spend)}</p>
+                          </div>
+                        )
+                      }
+                      return null
+                    }}
+                  />
+                  <Bar dataKey="spend" fill="#06B6D4" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        )
+      })()}
+
+      {/* Planned Forecast + Conference summary */}
+      <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+        <CardHeader>
+          <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Planned Forecast</CardTitle>
+          <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+            Planned items by Target Month (included under same $80k cap)
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+              <p className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Total Planned</p>
+              <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{formatCurrency(planned)}</p>
+            </div>
+            <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+              <p className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Digital Conference Planned</p>
+              <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                {formatCurrency(
+                  budgetItems
+                    .filter(i => i.budgetBucket === 'Digital Conference' && (i.spendType === 'Planned' || (!i.spendType && !i.date)))
+                    .reduce((s, i) => s + i.subtotal, 0)
+                )}
+              </p>
+            </div>
+            <div className={`p-4 rounded-lg ${isDark ? 'bg-orange-900/30' : 'bg-orange-50'}`}>
+              <p className={`text-sm font-medium ${isDark ? 'text-orange-200' : 'text-orange-800'}`}>Projected Remaining (after planned)</p>
+              <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-orange-900'}`}>
+                {formatCurrency(Math.max(0, BUDGET_CAP - spent - planned))}
+              </p>
+              <p className={`text-xs mt-0.5 ${isDark ? 'text-orange-300' : 'text-orange-600'}`}>
+                Cap − Spent − Planned
+              </p>
+            </div>
+          </div>
+          {/* Planned by Target Month breakdown */}
+          {(() => {
+            const byTargetMonth = (budgetItems as BudgetItem[]).reduce((acc, i) => {
+              if (!(i.spendType === 'Planned' || (!i.spendType && !i.date)) || !KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab')) return acc
+              const m = getMonthFromTargetMonth(i.targetMonth) || 'Unknown'
+              acc[m] = (acc[m] || 0) + i.subtotal
+              return acc
+            }, {} as Record<string, number>)
+            const entries = Object.entries(byTargetMonth).filter(([, v]) => v > 0).sort(([a], [b]) => a.localeCompare(b))
+            if (entries.length === 0) return null
+            return (
+              <div className={`mt-4 rounded-lg p-4 ${isDark ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                <p className={`text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Planned by Target Month</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {entries.map(([month, amt]) => {
+                    const [y, mo] = month.split('-')
+                    const label = month === 'Unknown' ? 'Unknown' : new Date(parseInt(y || '2025'), parseInt(mo || '1') - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                    return (
+                      <div key={month} className="flex justify-between">
+                        <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{label}</span>
+                        <span className="font-medium">{formatCurrency(amt)}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })()}
+        </CardContent>
+      </Card>
+
+      {/* Audit tabs + Spent To Date table */}
+      <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+        <CardHeader>
+          <div className="flex flex-wrap gap-2">
+            <Button variant={auditTab === 'spent' ? 'default' : 'outline'} size="sm" onClick={() => setAuditTab('spent')}>
+              Spent To Date ({actualsItems.length})
+            </Button>
+            <Button variant={auditTab === 'missing-proof' ? 'default' : 'outline'} size="sm" onClick={() => setAuditTab('missing-proof')}>
+              Missing Proof ({missingProofItems.length})
+            </Button>
+            <Button variant={auditTab === 'missing-dates' ? 'default' : 'outline'} size="sm" onClick={() => setAuditTab('missing-dates')}>
+              Missing Dates ({missingDateItems.length})
+            </Button>
+            <Button variant={auditTab === 'planned-with-date' ? 'default' : 'outline'} size="sm" onClick={() => setAuditTab('planned-with-date')}>
+              Planned but Has Date ({plannedWithDateItems.length})
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className={`border-b ${isDark ? 'border-gray-600' : 'border-gray-200'}`}>
+                  <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'} cursor-pointer select-none hover:opacity-80`} onClick={() => handleSort('date')}>
+                    <span className="flex items-center gap-1">Date {tableSort.column === 'date' && (tableSort.direction === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />)}</span>
+                  </th>
+                  <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'} cursor-pointer select-none hover:opacity-80`} onClick={() => handleSort('item')}>
+                    <span className="flex items-center gap-1">Item {tableSort.column === 'item' && (tableSort.direction === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />)}</span>
+                  </th>
+                  <th className={`text-right p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'} cursor-pointer select-none hover:opacity-80`} onClick={() => handleSort('subtotal')}>
+                    <span className="flex items-center gap-1 justify-end">Subtotal {tableSort.column === 'subtotal' && (tableSort.direction === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />)}</span>
+                  </th>
+                  <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'} cursor-pointer select-none hover:opacity-80`} onClick={() => handleSort('vendorGroup')}>
+                    <span className="flex items-center gap-1">Vendor Group {tableSort.column === 'vendorGroup' && (tableSort.direction === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />)}</span>
+                  </th>
+                  <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'} cursor-pointer select-none hover:opacity-80`} onClick={() => handleSort('programPillar')}>
+                    <span className="flex items-center gap-1">Program Pillar {tableSort.column === 'programPillar' && (tableSort.direction === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />)}</span>
+                  </th>
+                  <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'} cursor-pointer select-none hover:opacity-80`} onClick={() => handleSort('category')}>
+                    <span className="flex items-center gap-1">Category {tableSort.column === 'category' && (tableSort.direction === 'asc' ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />)}</span>
+                  </th>
+                  <th className={`text-center p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Proof</th>
+                  <th className={`text-left p-3 max-w-[200px] ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Evidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tableItems.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className={`p-6 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      No items in this view
+                    </td>
+                  </tr>
+                ) : (
+                  tableItems.map((item, idx) => (
+                    <tr key={idx} className={`border-b ${isDark ? 'border-gray-700 hover:bg-gray-700/30' : 'border-gray-100 hover:bg-gray-50'}`}>
+                      <td className="p-3">
+                        <div className="flex flex-col gap-0.5">
+                          <span>{formatDateBadge(item.date || item.emailDate) || '—'}</span>
+                          {!item.date && item.emailDate && (
+                            <Badge variant="outline" className={`w-fit text-[10px] ${isDark ? 'border-amber-500/50 text-amber-400' : 'border-amber-600 text-amber-700'}`}>
+                              Needs Bill.com posted date
+                            </Badge>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <span className="mr-2">{getCategoryIcon(item.category)}</span>
+                        {item.lineItem}
+                      </td>
+                      <td className="p-3 text-right font-medium">{formatCurrency(item.subtotal)}</td>
+                      <td className="p-3">{item.vendorGroup || '—'}</td>
+                      <td className="p-3">{item.programPillar || '—'}</td>
+                      <td className="p-3">{item.category}</td>
+                      <td className="p-3 text-center">
+                        {hasProof(item) ? (
+                          <span title="Proof complete"><CheckCircle2 className="h-5 w-5 text-green-500 inline" /></span>
+                        ) : (
+                          <span title="Missing proof"><AlertTriangle className="h-5 w-5 text-amber-500 inline" /></span>
+                        )}
+                      </td>
+                      <td className="p-3 max-w-[200px] truncate" title={item.evidenceMetadata}>
+                        {item.evidenceMetadata || '—'}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Planned for [Month] — when month selected */}
+      {selectedMonth && (
+        <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+          <CardHeader>
+            <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>
+              Planned for {formatMonthLabel(selectedMonth)}
+            </CardTitle>
+            <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+              Planned items with Target Month matching selected month
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className={`border-b ${isDark ? 'border-gray-600' : 'border-gray-200'}`}>
+                    <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Item</th>
+                    <th className={`text-right p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Subtotal</th>
+                    <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Target Month</th>
+                    <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Vendor Group</th>
+                    <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Program Pillar</th>
+                    <th className={`text-left p-3 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Category</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {plannedForMonthItems.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className={`p-6 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        No planned items for this month
+                      </td>
+                    </tr>
+                  ) : (
+                  plannedForMonthItems.map((item, idx) => (
+                    <tr key={idx} className={`border-b ${isDark ? 'border-gray-700 hover:bg-gray-700/30' : 'border-gray-100 hover:bg-gray-50'}`}>
+                      <td className="p-3">
+                        <span className="mr-2">{getCategoryIcon(item.category)}</span>
+                        {item.lineItem}
+                      </td>
+                      <td className="p-3 text-right font-medium">{formatCurrency(item.subtotal)}</td>
+                      <td className="p-3">{item.targetMonth || '—'}</td>
+                      <td className="p-3">{item.vendorGroup || '—'}</td>
+                      <td className="p-3">{item.programPillar || '—'}</td>
+                      <td className="p-3">{item.category}</td>
+                    </tr>
+                  ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  )
+}
+
 // Presentation view for stakeholder meetings (Knight Foundation, etc.)
 function PresentationView({
   budgetItems,
@@ -1467,7 +2990,7 @@ function PresentationView({
   const purchasedTotal = purchased.reduce((s, i) => s + i.subtotal, 0)
   const plannedTotal = planned.reduce((s, i) => s + i.subtotal, 0)
 
-  const pillarOrder = ['Programming Support', 'Infrastructure', 'Documentation + Archive', 'Public Engagement', 'Smart Sign']
+  const pillarOrder = ['Programming Support', 'Programming + Archive', 'Infrastructure', 'Documentation + Archive', 'Public Engagement', 'Smart Sign']
   const sortedPillars = Object.entries(byPillar).sort((a, b) => {
     const ai = pillarOrder.indexOf(a[0])
     const bi = pillarOrder.indexOf(b[0])
@@ -1533,6 +3056,48 @@ function PresentationView({
               </div>
             ))}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Program Pillar Bar Chart */}
+      <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
+        <CardHeader>
+          <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Spend by Program Pillar</CardTitle>
+          <CardDescription className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+            Knight Foundation buckets — horizontal view
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={Math.max(200, sortedPillars.length * 48)}>
+            <BarChart
+              data={sortedPillars.map(([pillar, { total: pillarTotal }]) => ({
+                name: pillar,
+                amount: pillarTotal,
+                pct: total > 0 ? ((pillarTotal / total) * 100).toFixed(1) : '0'
+              }))}
+              layout="vertical"
+              margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" className={isDark ? 'stroke-gray-600' : 'stroke-gray-200'} />
+              <XAxis type="number" tickFormatter={(v) => `$${v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}`} tick={{ fill: isDark ? '#9CA3AF' : '#6B7280' }} />
+              <YAxis type="category" dataKey="name" width={95} tick={{ fill: isDark ? '#9CA3AF' : '#6B7280', fontSize: 12 }} />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload?.[0]) {
+                    const d = payload[0].payload
+                    return (
+                      <div className={`p-3 rounded-lg shadow-lg border ${isDark ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}>
+                        <p className="font-semibold">{d.name}</p>
+                        <p className="text-sm">{formatCurrency(d.amount)} ({d.pct}%)</p>
+                      </div>
+                    )
+                  }
+                  return null
+                }}
+              />
+              <Bar dataKey="amount" fill="#3B82F6" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </CardContent>
       </Card>
 
@@ -1970,7 +3535,16 @@ function convertBudgetConfigToItems(config: ReturnType<typeof getBudgetConfig>, 
       purpose,
       phaseLabel: item.phase,
       programPillar: item.programPillar,
-      spendType: item.spendType
+      spendType: item.spendType,
+      budgetBucket: item.budgetBucket,
+      targetMonth: item.targetMonth,
+      vendorGroup: item.vendorGroup,
+      printSystem: item.printSystem,
+      expenseType: item.expenseType,
+      emailTitle: item.emailTitle,
+      emailDate: item.emailDate,
+      emailPeople: item.emailPeople,
+      evidenceMetadata: item.evidenceMetadata
     }
   })
   

@@ -12,6 +12,15 @@ export interface OrganizationBudgetConfig {
     phase?: string
     programPillar?: string
     spendType?: string
+    budgetBucket?: string
+    targetMonth?: string
+    vendorGroup?: string
+    printSystem?: string
+    expenseType?: string
+    emailTitle?: string
+    emailDate?: string
+    emailPeople?: string
+    evidenceMetadata?: string
   })[]
   description?: string
 }

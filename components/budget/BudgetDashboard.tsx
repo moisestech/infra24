@@ -35,21 +35,30 @@ import { CategoryIcon } from './CategoryIcon'
 import { cn } from '@/lib/utils'
 import { getBudgetConfig } from '@/lib/budget/budget-data'
 
+export interface CategoryChartItem {
+  name: string
+  value: number
+  color: string
+  [key: string]: unknown // Recharts compatibility
+}
+
 interface BudgetDashboardProps {
   months: BudgetMonth[]
   organizationSlug: string
+  totalBudget?: number // When provided (e.g. from API/Airtable), use instead of getBudgetConfig
+  /** When provided (e.g. for Oolite/Airtable), use for category pie instead of BUDGET_CATEGORIES */
+  categoryChartData?: CategoryChartItem[]
 }
 
-export function BudgetDashboard({ months, organizationSlug }: BudgetDashboardProps) {
+export function BudgetDashboard({ months, organizationSlug, totalBudget: totalBudgetProp, categoryChartData: categoryChartDataProp }: BudgetDashboardProps) {
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'
   const [selectedYear, setSelectedYear] = useState<string>('2025')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   
-  // Use the config totalBudget ($80k) instead of summing months
-  // This ensures consistency with the main budget page
+  // Use passed totalBudget (from API/Airtable) or fall back to getBudgetConfig
   const budgetConfig = getBudgetConfig(organizationSlug)
-  const totalBudget = budgetConfig.totalBudget // Use $80k from config
+  const totalBudget = totalBudgetProp ?? budgetConfig.totalBudget
   const totalSpent = getTotalSpent(months)
   const remaining = totalBudget - totalSpent
   
@@ -63,14 +72,17 @@ export function BudgetDashboard({ months, organizationSlug }: BudgetDashboardPro
     }))
   }, [months])
   
-  // Pie chart data for categories
+  // Pie chart data for categories - use prop when provided (Airtable display categories), else BUDGET_CATEGORIES
   const categoryChartData = useMemo(() => {
+    if (categoryChartDataProp && categoryChartDataProp.length > 0) {
+      return categoryChartDataProp
+    }
     return BUDGET_CATEGORIES.map(category => ({
       name: category.name,
       value: getCategoryTotal(months, category.id),
       color: category.color
     })).filter(item => item.value > 0)
-  }, [months])
+  }, [months, categoryChartDataProp])
   
   const COLORS = categoryChartData.map(item => item.color)
   

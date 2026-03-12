@@ -22,7 +22,15 @@ const FIELD_MAP = {
   purpose: process.env.AIRTABLE_FIELD_PURPOSE || 'Purpose',
   phase: process.env.AIRTABLE_FIELD_PHASE || 'Phase',
   programPillar: process.env.AIRTABLE_FIELD_PROGRAM_PILLAR || 'Program Pillar',
-  spendType: process.env.AIRTABLE_FIELD_SPEND_TYPE || 'Spend Type'
+  spendType: process.env.AIRTABLE_FIELD_SPEND_TYPE || 'Spend Type',
+  targetMonth: process.env.AIRTABLE_FIELD_TARGET_MONTH || 'Target Month',
+  vendorGroup: process.env.AIRTABLE_FIELD_VENDOR_GROUP || 'Vendor Group',
+  printSystem: process.env.AIRTABLE_FIELD_PRINT_SYSTEM || 'Print System',
+  expenseType: process.env.AIRTABLE_FIELD_EXPENSE_TYPE || 'Expense Type',
+  emailTitle: process.env.AIRTABLE_FIELD_EMAIL_TITLE || 'Email Title',
+  emailDate: process.env.AIRTABLE_FIELD_EMAIL_DATE || 'Email Date',
+  emailPeople: process.env.AIRTABLE_FIELD_EMAIL_PEOPLE || 'Email People',
+  evidenceMetadata: process.env.AIRTABLE_FIELD_EVIDENCE_METADATA || 'Evidence Metadata'
 }
 
 // Filter values - must match "Budget Bucket" single-select in Airtable
@@ -141,9 +149,16 @@ function mapRecordsToItems(records: AirtableRecord[]): OrganizationBudgetConfig[
     })
     .map((record) => {
       const fields = record.fields
-      const amount = parseAmount(fields[FIELD_MAP.amount]) || parseAmount(fields[FIELD_MAP.subtotal])
+      // Prefer Subtotal (line total) over Amount for Airtable/CSV consistency
+      const amount = parseAmount(fields[FIELD_MAP.subtotal]) || parseAmount(fields[FIELD_MAP.amount])
       const category = String(fields[FIELD_MAP.category] ?? 'hardware-materials').trim()
       const purposeRaw = fields[FIELD_MAP.purpose] ? String(fields[FIELD_MAP.purpose]).trim() : undefined
+      const budgetBucketRaw = fields[FIELD_MAP.budgetBucket] ? String(fields[FIELD_MAP.budgetBucket]).trim() : undefined
+      const emailPeopleRaw = fields[FIELD_MAP.emailPeople]
+      const emailPeopleStr = Array.isArray(emailPeopleRaw)
+        ? (emailPeopleRaw as string[]).join(', ')
+        : emailPeopleRaw ? String(emailPeopleRaw).trim() : undefined
+
       return {
         name: String(fields[FIELD_MAP.name] ?? '').trim(),
         category,
@@ -154,7 +169,16 @@ function mapRecordsToItems(records: AirtableRecord[]): OrganizationBudgetConfig[
         purpose: purposeRaw || getPurposeFromCategory(category),
         phase: fields[FIELD_MAP.phase] ? String(fields[FIELD_MAP.phase]).trim() : undefined,
         programPillar: fields[FIELD_MAP.programPillar] ? String(fields[FIELD_MAP.programPillar]).trim() : undefined,
-        spendType: fields[FIELD_MAP.spendType] ? String(fields[FIELD_MAP.spendType]).trim() : undefined
+        spendType: fields[FIELD_MAP.spendType] ? String(fields[FIELD_MAP.spendType]).trim() : undefined,
+        budgetBucket: budgetBucketRaw || 'Digital Lab',
+        targetMonth: fields[FIELD_MAP.targetMonth] ? String(fields[FIELD_MAP.targetMonth]).trim() : undefined,
+        vendorGroup: fields[FIELD_MAP.vendorGroup] ? String(fields[FIELD_MAP.vendorGroup]).trim() : undefined,
+        printSystem: fields[FIELD_MAP.printSystem] ? String(fields[FIELD_MAP.printSystem]).trim() : undefined,
+        expenseType: fields[FIELD_MAP.expenseType] ? String(fields[FIELD_MAP.expenseType]).trim() : undefined,
+        emailTitle: fields[FIELD_MAP.emailTitle] ? String(fields[FIELD_MAP.emailTitle]).trim() : undefined,
+        emailDate: parseAirtableDate(fields[FIELD_MAP.emailDate]),
+        emailPeople: emailPeopleStr,
+        evidenceMetadata: fields[FIELD_MAP.evidenceMetadata] ? String(fields[FIELD_MAP.evidenceMetadata]).trim() : undefined
       }
     })
 }
@@ -180,8 +204,39 @@ function getPurposeFromCategory(category: string): string {
 }
 
 /**
- * Fetch budget config from Airtable for Oolite.
- * Returns null on error or when Airtable is not configured (caller should use getBudgetConfig fallback).
+ * Fetch ALL budget items from Airtable for Oolite (Digital Lab + Digital Conference).
+ * No Budget Bucket filter - returns everything for view-based filtering in the app.
+ * Returns null on error or when Airtable is not configured.
+ */
+export async function fetchAllBudgetItemsFromAirtable(
+  orgSlug: string
+): Promise<OrganizationBudgetConfig | null> {
+  if (orgSlug !== 'oolite') return null
+
+  const apiKey = process.env.AIRTABLE_API_KEY
+  const baseId = process.env.AIRTABLE_BASE_ID
+  const budgetTableId = process.env.AIRTABLE_BUDGET_TABLE_ID
+
+  if (!apiKey || !baseId || !budgetTableId) return null
+
+  try {
+    const records = await fetchAllRecords(baseId, budgetTableId, apiKey)
+    const items = mapRecordsToItems(records)
+
+    return {
+      totalBudget: 80000,
+      description: 'Digital Lab + Digital Conference (combined $80k)',
+      items
+    }
+  } catch (err) {
+    console.error('Airtable budget fetch error:', err)
+    return null
+  }
+}
+
+/**
+ * Fetch budget config from Airtable for Oolite (filtered by budgetType).
+ * @deprecated Prefer fetchAllBudgetItemsFromAirtable for combined view.
  */
 export async function fetchBudgetFromAirtable(
   orgSlug: string,
