@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { 
   Users, 
   Search, 
@@ -282,10 +283,13 @@ export default function UsersPage() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-3">
                     {user.image_url ? (
-                      <img 
-                        src={user.image_url} 
+                      <Image
+                        src={user.image_url}
                         alt={`${user.first_name} ${user.last_name}`}
-                        className="h-12 w-12 rounded-full"
+                        width={48}
+                        height={48}
+                        className="h-12 w-12 rounded-full object-cover"
+                        unoptimized
                       />
                     ) : (
                       <div className="h-12 w-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">

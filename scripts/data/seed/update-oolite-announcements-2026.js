@@ -48,7 +48,11 @@ const IMAGES = {
   welcome2026Residents: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1771620756/feb-welcome-2026-resideents-oolite-arts_qixk3b.jpg',
   campusProgress2: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1771620756/feb-a-world-class-campus-2_goz0an.jpg',
   campusProgress3: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1771620755/feb-a-world-class-campus-3_dabwcj.jpg',
-  untitledArtPodcast: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1771620756/feb-untitled-art-podcast_mqk5h0.jpg'
+  untitledArtPodcast: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1771620756/feb-untitled-art-podcast_mqk5h0.jpg',
+  // March 2026
+  crossingBridgeRecap: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1773427571/march-oolite-crossing-the-bridge-opening-reception-recap_jrlatf.jpg',
+  weeklyCuratorialTours: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1773427565/march-oolite-coming-up-weekly-curatorial-tours_czlqgk.jpg',
+  alumniGrantDanWeitendorf: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1773427559/march-oolite-alumni-grant-winner-honoring-dan-weitendorf_nkrvom.jpg'
 };
 
 // Helper function for avatar placeholders
@@ -526,6 +530,60 @@ async function updateOoliteAnnouncements() {
         image_url: IMAGES.alumniNews,
         image_layout: 'card',
         primary_link: '#', // Will be updated with registration form link
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Crossing the Bridge: Opening Reception Recap',
+        body: 'A recap of the Crossing the Bridge alumni exhibition opening reception. The exhibition, curated by Claire Breukel and Lauryn Lawrence, celebrates Oolite Arts alumni and the impact of institutional context on artists\' careers.',
+        status: 'published',
+        priority: 'high',
+        tags: ['exhibition', 'alumni', 'recap', 'march-2026'],
+        visibility: 'public',
+        type: 'news',
+        sub_type: 'general',
+        image_url: IMAGES.crossingBridgeRecap,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Coming Up: Weekly Curatorial Tours',
+        body: 'Join us for weekly curatorial tours at Oolite Arts. Explore current exhibitions and connect with the work of our residents and alumni.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['tours', 'curatorial', 'events', 'march-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'general',
+        image_url: IMAGES.weeklyCuratorialTours,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Alumni Grant Winner: Honoring Dan Weitendorf',
+        body: 'Celebrating the Alumni Grant winner and honoring Dan Weitendorf for his 24-year trajectory as Facilities Manager at Oolite Arts. The alumni grant supports artists connected to our community.',
+        status: 'published',
+        priority: 'high',
+        tags: ['alumni', 'grant', 'dan-weitendorf', 'march-2026'],
+        visibility: 'public',
+        type: 'news',
+        sub_type: 'general',
+        image_url: IMAGES.alumniGrantDanWeitendorf,
+        image_layout: 'card',
         published_at: now.toISOString()
       },
       {

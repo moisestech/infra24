@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { MapPin, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
@@ -121,11 +122,22 @@ export function AnnouncementContent({
     // Always use the iconSizeMultiplier prop - it's explicitly passed and should take precedence
     const multiplier = iconSizeMultiplier;
     const finalSize = Math.round(baseSize * multiplier);
-    
-    // getIconSize log removed to reduce console noise
-    
     return finalSize;
   };
+
+  // Log screen size, icon size, and location icon size for debugging
+  useEffect(() => {
+    if (screenMetrics && screenMetrics.width && screenMetrics.height) {
+      const badgeIconSize = layoutType === 'card' ? getIconSize('small') : getIconSize('medium');
+      const locationIconSize = layoutType === 'card' ? getIconSize('small') : getIconSize('medium');
+      console.log('[AnnouncementContent]', {
+        screenSize: `${screenMetrics.width}×${screenMetrics.height}`,
+        iconSizeMultiplier,
+        badgeIconSize: `${badgeIconSize}px`,
+        locationIconSize: `${locationIconSize}px`,
+      });
+    }
+  }, [screenMetrics?.width, screenMetrics?.height, iconSizeMultiplier, layoutType]);
 
   // Adjust padding based on layout type and responsive sizing
   // Card and split layouts need less padding since they're constrained
@@ -161,80 +173,93 @@ export function AnnouncementContent({
 
   // Rendering log removed to reduce console noise
 
-  // Calculate max width for card layouts to ensure text wraps
-  const getContentMaxWidth = () => {
-    if (layoutType === 'card' && screenMetrics) {
-      // For card layouts, use available width minus padding and image card
-      const availableWidth = screenMetrics.width;
-      const height = screenMetrics.height;
-      
-      // Check if it's 1080x1808 ratio - add 200px to max-width
-      const aspectRatio = availableWidth / height;
-      const is1080x1808 = Math.abs(aspectRatio - (1080/1808)) < 0.05 && 
-                          availableWidth >= 1050 && availableWidth <= 1110 && 
-                          height >= 1750 && height <= 1850;
-      
-      // For 1080x1808, use fixed 900px max-width
-      let maxWidth: number;
-      if (is1080x1808) {
-        maxWidth = 900;
-      } else {
-        // Estimate: image card takes ~30-35% of width, padding takes ~10-15%
-        // So content gets ~50-60% of total width
-        maxWidth = Math.floor(availableWidth * 0.6);
-      }
-      
-      // getContentMaxWidth log removed to reduce console noise
-      
-      return `${maxWidth}px`;
-    }
-    return undefined;
-  };
+  // DEBUG: colored backgrounds to see layout bounds (set true for debugging)
+  const DEBUG_LAYOUT = false;
 
   return (
     <div 
       className={cn(
         "relative z-30 h-full flex flex-col w-full min-w-0",
-        layoutType === 'card' ? "justify-between" : "justify-center",
-        getPaddingClass()
+        layoutType === 'card' ? "justify-between p-0 space-y-4 md:space-y-6 xl:space-y-8" : "justify-center",
+        layoutType === 'card' ? "flex-1" : getPaddingClass(),
+        layoutType !== 'card' && "space-y-16 xl:space-y-20 2xl:space-y-24 3xl:space-y-28 max-w-4xl xl:max-w-6xl 2xl:max-w-7xl 3xl:max-w-8xl",
+        DEBUG_LAYOUT && "bg-blue-500/40"
       )}
       style={{ maxWidth: '100%', width: '100%', boxSizing: 'border-box' }}
     >
-      <div className={cn(
-        "w-full min-w-0 flex flex-col",
-        layoutType === 'card' 
-          ? "space-y-4 md:space-y-6 xl:space-y-8 flex-1" 
-          : "space-y-16 xl:space-y-20 2xl:space-y-24 3xl:space-y-28 max-w-4xl xl:max-w-6xl 2xl:max-w-7xl 3xl:max-w-8xl"
-      )}
-      style={{ 
-        maxWidth: layoutType === 'card' ? getContentMaxWidth() || '100%' : undefined, 
-        width: '100%',
-        boxSizing: 'border-box'
-      }}
-      >
-        {/* Type Badge */}
+        {/* Type Badge - icon and category side by side */}
         <div 
-          className="inline-flex items-center gap-4 xl:gap-6 px-8 xl:px-12 py-4 xl:py-6 rounded-full bg-white/10 backdrop-blur-sm flex-wrap"
+          className={cn(
+            "inline-flex items-center gap-2 flex-nowrap rounded-full bg-white/10 backdrop-blur-sm",
+            layoutType === 'card' 
+              ? "gap-2 px-4 py-2 md:px-5 md:py-2.5 xl:px-6 xl:py-3" 
+              : "gap-4 xl:gap-6 px-8 xl:px-12 py-4 xl:py-6",
+            DEBUG_LAYOUT && "border-2 border-red-500"
+          )}
         >
-          <IconComponent 
-            className={cn(styles.text || "text-white", "flex-shrink-0")} 
-            size={getIconSize('medium')} 
-          />
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className={cn("font-bold break-words whitespace-normal", styles.text || "text-white", textSizes.type)}>
+          <span className={cn("flex-shrink-0 flex items-center justify-center", DEBUG_LAYOUT && "bg-green-500/60 p-1 rounded")}>
+            <IconComponent 
+              className={cn(styles.text || "text-white")} 
+              size={layoutType === 'card' ? getIconSize('small') : getIconSize('medium')} 
+            />
+          </span>
+          <div className={cn("flex items-center gap-2 flex-nowrap min-w-0", DEBUG_LAYOUT && "bg-purple-500/60 px-2 py-1 rounded")}>
+            <span className={cn(
+              "font-bold break-words whitespace-normal",
+              styles.text || "text-white",
+              textSizes.type
+            )}>
               {announcement.type?.replace('_', ' ').toUpperCase() || 'EVENT'}
             </span>
             {announcement.sub_type && (
-              <span className={cn("font-medium opacity-70 break-words whitespace-normal", styles.text || "text-white", textSizes.type)}>
+              <span className={cn(
+                "font-medium opacity-70 break-words whitespace-normal",
+                styles.text || "text-white",
+                textSizes.type
+              )}>
                 • {announcement.sub_type.replace('_', ' ').toUpperCase()}
               </span>
             )}
           </div>
         </div>
 
+        {/* Date - in-flow for card layout (no overlay). Only show event time from starts_at, not posted time from created_at */}
+        {layoutType === 'card' && (announcement.type as string) !== 'fun_fact' && (() => {
+          const eventDate = announcement.starts_at || announcement.created_at;
+          if (!eventDate) return null;
+          const d = new Date(eventDate);
+          const dayOfWeek = d.toLocaleString('en-US', { weekday: 'long' });
+          const dateStr = `${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate()}`;
+          // Only show time when it's from starts_at (event time), not created_at (posted time)
+          const hasEventTime = !!announcement.starts_at;
+          const timeStr = hasEventTime ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : null;
+          const showTime = hasEventTime && timeStr && timeStr !== '12:00 AM';
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          d.setHours(0, 0, 0, 0);
+          const isToday = d.getTime() === today.getTime();
+          return (
+            <div className="flex flex-col gap-1">
+              <div className={cn("font-semibold text-white/90", textSizes.date)}>
+                {dayOfWeek} · {dateStr}
+                {showTime && ` · ${timeStr}`}
+              </div>
+              {isToday && (
+                <span className="inline-flex w-fit rounded-full bg-green-500/90 px-3 py-1 text-sm font-medium text-white">
+                  Today
+                </span>
+              )}
+            </div>
+          );
+        })()}
+
         {/* Title */}
         <h1 
-          className={cn("font-black leading-tight break-words whitespace-normal", styles.text || "text-white", textSizes.title)}
+          className={cn(
+            "font-black leading-tight break-words whitespace-normal",
+            styles.text || "text-white",
+            textSizes.title
+          )}
           style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
         >
           {announcement.title}
@@ -243,7 +268,10 @@ export function AnnouncementContent({
         {/* Description - First sentence only */}
         {announcement.body && (
           <p 
-            className={cn("font-medium leading-relaxed opacity-90 break-words whitespace-normal text-black", textSizes.description)}
+            className={cn(
+              "font-medium leading-relaxed opacity-90 break-words whitespace-normal text-black",
+              textSizes.description
+            )}
             style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
           >
             {(() => {
@@ -258,17 +286,15 @@ export function AnnouncementContent({
         {announcement.location && (
           <div 
             className={cn(
-              "flex items-center gap-4 xl:gap-6 2xl:gap-8 3xl:gap-10 flex-wrap",
-              orientation === 'portrait'
-                ? "text-8xl xl:text-10xl 2xl:text-12xl 3xl:text-14xl 4xl:text-16xl"
-                : "text-10xl xl:text-12xl 2xl:text-14xl 3xl:text-16xl 4xl:text-18xl"
+              "flex items-center gap-2 md:gap-4 flex-wrap",
+              textSizes.location
             )}
           >
             <MapPin 
               className="opacity-80 flex-shrink-0 text-black"
-              size={getIconSize('medium')} 
+              size={layoutType === 'card' ? getIconSize('small') : getIconSize('medium')} 
             />
-            <span className={cn("opacity-80 font-medium break-words whitespace-normal text-black", textSizes.location)} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            <span className="opacity-80 font-medium break-words whitespace-normal text-black" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
               {announcement.location}
             </span>
           </div>
@@ -370,7 +396,6 @@ export function AnnouncementContent({
             </a>
           </div>
         )}
-      </div>
     </div>
   );
 }

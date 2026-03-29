@@ -45,18 +45,19 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
   
   const [screenMetrics, setScreenMetrics] = useState(initialMetrics);
   const [responsiveSizes, setResponsiveSizes] = useState<ResponsiveSizes>(initialSizes);
-  const [textSizes, setTextSizes] = useState({
-    title: initialSizes.title,
+  const defaultTextSizes = {
+    title: 'text-6xl',
     description: initialSizes.description,
     location: initialSizes.location,
     date: initialSizes.date,
-    type: initialSizes.type,
+    type: 'text-4xl',
     metadata: initialSizes.metadata,
     startDate: 'text-3xl',
     endDate: 'text-3xl',
     duration: 'text-3xl'
-  });
-  const [iconSizeMultiplier, setIconSizeMultiplier] = useState(initialSizes.iconMultiplier);
+  };
+  const [textSizes, setTextSizes] = useState(defaultTextSizes);
+  const [iconSizeMultiplier, setIconSizeMultiplier] = useState(2.5);
   const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(initialSizes.avatarMultiplier);
   
   // Initial state log removed to reduce console noise
@@ -75,10 +76,22 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
   // Load persisted settings from localStorage on mount
+  const DISPLAY_SETTINGS_VERSION = 2; // Bump when defaults change; v1 had iconSize 5
   useEffect(() => {
     try {
+      // Force clear: add ?clearDisplaySettings=1 to URL to reset display settings
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('clearDisplaySettings') === '1') {
+          localStorage.removeItem('announcementCarouselDisplaySettings');
+          params.delete('clearDisplaySettings');
+          window.history.replaceState({}, '', `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`);
+        }
+      }
+
       const savedImageSettings = localStorage.getItem('announcementImageSettings');
       const savedDurations = localStorage.getItem('announcementDurations');
+      const savedDisplaySettings = localStorage.getItem('announcementCarouselDisplaySettings');
       
       if (savedImageSettings) {
         const parsed = JSON.parse(savedImageSettings);
@@ -96,6 +109,28 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
           durationsMap.set(id, duration as number);
         });
         setPerAnnouncementDurations(durationsMap);
+      }
+
+      if (savedDisplaySettings) {
+        const parsed = JSON.parse(savedDisplaySettings);
+        const version = parsed.version ?? 1;
+        // Only use stored values if version is current; v1 had wrong default (iconSize 5)
+        if (version >= DISPLAY_SETTINGS_VERSION) {
+          if (typeof parsed.iconSizeMultiplier === 'number') {
+            // Never use 5 or 1.5 (deprecated); force to 2.5
+            const iconSize = [5, 1.5].includes(parsed.iconSizeMultiplier) ? 2.5 : parsed.iconSizeMultiplier;
+            setIconSizeMultiplier(iconSize);
+            setHasManualIconSize(true);
+          }
+          if (parsed.textSizes) setTextSizes(prev => ({ ...prev, ...parsed.textSizes }));
+          if (typeof parsed.avatarSizeMultiplier === 'number') {
+            setAvatarSizeMultiplier(parsed.avatarSizeMultiplier);
+            setHasManualAvatarSize(true);
+          }
+        } else {
+          // Legacy data: ignore it, use defaults (icon 2.5x), and mark as manual so updateMetrics won't overwrite
+          setHasManualIconSize(true);
+        }
       }
     } catch (error) {
       console.error('Failed to load persisted settings:', error);
@@ -121,6 +156,22 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
       console.error('Failed to save durations:', error);
     }
   }, [perAnnouncementDurations]);
+
+  // Persist display settings (text sizes, icon size, avatar size) to localStorage
+  useEffect(() => {
+    try {
+      // Never persist 5 or 1.5 (deprecated); overwrite with 2.5 so localStorage gets corrected
+      const iconToSave = [5, 1.5].includes(iconSizeMultiplier) ? 2.5 : iconSizeMultiplier;
+      localStorage.setItem('announcementCarouselDisplaySettings', JSON.stringify({
+        version: 2,
+        textSizes,
+        iconSizeMultiplier: iconToSave,
+        avatarSizeMultiplier
+      }));
+    } catch (error) {
+      console.error('Failed to save display settings:', error);
+    }
+  }, [textSizes, iconSizeMultiplier, avatarSizeMultiplier]);
 
   // Filter active announcements (show all active announcements, not just future ones)
   // Also deduplicate by ID to prevent duplicates from showing
@@ -151,15 +202,22 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
   }, [announcements]);
   
   // Log carousel initialization with all announcements (only once)
-  useEffect(() => {
-    if (futureAnnouncements.length > 0) {
-      console.log('🎠 CAROUSEL INITIALIZED:', {
-        total: futureAnnouncements.length,
-        autoplay: !isPaused && futureAnnouncements.length > 1 ? 'ON' : 'OFF',
-        order: futureAnnouncements.map((ann, idx) => `${idx + 1}. ${ann.title?.substring(0, 40)}...`).join('\n')
-      });
-    }
-  }, [futureAnnouncements.length]); // Only log when count changes, not on every render
+  useEffect(
+    () => {
+      if (futureAnnouncements.length > 0) {
+        console.log('🎠 CAROUSEL INITIALIZED:', {
+          total: futureAnnouncements.length,
+          autoplay: !isPaused && futureAnnouncements.length > 1 ? 'ON' : 'OFF',
+          order: futureAnnouncements
+            .map((ann, idx) => `${idx + 1}. ${ann.title?.substring(0, 40)}...`)
+            .join('\n'),
+        });
+      }
+    },
+    // Intentionally when count changes only; full deps would spam on pause/title edits
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [futureAnnouncements.length],
+  );
 
   // Get current announcement
   const currentAnnouncement = futureAnnouncements[currentIndex];
@@ -178,7 +236,14 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
         autoplay: !isPaused ? 'ON' : 'OFF'
       });
     }
-  }, [currentIndex, currentAnnouncement?.id]); // Removed other deps to reduce logging
+  }, [
+    currentIndex,
+    currentAnnouncement?.id,
+    currentDuration,
+    futureAnnouncements.length,
+    isPaused,
+    currentAnnouncement,
+  ]);
 
   // Refs to manage autoplay interval and timer state
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -305,7 +370,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
     return () => {
       emblaApi.off('select', onSelect);
     };
-  }, [emblaApi, currentIndex, futureAnnouncements, isPaused]);
+  }, [emblaApi, currentIndex, futureAnnouncements, isPaused, perAnnouncementDurations]);
 
   // Track if user has manually changed icon/avatar sizes
   const [hasManualIconSize, setHasManualIconSize] = useState(false);
@@ -316,7 +381,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
     if (screenMetrics && screenMetrics.width === 1080 && screenMetrics.height === 1808) {
       setHasManualIconSize(false);
     }
-  }, [screenMetrics?.width, screenMetrics?.height]);
+  }, [screenMetrics]);
 
   // Handle orientation and screen metrics changes
   useEffect(() => {
@@ -331,11 +396,11 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
       
       // Update text sizes from responsive system
       setTextSizes({
-        title: newSizes.title,
+        title: 'text-6xl',
         description: newSizes.description,
         location: newSizes.location,
         date: newSizes.date,
-        type: newSizes.type,
+        type: 'text-4xl',
         metadata: newSizes.metadata,
         startDate: 'text-3xl',
         endDate: 'text-3xl',
@@ -423,20 +488,14 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
   }
 
   return (
-    <div className="relative h-screen bg-white" style={{ aspectRatio: '1.37' }}>
-      {/* Text Size Debug Controls - Available in production with ?debug=true */}
-      {!cleanViewMode && (
-        <TextSizeControls 
+    <div className="relative w-full max-w-full h-screen overflow-x-hidden bg-white">
+      {/* Design Debug Controls - Add ?debug=true to URL or click Settings gear to open */}
+      <TextSizeControls 
         onTextSizeChange={(element, size) => setTextSizes(prev => ({ ...prev, [element]: size }))} 
-              onIconSizeChange={(size) => {
-                console.log('🎛️ Manual icon size change from debug controls:', {
-                  oldValue: iconSizeMultiplier,
-                  newValue: size,
-                  settingHasManualIconSize: true
-                });
-                setIconSizeMultiplier(size);
-                setHasManualIconSize(true);
-              }}
+        onIconSizeChange={(size) => {
+          setIconSizeMultiplier(size);
+          setHasManualIconSize(true);
+        }}
         onAvatarSizeChange={(size) => {
           setAvatarSizeMultiplier(size);
           setHasManualAvatarSize(true);
@@ -452,8 +511,16 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
         onImageSettingsChange={handleImageSettingsChange}
         onDurationChange={handleDurationChange}
         currentDuration={currentDuration}
+        currentTextSizes={textSizes}
+        currentIconSize={iconSizeMultiplier}
+        currentAvatarSize={avatarSizeMultiplier}
+        currentImageSettings={currentAnnouncementId ? perAnnouncementImageSettings.get(currentAnnouncementId) : undefined}
+        currentShowTags={showTags}
+        currentShowPriorityBadge={showPriorityBadge}
+        currentShowVisibilityBadge={showVisibilityBadge}
+        currentShowQRCodeButton={showQRCodeButton}
+        currentShowLearnMore={showLearnMore}
       />
-      )}
 
       {/* Carousel Controls */}
       <CarouselControls
@@ -470,12 +537,12 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
       />
 
       {/* Carousel content */}
-      <div className="overflow-hidden h-full" ref={emblaRef}>
-        <div className="flex h-full" style={{ transition: 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}>
+      <div className="w-full max-w-full overflow-hidden h-full" ref={emblaRef}>
+        <div className="flex flex-row h-full" style={{ transition: 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)' }}>
           {futureAnnouncements.map((announcement, index) => (
             <div 
               key={`${announcement.id}-${index}`}
-              className="flex-[0_0_100%] min-w-0 relative h-full"
+              className="flex-[0_0_100%] min-w-0 relative h-full flex flex-col"
             >
               <PatternTemplate 
                 key={`${announcement.id}-${currentIndex}-${index}`}

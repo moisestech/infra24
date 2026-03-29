@@ -11,6 +11,7 @@ import {
   formatMonth, 
   getTotalBudget, 
   getTotalSpent,
+  getTotalPlanned,
   getCategoryTotal,
   BUDGET_CATEGORIES
 } from '@/lib/budget/budget-utils'
@@ -55,41 +56,67 @@ export function BudgetDashboard({ months, organizationSlug, totalBudget: totalBu
   const isDark = resolvedTheme === 'dark'
   const [selectedYear, setSelectedYear] = useState<string>('2025')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [chartMode, setChartMode] = useState<'spent' | 'planned' | 'both'>('spent')
   
   // Use passed totalBudget (from API/Airtable) or fall back to getBudgetConfig
   const budgetConfig = getBudgetConfig(organizationSlug)
   const totalBudget = totalBudgetProp ?? budgetConfig.totalBudget
   const totalSpent = getTotalSpent(months)
+  const totalPlanned = getTotalPlanned(months)
   const remaining = totalBudget - totalSpent
   
-  // Chart data for monthly spending
+  // Chart data for monthly spending (spent = actuals only, planned = forecast)
   const monthlyChartData = useMemo(() => {
     return months.map(month => ({
       month: new Date(month.month).toLocaleDateString('en-US', { month: 'short' }),
+      monthKey: month.month,
       budget: month.budget,
       spent: month.spent,
+      planned: month.planned ?? 0,
       remaining: month.budget - month.spent
     }))
   }, [months])
   
-  // Pie chart data for categories - use prop when provided (Airtable display categories), else BUDGET_CATEGORIES
+  // Pie chart data for categories - when chartMode planned/both, build from plannedLineItems (display categories)
   const categoryChartData = useMemo(() => {
-    if (categoryChartDataProp && categoryChartDataProp.length > 0) {
-      return categoryChartDataProp
+    const plannedByCat: Record<string, number> = {}
+    months.forEach(month => {
+      (month.plannedLineItems || []).forEach(item => {
+        const cat = item.category || 'Other'
+        plannedByCat[cat] = (plannedByCat[cat] ?? 0) + item.amount
+      })
+    })
+    const spentByCat: Record<string, number> = {}
+    months.forEach(month => {
+      month.lineItems.forEach(item => {
+        const cat = item.category || 'Other'
+        spentByCat[cat] = (spentByCat[cat] ?? 0) + item.amount
+      })
+    })
+    const allCats = new Set([...Object.keys(spentByCat), ...Object.keys(plannedByCat)])
+    const getColor = (name: string) => BUDGET_CATEGORIES.find(c => c.name === name)?.color ?? '#6B7280'
+    if (chartMode === 'spent') {
+      if (categoryChartDataProp && categoryChartDataProp.length > 0) {
+        return categoryChartDataProp
+      }
+      return BUDGET_CATEGORIES.map(c => ({ name: c.name, value: getCategoryTotal(months, c.id), color: c.color })).filter(i => i.value > 0)
     }
-    return BUDGET_CATEGORIES.map(category => ({
-      name: category.name,
-      value: getCategoryTotal(months, category.id),
-      color: category.color
-    })).filter(item => item.value > 0)
-  }, [months, categoryChartDataProp])
+    if (chartMode === 'planned') {
+      return Array.from(allCats)
+        .filter(cat => (plannedByCat[cat] ?? 0) > 0)
+        .map(cat => ({ name: cat, value: plannedByCat[cat] ?? 0, color: getColor(cat) }))
+    }
+    return Array.from(allCats)
+      .filter(cat => ((spentByCat[cat] ?? 0) + (plannedByCat[cat] ?? 0)) > 0)
+      .map(cat => ({ name: cat, value: (spentByCat[cat] ?? 0) + (plannedByCat[cat] ?? 0), color: getColor(cat) }))
+  }, [months, categoryChartDataProp, chartMode])
   
   const COLORS = categoryChartData.map(item => item.color)
   
   return (
     <div className="space-y-8">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-blue-100">
@@ -107,7 +134,7 @@ export function BudgetDashboard({ months, organizationSlug, totalBudget: totalBu
         <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-green-100">
-              Total Spent
+              Total Spent (Actuals only)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -118,10 +145,26 @@ export function BudgetDashboard({ months, organizationSlug, totalBudget: totalBu
             <p className="text-sm text-green-100 mt-2">
               {((totalSpent / totalBudget) * 100).toFixed(1)}% of budget
             </p>
+            <p className="text-xs text-green-200 mt-1">Posted/confirmed spend only — Planned excluded</p>
           </CardContent>
         </Card>
         
         <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-purple-100">
+              Total Planned
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <p className="text-3xl font-bold">{formatCurrency(totalPlanned)}</p>
+              <Calendar className="h-8 w-8 text-purple-200" />
+            </div>
+            <p className="text-xs text-purple-200 mt-1">Forecast — not yet spent</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-purple-100">
               Remaining
@@ -135,21 +178,22 @@ export function BudgetDashboard({ months, organizationSlug, totalBudget: totalBu
               )}>
                 {formatCurrency(remaining)}
               </p>
-              <Calendar className="h-8 w-8 text-purple-200" />
+              <Calendar className="h-8 w-8 text-orange-200" />
             </div>
+            <p className="text-xs text-orange-200 mt-1">Cap − Spent (Actuals)</p>
           </CardContent>
         </Card>
         
-        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white">
+        <Card className="bg-gradient-to-br from-cyan-500 to-cyan-600 text-white">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-orange-100">
+            <CardTitle className="text-sm font-medium text-cyan-100">
               Months Tracked
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
               <p className="text-3xl font-bold">{months.length}</p>
-              <Calendar className="h-8 w-8 text-orange-200" />
+              <Calendar className="h-8 w-8 text-cyan-200" />
             </div>
           </CardContent>
         </Card>
@@ -160,10 +204,30 @@ export function BudgetDashboard({ months, organizationSlug, totalBudget: totalBu
         {/* Monthly Spending Bar Chart */}
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Spending Overview</CardTitle>
-            <CardDescription>
-              Budget vs. Spent by month
-            </CardDescription>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <CardTitle>Monthly Spending Overview</CardTitle>
+                <CardDescription>
+                  Toggle to show Spent (actuals), Planned (forecast), or Both
+                </CardDescription>
+              </div>
+              <div className="flex gap-2">
+                {(['spent', 'planned', 'both'] as const).map(mode => (
+                  <button
+                    key={mode}
+                    onClick={() => setChartMode(mode)}
+                    className={cn(
+                      'px-3 py-1.5 rounded text-sm font-medium transition-colors',
+                      chartMode === mode
+                        ? 'bg-blue-600 text-white'
+                        : isDark ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    )}
+                  >
+                    {mode === 'spent' ? 'Spent' : mode === 'planned' ? 'Planned' : 'Both'}
+                  </button>
+                ))}
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -189,7 +253,12 @@ export function BudgetDashboard({ months, organizationSlug, totalBudget: totalBu
                 />
                 <Legend />
                 <Bar dataKey="budget" fill="#3B82F6" name="Budget" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="spent" fill="#10B981" name="Spent" radius={[4, 4, 0, 0]} />
+                {(chartMode === 'spent' || chartMode === 'both') && (
+                  <Bar dataKey="spent" fill="#10B981" name="Spent (Actuals)" radius={[4, 4, 0, 0]} stackId={chartMode === 'both' ? 'a' : undefined} />
+                )}
+                {(chartMode === 'planned' || chartMode === 'both') && (
+                  <Bar dataKey="planned" fill="#8B5CF6" name="Planned" radius={[4, 4, 0, 0]} stackId={chartMode === 'both' ? 'a' : undefined} />
+                )}
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

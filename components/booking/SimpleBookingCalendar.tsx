@@ -37,49 +37,49 @@ export function SimpleBookingCalendar({ orgId, onBookingCreate, onBookingUpdate,
   const [resources, setResources] = useState<Resource[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
   const [currentWeek, setCurrentWeek] = useState(new Date())
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
   useEffect(() => {
-    fetchResourcesAndBookings()
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+
+    async function loadResourcesAndBookings() {
+      const { data: resourcesData, error: resourcesError } = await supabase
+        .from('resources')
+        .select('*')
+        .eq('organization_id', orgId)
+
+      if (resourcesError) {
+        console.error('Error fetching resources:', resourcesError)
+        return
+      }
+      setResources(resourcesData || [])
+
+      const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 })
+      const weekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 })
+
+      const { data: bookingsData, error: bookingsError } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('organization_id', orgId)
+        .gte('starts_at', weekStart.toISOString())
+        .lte('ends_at', weekEnd.toISOString())
+
+      if (bookingsError) {
+        console.error('Error fetching bookings:', bookingsError)
+        return
+      }
+      setBookings(
+        bookingsData?.map((b) => ({
+          ...b,
+          start_time: new Date(b.starts_at),
+          end_time: new Date(b.ends_at),
+        })) || []
+      )
+    }
+
+    loadResourcesAndBookings()
   }, [orgId, currentWeek])
-
-  const fetchResourcesAndBookings = async () => {
-    // Fetch resources
-    const { data: resourcesData, error: resourcesError } = await supabase
-      .from('resources')
-      .select('*')
-      .eq('organization_id', orgId)
-
-    if (resourcesError) {
-      console.error('Error fetching resources:', resourcesError)
-      return
-    }
-    setResources(resourcesData || [])
-
-    // Fetch bookings for the current week
-    const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 }) // Monday
-    const weekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 }) // Sunday
-
-    const { data: bookingsData, error: bookingsError } = await supabase
-      .from('bookings')
-      .select('*')
-      .eq('organization_id', orgId)
-      .gte('starts_at', weekStart.toISOString())
-      .lte('ends_at', weekEnd.toISOString())
-
-    if (bookingsError) {
-      console.error('Error fetching bookings:', bookingsError)
-      return
-    }
-    setBookings(bookingsData?.map(b => ({
-      ...b,
-      start_time: new Date(b.starts_at),
-      end_time: new Date(b.ends_at)
-    })) || [])
-  }
 
   const daysOfWeek = Array.from({ length: 7 }).map((_, i) => addDays(startOfWeek(currentWeek, { weekStartsOn: 1 }), i))
   const hoursOfDay = Array.from({ length: 24 }).map((_, i) => i)

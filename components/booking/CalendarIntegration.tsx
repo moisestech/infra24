@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -44,12 +44,7 @@ export function CalendarIntegration({
   const [isLoading, setIsLoading] = useState(false)
   const [isConnecting, setIsConnecting] = useState(false)
 
-  // Load calendar connection status on mount
-  useEffect(() => {
-    loadCalendarStatus()
-  }, [])
-
-  const loadCalendarStatus = async () => {
+  const loadCalendarStatus = useCallback(async () => {
     if (!user) return
 
     setIsLoading(true)
@@ -63,8 +58,8 @@ export function CalendarIntegration({
         data.providers?.forEach((provider: CalendarProvider) => {
           if (provider.connected && provider.calendars?.length) {
             const primaryCalendar = provider.calendars.find(cal => cal.primary) || provider.calendars[0]
-            if (primaryCalendar && !selectedCalendar) {
-              setSelectedCalendar(primaryCalendar.id)
+            if (primaryCalendar) {
+              setSelectedCalendar((prev) => prev || primaryCalendar.id)
             }
           }
         })
@@ -74,7 +69,12 @@ export function CalendarIntegration({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user])
+
+  // Load calendar connection status on mount
+  useEffect(() => {
+    loadCalendarStatus()
+  }, [loadCalendarStatus])
 
   const connectCalendar = async (provider: 'google' | 'microsoft') => {
     if (!user) return

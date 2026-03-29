@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -8,8 +9,6 @@ import {
   UserPlus, 
   X, 
   Users,
-  Building2,
-  ExternalLink
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AnnouncementPerson, createPersonFromUser, createExternalPerson } from '@/types/people';
@@ -95,10 +94,13 @@ export function PeopleSelector({
                 {/* Avatar */}
                 <div className="relative">
                   {person.avatar_url ? (
-                    <img
+                    <Image
                       src={person.avatar_url}
                       alt={person.name}
+                      width={24}
+                      height={24}
                       className="w-6 h-6 rounded-full object-cover"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
@@ -175,10 +177,13 @@ export function PeopleSelector({
                 >
                   <div className="relative">
                     {member.profile_image ? (
-                      <img
+                      <Image
                         src={member.profile_image}
                         alt={member.name}
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded-full object-cover"
+                        unoptimized
                       />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">

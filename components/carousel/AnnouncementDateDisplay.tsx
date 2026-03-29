@@ -8,6 +8,7 @@ interface AnnouncementDateDisplayProps {
   orientation: 'portrait' | 'landscape';
   organizationTheme?: any;
   showDetailedMetadata?: boolean; // New prop to show detailed date info in metadata section
+  layoutType?: string | null; // e.g. 'card' - used to position date visibly
   textSizes?: {
     title: string;
     description: string;
@@ -29,6 +30,7 @@ export function AnnouncementDateDisplay({
   orientation, 
   organizationTheme,
   showDetailedMetadata = false,
+  layoutType = null,
   textSizes = {
     title: 'text-9xl',
     description: 'text-7xl',
@@ -199,14 +201,23 @@ export function AnnouncementDateDisplay({
   const isHistoricalFunFact = isFunFact && (announcement.sub_type as string) === 'historical';
   const shouldShowDate = !isFunFact;
 
+  // For card layout: position top-left so date is always visible (no horizontal scroll)
+  const isCardLayout = layoutType === 'card';
+  const positionClass = isCardLayout
+    ? 'absolute top-4 left-4 md:left-6 md:top-6 text-left z-30 max-w-[calc(100%-2rem)]'
+    : 'absolute top-16 right-8 md:right-12 text-right z-30';
+
   return (
     <div 
-      className="absolute top-16 right-8 md:right-12 text-right z-30"
+      className={cn(positionClass)}
     >
       {/* Day of Week - only show for non-historical fun facts */}
       {shouldShowDate && (
         <div 
-          className="text-4xl xl:text-6xl 2xl:text-8xl 3xl:text-10xl font-bold text-white/80 mb-2"
+          className={cn(
+            "font-bold text-white/80 mb-2",
+            isCardLayout ? "text-2xl md:text-3xl xl:text-4xl" : "text-4xl xl:text-6xl 2xl:text-8xl 3xl:text-10xl"
+          )}
         >
           {formatDateWithDay(eventDate).dayOfWeek}
         </div>
@@ -226,7 +237,12 @@ export function AnnouncementDateDisplay({
 
       {/* Date - only show for non-historical fun facts */}
       {shouldShowDate && (
-        <div className="text-[10rem] md:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] 3xl:text-[24rem] font-black text-white tracking-tighter leading-none">
+        <div className={cn(
+          "font-black text-white tracking-tighter leading-none",
+          isCardLayout
+            ? "text-4xl md:text-5xl xl:text-6xl 2xl:text-7xl"
+            : "text-[10rem] md:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] 3xl:text-[24rem]"
+        )}>
           {formatDateWithDay(eventDate).date}
         </div>
       )}
@@ -245,7 +261,10 @@ export function AnnouncementDateDisplay({
 
       {/* Time if available - only show for non-historical fun facts */}
       {shouldShowDate && formatTime(eventDate) && (
-        <div className="text-3xl xl:text-5xl 2xl:text-6xl 3xl:text-8xl text-white/60 font-medium tracking-tight mt-2">
+        <div className={cn(
+          "text-white/60 font-medium tracking-tight mt-2",
+          isCardLayout ? "text-lg md:text-xl xl:text-2xl" : "text-3xl xl:text-5xl 2xl:text-6xl 3xl:text-8xl"
+        )}>
           {formatTime(eventDate)}
         </div>
       )}
@@ -253,7 +272,10 @@ export function AnnouncementDateDisplay({
       {/* End Date/Time if available - only show for non-historical fun facts */}
       {shouldShowDate && announcement.ends_at && (
         <div 
-          className="text-2xl xl:text-4xl 2xl:text-5xl 3xl:text-7xl text-white/50 font-medium tracking-tight mt-1"
+          className={cn(
+            "text-white/50 font-medium tracking-tight mt-1",
+            isCardLayout ? "text-base md:text-lg xl:text-xl" : "text-2xl xl:text-4xl 2xl:text-5xl 3xl:text-7xl"
+          )}
         >
           {formatEndDate(eventDate, announcement.ends_at) && (
             <span>Until {formatEndDate(eventDate, announcement.ends_at)}</span>
@@ -264,7 +286,10 @@ export function AnnouncementDateDisplay({
       {/* Date Range if multi-day event */}
       {shouldShowDate && getDateRange(eventDate, announcement.ends_at) && (
         <div 
-          className="text-xl xl:text-3xl 2xl:text-4xl 3xl:text-6xl text-white/40 font-medium tracking-tight mt-1"
+          className={cn(
+            "text-white/40 font-medium tracking-tight mt-1",
+            isCardLayout ? "text-sm md:text-base xl:text-lg" : "text-xl xl:text-3xl 2xl:text-4xl 3xl:text-6xl"
+          )}
         >
           {getDateRange(eventDate, announcement.ends_at)}
         </div>
@@ -287,7 +312,9 @@ export function AnnouncementDateDisplay({
         <div 
           className={cn(
             `inline-flex items-center rounded-full mt-4 font-bold ${
-              orientation === 'portrait'
+              isCardLayout
+                ? 'gap-2 px-3 py-2 md:px-4 md:py-2.5 text-sm md:text-base xl:text-lg'
+                : orientation === 'portrait'
                 ? 'gap-3 xl:gap-5 2xl:gap-7 3xl:gap-9 px-6 xl:px-8 2xl:px-10 3xl:px-14 py-3 xl:py-4 2xl:py-5 3xl:py-7 text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-7xl'
                 : 'gap-2 xl:gap-4 2xl:gap-6 3xl:gap-8 px-4 xl:px-6 2xl:px-8 3xl:px-12 py-2 xl:py-3 2xl:py-4 3xl:py-6 text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl 4xl:text-6xl'
             }`,

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -53,11 +53,7 @@ export function AnalyticsDashboard({ organizationId, className }: AnalyticsDashb
   const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState('30'); // days
 
-  useEffect(() => {
-    fetchAnalytics();
-  }, [organizationId, dateRange]);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       setLoading(true);
       const endDate = new Date().toISOString().split('T')[0];
@@ -78,7 +74,11 @@ export function AnalyticsDashboard({ organizationId, className }: AnalyticsDashb
     } finally {
       setLoading(false);
     }
-  };
+  }, [organizationId, dateRange]);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
 
   if (loading) {
     return (

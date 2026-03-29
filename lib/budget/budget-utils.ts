@@ -16,6 +16,9 @@ export interface BudgetMonth {
   budget: number
   spent: number
   lineItems: BudgetLineItem[]
+  /** Planned (not yet spent) for this month — Oolite/Airtable */
+  planned?: number
+  plannedLineItems?: BudgetLineItem[]
 }
 
 export interface BudgetCategory {
@@ -288,6 +291,10 @@ export function getTotalBudget(months: BudgetMonth[]): number {
 
 export function getTotalSpent(months: BudgetMonth[]): number {
   return months.reduce((sum: number, month: BudgetMonth) => sum + month.spent, 0)
+}
+
+export function getTotalPlanned(months: BudgetMonth[]): number {
+  return months.reduce((sum: number, month: BudgetMonth) => sum + (month.planned ?? 0), 0)
 }
 
 export function getCategoryTotal(months: BudgetMonth[], categoryId: string): number {

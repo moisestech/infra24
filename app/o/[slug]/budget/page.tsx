@@ -30,6 +30,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { BudgetDashboard, type CategoryChartItem } from '@/components/budget/BudgetDashboard'
@@ -165,6 +166,7 @@ export default function DigitalLabBudgetPage() {
   const [selectedBudgetBucket, setSelectedBudgetBucket] = useState<string>('all')
   const [selectedTargetMonth, setSelectedTargetMonth] = useState<string | null>(null)
   const [selectedPeople, setSelectedPeople] = useState<string>('')
+  const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [groupBy, setGroupBy] = useState<'category' | 'programPillar'>('category')
   const [selectedPillarForSort, setSelectedPillarForSort] = useState<string | null>(null)
 
@@ -1089,7 +1091,7 @@ export default function DigitalLabBudgetPage() {
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                  <Input
+                <Input
                   placeholder="Search name, category, notes, or evidence..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -1097,155 +1099,196 @@ export default function DigitalLabBudgetPage() {
                 />
               </div>
             </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Select 
-                value={selectedCategory} 
-                onValueChange={(value) => {
-                  setSelectedCategory(value)
-                  if (value === 'all') {
-                    // Reset everything when "all" is selected
-                    setSelectedSegment(null)
-                    setSelectedCategoryForSort(null)
-                    setExpandedCategories(new Set())
-                  } else {
-                    // Find the category name for highlighting
-                    const category = categories.find(c => c.id === value)
-                    if (category) {
-                      // Highlight the pie chart segment (use category name)
-                      setSelectedSegment(category.name)
-                      // Bring category to top in breakdown (use category id)
-                      setSelectedCategoryForSort(value)
-                      // Expand the category in the breakdown
-                      setExpandedCategories(prev => {
-                        const newSet = new Set(prev)
-                        newSet.add(value)
-                        return newSet
-                      })
-                    }
-                  }
-                }}
-              >
-                <SelectTrigger className={`w-full sm:w-64 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
-                  <SelectValue placeholder="Filter by category" />
-                </SelectTrigger>
-                <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      <span className="flex items-center">
-                        <span className="mr-2">{category.emoji}</span>
-                        {category.name}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {slug === 'oolite' && (
-                <Select
-                  value={selectedMonth ?? 'all'}
-                  onValueChange={(v) => setSelectedMonth(v === 'all' ? null : v)}
-                >
-                  <SelectTrigger className={`w-full sm:w-48 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
-                    <SelectValue placeholder="All months" />
-                  </SelectTrigger>
-                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
-                    <SelectItem value="all">All months</SelectItem>
-                    {[
-                      ...Array.from({ length: 4 }, (_, i) => ({ y: 2025, m: 9 + i })),
-                      ...Array.from({ length: 11 }, (_, i) => ({ y: 2026, m: 1 + i }))
-                    ].map(({ y, m }) => {
-                      const val = `${y}-${String(m).padStart(2, '0')}`
-                      const label = new Date(y, m - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-                      return (
-                        <SelectItem key={val} value={val}>
-                          {label}
-                        </SelectItem>
-                      )
-                    })}
-                  </SelectContent>
-                </Select>
-              )}
-              {slug === 'oolite' && vendorGroups.length > 0 && (
-                <Select value={selectedVendorGroup} onValueChange={setSelectedVendorGroup}>
-                  <SelectTrigger className={`w-full sm:w-40 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
-                    <SelectValue placeholder="Vendor Group" />
-                  </SelectTrigger>
-                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
-                    <SelectItem value="all">All Vendors</SelectItem>
-                    {vendorGroups.map(vg => (
-                      <SelectItem key={vg} value={vg}>{vg}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              {slug === 'oolite' && expenseTypes.length > 0 && (
-                <Select value={selectedExpenseType} onValueChange={setSelectedExpenseType}>
-                  <SelectTrigger className={`w-full sm:w-40 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
-                    <SelectValue placeholder="Expense Type" />
-                  </SelectTrigger>
-                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
-                    <SelectItem value="all">All Types</SelectItem>
-                    {expenseTypes.map(et => (
-                      <SelectItem key={et} value={et}>{et}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              {slug === 'oolite' && programPillars.length > 0 && (
-                <Select value={selectedProgramPillar} onValueChange={setSelectedProgramPillar}>
-                  <SelectTrigger className={`w-full sm:w-48 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
-                    <SelectValue placeholder="Program Pillar" />
-                  </SelectTrigger>
-                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
-                    <SelectItem value="all">All Pillars</SelectItem>
-                    {programPillars.map(p => (
-                      <SelectItem key={p} value={p}>{p}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              {slug === 'oolite' && budgetBuckets.length > 0 && (
-                <Select value={selectedBudgetBucket} onValueChange={setSelectedBudgetBucket}>
-                  <SelectTrigger className={`w-full sm:w-44 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
-                    <SelectValue placeholder="Budget Bucket" />
-                  </SelectTrigger>
-                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
-                    <SelectItem value="all">All Buckets</SelectItem>
-                    {budgetBuckets.map(b => (
-                      <SelectItem key={b} value={b}>{b}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              {slug === 'oolite' && targetMonths.length > 0 && (
-                <Select value={selectedTargetMonth ?? 'all'} onValueChange={(v) => setSelectedTargetMonth(v === 'all' ? null : v)}>
-                  <SelectTrigger className={`w-full sm:w-48 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
-                    <SelectValue placeholder="Target Month (Planned)" />
-                  </SelectTrigger>
-                  <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}>
-                    <SelectItem value="all">All Target Months</SelectItem>
-                    {targetMonths.map(m => {
-                      const [y, mo] = m.split('-')
-                      const label = new Date(parseInt(y || '2025'), parseInt(mo || '1') - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-                      return <SelectItem key={m} value={m}>{label}</SelectItem>
-                    })}
-                  </SelectContent>
-                </Select>
-              )}
-              {slug === 'oolite' && (
-                <Input
-                  placeholder="People (Email People)..."
-                  value={selectedPeople}
-                  onChange={(e) => setSelectedPeople(e.target.value)}
-                  className={`w-full sm:w-48 ${isDark ? 'bg-gray-800 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
-                  title="Comma-separated names to filter by Email People"
-                />
-              )}
-            </div>
 
             <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+              <Sheet open={filtersSheetOpen} onOpenChange={setFiltersSheetOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={`flex items-center gap-2 ${isDark ? 'bg-gray-800 border-gray-600 text-white hover:bg-gray-700' : 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50'}`}
+                  >
+                    <Filter className="h-4 w-4" />
+                    Filters
+                    {(selectedCategory !== 'all' || (slug === 'oolite' && (selectedMonth || selectedVendorGroup !== 'all' || selectedExpenseType !== 'all' || selectedProgramPillar !== 'all' || selectedBudgetBucket !== 'all' || selectedTargetMonth || selectedPeople.trim()))) && (
+                      <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1.5">
+                        {[selectedCategory !== 'all', slug === 'oolite' && selectedMonth, slug === 'oolite' && selectedVendorGroup !== 'all', slug === 'oolite' && selectedExpenseType !== 'all', slug === 'oolite' && selectedProgramPillar !== 'all', slug === 'oolite' && selectedBudgetBucket !== 'all', slug === 'oolite' && selectedTargetMonth, slug === 'oolite' && selectedPeople.trim()].filter(Boolean).length}
+                      </Badge>
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className={`w-full sm:max-w-md overflow-y-auto ${isDark ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200'}`}>
+                  <SheetHeader>
+                    <SheetTitle className={isDark ? 'text-white' : 'text-gray-900'}>Filters</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6 space-y-2">
+                    <details className={`rounded-lg border ${isDark ? 'border-gray-600 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`} open>
+                      <summary className={`px-4 py-3 cursor-pointer font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Time & Category</summary>
+                      <div className="px-4 pb-4 space-y-3">
+                        <div>
+                          <Label className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Category</Label>
+                          <Select
+                            value={selectedCategory}
+                            onValueChange={(value) => {
+                              setSelectedCategory(value)
+                              if (value === 'all') {
+                                setSelectedSegment(null)
+                                setSelectedCategoryForSort(null)
+                                setExpandedCategories(new Set())
+                              } else {
+                                const category = categories.find(c => c.id === value)
+                                if (category) {
+                                  setSelectedSegment(category.name)
+                                  setSelectedCategoryForSort(value)
+                                  setExpandedCategories(prev => { const s = new Set(prev); s.add(value); return s })
+                                }
+                              }
+                            }}
+                          >
+                            <SelectTrigger className={`mt-1 w-full ${isDark ? 'bg-gray-700 border-gray-600 text-white' : ''}`}>
+                              <SelectValue placeholder="Filter by category" />
+                            </SelectTrigger>
+                            <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : ''}>
+                              {categories.map((category) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  <span className="flex items-center"><span className="mr-2">{category.emoji}</span>{category.name}</span>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {slug === 'oolite' && (
+                          <div>
+                            <Label className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Month</Label>
+                            <Select value={selectedMonth ?? 'all'} onValueChange={(v) => setSelectedMonth(v === 'all' ? null : v)}>
+                              <SelectTrigger className={`mt-1 w-full ${isDark ? 'bg-gray-700 border-gray-600 text-white' : ''}`}>
+                                <SelectValue placeholder="All months" />
+                              </SelectTrigger>
+                              <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : ''}>
+                                <SelectItem value="all">All months</SelectItem>
+                                {[...Array.from({ length: 4 }, (_, i) => ({ y: 2025, m: 9 + i })), ...Array.from({ length: 11 }, (_, i) => ({ y: 2026, m: 1 + i }))].map(({ y, m }) => {
+                                  const val = `${y}-${String(m).padStart(2, '0')}`
+                                  const label = new Date(y, m - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                                  return <SelectItem key={val} value={val}>{label}</SelectItem>
+                                })}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                      </div>
+                    </details>
+
+                    {slug === 'oolite' && (vendorGroups.length > 0 || expenseTypes.length > 0) && (
+                      <details className={`rounded-lg border ${isDark ? 'border-gray-600 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
+                        <summary className={`px-4 py-3 cursor-pointer font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Vendor & Expense</summary>
+                        <div className="px-4 pb-4 space-y-3">
+                          {vendorGroups.length > 0 && (
+                            <div>
+                              <Label className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Vendor Group</Label>
+                              <Select value={selectedVendorGroup} onValueChange={setSelectedVendorGroup}>
+                                <SelectTrigger className={`mt-1 w-full ${isDark ? 'bg-gray-700 border-gray-600 text-white' : ''}`}>
+                                  <SelectValue placeholder="All Vendors" />
+                                </SelectTrigger>
+                                <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : ''}>
+                                  <SelectItem value="all">All Vendors</SelectItem>
+                                  {vendorGroups.map(vg => <SelectItem key={vg} value={vg}>{vg}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                          {expenseTypes.length > 0 && (
+                            <div>
+                              <Label className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Expense Type</Label>
+                              <Select value={selectedExpenseType} onValueChange={setSelectedExpenseType}>
+                                <SelectTrigger className={`mt-1 w-full ${isDark ? 'bg-gray-700 border-gray-600 text-white' : ''}`}>
+                                  <SelectValue placeholder="All Types" />
+                                </SelectTrigger>
+                                <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : ''}>
+                                  <SelectItem value="all">All Types</SelectItem>
+                                  {expenseTypes.map(et => <SelectItem key={et} value={et}>{et}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                        </div>
+                      </details>
+                    )}
+
+                    {slug === 'oolite' && (
+                      <details className={`rounded-lg border ${isDark ? 'border-gray-600 bg-gray-800/50' : 'border-gray-200 bg-gray-50'}`}>
+                        <summary className={`px-4 py-3 cursor-pointer font-medium ${isDark ? 'text-gray-200' : 'text-gray-800'}`}>Planning & People</summary>
+                        <div className="px-4 pb-4 space-y-3">
+                          {programPillars.length > 0 && (
+                            <div>
+                              <Label className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Program Pillar</Label>
+                              <Select value={selectedProgramPillar} onValueChange={setSelectedProgramPillar}>
+                                <SelectTrigger className={`mt-1 w-full ${isDark ? 'bg-gray-700 border-gray-600 text-white' : ''}`}>
+                                  <SelectValue placeholder="All Pillars" />
+                                </SelectTrigger>
+                                <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : ''}>
+                                  <SelectItem value="all">All Pillars</SelectItem>
+                                  {programPillars.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                          {budgetBuckets.length > 0 && (
+                            <div>
+                              <Label className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Budget Bucket</Label>
+                              <Select value={selectedBudgetBucket} onValueChange={setSelectedBudgetBucket}>
+                                <SelectTrigger className={`mt-1 w-full ${isDark ? 'bg-gray-700 border-gray-600 text-white' : ''}`}>
+                                  <SelectValue placeholder="All Buckets" />
+                                </SelectTrigger>
+                                <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : ''}>
+                                  <SelectItem value="all">All Buckets</SelectItem>
+                                  {budgetBuckets.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                          {targetMonths.length > 0 && (
+                            <div>
+                              <Label className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Target Month (Planned)</Label>
+                              <Select value={selectedTargetMonth ?? 'all'} onValueChange={(v) => setSelectedTargetMonth(v === 'all' ? null : v)}>
+                                <SelectTrigger className={`mt-1 w-full ${isDark ? 'bg-gray-700 border-gray-600 text-white' : ''}`}>
+                                  <SelectValue placeholder="All Target Months" />
+                                </SelectTrigger>
+                                <SelectContent className={isDark ? 'bg-gray-800 border-gray-600 text-white' : ''}>
+                                  <SelectItem value="all">All Target Months</SelectItem>
+                                  {targetMonths.map(m => {
+                                    const [y, mo] = m.split('-')
+                                    const label = new Date(parseInt(y || '2025'), parseInt(mo || '1') - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                                    return <SelectItem key={m} value={m}>{label}</SelectItem>
+                                  })}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                          <div>
+                            <Label className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>People (Email People)</Label>
+                            <Input
+                              placeholder="Comma-separated names..."
+                              value={selectedPeople}
+                              onChange={(e) => setSelectedPeople(e.target.value)}
+                              className={`mt-1 w-full ${isDark ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+                              title="Comma-separated names to filter by Email People"
+                            />
+                          </div>
+                        </div>
+                      </details>
+                    )}
+                  </div>
+                  <div className="mt-6 flex gap-2">
+                    <Button variant="outline" size="sm" onClick={resetFilters}>
+                      Reset Filters
+                    </Button>
+                    <Button size="sm" onClick={() => setFiltersSheetOpen(false)}>
+                      Done
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+
               {slug === 'oolite' && (
                 <Button
                   variant="outline"
@@ -1253,29 +1296,25 @@ export default function DigitalLabBudgetPage() {
                   onClick={syncPurposeToAirtable}
                   disabled={syncPurposeLoading}
                 >
-                  {syncPurposeLoading ? (
-                    <span className="animate-spin mr-2">⏳</span>
-                  ) : (
-                    <Wrench className="h-4 w-4 mr-2" />
-                  )}
+                  {syncPurposeLoading ? <span className="animate-spin mr-2">⏳</span> : <Wrench className="h-4 w-4 mr-2" />}
                   Sync Purpose
                 </Button>
               )}
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className={`flex items-center ${isDark ? 'bg-gray-800 border-gray-600 text-white hover:bg-gray-700' : 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50'}`}
                 onClick={exportToCSV}
               >
                 <Download className="h-4 w-4 mr-2" />
                 Export CSV
               </Button>
-            </div>
-            {syncPurposeResult && (
-              <p className={`text-sm ${syncPurposeResult.errors.length > 0 ? 'text-amber-600' : 'text-green-600'}`}>
-                {syncPurposeResult.updated} record(s) updated.
-                {syncPurposeResult.errors.length > 0 && ` ${syncPurposeResult.errors.length} error(s).`}
-              </p>
-            )}
+              </div>
+              {syncPurposeResult && (
+                <p className={`text-sm w-full ${syncPurposeResult.errors.length > 0 ? 'text-amber-600' : 'text-green-600'}`}>
+                  {syncPurposeResult.updated} record(s) updated.
+                  {syncPurposeResult.errors.length > 0 && ` ${syncPurposeResult.errors.length} error(s).`}
+                </p>
+              )}
             </div>
           </motion.div>
 
@@ -2210,16 +2249,6 @@ function ReportView({
             <div className="space-y-6">
               <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Reconciliation + governance</h2>
               <div className="space-y-4">
-                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Our tracker is built from the Digital Lab email request/receipt trail and shows:
-                </p>
-                <ul className={`list-disc list-inside text-sm space-y-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  <li>Spent to Date (Actuals): {formatCurrency(spent)}</li>
-                  <li>Remaining (after Actuals): {formatCurrency(remaining)}</li>
-                </ul>
-                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  A separate figure referenced in recent correspondence is:
-                </p>
                 <div className="flex items-center gap-1">
                   <Label className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Remaining (Accounting claim):</Label>
                   <Input
@@ -2354,7 +2383,6 @@ function ReconciliationView({
   const [auditTab, setAuditTab] = useState<'spent' | 'missing-proof' | 'missing-dates' | 'planned-with-date'>('spent')
   const [accountingRemaining, setAccountingRemaining] = useState<string>('22000')
   const [tableSort, setTableSort] = useState<{ column: 'date' | 'item' | 'subtotal' | 'vendorGroup' | 'programPillar' | 'category'; direction: 'asc' | 'desc' }>({ column: 'date', direction: 'desc' })
-  const [checklistExpanded, setChecklistExpanded] = useState(false)
   const gap = accountingRemaining ? parseFloat(accountingRemaining.replace(/[^0-9.-]/g, '')) - remaining : null
 
   const applyMonthFilter = (items: BudgetItem[]) => {
@@ -2438,54 +2466,6 @@ function ReconciliationView({
 
   return (
     <div className="space-y-6">
-      {/* Presentation Checklist (collapsible) */}
-      <Card className={isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}>
-        <CardHeader
-          className={`py-4 cursor-pointer select-none ${isDark ? 'hover:bg-gray-700/30' : 'hover:bg-gray-50'}`}
-          onClick={() => setChecklistExpanded(!checklistExpanded)}
-        >
-          <div className="flex items-center justify-between">
-            <CardTitle className={`text-base flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              <LayoutDashboard className="h-4 w-4" />
-              Presentation Checklist — What we have, what matters most
-            </CardTitle>
-            {checklistExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </div>
-        </CardHeader>
-        {checklistExpanded && (
-          <CardContent className="pt-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className={`border-b ${isDark ? 'border-gray-600' : 'border-gray-200'}`}>
-                    <th className={`text-left p-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Feature</th>
-                    <th className={`text-left p-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Status</th>
-                    <th className={`text-left p-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Notes</th>
-                  </tr>
-                </thead>
-                <tbody className={`${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  <tr><td className="p-2">Executive KPI strip (5 blocks)</td><td className="p-2">Done</td><td className="p-2">Cap, Spent, Requested/Pending, Planned, Remaining</td></tr>
-                  <tr><td className="p-2">Proof Coverage meter</td><td className="p-2">Done</td><td className="p-2">Badge under Spent to Date</td></tr>
-                  <tr><td className="p-2">Accounting Reconciliation panel</td><td className="p-2">Done</td><td className="p-2">Discrepancy explainer</td></tr>
-                  <tr><td className="p-2">Spent To Date table</td><td className="p-2">Done</td><td className="p-2">Default view, sortable by column</td></tr>
-                  <tr><td className="p-2">Audit tabs (Missing Proof, Dates, etc.)</td><td className="p-2">Done</td><td className="p-2">4 tabs</td></tr>
-                  <tr><td className="p-2">Month filter</td><td className="p-2">Done</td><td className="p-2">Sep 2025–Nov 2026</td></tr>
-                  <tr><td className="p-2">Category, Program Pillar, Budget Bucket, Target Month, People filters</td><td className="p-2">Done</td><td className="p-2">—</td></tr>
-                  <tr><td className="p-2">Spent by Month chart</td><td className="p-2">Done</td><td className="p-2">Bar chart</td></tr>
-                  <tr><td className="p-2">Spent by Program Pillar chart</td><td className="p-2">Done</td><td className="p-2">In Reconciliation</td></tr>
-                  <tr><td className="p-2">Planned for [Month] list</td><td className="p-2">Done</td><td className="p-2">When month selected</td></tr>
-                  <tr><td className="p-2">Planned burn-down</td><td className="p-2">Done</td><td className="p-2">Projected Remaining after planned</td></tr>
-                  <tr><td className="p-2">Printers / Verity story views</td><td className="p-2">Done</td><td className="p-2">View filter</td></tr>
-                  <tr><td className="p-2">Export to CSV</td><td className="p-2">Done</td><td className="p-2">—</td></tr>
-                  <tr><td className="p-2 font-medium">Table column sorting</td><td className="p-2 font-medium">Done</td><td className="p-2">Click headers to sort</td></tr>
-                  <tr><td className="p-2 font-medium">Report / Story flow</td><td className="p-2 font-medium">Done</td><td className="p-2">Report tab with 3 slides</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        )}
-      </Card>
-
       {/* Executive KPI strip (5 blocks + Proof Coverage) */}
       <div className="flex flex-wrap items-start gap-4">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 flex-1 min-w-0">
@@ -2553,16 +2533,6 @@ function ReconciliationView({
           <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Accounting Reconciliation (Knight Reporting)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-            Our tracker is built from the Digital Lab email request/receipt trail and shows:
-          </p>
-          <ul className={`list-disc list-inside text-sm space-y-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-            <li>Spent to Date (Actuals): {formatCurrency(spent)}</li>
-            <li>Remaining (after Actuals): {formatCurrency(remaining)}</li>
-          </ul>
-          <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-            A separate figure referenced in recent correspondence is:
-          </p>
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <Label htmlFor="accounting-remaining" className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Remaining (Accounting claim):</Label>
@@ -3612,77 +3582,76 @@ function createMonthsFromBudgetItems(budgetItems: BudgetItem[], totalBudget: num
   }
   // Result: 2025-09..12 (4) + 2026-01..11 (11) = 15 months
 
+  const KNIGHT_BUCKETS = ['Digital Lab', 'Digital Conference']
+  const getMonthFromTargetMonth = (s?: string): string | null => {
+    if (!s) return null
+    try {
+      const d = new Date(s)
+      if (isNaN(d.getTime())) return null
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+    } catch { return null }
+  }
+
   monthNames.forEach((monthStr) => {
     months.push({
       month: monthStr,
       budget: 0,
       spent: 0,
-      lineItems: []
+      lineItems: [],
+      planned: 0,
+      plannedLineItems: []
     })
   })
-  
-  // Group items by month based on date field
-  const itemsWithoutDate: BudgetItem[] = []
-  
+
+  const isActual = (i: BudgetItem) =>
+    i.spendType === 'Purchased Actual' && KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab')
+  const isPlanned = (i: BudgetItem) =>
+    (i.spendType === 'Planned' || (!i.spendType && !i.date)) && KNIGHT_BUCKETS.includes(i.budgetBucket || 'Digital Lab')
+  const amt = (i: BudgetItem) => i.subtotal ?? i.unitCost ?? 0
+
   budgetItems.forEach((item, idx) => {
-    if (item.date) {
-      // Parse date to determine month
-      const itemDate = new Date(item.date)
-      const itemYear = itemDate.getFullYear()
-      const itemMonth = String(itemDate.getMonth() + 1).padStart(2, '0')
-      const itemMonthStr = `${itemYear}-${itemMonth}`
-      
-      // Find the corresponding month
-      const monthIndex = months.findIndex(m => m.month === itemMonthStr)
-      if (monthIndex !== -1) {
-        const month = months[monthIndex]
-        const lineItem: BudgetLineItem = {
-          id: `${itemMonthStr}-${month.lineItems.length}`,
-          name: item.lineItem,
-          category: item.category,
-          amount: item.subtotal,
-          imageUrl: '',
-          date: item.date,
-          vendor: item.links || '',
-          notes: item.notes || ''
+    const lineItem: BudgetLineItem = {
+      id: `item-${idx}-${item.lineItem}-${item.subtotal}`,
+      name: item.lineItem,
+      category: item.category,
+      amount: amt(item),
+      imageUrl: '',
+      date: item.date || item.emailDate || '',
+      vendor: item.links || '',
+      notes: item.notes || ''
+    }
+
+    if (isActual(item)) {
+      const monthStr = item.date
+        ? (() => {
+            const d = new Date(item.date)
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+          })()
+        : item.emailDate
+          ? (() => {
+              const d = new Date(item.emailDate)
+              return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+            })()
+          : null
+      if (monthStr) {
+        const month = months.find(m => m.month === monthStr)
+        if (month) {
+          month.lineItems.push(lineItem)
+          month.spent += amt(item)
         }
-        month.lineItems.push(lineItem)
-        month.spent += item.subtotal
-      } else {
-        // Date is outside month range, add to itemsWithoutDate for distribution
-        itemsWithoutDate.push(item)
       }
-    } else {
-      // No date specified, add to itemsWithoutDate for even distribution
-      itemsWithoutDate.push(item)
+    } else if (isPlanned(item)) {
+      const monthStr = getMonthFromTargetMonth(item.targetMonth)
+      if (monthStr) {
+        const month = months.find(m => m.month === monthStr)
+        if (month) {
+          month.plannedLineItems = month.plannedLineItems || []
+          month.plannedLineItems.push(lineItem)
+          month.planned = (month.planned ?? 0) + amt(item)
+        }
+      }
     }
   })
-  
-  // Distribute items without dates evenly across months
-  if (itemsWithoutDate.length > 0) {
-    const itemsPerMonth = Math.ceil(itemsWithoutDate.length / monthNames.length)
-    monthNames.forEach((monthStr, index) => {
-      const startIdx = index * itemsPerMonth
-      const endIdx = Math.min(startIdx + itemsPerMonth, itemsWithoutDate.length)
-      const monthItems = itemsWithoutDate.slice(startIdx, endIdx)
-      const month = months.find(m => m.month === monthStr)!
-      
-      monthItems.forEach((item, idx) => {
-        const lineItem: BudgetLineItem = {
-          id: `${monthStr}-${month.lineItems.length}`,
-          name: item.lineItem,
-          category: item.category,
-          amount: item.subtotal,
-          imageUrl: '',
-          date: `${monthStr}-${String(Math.floor(1 + (idx * 7))).padStart(2, '0')}`,
-          vendor: item.links || '',
-          notes: item.notes || ''
-        }
-        month.lineItems.push(lineItem)
-        month.spent += item.subtotal
-      })
-    })
-  }
   
   // Set budget for each month (at least equal to spent)
   const monthlyBudgetFloor = Math.floor(totalBudget / monthNames.length)
@@ -3690,12 +3659,13 @@ function createMonthsFromBudgetItems(budgetItems: BudgetItem[], totalBudget: num
     month.budget = Math.max(month.spent, monthlyBudgetFloor)
   })
   
+  const totalSpent = months.reduce((sum, m) => sum + m.spent, 0)
+  const totalPlanned = months.reduce((sum, m) => sum + (m.planned ?? 0), 0)
   console.log('📊 Created months from budgetItems:', {
     totalItems: budgetItems.length,
-    itemsWithDates: budgetItems.filter(i => i.date).length,
-    itemsWithoutDates: itemsWithoutDate.length,
     monthsCreated: months.length,
-    totalSpent: months.reduce((sum, m) => sum + m.spent, 0),
+    totalSpent,
+    totalPlanned,
     totalBudget: months.reduce((sum, m) => sum + m.budget, 0)
   })
   

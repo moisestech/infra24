@@ -28,6 +28,16 @@ interface TextSizeControlsProps {
   onImageSettingsChange?: (announcementId: string, settings: Partial<ImageSettings>) => void;
   onDurationChange?: (announcementId: string, duration: number) => void;
   currentDuration?: number;
+  /** Current values from parent - keeps debug panel in sync */
+  currentTextSizes?: Record<string, string>;
+  currentIconSize?: number;
+  currentAvatarSize?: number;
+  currentImageSettings?: ImageSettings;
+  currentShowTags?: boolean;
+  currentShowPriorityBadge?: boolean;
+  currentShowVisibilityBadge?: boolean;
+  currentShowQRCodeButton?: boolean;
+  currentShowLearnMore?: boolean;
   className?: string;
 }
 
@@ -46,10 +56,19 @@ export function TextSizeControls({
   onImageSettingsChange,
   onDurationChange,
   currentDuration = 5000,
+  currentTextSizes,
+  currentIconSize,
+  currentAvatarSize,
+  currentImageSettings,
+  currentShowTags,
+  currentShowPriorityBadge,
+  currentShowVisibilityBadge,
+  currentShowQRCodeButton,
+  currentShowLearnMore,
   className 
 }: TextSizeControlsProps) {
   const [screenDimensions, setScreenDimensions] = useState({ width: 0, height: 0, ratio: 0 });
-  const [iconSizeMultiplier, setIconSizeMultiplier] = useState(1);
+  const [iconSizeMultiplier, setIconSizeMultiplier] = useState(2.5);
   const [avatarSizeMultiplier, setAvatarSizeMultiplier] = useState(5);
   const [showTags, setShowTags] = useState(false);
   const [showPriorityBadge, setShowPriorityBadge] = useState(false);
@@ -66,16 +85,51 @@ export function TextSizeControls({
   const [splitPercentage, setSplitPercentage] = useState(40);
   const [imageOpacity, setImageOpacity] = useState(100);
 
-  // Reset image settings when announcement changes
+  // Sync from parent props when they change
   useEffect(() => {
-    if (currentAnnouncementId) {
-      // Reset to defaults when switching announcements
+    if (currentTextSizes) {
+      setTextSizes(prev => ({ ...prev, ...currentTextSizes }));
+    }
+  }, [currentTextSizes]);
+  useEffect(() => {
+    if (currentIconSize !== undefined) setIconSizeMultiplier(currentIconSize);
+  }, [currentIconSize]);
+  useEffect(() => {
+    if (currentAvatarSize !== undefined) setAvatarSizeMultiplier(currentAvatarSize);
+  }, [currentAvatarSize]);
+  useEffect(() => {
+    if (currentShowTags !== undefined) setShowTags(currentShowTags);
+  }, [currentShowTags]);
+  useEffect(() => {
+    if (currentShowPriorityBadge !== undefined) setShowPriorityBadge(currentShowPriorityBadge);
+  }, [currentShowPriorityBadge]);
+  useEffect(() => {
+    if (currentShowVisibilityBadge !== undefined) setShowVisibilityBadge(currentShowVisibilityBadge);
+  }, [currentShowVisibilityBadge]);
+  useEffect(() => {
+    if (currentShowQRCodeButton !== undefined) setShowQRCodeButton(currentShowQRCodeButton);
+  }, [currentShowQRCodeButton]);
+  useEffect(() => {
+    if (currentShowLearnMore !== undefined) setShowLearnMore(currentShowLearnMore);
+  }, [currentShowLearnMore]);
+  useEffect(() => {
+    if (currentImageSettings) {
+      if (currentImageSettings.layout) setImageLayout(currentImageSettings.layout);
+      if (currentImageSettings.scale !== undefined) setImageScale(currentImageSettings.scale);
+      if (currentImageSettings.splitPercentage !== undefined) setSplitPercentage(currentImageSettings.splitPercentage);
+      if (currentImageSettings.opacity !== undefined) setImageOpacity(currentImageSettings.opacity);
+    }
+  }, [currentImageSettings?.layout, currentImageSettings?.scale, currentImageSettings?.splitPercentage, currentImageSettings?.opacity]);
+
+  // Reset image settings when announcement changes (only if no currentImageSettings from parent)
+  useEffect(() => {
+    if (currentAnnouncementId && !currentImageSettings) {
       setImageLayout('card');
       setImageScale(1);
       setSplitPercentage(40);
       setImageOpacity(100);
     }
-  }, [currentAnnouncementId]);
+  }, [currentAnnouncementId, currentImageSettings]);
   
   // Individual text size controls for each element
   const [textSizes, setTextSizes] = useState({
@@ -83,17 +137,18 @@ export function TextSizeControls({
     description: 'text-3xl',
     location: 'text-3xl',
     date: 'text-7xl',
-    type: 'text-8xl',
+    type: 'text-4xl',
     metadata: 'text-sm',
     startDate: 'text-3xl',
     endDate: 'text-3xl',
     duration: 'text-3xl'
   });
 
-  // Check for debug mode via URL parameter or localStorage
+  // Check for debug mode via URL parameter (?debug=true or ?debug=layout) or localStorage
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const debugMode = urlParams.get('debug') === 'true' || localStorage.getItem('textSizeDebug') === 'true';
+    const debugParam = urlParams.get('debug');
+    const debugMode = debugParam === 'true' || debugParam === 'layout' || localStorage.getItem('textSizeDebug') === 'true';
     setIsVisible(debugMode);
   }, []);
 
@@ -167,11 +222,11 @@ export function TextSizeControls({
 
   const resetAllSizes = () => {
     const defaultSizes = {
-      title: 'text-9xl',
+      title: 'text-6xl',
       description: 'text-7xl',
       location: 'text-7xl',
       date: 'text-7xl',
-      type: 'text-8xl',
+      type: 'text-4xl',
       metadata: 'text-sm',
       startDate: 'text-3xl',
       endDate: 'text-3xl',
@@ -181,7 +236,7 @@ export function TextSizeControls({
     Object.entries(defaultSizes).forEach(([element, size]) => {
       onTextSizeChange(element, size);
     });
-    handleIconSizeChange(5.0);
+    handleIconSizeChange(2.5);
     handleAvatarSizeChange(8.0);
   };
 
@@ -243,14 +298,7 @@ export function TextSizeControls({
     }
   };
 
-  // Set default icon size to 5x for vertical orientation
-  useEffect(() => {
-    if (screenDimensions.ratio < 1) { // Portrait/vertical
-      handleIconSizeChange(5.0);
-    } else {
-      handleIconSizeChange(1.0);
-    }
-  }, [screenDimensions.ratio]);
+  // Set default icon size to 2x for vertical orientation (removed auto-override; use persisted/carousel value)
 
   const toggleVisibility = () => {
     const newVisibility = !isVisible;
@@ -750,7 +798,7 @@ export function TextSizeControls({
           </motion.button>
 
           <div className="text-xs text-white/60 text-center">
-            Add ?debug=true to URL to enable
+            Add ?debug=true to URL to enable on load
           </div>
         </div>
       ) : (

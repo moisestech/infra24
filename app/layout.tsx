@@ -10,8 +10,9 @@ import { Toaster } from '@/components/ui/Toast'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Infra24 - Multi-tenant Cultural Infrastructure Platform',
-  description: 'Infra24 is a comprehensive platform for cultural organizations to manage announcements, bookings, workshops, and community engagement.',
+  title: { default: 'Infra24', template: '%s | Infra24' },
+  description:
+    'Updateable public communication systems for nonprofits and cultural organizations—plus a multi-tenant platform for cultural orgs.',
 }
 
 export default function RootLayout({

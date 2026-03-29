@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { 
   Users, 
@@ -38,11 +38,7 @@ export function WorkshopAnalyticsWidget({
   const [stats, setStats] = useState<QuickStats | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchQuickStats()
-  }, [organizationId, timeRange])
-
-  const fetchQuickStats = async () => {
+  const fetchQuickStats = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -74,7 +70,11 @@ export function WorkshopAnalyticsWidget({
     } finally {
       setLoading(false)
     }
-  }
+  }, [organizationId, timeRange])
+
+  useEffect(() => {
+    fetchQuickStats()
+  }, [fetchQuickStats])
 
   if (loading) {
     return (

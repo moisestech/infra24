@@ -224,7 +224,7 @@ export default function AnnouncementDisplayPage() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">
       {/* Header with navigation */}
       <div className={`absolute top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm transition-all duration-300 ${
         showNavigation && !cleanViewMode ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'

@@ -111,8 +111,10 @@ export function PatternTemplate({
   // Check if announcement has an image and determine layout
   const hasImage = announcement.image_url && announcement.image_url.trim() !== '';
   // Use custom image settings layout if provided, otherwise use announcement's layout or default
+  // For Oolite: default to 'card' (image on top, text stacked below) so image is always first
+  const defaultLayout = organizationSlug === 'oolite' ? 'card' : 'hero';
   const imageLayout = hasImage 
-    ? (imageSettings?.layout || announcement.image_layout || 'hero' as ImageLayoutType)
+    ? (imageSettings?.layout || announcement.image_layout || defaultLayout as ImageLayoutType)
     : null;
 
   // Image information logging removed to reduce console noise
@@ -120,26 +122,31 @@ export function PatternTemplate({
   // Content wrapper component
   const ContentWrapper = () => (
     <>
-      {/* Date Display */}
-      <AnnouncementDateDisplay
-        announcement={announcement}
-        orientation={orientation}
-        organizationTheme={organizationTheme}
-        showDetailedMetadata={true}
-        textSizes={textSizes}
-        iconSizeMultiplier={iconSizeMultiplier}
-        screenMetrics={screenMetrics}
-        responsiveSizes={responsiveSizes}
-      />
+      {/* Date Display - only use absolute positioning for non-card layouts (card has date in-flow) */}
+      {imageLayout !== 'card' && (
+        <AnnouncementDateDisplay
+          announcement={announcement}
+          orientation={orientation}
+          organizationTheme={organizationTheme}
+          showDetailedMetadata={true}
+          textSizes={textSizes}
+          iconSizeMultiplier={iconSizeMultiplier}
+          screenMetrics={screenMetrics}
+          responsiveSizes={responsiveSizes}
+          layoutType={imageLayout}
+        />
+      )}
 
-      {/* People with Avatars - right under date display */}
-      <AnnouncementPeople 
-        people={announcement.people || []}
-        orientation={orientation}
-        avatarSizeMultiplier={avatarSizeMultiplier}
-        organizationSlug={organizationSlug}
-        className="absolute top-80 right-8 md:right-12 z-30"
-      />
+      {/* People with Avatars - omitted for now (too much info, hard to read) */}
+      {false && (
+        <AnnouncementPeople 
+          people={announcement.people || []}
+          orientation={orientation}
+          avatarSizeMultiplier={avatarSizeMultiplier}
+          organizationSlug={organizationSlug}
+          className="absolute top-80 right-8 md:right-12 z-30"
+        />
+      )}
 
       {/* Partner Organizations */}
       <AnnouncementPartnerOrgs

@@ -110,7 +110,7 @@ export function SplitLeftImageLayout({ announcement, imageUrl, orientation, chil
       
       {/* Content Section - Right */}
       <div className={cn(
-        "flex-1 relative z-10 overflow-auto flex flex-col min-w-0 w-full",
+        "flex-1 relative z-10 overflow-y-auto overflow-x-hidden flex flex-col min-w-0 w-full",
         responsiveSizes?.padding ? '' : ''
       )}>
         {children}
@@ -139,7 +139,7 @@ export function SplitRightImageLayout({ announcement, imageUrl, orientation, chi
       
       {/* Content Section - Left */}
       <div className={cn(
-        "flex-1 relative z-10 overflow-auto flex flex-col min-w-0 w-full",
+        "flex-1 relative z-10 overflow-y-auto overflow-x-hidden flex flex-col min-w-0 w-full",
         responsiveSizes?.padding ? '' : ''
       )}>
         {children}
@@ -172,46 +172,18 @@ export function SplitRightImageLayout({ announcement, imageUrl, orientation, chi
   );
 }
 
-// Card Layout: Image as prominent card element with content flowing around it
+// Debug: set true to show colored backgrounds (red=outer, blue=content wrapper, green=stack, orange=image, yellow=text)
+const DEBUG_LAYOUT = false;
+
+// Card Layout: Image on top, all text stacked underneath
 export function CardImageLayout({ announcement, imageUrl, orientation, children, textSizes, styles, imageSettings, screenMetrics, responsiveSizes }: ImageLayoutProps) {
-  // Always use scale 1 unless explicitly set by imageSettings
-  // Don't use responsiveSizes?.imageScale as it might be less than 1
   const imageScale = imageSettings?.scale !== undefined ? imageSettings.scale : 1;
   const imageOpacity = imageSettings?.opacity !== undefined ? imageSettings.opacity / 100 : 1;
   
-  // Get responsive image card dimensions
-  let imageCardStyle: { width?: string; height?: string } = {};
-  let imageCardClassName: string;
-  
-  if (screenMetrics?.isConstrained) {
-    // Use responsive sizing for constrained screens
-    const width = screenMetrics.width;
-    const height = screenMetrics.height;
-    const cardWidth = orientation === 'portrait' 
-      ? Math.floor(width * 0.35) 
-      : Math.floor(width * 0.30);
-    const cardHeight = orientation === 'portrait'
-      ? Math.floor(height * 0.40)
-      : Math.floor(height * 0.35);
-    imageCardStyle = {
-      width: `${cardWidth}px`,
-      height: `${cardHeight}px`
-    };
-    imageCardClassName = "relative overflow-hidden";
-  } else {
-    // Fixed sizes for larger screens
-      imageCardClassName = cn(
-      "relative overflow-hidden",
-      orientation === 'portrait' 
-        ? "w-64 xl:w-80 2xl:w-96 h-80 xl:h-96 2xl:h-[28rem]"
-        : "w-80 xl:w-96 2xl:w-[28rem] h-96 xl:h-[28rem] 2xl:h-[32rem]"
-    );
-  }
-  
-  // CardImageLayout rendering log removed to reduce console noise
+  const debugBg = (color: string) => DEBUG_LAYOUT ? { backgroundColor: color } : {};
   
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full max-w-full h-full overflow-hidden" style={debugBg('rgba(255,0,0,0.2)')}>
       {/* Background - use solid color for Oolite if available */}
       <div 
         className={cn(
@@ -221,84 +193,57 @@ export function CardImageLayout({ announcement, imageUrl, orientation, children,
         style={styles?.gradientStyle}
       />
       
-      {/* Content with floating image card */}
-      <div className={cn(
-        "relative z-20 h-full flex flex-col",
-        responsiveSizes?.padding || "p-12 md:p-16 xl:p-20"
-      )}>
-        {/* Check if portrait/tall display - show image on top */}
-        {orientation === 'portrait' && screenMetrics && screenMetrics.height > screenMetrics.width * 1.5 ? (
-          <div className="flex-1 flex flex-col relative min-w-0">
-            {/* Image Card - On Top */}
-            <motion.div
-              className="flex-shrink-0 relative z-10 mb-6"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div 
-                className={imageCardClassName}
-                style={{
-                  ...imageCardStyle,
-                  width: screenMetrics.width ? `${Math.floor(screenMetrics.width * 0.9)}px` : undefined,
-                  height: screenMetrics.height ? `${Math.floor(screenMetrics.height * 0.4)}px` : undefined,
-                  transform: `scale(${imageScale})`,
-                  transformOrigin: 'center',
-                  opacity: imageOpacity
-                }}
-              >
-                <img 
-                  src={imageUrl}
-                  alt={announcement.title || 'Announcement image'}
-                  className="w-full h-full object-contain"
-                  onLoad={() => console.log('✅ Image loaded:', imageUrl)}
-                  onError={() => console.error('❌ Image failed to load:', imageUrl)}
-                />
-              </div>
-            </motion.div>
-            
-            {/* Content - Below Image */}
-            <div className="flex-1 min-w-0 relative z-30 overflow-y-auto flex flex-col" style={{ maxWidth: '100%' }}>
-              {children}
-            </div>
-          </div>
-        ) : (
-          <div className={cn(
-            "flex-1 flex items-start relative min-w-0",
-            responsiveSizes?.gap || "gap-8 xl:gap-12"
-          )}>
-            {/* Image Card - Side */}
-            <motion.div
-              className="flex-shrink-0 relative z-10"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div 
-                className={imageCardClassName}
-                style={{
-                  ...imageCardStyle,
-                  transform: `scale(${imageScale})`,
-                  transformOrigin: 'center',
-                  opacity: imageOpacity
-                }}
-              >
-                <img 
-                  src={imageUrl}
-                  alt={announcement.title || 'Announcement image'}
-                  className="w-full h-full object-contain"
-                  onLoad={() => console.log('✅ Image loaded:', imageUrl)}
-                  onError={() => console.error('❌ Image failed to load:', imageUrl)}
-                />
-              </div>
-            </motion.div>
-            
-            {/* Content */}
-            <div className="flex-1 min-w-0 relative z-30 overflow-y-auto flex flex-col" style={{ maxWidth: '100%' }}>
-              {children}
-            </div>
-          </div>
+      {/* Content: stacked layout - image on top, all text underneath */}
+      <div 
+        className={cn(
+          "relative z-20 w-full max-w-full h-full flex flex-col overflow-hidden",
+          responsiveSizes?.padding || "p-8 md:p-12 xl:p-16"
         )}
+        style={debugBg('rgba(0,0,255,0.25)')}
+      >
+        <div 
+          className="flex-1 flex flex-col relative min-w-0 overflow-hidden"
+          style={debugBg('rgba(0,255,0,0.2)')}
+        >
+          {/* Image - On Top */}
+          <motion.div
+            className="flex-shrink-0 relative z-10 mb-4 md:mb-6 bg-transparent rounded-lg overflow-hidden"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            style={debugBg('rgba(255,165,0,0.4)')}
+          >
+            <div 
+              className={cn(
+                "relative overflow-hidden mx-auto bg-transparent rounded-md",
+                orientation === 'portrait' 
+                  ? "w-full max-w-md aspect-[4/3] xl:aspect-[3/2]"
+                  : "w-full max-w-2xl xl:max-w-3xl aspect-video"
+              )}
+              style={{
+                transform: `scale(${imageScale})`,
+                transformOrigin: 'center',
+                opacity: imageOpacity
+              }}
+            >
+              <img 
+                src={imageUrl}
+                alt={announcement.title || 'Announcement image'}
+                className="w-full h-full object-contain object-center"
+                onLoad={() => {}}
+                onError={() => console.error('❌ Image failed to load:', imageUrl)}
+              />
+            </div>
+          </motion.div>
+          
+          {/* All text content - Below Image */}
+          <div 
+            className="flex-1 min-w-0 relative z-30 overflow-y-auto overflow-x-hidden flex flex-col" 
+            style={{ maxWidth: '100%', ...debugBg('rgba(255,255,0,0.35)') }}
+          >
+            {children}
+          </div>
+        </div>
       </div>
     </div>
   );

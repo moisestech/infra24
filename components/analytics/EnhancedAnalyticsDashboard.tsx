@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { 
@@ -55,6 +55,22 @@ interface AnalyticsData {
   }>
 }
 
+function getDateFromRange(range: string) {
+  const now = new Date()
+  switch (range) {
+    case '7d':
+      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    case '30d':
+      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
+    case '90d':
+      return new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString()
+    case '1y':
+      return new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000).toISOString()
+    default:
+      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
+  }
+}
+
 export function EnhancedAnalyticsDashboard() {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -63,16 +79,12 @@ export function EnhancedAnalyticsDashboard() {
 
   const OOLITE_ORG_ID = '73339522-c672-40ac-a464-e027e9c99d13'
 
-  useEffect(() => {
-    fetchAnalytics()
-  }, [dateRange, eventType])
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
         orgId: OOLITE_ORG_ID,
-        dateFrom: getDateFrom(dateRange),
+        dateFrom: getDateFromRange(dateRange),
         dateTo: new Date().toISOString()
       })
 
@@ -90,23 +102,11 @@ export function EnhancedAnalyticsDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [dateRange, eventType])
 
-  const getDateFrom = (range: string) => {
-    const now = new Date()
-    switch (range) {
-      case '7d':
-        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
-      case '30d':
-        return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
-      case '90d':
-        return new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString()
-      case '1y':
-        return new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000).toISOString()
-      default:
-        return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
-    }
-  }
+  useEffect(() => {
+    fetchAnalytics()
+  }, [fetchAnalytics])
 
   const getEventTypeColor = (type: string) => {
     const colors: { [key: string]: string } = {

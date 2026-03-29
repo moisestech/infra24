@@ -287,14 +287,14 @@ function getIconMultiplier(isPortrait: boolean, isLargeDisplay: boolean, width?:
     }
   }
   
-  // Check for width 1028px or less (but not the specific ratios above) - use 1.5x
+  // Check for width 1028px or less (but not the specific ratios above) - use 2.5x
   if (width && width <= 1028) {
-    return 1.5;
+    return 2.5;
   }
   
   const defaultMultiplier = isLargeDisplay 
-    ? (isPortrait ? 6 : 4)
-    : (isPortrait ? 5 : 3);
+    ? (isPortrait ? 2 : 4)
+    : (isPortrait ? 2 : 3);
   return defaultMultiplier;
 }
 

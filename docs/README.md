@@ -125,6 +125,13 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_key
 # Other services
 STRIPE_SECRET_KEY=your_stripe_key
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+
+# Airtable (optional - for Oolite budget at /o/oolite/budget)
+# Matches "Budget Line Items-All Items" CSV: Name, Category, Amount, Subtotal, Vendor, Notes, Date, Budget Bucket
+AIRTABLE_API_KEY=patXXXXXXXXXXXXXX
+AIRTABLE_BASE_ID=appXXXXXXXXXXXXXX
+AIRTABLE_BUDGET_TABLE_ID=tblXXXXXXXXXXXXXX
+# Budget Bucket filters "Digital Lab" vs "Digital Conference"
 ```
 
 ## 🏗️ Project Structure
