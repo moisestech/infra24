@@ -9,6 +9,7 @@ const footerServices = [
 ];
 
 const footerCompany = [
+  { href: '/grant/knight-foundation', label: 'Miami pilot (Knight)' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];

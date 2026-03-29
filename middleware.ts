@@ -26,6 +26,7 @@ function isPublicRoute(pathname: string): boolean {
     '/case-studies',
     '/about',
     '/contact',
+    '/grant',
   ]
 
   return publicRoutes.some((route) => pathname.startsWith(route))
