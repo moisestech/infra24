@@ -2,8 +2,9 @@ import { authMiddleware } from '@clerk/nextjs'
 
 // Simple function to check if route is public
 function isPublicRoute(pathname: string): boolean {
+  if (pathname === '/') return true
+
   const publicRoutes = [
-    '/',
     '/sign-in',
     '/sign-up',
     '/api/webhooks/clerk',
@@ -14,12 +15,20 @@ function isPublicRoute(pathname: string): boolean {
     '/api/bookings',
     '/api/waitlist',
     '/api/analytics',
+    '/api/marketing',
     '/book',
     '/bookings',
-    '/o'
+    '/o',
+    '/platform',
+    '/what-we-do',
+    '/audit',
+    '/pilots',
+    '/case-studies',
+    '/about',
+    '/contact',
   ]
-  
-  return publicRoutes.some(route => pathname.startsWith(route))
+
+  return publicRoutes.some((route) => pathname.startsWith(route))
 }
 
 export default authMiddleware({
