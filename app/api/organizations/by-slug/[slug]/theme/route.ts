@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { OrganizationTheme, THEME_TEMPLATES } from '@/lib/themes';
 
+export const dynamic = 'force-dynamic';
+
 // This is a public API route - no authentication required
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;

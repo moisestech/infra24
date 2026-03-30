@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase';
 import { OrganizationTheme, THEME_TEMPLATES } from '@/lib/themes';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/organizations/[orgId]/theme - Get organization theme
 export async function GET(
   request: NextRequest,

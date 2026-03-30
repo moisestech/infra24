@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { conflictDetectionService } from '@/lib/conflict-detection'
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { orgId: string; conflictId: string } }

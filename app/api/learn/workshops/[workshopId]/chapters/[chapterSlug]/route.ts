@@ -3,6 +3,8 @@ import { mdxProcessor } from '@/lib/mdx-processor'
 import fs from 'fs'
 import path from 'path'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { workshopId: string; chapterSlug: string } }

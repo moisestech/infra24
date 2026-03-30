@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { ClerkServerService } from '@/lib/clerk-server';
 
+export const dynamic = 'force-dynamic';
+
 // POST /api/artists/claim - Submit a claim request for an artist profile
 export async function POST(request: NextRequest) {
   try {

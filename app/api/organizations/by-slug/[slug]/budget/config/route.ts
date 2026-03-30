@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { fetchAllBudgetItemsFromAirtable, type OoliteBudgetType } from '@/lib/airtable/budget-service'
 import { getBudgetConfig } from '@/lib/budget/budget-data'
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/organizations/by-slug/[slug]/budget/config
  *

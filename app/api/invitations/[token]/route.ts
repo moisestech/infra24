@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { GroupBookingService } from '@/lib/group-booking/service'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic';
+
 const respondToInvitationSchema = z.object({
   response: z.enum(['accepted', 'declined']),
 })

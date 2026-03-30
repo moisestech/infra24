@@ -5,6 +5,8 @@ import { sendBookingConfirmationEmail, sendHostNotificationEmail, BookingEmailDa
 import { auth } from '@clerk/nextjs/server'
 import crypto from 'crypto'
 
+export const dynamic = 'force-dynamic';
+
 interface CreateBookingRequest {
   org_id: string
   resource_id: string

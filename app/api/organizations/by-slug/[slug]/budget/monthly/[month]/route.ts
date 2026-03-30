@@ -3,6 +3,8 @@ import { generateMockBudgetData } from '@/lib/budget/budget-utils'
 import { fetchBudgetFromAirtable } from '@/lib/airtable/budget-service'
 import { getBudgetConfig } from '@/lib/budget/budget-data'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string; month: string }> }

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/announcements/public - Get public announcements for homepage
 export async function GET(request: NextRequest) {
   try {

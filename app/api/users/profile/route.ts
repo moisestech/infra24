@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { ClerkServerService } from '@/lib/clerk-server';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/users/profile - Get current user's profile
 export async function GET() {
   try {

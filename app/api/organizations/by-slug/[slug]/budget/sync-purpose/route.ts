@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { syncPurposeToAirtable } from '@/lib/airtable/budget-service'
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/organizations/by-slug/oolite/budget/sync-purpose
  *

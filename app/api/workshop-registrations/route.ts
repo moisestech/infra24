@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { createClient } from '@/lib/supabase'
 import { sendWorkshopRegistrationEmail } from '@/lib/email/workshop-emails'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth()

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 /**
  * Weekly Booking Reports API
  * Generates automated weekly booking summaries and reports

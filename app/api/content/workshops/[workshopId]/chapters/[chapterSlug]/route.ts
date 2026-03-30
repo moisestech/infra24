@@ -3,6 +3,8 @@ import { currentUser } from '@clerk/nextjs'
 import { promises as fs } from 'fs'
 import path from 'path'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ workshopId: string; chapterSlug: string }> }

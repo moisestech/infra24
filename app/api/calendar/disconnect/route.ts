@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic';
+
 const disconnectRequestSchema = z.object({
   provider: z.enum(['google', 'microsoft'])
 })

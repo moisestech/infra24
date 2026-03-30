@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
-import { 
-  generateGoogleCalendarUrl, 
-  generateOutlookCalendarUrl, 
-  ICSBookingData 
+import {
+  generateGoogleCalendarUrl,
+  generateOutlookCalendarUrl,
+  ICSBookingData,
 } from '@/lib/ics-generator'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(
   request: NextRequest,

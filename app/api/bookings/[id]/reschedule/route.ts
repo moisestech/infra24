@@ -3,6 +3,8 @@ import { getSupabaseAdmin } from '@/lib/supabase'
 import { generateScheduledGoogleMeetLink } from '@/lib/google-meet'
 import { sendBookingRescheduledEmail, BookingEmailData } from '@/lib/email/email-service'
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

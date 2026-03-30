@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { createClient } from '@/lib/supabase'
 import { generateWorkshopICS, generateWorkshopRegistrationICS, createWorkshopEventData, generateICSFilename } from '@/lib/calendar/ics-generator'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

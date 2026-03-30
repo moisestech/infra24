@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 /**
  * Waitlist API Endpoints
  * Handles waitlist operations for fully booked resources

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 /**
  * Waitlist Notification API
  * Handles waitlist notifications when slots become available

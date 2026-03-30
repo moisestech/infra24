@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic';
+
 const subscribeSchema = z.object({
   email: z.string().email('Invalid email address'),
   source: z.string().optional().default('digital_lab_page'),

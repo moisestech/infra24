@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { appSheetService } from '@/lib/appsheet-integration'
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { orgId: string } }

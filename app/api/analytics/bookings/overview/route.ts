@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 /**
  * Booking Analytics Overview API
  * Provides comprehensive booking metrics and statistics
