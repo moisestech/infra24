@@ -42,14 +42,11 @@ export default function ChapterPage() {
         const data = await workshopClientService.getChapter(String(workshopSlug), String(chapterSlug));
         if (data) {
           setChapter(data);
-          const mdx = await serialize({
-            source: data.content_markdown || '',
-            options: {
-              mdxOptions: {
-                remarkPlugins: [],
-                rehypePlugins: [],
-                format: 'mdx',
-              },
+          const mdx = await serialize(data.content_markdown || '', {
+            mdxOptions: {
+              remarkPlugins: [],
+              rehypePlugins: [],
+              format: 'mdx',
             },
           });
           setMdxSource(mdx);
