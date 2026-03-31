@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 type CaseStudyCardProps = {
@@ -6,6 +7,8 @@ type CaseStudyCardProps = {
   challenge: string;
   whatWeDid: string;
   outcome: string;
+  coverImage?: string;
+  coverAlt?: string;
 };
 
 export function CaseStudyCard({
@@ -14,9 +17,23 @@ export function CaseStudyCard({
   challenge,
   whatWeDid,
   outcome,
+  coverImage,
+  coverAlt,
 }: CaseStudyCardProps) {
   return (
-    <article className="flex flex-col rounded-lg border border-neutral-200 bg-white p-6">
+    <article className="flex flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white">
+      {coverImage && coverAlt ? (
+        <div className="relative aspect-[16/9] w-full bg-neutral-100">
+          <Image
+            src={coverImage}
+            alt={coverAlt}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 33vw"
+          />
+        </div>
+      ) : null}
+      <div className="flex flex-col p-6">
       <h3 className="text-base font-semibold text-neutral-900">{title}</h3>
       <dl className="mt-4 space-y-3 text-sm">
         <div>
@@ -38,6 +55,7 @@ export function CaseStudyCard({
       >
         Read more
       </Link>
+      </div>
     </article>
   );
 }

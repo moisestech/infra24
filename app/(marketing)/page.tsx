@@ -1,14 +1,17 @@
 import Link from 'next/link';
+import { Balancer } from 'react-wrap-balancer';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { MarketingSection } from '@/components/marketing/MarketingSection';
 import { CtaBand } from '@/components/marketing/CtaBand';
 import { OfferLadder } from '@/components/marketing/OfferLadder';
-import { CaseStudyCard } from '@/components/marketing/CaseStudyCard';
+import { HeroCollage } from '@/components/marketing/HeroCollage';
+import { ProblemSplitVisual } from '@/components/marketing/ProblemSplitVisual';
+import { BentoSystemsGrid } from '@/components/marketing/BentoSystemsGrid';
+import { ProofStrip } from '@/components/marketing/ProofStrip';
 import {
   marketingHero,
   problemSection,
   problemBullets,
-  fragmentedList,
-  connectedList,
   differentiationSection,
   differentiationCards,
   systemsIntro,
@@ -19,34 +22,6 @@ import {
   measurementSection,
 } from '@/lib/marketing/content';
 
-function SystemsDiagram() {
-  const nodes = ['Signs', 'Maps', 'Kiosks', 'Portal', 'Workflows'];
-  return (
-    <div
-      className="mt-10 rounded-lg border border-neutral-200 bg-neutral-50/80 p-6 sm:p-8"
-      aria-hidden
-    >
-      <p className="text-center text-xs font-medium uppercase tracking-wide text-neutral-500">
-        Surfaces connected into one institutional layer
-      </p>
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-        {nodes.map((label) => (
-          <span
-            key={label}
-            className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-xs font-medium text-neutral-800"
-          >
-            {label}
-          </span>
-        ))}
-      </div>
-      <div className="mx-auto mt-4 h-6 w-px bg-neutral-300 sm:h-8" />
-      <div className="mx-auto mt-1 max-w-md rounded-md border border-neutral-400 bg-white px-4 py-3 text-center text-sm font-medium text-neutral-900">
-        Updateable public communication infrastructure
-      </div>
-    </div>
-  );
-}
-
 export default function MarketingHomePage() {
   return (
     <>
@@ -54,47 +29,61 @@ export default function MarketingHomePage() {
         id="hero"
         className="scroll-mt-14 border-b border-neutral-200 bg-white"
       >
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-          <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-            {marketingHero.eyebrow}
-          </p>
-          <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
-            {marketingHero.headline}
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600">
-            {marketingHero.subhead}
-          </p>
-          <p className="mt-4 max-w-2xl text-sm text-neutral-500">{marketingHero.microTrust}</p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <Link
-              href="/audit"
-              className="inline-flex justify-center rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
-            >
-              Book a Communication Infrastructure Audit
-            </Link>
-            <Link
-              href="/pilots"
-              className="inline-flex justify-center text-sm font-medium text-neutral-800 underline-offset-4 hover:underline"
-            >
-              Explore pilot systems
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex justify-center text-sm font-medium text-neutral-600 underline-offset-4 hover:underline"
-            >
-              Ask about grant-aligned deployment
-            </Link>
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-14">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+                {marketingHero.eyebrow}
+              </p>
+              <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
+                <Balancer>{marketingHero.headline}</Balancer>
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600">
+                {marketingHero.subhead}
+              </p>
+              <p className="mt-4 max-w-2xl text-sm text-neutral-500">{marketingHero.microTrust}</p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <form
+                  action="/audit"
+                  method="get"
+                  className="inline-flex w-full justify-center sm:w-auto sm:justify-start"
+                >
+                  <ShimmerButton
+                    type="submit"
+                    borderRadius="0.375rem"
+                    background="rgb(23 23 23)"
+                    shimmerColor="rgb(212 212 212)"
+                    shimmerDuration="3.5s"
+                    className="w-full px-5 py-2.5 text-sm font-medium sm:w-auto"
+                  >
+                    Book a Communication Infrastructure Audit
+                  </ShimmerButton>
+                </form>
+                <Link
+                  href="/pilots"
+                  className="inline-flex justify-center text-sm font-medium text-neutral-800 underline-offset-4 hover:underline"
+                >
+                  Explore pilot systems
+                </Link>
+                <Link
+                  href="/contact"
+                  className="inline-flex justify-center text-sm font-medium text-neutral-600 underline-offset-4 hover:underline"
+                >
+                  Ask about grant-aligned deployment
+                </Link>
+              </div>
+              <p className="mt-8 text-sm text-neutral-500">
+                Platform and product demos:{' '}
+                <Link
+                  href="/platform"
+                  className="font-medium text-neutral-700 underline-offset-4 hover:underline"
+                >
+                  Platform overview
+                </Link>
+              </p>
+            </div>
+            <HeroCollage className="lg:justify-self-end" />
           </div>
-          <SystemsDiagram />
-          <p className="mt-8 text-sm text-neutral-500">
-            Platform and product demos:{' '}
-            <Link
-              href="/platform"
-              className="font-medium text-neutral-700 underline-offset-4 hover:underline"
-            >
-              Platform overview
-            </Link>
-          </p>
         </div>
       </section>
 
@@ -112,31 +101,10 @@ export default function MarketingHomePage() {
             </li>
           ))}
         </ul>
-        <p className="mt-6 max-w-2xl text-sm leading-relaxed text-neutral-600">
+        <ProblemSplitVisual />
+        <p className="mt-10 max-w-2xl text-sm leading-relaxed text-neutral-600">
           {problemSection.closing}
         </p>
-        <div className="mt-10 grid gap-8 md:grid-cols-2">
-          <div className="rounded-lg border border-neutral-200 bg-white p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
-              Fragmented
-            </h3>
-            <ul className="mt-3 space-y-2 text-sm text-neutral-700">
-              {fragmentedList.map((item) => (
-                <li key={item}>— {item}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-lg border border-neutral-300 bg-white p-6 ring-1 ring-neutral-200">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-neutral-700">
-              Connected
-            </h3>
-            <ul className="mt-3 space-y-2 text-sm text-neutral-700">
-              {connectedList.map((item) => (
-                <li key={item}>— {item}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
       </MarketingSection>
 
       <MarketingSection id="difference" className="scroll-mt-14 bg-white">
@@ -171,17 +139,8 @@ export default function MarketingHomePage() {
           What Infra24 builds
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600">{systemsIntro}</p>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {capabilities.map((c) => (
-            <Link
-              key={c.title}
-              href={c.href}
-              className="rounded-lg border border-neutral-200 bg-white p-5 transition-colors hover:border-neutral-300"
-            >
-              <h3 className="text-sm font-semibold text-neutral-900">{c.title}</h3>
-              <p className="mt-2 text-sm text-neutral-600">{c.description}</p>
-            </Link>
-          ))}
+        <div className="mt-10">
+          <BentoSystemsGrid capabilities={capabilities} />
         </div>
       </MarketingSection>
 
@@ -244,10 +203,8 @@ export default function MarketingHomePage() {
             View all case studies
           </Link>
         </div>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {caseStudyPreviews.map((c) => (
-            <CaseStudyCard key={c.slug} {...c} />
-          ))}
+        <div className="mt-10">
+          <ProofStrip items={caseStudyPreviews} />
         </div>
       </MarketingSection>
 

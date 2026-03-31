@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from "framer-motion";
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { ImageLayoutType } from '@/types/announcement';
 import { LucideIcon } from 'lucide-react';
@@ -33,6 +34,8 @@ interface ImageLayoutProps {
   imageSettings?: ImageSettings;
   screenMetrics?: any;
   responsiveSizes?: any;
+  /** When true, skip enter animations (e.g. kiosk / reduced motion) */
+  animationsPaused?: boolean;
 }
 
 // Hero Layout: Large image as background with content overlay
@@ -41,7 +44,7 @@ export function HeroImageLayout({ announcement, imageUrl, orientation, children,
   const imageOpacity = imageSettings?.opacity !== undefined ? imageSettings.opacity / 100 : 1;
   
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full overflow-hidden">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -50,12 +53,15 @@ export function HeroImageLayout({ announcement, imageUrl, orientation, children,
           transform: `scale(${imageScale})`,
           opacity: imageOpacity
         }}
-      >
-      </div>
-      
+      />
+      {/* Cinematic scrim: keeps typography readable over busy photos */}
+      <div
+        className="absolute inset-0 z-[1] bg-gradient-to-t from-black/85 via-black/35 to-black/20"
+        aria-hidden
+      />
       {/* Pattern overlay (reduced opacity) */}
       {styles && (
-        <div className={cn("absolute inset-0 opacity-30", styles.gradient)} />
+        <div className={cn("absolute inset-0 z-[2] opacity-25", styles.gradient)} />
       )}
       
       {/* Content */}
@@ -86,25 +92,26 @@ export function SplitLeftImageLayout({ announcement, imageUrl, orientation, chil
       
       {/* Image Section - Left */}
       <div 
-        className="h-full relative flex-shrink-0 z-10"
+        className="h-full relative flex-shrink-0 z-10 overflow-hidden rounded-r-2xl shadow-[12px_0_48px_-12px_rgba(0,0,0,0.55)] ring-1 ring-white/10"
         style={{ width: `${splitPercentage}%` }}
       >
         <div 
+          className="relative h-full w-full min-h-[160px]"
           style={{ 
             transform: `scale(${imageScale})`,
             transformOrigin: 'center',
-            width: '100%',
-            height: '100%',
             opacity: imageOpacity
           }}
         >
-          <img 
+          <Image
             src={imageUrl}
             alt={announcement.title || 'Announcement image'}
-            className="w-full h-full object-cover"
-            onLoad={() => {}} // Image load logging removed
-            onError={() => console.error('❌ Image failed to load:', imageUrl)} // Keep errors
+            fill
+            className="object-cover"
+            sizes={`${splitPercentage}vw`}
+            priority={false}
           />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-black/25 to-transparent" aria-hidden />
         </div>
       </div>
       
@@ -147,25 +154,26 @@ export function SplitRightImageLayout({ announcement, imageUrl, orientation, chi
       
       {/* Image Section - Right */}
       <div 
-        className="h-full relative flex-shrink-0 z-10"
+        className="h-full relative flex-shrink-0 z-10 overflow-hidden rounded-l-2xl shadow-[-12px_0_48px_-12px_rgba(0,0,0,0.55)] ring-1 ring-white/10"
         style={{ width: `${splitPercentage}%` }}
       >
         <div 
+          className="relative h-full w-full min-h-[160px]"
           style={{ 
             transform: `scale(${imageScale})`,
             transformOrigin: 'center',
-            width: '100%',
-            height: '100%',
             opacity: imageOpacity
           }}
         >
-          <img 
+          <Image
             src={imageUrl}
             alt={announcement.title || 'Announcement image'}
-            className="w-full h-full object-cover"
-            onLoad={() => {}} // Image load logging removed
-            onError={() => console.error('❌ Image failed to load:', imageUrl)} // Keep errors
+            fill
+            className="object-cover"
+            sizes={`${splitPercentage}vw`}
+            priority={false}
           />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-black/25 to-transparent" aria-hidden />
         </div>
       </div>
     </div>
@@ -176,7 +184,7 @@ export function SplitRightImageLayout({ announcement, imageUrl, orientation, chi
 const DEBUG_LAYOUT = false;
 
 // Card Layout: Image on top, all text stacked underneath
-export function CardImageLayout({ announcement, imageUrl, orientation, children, textSizes, styles, imageSettings, screenMetrics, responsiveSizes }: ImageLayoutProps) {
+export function CardImageLayout({ announcement, imageUrl, orientation, children, textSizes, styles, imageSettings, screenMetrics, responsiveSizes, animationsPaused }: ImageLayoutProps) {
   const imageScale = imageSettings?.scale !== undefined ? imageSettings.scale : 1;
   const imageOpacity = imageSettings?.opacity !== undefined ? imageSettings.opacity / 100 : 1;
   
@@ -184,7 +192,6 @@ export function CardImageLayout({ announcement, imageUrl, orientation, children,
   
   return (
     <div className="relative w-full max-w-full h-full overflow-hidden" style={debugBg('rgba(255,0,0,0.2)')}>
-      {/* Background - use solid color for Oolite if available */}
       <div 
         className={cn(
           "absolute inset-0",
@@ -193,7 +200,6 @@ export function CardImageLayout({ announcement, imageUrl, orientation, children,
         style={styles?.gradientStyle}
       />
       
-      {/* Content: stacked layout - image on top, all text underneath */}
       <div 
         className={cn(
           "relative z-20 w-full max-w-full h-full flex flex-col overflow-hidden",
@@ -205,38 +211,47 @@ export function CardImageLayout({ announcement, imageUrl, orientation, children,
           className="flex-1 flex flex-col relative min-w-0 overflow-hidden"
           style={debugBg('rgba(0,255,0,0.2)')}
         >
-          {/* Image - On Top */}
+          {/* Image — editorial frame, cover crop, micro-motion */}
           <motion.div
-            className="flex-shrink-0 relative z-10 mb-4 md:mb-6 bg-transparent rounded-lg overflow-hidden"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
+            className="flex-shrink-0 relative z-10 mb-4 md:mb-8 w-full flex justify-center"
+            initial={animationsPaused ? false : { opacity: 0, y: 14, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             style={debugBg('rgba(255,165,0,0.4)')}
           >
-            <div 
-              className={cn(
-                "relative overflow-hidden mx-auto bg-transparent rounded-md",
-                orientation === 'portrait' 
-                  ? "w-full max-w-md aspect-[4/3] xl:aspect-[3/2]"
-                  : "w-full max-w-2xl xl:max-w-3xl aspect-video"
-              )}
+            <div
+              className="w-full max-w-4xl"
               style={{
                 transform: `scale(${imageScale})`,
-                transformOrigin: 'center',
-                opacity: imageOpacity
+                transformOrigin: 'center top',
+                opacity: imageOpacity,
               }}
             >
-              <img 
-                src={imageUrl}
-                alt={announcement.title || 'Announcement image'}
-                className="w-full h-full object-contain object-center"
-                onLoad={() => {}}
-                onError={() => console.error('❌ Image failed to load:', imageUrl)}
-              />
+              <div className="rounded-2xl p-[1px] bg-gradient-to-br from-white/50 via-white/15 to-emerald-400/25 shadow-[0_28px_90px_-24px_rgba(0,0,0,0.8)] ring-1 ring-white/15">
+                <div
+                  className={cn(
+                    'relative overflow-hidden rounded-2xl bg-neutral-950/40',
+                    orientation === 'portrait'
+                      ? 'aspect-[4/3] max-h-[min(44vh,540px)] w-full max-w-lg mx-auto'
+                      : 'aspect-[16/9] w-full mx-auto'
+                  )}
+                >
+                  <Image
+                    src={imageUrl}
+                    alt={announcement.title || 'Announcement image'}
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 768px) 100vw, min(85vw, 960px)"
+                    priority={false}
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/15" />
+                  <div className="pointer-events-none absolute top-3 left-3 h-9 w-9 border-l-2 border-t-2 border-white/40 rounded-tl-md" />
+                  <div className="pointer-events-none absolute bottom-3 right-3 h-9 w-9 border-r-2 border-b-2 border-white/40 rounded-br-md" />
+                </div>
+              </div>
             </div>
           </motion.div>
           
-          {/* All text content - Below Image */}
           <div 
             className="flex-1 min-w-0 relative z-30 overflow-y-auto overflow-x-hidden flex flex-col" 
             style={{ maxWidth: '100%', ...debugBg('rgba(255,255,0,0.35)') }}
@@ -262,18 +277,23 @@ export function MasonryImageLayout({ announcement, imageUrl, orientation, childr
       <div className="relative z-20 h-full p-8 md:p-12 xl:p-16 grid grid-cols-12 grid-rows-6 gap-4">
         {/* Image in top-right quadrant */}
         <div 
-          className="col-span-7 row-span-3 relative overflow-hidden"
+          className="col-span-7 row-span-3 relative overflow-hidden rounded-xl ring-1 ring-white/15 shadow-xl"
           style={{
             transform: `scale(${imageScale})`,
             transformOrigin: 'center',
             opacity: imageOpacity
           }}
         >
-          <img 
-            src={imageUrl}
-            alt={announcement.title || 'Announcement image'}
-            className="w-full h-full object-cover"
-          />
+          <div className="relative h-full min-h-[140px] w-full">
+            <Image
+              src={imageUrl}
+              alt={announcement.title || 'Announcement image'}
+              fill
+              className="object-cover"
+              sizes="58vw"
+              priority={false}
+            />
+          </div>
         </div>
         
         {/* Content spans multiple areas */}
@@ -296,8 +316,7 @@ export function OverlayImageLayout({ announcement, imageUrl, orientation, childr
   const imageOpacity = imageSettings?.opacity !== undefined ? imageSettings.opacity / 100 : 1;
   
   return (
-    <div className="relative w-full h-full">
-      {/* Background Image */}
+    <div className="relative w-full h-full overflow-hidden">
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ 
@@ -305,15 +324,11 @@ export function OverlayImageLayout({ announcement, imageUrl, orientation, childr
           transform: `scale(${imageScale})`,
           opacity: imageOpacity
         }}
-      >
-      </div>
-      
-      {/* Pattern overlay (if styles provided) */}
+      />
+      <div className="absolute inset-0 z-[1] bg-gradient-to-br from-black/70 via-black/40 to-black/65" aria-hidden />
       {styles && (
-        <div className={cn("absolute inset-0 opacity-20", styles.gradient)} />
+        <div className={cn("absolute inset-0 z-[2] opacity-25", styles.gradient)} />
       )}
-      
-      {/* Content */}
       <div className="relative z-20 h-full">
         {children}
       </div>

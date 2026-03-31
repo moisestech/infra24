@@ -122,6 +122,9 @@ export const caseStudyPreviews = [
     challenge: 'Event and hours data lived in three systems; on-site screens lagged the website by days.',
     whatWeDid: 'Pilot: single update path into smart signs and a public map.',
     outcome: 'Staff stopped re-keying the same copy; visitors saw consistent hours and programs.',
+    coverImage:
+      'https://images.unsplash.com/photo-1566127444979-b3d2b64e932f?auto=format&fit=crop&w=1200&q=80',
+    coverAlt: 'Museum visitors in a spacious exhibition hall—public information in context',
   },
   {
     slug: 'nonprofit-program-portal',
@@ -129,6 +132,9 @@ export const caseStudyPreviews = [
     challenge: 'Artist-facing requirements were buried in PDFs and email threads.',
     whatWeDid: 'Resident portal prototype tied to your existing program structure.',
     outcome: 'Clear expectations for artists; fewer “where do I find…?” questions to staff.',
+    coverImage:
+      'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80',
+    coverAlt: 'Workshop tables and materials—program operations in a nonprofit setting',
   },
   {
     slug: 'multi-venue-events',
@@ -136,6 +142,9 @@ export const caseStudyPreviews = [
     challenge: 'Communications and programming each maintained separate calendars.',
     whatWeDid: 'Scoped workflow: one authoritative schedule, multiple public views.',
     outcome: 'One place to update; fewer last-minute corrections before openings.',
+    coverImage:
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
+    coverAlt: 'Event venue seating—multi-venue coordination in physical space',
   },
 ] as const;
 

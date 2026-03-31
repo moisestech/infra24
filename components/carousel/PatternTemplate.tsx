@@ -56,6 +56,8 @@ interface PatternTemplateProps {
   responsiveSizes?: ResponsiveSizes;
   isActive?: boolean;
   animationsPaused?: boolean;
+  /** Carousel slide index — used to vary default image layout when `image_layout` is unset */
+  slideIndex?: number;
 }
 
 export function PatternTemplate({ 
@@ -89,7 +91,8 @@ export function PatternTemplate({
   screenMetrics,
   responsiveSizes,
   isActive = false,
-  animationsPaused = false
+  animationsPaused = false,
+  slideIndex = 0
 }: PatternTemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
@@ -110,11 +113,18 @@ export function PatternTemplate({
 
   // Check if announcement has an image and determine layout
   const hasImage = announcement.image_url && announcement.image_url.trim() !== '';
-  // Use custom image settings layout if provided, otherwise use announcement's layout or default
-  // For Oolite: default to 'card' (image on top, text stacked below) so image is always first
-  const defaultLayout = organizationSlug === 'oolite' ? 'card' : 'hero';
-  const imageLayout = hasImage 
-    ? (imageSettings?.layout || announcement.image_layout || defaultLayout as ImageLayoutType)
+  // When DB/localStorage don't specify a layout, rotate for visual variety (still overridable per slide in dev tools)
+  const ROTATING_DEFAULT_LAYOUTS: ImageLayoutType[] = [
+    'card',
+    'split-right',
+    'split-left',
+    'overlay',
+  ];
+  const rotatedFallback =
+    ROTATING_DEFAULT_LAYOUTS[Math.abs(slideIndex) % ROTATING_DEFAULT_LAYOUTS.length];
+  const explicitLayout = imageSettings?.layout || announcement.image_layout;
+  const imageLayout = hasImage
+    ? ((explicitLayout || rotatedFallback) as ImageLayoutType)
     : null;
 
   // Image information logging removed to reduce console noise
@@ -137,14 +147,19 @@ export function PatternTemplate({
         />
       )}
 
-      {/* People with Avatars - omitted for now (too much info, hard to read) */}
-      {false && (
-        <AnnouncementPeople 
-          people={announcement.people || []}
+      {/* People with Avatars — in-flow for card/split; overlay positions for full-bleed layouts */}
+      {Array.isArray(announcement.people) && announcement.people.length > 0 && (
+        <AnnouncementPeople
+          people={announcement.people}
           orientation={orientation}
           avatarSizeMultiplier={avatarSizeMultiplier}
           organizationSlug={organizationSlug}
-          className="absolute top-80 right-8 md:right-12 z-30"
+          className={cn(
+            'z-30',
+            imageLayout === 'card' || imageLayout === 'split-left' || imageLayout === 'split-right'
+              ? 'relative mt-4 w-full max-w-2xl'
+              : 'absolute bottom-28 left-6 right-6 md:left-12 md:right-auto md:max-w-lg max-h-[28vh] overflow-y-auto pr-1'
+          )}
         />
       )}
 
@@ -221,6 +236,7 @@ export function PatternTemplate({
           imageSettings={imageSettings}
           screenMetrics={screenMetrics}
           responsiveSizes={responsiveSizes}
+          animationsPaused={animationsPaused}
         >
           {/* Pattern overlay - only show if not using image background and not solid pattern */}
           {isMounted && 

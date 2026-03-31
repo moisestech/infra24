@@ -567,6 +567,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
                 responsiveSizes={responsiveSizes}
                 isActive={index === currentIndex}
                 animationsPaused={cleanViewMode}
+                slideIndex={index}
               />
             </div>
           ))}

@@ -125,7 +125,30 @@
       transform: scale(1);
     }
   }
-}
+
+  --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
+
+  --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear
+;
+  @keyframes shimmer-slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+    }
+  }
+  @keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+    }
+  15%, 35% {
+    transform: translateZ(0) rotate(90deg);
+    }
+  65%, 85% {
+    transform: translateZ(0) rotate(270deg);
+    }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+    }
+  }}
 
 :root {
   --background: oklch(1 0 0);
@@ -205,12 +228,12 @@
   body {
     @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
   }
-  
+
   /* Organization-specific font classes */
   .org-oolite {
     font-family: 'AtlasGrotesk', system-ui, sans-serif;
   }
-  
+
   .org-oolite h1,
   .org-oolite h2,
   .org-oolite h3,
@@ -219,12 +242,12 @@
   .org-oolite h6 {
     font-family: 'AtlasGrotesk', system-ui, sans-serif;
   }
-  
+
   /* Ensure AtlasGrotesk is used in announcement display view */
   .org-oolite * {
     font-family: 'AtlasGrotesk', system-ui, sans-serif;
   }
-  
+
   /* Ensure carousel components use AtlasGrotesk for oolite organization */
   .org-oolite [class*="carousel"],
   .org-oolite [class*="announcement"],
@@ -238,26 +261,26 @@
   input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(0);
   }
-  
+
   .dark input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
   }
-  
+
   input[type="date"]::-webkit-inner-spin-button,
   input[type="date"]::-webkit-clear-button {
     filter: invert(0);
   }
-  
+
   .dark input[type="date"]::-webkit-inner-spin-button,
   .dark input[type="date"]::-webkit-clear-button {
     filter: invert(1);
   }
-  
+
   /* Smooth transitions for Embla Carousel */
   .embla__container {
     transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
   }
-  
+
   .embla__viewport {
     scroll-behavior: smooth;
   }
