@@ -20,6 +20,7 @@ function isPublicRoute(pathname: string): boolean {
     '/bookings',
     '/o',
     '/platform',
+    '/infra24',
     '/what-we-do',
     '/audit',
     '/pilots',
