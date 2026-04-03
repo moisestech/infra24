@@ -217,8 +217,8 @@ export default function SubmitLandingPage() {
             <Link href="/terms" className="hover:text-blue-600 dark:hover:text-blue-400">
               Terms of Service
             </Link>
-            <Link href="/support" className="hover:text-blue-600 dark:hover:text-blue-400">
-              Support
+            <Link href="/grants" className="hover:text-blue-600 dark:hover:text-blue-400">
+              Grants
             </Link>
           </div>
         </motion.div>

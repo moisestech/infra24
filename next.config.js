@@ -73,6 +73,22 @@ const nextConfig = {
     ];
   },
 
+  async redirects() {
+    return [
+      { source: '/support', destination: '/grants', permanent: true },
+      { source: '/support/:path*', destination: '/grants/:path*', permanent: true },
+      { source: '/case-studies', destination: '/projects', permanent: true },
+      { source: '/case-studies/:slug', destination: '/projects/:slug', permanent: true },
+      { source: '/pilots', destination: '/projects', permanent: true },
+      { source: '/what-we-do', destination: '/programs', permanent: true },
+      {
+        source: '/audit',
+        destination: '/programs/artist-support/digital-audits',
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {

@@ -11,11 +11,14 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200/80 bg-[#fafafa]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fafafa]/80">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link
-          href="/"
-          className="text-sm font-semibold tracking-tight text-neutral-900"
-        >
-          Infra24
+        <Link href="/" className="group flex flex-col leading-tight">
+          <span className="text-sm font-semibold tracking-tight text-neutral-900 md:text-[0.95rem]">
+            <span className="sm:hidden">CDC</span>
+            <span className="hidden sm:inline">Center of Digital Culture</span>
+          </span>
+          <span className="text-[10px] font-normal text-neutral-500 group-hover:text-neutral-600">
+            Powered by Infra24
+          </span>
         </Link>
         <nav className="hidden items-center gap-6 md:flex" aria-label="Primary">
           {navItems.map((item) => (
@@ -39,10 +42,10 @@ export function SiteHeader() {
             Contact
           </Link>
           <Link
-            href="/audit"
+            href="/grants"
             className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
           >
-            Book audit
+            Grants
           </Link>
         </div>
       </div>

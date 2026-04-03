@@ -1,0 +1,173 @@
+{
+  "version": "1",
+  "description": "OpenClaw-oriented manifest of Infra24 control actions. Use with POST /api/control/v1/propose and POST /api/control/v1/commit (Bearer INFRA24_CONTROL_SERVICE_TOKEN). See docs/openclaw-control-plane.md and docs/control-actions.schema.json.",
+  "base_fields": {
+    "organization_slug": { "type": "string", "required": true },
+    "action": { "type": "string", "required": true },
+    "payload": { "type": "object", "required": false },
+    "correlation_id": { "type": "string", "required": false },
+    "actor_clerk_id": {
+      "type": "string",
+      "required": false,
+      "note": "Required for service auth unless telegram_user_id is set and mapped in control_identities"
+    },
+    "telegram_user_id": {
+      "type": "string",
+      "required": false,
+      "note": "Service auth only; resolved to clerk_user_id via control_identities for the org"
+    },
+    "idempotency_key": { "type": "string", "required": false, "note": "propose only" }
+  },
+  "commit_fields": {
+    "organization_slug": { "type": "string", "required": true },
+    "proposal_id": { "type": "string", "required": true },
+    "commit_token": { "type": "string", "required": true },
+    "actor_clerk_id": { "type": "string", "required": false },
+    "telegram_user_id": { "type": "string", "required": false }
+  },
+  "tools": [
+    {
+      "name": "display_screens_overview",
+      "action": "display.screens_overview",
+      "payload": {}
+    },
+    {
+      "name": "display_resolver_preview",
+      "action": "display.resolver_preview",
+      "payload": { "screen_id": "uuid" }
+    },
+    {
+      "name": "departments_list",
+      "action": "departments.list",
+      "payload": {}
+    },
+    {
+      "name": "screen_list",
+      "action": "screen.list",
+      "payload": {}
+    },
+    {
+      "name": "playlist_list",
+      "action": "playlist.list",
+      "payload": {}
+    },
+    {
+      "name": "audit_list_recent",
+      "action": "audit.list_recent",
+      "payload": { "limit": 40 }
+    },
+    {
+      "name": "screen_create",
+      "action": "screen.create",
+      "payload": {
+        "name": "string",
+        "device_key": "string",
+        "public_slug": "string?",
+        "location": "string?",
+        "display_token": "string?",
+        "settings": "object?"
+      }
+    },
+    {
+      "name": "screen_patch",
+      "action": "screen.patch",
+      "payload": {
+        "screen_id": "uuid",
+        "name": "string?",
+        "location": "string?",
+        "public_slug": "string?",
+        "status": "string?",
+        "display_token": "string?",
+        "settings": "object?"
+      }
+    },
+    {
+      "name": "screen_assign_playlist",
+      "action": "screen.assign_playlist",
+      "payload": { "screen_id": "uuid", "playlist_id": "uuid", "priority": 0 }
+    },
+    {
+      "name": "playlist_create",
+      "action": "playlist.create",
+      "payload": { "name": "string", "description": "string?", "status": "active|draft|inactive?", "metadata": "object?" }
+    },
+    {
+      "name": "playlist_add_announcement",
+      "action": "playlist.add_announcement",
+      "payload": {
+        "playlist_id": "uuid",
+        "announcement_id": "uuid",
+        "order_index": "number?",
+        "duration_seconds": 12
+      }
+    },
+    {
+      "name": "playlist_add_dynamic_feed",
+      "action": "playlist.add_dynamic_feed",
+      "payload": { "playlist_id": "uuid", "order_index": "number?", "duration_seconds": 12 }
+    },
+    {
+      "name": "playlist_add_media",
+      "action": "playlist.add_media",
+      "payload": {
+        "playlist_id": "uuid",
+        "media_url": "url",
+        "title_override": "string?",
+        "order_index": "number?",
+        "duration_seconds": 12
+      }
+    },
+    {
+      "name": "playlist_reorder_items",
+      "action": "playlist.reorder_items",
+      "payload": { "playlist_id": "uuid", "item_ids": ["uuid"] }
+    },
+    {
+      "name": "playlist_add_artist_spotlight",
+      "action": "playlist.add_artist_spotlight",
+      "payload": {
+        "playlist_id": "uuid",
+        "artist_profile_id": "uuid",
+        "title_override": "string?",
+        "order_index": "number?",
+        "duration_seconds": 12
+      }
+    },
+    {
+      "name": "playlist_add_workshop_digest",
+      "action": "playlist.add_workshop_digest",
+      "payload": { "playlist_id": "uuid", "order_index": "number?", "duration_seconds": 12, "payload": "object?" }
+    },
+    {
+      "name": "playlist_set_department_filter",
+      "action": "playlist.set_department_filter",
+      "payload": { "playlist_id": "uuid", "department_ids": ["uuid"] }
+    },
+    {
+      "name": "announcement_set_department",
+      "action": "announcement.set_department",
+      "payload": { "announcement_id": "uuid", "department_id": "uuid|null" }
+    },
+    {
+      "name": "announcement_publish",
+      "action": "announcement.publish",
+      "payload": { "announcement_id": "uuid" }
+    },
+    {
+      "name": "announcement_create_draft",
+      "action": "announcement.create_draft",
+      "payload": {
+        "title": "string",
+        "body": "string",
+        "tags": "string[]?",
+        "visibility": "internal|external|both?",
+        "priority": "number?",
+        "department_id": "uuid?",
+        "scheduled_at": "iso?",
+        "expires_at": "iso?",
+        "image_url": "string?",
+        "image_layout": "string?"
+      }
+    }
+  ]
+}

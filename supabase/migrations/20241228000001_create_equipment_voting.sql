@@ -86,51 +86,39 @@ GROUP BY eo.id, eo.org_id, eo.name, eo.description, eo.category, eo.estimated_co
 ORDER BY total_weight DESC, total_votes DESC;
 
 -- =============================================
--- INSERT SAMPLE EQUIPMENT OPTIONS FOR OOLITE
+-- INSERT SAMPLE EQUIPMENT OPTIONS FOR OOLITE (only if org slug exists)
 -- =============================================
 
--- Insert sample equipment options for voting
-INSERT INTO equipment_options (org_id, name, description, category, estimated_cost, priority_level) VALUES
--- VR/AR Equipment
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'VR/AR Workstation', 'High-end VR development and content creation station with RTX 4080 GPU', 'VR/AR', 5000.00, 'high'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Meta Quest 3 VR Headset', 'Latest VR headset for immersive art experiences', 'VR/AR', 500.00, 'medium'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Apple Vision Pro', 'Professional mixed reality headset for creative work', 'VR/AR', 3500.00, 'high'),
-
--- 3D Printing Equipment
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Prusa i3 MK4 3D Printer', 'High-quality 3D printer for detailed prototyping', '3D Printing', 1200.00, 'medium'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Resin 3D Printer', 'High-resolution resin printer for detailed miniatures and jewelry', '3D Printing', 800.00, 'medium'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Large Format 3D Printer', '3D printer with 500x500x500mm build volume', '3D Printing', 3000.00, 'low'),
-
--- Audio Equipment
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Professional Audio Studio', 'Complete audio recording and mixing setup', 'Audio', 8000.00, 'medium'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Podcast Recording Booth', 'Sound-isolated booth for podcast and voice recording', 'Audio', 2000.00, 'low'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'MIDI Controller Station', 'Professional MIDI controllers for music production', 'Audio', 1500.00, 'medium'),
-
--- Photography Equipment
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Professional Photography Studio', 'Complete photography setup with lighting and backdrops', 'Photography', 10000.00, 'high'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', '360° Camera Setup', 'Equipment for creating immersive 360° content', 'Photography', 2000.00, 'low'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Drone Photography Kit', 'Professional drone for aerial photography and videography', 'Photography', 3000.00, 'medium'),
-
--- Digital Art Equipment
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Wacom Cintiq Pro 32', 'Large format drawing tablet for digital art', 'Digital Art', 3500.00, 'high'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'iPad Pro with Apple Pencil', 'Portable digital art creation device', 'Digital Art', 1200.00, 'medium'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Color Calibrated Monitor', 'Professional monitor for accurate color work', 'Digital Art', 800.00, 'medium'),
-
--- AI/ML Equipment
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'AI Art Generation Workstation', 'High-end computer for AI art generation and machine learning', 'AI/ML', 6000.00, 'high'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'GPU Server for AI Training', 'Dedicated server for training custom AI models', 'AI/ML', 15000.00, 'low'),
-
--- Fabrication Equipment
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Laser Cutter/Engraver', 'CNC laser for cutting and engraving various materials', 'Fabrication', 8000.00, 'high'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'CNC Router', 'Computer-controlled router for wood and metal work', 'Fabrication', 12000.00, 'medium'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Vinyl Cutter', 'Professional vinyl cutting machine for signage and decals', 'Fabrication', 2000.00, 'medium'),
-
--- Software and Licenses
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Adobe Creative Cloud Licenses', 'Professional software licenses for creative work', 'Software', 600.00, 'critical'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Blender Pro License', 'Professional 3D modeling and animation software', 'Software', 200.00, 'medium'),
-('e5c13761-bb53-4b74-94ef-aa08de38bdaf', 'Unity Pro License', 'Game development and interactive media platform', 'Software', 400.00, 'low')
-
-ON CONFLICT DO NOTHING;
+INSERT INTO equipment_options (org_id, name, description, category, estimated_cost, priority_level)
+SELECT o.id, x.name, x.description, x.category, x.estimated_cost, x.priority_level::text
+FROM organizations o
+CROSS JOIN (
+  VALUES
+    ('VR/AR Workstation', 'High-end VR development and content creation station with RTX 4080 GPU', 'VR/AR', 5000.00::numeric, 'high'),
+    ('Meta Quest 3 VR Headset', 'Latest VR headset for immersive art experiences', 'VR/AR', 500.00::numeric, 'medium'),
+    ('Apple Vision Pro', 'Professional mixed reality headset for creative work', 'VR/AR', 3500.00::numeric, 'high'),
+    ('Prusa i3 MK4 3D Printer', 'High-quality 3D printer for detailed prototyping', '3D Printing', 1200.00::numeric, 'medium'),
+    ('Resin 3D Printer', 'High-resolution resin printer for detailed miniatures and jewelry', '3D Printing', 800.00::numeric, 'medium'),
+    ('Large Format 3D Printer', '3D printer with 500x500x500mm build volume', '3D Printing', 3000.00::numeric, 'low'),
+    ('Professional Audio Studio', 'Complete audio recording and mixing setup', 'Audio', 8000.00::numeric, 'medium'),
+    ('Podcast Recording Booth', 'Sound-isolated booth for podcast and voice recording', 'Audio', 2000.00::numeric, 'low'),
+    ('MIDI Controller Station', 'Professional MIDI controllers for music production', 'Audio', 1500.00::numeric, 'medium'),
+    ('Professional Photography Studio', 'Complete photography setup with lighting and backdrops', 'Photography', 10000.00::numeric, 'high'),
+    ('360° Camera Setup', 'Equipment for creating immersive 360° content', 'Photography', 2000.00::numeric, 'low'),
+    ('Drone Photography Kit', 'Professional drone for aerial photography and videography', 'Photography', 3000.00::numeric, 'medium'),
+    ('Wacom Cintiq Pro 32', 'Large format drawing tablet for digital art', 'Digital Art', 3500.00::numeric, 'high'),
+    ('iPad Pro with Apple Pencil', 'Portable digital art creation device', 'Digital Art', 1200.00::numeric, 'medium'),
+    ('Color Calibrated Monitor', 'Professional monitor for accurate color work', 'Digital Art', 800.00::numeric, 'medium'),
+    ('AI Art Generation Workstation', 'High-end computer for AI art generation and machine learning', 'AI/ML', 6000.00::numeric, 'high'),
+    ('GPU Server for AI Training', 'Dedicated server for training custom AI models', 'AI/ML', 15000.00::numeric, 'low'),
+    ('Laser Cutter/Engraver', 'CNC laser for cutting and engraving various materials', 'Fabrication', 8000.00::numeric, 'high'),
+    ('CNC Router', 'Computer-controlled router for wood and metal work', 'Fabrication', 12000.00::numeric, 'medium'),
+    ('Vinyl Cutter', 'Professional vinyl cutting machine for signage and decals', 'Fabrication', 2000.00::numeric, 'medium'),
+    ('Adobe Creative Cloud Licenses', 'Professional software licenses for creative work', 'Software', 600.00::numeric, 'critical'),
+    ('Blender Pro License', 'Professional 3D modeling and animation software', 'Software', 200.00::numeric, 'medium'),
+    ('Unity Pro License', 'Game development and interactive media platform', 'Software', 400.00::numeric, 'low')
+) AS x(name, description, category, estimated_cost, priority_level)
+WHERE o.slug = 'oolite';
 
 -- =============================================
 -- MIGRATION COMPLETE

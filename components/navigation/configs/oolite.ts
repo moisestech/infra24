@@ -12,7 +12,9 @@ import {
   LineChart,
   Users,
   Bell,
-  Mail
+  Mail,
+  Monitor,
+  MessageSquare
 } from 'lucide-react'
 import { NavigationConfig } from '../types'
 
@@ -170,6 +172,20 @@ export const ooliteConfig: NavigationConfig = {
         href: '/o/oolite/bookings',
         icon: Calendar,
         description: 'Manage workshops and resources',
+        category: 'admin'
+      },
+      {
+        name: 'Screens & playlists',
+        href: '/o/oolite/admin/screens',
+        icon: Monitor,
+        description: 'Smart sign displays, playlists, and kiosk URLs',
+        category: 'admin'
+      },
+      {
+        name: 'Control identities',
+        href: '/o/oolite/admin/control-identities',
+        icon: MessageSquare,
+        description: 'Map Telegram users to Clerk for display control (OpenClaw)',
         category: 'admin'
       },
       {

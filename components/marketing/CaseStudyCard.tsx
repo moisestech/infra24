@@ -50,7 +50,7 @@ export function CaseStudyCard({
         </div>
       </dl>
       <Link
-        href={`/case-studies/${slug}`}
+        href={`/projects/${slug}`}
         className="mt-4 text-sm font-medium text-neutral-900 underline-offset-4 hover:underline"
       >
         Read more

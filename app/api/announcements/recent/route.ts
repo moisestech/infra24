@@ -25,7 +25,7 @@ export async function GET() {
     // Get the requesting user's membership to check permissions
     const { data: requestingUserMembership } = await supabase
       .from('org_memberships')
-      .select('role, organization_id')
+      .select('role, org_id')
       .eq('clerk_user_id', userId)
       .single();
 
@@ -64,7 +64,7 @@ export async function GET() {
     if (requestingUserMembership.role === 'super_admin') {
       // No additional filters needed
     } else if (['admin', 'manager'].includes(requestingUserMembership.role)) {
-      query = query.eq('organization_id', requestingUserMembership.organization_id);
+      query = query.eq('organization_id', requestingUserMembership.org_id);
     } else {
       query = query.eq('created_by', userId);
     }

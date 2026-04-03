@@ -81,7 +81,7 @@ content/
         │       ├── 02-keyword-research.md
         │       ├── 03-on-page-optimization.md
         │       └── 04-analytics-and-tracking.md
-        └── digital-presence-workshop/
+        └── own-your-digital-presence/
             └── chapters/
                 ├── 01-building-your-online-identity.md
                 ├── 02-content-creation-strategies.md

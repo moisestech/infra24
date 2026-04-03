@@ -88,7 +88,8 @@ export async function GET(
         is_time_tbd,
         rsvp_label,
         rsvp_url,
-        event_state
+        event_state,
+        department_id
       `)
       .eq('org_id', organization.id)
       .is('deleted_at', null)
@@ -185,7 +186,8 @@ export async function POST(
         expires_at: body.expires_at || null,
         published_at: body.status === 'published' ? new Date().toISOString() : null,
         image_url: body.image_url || null,
-        image_layout: body.image_layout || null
+        image_layout: body.image_layout || null,
+        department_id: body.department_id || null
       })
       .select()
       .single();

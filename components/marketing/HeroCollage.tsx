@@ -23,14 +23,14 @@ export function HeroCollage({ className }: { className?: string }) {
           colorFrom="#d4d4d8"
           colorTo="#18181b"
         />
-        <div className="relative z-[1] grid min-h-[280px] grid-cols-12 grid-rows-3 gap-2 sm:min-h-[340px] lg:min-h-[400px]">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-20px' }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="relative col-span-8 row-span-3 overflow-hidden rounded-xl"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-20px' }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="relative isolate z-[1] grid min-h-[280px] grid-cols-12 grid-rows-3 gap-2 sm:min-h-[340px] lg:min-h-[400px]"
+        >
+          <div className="relative col-span-8 row-span-3 overflow-hidden rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_12px_40px_-16px_rgba(15,23,42,0.35)]">
             <Image
               src={main.src}
               alt={main.alt}
@@ -43,14 +43,13 @@ export function HeroCollage({ className }: { className?: string }) {
             <span className="absolute left-3 top-3 rounded bg-black/35 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-white/95 backdrop-blur-sm">
               {main.label}
             </span>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.45, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-            className="relative col-span-4 row-span-1 overflow-hidden rounded-lg"
+          <div
+            className={cn(
+              'relative z-10 col-span-4 row-span-1 overflow-hidden rounded-lg',
+              'shadow-md ring-1 ring-black/10'
+            )}
           >
             <Image
               src={topRight.src}
@@ -63,14 +62,14 @@ export function HeroCollage({ className }: { className?: string }) {
             <span className="absolute bottom-2 left-2 right-2 text-[9px] font-medium uppercase tracking-wide text-white drop-shadow">
               {topRight.label}
             </span>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.45, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="relative col-span-4 row-span-1 overflow-hidden rounded-lg"
+          <div
+            className={cn(
+              'relative z-20 col-span-4 row-span-1 overflow-hidden rounded-lg',
+              'lg:-mt-4 lg:shadow-lg lg:ring-1 lg:ring-white/35',
+              'shadow-md ring-1 ring-black/10'
+            )}
           >
             <Image
               src={midRight.src}
@@ -83,14 +82,14 @@ export function HeroCollage({ className }: { className?: string }) {
             <span className="absolute bottom-2 left-2 right-2 text-[9px] font-medium uppercase tracking-wide text-white drop-shadow">
               {midRight.label}
             </span>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.45, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative col-span-4 row-span-1 overflow-hidden rounded-lg ring-1 ring-white/20"
+          <div
+            className={cn(
+              'relative z-30 col-span-4 row-span-1 overflow-hidden rounded-lg ring-1 ring-white/20',
+              'lg:-mt-4 lg:shadow-lg lg:ring-white/40',
+              'shadow-md'
+            )}
           >
             <Image
               src={phone.src}
@@ -103,8 +102,8 @@ export function HeroCollage({ className }: { className?: string }) {
             <span className="absolute bottom-2 left-2 text-[9px] font-medium uppercase tracking-wide text-white drop-shadow">
               {phone.label}
             </span>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
       </div>
       <p className="mt-3 text-center text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500">
         One communication layer across physical and digital surfaces

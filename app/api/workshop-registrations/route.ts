@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     const { data: membership } = await supabase
       .from('org_memberships')
       .select('role')
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
       .eq('clerk_user_id', userId)
       .single()
 
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
     const { data: membership } = await supabase
       .from('org_memberships')
       .select('role')
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
       .eq('clerk_user_id', userId)
       .single()
 

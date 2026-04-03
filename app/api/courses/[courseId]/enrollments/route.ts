@@ -71,7 +71,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const { data: membership, error: membershipError } = await supabase
       .from('org_memberships')
       .select('id')
-      .eq('organization_id', organizationId)
+      .eq('org_id', organizationId)
       .eq('clerk_user_id', userId)
       .eq('is_active', true)
       .single()

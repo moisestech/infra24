@@ -58,7 +58,7 @@ export async function POST(
     const { data: membership, error: membershipError } = await supabase
       .from('org_memberships')
       .select('role')
-      .eq('organization_id', workshop.organization_id)
+      .eq('org_id', workshop.organization_id)
       .eq('clerk_user_id', userId)
       .eq('is_active', true)
       .single()

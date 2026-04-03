@@ -102,7 +102,7 @@ export async function POST(
     const { data: membership } = await supabase
       .from('org_memberships')
       .select('role')
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
       .eq('user_id', userId)
       .single();
 

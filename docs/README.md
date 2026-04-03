@@ -226,6 +226,9 @@ npm run test:analytics
 - **[📝 REMAINING_TASKS.md](./REMAINING_TASKS.md)** - Remaining tasks and priorities
 - **[🎬 MADARTS_ORGANIZATION_SETUP.md](./MADARTS_ORGANIZATION_SETUP.md)** - MadArts organization and Video Performance workshop setup
 
+### Marketing site (`app/(marketing)`)
+- **[marketing/HOMEPAGE_IMAGE_SYSTEM.md](./marketing/HOMEPAGE_IMAGE_SYSTEM.md)** — Homepage image strategy, funnel-aligned components (`HeroCollage`, `ProblemSplitVisual`, `BentoSystemsGrid`, `ProofStrip`), Magic UI usage, and visual anti-patterns
+
 ### 🎯 [Strategy & Business](/strategy/)
 - **Strategic Leverage Plan** - How to gain power through communication control
 - Business models and monetization strategies

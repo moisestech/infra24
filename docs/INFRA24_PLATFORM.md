@@ -6,6 +6,8 @@
 
 Infra24 is a multi-tenant SaaS platform that powers digital arts education, community management, and cultural infrastructure for organizations like Oolite Arts, Bakehouse Art Complex, Edge Zones, and Locust Projects.
 
+For the current **product thesis, strategic wedge, display/control spine, September MVP scope, and grant-facing language** aligned with the codebase, see **[MASTER_STRATEGY_MEMO.md](./MASTER_STRATEGY_MEMO.md)**.
+
 ## 🏗️ Platform Architecture
 
 ### Core Modules

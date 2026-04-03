@@ -46,7 +46,7 @@ export async function DELETE(
     // Check if user has access to this organization
     const { data: userMembership } = await supabase
       .from('org_memberships')
-      .select('role, organization_id')
+      .select('role, org_id')
       .eq('clerk_user_id', userId)
       .single();
 
@@ -58,8 +58,8 @@ export async function DELETE(
     // Check permissions - super admins can delete any, org admins can delete from their org, users can delete their own
     const canDelete = 
       userMembership.role === 'super_admin' ||
-      (userMembership.role === 'org_admin' && userMembership.organization_id === announcement.organization_id) ||
-      (userMembership.role === 'moderator' && userMembership.organization_id === announcement.organization_id) ||
+      (userMembership.role === 'org_admin' && userMembership.org_id === announcement.organization_id) ||
+      (userMembership.role === 'moderator' && userMembership.org_id === announcement.organization_id) ||
       announcement.created_by === userId;
 
     if (!canDelete) {
@@ -126,7 +126,7 @@ export async function PATCH(
     // Check if user has access to this organization
     const { data: userMembership } = await supabase
       .from('org_memberships')
-      .select('role, organization_id')
+      .select('role, org_id')
       .eq('clerk_user_id', userId)
       .single();
 
@@ -138,8 +138,8 @@ export async function PATCH(
     // Check permissions - super admins can edit any, org admins can edit from their org, users can edit their own
     const canEdit = 
       userMembership.role === 'super_admin' ||
-      (userMembership.role === 'org_admin' && userMembership.organization_id === announcement.organization_id) ||
-      (userMembership.role === 'moderator' && userMembership.organization_id === announcement.organization_id) ||
+      (userMembership.role === 'org_admin' && userMembership.org_id === announcement.organization_id) ||
+      (userMembership.role === 'moderator' && userMembership.org_id === announcement.organization_id) ||
       announcement.created_by === userId;
 
     if (!canEdit) {

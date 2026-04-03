@@ -98,7 +98,7 @@ export async function PUT(
     const { data: membership } = await supabase
       .from('org_memberships')
       .select('role')
-      .eq('organization_id', currentSurvey.organization_id)
+      .eq('org_id', currentSurvey.organization_id)
       .eq('user_id', userId)
       .single();
 
@@ -161,7 +161,7 @@ export async function DELETE(
     const { data: membership } = await supabase
       .from('org_memberships')
       .select('role')
-      .eq('organization_id', currentSurvey.organization_id)
+      .eq('org_id', currentSurvey.organization_id)
       .eq('user_id', userId)
       .single();
 

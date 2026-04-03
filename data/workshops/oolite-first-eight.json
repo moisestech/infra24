@@ -1,0 +1,1018 @@
+{
+  "organizationSlug": "oolite",
+  "workshops": [
+    {
+      "slug": "own-your-digital-presence",
+      "title": "Own Your Digital Presence",
+      "description": "Structure your site, social, and email list so your practice is findable—without surrendering your voice to platforms.",
+      "category": "web_portfolio_presence",
+      "level": "beginner",
+      "duration_minutes": 150,
+      "max_participants": 20,
+      "price": 0,
+      "instructor": "Professional Development",
+      "outcomes": [
+        "Clarify who the site is for and what they should do next",
+        "Draft information architecture (pages) and a sustainable update rhythm",
+        "Compare tradeoffs of rented platforms vs an owned web presence"
+      ],
+      "prerequisites": [],
+      "materials": [
+        "Laptop"
+      ],
+      "featured": true,
+      "status": "published",
+      "is_active": true,
+      "is_public": true,
+      "content": "We map audience, tone, and infrastructure: domain, simple site architecture, accessibility basics, and sustainable rhythms for updates. You leave with a prioritized checklist, draft copy blocks, and clear next steps for the next 30 days.",
+      "relatedSlugs": [
+        "seo-workshop",
+        "writing-about-digital-practice",
+        "organizing-digital-studio"
+      ],
+      "metadata": {
+        "slug": "own-your-digital-presence",
+        "subtitle": "Portfolio clarity, owned infrastructure, and humane habits for showing work online.",
+        "shortDescription": "A structured pass through site architecture, copy, and presence for working artists.",
+        "seoTitle": "Own Your Digital Presence — Oolite Arts",
+        "seoDescription": "Plan your artist site, socials, and updates with a checklist you can actually maintain.",
+        "audienceTags": [
+          "individual_artists",
+          "emerging_artists",
+          "educators"
+        ],
+        "format": "in_person",
+        "materialsRequired": [
+          "Laptop",
+          "Links to existing site or socials if any"
+        ],
+        "materialsProvided": [
+          "Checklist PDF",
+          "Copy blocks worksheet"
+        ],
+        "agenda": [
+          {
+            "title": "Audience & goals",
+            "durationMinutes": 30,
+            "summary": "Who you are speaking to and what a successful visit looks like."
+          },
+          {
+            "title": "Site map & page purposes",
+            "durationMinutes": 40,
+            "summary": "Every page answers one question; trim dead weight."
+          },
+          {
+            "title": "Voice, access, and maintenance",
+            "durationMinutes": 40,
+            "summary": "Tone, alt text basics, and a rhythm you can keep."
+          },
+          {
+            "title": "Next 30 days plan",
+            "durationMinutes": 40,
+            "summary": "Prioritized tasks and accountability pairs."
+          }
+        ],
+        "instructors": [
+          {
+            "name": "Professional Development",
+            "title": "Oolite Arts",
+            "bio": "Focuses on sustainable careers for artists in nonprofit and public contexts."
+          }
+        ],
+        "deliveryHistory": {
+          "firstOfferedYear": 2024,
+          "runsCount": 3,
+          "venues": [
+            "Oolite Arts"
+          ]
+        },
+        "faq": [
+          {
+            "q": "I only have Instagram—is that ok?",
+            "a": "Yes. We map what to keep and what to add so audiences can go deeper."
+          }
+        ],
+        "ctas": {
+          "primary": {
+            "label": "Express interest",
+            "action": "interest"
+          },
+          "institutional": {
+            "label": "Institutional inquiry",
+            "action": "external"
+          }
+        },
+        "whoFor": [
+          "Artists building or refreshing a public-facing site",
+          "Educators who need shared language for cohort digital presence"
+        ],
+        "whoNotFor": [
+          "Teams needing a full rebrand in one afternoon",
+          "Advanced technical SEO audits—we cover foundations only"
+        ],
+        "modulesPreview": [
+          {
+            "title": "Owned vs rented presence",
+            "lessonCount": 2
+          },
+          {
+            "title": "Site map lab",
+            "lessonCount": 2
+          }
+        ],
+        "track": "presence",
+        "buildPriority": 1,
+        "placeholderImagePrompt": "Editorial photo: artist at laptop, soft daylight, minimal desk, subtle Miami pastel wall, no logos, candid not stock-smile",
+        "packetConcept": "A 12-page facilitator packet: learning goals, timing blocks, slide outline, copy worksheet (hero, about, contact), platform comparison one-pager, and a 30-day maintenance calendar template."
+      }
+    },
+    {
+      "slug": "seo-workshop",
+      "title": "SEO for Artists in the Age of AI Search",
+      "description": "Foundational SEO when summaries and chat-style answers change how people discover culture—language, structure, and credibility without gimmicks.",
+      "category": "digital_literacy",
+      "level": "intermediate",
+      "duration_minutes": 120,
+      "max_participants": 18,
+      "price": 0,
+      "instructor": "Digital Lab",
+      "outcomes": [
+        "Align page titles and descriptions with real search intent",
+        "Apply structured thinking to events and programs pages",
+        "Recognize SEO and AI-search advice that does not fit nonprofit arts work"
+      ],
+      "prerequisites": [
+        "An existing site or project URL to review"
+      ],
+      "materials": [
+        "Laptop"
+      ],
+      "featured": true,
+      "status": "published",
+      "is_active": true,
+      "is_public": true,
+      "content": "Search is part of cultural literacy. We cover how people look for programs and artists today, how to write titles and descriptions that match intent, and how to spot opaque growth advice that does not fit arts contexts. Includes a short segment on AI overviews and what still belongs on your own pages.",
+      "relatedSlugs": [
+        "own-your-digital-presence",
+        "documentation-for-artists",
+        "ai-copyright-creative-risk"
+      ],
+      "metadata": {
+        "slug": "seo-workshop",
+        "subtitle": "Ethical, practical discoverability for artists and small cultural orgs.",
+        "shortDescription": "Intent, structure, and credibility—search basics that respect arts contexts and new AI interfaces.",
+        "audienceTags": [
+          "staff_teams",
+          "educators",
+          "public_programs",
+          "individual_artists"
+        ],
+        "format": "online",
+        "materialsRequired": [
+          "Laptop",
+          "CMS or site access if possible"
+        ],
+        "materialsProvided": [
+          "Keyword & intent worksheet",
+          "Example snippets for programs pages"
+        ],
+        "agenda": [
+          {
+            "title": "How discovery works in arts contexts",
+            "durationMinutes": 25,
+            "summary": "Intent, snippets, and overviews."
+          },
+          {
+            "title": "Intent & page-level patterns",
+            "durationMinutes": 35,
+            "summary": "Titles, descriptions, internal links."
+          },
+          {
+            "title": "Workshop: rewrite titles & descriptions",
+            "durationMinutes": 40,
+            "summary": "Peer review with a simple rubric."
+          },
+          {
+            "title": "Q&A and responsible metrics",
+            "durationMinutes": 20,
+            "summary": "What to track without losing the plot."
+          }
+        ],
+        "instructors": [
+          {
+            "name": "Digital Lab team",
+            "bio": "Supports public-facing digital literacy across Oolite programming."
+          }
+        ],
+        "deliveryHistory": {
+          "firstOfferedYear": 2025,
+          "runsCount": 1,
+          "venues": [
+            "Oolite Arts"
+          ]
+        },
+        "faq": [
+          {
+            "q": "Is this about ads?",
+            "a": "We focus on organic fundamentals; ads are optional context only."
+          }
+        ],
+        "ctas": {
+          "primary": {
+            "label": "Express interest",
+            "action": "interest"
+          },
+          "institutional": {
+            "label": "Institutional inquiry",
+            "action": "external"
+          }
+        },
+        "whoFor": [
+          "Small teams publishing programs and open calls",
+          "Artists stewarding their own sites"
+        ],
+        "whoNotFor": [
+          "Enterprises needing enterprise SEO tooling",
+          "Anyone expecting guaranteed ranking outcomes"
+        ],
+        "modulesPreview": [
+          {
+            "title": "Intent mapping",
+            "lessonCount": 2
+          },
+          {
+            "title": "Page patterns for culture orgs",
+            "lessonCount": 3
+          }
+        ],
+        "track": "presence",
+        "buildPriority": 2,
+        "placeholderImagePrompt": "Abstract diagram aesthetic: search results morphing into chat bubble, muted teal and coral, museum-quality typography, no brand marks",
+        "packetConcept": "Facilitator guide with AI-search vs classic SERP comparison sheet, rewrite exercises for three page types (bio, exhibition, program), and a metrics appendix focused on meaningful referrals—not vanity counts."
+      }
+    },
+    {
+      "slug": "writing-about-digital-practice",
+      "title": "Writing About Your Digital Practice",
+      "description": "Turn process, tools, and URLs into clear language for statements, panels, and funders—without sounding like a press release.",
+      "category": "digital_literacy",
+      "level": "beginner",
+      "duration_minutes": 120,
+      "max_participants": 16,
+      "price": 0,
+      "instructor": "Professional Development",
+      "outcomes": [
+        "Produce a draft artist statement paragraph that names medium and audience",
+        "Describe technical process in plain language for non-specialist readers",
+        "Align writing with documentation you already have or will collect"
+      ],
+      "prerequisites": [
+        "Examples of recent work (images, links, or files)"
+      ],
+      "materials": [
+        "Laptop or notebook"
+      ],
+      "featured": true,
+      "status": "published",
+      "is_active": true,
+      "is_public": true,
+      "content": "We work from artifacts: screenshots, repos, links, and studio notes. You draft short paragraphs that explain what the work is, how it was made, and why it matters now. Emphasis on honest authorship when tools include AI and platforms.",
+      "relatedSlugs": [
+        "documentation-for-artists",
+        "own-your-digital-presence",
+        "ai-for-artists-voice-workflow-authorship"
+      ],
+      "metadata": {
+        "slug": "writing-about-digital-practice",
+        "subtitle": "Statements, bios, and panel language that match how you actually work.",
+        "shortDescription": "From studio notes and links to clear writing for grants, sites, and public talks.",
+        "audienceTags": [
+          "individual_artists",
+          "emerging_artists",
+          "educators"
+        ],
+        "format": "hybrid",
+        "materialsRequired": [
+          "2–3 work samples or links",
+          "Existing draft text optional"
+        ],
+        "materialsProvided": [
+          "Sentence scaffold handout",
+          "Peer review checklist"
+        ],
+        "agenda": [
+          {
+            "title": "What readers need in 60 seconds",
+            "durationMinutes": 25,
+            "summary": "Medium, method, stake."
+          },
+          {
+            "title": "From artifact to paragraph",
+            "durationMinutes": 40,
+            "summary": "Pair exercises from URLs and images."
+          },
+          {
+            "title": "Authorship and tools",
+            "durationMinutes": 35,
+            "summary": "Naming collaboration and AI use clearly."
+          },
+          {
+            "title": "Revision pass",
+            "durationMinutes": 20,
+            "summary": "Swap drafts with a rubric."
+          }
+        ],
+        "instructors": [
+          {
+            "name": "Professional Development",
+            "title": "Oolite Arts",
+            "bio": "Supports artists translating studio practice into public language."
+          }
+        ],
+        "deliveryHistory": {
+          "firstOfferedYear": 2026,
+          "runsCount": 0,
+          "venues": [
+            "Oolite Arts"
+          ]
+        },
+        "faq": [
+          {
+            "q": "Do I need a finished website?",
+            "a": "No—links, docs, or files are enough to start."
+          }
+        ],
+        "ctas": {
+          "primary": {
+            "label": "Express interest",
+            "action": "interest"
+          },
+          "institutional": {
+            "label": "Institutional inquiry",
+            "action": "external"
+          }
+        },
+        "whoFor": [
+          "Artists preparing grants, residencies, or public talks",
+          "Educators coaching cohorts on artist statements"
+        ],
+        "whoNotFor": [
+          "Fiction or poetry workshops—this is about discursive practice writing"
+        ],
+        "modulesPreview": [
+          {
+            "title": "Statement scaffolds",
+            "lessonCount": 2
+          },
+          {
+            "title": "Process in plain language",
+            "lessonCount": 2
+          }
+        ],
+        "track": "presence",
+        "buildPriority": 3,
+        "placeholderImagePrompt": "Close-up of handwritten notes next to keyboard, warm light, creative mess, no readable private text",
+        "packetConcept": "Printable scaffolds: one-page bios (50/100/250 words), process paragraph templates, glossary of common digital terms for funders, and panel prep question bank."
+      }
+    },
+    {
+      "slug": "documentation-for-artists",
+      "title": "Documentation for Artists",
+      "description": "Capture installation, performance, and time-based work so archives, press, and future-you can understand what happened.",
+      "category": "systems_archive",
+      "level": "beginner",
+      "duration_minutes": 150,
+      "max_participants": 18,
+      "price": 0,
+      "instructor": "Digital Lab",
+      "outcomes": [
+        "Write a one-page documentation plan for your next show or activation",
+        "Choose formats and resolutions appropriate for web, print, and archive",
+        "Apply a simple naming and backup habit to new files"
+      ],
+      "prerequisites": [],
+      "materials": [
+        "Phone or camera optional",
+        "Laptop"
+      ],
+      "featured": false,
+      "status": "published",
+      "is_active": true,
+      "is_public": true,
+      "content": "We cover capture plans, lighting and color basics, file naming, consent when people appear, and what to hand off to an archivist or org. You leave with a shoot checklist and a folder structure you can reuse.",
+      "relatedSlugs": [
+        "writing-about-digital-practice",
+        "organizing-digital-studio",
+        "own-your-digital-presence"
+      ],
+      "metadata": {
+        "slug": "documentation-for-artists",
+        "subtitle": "Checklists, file habits, and ethics for documenting live and installed work.",
+        "shortDescription": "From capture plan to folder structure—documentation that scales from studio to archive.",
+        "audienceTags": [
+          "individual_artists",
+          "emerging_artists",
+          "staff_teams"
+        ],
+        "format": "in_person",
+        "materialsRequired": [
+          "Laptop",
+          "Optional: camera or recent project media"
+        ],
+        "materialsProvided": [
+          "Documentation plan template",
+          "Folder structure starter"
+        ],
+        "agenda": [
+          {
+            "title": "What documentation is for",
+            "durationMinutes": 20,
+            "summary": "Audiences: you, press, archive, public."
+          },
+          {
+            "title": "Capture plan lab",
+            "durationMinutes": 45,
+            "summary": "Angles, lighting, audio when needed."
+          },
+          {
+            "title": "Files, names, backups",
+            "durationMinutes": 40,
+            "summary": "Practical hygiene."
+          },
+          {
+            "title": "Consent and collaboration",
+            "durationMinutes": 25,
+            "summary": "People in the frame; credit lines."
+          },
+          {
+            "title": "Share-back",
+            "durationMinutes": 20,
+            "summary": "Review one plan per participant."
+          }
+        ],
+        "instructors": [
+          {
+            "name": "Digital Lab team",
+            "title": "Oolite Arts",
+            "bio": "Supports documentation and public-facing media for artists."
+          }
+        ],
+        "deliveryHistory": {
+          "firstOfferedYear": 2026,
+          "runsCount": 0,
+          "venues": [
+            "Oolite Arts"
+          ]
+        },
+        "faq": [
+          {
+            "q": "Do I need pro gear?",
+            "a": "No—phones and available light are enough for the habits we teach."
+          }
+        ],
+        "ctas": {
+          "primary": {
+            "label": "Express interest",
+            "action": "interest"
+          },
+          "institutional": {
+            "label": "Institutional inquiry",
+            "action": "external"
+          }
+        },
+        "whoFor": [
+          "Artists who document their own work",
+          "Small org staff supporting artists"
+        ],
+        "whoNotFor": [
+          "High-end commercial product photography—foundations only"
+        ],
+        "modulesPreview": [
+          {
+            "title": "Capture planning",
+            "lessonCount": 2
+          },
+          {
+            "title": "Ingest & backup",
+            "lessonCount": 2
+          }
+        ],
+        "track": "systems_archive",
+        "buildPriority": 4,
+        "placeholderImagePrompt": "Gallery interior, tripod and camera in soft focus, neutral walls, documentary not glamorous",
+        "packetConcept": "Shot list templates for install, performance, and public program; model release notes; ingest checklist for orgs; and a one-page 'minimum viable documentation' for tight budgets."
+      }
+    },
+    {
+      "slug": "ai-for-artists-voice-workflow-authorship",
+      "title": "AI for Artists: Voice, Workflow, and Authorship",
+      "description": "Use AI tools deliberately in studio and admin workflows while keeping voice, credit, and ethics visible.",
+      "category": "digital_literacy",
+      "level": "intermediate",
+      "duration_minutes": 180,
+      "max_participants": 16,
+      "price": 0,
+      "instructor": "Digital Lab",
+      "outcomes": [
+        "Draft a short personal AI-use policy for grants and collaborators",
+        "Run a structured critique session on AI-assisted drafts",
+        "Identify three workflow steps where human judgment must stay in the loop"
+      ],
+      "prerequisites": [
+        "Laptop",
+        "Comfort trying a browser-based AI tool"
+      ],
+      "materials": [
+        "Laptop"
+      ],
+      "featured": false,
+      "status": "published",
+      "is_active": true,
+      "is_public": true,
+      "content": "We separate experimentation from publication, build personal policies for disclosure, and map where AI saves time vs where it erases judgment. Includes hands-on prompts for research, drafting, and iteration—not a single-tool tutorial tied to one vendor.",
+      "relatedSlugs": [
+        "vibe-coding-net-art",
+        "ai-copyright-creative-risk",
+        "writing-about-digital-practice"
+      ],
+      "metadata": {
+        "slug": "ai-for-artists-voice-workflow-authorship",
+        "subtitle": "Policies, prompts, and critique—AI as studio assistant, not author replacement.",
+        "shortDescription": "Practical frameworks for voice, disclosure, and workflow when AI is in the room.",
+        "audienceTags": [
+          "individual_artists",
+          "emerging_artists",
+          "educators",
+          "staff_teams"
+        ],
+        "format": "hybrid",
+        "materialsRequired": [
+          "Laptop",
+          "Account on one public AI chat tool (free tier ok)"
+        ],
+        "materialsProvided": [
+          "Policy worksheet",
+          "Prompt pattern cards"
+        ],
+        "agenda": [
+          {
+            "title": "Framing: assistant vs author",
+            "durationMinutes": 30,
+            "summary": "Language and stakes."
+          },
+          {
+            "title": "Workflow mapping",
+            "durationMinutes": 40,
+            "summary": "Where AI enters; where it must not."
+          },
+          {
+            "title": "Hands-on: research & draft loops",
+            "durationMinutes": 50,
+            "summary": "Prompts and red-team edits."
+          },
+          {
+            "title": "Policy writing",
+            "durationMinutes": 40,
+            "summary": "Share one-paragraph policies."
+          }
+        ],
+        "instructors": [
+          {
+            "name": "Digital Lab team",
+            "title": "Oolite Arts",
+            "bio": "Supports critical digital practice and tool literacy."
+          }
+        ],
+        "deliveryHistory": {
+          "firstOfferedYear": 2026,
+          "runsCount": 0,
+          "venues": [
+            "Oolite Arts"
+          ]
+        },
+        "faq": [
+          {
+            "q": "Is this only for visual artists?",
+            "a": "No—writers and interdisciplinary practitioners are welcome."
+          }
+        ],
+        "ctas": {
+          "primary": {
+            "label": "Express interest",
+            "action": "interest"
+          },
+          "institutional": {
+            "label": "Institutional inquiry",
+            "action": "external"
+          }
+        },
+        "whoFor": [
+          "Artists already experimenting with AI",
+          "Educators setting cohort norms"
+        ],
+        "whoNotFor": [
+          "Participants seeking uncritical tool hype",
+          "Legal advice— we give frameworks, not counsel"
+        ],
+        "modulesPreview": [
+          {
+            "title": "Policies & disclosure",
+            "lessonCount": 2
+          },
+          {
+            "title": "Workflow labs",
+            "lessonCount": 4
+          }
+        ],
+        "track": "ai_literacy",
+        "buildPriority": 5,
+        "placeholderImagePrompt": "Split composition: human hand sketching beside abstract neural motif, editorial illustration style, restrained palette",
+        "packetConcept": "Sample policies (short/medium), facilitator notes on common objections, bibliography of arts-AI readings, and a peer critique rubric for AI-assisted writing and images."
+      }
+    },
+    {
+      "slug": "vibe-coding-net-art",
+      "title": "Vibe-coding with Net Art",
+      "description": "Use contemporary AI-assisted workflows to sketch, prototype, and publish small net art pieces—without losing authorship or critical intent.",
+      "category": "creative_coding_net_art",
+      "level": "beginner",
+      "duration_minutes": 180,
+      "max_participants": 16,
+      "price": 0,
+      "instructor": "Digital Lab",
+      "outcomes": [
+        "Ship a small browser-based sketch or micro-site",
+        "Document prompts, edits, and authorship choices",
+        "Connect the work to net art histories and contemporary practice"
+      ],
+      "prerequisites": [
+        "Laptop",
+        "Modern browser"
+      ],
+      "materials": [
+        "Laptop",
+        "GitHub account (free) optional"
+      ],
+      "featured": true,
+      "status": "published",
+      "is_active": true,
+      "is_public": true,
+      "content": "This workshop treats vibe-coding as a disciplined sketch process: short cycles, clear constraints, and documentation of decisions. You leave with a micro-site or interactive sketch and language to talk about it in portfolio and grant contexts.",
+      "relatedSlugs": [
+        "ai-for-artists-voice-workflow-authorship",
+        "organizing-digital-studio",
+        "documentation-for-artists"
+      ],
+      "metadata": {
+        "slug": "vibe-coding-net-art",
+        "subtitle": "Creative coding meets critical publishing—fast iteration, clear intent.",
+        "shortDescription": "Prototype net art with AI-assisted workflows while keeping authorship visible.",
+        "audienceTags": [
+          "individual_artists",
+          "emerging_artists",
+          "public_programs"
+        ],
+        "format": "hybrid",
+        "materialsRequired": [
+          "Laptop",
+          "Code editor (VS Code or similar)"
+        ],
+        "materialsProvided": [
+          "Starter templates",
+          "Documentation worksheet"
+        ],
+        "agenda": [
+          {
+            "title": "Histories & ethics snapshot",
+            "durationMinutes": 25,
+            "summary": "Net art and tool use."
+          },
+          {
+            "title": "Vibe-coding loop: sketch → refine → document",
+            "durationMinutes": 55,
+            "summary": "Hands-on build."
+          },
+          {
+            "title": "Publish & peer feedback",
+            "durationMinutes": 40,
+            "summary": "Share URLs; critique."
+          },
+          {
+            "title": "Portfolio / statement language",
+            "durationMinutes": 40,
+            "summary": "Name what you made."
+          }
+        ],
+        "instructors": [
+          {
+            "name": "Digital Lab team",
+            "title": "Oolite Arts",
+            "bio": "Supports artists working at the intersection of studio practice and digital infrastructure."
+          }
+        ],
+        "deliveryHistory": {
+          "firstOfferedYear": 2025,
+          "runsCount": 2,
+          "venues": [
+            "Oolite Arts",
+            "Miami cultural partners"
+          ]
+        },
+        "testimonials": [
+          {
+            "quote": "I finally had language for what I was doing with AI tools—and a file I could show.",
+            "attribution": "Participant",
+            "role": "Studio artist"
+          }
+        ],
+        "faq": [
+          {
+            "q": "Do I need to know how to code?",
+            "a": "Some HTML/CSS comfort helps; we start from templates and focus on iteration and documentation."
+          },
+          {
+            "q": "Will my work be public?",
+            "a": "Publishing is optional; you control what you share during the session."
+          }
+        ],
+        "ctas": {
+          "primary": {
+            "label": "Express interest",
+            "action": "interest"
+          },
+          "secondary": {
+            "label": "Download packet (when available)"
+          },
+          "institutional": {
+            "label": "Institutional inquiry",
+            "action": "external"
+          }
+        },
+        "whoFor": [
+          "Artists curious about creative coding and the web as medium",
+          "Studio practitioners who want publishable artifacts quickly"
+        ],
+        "whoNotFor": [
+          "Those seeking a full-stack engineering bootcamp",
+          "Participants who need a fully offline workflow only"
+        ],
+        "modulesPreview": [
+          {
+            "title": "Net art contexts",
+            "lessonCount": 2
+          },
+          {
+            "title": "Build & publish loop",
+            "lessonCount": 3
+          }
+        ],
+        "track": "creative_coding",
+        "buildPriority": 6,
+        "placeholderImagePrompt": "Browser window with abstract generative art, terminal snippet blurred, dark mode aesthetic, arts context not corporate",
+        "packetConcept": "Starter repo README, history-of-net-art reading links (short), documentation worksheet for prompts/commits, deploy checklist (static host)."
+      }
+    },
+    {
+      "slug": "organizing-digital-studio",
+      "title": "Organizing Your Digital Studio",
+      "description": "Folders, backups, passwords, and project handoffs—so your digital studio stays legible to you and collaborators.",
+      "category": "systems_archive",
+      "level": "beginner",
+      "duration_minutes": 120,
+      "max_participants": 20,
+      "price": 0,
+      "instructor": "Digital Lab",
+      "outcomes": [
+        "Adopt a repeatable project folder template",
+        "Choose a backup approach appropriate to your risk tolerance",
+        "Document one collaboration handoff (what a partner receives)"
+      ],
+      "prerequisites": [],
+      "materials": [
+        "Laptop"
+      ],
+      "featured": false,
+      "status": "published",
+      "is_active": true,
+      "is_public": true,
+      "content": "We build a lightweight system: project skeletons, naming, cloud vs local tradeoffs, version habits for images and video, and a simple security baseline. Designed for artists who work across many small projects, not enterprise IT.",
+      "relatedSlugs": [
+        "documentation-for-artists",
+        "own-your-digital-presence",
+        "vibe-coding-net-art"
+      ],
+      "metadata": {
+        "slug": "organizing-digital-studio",
+        "subtitle": "Files, backups, and handoffs—systems that survive busy studio seasons.",
+        "shortDescription": "Templates and habits for digital projects without enterprise IT overhead.",
+        "audienceTags": [
+          "individual_artists",
+          "emerging_artists",
+          "staff_teams"
+        ],
+        "format": "online",
+        "materialsRequired": [
+          "Laptop",
+          "List of current storage tools you use"
+        ],
+        "materialsProvided": [
+          "Folder template (download)",
+          "Backup decision worksheet"
+        ],
+        "agenda": [
+          {
+            "title": "Where chaos comes from",
+            "durationMinutes": 20,
+            "summary": "Projects, exports, versions."
+          },
+          {
+            "title": "Template build",
+            "durationMinutes": 45,
+            "summary": "Apply skeleton to a real project."
+          },
+          {
+            "title": "Backups & recovery drill",
+            "durationMinutes": 35,
+            "summary": "Pick one tool; test restore."
+          },
+          {
+            "title": "Security baseline",
+            "durationMinutes": 20,
+            "summary": "Passwords, 2FA, sharing links."
+          }
+        ],
+        "instructors": [
+          {
+            "name": "Digital Lab team",
+            "title": "Oolite Arts",
+            "bio": "Supports sustainable digital infrastructure for artists."
+          }
+        ],
+        "deliveryHistory": {
+          "firstOfferedYear": 2026,
+          "runsCount": 0,
+          "venues": [
+            "Oolite Arts"
+          ]
+        },
+        "faq": [
+          {
+            "q": "Mac or Windows?",
+            "a": "Both—patterns are tool-agnostic with OS-specific tips."
+          }
+        ],
+        "ctas": {
+          "primary": {
+            "label": "Express interest",
+            "action": "interest"
+          },
+          "institutional": {
+            "label": "Institutional inquiry",
+            "action": "external"
+          }
+        },
+        "whoFor": [
+          "Artists juggling many concurrent digital projects",
+          "Small teams without dedicated IT"
+        ],
+        "whoNotFor": [
+          "Organizations needing formal compliance training"
+        ],
+        "modulesPreview": [
+          {
+            "title": "Project templates",
+            "lessonCount": 2
+          },
+          {
+            "title": "Backup & security basics",
+            "lessonCount": 2
+          }
+        ],
+        "track": "systems_archive",
+        "buildPriority": 7,
+        "placeholderImagePrompt": "Neat folder icons as subtle abstract shapes, paper texture overlay, calm green-gray palette",
+        "packetConcept": "Printable folder tree diagrams, password-manager onboarding checklist, collaborator handoff one-pager, and optional Obsidian/Drive comparison for artists."
+      }
+    },
+    {
+      "slug": "ai-copyright-creative-risk",
+      "title": "AI, Copyright, and Creative Risk",
+      "description": "A practical overview of how copyright, contracts, and platform terms intersect with AI-assisted art—what to watch for, not legal advice.",
+      "category": "digital_literacy",
+      "level": "intermediate",
+      "duration_minutes": 120,
+      "max_participants": 24,
+      "price": 0,
+      "instructor": "Professional Development",
+      "outcomes": [
+        "Identify contract and terms clauses that touch AI-generated or assisted work",
+        "Separate legal unknowns from studio risk decisions you control",
+        "Draft questions for counsel or institutional partners"
+      ],
+      "prerequisites": [],
+      "materials": [
+        "Laptop or notebook"
+      ],
+      "featured": false,
+      "status": "published",
+      "is_active": true,
+      "is_public": true,
+      "content": "We map common scenarios: training data debates, terms of use for tools, gallery and festival agreements, and how to talk to collaborators about disclosure. You leave with questions to ask a lawyer and clearer language for your own policies.",
+      "relatedSlugs": [
+        "ai-for-artists-voice-workflow-authorship",
+        "seo-workshop",
+        "documentation-for-artists"
+      ],
+      "metadata": {
+        "slug": "ai-copyright-creative-risk",
+        "subtitle": "Contracts, terms, and studio risk—framed for artists and small orgs.",
+        "shortDescription": "Navigate AI and IP conversations with clearer vocabulary and safer habits—not a substitute for legal counsel.",
+        "audienceTags": [
+          "individual_artists",
+          "staff_teams",
+          "educators",
+          "public_programs"
+        ],
+        "format": "in_person",
+        "materialsRequired": [],
+        "materialsProvided": [
+          "Scenario handout",
+          "Question list for counsel"
+        ],
+        "agenda": [
+          {
+            "title": "Landscape snapshot",
+            "durationMinutes": 30,
+            "summary": "What is settled vs in flux."
+          },
+          {
+            "title": "Tool terms & datasets",
+            "durationMinutes": 25,
+            "summary": "Reading ToS with an artist eye."
+          },
+          {
+            "title": "Contracts & exhibitions",
+            "durationMinutes": 35,
+            "summary": "Clauses and conversations."
+          },
+          {
+            "title": "Your question list",
+            "durationMinutes": 30,
+            "summary": "Draft for your lawyer or partner."
+          }
+        ],
+        "instructors": [
+          {
+            "name": "Professional Development",
+            "title": "Oolite Arts",
+            "bio": "Focuses on career infrastructure and partnerships for artists."
+          }
+        ],
+        "deliveryHistory": {
+          "firstOfferedYear": 2026,
+          "runsCount": 0,
+          "venues": [
+            "Oolite Arts"
+          ]
+        },
+        "faq": [
+          {
+            "q": "Will a lawyer teach this?",
+            "a": "No—this is practical literacy; bring questions to qualified counsel."
+          }
+        ],
+        "ctas": {
+          "primary": {
+            "label": "Express interest",
+            "action": "interest"
+          },
+          "institutional": {
+            "label": "Institutional inquiry",
+            "action": "external"
+          }
+        },
+        "whoFor": [
+          "Artists using or exhibiting AI-assisted work",
+          "Staff writing agreements for programs"
+        ],
+        "whoNotFor": [
+          "Legal advice—participants should consult qualified counsel"
+        ],
+        "modulesPreview": [
+          {
+            "title": "Terms & tools",
+            "lessonCount": 2
+          },
+          {
+            "title": "Agreements & exhibitions",
+            "lessonCount": 2
+          }
+        ],
+        "track": "ai_literacy",
+        "buildPriority": 8,
+        "placeholderImagePrompt": "Scales and stylus overlapping creative tools, monochrome ink illustration, serious but approachable",
+        "packetConcept": "Case-vignette deck for discussion, glossary of IP terms, sample rider language prompts (non-legal), and resource list for regional legal aid for artists."
+      }
+    }
+  ]
+}

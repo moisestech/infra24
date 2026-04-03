@@ -5,16 +5,16 @@ const steps = [
     title: 'Communication Infrastructure Audit',
     description:
       'A focused assessment of signs, screens, maps, event information, update bottlenecks, and public-facing gaps—with pilot recommendations and a practical roadmap.',
-    href: '/audit',
+    href: '/programs/artist-support/digital-audits',
   },
   {
     title: 'Pilot deployment',
     description:
       'One contained system in the real world: smart sign, map, kiosk, event layer, portal, or QR-based navigation—scoped to prove value before a larger commitment.',
-    href: '/pilots',
+    href: '/projects',
   },
   {
-    title: 'Support + reporting',
+    title: 'Sustainability + reporting',
     description:
       'Ongoing help so the system stays current, usable, and legible to staff, leadership, and funders—content rhythm, onboarding, usage snapshots, and optimization.',
     href: '/contact',

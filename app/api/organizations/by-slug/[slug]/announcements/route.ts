@@ -87,7 +87,7 @@ export async function GET(
       // Check if user has access to this organization
       const { data: userMembership } = await supabase
         .from('org_memberships')
-        .select('role, organization_id')
+        .select('role, org_id')
         .eq('clerk_user_id', userId)
         .single();
 
@@ -95,7 +95,7 @@ export async function GET(
         console.log('👥 Found user membership:', userMembership);
         
         // Super admins can see all organizations, others can only see their own
-        if (userMembership.role !== 'super_admin' && userMembership.organization_id !== organization.id) {
+        if (userMembership.role !== 'super_admin' && userMembership.org_id !== organization.id) {
           return NextResponse.json({ error: 'Access denied' }, { status: 403 });
         }
 
@@ -163,7 +163,7 @@ export async function POST(
     // Check if user has access to this organization
     const { data: userMembership } = await supabase
       .from('org_memberships')
-      .select('role, organization_id')
+      .select('role, org_id')
       .eq('clerk_user_id', userId)
       .single();
 
@@ -172,7 +172,7 @@ export async function POST(
     }
 
     // Super admins can see all organizations, others can only see their own
-    if (userMembership.role !== 'super_admin' && userMembership.organization_id !== organization.id) {
+    if (userMembership.role !== 'super_admin' && userMembership.org_id !== organization.id) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 

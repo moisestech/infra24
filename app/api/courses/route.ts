@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     const { data: membership, error: membershipError } = await supabase
       .from('org_memberships')
       .select('role')
-      .eq('organization_id', organizationId)
+      .eq('org_id', organizationId)
       .eq('clerk_user_id', userId)
       .eq('is_active', true)
       .single()
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
     const { data: membership, error: membershipError } = await supabase
       .from('org_memberships')
       .select('role')
-      .eq('organization_id', organizationId)
+      .eq('org_id', organizationId)
       .eq('clerk_user_id', userId)
       .eq('is_active', true)
       .single()

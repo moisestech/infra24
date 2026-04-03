@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Control action payloads (reference)",
+  "description": "Use with POST /api/control/v1/propose, /commit, or /execute-immediate. Top-level body also requires organization_slug and action.",
+  "type": "object",
+  "properties": {
+    "organization_slug": { "type": "string" },
+    "action": {
+      "type": "string",
+      "enum": [
+        "display.resolver_preview",
+        "display.screens_overview",
+        "departments.list",
+        "screen.list",
+        "playlist.list",
+        "audit.list_recent",
+        "screen.create",
+        "screen.patch",
+        "screen.assign_playlist",
+        "playlist.create",
+        "playlist.add_announcement",
+        "playlist.add_dynamic_feed",
+        "playlist.add_media",
+        "playlist.reorder_items",
+        "playlist.add_artist_spotlight",
+        "playlist.add_workshop_digest",
+        "playlist.set_department_filter",
+        "announcement.set_department",
+        "announcement.publish",
+        "announcement.create_draft"
+      ]
+    },
+    "payload": { "type": "object" },
+    "correlation_id": { "type": ["string", "null"] },
+    "actor_clerk_id": { "type": ["string", "null"] },
+    "telegram_user_id": { "type": ["string", "null"] }
+  },
+  "required": ["organization_slug", "action"],
+  "examples": [
+    {
+      "organization_slug": "oolite",
+      "action": "display.screens_overview",
+      "payload": {}
+    },
+    {
+      "organization_slug": "oolite",
+      "action": "display.resolver_preview",
+      "payload": { "screen_id": "00000000-0000-0000-0000-000000000000" }
+    },
+    {
+      "organization_slug": "oolite",
+      "action": "screen.create",
+      "payload": {
+        "name": "Lobby",
+        "device_key": "lobby-01",
+        "public_slug": "lobby",
+        "display_token": "optional-secret"
+      }
+    },
+    {
+      "organization_slug": "oolite",
+      "action": "playlist.add_media",
+      "payload": {
+        "playlist_id": "00000000-0000-0000-0000-000000000000",
+        "media_url": "https://example.com/poster.jpg",
+        "title_override": "Opening night"
+      }
+    },
+    {
+      "organization_slug": "oolite",
+      "action": "playlist.set_department_filter",
+      "payload": {
+        "playlist_id": "00000000-0000-0000-0000-000000000000",
+        "department_ids": []
+      }
+    }
+  ]
+}

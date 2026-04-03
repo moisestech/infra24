@@ -83,7 +83,7 @@ async function testLearnCanvasSystem() {
 
     const contentDirs = [
       'content/workshops/oolite/seo-workshop/chapters',
-      'content/workshops/oolite/digital-presence-workshop/chapters'
+      'content/workshops/oolite/own-your-digital-presence/chapters'
     ]
 
     let totalContentFiles = 0

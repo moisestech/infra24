@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Balancer } from 'react-wrap-balancer';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
@@ -8,19 +9,43 @@ import { HeroCollage } from '@/components/marketing/HeroCollage';
 import { ProblemSplitVisual } from '@/components/marketing/ProblemSplitVisual';
 import { BentoSystemsGrid } from '@/components/marketing/BentoSystemsGrid';
 import { ProofStrip } from '@/components/marketing/ProofStrip';
+import { CardGrid } from '@/components/marketing/cdc';
 import {
   marketingHero,
+  marketingHomeMeta,
+  marketingFaq,
   problemSection,
   problemBullets,
   differentiationSection,
   differentiationCards,
-  systemsIntro,
   capabilities,
   caseStudyPreviews,
   idealFitSection,
   idealFitBullets,
   measurementSection,
+  cdcNarrativeStack,
+  cdcAudiencePathways,
+  cdcWhyMiami,
+  cdcSystemsIntro,
+  cdcSiteMeta,
 } from '@/lib/marketing/content';
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: marketingHomeMeta.title,
+    description: marketingHomeMeta.description,
+    alternates: { canonical: '/' },
+    openGraph: {
+      title: marketingHomeMeta.title,
+      description: marketingHomeMeta.description,
+      url: '/',
+    },
+    twitter: {
+      title: marketingHomeMeta.title,
+      description: marketingHomeMeta.description,
+    },
+  };
+}
 
 export default function MarketingHomePage() {
   return (
@@ -38,13 +63,14 @@ export default function MarketingHomePage() {
               <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
                 <Balancer>{marketingHero.headline}</Balancer>
               </h1>
+              <p className="mt-2 text-sm font-medium text-neutral-500">{cdcSiteMeta.poweredByLine}</p>
               <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600">
                 {marketingHero.subhead}
               </p>
               <p className="mt-4 max-w-2xl text-sm text-neutral-500">{marketingHero.microTrust}</p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <form
-                  action="/audit"
+                  action="/grants"
                   method="get"
                   className="inline-flex w-full justify-center sm:w-auto sm:justify-start"
                 >
@@ -56,29 +82,36 @@ export default function MarketingHomePage() {
                     shimmerDuration="3.5s"
                     className="w-full px-5 py-2.5 text-sm font-medium sm:w-auto"
                   >
-                    Book a Communication Infrastructure Audit
+                    Grants & Miami pilot
                   </ShimmerButton>
                 </form>
                 <Link
-                  href="/pilots"
+                  href="/programs"
                   className="inline-flex justify-center text-sm font-medium text-neutral-800 underline-offset-4 hover:underline"
                 >
-                  Explore pilot systems
+                  Browse programs
                 </Link>
                 <Link
-                  href="/contact"
+                  href="/grants/funders"
                   className="inline-flex justify-center text-sm font-medium text-neutral-600 underline-offset-4 hover:underline"
                 >
-                  Ask about grant-aligned deployment
+                  Funder overview
                 </Link>
               </div>
               <p className="mt-8 text-sm text-neutral-500">
-                Platform and product demos:{' '}
+                Implementation layer:{' '}
+                <Link
+                  href="/infra24"
+                  className="font-medium text-neutral-700 underline-offset-4 hover:underline"
+                >
+                  What is Infra24?
+                </Link>
+                {' · '}
                 <Link
                   href="/platform"
                   className="font-medium text-neutral-700 underline-offset-4 hover:underline"
                 >
-                  Platform overview
+                  Platform area
                 </Link>
               </p>
             </div>
@@ -87,7 +120,47 @@ export default function MarketingHomePage() {
         </div>
       </section>
 
-      <MarketingSection id="problem" className="scroll-mt-14 bg-[#fafafa]">
+      <MarketingSection id="pathways" className="scroll-mt-14 bg-[#fafafa]">
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
+          Three ways to engage
+        </h2>
+        <p className="mt-3 max-w-2xl text-sm text-neutral-600">
+          We are prioritizing <strong className="font-medium text-neutral-800">grantmakers</strong> and{' '}
+          <strong className="font-medium text-neutral-800">small cultural organizations</strong> first;
+          artists remain central through programs and workshops. One site—CDC mission, Infra24
+          delivery—without competing brands.
+        </p>
+        <div className="mt-10">
+          <CardGrid items={[...cdcAudiencePathways]} columnsClassName="lg:grid-cols-3" />
+        </div>
+      </MarketingSection>
+
+      <MarketingSection id="narrative" className="scroll-mt-14 bg-white">
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
+          Narrative stack
+        </h2>
+        <p className="mt-3 max-w-2xl text-sm text-neutral-600">
+          Problem → opportunity → response → method → outcome. This sequence matches how we talk with
+          partners and in grant applications.
+        </p>
+        <dl className="mt-10 space-y-8">
+          {cdcNarrativeStack.map((step) => (
+            <div key={step.id}>
+              <dt className="text-sm font-semibold text-neutral-900">{step.title}</dt>
+              <dd className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-600">{step.body}</dd>
+            </div>
+          ))}
+        </dl>
+      </MarketingSection>
+
+      <MarketingSection id="why-miami" className="scroll-mt-14 bg-[#fafafa]">
+        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
+          {cdcWhyMiami.title}
+        </h2>
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">{cdcWhyMiami.body}</p>
+      </MarketingSection>
+
+      <MarketingSection id="problem" className="scroll-mt-14 bg-white">
         <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
           {problemSection.headline}
         </h2>
@@ -107,7 +180,7 @@ export default function MarketingHomePage() {
         </p>
       </MarketingSection>
 
-      <MarketingSection id="difference" className="scroll-mt-14 bg-white">
+      <MarketingSection id="difference" className="scroll-mt-14 bg-[#fafafa]">
         <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
           {differentiationSection.headline}
         </h2>
@@ -118,7 +191,7 @@ export default function MarketingHomePage() {
           {differentiationCards.map((card) => (
             <div
               key={card.leftLabel}
-              className="flex flex-col rounded-lg border border-neutral-200 p-5"
+              className="flex flex-col rounded-lg border border-neutral-200 bg-white p-5"
             >
               <div className="border-b border-neutral-100 pb-3">
                 <p className="text-xs font-medium uppercase text-neutral-500">{card.leftLabel}</p>
@@ -134,29 +207,30 @@ export default function MarketingHomePage() {
         <p className="mt-8 text-sm text-neutral-600">{differentiationSection.supportingLine}</p>
       </MarketingSection>
 
-      <MarketingSection id="systems" className="scroll-mt-14 bg-[#fafafa]">
+      <MarketingSection id="systems" className="scroll-mt-14 bg-white">
         <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
-          What Infra24 builds
+          What we build
         </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600">{systemsIntro}</p>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600">{cdcSystemsIntro}</p>
         <div className="mt-10">
           <BentoSystemsGrid capabilities={capabilities} />
         </div>
       </MarketingSection>
 
-      <MarketingSection id="process" className="scroll-mt-14 bg-white">
+      <MarketingSection id="process" className="scroll-mt-14 bg-[#fafafa]">
         <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
-          Start with an audit. Build a pilot. Expand what works.
+          Start with clarity. Pilot what matters. Expand what works.
         </h2>
         <p className="mt-3 max-w-2xl text-sm text-neutral-600">
-          Infra24 is designed to begin with a clear first step—not a giant transformation project.
+          CDC and Infra24 are designed for sequenced work—audits and scoped pilots before large
+          commitments.
         </p>
         <div className="mt-10">
           <OfferLadder />
         </div>
       </MarketingSection>
 
-      <MarketingSection id="fit" className="scroll-mt-14 bg-[#fafafa]">
+      <MarketingSection id="fit" className="scroll-mt-14 bg-white">
         <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
           {idealFitSection.headline}
         </h2>
@@ -173,7 +247,7 @@ export default function MarketingHomePage() {
         <p className="mt-6 max-w-2xl text-sm text-neutral-600">{idealFitSection.supporting}</p>
       </MarketingSection>
 
-      <MarketingSection id="outcomes" className="scroll-mt-14 bg-white">
+      <MarketingSection id="outcomes" className="scroll-mt-14 bg-[#fafafa]">
         <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
           {measurementSection.headline}
         </h2>
@@ -185,22 +259,38 @@ export default function MarketingHomePage() {
         </p>
       </MarketingSection>
 
+      <MarketingSection id="faq" className="scroll-mt-14 bg-white">
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
+          Common questions
+        </h2>
+        <p className="mt-3 max-w-2xl text-sm text-neutral-600">
+          Straight answers for artists, organizations, and funders evaluating this work.
+        </p>
+        <dl className="mt-10 space-y-8">
+          {marketingFaq.map((item) => (
+            <div key={item.question}>
+              <dt className="text-sm font-semibold text-neutral-900">{item.question}</dt>
+              <dd className="mt-2 text-sm leading-relaxed text-neutral-600">{item.answer}</dd>
+            </div>
+          ))}
+        </dl>
+      </MarketingSection>
+
       <MarketingSection id="proof" className="scroll-mt-14 bg-[#fafafa]">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
-              Early system examples
+              Project patterns
             </h2>
             <p className="mt-2 max-w-xl text-sm text-neutral-600">
-              Pilotable patterns—structured so leadership can see challenge, intervention, and what
-              scales next.
+              Case-style examples—challenge, intervention, and what scales next.
             </p>
           </div>
           <Link
-            href="/case-studies"
+            href="/projects"
             className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline"
           >
-            View all case studies
+            View all projects
           </Link>
         </div>
         <div className="mt-10">
@@ -208,16 +298,16 @@ export default function MarketingHomePage() {
         </div>
       </MarketingSection>
 
-      <MarketingSection id="audit" className="scroll-mt-14 bg-white pb-20">
+      <MarketingSection id="cta" className="scroll-mt-14 bg-white pb-20">
         <CtaBand
-          headline="Start with a Communication Infrastructure Audit"
-          body="If your organization is dealing with fragmented signs, scattered updates, inconsistent event information, or underused public-facing tools, the best first step is a focused review. We help identify what needs to be visible, where it should live, who should own it, and which pilot creates the clearest value."
-          primaryLabel="Book the audit"
-          primaryHref="/audit"
-          secondaryLabel="Discuss a pilot"
-          secondaryHref="/pilots"
-          tertiaryLabel="Ask about grant-aligned deployment"
-          tertiaryHref="/contact"
+          headline="Build public digital culture with us"
+          body="Funding supports CDC programs and the Infra24 implementation that keeps interfaces and workshops maintainable. Partners host pilots; funders help prove the model for Miami."
+          primaryLabel="Grants"
+          primaryHref="/grants"
+          secondaryLabel="Explore projects"
+          secondaryHref="/projects"
+          tertiaryLabel="Partnership contact"
+          tertiaryHref="/contact/partnerships"
         />
       </MarketingSection>
     </>

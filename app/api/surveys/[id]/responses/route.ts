@@ -40,7 +40,7 @@ export async function GET(
     const { data: membership } = await supabase
       .from('org_memberships')
       .select('role')
-      .eq('organization_id', survey.organization_id)
+      .eq('org_id', survey.organization_id)
       .eq('user_id', userId)
       .single();
 

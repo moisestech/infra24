@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
         id,
         clerk_user_id,
         role,
-        organization_id,
+        org_id,
         joined_at,
         organizations (
           id,
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
         id: primaryMembership.id,
         clerk_user_id: primaryMembership.clerk_user_id,
         role: primaryMembership.role,
-        organization_id: primaryMembership.organization_id,
+        organization_id: primaryMembership.org_id,
         joined_at: primaryMembership.joined_at
       },
       organization: primaryMembership.organizations,

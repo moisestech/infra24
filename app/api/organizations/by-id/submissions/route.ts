@@ -178,7 +178,7 @@ export async function POST(
     const { data: admins } = await supabase
       .from('org_memberships')
       .select('user_id')
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
       .in('role', ['admin', 'manager']);
 
     if (admins) {

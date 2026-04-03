@@ -86,6 +86,31 @@ function VisualBlock({
     );
   }
 
+  if (visual === 'handoff') {
+    const cells = [
+      1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0,
+    ];
+    return (
+      <div
+        className="flex items-center justify-center gap-3 rounded-md border border-neutral-200 bg-gradient-to-b from-neutral-50 to-neutral-100 p-3"
+        aria-hidden
+      >
+        <div className="relative h-14 w-[4.5rem] rounded-lg border border-neutral-300 bg-neutral-900 shadow-inner">
+          <div className="absolute left-1/2 top-1.5 h-1 w-6 -translate-x-1/2 rounded-full bg-neutral-700" />
+          <div className="absolute bottom-2 left-2 right-2 h-8 rounded border border-neutral-600 bg-neutral-800/80" />
+        </div>
+        <div className="grid grid-cols-5 gap-px rounded border border-neutral-300 bg-neutral-300 p-1">
+          {cells.map((on, idx) => (
+            <div
+              key={idx}
+              className={cn('h-1.5 w-1.5', on ? 'bg-neutral-900' : 'bg-white')}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-md border border-neutral-200 bg-neutral-50 px-3 py-3">
       <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">

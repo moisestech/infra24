@@ -185,10 +185,9 @@ async function ensureUserOrganizationAccess(userId: string, organizationId: stri
       .from('org_memberships')
       .upsert({
         user_id: userId,
-        organization_id: organizationId,
-        role: 'survey_respondent',
-        status: 'active',
-        created_at: new Date().toISOString()
+        clerk_user_id: userId,
+        org_id: organizationId,
+        role: 'member',
       });
 
     if (error) {

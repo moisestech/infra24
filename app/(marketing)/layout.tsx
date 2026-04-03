@@ -1,15 +1,46 @@
 import type { Metadata } from 'next';
 import { SiteHeader } from '@/components/marketing/SiteHeader';
 import { SiteFooter } from '@/components/marketing/SiteFooter';
+import { MarketingJsonLd } from '@/components/marketing/MarketingJsonLd';
+import { cdcSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
+import { getSiteUrl } from '@/lib/marketing/site-url';
+
+const siteUrl = getSiteUrl();
+const metadataBase = new URL(siteUrl);
 
 export const metadata: Metadata = {
-  title: { default: 'Infra24', template: '%s | Infra24' },
-  description:
-    'Updateable public communication systems for nonprofits and cultural organizations—smart signage, maps, kiosks, portals, and workflows across physical and online space.',
+  metadataBase,
+  title: {
+    default: cdcSiteMeta.organizationName,
+    template: `%s | ${cdcSiteMeta.organizationName}`,
+  },
+  description: marketingHomeMeta.description,
+  keywords: [
+    'Center of Digital Culture',
+    'Miami',
+    'digital culture',
+    'artist support',
+    'cultural infrastructure',
+    'public programs',
+    'digital literacy',
+    'smart signage',
+    'wayfinding',
+    'nonprofit',
+    'civic interfaces',
+    'Infra24',
+  ],
   openGraph: {
-    title: 'Infra24',
-    description:
-      'Infra24 builds communication infrastructure for mission-driven organizations: signs, maps, kiosks, portals, and measurable public-facing systems.',
+    type: 'website',
+    url: '/',
+    siteName: cdcSiteMeta.organizationName,
+    locale: 'en_US',
+    title: cdcSiteMeta.organizationName,
+    description: marketingHomeMeta.description,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: cdcSiteMeta.organizationName,
+    description: marketingHomeMeta.description,
   },
 };
 
@@ -20,6 +51,7 @@ export default function MarketingLayout({
 }) {
   return (
     <div className="min-h-screen bg-[#fafafa] text-neutral-900 antialiased">
+      <MarketingJsonLd />
       <SiteHeader />
       <main className="min-h-[60vh]">{children}</main>
       <SiteFooter />
