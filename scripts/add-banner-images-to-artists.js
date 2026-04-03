@@ -22,7 +22,7 @@ const OOLITE_ORG_ID = '2133fe94-fb12-41f8-ab37-ea4acd4589f6';
 const bannerImages = {
   'Studio Resident': 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=400&fit=crop&crop=center',
   'Live In Art Resident': 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=400&fit=crop&crop=center',
-  'Cinematic Resident': 'https://images.unsplash.com/photo-1489599805000-0b2b3b3b3b3b?w=800&h=400&fit=crop&crop=center',
+  'Cinematic Resident': 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&h=400&fit=crop&crop=center',
   'Staff': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=400&fit=crop&crop=center'
 };
 

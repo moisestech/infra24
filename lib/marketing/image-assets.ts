@@ -10,13 +10,13 @@
 export const heroCollagePanels = [
   {
     id: 'space',
-    src: 'https://images.unsplash.com/photo-1577083553086-f6c65c021c89?auto=format&fit=crop&w=1600&q=80',
+    src: 'https://images.unsplash.com/photo-1578321272176-b7bbc0679853?auto=format&fit=crop&w=1600&q=80',
     alt: 'Gallery hallway with white walls—public cultural space',
     label: 'Public space',
   },
   {
     id: 'layers',
-    src: 'https://images.unsplash.com/photo-1524661135-423995f32d0b?auto=format&fit=crop&w=900&q=80',
+    src: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=900&q=80',
     alt: 'Abstract map layers suggesting navigation and geography',
     label: 'Wayfinding layer',
   },
@@ -48,7 +48,7 @@ export const bentoPhotoSrc: Record<number, { src: string; alt: string }> = {
 
 export const caseStudyCoverImages = {
   'cultural-institution-wayfinding': {
-    src: 'https://images.unsplash.com/photo-1566127444979-b3d2b64e932f?auto=format&fit=crop&w=1200&q=80',
+    src: 'https://images.unsplash.com/photo-1576502200916-3808e07386a5?auto=format&fit=crop&w=1200&q=80',
     alt: 'Museum visitors in a spacious exhibition hall—public information in context',
   },
   'nonprofit-program-portal': {

@@ -80,7 +80,7 @@ const nextConfig = {
       { source: '/case-studies', destination: '/projects', permanent: true },
       { source: '/case-studies/:slug', destination: '/projects/:slug', permanent: true },
       { source: '/pilots', destination: '/projects', permanent: true },
-      { source: '/what-we-do', destination: '/programs', permanent: true },
+      { source: '/what-we-do', destination: '/infra24', permanent: true },
       {
         source: '/audit',
         destination: '/programs/artist-support/digital-audits',

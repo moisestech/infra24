@@ -67,22 +67,27 @@ export const BUDGET_CATEGORIES: BudgetCategory[] = [
   }
 ]
 
-// Generate Unsplash image URL based on category and item name
+// Stable Unsplash CDN URLs (source.unsplash.com was retired).
+const BUDGET_PLACEHOLDER_IMAGES = [
+  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&h=600&q=80',
+  'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&h=600&q=80',
+  'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&h=600&q=80',
+  'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&h=600&q=80',
+  'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&h=600&q=80',
+  'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&h=600&q=80',
+  'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&h=600&q=80',
+  'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&h=600&q=80',
+]
+
+function budgetImageIndex(seed: string): number {
+  let h = 0
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0
+  return Math.abs(h) % BUDGET_PLACEHOLDER_IMAGES.length
+}
+
 export function getBudgetItemImage(category: string, itemName: string): string {
-  const searchTerms: Record<string, string> = {
-    'program-salaries': 'office+team',
-    'contracted-services': 'technology+development',
-    'hardware-materials': 'computer+equipment',
-    'cloud-admin': 'cloud+server',
-    'contingency': 'tools+equipment'
-  }
-  
-  const term = searchTerms[category] || 'business'
-  const width = 800
-  const height = 600
-  const seed = itemName.toLowerCase().replace(/\s+/g, '-')
-  
-  return `https://source.unsplash.com/${width}x${height}/?${term}&sig=${seed}`
+  const seed = `${category}:${itemName.toLowerCase()}`
+  return BUDGET_PLACEHOLDER_IMAGES[budgetImageIndex(seed)]
 }
 
 // Budget config shape for optional injection (e.g. from Airtable)

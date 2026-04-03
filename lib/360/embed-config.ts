@@ -20,7 +20,8 @@ export function getEmbedItems(organizationSlug: string): EmbedItem[] {
       url: 'https://observablehq.com/@d3/bar-chart',
       description: 'Real-time analytics and data visualization',
       aspectRatio: '16:9',
-      thumbnail: 'https://source.unsplash.com/800x450/?dashboard,analytics'
+      thumbnail:
+        'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&h=450&q=80'
     },
     {
       id: '2',
@@ -28,7 +29,8 @@ export function getEmbedItems(organizationSlug: string): EmbedItem[] {
       url: 'https://modelviewer.dev/examples/augmented-reality/index.html',
       description: 'Interactive 3D model exploration',
       aspectRatio: '16:9',
-      thumbnail: 'https://source.unsplash.com/800x450/?3d,model'
+      thumbnail:
+        'https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&h=450&q=80'
     },
     {
       id: '3',
@@ -36,7 +38,8 @@ export function getEmbedItems(organizationSlug: string): EmbedItem[] {
       url: 'https://codepen.io/pen/',
       description: 'Live code editor and preview',
       aspectRatio: '16:9',
-      thumbnail: 'https://source.unsplash.com/800x450/?code,programming'
+      thumbnail:
+        'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&h=450&q=80'
     },
     {
       id: '4',
@@ -44,7 +47,8 @@ export function getEmbedItems(organizationSlug: string): EmbedItem[] {
       url: 'https://www.openstreetmap.org/export/embed.html?bbox=-80.3,25.7,-80.1,25.9&layer=mapnik',
       description: 'Geographic data visualization',
       aspectRatio: '16:9',
-      thumbnail: 'https://source.unsplash.com/800x450/?map,geography'
+      thumbnail:
+        'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&h=450&q=80'
     },
     {
       id: '5',
@@ -52,7 +56,8 @@ export function getEmbedItems(organizationSlug: string): EmbedItem[] {
       url: 'https://www.figma.com/embed?embed_host=share&url=https://www.figma.com/file/example',
       description: 'Collaborative design workspace',
       aspectRatio: '16:9',
-      thumbnail: 'https://source.unsplash.com/800x450/?design,creative'
+      thumbnail:
+        'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=800&h=450&q=80'
     }
   ]
   
@@ -66,7 +71,8 @@ export function getEmbedItems(organizationSlug: string): EmbedItem[] {
         url: 'https://aframe.io/aframe/examples/boilerplate/hello-world/',
         description: 'WebXR immersive experiences',
         aspectRatio: '16:9',
-        thumbnail: 'https://source.unsplash.com/800x450/?vr,ar'
+        thumbnail:
+          'https://images.unsplash.com/photo-1635322966219-b75ed372eb01?auto=format&fit=crop&w=800&h=450&q=80'
       }
     ]
   }
