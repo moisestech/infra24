@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CdcMiamiLogo } from '@/components/marketing/cdc/CdcMiamiLogo';
 import { cdcSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
 
 const footerWork = [
@@ -24,6 +25,9 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
+            <Link href="/" className="mb-4 inline-block">
+              <CdcMiamiLogo size="lg" />
+            </Link>
             <p className="text-sm font-semibold text-neutral-900">{cdcSiteMeta.organizationName}</p>
             <p className="mt-1 text-xs text-neutral-500">{cdcSiteMeta.poweredByLine}</p>
             <p className="mt-3 max-w-md text-sm font-medium leading-relaxed text-neutral-900">

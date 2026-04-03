@@ -1,9 +1,10 @@
+import { CDC_MIAMI_LOGO_URL } from '@/lib/marketing/cdc-brand';
 import { getSiteUrl } from '@/lib/marketing/site-url';
 import { cdcSiteMeta, marketingFaq, marketingHomeMeta } from '@/lib/marketing/content';
 
 export function MarketingJsonLd() {
   const base = getSiteUrl();
-  const logoUrl = `${base}/file.svg`;
+  const logoUrl = CDC_MIAMI_LOGO_URL;
   const orgName = cdcSiteMeta.organizationName;
 
   const organization = {
