@@ -3,17 +3,18 @@
  * Miami-inflected webcore accents — use with restraint outside hero/special UI.
  */
 .cdc-marketing {
-  --cdc-teal: #0d9488;
-  --cdc-coral: #ea580c;
-  --cdc-magenta: #db2777;
+  /* Brighter RGB-forward accents (cyan / orange / magenta) */
+  --cdc-teal: rgb(0, 212, 170);
+  --cdc-coral: rgb(255, 107, 53);
+  --cdc-magenta: rgb(255, 0, 136);
   --cdc-navy: #0f172a;
   --cdc-surface: #fafafa;
-  --cdc-hero-surface: #f4fbfb;
+  --cdc-hero-surface: #f6f8ff;
   --cdc-border: rgba(15, 23, 42, 0.12);
-  --cdc-border-strong: rgba(13, 148, 136, 0.35);
-  --cdc-mesh-teal: rgba(13, 148, 136, 0.14);
-  --cdc-mesh-coral: rgba(234, 88, 12, 0.1);
-  --cdc-mesh-magenta: rgba(219, 39, 119, 0.08);
+  --cdc-border-strong: rgba(0, 212, 170, 0.45);
+  --cdc-mesh-teal: rgba(0, 212, 170, 0.18);
+  --cdc-mesh-coral: rgba(255, 107, 53, 0.14);
+  --cdc-mesh-magenta: rgba(255, 0, 136, 0.1);
 }
 
 .cdc-mesh-hero-bg {

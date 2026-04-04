@@ -7,6 +7,143 @@ import type { WebcoreIconName } from '@/components/marketing/webcore-lucide';
 
 import { caseStudyCoverImages } from './image-assets';
 
+/** Lockup line — header + hero (place + public digital culture). */
+export const publicDigitalMiamiLine = 'PUBLIC DIGITAL MIAMI' as const;
+
+export type MarketingHeroSubheadSegment =
+  | { readonly kind: 'text'; readonly text: string }
+  | {
+      readonly kind: 'term';
+      readonly text: string;
+      readonly image: { readonly src: string; readonly alt: string };
+      readonly caption?: string;
+    };
+
+/** Homepage hero description as plain text + interactive key terms (images on hover/tap). */
+export const marketingHeroSubheadSegments = [
+  { kind: 'text', text: 'A ' },
+  {
+    kind: 'term',
+    text: 'Miami-based',
+    caption: 'Place-based pilot in civic corridors',
+    image: {
+      src: 'https://angelocaruso.art/images/traverse2.jpg',
+      alt: 'Photograph suggesting movement through urban or corridor space.',
+    },
+  },
+  { kind: 'text', text: ' platform for ' },
+  {
+    kind: 'term',
+    text: 'artists',
+    caption: 'Workshops, clinics, and experimental learning',
+    image: {
+      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717961679/art/moisestech-website/moisesdsanabria-babyagi_ewquhe.webp',
+      alt: 'Artwork referencing autonomous agents and digital labor.',
+    },
+  },
+  { kind: 'text', text: ', ' },
+  {
+    kind: 'term',
+    text: 'public learning',
+    caption: 'Programs that build literacy in the open',
+    image: {
+      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717960571/art/moisestech-website/digitaldivinities-moisesdsanabria-fabiolalarios-bakehouse-openstudios-spring-2024_f3ahbx.jpg',
+      alt: 'Open studios exhibition view with digital and sculptural work.',
+    },
+  },
+  { kind: 'text', text: ', and ' },
+  {
+    kind: 'term',
+    text: 'civic-facing',
+    caption: 'Interfaces the public actually encounters',
+    image: {
+      src: 'https://angelocaruso.art/images/frontpage/rain.jpg',
+      alt: 'Rain-soaked urban scene, reflective surfaces.',
+    },
+  },
+  { kind: 'text', text: ' ' },
+  {
+    kind: 'term',
+    text: 'digital culture infrastructure',
+    caption: 'Systems, not one-off installs',
+    image: {
+      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1738040056/art/moisestech-website/tumblr_npjvyoUNXh1r1ubs7o1_1280_bsmcic.jpg',
+      alt: 'Abstract digital texture with vertical color bands.',
+    },
+  },
+  { kind: 'text', text: '—' },
+  {
+    kind: 'term',
+    text: 'workshops',
+    caption: 'Hands-on skill building',
+    image: {
+      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1737831887/art/moisestech-website/touchgrass-doomscrolling-treadmill-stations-1_gggocb.jpg',
+      alt: 'Installation with treadmills and screens commenting on doomscrolling and physical presence.',
+    },
+  },
+  { kind: 'text', text: ', ' },
+  {
+    kind: 'term',
+    text: 'public programs',
+    caption: 'Events and offerings made legible',
+    image: {
+      src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_Surveillance_Cutie_2024.webp',
+      alt: 'Artwork depicting cute aesthetics intersecting surveillance motifs.',
+    },
+  },
+  { kind: 'text', text: ', ' },
+  {
+    kind: 'term',
+    text: 'artist support',
+    caption: 'Visibility tools and pathways',
+    image: {
+      src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_Gems_of_Obsolescence.webp',
+      alt: 'Sculptural work with gems and obsolete technology aesthetics.',
+    },
+  },
+  { kind: 'text', text: ', and ' },
+  {
+    kind: 'term',
+    text: 'updateable public interfaces',
+    caption: 'Signs, maps, kiosks, portals—kept current',
+    image: {
+      src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_eyeseeyou_watch.webp',
+      alt: 'Wearable or object evoking always-on watching and smart devices.',
+    },
+  },
+  { kind: 'text', text: '. ' },
+  {
+    kind: 'term',
+    text: 'Infra24',
+    caption: 'Implementation methodology behind CDC pilots',
+    image: {
+      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1738040056/art/moisestech-website/tumblr_npjzb2mbro1r1ubs7o1_1280_cqc4ds.jpg',
+      alt: 'Layered abstract imagery suggesting stacked interfaces.',
+    },
+  },
+  { kind: 'text', text: ' is the systems methodology that makes this work ' },
+  {
+    kind: 'term',
+    text: 'repeatable',
+    caption: 'Patterns other partners can adopt',
+    image: {
+      src: 'https://createbuildconnect.com/images/exhibitions/cubic.jpg',
+      alt: 'Exhibition documentation with cubic sculptural installation.',
+    },
+  },
+  { kind: 'text', text: ' and ' },
+  {
+    kind: 'term',
+    text: 'deployable',
+    caption: 'From pilot to operating practice',
+    image: {
+      src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_Internet_Entanglement_2024.webp',
+      alt: 'Artwork about entanglement with internet systems and identity.',
+    },
+  },
+  { kind: 'text', text: '.' },
+] as const satisfies readonly MarketingHeroSubheadSegment[];
+
 /** Site-wide organization name + tagline (metadata, JSON-LD, header/footer). */
 export const cdcSiteMeta = {
   organizationName: 'Center of Digital Culture',
@@ -26,8 +163,7 @@ export const marketingHomeMeta = {
 export const marketingHero = {
   eyebrow: 'Miami · Public digital culture',
   headline: 'Center of Digital Culture',
-  subhead:
-    'A Miami-based platform for artists, public learning, and civic-facing digital culture infrastructure—workshops, public programs, artist support, and updateable public interfaces. Infra24 is the systems methodology that makes this work repeatable and deployable.',
+  subhead: marketingHeroSubheadSegments.map((s) => s.text).join(''),
   microTrust:
     'Built for funders, partners, and communities who want cultural infrastructure that is visible, legible, and accountable—not a one-off vendor relationship.',
 } as const;
@@ -63,7 +199,6 @@ export const homeSysLogLines = [
 /** Hero digital frame microcopy (homepage webcore strip). */
 export const cdcHeroDigital = {
   systemLabels: ['Public', 'Digital', 'Miami'] as const,
-  frameTitle: 'Interface layer',
   caption: 'One communication layer across physical and digital surfaces',
 } as const;
 
@@ -74,30 +209,50 @@ export const cdcNarrativeStack = [
     title: 'Problem',
     body:
       'Artists and cultural organizations are expected to operate in digital public space, but most lack usable systems, interfaces, workflows, and support. Information fragments across signs, PDFs, inboxes, and screens.',
+    image: {
+      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1737831887/art/moisestech-website/touchgrass-doomscrolling-treadmill-stations-1_gggocb.jpg',
+      alt: 'Installation with treadmills and screens commenting on doomscrolling and physical presence.',
+    },
   },
   {
     id: 'opportunity',
     title: 'Opportunity',
     body:
       'Miami can model artist-centered digital culture infrastructure that is visible, useful, and repeatable—across workshops, public interfaces, and documentation others can adopt.',
+    image: {
+      src: 'https://angelocaruso.art/images/traverse2.jpg',
+      alt: 'Photograph suggesting movement through urban or corridor space.',
+    },
   },
   {
     id: 'response',
     title: 'Response',
     body:
       'CDC builds public programs, tools, workshops, and prototypes grounded in neighborhood and field reality—not abstract “innovation” for its own sake.',
+    image: {
+      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717960571/art/moisestech-website/digitaldivinities-moisesdsanabria-fabiolalarios-bakehouse-openstudios-spring-2024_f3ahbx.jpg',
+      alt: 'Open studios exhibition view with digital and sculptural work.',
+    },
   },
   {
     id: 'method',
     title: 'Method',
     body:
-      'Infra24 provides the systems logic and implementation layer: what to deploy, how updates flow, and how pilots become legible to staff, boards, and funders.',
+      'Partners implement the technical layer: what to deploy, how updates flow, and how pilots become legible to staff, boards, and funders. Infra24 documents that systems grammar on the implementation site.',
+    image: {
+      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1738040056/art/moisestech-website/tumblr_npjvyoUNXh1r1ubs7o1_1280_bsmcic.jpg',
+      alt: 'Abstract digital texture with vertical color bands.',
+    },
   },
   {
     id: 'outcome',
     title: 'Outcome',
     body:
       'More access, clearer visibility, stronger public engagement, and infrastructure that can travel across partners—without losing accountability to the public.',
+    image: {
+      src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_Surveillance_Cutie_2024.webp',
+      alt: 'Artwork depicting cute aesthetics intersecting surveillance motifs.',
+    },
   },
 ] as const;
 
@@ -106,18 +261,30 @@ export const cdcAudiencePathways = [
     href: '/grants/funders',
     title: 'For funders & grantmakers',
     description:
-      'Miami pilot narrative, funding priorities, materials, and how Infra24 implements the technical layer.',
+      'Miami pilot narrative, funding priorities, and materials—written for boards and program officers evaluating place-based digital culture.',
+    image: {
+      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717960571/art/moisestech-website/digitaldivinities-moisesdsanabria-fabiolalarios-bakehouse-openstudios-spring-2024_f3ahbx.jpg',
+      alt: 'Open studios exhibition view with digital and sculptural work.',
+    },
   },
   {
     href: '/programs/institutional-programs',
     title: 'For small cultural organizations',
     description:
       'Public interfaces, smart signs, artist-centered workflows, and staff training—scoped for organizations that need maintainable systems, not a one-off vendor.',
+    image: {
+      src: 'https://angelocaruso.art/images/frontpage/rain.jpg',
+      alt: 'Rain-soaked urban scene, reflective surfaces.',
+    },
   },
   {
     href: '/programs',
     title: 'For artists',
     description: 'Workshops, clinics, visibility tools, and experimental learning.',
+    image: {
+      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717961679/art/moisestech-website/moisesdsanabria-babyagi_ewquhe.webp',
+      alt: 'Artwork referencing autonomous agents and digital labor.',
+    },
   },
 ] as const;
 
@@ -300,6 +467,14 @@ export const navItems = [
   { href: '/contact', label: 'Contact' },
   { href: '/infra24', label: 'Infra24' },
 ] as const;
+
+/** Grouped links for the marketing header Sheet (`<details>` sections). Hrefs must exist in `navItems`. */
+export const marketingNavSheetGroups = [
+  { title: 'Explore', hrefs: ['/programs', '/projects', '/partners'] as const },
+  { title: 'Organization', hrefs: ['/about', '/grants', '/journal'] as const },
+] as const;
+
+export const marketingNavSheetFooterHrefs = ['/contact', '/infra24'] as const;
 
 /** Dedicated public product page at /infra24 (institutions, RFPs, technical buyers). */
 export const infra24MarketingMeta = {

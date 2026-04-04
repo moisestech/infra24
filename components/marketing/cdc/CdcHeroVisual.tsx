@@ -47,10 +47,7 @@ export function CdcHeroVisual({ className }: { className?: string }) {
             </span>
             <span className="text-[var(--cdc-magenta)]">{cdcHeroDigital.systemLabels[2]}</span>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden font-mono text-[9px] uppercase tracking-[0.18em] text-neutral-400 sm:inline">
-              {cdcHeroDigital.frameTitle}
-            </span>
+          <div className="flex items-center justify-end gap-3">
             <CdcMiamiLogo size="hero" priority />
           </div>
         </div>

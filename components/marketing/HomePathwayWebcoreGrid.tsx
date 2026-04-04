@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useId, useState } from 'react';
 import { ArrowRight, Terminal } from 'lucide-react';
@@ -59,18 +60,31 @@ function PathwayCard({ item }: { item: CardGridItem }) {
     >
       <Link
         href={item.href}
-        className="group/link flex flex-1 flex-col p-5 pb-3 transition-colors hover:bg-white/95"
+        className="group/link flex flex-1 flex-col transition-colors hover:bg-white/95"
       >
-        <span className="flex items-start justify-between gap-2">
-          <span className="text-sm font-semibold text-neutral-900">{item.title}</span>
-          <ArrowRight
-            className="mt-0.5 h-4 w-4 shrink-0 text-neutral-300 transition-colors duration-200 group-hover/link:text-[var(--cdc-teal)]"
-            aria-hidden
-          />
-        </span>
-        <p className="cdc-webcore-path-desc mt-2 text-sm leading-relaxed text-neutral-600 transition-[color,transform] duration-200 group-hover/link:text-neutral-800 group-hover/link:[text-shadow:0_0_0.6px_rgba(15,23,42,0.12)] sm:group-hover/link:translate-x-px">
-          {item.description}
-        </p>
+        {item.image ? (
+          <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-neutral-200/80">
+            <Image
+              src={item.image.src}
+              alt={item.image.alt}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition-[transform,filter] duration-500 ease-out group-hover/link:scale-[1.03] group-hover/link:contrast-[1.03]"
+            />
+          </div>
+        ) : null}
+        <div className="flex flex-1 flex-col p-5 pb-3">
+          <span className="flex items-start justify-between gap-2">
+            <span className="text-sm font-semibold text-neutral-900">{item.title}</span>
+            <ArrowRight
+              className="mt-0.5 h-4 w-4 shrink-0 text-neutral-300 transition-colors duration-200 group-hover/link:text-[var(--cdc-teal)]"
+              aria-hidden
+            />
+          </span>
+          <p className="cdc-webcore-path-desc mt-2 text-sm leading-relaxed text-neutral-600 transition-[color,transform] duration-200 group-hover/link:text-neutral-800 group-hover/link:[text-shadow:0_0_0.6px_rgba(15,23,42,0.12)] sm:group-hover/link:translate-x-px">
+            {item.description}
+          </p>
+        </div>
       </Link>
 
       {tech && (

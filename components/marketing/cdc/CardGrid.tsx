@@ -5,6 +5,8 @@ export type CardGridItem = {
   href: string;
   title: string;
   description: string;
+  /** Optional cover image for pathway / card grids. */
+  image?: { src: string; alt: string };
 };
 
 type CardGridProps = {

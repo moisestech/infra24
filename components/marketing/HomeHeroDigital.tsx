@@ -6,25 +6,37 @@ import { BorderBeam } from '@/components/ui/border-beam';
 import { AnimatedGridPattern } from '@/components/magicui/animated-grid-pattern';
 import { TextAnimate } from '@/components/magicui/text-animate';
 import { GlitchText } from '@/components/marketing/GlitchText';
+import { HeroSubheadKeyTerms } from '@/components/marketing/HeroSubheadKeyTerms';
 import { cdcDigitalBeam } from '@/lib/marketing/cdc-digital-theme';
+import type { MarketingHeroSubheadSegment } from '@/lib/marketing/content';
 import { cn } from '@/lib/utils';
 
 type HomeHeroDigitalProps = {
-  eyebrow: string;
+  /** Optional small line above PDM / headline (omit when using `publicDigitalMiamiLine` only). */
+  eyebrow?: string;
+  /** Prominent place + public digital culture lockup (larger than header). */
+  publicDigitalMiamiLine?: string;
   headline: string;
-  subhead: string;
   poweredByLine: string;
+  /** Plain subhead (used with `TextAnimate` when `subheadSegments` is omitted). */
+  subhead?: string;
+  /** Structured subhead with interactive key terms; takes precedence over `subhead` for visible body. */
+  subheadSegments?: readonly MarketingHeroSubheadSegment[];
   children: React.ReactNode;
 };
 
 export function HomeHeroDigital({
   eyebrow,
+  publicDigitalMiamiLine,
   headline,
-  subhead,
   poweredByLine,
+  subhead,
+  subheadSegments,
   children,
 }: HomeHeroDigitalProps) {
   const reduceMotion = useReducedMotion();
+  const showEyebrow = Boolean(eyebrow?.trim());
+  const plainSubheadForSr = subhead ?? subheadSegments?.map((s) => s.text).join('') ?? '';
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-[var(--cdc-border)] bg-white/35 p-6 shadow-sm shadow-teal-950/[0.04] backdrop-blur-[2px] sm:p-8">
@@ -50,36 +62,71 @@ export function HomeHeroDigital({
       )}
 
       <div className="relative z-[1]">
-        {reduceMotion ? (
-          <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--cdc-teal)]">
-            {eyebrow}
-          </p>
-        ) : (
-          <TextAnimate
-            as="p"
-            by="word"
-            animation="blurInUp"
-            startOnView
-            once
-            delay={0.05}
-            duration={0.45}
-            className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--cdc-teal)]"
-          >
-            {eyebrow}
-          </TextAnimate>
-        )}
+        {showEyebrow ? (
+          reduceMotion ? (
+            <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--cdc-teal)]">
+              {eyebrow}
+            </p>
+          ) : (
+            <TextAnimate
+              as="p"
+              by="word"
+              animation="blurInUp"
+              startOnView
+              once
+              delay={0.05}
+              duration={0.45}
+              className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--cdc-teal)]"
+            >
+              {eyebrow}
+            </TextAnimate>
+          )
+        ) : null}
+
+        {publicDigitalMiamiLine ? (
+          reduceMotion ? (
+            <p
+              className={cn(
+                'font-mono text-sm font-bold uppercase tracking-[0.24em] text-[var(--cdc-teal)] sm:text-base sm:tracking-[0.28em]',
+                showEyebrow ? 'mt-3' : 'mt-0'
+              )}
+            >
+              {publicDigitalMiamiLine}
+            </p>
+          ) : (
+            <motion.p
+              className={cn(
+                'font-mono text-sm font-bold uppercase tracking-[0.24em] text-[var(--cdc-teal)] sm:text-base sm:tracking-[0.28em]',
+                showEyebrow ? 'mt-3' : 'mt-0'
+              )}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.04 }}
+            >
+              {publicDigitalMiamiLine}
+            </motion.p>
+          )
+        ) : null}
 
         {reduceMotion ? (
-          <h1 className="cdc-hero-headline mt-5 max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl lg:leading-[1.08]">
+          <h1
+            className={cn(
+              'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
+              publicDigitalMiamiLine || showEyebrow ? 'mt-4' : 'mt-5'
+            )}
+          >
             <Balancer>
-              <GlitchText as="span" disabled={reduceMotion} className="inline">
+              <GlitchText as="span" disabled className="inline">
                 {headline}
               </GlitchText>
             </Balancer>
           </h1>
         ) : (
           <motion.h1
-            className="cdc-hero-headline mt-5 max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl lg:leading-[1.08]"
+            className={cn(
+              'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
+              publicDigitalMiamiLine || showEyebrow ? 'mt-4' : 'mt-5'
+            )}
             initial={{ opacity: 0, y: 22, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
@@ -94,22 +141,29 @@ export function HomeHeroDigital({
 
         <p className="mt-2 text-sm font-medium text-neutral-500">{poweredByLine}</p>
 
-        {reduceMotion ? (
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600">{subhead}</p>
-        ) : (
-          <TextAnimate
-            as="p"
-            by="word"
-            animation="blurIn"
-            startOnView
-            once
-            delay={0.2}
-            duration={0.65}
-            className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600"
-          >
-            {subhead}
-          </TextAnimate>
-        )}
+        {subheadSegments?.length ? (
+          <>
+            <span className="sr-only">{plainSubheadForSr}</span>
+            <HeroSubheadKeyTerms segments={subheadSegments} reduceMotion={Boolean(reduceMotion)} />
+          </>
+        ) : subhead ? (
+          reduceMotion ? (
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600">{subhead}</p>
+          ) : (
+            <TextAnimate
+              as="p"
+              by="word"
+              animation="blurIn"
+              startOnView
+              once
+              delay={0.2}
+              duration={0.65}
+              className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600"
+            >
+              {subhead}
+            </TextAnimate>
+          )
+        ) : null}
 
         <div
           className={cn(

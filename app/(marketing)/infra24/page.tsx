@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Balancer } from 'react-wrap-balancer';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
@@ -25,6 +26,18 @@ import {
   idealFitBullets,
   measurementSection,
 } from '@/lib/marketing/content';
+import { homeVisualProblemFeatured, homeVisualProcessStrip } from '@/lib/marketing/home-visual-assets';
+
+const HomeWebcoreVisualGrid = dynamic(
+  () =>
+    import('@/components/marketing/HomeWebcoreVisualGrid').then((m) => m.HomeWebcoreVisualGrid),
+  {
+    ssr: true,
+    loading: () => (
+      <div className="min-h-[200px] animate-pulse rounded-xl bg-neutral-100/90" aria-hidden />
+    ),
+  }
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -116,6 +129,9 @@ export default function Infra24ProductPage() {
             </li>
           ))}
         </ul>
+        <div className="mt-10">
+          <HomeWebcoreVisualGrid lightbox mode="featured" item={homeVisualProblemFeatured} />
+        </div>
         <ProblemSplitVisual />
         <p className="mt-10 max-w-2xl text-sm leading-relaxed text-neutral-600">
           {problemSection.closing}
@@ -133,7 +149,7 @@ export default function Infra24ProductPage() {
           {differentiationCards.map((card) => (
             <div
               key={card.leftLabel}
-              className="flex flex-col rounded-lg border border-neutral-200 bg-[#fafafa] p-5"
+              className="cdc-webcore-brackets flex flex-col rounded-lg border border-[var(--cdc-border)] bg-white p-5 shadow-sm shadow-teal-950/[0.03]"
             >
               <div className="border-b border-neutral-100 pb-3">
                 <p className="text-xs font-medium uppercase text-neutral-500">{card.leftLabel}</p>
@@ -182,6 +198,14 @@ export default function Infra24ProductPage() {
         <p className="mt-3 max-w-2xl text-sm text-neutral-600">
           Infra24 is designed to begin with a clear first step—not a giant transformation project.
         </p>
+        <div className="mt-8">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+            Process buffer
+          </p>
+          <div className="mt-3">
+            <HomeWebcoreVisualGrid lightbox mode="strip" items={[...homeVisualProcessStrip]} />
+          </div>
+        </div>
         <div className="mt-10">
           <OfferLadder />
         </div>

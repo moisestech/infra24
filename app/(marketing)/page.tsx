@@ -1,12 +1,10 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { MarketingSection } from '@/components/marketing/MarketingSection';
 import { CtaBand } from '@/components/marketing/CtaBand';
-import { OfferLadder } from '@/components/marketing/OfferLadder';
-import { ProblemSplitVisual } from '@/components/marketing/ProblemSplitVisual';
-import { BentoSystemsGrid } from '@/components/marketing/BentoSystemsGrid';
 import { ProofStrip } from '@/components/marketing/ProofStrip';
 import { HomeFaqWebcoreList } from '@/components/marketing/HomeFaqWebcoreList';
 import { HomeSysLogPanel } from '@/components/marketing/HomeSysLogPanel';
@@ -14,21 +12,14 @@ import { HomeWebcoreStatusStrip } from '@/components/marketing/HomeWebcoreStatus
 import { WebcoreIcon, type WebcoreIconName } from '@/components/marketing/webcore-lucide';
 import {
   marketingHero,
+  marketingHeroSubheadSegments,
   marketingHomeMeta,
+  publicDigitalMiamiLine,
   marketingFaq,
-  problemSection,
-  problemBullets,
-  differentiationSection,
-  differentiationCards,
-  capabilities,
   caseStudyPreviews,
-  idealFitSection,
-  idealFitBullets,
-  measurementSection,
   cdcNarrativeStack,
   cdcAudiencePathways,
   cdcWhyMiami,
-  cdcSystemsIntro,
   cdcSiteMeta,
   homeDigitalMarquee,
   homeWebcoreStatus,
@@ -38,8 +29,6 @@ import {
   homeVisualMidGallery,
   homeVisualNarrativeBridge,
   homeVisualPostMarquee,
-  homeVisualProblemFeatured,
-  homeVisualProcessStrip,
   homeVisualProofEcho,
   homeVisualWhyMiami,
 } from '@/lib/marketing/home-visual-assets';
@@ -125,9 +114,10 @@ export default function MarketingHomePage() {
           />
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-14">
             <HomeHeroDigital
-              eyebrow={marketingHero.eyebrow}
+              publicDigitalMiamiLine={publicDigitalMiamiLine}
               headline={marketingHero.headline}
               subhead={marketingHero.subhead}
+              subheadSegments={marketingHeroSubheadSegments}
               poweredByLine={cdcSiteMeta.poweredByLine}
             >
               <p className="mt-4 max-w-2xl text-sm text-neutral-500">{marketingHero.microTrust}</p>
@@ -206,8 +196,12 @@ export default function MarketingHomePage() {
         <p className="mt-3 max-w-2xl text-sm text-neutral-600">
           We are prioritizing <strong className="font-medium text-neutral-800">grantmakers</strong> and{' '}
           <strong className="font-medium text-neutral-800">small cultural organizations</strong> first;
-          artists remain central through programs and workshops. One site—CDC mission, Infra24
-          delivery—without competing brands.
+          artists stay central through programs and workshops. For audits, signage systems, and
+          implementation detail, see{' '}
+          <Link href="/infra24" className="font-medium text-neutral-800 underline-offset-4 hover:underline">
+            Infra24
+          </Link>
+          .
         </p>
         <div className="mt-10">
           <HomePathwayWebcoreGrid
@@ -225,19 +219,33 @@ export default function MarketingHomePage() {
           Problem → opportunity → response → method → outcome. This sequence matches how we talk with
           partners and in grant applications.
         </p>
-        <dl className="mt-10 space-y-8">
+        <dl className="mt-10 space-y-10">
           {cdcNarrativeStack.map((step) => (
-            <div key={step.id}>
-              <dt className="flex items-start gap-2.5 text-sm font-semibold text-neutral-900">
-                <WebcoreIcon
-                  name={NARRATIVE_WEBCORE_ICONS[step.id]}
-                  className="mt-0.5 h-4 w-4 shrink-0 text-[var(--cdc-teal)]"
+            <div
+              key={step.id}
+              className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8"
+            >
+              <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-xl border border-[var(--cdc-border)] bg-neutral-100 shadow-sm sm:aspect-square sm:w-40 md:w-48">
+                <Image
+                  src={step.image.src}
+                  alt={step.image.alt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 192px"
+                  className="object-cover"
                 />
-                <span>{step.title}</span>
-              </dt>
-              <dd className="mt-2 max-w-2xl pl-[1.625rem] text-sm leading-relaxed text-neutral-600 sm:pl-7">
-                {step.body}
-              </dd>
+              </div>
+              <div className="min-w-0 flex-1">
+                <dt className="flex items-start gap-2.5 text-sm font-semibold text-neutral-900">
+                  <WebcoreIcon
+                    name={NARRATIVE_WEBCORE_ICONS[step.id]}
+                    className="mt-0.5 h-4 w-4 shrink-0 text-[var(--cdc-teal)]"
+                  />
+                  <span>{step.title}</span>
+                </dt>
+                <dd className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-600">
+                  {step.body}
+                </dd>
+              </div>
             </div>
           ))}
         </dl>
@@ -267,59 +275,6 @@ export default function MarketingHomePage() {
         </div>
       </MarketingSection>
 
-      <MarketingSection id="problem" className="scroll-mt-14 bg-white">
-        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
-          {problemSection.headline}
-        </h2>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">
-          {problemSection.lead}
-        </p>
-        <ul className="mt-6 space-y-2.5">
-          {problemBullets.map((s) => (
-            <li key={s} className="flex gap-2.5 text-sm text-neutral-700">
-              <span className="select-none font-mono text-sm font-semibold text-[var(--cdc-teal)]" aria-hidden>
-                {'>'}
-              </span>
-              <span>{s}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-10">
-          <HomeWebcoreVisualGrid lightbox mode="featured" item={homeVisualProblemFeatured} />
-        </div>
-        <ProblemSplitVisual />
-        <p className="mt-10 max-w-2xl text-sm leading-relaxed text-neutral-600">
-          {problemSection.closing}
-        </p>
-      </MarketingSection>
-
-      <MarketingSection id="difference" className="scroll-mt-14 bg-[#fafafa]">
-        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
-          {differentiationSection.headline}
-        </h2>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">
-          {differentiationSection.intro}
-        </p>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {differentiationCards.map((card) => (
-            <div
-              key={card.leftLabel}
-              className="cdc-webcore-brackets flex flex-col rounded-lg border border-[var(--cdc-border)] bg-white p-5 shadow-sm shadow-teal-950/[0.03]"
-            >
-              <div className="border-b border-neutral-100 pb-3">
-                <p className="text-xs font-medium uppercase text-neutral-500">{card.leftLabel}</p>
-                <p className="mt-2 text-sm text-neutral-600">{card.left}</p>
-              </div>
-              <div className="pt-4">
-                <p className="text-xs font-medium uppercase text-neutral-800">{card.rightLabel}</p>
-                <p className="mt-2 text-sm text-neutral-700">{card.right}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <p className="mt-8 text-sm text-neutral-600">{differentiationSection.supportingLine}</p>
-      </MarketingSection>
-
       <MarketingSection
         id="field-refs"
         className="scroll-mt-14 border-y border-[var(--cdc-border)] bg-white py-16 sm:py-20"
@@ -337,72 +292,6 @@ export default function MarketingHomePage() {
         <div className="mt-10">
           <HomeWebcoreVisualGrid lightbox mode="mosaic" items={[...homeVisualMidGallery]} />
         </div>
-      </MarketingSection>
-
-      <MarketingSection id="systems" className="scroll-mt-14 bg-white">
-        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
-          What we build
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600">{cdcSystemsIntro}</p>
-        <div className="mt-10">
-          <BentoSystemsGrid capabilities={capabilities} />
-        </div>
-      </MarketingSection>
-
-      <MarketingSection id="process" className="scroll-mt-14 bg-[#fafafa]">
-        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
-          Start with clarity. Pilot what matters. Expand what works.
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm text-neutral-600">
-          CDC and Infra24 are designed for sequenced work—audits and scoped pilots before large
-          commitments.
-        </p>
-        <div className="mt-8">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
-            Process buffer
-          </p>
-          <div className="mt-3">
-            <HomeWebcoreVisualGrid lightbox mode="strip" items={[...homeVisualProcessStrip]} />
-          </div>
-        </div>
-        <div className="mt-10">
-          <OfferLadder />
-        </div>
-      </MarketingSection>
-
-      <MarketingSection id="fit" className="scroll-mt-14 bg-white">
-        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
-          {idealFitSection.headline}
-        </h2>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">
-          {idealFitSection.body}
-        </p>
-        <ul className="mt-6 grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
-          {idealFitBullets.map((b) => (
-            <li key={b} className="flex gap-2.5 text-sm text-neutral-700">
-              <span
-                className="select-none font-mono text-xs font-semibold text-[var(--cdc-magenta)] opacity-80"
-                aria-hidden
-              >
-                {'~'}
-              </span>
-              <span>{b}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-6 max-w-2xl text-sm text-neutral-600">{idealFitSection.supporting}</p>
-      </MarketingSection>
-
-      <MarketingSection id="outcomes" className="scroll-mt-14 bg-[#fafafa]">
-        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
-          {measurementSection.headline}
-        </h2>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">
-          {measurementSection.lead}
-        </p>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">
-          {measurementSection.supporting}
-        </p>
       </MarketingSection>
 
       <MarketingSection
