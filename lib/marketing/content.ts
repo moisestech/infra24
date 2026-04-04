@@ -6,6 +6,7 @@
 import type { WebcoreIconName } from '@/components/marketing/webcore-lucide';
 
 import { caseStudyCoverImages } from './image-assets';
+import { homePageStudioImagePool as studioImg } from './home-visual-assets';
 
 /** Lockup line — header + hero (place + public digital culture). */
 export const publicDigitalMiamiLine = 'PUBLIC DIGITAL MIAMI' as const;
@@ -26,120 +27,84 @@ export const marketingHeroSubheadSegments = [
     kind: 'term',
     text: 'Miami-based',
     caption: 'Place-based pilot in civic corridors',
-    image: {
-      src: 'https://angelocaruso.art/images/traverse2.jpg',
-      alt: 'Photograph suggesting movement through urban or corridor space.',
-    },
+    image: { src: studioImg[0].src, alt: studioImg[0].alt },
   },
   { kind: 'text', text: ' platform for ' },
   {
     kind: 'term',
     text: 'artists',
     caption: 'Workshops, clinics, and experimental learning',
-    image: {
-      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717961679/art/moisestech-website/moisesdsanabria-babyagi_ewquhe.webp',
-      alt: 'Artwork referencing autonomous agents and digital labor.',
-    },
+    image: { src: studioImg[1].src, alt: studioImg[1].alt },
   },
   { kind: 'text', text: ', ' },
   {
     kind: 'term',
     text: 'public learning',
     caption: 'Programs that build literacy in the open',
-    image: {
-      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717960571/art/moisestech-website/digitaldivinities-moisesdsanabria-fabiolalarios-bakehouse-openstudios-spring-2024_f3ahbx.jpg',
-      alt: 'Open studios exhibition view with digital and sculptural work.',
-    },
+    image: { src: studioImg[2].src, alt: studioImg[2].alt },
   },
   { kind: 'text', text: ', and ' },
   {
     kind: 'term',
     text: 'civic-facing',
     caption: 'Interfaces the public actually encounters',
-    image: {
-      src: 'https://angelocaruso.art/images/frontpage/rain.jpg',
-      alt: 'Rain-soaked urban scene, reflective surfaces.',
-    },
+    image: { src: studioImg[3].src, alt: studioImg[3].alt },
   },
   { kind: 'text', text: ' ' },
   {
     kind: 'term',
     text: 'digital culture infrastructure',
     caption: 'Systems, not one-off installs',
-    image: {
-      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1738040056/art/moisestech-website/tumblr_npjvyoUNXh1r1ubs7o1_1280_bsmcic.jpg',
-      alt: 'Abstract digital texture with vertical color bands.',
-    },
+    image: { src: studioImg[4].src, alt: studioImg[4].alt },
   },
   { kind: 'text', text: '—' },
   {
     kind: 'term',
     text: 'workshops',
     caption: 'Hands-on skill building',
-    image: {
-      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1737831887/art/moisestech-website/touchgrass-doomscrolling-treadmill-stations-1_gggocb.jpg',
-      alt: 'Installation with treadmills and screens commenting on doomscrolling and physical presence.',
-    },
+    image: { src: studioImg[0].src, alt: studioImg[0].alt },
   },
   { kind: 'text', text: ', ' },
   {
     kind: 'term',
     text: 'public programs',
     caption: 'Events and offerings made legible',
-    image: {
-      src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_Surveillance_Cutie_2024.webp',
-      alt: 'Artwork depicting cute aesthetics intersecting surveillance motifs.',
-    },
+    image: { src: studioImg[1].src, alt: studioImg[1].alt },
   },
   { kind: 'text', text: ', ' },
   {
     kind: 'term',
     text: 'artist support',
     caption: 'Visibility tools and pathways',
-    image: {
-      src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_Gems_of_Obsolescence.webp',
-      alt: 'Sculptural work with gems and obsolete technology aesthetics.',
-    },
+    image: { src: studioImg[2].src, alt: studioImg[2].alt },
   },
   { kind: 'text', text: ', and ' },
   {
     kind: 'term',
     text: 'updateable public interfaces',
     caption: 'Signs, maps, kiosks, portals—kept current',
-    image: {
-      src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_eyeseeyou_watch.webp',
-      alt: 'Wearable or object evoking always-on watching and smart devices.',
-    },
+    image: { src: studioImg[3].src, alt: studioImg[3].alt },
   },
   { kind: 'text', text: '. ' },
   {
     kind: 'term',
     text: 'Infra24',
     caption: 'Implementation methodology behind CDC pilots',
-    image: {
-      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1738040056/art/moisestech-website/tumblr_npjzb2mbro1r1ubs7o1_1280_cqc4ds.jpg',
-      alt: 'Layered abstract imagery suggesting stacked interfaces.',
-    },
+    image: { src: studioImg[4].src, alt: studioImg[4].alt },
   },
   { kind: 'text', text: ' is the systems methodology that makes this work ' },
   {
     kind: 'term',
     text: 'repeatable',
     caption: 'Patterns other partners can adopt',
-    image: {
-      src: 'https://createbuildconnect.com/images/exhibitions/cubic.jpg',
-      alt: 'Exhibition documentation with cubic sculptural installation.',
-    },
+    image: { src: studioImg[0].src, alt: studioImg[0].alt },
   },
   { kind: 'text', text: ' and ' },
   {
     kind: 'term',
     text: 'deployable',
     caption: 'From pilot to operating practice',
-    image: {
-      src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_Internet_Entanglement_2024.webp',
-      alt: 'Artwork about entanglement with internet systems and identity.',
-    },
+    image: { src: studioImg[1].src, alt: studioImg[1].alt },
   },
   { kind: 'text', text: '.' },
 ] as const satisfies readonly MarketingHeroSubheadSegment[];
@@ -209,50 +174,35 @@ export const cdcNarrativeStack = [
     title: 'Problem',
     body:
       'Artists and cultural organizations are expected to operate in digital public space, but most lack usable systems, interfaces, workflows, and support. Information fragments across signs, PDFs, inboxes, and screens.',
-    image: {
-      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1737831887/art/moisestech-website/touchgrass-doomscrolling-treadmill-stations-1_gggocb.jpg',
-      alt: 'Installation with treadmills and screens commenting on doomscrolling and physical presence.',
-    },
+    image: { src: studioImg[0].src, alt: studioImg[0].alt },
   },
   {
     id: 'opportunity',
     title: 'Opportunity',
     body:
       'Miami can model artist-centered digital culture infrastructure that is visible, useful, and repeatable—across workshops, public interfaces, and documentation others can adopt.',
-    image: {
-      src: 'https://angelocaruso.art/images/traverse2.jpg',
-      alt: 'Photograph suggesting movement through urban or corridor space.',
-    },
+    image: { src: studioImg[1].src, alt: studioImg[1].alt },
   },
   {
     id: 'response',
     title: 'Response',
     body:
       'CDC builds public programs, tools, workshops, and prototypes grounded in neighborhood and field reality—not abstract “innovation” for its own sake.',
-    image: {
-      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717960571/art/moisestech-website/digitaldivinities-moisesdsanabria-fabiolalarios-bakehouse-openstudios-spring-2024_f3ahbx.jpg',
-      alt: 'Open studios exhibition view with digital and sculptural work.',
-    },
+    image: { src: studioImg[2].src, alt: studioImg[2].alt },
   },
   {
     id: 'method',
     title: 'Method',
     body:
       'Partners implement the technical layer: what to deploy, how updates flow, and how pilots become legible to staff, boards, and funders. Infra24 documents that systems grammar on the implementation site.',
-    image: {
-      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1738040056/art/moisestech-website/tumblr_npjvyoUNXh1r1ubs7o1_1280_bsmcic.jpg',
-      alt: 'Abstract digital texture with vertical color bands.',
-    },
+    image: { src: studioImg[3].src, alt: studioImg[3].alt },
   },
   {
     id: 'outcome',
     title: 'Outcome',
     body:
       'More access, clearer visibility, stronger public engagement, and infrastructure that can travel across partners—without losing accountability to the public.',
-    image: {
-      src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_Surveillance_Cutie_2024.webp',
-      alt: 'Artwork depicting cute aesthetics intersecting surveillance motifs.',
-    },
+    image: { src: studioImg[4].src, alt: studioImg[4].alt },
   },
 ] as const;
 
@@ -262,29 +212,20 @@ export const cdcAudiencePathways = [
     title: 'For funders & grantmakers',
     description:
       'Miami pilot narrative, funding priorities, and materials—written for boards and program officers evaluating place-based digital culture.',
-    image: {
-      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717960571/art/moisestech-website/digitaldivinities-moisesdsanabria-fabiolalarios-bakehouse-openstudios-spring-2024_f3ahbx.jpg',
-      alt: 'Open studios exhibition view with digital and sculptural work.',
-    },
+    image: { src: studioImg[0].src, alt: studioImg[0].alt },
   },
   {
     href: '/programs/institutional-programs',
     title: 'For small cultural organizations',
     description:
       'Public interfaces, smart signs, artist-centered workflows, and staff training—scoped for organizations that need maintainable systems, not a one-off vendor.',
-    image: {
-      src: 'https://angelocaruso.art/images/frontpage/rain.jpg',
-      alt: 'Rain-soaked urban scene, reflective surfaces.',
-    },
+    image: { src: studioImg[1].src, alt: studioImg[1].alt },
   },
   {
     href: '/programs',
     title: 'For artists',
     description: 'Workshops, clinics, visibility tools, and experimental learning.',
-    image: {
-      src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717961679/art/moisestech-website/moisesdsanabria-babyagi_ewquhe.webp',
-      alt: 'Artwork referencing autonomous agents and digital labor.',
-    },
+    image: { src: studioImg[2].src, alt: studioImg[2].alt },
   },
 ] as const;
 

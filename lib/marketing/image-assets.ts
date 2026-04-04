@@ -7,30 +7,34 @@
  * @see docs/marketing/HOMEPAGE_IMAGE_SYSTEM.md
  */
 
+import { homePageStudioImagePool } from './home-visual-assets';
+
+const H = homePageStudioImagePool;
+
 export const heroCollagePanels = [
   {
     id: 'field',
-    src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717960571/art/moisestech-website/digitaldivinities-moisesdsanabria-fabiolalarios-bakehouse-openstudios-spring-2024_f3ahbx.jpg',
-    alt: 'Bakehouse Open Studios—digital and sculptural work in a Miami cultural space',
-    label: 'Miami field',
+    src: H[0].src,
+    alt: H[0].alt,
+    label: 'Layer stack',
   },
   {
     id: 'entanglement',
-    src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_Internet_Entanglement_2024.webp',
-    alt: 'Artwork about entanglement with internet systems and identity',
-    label: 'Network layer',
+    src: H[1].src,
+    alt: H[1].alt,
+    label: 'Vertical buffer',
   },
   {
     id: 'touchgrass',
-    src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1737831887/art/moisestech-website/touchgrass-doomscrolling-treadmill-stations-1_gggocb.jpg',
-    alt: 'Installation with treadmills and screens—physical presence and doomscrolling',
-    label: 'Body / feed',
+    src: H[2].src,
+    alt: H[2].alt,
+    label: 'Held attention',
   },
   {
     id: 'watch',
-    src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_eyeseeyou_watch.webp',
-    alt: 'Wearable evoking always-on devices and watching',
-    label: 'Wearable UI',
+    src: H[3].src,
+    alt: H[3].alt,
+    label: 'Public format',
   },
 ] as const;
 
