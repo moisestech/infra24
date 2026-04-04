@@ -38,12 +38,16 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--cdc-border)] bg-[#fafafa]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fafafa]/80">
-      <div className="mx-auto flex h-12 max-w-6xl items-center justify-between gap-2 px-3 sm:h-14 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-6 lg:px-8">
         <Link
           href="/"
           className="group flex min-w-0 flex-1 items-center gap-2.5 leading-tight sm:gap-3"
         >
-          <CdcMiamiLogo size="sm" priority className="max-sm:h-6 max-sm:w-[5.5rem]" />
+          <CdcMiamiLogo
+            size="hero"
+            priority
+            className="max-sm:h-10 max-sm:w-[9.5rem]"
+          />
           <div className="min-w-0 flex flex-col">
             <span className="truncate text-sm font-semibold tracking-tight text-neutral-900 sm:text-[0.95rem]">
               <span className="sm:hidden">{cdcSiteMeta.shortName}</span>
