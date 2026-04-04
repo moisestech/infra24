@@ -63,10 +63,10 @@ export function SiteHeader() {
             <SheetTrigger asChild>
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-[var(--cdc-border)] bg-white/80 text-neutral-800 shadow-sm transition-colors hover:bg-white hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)] focus-visible:ring-offset-2"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-md border border-[var(--cdc-border)] bg-white/80 text-neutral-800 shadow-sm transition-colors hover:bg-white hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)] focus-visible:ring-offset-2"
                 aria-label="Open menu"
               >
-                <Menu className="h-5 w-5" aria-hidden />
+                <Menu className="h-10 w-10" aria-hidden />
               </button>
             </SheetTrigger>
             <SheetContent
