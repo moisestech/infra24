@@ -9,28 +9,28 @@
 
 export const heroCollagePanels = [
   {
-    id: 'space',
-    src: 'https://images.unsplash.com/photo-1578321272176-b7bbc0679853?auto=format&fit=crop&w=1600&q=80',
-    alt: 'Gallery hallway with white walls—public cultural space',
-    label: 'Public space',
+    id: 'field',
+    src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1717960571/art/moisestech-website/digitaldivinities-moisesdsanabria-fabiolalarios-bakehouse-openstudios-spring-2024_f3ahbx.jpg',
+    alt: 'Bakehouse Open Studios—digital and sculptural work in a Miami cultural space',
+    label: 'Miami field',
   },
   {
-    id: 'layers',
-    src: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=900&q=80',
-    alt: 'Abstract map layers suggesting navigation and geography',
-    label: 'Wayfinding layer',
+    id: 'entanglement',
+    src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_Internet_Entanglement_2024.webp',
+    alt: 'Artwork about entanglement with internet systems and identity',
+    label: 'Network layer',
   },
   {
-    id: 'surface',
-    src: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=900&q=80',
-    alt: 'Ambient light and digital surface in a public interior',
-    label: 'Signage & screens',
+    id: 'touchgrass',
+    src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1737831887/art/moisestech-website/touchgrass-doomscrolling-treadmill-stations-1_gggocb.jpg',
+    alt: 'Installation with treadmills and screens—physical presence and doomscrolling',
+    label: 'Body / feed',
   },
   {
-    id: 'handoff',
-    src: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=600&q=80',
-    alt: 'Mobile device—QR and public handoff',
-    label: 'Mobile & QR',
+    id: 'watch',
+    src: 'https://fabiola.io/portfolio/works/Fabiola_Larios_eyeseeyou_watch.webp',
+    alt: 'Wearable evoking always-on devices and watching',
+    label: 'Wearable UI',
   },
 ] as const;
 

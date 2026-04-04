@@ -3,6 +3,8 @@
  * Public narrative: Center of Digital Culture (CDC). Implementation layer: Infra24.
  */
 
+import type { WebcoreIconName } from '@/components/marketing/webcore-lucide';
+
 import { caseStudyCoverImages } from './image-assets';
 
 /** Site-wide organization name + tagline (metadata, JSON-LD, header/footer). */
@@ -28,6 +30,41 @@ export const marketingHero = {
     'A Miami-based platform for artists, public learning, and civic-facing digital culture infrastructure—workshops, public programs, artist support, and updateable public interfaces. Infra24 is the systems methodology that makes this work repeatable and deployable.',
   microTrust:
     'Built for funders, partners, and communities who want cultural infrastructure that is visible, legible, and accountable—not a one-off vendor relationship.',
+} as const;
+
+/** Homepage ticker — Magic UI marquee strip (icons + pause on hover). */
+export const homeDigitalMarquee = [
+  { label: 'Workshops', icon: 'GraduationCap' },
+  { label: 'Public interfaces', icon: 'LayoutPanelLeft' },
+  { label: 'Grant-ready documentation', icon: 'FileSpreadsheet' },
+  { label: 'Miami pilot', icon: 'MapPin' },
+  { label: 'Artist-centered systems', icon: 'Users' },
+  { label: 'Wayfinding & signage', icon: 'Signpost' },
+  { label: 'Open documentation', icon: 'BookOpen' },
+  { label: 'Civic-facing UX', icon: 'Building2' },
+] as const satisfies ReadonlyArray<{ readonly label: string; readonly icon: WebcoreIconName }>;
+
+/** Hero status row — webcore / net-art chrome (mono + icons). */
+export const homeWebcoreStatus = [
+  { icon: 'Radio', label: 'Public signal' },
+  { icon: 'MapPin', label: 'Miami node' },
+  { icon: 'Cpu', label: 'Systems layer' },
+] as const satisfies ReadonlyArray<{ readonly icon: WebcoreIconName; readonly label: string }>;
+
+/** Decorative SYS.LOG lines (stylized; not operational telemetry). */
+export const homeSysLogLines = [
+  '[public.layer] handshake · miami_corridor · OK',
+  '[grants] schema_validate · priorities_bundle loaded',
+  '[workshops] queue · next_session · scheduled',
+  '[interfaces] signage_feed · delta_sync · idle',
+  '[docs] open_spec · version pinned for partners',
+] as const;
+
+/** Hero digital frame microcopy (homepage webcore strip). */
+export const cdcHeroDigital = {
+  systemLabels: ['Public', 'Digital', 'Miami'] as const,
+  frameTitle: 'Interface layer',
+  caption: 'One communication layer across physical and digital surfaces',
 } as const;
 
 /** Homepage narrative sequence (grants, decks, and site). */
@@ -107,36 +144,57 @@ export const marketingFaq = [
     question: 'What is Center of Digital Culture?',
     answer:
       'Center of Digital Culture (CDC) is a public-facing Miami initiative for artist-centered digital culture: workshops, public programs, artist support, and civic-facing interfaces. It is structured so funders and partners can see public benefit, pilots, and measurable outcomes—not only commercial services.',
+    readout:
+      'CDC is modeled as cultural infrastructure with legible public surfaces: programs produce literacy, interfaces produce accountability, and pilots produce evidence—not a closed SaaS product narrative.',
+    hints: ['entity: cdc.public_mission', 'surface: workshops + civic_ui', 'output: pilot_evidence_bundle'],
   },
   {
     question: 'What is Infra24, and how does it relate to CDC?',
     answer:
       'Infra24 is the implementation layer: the methodology and systems studio that designs, deploys, and documents the infrastructure behind CDC programs—smart signage, maps, kiosks, portals, update workflows, and documentation so the model can repeat across institutions.',
+    readout:
+      'Infra24 owns deployable patterns: schema for what ships, runbooks for who updates what, and documentation so the next org does not restart from zero—CDC stays the public story; Infra24 stays the systems grammar.',
+    hints: ['layer: implementation_studio', 'artifact: runbook + delta_feed', 'route: /infra24 · /platform'],
   },
   {
     question: 'Who is this for?',
     answer:
       'Artists, small cultural organizations, educators, civic partners, and funders investing in place-based digital culture in Miami. Institutional programs also include museums, nonprofits, libraries, and residency-style organizations that need public information to stay current across web and physical space.',
+    readout:
+      'Audience graph is intentionally multi-node: artists need clinics; orgs need maintainable stacks; funders need outcome language—same site, different entry paths without forking the brand.',
+    hints: ['segment: artist | org | funder', 'constraint: small_team_ops', 'geo: miami_pilot'],
   },
   {
     question: 'How is this different from buying displays or digital signage?',
     answer:
       'Buying screens answers hardware. CDC and Infra24 focus on communication systems: what must be visible, where it lives, who updates it, and how you know it works—so public culture stays legible over time.',
+    readout:
+      'Hardware procurement closes a PO; communication systems close a loop—content lifecycle, ownership, and measurement are the actual product, screens are just one render target.',
+    hints: ['anti-pattern: screen_without_owner', 'target: update_graph + sla', 'signal: stale_public_info ↓'],
   },
   {
     question: 'What is a typical first step?',
     answer:
       'For organizations, a structured infrastructure review (audit) or a scoped pilot is common. For artists, workshops and clinics are entry points. For funders, start with Grants and the funder contact path.',
+    readout:
+      'First moves are sequenced: audit → scoped pilot → expand—so boards see a defensible slice before capital-heavy rollouts.',
+    hints: ['flow: audit → pilot → scale', 'entry: /programs · /grants', 'artifact: scope_memo'],
   },
   {
     question: 'Can outcomes be measured for grants or boards?',
     answer:
       'Yes—systems are designed so improvements can be legible when appropriate: usage signals, update patterns, kiosk and map engagement, workshop attendance, and reduced outdated public information, depending on what you deploy.',
+    readout:
+      'Metrics attach to deployed surfaces—not vanity dashboards. What you can report depends on what you turn on: kiosks yield touch events; workshops yield attendance; update workflows yield freshness.',
+    hints: ['metric: engagement | freshness | training', 'policy: proportionate_measurement', 'export: board_summary'],
   },
   {
     question: 'Where can I learn more or get in touch?',
     answer:
       'Browse Programs and Projects for offerings and case patterns, read Grants for funding priorities, or use Contact to route general, partnership, funder, or press inquiries.',
+    readout:
+      'Routing is explicit to reduce inbox entropy—partnership vs funder vs press should not compete in one generic form if you can help it.',
+    hints: ['nav: /programs · /projects · /grants', 'action: /contact/*', 'queue: routed_intake'],
   },
 ] as const;
 
@@ -240,6 +298,93 @@ export const navItems = [
   { href: '/grants', label: 'Grants' },
   { href: '/journal', label: 'Journal' },
   { href: '/contact', label: 'Contact' },
+  { href: '/infra24', label: 'Infra24' },
+] as const;
+
+/** Dedicated public product page at /infra24 (institutions, RFPs, technical buyers). */
+export const infra24MarketingMeta = {
+  title: 'Infra24 — smart signage, maps, kiosks & public communication systems',
+  description:
+    'Infra24 designs updateable public communication systems for nonprofits, museums, and cultural organizations: smart signage, wayfinding, kiosks, portals, and workflows so the public sees accurate information and your team can maintain it.',
+} as const;
+
+export const infra24MarketingHero = {
+  eyebrow: 'Digital infrastructure for public-facing organizations',
+  headline: 'Updateable public communication systems',
+  subhead:
+    'Infra24 is a digital infrastructure partner for nonprofits, museums, libraries, residency programs, and cultural organizations. We build smart signage, maps, kiosks, portals, and communication workflows so the public sees accurate, current information—and your team can update and measure it without endless manual rework.',
+  microTrust:
+    'If your mission depends on clear public access, navigation, and program visibility, we align infrastructure with how you actually operate.',
+  cdcLinkLine:
+    'For Miami public programs, workshops, and the CDC mission layer, start at the home page.',
+} as const;
+
+/** Service areas (legacy “what we do” template). */
+export const infra24WhatWeDoCategories = [
+  {
+    title: 'Visibility systems',
+    body: 'A coherent picture of what your organization offers the public: what to see, when, and where—without competing versions in email, PDFs, and side channels.',
+  },
+  {
+    title: 'Public interfaces',
+    body: 'Websites and on-site surfaces that are easy to update and easy to navigate. Structure matches how visitors actually look for information.',
+  },
+  {
+    title: 'Smart signs',
+    body: 'Lobby and gallery screens that reflect authoritative data—not a separate copy-paste job every Monday.',
+  },
+  {
+    title: 'Smart maps',
+    body: 'Wayfinding and program-aware maps that stay tied to places and schedules as they change.',
+  },
+  {
+    title: 'Artist and resident portals',
+    body: 'Clear entry points for people your organization serves: expectations, resources, and deadlines in one accountable place.',
+  },
+  {
+    title: 'Update workflows',
+    body: 'Who publishes what, which system is source of truth, and how handoffs work between programming, communications, and operations.',
+  },
+  {
+    title: 'Institutional memory',
+    body: 'Lightweight patterns so decisions and content do not live only in inboxes or departing staff laptops.',
+  },
+  {
+    title: 'Web and physical coherence',
+    body: 'The lobby, the website, and the program calendar tell one story—because they draw from aligned systems.',
+  },
+  {
+    title: 'Pilot design and implementation',
+    body: 'Bounded experiments with clear success signals before you commit to organization-wide change.',
+  },
+] as const;
+
+export const infra24Faq = [
+  {
+    question: 'What is Infra24?',
+    answer:
+      'A practice that designs and implements updateable public communication systems for mission-driven organizations—smart signage, maps, wayfinding, kiosks, portals, and the workflows that keep public-facing information accurate over time.',
+  },
+  {
+    question: 'Who is Infra24 for?',
+    answer:
+      'Nonprofits, museums, art centers, libraries, artist-serving organizations, and cultural or civic organizations that need public information to stay current across physical spaces, screens, and the web—not a one-time hardware purchase.',
+  },
+  {
+    question: 'How is this different from buying displays?',
+    answer:
+      'Buying screens solves hardware. Infra24 focuses on communication systems: what needs to be visible, where it lives, who owns updates, and how you know the system is working.',
+  },
+  {
+    question: 'What is the usual first step?',
+    answer:
+      'Most engagements start with a Communication Infrastructure Audit: how information moves today, prioritized gaps, and a recommended pilot sequence sized to your capacity.',
+  },
+  {
+    question: 'How does Infra24 relate to Center of Digital Culture?',
+    answer:
+      'CDC is the public Miami initiative for digital culture programs; Infra24 is the implementation methodology and product layer that builds and runs the systems. This page is the institutional entry point for the Infra24 studio itself.',
+  },
 ] as const;
 
 export const caseStudyPreviews = [

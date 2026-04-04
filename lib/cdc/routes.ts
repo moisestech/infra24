@@ -87,7 +87,7 @@ const pages: CdcPageDef[] = [
     path: '/infra24',
     title: 'Infra24',
     description:
-      'The operational and systems methodology that powers Center of Digital Culture—deployment, interfaces, and repeatable infrastructure.',
+      'Updateable public communication systems for nonprofits and cultural organizations: smart signage, wayfinding, kiosks, portals, and workflows you can maintain and measure. The systems studio behind Center of Digital Culture.',
     parent: '/about',
     layout: 'default',
   }),

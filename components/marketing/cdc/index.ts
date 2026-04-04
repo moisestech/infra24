@@ -1,4 +1,5 @@
 export { CdcMiamiLogo } from './CdcMiamiLogo';
+export { CdcHeroVisual } from './CdcHeroVisual';
 export { Breadcrumbs } from './Breadcrumbs';
 export { PageHero } from './PageHero';
 export { Section } from './Section';

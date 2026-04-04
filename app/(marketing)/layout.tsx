@@ -4,6 +4,7 @@ import { SiteFooter } from '@/components/marketing/SiteFooter';
 import { MarketingJsonLd } from '@/components/marketing/MarketingJsonLd';
 import { cdcSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
 import { getSiteUrl } from '@/lib/marketing/site-url';
+import './cdc-marketing-theme.css';
 
 const siteUrl = getSiteUrl();
 const metadataBase = new URL(siteUrl);
@@ -50,7 +51,7 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#fafafa] text-neutral-900 antialiased">
+    <div className="cdc-marketing min-h-screen bg-[#fafafa] text-neutral-900 antialiased">
       <MarketingJsonLd />
       <SiteHeader />
       <main className="min-h-[60vh]">{children}</main>

@@ -79,19 +79,21 @@ export default function WhatWeDoPage() {
         <CtaBand
           headline="Turn this into a scoped next step"
           body="An audit clarifies what to pilot first. A pilot proves value before a larger build."
-          primaryHref="/audit"
-          secondaryHref="/contact"
+          primaryLabel="Book the audit"
+          primaryHref="/programs/artist-support/digital-audits"
+          secondaryLabel="Contact"
+          secondaryHref="/contact/general"
         />
       </MarketingSection>
 
       <MarketingSection className="bg-[#fafafa] pb-20">
         <p className="text-sm text-neutral-600">
-          <Link href="/pilots" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
-            Explore pilots
+          <Link href="/projects" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
+            Explore projects
           </Link>{' '}
           ·{' '}
-          <Link href="/case-studies" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
-            Case studies
+          <Link href="/infra24" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
+            Infra24 overview
           </Link>
         </p>
       </MarketingSection>
