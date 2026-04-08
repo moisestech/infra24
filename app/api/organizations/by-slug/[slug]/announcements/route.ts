@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { createClient } from '@supabase/supabase-js';
+import { getValidatedAnnouncementRedirectTarget } from '@/lib/announcements/scan-target';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,6 +69,7 @@ export async function GET(
         status,
         tags,
         primary_link,
+        qr_destination_url,
         additional_info,
         created_at,
         updated_at,
@@ -77,7 +79,7 @@ export async function GET(
         image_url,
         image_layout
       `)
-      .eq('org_id', organization.id)
+      .or(`organization_id.eq.${organization.id},org_id.eq.${organization.id}`)
       .order('created_at', { ascending: false });
 
     // If no user is authenticated, only show active announcements
@@ -185,6 +187,7 @@ export async function POST(
     // Support both old schema (content, created_by) and new schema (body, author_clerk_id)
     const announcementData: any = {
       org_id: organization.id,
+      organization_id: organization.id,
       title: body.title,
       is_active: body.is_active !== false, // Default to true
       priority: body.priority || 'normal',
@@ -193,10 +196,34 @@ export async function POST(
       end_date: body.end_date || null,
       location: body.location || null,
       key_people: body.key_people || [],
-      metadata: body.metadata || {},
+      metadata: body.metadata ?? {},
       image_url: body.image_url || null,
       image_layout: body.image_layout || null
     };
+
+    if (body.primary_link !== undefined && body.primary_link !== null && String(body.primary_link).trim() !== '') {
+      const pl = getValidatedAnnouncementRedirectTarget(String(body.primary_link));
+      if (!pl) {
+        return NextResponse.json({ error: 'Invalid primary_link URL' }, { status: 400 });
+      }
+      announcementData.primary_link = pl;
+    } else if (body.primary_link === null || body.primary_link === '') {
+      announcementData.primary_link = null;
+    }
+
+    if (
+      body.qr_destination_url !== undefined &&
+      body.qr_destination_url !== null &&
+      String(body.qr_destination_url).trim() !== ''
+    ) {
+      const qr = getValidatedAnnouncementRedirectTarget(String(body.qr_destination_url));
+      if (!qr) {
+        return NextResponse.json({ error: 'Invalid qr_destination_url' }, { status: 400 });
+      }
+      announcementData.qr_destination_url = qr;
+    } else if (body.qr_destination_url === null || body.qr_destination_url === '') {
+      announcementData.qr_destination_url = null;
+    }
 
     // Use new schema fields if provided, otherwise fall back to old schema
     if (body.body !== undefined) {

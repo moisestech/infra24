@@ -13,6 +13,7 @@ export type AnnouncementType =
   | 'attention_public'
   | 'fun_fact'
   | 'promotion'
+  | 'cinematic'
   | 'gala_announcement';
 
 export type AnnouncementSubType = 
@@ -92,6 +93,8 @@ export interface Announcement {
   sub_type?: AnnouncementSubType;
   template?: string;
   primary_link?: string;
+  /** Smart-sign QR /scan redirect; falls back to primary_link if unset */
+  qr_destination_url?: string | null;
   additional_info?: string;
   image_url?: string;
   people?: any[];

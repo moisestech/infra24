@@ -26,6 +26,8 @@ This document establishes the standard theme system for the Bakehouse News platf
 
 ## Implementation Standard
 
+**Tailwind CSS:** `tailwind.config.js` must set `darkMode: 'class'` so every `dark:` utility follows the same `dark` / `light` class on `<html>` that `ThemeContext` applies. Without it, Tailwind defaults to `media` (`prefers-color-scheme`), and the navigation bar and other `dark:` classes will not track the in-app theme toggle.
+
 ### ✅ CORRECT: Use Custom ThemeContext
 
 ```typescript

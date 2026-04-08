@@ -21,9 +21,15 @@ interface AnnouncementCarouselProps {
   announcements: Announcement[];
   organizationSlug?: string;
   cleanViewMode?: boolean;
+  hideAnnouncementDates?: boolean;
 }
 
-export function AnnouncementCarousel({ announcements, organizationSlug, cleanViewMode = false }: AnnouncementCarouselProps) {
+export function AnnouncementCarousel({
+  announcements,
+  organizationSlug,
+  cleanViewMode = false,
+  hideAnnouncementDates = false,
+}: AnnouncementCarouselProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
     loop: true,
     align: 'start',
@@ -35,7 +41,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false); // Hide QR code by default
-  const [showQRCodeButton, setShowQRCodeButton] = useState(false); // Disabled until QR code is fully tested
+  const [showQRCodeButton, setShowQRCodeButton] = useState(true);
   const [showLearnMore, setShowLearnMore] = useState(false); // Hide Learn More button by default
   const initialMetrics = calculateScreenMetrics();
   const initialSizes = getResponsiveTextSizes(initialMetrics);
@@ -568,6 +574,7 @@ export function AnnouncementCarousel({ announcements, organizationSlug, cleanVie
                 isActive={index === currentIndex}
                 animationsPaused={cleanViewMode}
                 slideIndex={index}
+                hideAnnouncementDates={hideAnnouncementDates}
               />
             </div>
           ))}

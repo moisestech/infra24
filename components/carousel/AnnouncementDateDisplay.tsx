@@ -7,6 +7,8 @@ interface AnnouncementDateDisplayProps {
   announcement: any;
   orientation: 'portrait' | 'landscape';
   organizationTheme?: any;
+  /** Smart sign: hide all date UI (e.g. studio resident stories) */
+  hideDates?: boolean;
   showDetailedMetadata?: boolean; // New prop to show detailed date info in metadata section
   layoutType?: string | null; // e.g. 'card' - used to position date visibly
   textSizes?: {
@@ -29,6 +31,7 @@ export function AnnouncementDateDisplay({
   announcement, 
   orientation, 
   organizationTheme,
+  hideDates = false,
   showDetailedMetadata = false,
   layoutType = null,
   textSizes = {
@@ -46,7 +49,8 @@ export function AnnouncementDateDisplay({
   screenMetrics,
   responsiveSizes
 }: AnnouncementDateDisplayProps) {
-  
+  if (hideDates) return null;
+
   // Get responsive icon size for date display icons
   const getDateIconSize = () => {
     if (!screenMetrics) {

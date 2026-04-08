@@ -40,7 +40,7 @@ interface Artist {
   updated_at: string;
   organization_id: string;
   metadata?: Record<string, any>;
-  organizations: {
+  organizations?: {
     id: string;
     name: string;
     slug: string;
@@ -66,6 +66,20 @@ const studioTypeColors = {
   'Cinematic Resident': 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400',
   'Staff': 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400'
 };
+
+function residencyLabel(artist: Artist): string {
+  const fromMeta =
+    artist.metadata &&
+    typeof artist.metadata.residency_type === 'string' &&
+    artist.metadata.residency_type.trim();
+  return (artist.studio_type || fromMeta || '').trim();
+}
+
+function studioNumberLabel(artist: Artist): string {
+  const fromMeta =
+    artist.metadata && typeof artist.metadata.studio === 'string' && artist.metadata.studio.trim();
+  return (artist.studio_location || fromMeta || '').trim();
+}
 
 export default function ArtistsPage() {
   const params = useParams();
@@ -95,21 +109,36 @@ export default function ArtistsPage() {
       try {
         console.log('🔍 ArtistsPage: Loading data for slug:', slug);
         
-        // Load organization data
-        const orgResponse = await fetch(`/api/organizations/by-slug/${slug}`);
+        // Load organization data (public API)
+        const orgResponse = await fetch(`/api/organizations/by-slug/${slug}`, {
+          cache: 'no-store',
+        });
         console.log('🔍 ArtistsPage: Organization response status:', orgResponse.status);
         
         if (orgResponse.ok) {
           const orgData = await orgResponse.json();
           console.log('🔍 ArtistsPage: Organization data:', orgData);
-          setOrganization(orgData.organization);
+          const org = orgData.organization;
+          if (!org?.id) {
+            console.error('❌ ArtistsPage: Organization payload missing id', orgData);
+            return;
+          }
+          setOrganization(org);
           
-          // Load artists for this organization
-          const artistsUrl = `/api/artists?orgId=${orgData.organization.id}`;
+          const artistsUrl = `/api/artists?orgId=${encodeURIComponent(org.id)}`;
           console.log('🔍 ArtistsPage: Fetching artists from:', artistsUrl);
           
-          const artistsResponse = await fetch(artistsUrl);
+          const artistsResponse = await fetch(artistsUrl, { cache: 'no-store' });
           console.log('🔍 ArtistsPage: Artists response status:', artistsResponse.status);
+          
+          const contentType = artistsResponse.headers.get('content-type') || '';
+          if (!contentType.includes('application/json')) {
+            console.error(
+              '❌ ArtistsPage: Artists response is not JSON (check Clerk middleware for /api/artists):',
+              contentType
+            );
+            return;
+          }
           
           if (artistsResponse.ok) {
             const artistsData = await artistsResponse.json();
@@ -134,14 +163,20 @@ export default function ArtistsPage() {
   const filteredArtists = artists.filter(artist => {
     const matchesSearch = artist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (artist.bio && artist.bio.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStudioType = !studioTypeFilter || artist.studio_type === studioTypeFilter;
-    const matchesStudioNumber = !studioNumberFilter || artist.studio_location === studioNumberFilter;
+    const typeLabel = residencyLabel(artist);
+    const studioNum = studioNumberLabel(artist);
+    const matchesStudioType = !studioTypeFilter || typeLabel === studioTypeFilter;
+    const matchesStudioNumber = !studioNumberFilter || studioNum === studioNumberFilter;
     
     return matchesSearch && matchesStudioType && matchesStudioNumber;
   });
 
-  const uniqueStudioTypes = Array.from(new Set(artists.map(artist => artist.studio_type).filter(Boolean)));
-  const uniqueStudioNumbers = Array.from(new Set(artists.map(artist => artist.studio_location).filter(Boolean)));
+  const uniqueStudioTypes = Array.from(
+    new Set(artists.map((a) => residencyLabel(a)).filter(Boolean))
+  );
+  const uniqueStudioNumbers = Array.from(
+    new Set(artists.map((a) => studioNumberLabel(a)).filter(Boolean))
+  );
 
   const getStudioTypeIcon = (studioType: string) => {
     const IconComponent = studioTypeIcons[studioType as keyof typeof studioTypeIcons] || User;
@@ -290,26 +325,26 @@ export default function ArtistsPage() {
             >
               {/* Banner Image */}
               <div className="relative h-32 bg-gradient-to-r from-blue-500 to-purple-600">
-                {artist.metadata?.residency_type === 'Studio Resident' && (
+                {residencyLabel(artist) === 'Studio Resident' && (
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600"></div>
                 )}
-                {artist.metadata?.residency_type === 'Live In Art Resident' && (
+                {residencyLabel(artist) === 'Live In Art Resident' && (
                   <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600"></div>
                 )}
-                {artist.metadata?.residency_type === 'Cinematic Resident' && (
+                {residencyLabel(artist) === 'Cinematic Resident' && (
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-purple-600"></div>
                 )}
-                {artist.metadata?.residency_type === 'Staff' && (
+                {residencyLabel(artist) === 'Staff' && (
                   <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-600"></div>
                 )}
                 
                 {/* Residency Type Badge */}
-                {artist.metadata?.residency_type && (
+                {residencyLabel(artist) && (
                   <div className="absolute top-3 right-3">
-                    <Badge className={`${getStudioTypeColor(artist.metadata.residency_type)} flex items-center space-x-1`}>
-                      {getStudioTypeIcon(artist.metadata.residency_type)}
+                    <Badge className={`${getStudioTypeColor(residencyLabel(artist))} flex items-center space-x-1`}>
+                      {getStudioTypeIcon(residencyLabel(artist))}
                       <span className="text-xs font-medium">
-                        {artist.metadata.residency_type}
+                        {residencyLabel(artist)}
                       </span>
                     </Badge>
                   </div>
@@ -340,9 +375,9 @@ export default function ArtistsPage() {
                   </h3>
                   
                   {/* Studio Number */}
-                  {artist.metadata?.studio && (
+                  {studioNumberLabel(artist) && (
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Studio {artist.metadata.studio}
+                      Studio {studioNumberLabel(artist)}
                     </p>
                   )}
                 </div>

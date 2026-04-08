@@ -603,7 +603,7 @@ export default function Navigation({ className = '', organization }: NavigationP
                     Your Profile
                   </Link>
                   <Link 
-                    href="/settings"
+                    href="/profile/settings"
                     className="block px-4 py-2 text-sm"
                     style={{ color: navStyles.textSecondary }}
                     onMouseEnter={(e) => {

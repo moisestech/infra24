@@ -2,9 +2,11 @@
 
 /**
  * Database Sync Script
- * 
- * This script provides utilities to sync data between local and production databases.
- * It can export data from one environment and import it into another.
+ *
+ * DATA_SEED_SAFETY: DESTRUCTIVE when clearExisting is true
+ * ---------------------------------------------------------
+ * importTableData(..., clearExisting) issues a table-wide DELETE on the target
+ * before insert. See scripts/DATA_SEED_REGISTRY.md before syncing production.
  */
 
 require('dotenv').config({ path: '.env.local' });
@@ -69,6 +71,8 @@ class DatabaseSync {
     console.log(`📥 Importing ${data?.length || 0} records to ${tableName} in ${environments[this.targetEnv].name}...`);
     
     if (clearExisting) {
+      console.warn(`\n⚠️  DESTRUCTIVE: Clearing ALL rows from ${tableName} on target before import.`);
+      console.warn('    See scripts/DATA_SEED_REGISTRY.md\n');
       console.log(`🗑️  Clearing existing data from ${tableName}...`);
       const { error: deleteError } = await this.targetClient
         .from(tableName)

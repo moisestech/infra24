@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Sun, Moon } from 'lucide-react'
 import { NavigationItem, ThemeColors } from './types'
 import { NavigationBrand } from './NavigationBrand'
 import { AdminTools } from './AdminTools'
 import { UserMenu } from './UserMenu'
 import { Organization } from './types'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface MobileMenuProps {
   organization: Organization
@@ -29,6 +30,7 @@ export function MobileMenu({
 }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const { resolvedTheme, setTheme } = useTheme()
 
   const isActive = (href: string) => {
     if (href === '/o/oolite' || href === '/o/bakehouse') {
@@ -167,6 +169,37 @@ export function MobileMenu({
 
               {/* Footer */}
               <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+                <div className="mb-3">
+                  <div className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    Appearance
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setTheme('light')}
+                      className={`inline-flex items-center justify-center gap-1 rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                        resolvedTheme === 'light'
+                          ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      <Sun className="h-3.5 w-3.5" />
+                      Light
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTheme('dark')}
+                      className={`inline-flex items-center justify-center gap-1 rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                        resolvedTheme === 'dark'
+                          ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      <Moon className="h-3.5 w-3.5" />
+                      Dark
+                    </button>
+                  </div>
+                </div>
                 <UserMenu colors={colors} />
               </div>
             </div>

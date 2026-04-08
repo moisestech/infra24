@@ -2,9 +2,17 @@
 
 /**
  * Populate Oolite Artists Script
- * 
- * This script populates the artist_profiles table with all Oolite Arts residents
- * including Studio Residents, Live In Art Residents, and Cinematic Residents.
+ *
+ * DATA_SEED_SAFETY: DESTRUCTIVE (org-scoped)
+ * -----------------------------------------
+ * If any artist_profiles already exist for organization slug "oolite", this script
+ * DELETES ALL OF THEM for that org, then inserts the catalog below. Rows not in
+ * this file are permanently removed from that org. Does not touch other orgs.
+ *
+ * Registry: scripts/DATA_SEED_REGISTRY.md
+ * Safer alternative for 2026 residents: scripts/data/seed/upsert-oolite-studio-residents-2026.js
+ *
+ * Populates artist_profiles with Oolite Arts residents (studio / live-in / cinematic / staff).
  */
 
 require('dotenv').config({ path: '.env.local' });
@@ -15,8 +23,35 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// Oolite organization ID
-const OOLITE_ORG_ID = '2133fe94-fb12-41f8-ab37-ea4acd4589f6';
+const OOLITE_SLUG = 'oolite';
+
+function slugifyArtistKey(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_|_$/g, '')
+    .slice(0, 80);
+}
+
+async function resolveOoliteOrganizationId() {
+  const { data, error } = await supabase
+    .from('organizations')
+    .select('id')
+    .eq('slug', OOLITE_SLUG)
+    .maybeSingle();
+
+  if (error) {
+    console.error('❌ Failed to look up Oolite organization:', error.message);
+    return null;
+  }
+  if (!data?.id) {
+    console.error(
+      `❌ No organization with slug "${OOLITE_SLUG}". Create it or run supabase db reset so seed runs.`
+    );
+    return null;
+  }
+  return data.id;
+}
 
 // Artist data organized by residency type
 const artistsData = {
@@ -305,7 +340,14 @@ const artistsData = {
 
 async function populateArtists() {
   console.log('🎨 Starting Oolite Artists Population...\n');
-  
+
+  const OOLITE_ORG_ID = await resolveOoliteOrganizationId();
+  if (!OOLITE_ORG_ID) {
+    process.exitCode = 1;
+    return;
+  }
+  console.log(`📌 Using organization_id for slug "${OOLITE_SLUG}": ${OOLITE_ORG_ID}\n`);
+
   try {
     // First, let's check if artists already exist
     const { data: existingArtists, error: checkError } = await supabase
@@ -319,9 +361,13 @@ async function populateArtists() {
     }
     
     if (existingArtists && existingArtists.length > 0) {
+      console.warn('\n' + '='.repeat(72));
+      console.warn('DESTRUCTIVE STEP: Deleting ALL artist_profiles for org', OOLITE_ORG_ID);
+      console.warn('(slug oolite). Manual or prior-month rows in this org will be removed.');
+      console.warn('Registry: scripts/DATA_SEED_REGISTRY.md');
+      console.warn('='.repeat(72) + '\n');
       console.log(`📋 Found ${existingArtists.length} existing artists. Clearing them first...`);
-      
-      // Delete existing artists
+
       const { error: deleteError } = await supabase
         .from('artist_profiles')
         .delete()
@@ -356,28 +402,40 @@ async function populateArtists() {
     for (let i = 0; i < allArtists.length; i += batchSize) {
       const batch = allArtists.slice(i, i + batchSize);
       
-      const artistsToInsert = batch.map(artist => ({
-        organization_id: OOLITE_ORG_ID,
-        user_id: `oolite_${artist.name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}`,
-        name: artist.name,
-        bio: `${artist.residencyType} at Oolite Arts ${artist.year}. ${artist.studio ? `Studio: ${artist.studio}` : ''}`,
-        website: artist.website && artist.website !== '-' ? artist.website : null,
-        instagram: artist.instagram || null,
-        skills: getSkillsForResidencyType(artist.residencyType),
-        mediums: getMediumsForResidencyType(artist.residencyType),
-        location: "Miami, FL",
-        is_public: true,
-        is_featured: artist.residencyType === "Studio Resident",
-        metadata: {
-          residency_type: artist.residencyType,
-          year: artist.year,
-          studio: artist.studio,
-          phone: artist.phone,
-          email: artist.email,
-          instagram: artist.instagram,
-          website: artist.website
-        }
-      }));
+      const artistsToInsert = batch.map((artist) => {
+        const web =
+          artist.website && artist.website !== '-' ? artist.website.trim() : null;
+        const ig = artist.instagram ? String(artist.instagram).trim() : null;
+        const phone = artist.phone ? String(artist.phone).trim() : null;
+        return {
+          organization_id: OOLITE_ORG_ID,
+          user_id: `oolite_dir_${slugifyArtistKey(artist.name)}`,
+          name: artist.name,
+          bio: `${artist.residencyType} at Oolite Arts ${artist.year}. ${artist.studio ? `Studio: ${artist.studio}` : ''}`,
+          website: web,
+          website_url: web,
+          instagram: ig,
+          instagram_handle: ig,
+          phone: phone || null,
+          studio_type: artist.residencyType,
+          studio_location: artist.studio ? String(artist.studio) : null,
+          skills: getSkillsForResidencyType(artist.residencyType),
+          mediums: getMediumsForResidencyType(artist.residencyType),
+          location: 'Miami, FL',
+          is_public: true,
+          is_featured: artist.residencyType === 'Studio Resident',
+          metadata: {
+            residency_type: artist.residencyType,
+            year: artist.year,
+            studio: artist.studio,
+            phone: artist.phone,
+            email: artist.email,
+            instagram: artist.instagram,
+            website: artist.website,
+            source: 'oolite_catalog',
+          },
+        };
+      });
       
       const { data, error } = await supabase
         .from('artist_profiles')

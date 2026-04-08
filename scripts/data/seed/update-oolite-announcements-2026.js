@@ -1,3 +1,19 @@
+/**
+ * Oolite announcements bulk upsert for 2026 (titles + Cloudinary assets).
+ *
+ * DATA_SEED_SAFETY: MUTATING
+ * --------------------------
+ * - Upserts by exact title: updates matching rows, inserts new titles.
+ * - Sets is_active = false for hardcoded legacy titles (archiveTitles). Review
+ *   that list before each run; it hides announcements app-wide for this org.
+ * - Does NOT delete the announcements table or drop other months by default.
+ *
+ * Registry: scripts/DATA_SEED_REGISTRY.md
+ *
+ * Smart sign QR: use real https:// URLs in `primary_link` and/or `qr_destination_url` on each
+ * row. Placeholder `#` means no scan target until updated in admin or here.
+ */
+
 require('dotenv').config({ path: '.env.local' });
 
 const { createClient } = require('@supabase/supabase-js');
@@ -52,7 +68,22 @@ const IMAGES = {
   // March 2026
   crossingBridgeRecap: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1773427571/march-oolite-crossing-the-bridge-opening-reception-recap_jrlatf.jpg',
   weeklyCuratorialTours: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1773427565/march-oolite-coming-up-weekly-curatorial-tours_czlqgk.jpg',
-  alumniGrantDanWeitendorf: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1773427559/march-oolite-alumni-grant-winner-honoring-dan-weitendorf_nkrvom.jpg'
+  alumniGrantDanWeitendorf: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1773427559/march-oolite-alumni-grant-winner-honoring-dan-weitendorf_nkrvom.jpg',
+  // April/May 2026
+  ellies2026April: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775570009/april-Oolite-Arts-Conversations_fo6v2s.jpg',
+  weeklyCuratorialToursApril: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775570010/april-Weekly-Curatorial-Tours-led-by-co-curator-Lauryn-Lawrence_zzv9qs.jpg',
+  assemblageWorkshop: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775570008/april-Assemblage-Building-Workshop-with-Alumni-Kerry-Phillips_wpmk5b.jpg',
+  crossingBridgePanel: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775570010/april-Panel-Discussion-with-Edouard-Duval-Carrie-and-Yanira-Collado_nqgz7e.png',
+  ooliteConversations: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775570009/april-Oolite-Arts-Conversations_fo6v2s.jpg',
+  skillsIpAi: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775570010/april-Skills-Intellectual-Property-in-the-Age-of-Al_cayr7v.png',
+  skillsSpeakingArtWorld: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775570383/april-GrahamBell_grahamwbell_laura-3-2048x1367_lkozgp.jpg',
+  skillsPathToPublicArt: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775570010/april-kills-Speaking-Art-World-Engaging-Curators-Gallerists-and-other-Gatekeepers_mhcaep.png',
+  vibeCodingNetArt: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775603504/oolite-april-vibe-code-and-net-art_pqjut1.webp',
+  dualCitizenPoster: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775568901/Dual_Citizen_1920x1080_nvgqmh.png',
+  floorRemembersPoster: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775568901/The_Floor_Remembers_1920x1080_cfavha.png',
+  oldManParrotPoster: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775568900/Old_Man_and_the_Parrot_1920x1080_jhbvpr.png',
+  tropicalParkPoster: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775568900/Tropical_Park_1920x1080_cekrpp.png',
+  coladaPoster: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1775568900/Colada_1920x1080_sooqns.png'
 };
 
 // Helper function for avatar placeholders
@@ -93,6 +124,19 @@ async function updateOoliteAnnouncements() {
     const may24_2026 = new Date('2026-05-24T23:59:59');
     const apr22_2026 = new Date('2026-04-22T00:00:00');
     const dec31_2025 = new Date('2025-12-31T00:00:00');
+
+    const apr6_2026 = new Date('2026-04-06T18:00:00');
+    const apr9_2026 = new Date('2026-04-09T18:00:00');
+    const apr13_2026 = new Date('2026-04-13T18:00:00');
+    const apr14_2026 = new Date('2026-04-14T18:00:00');
+    const apr20_2026 = new Date('2026-04-20T18:00:00');
+    const apr22_2026_7pm = new Date('2026-04-22T19:00:00');
+    const apr25_2026 = new Date('2026-04-25T14:00:00');
+    const apr27_2026 = new Date('2026-04-27T18:00:00');
+    const apr29_2026 = new Date('2026-04-29T18:00:00');
+    /** Month anchor for image-only film posters (month filter + April preset) */
+    const apr15_2026 = new Date('2026-04-15T12:00:00');
+    const may21_2026 = new Date('2026-05-21T18:00:00');
 
     // Create announcements from the provided content
     const announcements = [
@@ -178,34 +222,6 @@ async function updateOoliteAnnouncements() {
           { name: 'TJ Wright', role: 'youth-resident', avatar_url: placeholderImage(150, 150, 'TJ') },
           { name: 'Emely Yanji', role: 'youth-resident', avatar_url: placeholderImage(150, 150, 'EY') },
           { name: 'Gonzalo Hernandez', role: 'mentor', avatar_url: placeholderImage(150, 150, 'GH') }
-        ],
-        published_at: now.toISOString()
-      },
-      {
-        organization_id: organization.id,
-        org_id: organization.id,
-        author_clerk_id: 'system_oolite',
-        created_by: 'system_oolite',
-        updated_by: 'system_oolite',
-        title: 'The Ellies 2026',
-        body: 'On Wednesday, April 22, 2026, Oolite Arts proudly presents The Ellies—Oolite Arts Awards: Celebrating the Foundation for What\'s Next.\n\nThis year, we are honored to recognize Mario Cader-Frech and Robert S. Wennett for their visionary leadership and enduring contributions to arts and culture, from advancing Central American art through the Cader Institute at Museo Reina Sofía and Y.ES Contemporary, to their foundational role in shaping Miami\'s global art ecosystem.\n\nAt the heart of the evening are our alumni. We\'re thrilled to introduce the 2026 Ellies Awards Artist Host Committee, led by Oolite Arts alumni whose practices continue to inspire and shape our community: Luisa Basnuevo, Ariel Baron Robbins, Leo Castañeda, Jen Clay, Yanira Collado, Mark Fleuridor, Gonzalo Fuenmayor, Pepe Mar, Charo Oquet, Marielle Plaisir, Anastasia Samoylova, and Kristen Thiele.\n\nTickets are now available. Secure your seat at an Artist Host Committee table and join us for this special evening in support of artists living and working across South Florida. Artist Host Committee members will also be featured in the inaugural Oolite Arts Auction, launching in March 2026.\n\nArtists lead. Community gathers. The future gets built, together.',
-        status: 'published',
-        priority: 'high',
-        tags: ['ellies', 'awards', 'event', '2026'],
-        visibility: 'public',
-        type: 'event',
-        sub_type: 'gala_announcement',
-        starts_at: apr22_2026.toISOString(),
-        location: 'Oolite Arts',
-        image_url: IMAGES.ellies,
-        image_layout: 'card',
-        primary_link: '#', // Will be updated with ticket link
-        people: [
-          { name: 'Mario Cader-Frech', role: 'honoree', avatar_url: placeholderImage(150, 150, 'MCF') },
-          { name: 'Robert S. Wennett', role: 'honoree', avatar_url: placeholderImage(150, 150, 'RSW') },
-          { name: 'Luisa Basnuevo', role: 'artist-host', avatar_url: placeholderImage(150, 150, 'LB') },
-          { name: 'Leo Castañeda', role: 'artist-host', avatar_url: placeholderImage(150, 150, 'LC') },
-          { name: 'Yanira Collado', role: 'artist-host', avatar_url: placeholderImage(150, 150, 'YC') }
         ],
         published_at: now.toISOString()
       },
@@ -610,6 +626,340 @@ async function updateOoliteAnnouncements() {
           { name: 'Lorie Mertes', role: 'moderator', avatar_url: placeholderImage(150, 150, 'LM') }
         ],
         published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'The Ellies 2026: Tickets Available',
+        body: 'On Wednesday, April 22, 2026, Oolite Arts proudly presents The Ellies, Oolite Arts Awards: Celebrating the Foundation for What’s Next. Tickets are now available. Secure your seat at an Artist Host Committee table and join us for this special evening in support of artists living and working across South Florida. Artist Host Committee members will also be featured in the inaugural Ellies 2026 Oolite Arts Auction. Artists lead. Community gathers. The future gets built, together.',
+        status: 'published',
+        priority: 'high',
+        tags: ['ellies', 'awards', 'tickets', 'april-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'gala_announcement',
+        starts_at: apr22_2026_7pm.toISOString(),
+        location: 'Oolite Arts',
+        image_url: IMAGES.ellies2026April,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Weekly Curatorial Tours (April 2026)',
+        body: 'Weekly Curatorial Tours led by co-curator Lauryn Lawrence. Upcoming dates: April 6, April 13, April 20, April 27.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['tours', 'curatorial', 'april-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'general',
+        starts_at: apr6_2026.toISOString(),
+        ends_at: apr27_2026.toISOString(),
+        image_url: IMAGES.weeklyCuratorialToursApril,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Artist Activation: Assemblage Building Workshop',
+        body: 'Artist Activations: Assemblage Building Workshop with Alumni Kerry Phillips. Thursday, April 9, 2026, 6–9 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['artist-activations', 'workshop', 'april-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr9_2026.toISOString(),
+        image_url: IMAGES.assemblageWorkshop,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Crossing the Bridge Panel Discussion',
+        body: 'Panel Discussion with Edouard Duval-Carrié and Yanira Collado. Moderated by Lauryn Lawrence. Wednesday, April 29, 2026, 6–8 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['panel', 'crossing-the-bridge', 'april-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'meeting',
+        starts_at: apr29_2026.toISOString(),
+        image_url: IMAGES.crossingBridgePanel,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Introducing Oolite Arts Conversations',
+        body: 'Introducing Oolite Arts Conversations — a new public series bringing leading artists, curators, and cultural thinkers into dialogue around today’s most pressing ideas in contemporary art. Designed as a space for exchange rather than lecture, the series connects global perspectives with Miami’s evolving cultural landscape.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['conversations', 'public-series', 'april-2026'],
+        visibility: 'public',
+        type: 'news',
+        sub_type: 'general',
+        image_url: IMAGES.ooliteConversations,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Skills: Intellectual Property in the Age of AI',
+        body: 'Skills Programming Returns: Sustaining and Propelling Careers. Skills: Intellectual Property in the Age of AI. Tuesday, April 14, 2026, 6–8 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['skills', 'ip', 'ai', 'april-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr14_2026.toISOString(),
+        image_url: IMAGES.skillsIpAi,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Skills: Speaking Art World',
+        body: 'Skills: Speaking Art World — Engaging Curators, Gallerists, and other gatekeepers. Monday, April 27, 2026, 6–8 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['skills', 'professional-development', 'april-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr27_2026.toISOString(),
+        image_url: IMAGES.skillsSpeakingArtWorld,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Skills: The Path to Public Art',
+        body: 'Skills Programming Returns: Sustaining and Propelling Careers. Skills: The Path to Public Art. Thursday, May 21, 2026, 6–8 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['skills', 'public-art', 'may-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: may21_2026.toISOString(),
+        image_url: IMAGES.skillsPathToPublicArt,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Alumni News: Beatriz Monteavaro at Under the Bridge Art Space',
+        body: 'Beatriz Monteavaro (Studio Resident 2000) presents Tonight, We Can Be As One Tonight, March 15–April 26 at Under the Bridge Art Space in North Miami.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['alumni', 'exhibition', 'april-2026'],
+        visibility: 'public',
+        type: 'news',
+        sub_type: 'general',
+        starts_at: mar8_2026.toISOString(),
+        ends_at: may3_2026.toISOString(),
+        image_url: IMAGES.alumniNews,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Alumni News: Lucia Morales at Frost Art Museum',
+        body: 'Lucia Morales (2026 Studio Resident) is featured in The Academy, March 18–April 19 at the Patricia and Phillip Frost Art Museum at FIU in Miami.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['alumni', 'frost-museum', 'april-2026'],
+        visibility: 'public',
+        type: 'news',
+        sub_type: 'general',
+        starts_at: mar8_2026.toISOString(),
+        ends_at: may3_2026.toISOString(),
+        image_url: IMAGES.alumniNews,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Alumni News: Sue Beyer at Flohaus Gallery',
+        body: 'Sue Beyer (2025 Live.In.Art Resident) is featured in Intimate Structures, March 19–April 5 at Flohaus Gallery in New York.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['alumni', 'flohaus', 'april-2026'],
+        visibility: 'public',
+        type: 'news',
+        sub_type: 'general',
+        starts_at: mar8_2026.toISOString(),
+        ends_at: may3_2026.toISOString(),
+        image_url: IMAGES.alumniNews,
+        image_layout: 'card',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Vibe Coding & Net Art: Code Art into HTML',
+        body: 'In-person workshop: Vibe Coding & Net Art: Code Art into HTML. Saturday, April 25, 2026, 2–5 p.m. A beginner-friendly Digital Lab workshop exploring net art and building a simple website.',
+        status: 'published',
+        priority: 'high',
+        tags: ['digital-lab', 'workshop', 'net-art', 'april-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr25_2026.toISOString(),
+        location: 'Oolite Arts, 924 Lincoln Rd., Studio 100, Miami, FL 33139',
+        image_url: IMAGES.vibeCodingNetArt,
+        image_layout: 'card',
+        primary_link: 'https://oolitearts.org/event/vibe-coding-net-art-code-art-into-html-workshop/',
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Dual Citizen',
+        body: 'Image-only announcement.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['film', 'poster', 'image-only', 'april-2026'],
+        visibility: 'public',
+        type: 'cinematic',
+        sub_type: 'general',
+        starts_at: apr15_2026.toISOString(),
+        image_url: IMAGES.dualCitizenPoster,
+        image_layout: 'card',
+        metadata: { image_only: true },
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'The Floor Remembers',
+        body: 'Image-only announcement.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['film', 'poster', 'image-only', 'april-2026'],
+        visibility: 'public',
+        type: 'cinematic',
+        sub_type: 'general',
+        starts_at: apr15_2026.toISOString(),
+        image_url: IMAGES.floorRemembersPoster,
+        image_layout: 'card',
+        metadata: { image_only: true },
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Old Man and the Parrot',
+        body: 'Image-only announcement.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['film', 'poster', 'image-only', 'april-2026'],
+        visibility: 'public',
+        type: 'cinematic',
+        sub_type: 'general',
+        starts_at: apr15_2026.toISOString(),
+        image_url: IMAGES.oldManParrotPoster,
+        image_layout: 'card',
+        metadata: { image_only: true },
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Tropical Park',
+        body: 'Image-only announcement.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['film', 'poster', 'image-only', 'april-2026'],
+        visibility: 'public',
+        type: 'cinematic',
+        sub_type: 'general',
+        starts_at: apr15_2026.toISOString(),
+        image_url: IMAGES.tropicalParkPoster,
+        image_layout: 'card',
+        metadata: { image_only: true },
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Colada',
+        body: 'Image-only announcement.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['film', 'poster', 'image-only', 'april-2026'],
+        visibility: 'public',
+        type: 'cinematic',
+        sub_type: 'general',
+        starts_at: apr15_2026.toISOString(),
+        image_url: IMAGES.coladaPoster,
+        image_layout: 'card',
+        metadata: { image_only: true },
+        published_at: now.toISOString()
       }
     ];
 
@@ -622,6 +972,14 @@ async function updateOoliteAnnouncements() {
       updated_by: announcement.updated_by || 'system_oolite',
       is_active: true,
     }));
+
+    const missingImage = announcementsWithRequiredFields.filter(
+      (announcement) => !announcement.image_url || !String(announcement.image_url).trim()
+    );
+    if (missingImage.length > 0) {
+      console.error('❌ Missing image_url for announcements:', missingImage.map((a) => a.title));
+      throw new Error('Aborting: one or more announcements are missing image_url');
+    }
 
     // First, let's check if any of these announcements already exist (by title)
     // We'll update existing ones and create new ones
@@ -692,10 +1050,47 @@ async function updateOoliteAnnouncements() {
       }
     }
 
+    // Explicitly archive older variants we no longer want visible.
+    const archiveTitles = [
+      'The Ellies 2026',
+      'Alumni News: Gabriel de Varona at Miami Film Festival',
+    ];
+    const { error: archiveError } = await supabase
+      .from('announcements')
+      .update({ is_active: false })
+      .eq('org_id', organization.id)
+      .in('title', archiveTitles);
+    if (archiveError) {
+      console.warn('⚠️ Could not archive legacy announcement variants:', archiveError.message);
+    } else {
+      console.log('✅ Archived legacy announcement variants:', archiveTitles.join(', '));
+    }
+
     console.log('\n🎉 Oolite Arts announcements updated successfully!');
     console.log(`📊 Summary: ${toUpdate.length} updated, ${toInsert.length} created`);
     console.log('📺 You can view the announcements at: http://localhost:3000/o/oolite/announcements');
     console.log('\n✅ Image URLs updated with January and February 2026 Cloudinary assets.');
+
+    const { data: duplicateTitles, error: duplicateError } = await supabase
+      .from('announcements')
+      .select('title')
+      .eq('org_id', organization.id);
+
+    if (duplicateError) {
+      console.warn('⚠️ Could not run duplicate title audit:', duplicateError.message);
+    } else {
+      const titleCounts = new Map();
+      (duplicateTitles || []).forEach((row) => {
+        titleCounts.set(row.title, (titleCounts.get(row.title) || 0) + 1);
+      });
+      const duplicates = Array.from(titleCounts.entries()).filter(([, count]) => count > 1);
+      if (duplicates.length > 0) {
+        console.warn('⚠️ Duplicate titles detected for Oolite:');
+        duplicates.forEach(([title, count]) => console.warn(`   - ${title} (${count})`));
+      } else {
+        console.log('✅ No duplicate titles detected for Oolite.');
+      }
+    }
 
   } catch (error) {
     console.error('❌ Error:', error);

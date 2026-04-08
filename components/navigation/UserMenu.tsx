@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useUser, SignOutButton } from '@clerk/nextjs'
-import { ChevronDown, User, Settings, LogOut } from 'lucide-react'
+import { ChevronDown, User, Settings, LogOut, Sun, Moon } from 'lucide-react'
 import { ThemeColors } from './types'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface UserMenuProps {
   colors: ThemeColors
@@ -13,6 +14,7 @@ interface UserMenuProps {
 
 export function UserMenu({ colors, className = '' }: UserMenuProps) {
   const { user, isLoaded } = useUser()
+  const { resolvedTheme, setTheme } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -112,13 +114,46 @@ export function UserMenu({ colors, className = '' }: UserMenuProps) {
             </Link>
 
             <Link
-              href="/settings"
+              href="/profile/settings"
               className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               onClick={() => setIsOpen(false)}
             >
               <Settings className="w-4 h-4 mr-3" />
               Settings
             </Link>
+
+            {/* Theme Toggle */}
+            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+              <div className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                Appearance
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setTheme('light')}
+                  className={`inline-flex items-center justify-center gap-1 rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                    resolvedTheme === 'light'
+                      ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  <Sun className="h-3.5 w-3.5" />
+                  Light
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('dark')}
+                  className={`inline-flex items-center justify-center gap-1 rounded-md px-3 py-2 text-xs font-medium transition-colors ${
+                    resolvedTheme === 'dark'
+                      ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  <Moon className="h-3.5 w-3.5" />
+                  Dark
+                </button>
+              </div>
+            </div>
 
 
             {/* Sign Out */}

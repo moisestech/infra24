@@ -86,6 +86,13 @@ const colorSchemes: ColorSchemes = {
     pattern: 'rgba(255, 171, 0, 0.9)', // Strong amber-yellow pattern
     background: 'rgba(255, 193, 7, 0.08)' // Primary yellow background
   },
+  cinematic: {
+    primary: 'rgba(139, 92, 246, 0.14)',
+    secondary: 'rgba(99, 102, 241, 0.12)',
+    accent: 'rgba(192, 132, 252, 0.10)',
+    pattern: 'rgba(139, 92, 246, 0.85)',
+    background: 'rgba(79, 70, 229, 0.08)'
+  },
   gala_announcement: {
     primary: 'rgba(255, 111, 0, 0.12)', // Deep orange-yellow
     secondary: 'rgba(255, 152, 0, 0.10)', // Orange-yellow
@@ -156,6 +163,13 @@ const darkColorSchemes: ColorSchemes = {
     accent: 'rgba(255, 213, 79, 0.20)', // Light yellow
     pattern: 'rgba(255, 171, 0, 0.8)', // Strong amber-yellow pattern
     background: 'rgba(255, 193, 7, 0.15)' // Primary yellow background
+  },
+  cinematic: {
+    primary: 'rgba(139, 92, 246, 0.22)',
+    secondary: 'rgba(99, 102, 241, 0.20)',
+    accent: 'rgba(192, 132, 252, 0.18)',
+    pattern: 'rgba(139, 92, 246, 0.75)',
+    background: 'rgba(79, 70, 229, 0.14)'
   },
   gala_announcement: {
     primary: 'rgba(255, 111, 0, 0.25)', // Deep orange-yellow

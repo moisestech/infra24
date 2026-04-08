@@ -40,14 +40,84 @@ BEGIN
       user_id,
       name,
       bio,
-      is_public
+      is_public,
+      studio_type,
+      studio_location,
+      metadata
     )
   VALUES (
       org_uuid,
       'artist_seed_display',
       'Seed Artist (display smoke)',
       'Bio for artist spotlight smoke tests.',
-      true
+      true,
+      'Studio Resident',
+      'Lab',
+      jsonb_build_object(
+        'residency_type', 'Studio Resident',
+        'year', '2026',
+        'studio', 'Lab',
+        'website', 'https://oolitearts.org',
+        'instagram', '@oolitearts',
+        'source', 'seed'
+      )
+    )
+  ON CONFLICT (organization_id, user_id) DO NOTHING;
+
+  INSERT INTO artist_profiles (
+      organization_id,
+      user_id,
+      name,
+      bio,
+      is_public,
+      studio_type,
+      studio_location,
+      metadata
+    )
+  VALUES (
+      org_uuid,
+      'artist_seed_member_2',
+      'Jordan Lee',
+      'Mixed-media practice exploring memory and place.',
+      true,
+      'Studio Resident',
+      '202',
+      jsonb_build_object(
+        'residency_type', 'Studio Resident',
+        'year', '2026',
+        'studio', '202',
+        'website', 'https://oolitearts.org',
+        'instagram', '@oolitearts',
+        'source', 'seed'
+      )
+    )
+  ON CONFLICT (organization_id, user_id) DO NOTHING;
+
+  INSERT INTO artist_profiles (
+      organization_id,
+      user_id,
+      name,
+      bio,
+      is_public,
+      studio_type,
+      studio_location,
+      metadata
+    )
+  VALUES (
+      org_uuid,
+      'artist_seed_staff_1',
+      'Alex Rivera',
+      'Education and community programs at Oolite Arts.',
+      true,
+      'Staff',
+      'Front desk',
+      jsonb_build_object(
+        'residency_type', 'Staff',
+        'year', '2026',
+        'studio', 'Front desk',
+        'website', 'https://oolitearts.org',
+        'source', 'seed'
+      )
     )
   ON CONFLICT (organization_id, user_id) DO NOTHING;
 

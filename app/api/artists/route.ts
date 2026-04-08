@@ -39,10 +39,15 @@ export async function GET(request: NextRequest) {
         name,
         bio,
         avatar_url,
+        profile_image,
         cover_image_url,
         website,
+        website_url,
         instagram,
+        instagram_handle,
         phone,
+        studio_type,
+        studio_location,
         skills,
         mediums,
         location,
@@ -51,12 +56,7 @@ export async function GET(request: NextRequest) {
         metadata,
         created_at,
         updated_at,
-        organization_id,
-        organizations (
-          id,
-          name,
-          slug
-        )
+        organization_id
       `);
 
     if (orgId) {
@@ -85,7 +85,12 @@ export async function GET(request: NextRequest) {
     console.log('🔍 Artists API: Query successful, found', artists?.length || 0, 'artists');
     console.log('🔍 Artists API: Artists data:', artists);
 
-    return NextResponse.json({ artists }, { status: 200 });
+    const normalized = (artists || []).map((a) => ({
+      ...a,
+      profile_image: a.profile_image || a.avatar_url || null,
+    }));
+
+    return NextResponse.json({ artists: normalized }, { status: 200 });
   } catch (error) {
     console.error('❌ Artists API: Unexpected error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

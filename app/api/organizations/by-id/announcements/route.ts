@@ -77,6 +77,7 @@ export async function GET(
         type,
         sub_type,
         primary_link,
+        qr_destination_url,
         additional_info,
         image_url,
         image_layout,

@@ -1,0 +1,170 @@
+/**
+ * Smart-sign display program: timed segments (carousel, grids, fullscreen).
+ * V1: localStorage + optional ?program= URL (base64url JSON).
+ */
+
+export const DISPLAY_PROGRAM_STORAGE_PREFIX = 'display-program:v1:';
+
+export type DisplaySegmentKind =
+  | 'announcement_carousel'
+  | 'announcement_fullscreen'
+  | 'grid_workshops'
+  | 'grid_artists'
+  | 'grid_cinematic';
+
+export type ArtistGridFilter = 'all' | 'studio_residents';
+
+export interface DisplaySegmentParams {
+  /** Carousel: limit to announcements within N days (created_at / starts_at / scheduled_at) */
+  useRecentWindowDays?: number;
+  maxItems?: number;
+  columns?: 3 | 2 | 1;
+  /** Fullscreen: target announcement */
+  announcementId?: string;
+  /** Fullscreen: match announcement title (substring, case-insensitive) */
+  title?: string;
+  /** Fullscreen / carousel: hide date UI */
+  hideDates?: boolean;
+  /** Artists grid */
+  filter?: ArtistGridFilter;
+}
+
+export interface DisplaySegment {
+  id: string;
+  kind: DisplaySegmentKind;
+  durationMs: number;
+  params?: DisplaySegmentParams;
+}
+
+export interface DisplayProgram {
+  version: 1;
+  segments: DisplaySegment[];
+}
+
+export const DEFAULT_DISPLAY_PROGRAM: DisplayProgram = {
+  version: 1,
+  segments: [
+    {
+      id: 'announcements',
+      kind: 'announcement_carousel',
+      durationMs: 90_000,
+      params: { useRecentWindowDays: 30 },
+    },
+    {
+      id: 'workshops',
+      kind: 'grid_workshops',
+      durationMs: 35_000,
+      params: { maxItems: 12, columns: 3 },
+    },
+    {
+      id: 'artists',
+      kind: 'grid_artists',
+      durationMs: 35_000,
+      params: {
+        maxItems: 12,
+        columns: 3,
+        hideDates: true,
+        filter: 'studio_residents',
+      },
+    },
+    {
+      id: 'cinematic',
+      kind: 'grid_cinematic',
+      durationMs: 35_000,
+      params: { maxItems: 12, columns: 3 },
+    },
+  ],
+};
+
+function isDisplayProgram(x: unknown): x is DisplayProgram {
+  if (!x || typeof x !== 'object') return false;
+  const o = x as DisplayProgram;
+  if (o.version !== 1) return false;
+  if (!Array.isArray(o.segments) || o.segments.length === 0) return false;
+  return o.segments.every(
+    (s) =>
+      typeof s.id === 'string' &&
+      typeof s.kind === 'string' &&
+      typeof s.durationMs === 'number' &&
+      s.durationMs >= 3000
+  );
+}
+
+/** Parse and validate JSON text from the settings editor */
+export function tryParseDisplayProgramJson(raw: string): DisplayProgram | null {
+  try {
+    const parsed = JSON.parse(raw);
+    return isDisplayProgram(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function parseProgramFromUrl(search: string): DisplayProgram | null {
+  try {
+    const q = new URLSearchParams(search);
+    const raw = q.get('program');
+    if (!raw?.trim()) return null;
+    const json = typeof atob !== 'undefined' ? atob(raw.replace(/-/g, '+').replace(/_/g, '/')) : '';
+    const parsed = JSON.parse(json);
+    return isDisplayProgram(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function loadDisplayProgram(orgSlug: string): DisplayProgram {
+  if (typeof window === 'undefined') return DEFAULT_DISPLAY_PROGRAM;
+  try {
+    const urlProg = parseProgramFromUrl(window.location.search);
+    if (urlProg) return urlProg;
+
+    const raw = localStorage.getItem(`${DISPLAY_PROGRAM_STORAGE_PREFIX}${orgSlug}`);
+    if (!raw) return DEFAULT_DISPLAY_PROGRAM;
+    const parsed = JSON.parse(raw);
+    return isDisplayProgram(parsed) ? parsed : DEFAULT_DISPLAY_PROGRAM;
+  } catch {
+    return DEFAULT_DISPLAY_PROGRAM;
+  }
+}
+
+export function saveDisplayProgram(orgSlug: string, program: DisplayProgram): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(
+    `${DISPLAY_PROGRAM_STORAGE_PREFIX}${orgSlug}`,
+    JSON.stringify(program, null, 2)
+  );
+}
+
+/** Base64url (no padding) for `?program=` kiosk setup */
+export function encodeDisplayProgramForUrl(program: DisplayProgram): string {
+  const json = JSON.stringify(program);
+  if (typeof btoa === 'undefined') return '';
+  const b64 = btoa(json);
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+export function filterAnnouncementsByRecentWindow(
+  announcements: { created_at?: string; starts_at?: string; scheduled_at?: string }[],
+  days: number
+): typeof announcements {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  return announcements.filter((a) => {
+    const raw = a.created_at || a.starts_at || a.scheduled_at;
+    if (!raw) return false;
+    const d = new Date(raw);
+    return !Number.isNaN(d.getTime()) && d >= cutoff;
+  });
+}
+
+export function filterCinematicAnnouncements<T extends { type?: string | null; tags?: string[] | null }>(
+  announcements: T[]
+): T[] {
+  return announcements.filter((a) => {
+    const t = String(a.type || '').toLowerCase();
+    if (t === 'cinematic') return true;
+    const tags = (a.tags || []).map((x) => String(x).toLowerCase());
+    return tags.some((tag) => tag.includes('film') || tag.includes('cinematic') || tag.includes('poster'));
+  });
+}

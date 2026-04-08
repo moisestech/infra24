@@ -110,6 +110,11 @@ export const typeIcons: TypeIconMappings = {
     sale: DollarSign,
     default: Gift
   },
+  cinematic: {
+    festival: Crown,
+    screening: Theater,
+    default: Theater
+  },
   gala_announcement: {
     fundraising: DollarSign,
     celebration: Crown,
@@ -209,6 +214,16 @@ export const typeStyles: TypeStyles = {
     icon: Gift,
     backgroundPattern: "sparkles"
   },
+  cinematic: {
+    gradient: "bg-gradient-to-br from-violet-900 via-indigo-900 to-slate-950",
+    overlay: "bg-black/30",
+    accent: "from-violet-300 to-fuchsia-300",
+    badge: "bg-violet-600",
+    text: "text-white",
+    dateStyle: "bg-violet-800/90 text-white",
+    icon: Theater,
+    backgroundPattern: "sparkles"
+  },
   gala_announcement: {
     gradient: "bg-gradient-to-br from-red-600 via-rose-500 to-pink-500",
     overlay: "bg-black/20",
@@ -238,6 +253,7 @@ export const getIconForAnnouncement = (announcement: Announcement): LucideIcon =
     case 'event': return PartyPopper;
     case 'opportunity': return Sparkles;
     case 'administrative': return FileText;
+    case 'cinematic': return Theater;
     default: return Bell;
   }
 };
@@ -392,6 +408,17 @@ export const getStylesForAnnouncement = (announcement: Announcement, organizatio
         text: "text-white",
         dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
         icon: FileText,
+        backgroundPattern: "solid"
+      },
+      cinematic: {
+        gradient: ooliteGradient.className,
+        gradientStyle: ooliteGradient.style,
+        overlay: "bg-transparent",
+        accent: `from-[${oolitePrimary}]/30 to-[${oolitePrimary}]/50`,
+        badge: `bg-[${oolitePrimary}]`,
+        text: "text-white",
+        dateStyle: `bg-[${oolitePrimary}]/90 text-white`,
+        icon: Theater,
         backgroundPattern: "solid"
       }
     };

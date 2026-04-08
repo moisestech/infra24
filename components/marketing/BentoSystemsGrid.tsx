@@ -1,14 +1,14 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import {
   bentoLayouts,
-  bentoPhotoSrc,
+  bentoPhotoGradient,
   type BentoVisualKind,
 } from '@/lib/marketing/homepage-visuals';
+import { marketingGradientSurfaceClass } from '@/lib/marketing/marketing-gradients';
 
 type Capability = {
   title: string;
@@ -32,19 +32,19 @@ function VisualBlock({
   visual: BentoVisualKind;
   capabilityIndex: number;
 }) {
-  const photo = bentoPhotoSrc[capabilityIndex];
+  const gradientId = bentoPhotoGradient[capabilityIndex];
 
-  if (visual === 'photo' && photo) {
+  if (visual === 'photo' && gradientId) {
     return (
-      <div className="relative h-24 w-full overflow-hidden rounded-md sm:h-28">
-        <Image
-          src={photo.src}
-          alt={photo.alt}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 25vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent" />
+      <div
+        className={cn(
+          'relative h-24 w-full overflow-hidden rounded-md sm:h-28',
+          marketingGradientSurfaceClass(gradientId)
+        )}
+        role="img"
+        aria-label="Abstract systems texture"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 to-transparent" />
       </div>
     );
   }

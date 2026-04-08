@@ -3,20 +3,44 @@
  * Other orgs can add parallel files or a registry later.
  */
 
+export type WorkshopHeroCta = {
+  label: string
+  href: string
+}
+
+export type LandingCtaLink = {
+  label: string
+  href: string
+}
+
 export type WorkshopsLandingContent = {
   heroEyebrow: string
   heroTitle: string
   heroTitleAccent: string
   heroLead: string
+  /** Primary hero CTA (e.g. anchor to catalog) */
+  heroPrimaryCta: WorkshopHeroCta
+  /** Secondary hero CTA (e.g. mailto book) */
+  heroSecondaryCta: WorkshopHeroCta
   trustLine: string
   trustItems: string[]
+  /** Framing section below hero */
+  framingSection: { title: string; body: string }
+  /** Intro above workshop grids */
+  featuredSection: { title: string; subcopy: string }
+  /** Why this series */
+  whySeriesSection: { title: string; body: string }
   howItWorks: { title: string; steps: { title: string; body: string }[] }
   forInstitutions: {
     title: string
     body: string
     bullets: string[]
   }
+  /** Extra links under institution block (mailto or anchors) */
+  institutionCtas: LandingCtaLink[]
   proofLine: string
+  comingSoonSection: { title: string; subcopy: string }
+  footerCtaSection: { title: string; body: string; ctas: LandingCtaLink[] }
   faq: { q: string; a: string }[]
   institutionalInquiry: {
     email: string
@@ -26,17 +50,40 @@ export type WorkshopsLandingContent = {
 }
 
 const OOLITE: WorkshopsLandingContent = {
-  heroEyebrow: 'Creative technology & arts education',
-  heroTitle: 'Workshops',
-  heroTitleAccent: 'Artist infrastructure, made practical',
+  heroEyebrow: 'Oolite Arts Digital Lab',
+  heroTitle: 'Artist-centered workshops',
+  heroTitleAccent: 'for digital practice',
   heroLead:
-    'Hands-on sessions in creative coding, digital presence, and professional practice—built as part of a growing program at Oolite Arts, not one-off tips.',
+    'Digital Lab Workshops are designed for artists, teaching artists, and cultural organizations navigating digital practice in real time. The series focuses on websites, discoverability, documentation, AI literacy, creative coding, and sustainable workflows — with an emphasis on clarity, experimentation, and long-term usefulness.',
+  heroPrimaryCta: {
+    label: 'Explore workshops',
+    href: '#workshops-catalog',
+  },
+  heroSecondaryCta: {
+    label: 'Book a workshop',
+    href: 'mailto:info@oolitearts.org?subject=Workshop%20inquiry%20%E2%80%94%20Oolite%20Arts%20Digital%20Lab',
+  },
   trustLine: 'Designed for artists, educators, and cultural organizations.',
   trustItems: [
     'Individual artists & studio practitioners',
     'Nonprofits & residency programs',
     'Public-facing cultural education',
   ],
+  framingSection: {
+    title: 'A growing workshop system for contemporary artistic practice',
+    body:
+      'These workshops are designed to meet artists where digital practice actually happens: across websites, writing, search visibility, documentation, browser-based publishing, AI-assisted workflows, and creative experimentation. The series is beginner-friendly overall, while leaving room for more advanced and experimental approaches as demand grows. Each workshop can function as a standalone learning experience or as part of a larger educational pathway.',
+  },
+  featuredSection: {
+    title: 'Featured workshops',
+    subcopy:
+      'Start with the core workshops in the Digital Lab series — designed for immediate relevance, strong public value, and future growth into packets, toolkits, and learning pathways.',
+  },
+  whySeriesSection: {
+    title: 'Why these workshops now',
+    body:
+      'Artists are increasingly expected to maintain a public presence, document their work clearly, navigate emerging technologies, and communicate across multiple digital platforms. At the same time, many institutions want programming that is contemporary, useful, and accessible without becoming overly technical. Digital Lab Workshops respond to that gap with artist-centered learning experiences that combine critical thinking, practical tools, and reusable frameworks.',
+  },
   howItWorks: {
     title: 'How it works',
     steps: [
@@ -55,17 +102,47 @@ const OOLITE: WorkshopsLandingContent = {
     ],
   },
   forInstitutions: {
-    title: 'For institutions & partners',
+    title: 'Built for artists, adaptable for institutions',
     body:
-      'Bring a cohort, sponsor a public program, or train staff. We’ll align materials and pacing with your context.',
+      'These workshops can be offered as public programs, artist professional development sessions, residency support, cohort-based learning, or staff-and-artist hybrid programming. The format is flexible enough for one-time events while also supporting longer-term curriculum development.',
     bullets: [
       'Cohort-friendly scheduling',
       'Clear learning outcomes & materials lists',
       'Optional follow-up resources (roadmap for LMS)',
     ],
   },
+  institutionCtas: [
+    {
+      label: 'Book for your organization',
+      href: 'mailto:info@oolitearts.org?subject=Institutional%20workshop%20%E2%80%94%20Oolite%20Arts',
+    },
+    {
+      label: 'Discuss institutional programming',
+      href: 'mailto:info@oolitearts.org?subject=Institutional%20programming%20%E2%80%94%20Digital%20Lab',
+    },
+  ],
   proofLine:
     'Oolite Arts has hosted digital lab programming and professional development for artists across Miami—this catalog grows from that work.',
+  comingSoonSection: {
+    title: 'Coming soon',
+    subcopy:
+      'The Digital Lab Workshops catalog is expanding into a larger system, including advanced creative coding, publishing workflows, digital archiving, and artist-centered AI practice.',
+  },
+  footerCtaSection: {
+    title: 'Looking for a workshop for your cohort, residency, or organization?',
+    body:
+      'We can adapt workshops for different group sizes, technical levels, and institutional contexts — from artist-centered public programs to more focused professional development sessions.',
+    ctas: [
+      {
+        label: 'Get in touch',
+        href: 'mailto:info@oolitearts.org?subject=Workshop%20%E2%80%94%20Get%20in%20touch',
+      },
+      {
+        label: 'Request a workshop',
+        href: 'mailto:info@oolitearts.org?subject=Request%20a%20workshop',
+      },
+    ],
+  },
   faq: [
     {
       q: 'Are these beginner-friendly?',
@@ -82,19 +159,79 @@ const OOLITE: WorkshopsLandingContent = {
   ],
   institutionalInquiry: {
     email: 'info@oolitearts.org',
-    subjectPrefix: '[Workshop inquiry — Oolite / Infra24]',
+    subjectPrefix: '[Workshop inquiry — Oolite Digital Lab]',
     bodyIntro:
       'We are interested in institutional or cohort programming. Organization / role:',
+  },
+}
+
+/** Defaults for orgs that do not have bespoke copy; satisfies full type. */
+const GENERIC_DEFAULTS: Pick<
+  WorkshopsLandingContent,
+  | 'heroPrimaryCta'
+  | 'heroSecondaryCta'
+  | 'framingSection'
+  | 'featuredSection'
+  | 'whySeriesSection'
+  | 'institutionCtas'
+  | 'comingSoonSection'
+  | 'footerCtaSection'
+> = {
+  heroPrimaryCta: { label: 'Explore workshops', href: '#workshops-catalog' },
+  heroSecondaryCta: {
+    label: 'Contact us',
+    href: 'mailto:info@oolitearts.org',
+  },
+  framingSection: {
+    title: 'Workshops for your practice',
+    body:
+      'Hands-on sessions designed to build skills and community within your organization.',
+  },
+  featuredSection: {
+    title: 'Featured workshops',
+    subcopy: 'Highlighted sessions open for registration or interest.',
+  },
+  whySeriesSection: {
+    title: 'Why now',
+    body:
+      'Practical professional development for artists and cultural workers navigating digital tools and visibility.',
+  },
+  institutionCtas: [],
+  comingSoonSection: {
+    title: 'Coming soon',
+    subcopy: 'More workshops are added to the catalog over time.',
+  },
+  footerCtaSection: {
+    title: 'Questions?',
+    body: 'Reach out to discuss cohorts or custom programming.',
+    ctas: [{ label: 'Contact', href: 'mailto:info@oolitearts.org' }],
   },
 }
 
 export function getWorkshopsLandingContent(orgSlug: string): WorkshopsLandingContent {
   if (orgSlug === 'oolite') return OOLITE
   return {
-    ...OOLITE,
-    heroTitleAccent: 'Learn & create',
+    ...GENERIC_DEFAULTS,
+    heroEyebrow: 'Workshops',
+    heroTitle: 'Learn & create',
+    heroTitleAccent: 'with your organization',
     heroLead:
       'Discover hands-on workshops designed to build skills and community within your organization.',
+    trustLine: 'Designed for artists, educators, and cultural organizations.',
+    trustItems: [
+      'Individual artists & studio practitioners',
+      'Nonprofits & residency programs',
+      'Public-facing cultural education',
+    ],
+    howItWorks: OOLITE.howItWorks,
+    forInstitutions: {
+      ...OOLITE.forInstitutions,
+      title: 'For institutions & partners',
+      body:
+        'Bring a cohort, sponsor a public program, or train staff. We’ll align materials and pacing with your context.',
+    },
+    proofLine: OOLITE.proofLine,
+    faq: OOLITE.faq,
     institutionalInquiry: {
       ...OOLITE.institutionalInquiry,
       subjectPrefix: `[Workshop inquiry — ${orgSlug}]`,

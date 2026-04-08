@@ -1,80 +1,78 @@
-export type HomeVisualItem = {
-  src: string;
-  alt: string;
-  caption?: string;
-  credit?: string;
-};
+import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
 
-/**
- * Five Cloudinary studio assets — shared pool for the marketing homepage (and related strips)
- * so the same handful of URLs repeats intentionally instead of many one-off remotes.
- */
-export const homePageStudioImagePool = [
-  {
-    src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1738040056/art/moisestech-website/tumblr_npjzb2mbro1r1ubs7o1_1280_cqc4ds.jpg',
-    alt: 'Layered abstract imagery suggesting stacked digital interfaces.',
-  },
-  {
-    src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1738040056/art/moisestech-website/tumblr_npjvpsamAG1r1ubs7o1_1280_kdxzoj.jpg',
-    alt: 'Vertical color bands and abstract digital texture.',
-  },
-  {
-    src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1737831875/art/moisestech-website/meditation-battlestation_b7ne15.jpg',
-    alt: 'Meditation-oriented installation with screens and seating.',
-  },
-  {
-    src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1737831875/art/moisestech-website/data-dating-show-1_w0imjq.webp',
-    alt: 'Performance or installation referencing data and social formats.',
-  },
-  {
-    src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1737831876/art/moisestech-website/smart_shoppers__bsw9ko.jpg',
-    alt: 'Retail or consumer-facing imagery with digital overlays.',
-  },
-] as const;
+export type HomeVisualItem =
+  | {
+      kind: 'image';
+      src: string;
+      alt: string;
+      caption?: string;
+      credit?: string;
+    }
+  | {
+      kind: 'gradient';
+      gradientId: MarketingGradientId;
+      alt: string;
+      caption?: string;
+      credit?: string;
+    };
 
-const S = homePageStudioImagePool;
+const g = (
+  gradientId: MarketingGradientId,
+  alt: string,
+  caption?: string,
+  credit?: string
+): HomeVisualItem => ({
+  kind: 'gradient',
+  gradientId,
+  alt,
+  caption,
+  credit,
+});
 
-/** Full-bleed mosaic after marquee — above-the-fold texture (distinct from hero collage). */
+/** Full-bleed mosaic after marquee */
 export const homeVisualPostMarquee: HomeVisualItem[] = [
-  { ...S[0], caption: 'Stacked signal', credit: 'Studio' },
-  { ...S[1], caption: 'Vertical buffer', credit: 'Studio' },
-  { ...S[2], caption: 'Held attention', credit: 'Studio' },
+  g('stackTeal', 'Teal and slate gradient suggesting stacked digital layers.', 'Stacked signal'),
+  g('columnCoral', 'Warm vertical gradient suggesting interface columns.', 'Vertical buffer'),
+  g('fieldViolet', 'Violet gradient suggesting held attention in a field.', 'Held attention'),
 ];
 
-/** After narrative — studio texture. */
+/** After narrative — reference layer */
 export const homeVisualNarrativeBridge: HomeVisualItem[] = [
-  { ...S[3], caption: 'Data social', credit: 'Studio' },
-  { ...S[4], caption: 'Smart surface', credit: 'Studio' },
+  g('pulseMagenta', 'Magenta pulse gradient suggesting networked public formats.', 'Data social'),
+  g('warmAmber', 'Amber gradient suggesting surfaces and retail-adjacent display.', 'Smart surface'),
 ];
 
-/** Why Miami — same pool, different crop of indices. */
+/** Why Miami — distinct pair */
 export const homeVisualWhyMiami: HomeVisualItem[] = [
-  { ...S[2], caption: 'Pilot posture', credit: 'Studio' },
-  { ...S[3], caption: 'Public format', credit: 'Studio' },
+  g('signalCyan', 'Cyan signal gradient suggesting pilot posture.', 'Pilot posture'),
+  g('meshSlate', 'Slate mesh gradient suggesting public institutional formats.', 'Public format'),
 ];
 
-/** Process section — horizontal strip (scroll on small screens). */
+/** Process section — Infra24 page strip */
 export const homeVisualProcessStrip: HomeVisualItem[] = [
-  { ...S[0], caption: 'Process A', credit: 'Studio' },
-  { ...S[1], caption: 'Process B', credit: 'Studio' },
+  g('deepInk', 'Deep ink gradient — process phase texture.', 'Process A'),
+  g('indigoHaze', 'Indigo haze gradient — process phase texture.', 'Process B'),
 ];
 
-/** Proof section — single echo tile. */
-export const homeVisualProofEcho: HomeVisualItem[] = [{ ...S[4], caption: 'Pattern echo', credit: 'Studio' }];
+/** Proof section — single echo tile */
+export const homeVisualProofEcho: HomeVisualItem[] = [
+  g('roseMist', 'Rose-neutral gradient echo tile.', 'Pattern echo'),
+];
 
-/** Problem section — physical/digital friction (featured). */
-export const homeVisualProblemFeatured: HomeVisualItem = {
-  ...S[2],
-  caption: 'Station / screen',
-  credit: 'Studio',
-};
+/** Problem section — featured (Infra24) */
+export const homeVisualProblemFeatured: HomeVisualItem = g(
+  'fieldViolet',
+  'Violet field gradient — friction between physical and digital surfaces.',
+  'Station / screen',
+  'Texture'
+);
 
-/** Mid-page exhibition & practice references. */
+/** Mid-page gallery — six unique gradients (no repeated artwork) */
 export const homeVisualMidGallery: HomeVisualItem[] = [
-  { ...S[0], caption: 'Layer stack', credit: 'Studio' },
-  { ...S[1], caption: 'Color columns', credit: 'Studio' },
-  { ...S[2], caption: 'Battlestation', credit: 'Studio' },
-  { ...S[3], caption: 'Data dating', credit: 'Studio' },
-  { ...S[4], caption: 'Smart shoppers', credit: 'Studio' },
-  { ...S[0], caption: 'Layer stack (return)', credit: 'Studio' },
+  g('stackTeal', 'Teal stack gradient.', 'Layer stack'),
+  g('columnCoral', 'Coral column gradient.', 'Color columns'),
+  g('fieldViolet', 'Violet field gradient.', 'Field'),
+  g('pulseMagenta', 'Magenta pulse gradient.', 'Network pulse'),
+  g('warmAmber', 'Amber warmth gradient.', 'Warm signal'),
+  g('signalCyan', 'Cyan signal gradient.', 'Civic signal'),
 ];

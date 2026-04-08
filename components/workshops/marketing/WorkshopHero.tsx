@@ -3,6 +3,8 @@ import type { WorkshopMarketingMetadata } from '@/lib/workshops/marketing-metada
 import { workshopTrackLabel } from '@/lib/workshops/track-labels'
 import type { WorkshopRow } from './types'
 import { Clock, Users } from 'lucide-react'
+import { WorkshopMediaPlaceholder } from './WorkshopMediaPlaceholder'
+import { workshopCategoryLabel } from './workshop-category-labels'
 
 const formatLabels: Record<WorkshopMarketingMetadata['format'], string> = {
   in_person: 'In person',
@@ -31,17 +33,25 @@ export function WorkshopHero({
   const duration = formatDuration(workshop.duration_minutes)
   const subtitle = marketing.subtitle ?? workshop.description ?? ''
   const trackLabel = workshopTrackLabel(marketing.track)
+  const categoryLabel = workshopCategoryLabel(workshop.category)
 
   return (
-    <header className="space-y-6">
-      {workshop.image_url && (
-        <div className="relative aspect-[21/9] max-h-[420px] w-full overflow-hidden rounded-xl bg-muted">
+    <header className="space-y-8">
+      {workshop.image_url ? (
+        <div className="relative aspect-[21/9] max-h-[420px] w-full overflow-hidden rounded-xl bg-muted ring-1 ring-border/60">
           <img
             src={workshop.image_url}
             alt=""
             className="h-full w-full object-cover"
           />
         </div>
+      ) : (
+        <WorkshopMediaPlaceholder
+          title={workshop.title}
+          subtitle={trackLabel ?? categoryLabel ?? 'Workshop'}
+          aspectClassName="aspect-[21/9] max-h-[420px] min-h-[200px] rounded-xl ring-1 ring-border/40"
+          imagePrompt={marketing.placeholderImagePrompt}
+        />
       )}
       <div className="flex flex-wrap gap-2">
         <Badge variant="secondary" className="font-normal">
@@ -50,8 +60,13 @@ export function WorkshopHero({
         <Badge variant="outline" className="font-normal">
           {formatLabels[marketing.format]}
         </Badge>
+        {categoryLabel ? (
+          <Badge variant="outline" className="font-normal">
+            {categoryLabel}
+          </Badge>
+        ) : null}
         {trackLabel && (
-          <Badge variant="outline" className="font-normal border-primary/40 text-primary">
+          <Badge variant="outline" className="border-primary/40 font-normal text-primary">
             {trackLabel}
           </Badge>
         )}
@@ -62,16 +77,16 @@ export function WorkshopHero({
         )}
       </div>
       <div>
-        <h1 className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl">
+        <h1 className="text-4xl font-semibold tracking-tight text-foreground md:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
           {workshop.title}
         </h1>
         {subtitle && (
-          <p className="mt-4 max-w-3xl text-lg text-muted-foreground leading-relaxed">
+          <p className="mt-5 max-w-3xl text-lg leading-relaxed text-muted-foreground md:text-xl">
             {subtitle}
           </p>
         )}
       </div>
-      <dl className="flex flex-wrap gap-x-8 gap-y-2 text-sm text-muted-foreground">
+      <dl className="flex flex-wrap gap-x-10 gap-y-2 text-sm text-muted-foreground">
         {duration && (
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 shrink-0" />

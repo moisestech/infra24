@@ -53,6 +53,7 @@ export async function GET() {
         priority,
         tags,
         org_id,
+        metadata,
         image_url,
         image_layout
       `)

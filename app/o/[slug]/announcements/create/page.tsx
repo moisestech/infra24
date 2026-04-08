@@ -47,7 +47,9 @@ export default function CreateAnnouncementPage() {
     expires_at: '',
     expires_time: '',
     image_url: '',
-    image_layout: '' as ImageLayoutType | ''
+    image_layout: '' as ImageLayoutType | '',
+    primary_link: '',
+    qr_destination_url: '',
   })
   
   const [selectedPeople, setSelectedPeople] = useState<AnnouncementPerson[]>([])
@@ -84,7 +86,9 @@ export default function CreateAnnouncementPage() {
         expires_at: formData.expires_at ? new Date(formData.expires_at).toISOString() : null,
         key_people: selectedPeople,
         image_url: formData.image_url.trim() || null,
-        image_layout: formData.image_layout || (formData.image_url.trim() ? 'hero' : null) // Default to 'hero' if image exists but no layout selected
+        image_layout: formData.image_layout || (formData.image_url.trim() ? 'hero' : null), // Default to 'hero' if image exists but no layout selected
+        primary_link: formData.primary_link.trim() || null,
+        qr_destination_url: formData.qr_destination_url.trim() || null,
       }
 
       const response = await fetch(`/api/organizations/by-slug/${slug}/announcements`, {
@@ -336,6 +340,43 @@ export default function CreateAnnouncementPage() {
                 </p>
               </div>
             )}
+
+            <div className="rounded-lg border border-gray-200 dark:border-gray-600 p-4 space-y-4 bg-gray-50/80 dark:bg-gray-900/40">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Smart sign QR</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                After you create this announcement, the smart sign can show a QR that points to a stable URL on this site,
+                then redirects visitors to the destination you set. Use https links only (no localhost). For scans to
+                work, use visibility that includes public access and publish the announcement.
+              </p>
+              <div>
+                <label htmlFor="qr_destination_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Scan destination URL (optional)
+                </label>
+                <input
+                  type="url"
+                  id="qr_destination_url"
+                  name="qr_destination_url"
+                  value={formData.qr_destination_url}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  placeholder="https://example.com/event"
+                />
+              </div>
+              <div>
+                <label htmlFor="primary_link" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Primary / fallback link
+                </label>
+                <input
+                  type="url"
+                  id="primary_link"
+                  name="primary_link"
+                  value={formData.primary_link}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  placeholder="https://..."
+                />
+              </div>
+            </div>
 
             {/* Schedule and Expiry */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

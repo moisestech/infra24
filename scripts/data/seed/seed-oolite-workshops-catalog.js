@@ -26,18 +26,31 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 const PLACEHOLDER =
   'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80'
 
-const CATALOG_PATH = path.join(
-  __dirname,
-  '../../../data/workshops/oolite-first-eight.json'
-)
+const CATALOG_PATHS = [
+  path.join(__dirname, '../../../data/workshops/oolite-first-eight.json'),
+  path.join(__dirname, '../../../data/oolite/adult-art-classes-spring-2026.json'),
+]
 
 function loadCatalog() {
-  const raw = fs.readFileSync(CATALOG_PATH, 'utf8')
-  const data = JSON.parse(raw)
-  if (!data.workshops || !Array.isArray(data.workshops)) {
-    throw new Error('Catalog JSON must contain a workshops array')
+  let organizationSlug = 'oolite'
+  const workshops = []
+  for (const catalogPath of CATALOG_PATHS) {
+    if (!fs.existsSync(catalogPath)) {
+      console.warn('Catalog file missing, skipping:', catalogPath)
+      continue
+    }
+    const raw = fs.readFileSync(catalogPath, 'utf8')
+    const data = JSON.parse(raw)
+    if (!data.workshops || !Array.isArray(data.workshops)) {
+      throw new Error(`Catalog must contain workshops array: ${catalogPath}`)
+    }
+    organizationSlug = data.organizationSlug || organizationSlug
+    workshops.push(...data.workshops)
   }
-  return data
+  if (workshops.length === 0) {
+    throw new Error('No workshop catalogs loaded (all paths missing or empty)')
+  }
+  return { organizationSlug, workshops }
 }
 
 async function upsertWorkshop(orgId, row, metadataForDb) {
@@ -48,6 +61,11 @@ async function upsertWorkshop(orgId, row, metadataForDb) {
     .eq('organization_id', orgId)
     .eq('metadata->>slug', slug)
     .maybeSingle()
+
+  const imageFromRow =
+    row.image_url && String(row.image_url).trim()
+      ? String(row.image_url).trim()
+      : null
 
   const payload = {
     organization_id: orgId,
@@ -69,7 +87,7 @@ async function upsertWorkshop(orgId, row, metadataForDb) {
     is_shared: false,
     featured: row.featured,
     status: row.status,
-    image_url: PLACEHOLDER,
+    image_url: imageFromRow || PLACEHOLDER,
     metadata: metadataForDb,
     created_by: 'seed_oolite_workshops_catalog',
   }
@@ -114,6 +132,12 @@ async function main() {
     const { relatedSlugs = [], metadata: _ignore, ...row } = entry
     const metadata = { ...(entry.metadata || {}) }
     delete metadata.relatedWorkshopIds
+    metadata.slug = metadata.slug || entry.slug
+    metadata.announcement_title =
+      metadata.announcement_title || entry.title
+    if (!metadata.slug) {
+      throw new Error(`Workshop missing metadata.slug: ${entry.title}`)
+    }
 
     const workshopSlug = metadata.slug || row.slug
     slugToRelatedSlugs[workshopSlug] = Array.isArray(relatedSlugs) ? relatedSlugs : []

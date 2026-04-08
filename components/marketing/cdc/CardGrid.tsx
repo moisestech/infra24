@@ -1,11 +1,15 @@
 import Link from 'next/link';
+
+import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
 import { cn } from '@/lib/utils';
 
 export type CardGridItem = {
   href: string;
   title: string;
   description: string;
-  /** Optional cover image for pathway / card grids. */
+  /** Gradient cover for pathway cards (marketing). */
+  cover?: { gradientId: MarketingGradientId; alt: string };
+  /** Legacy remote image cover. */
   image?: { src: string; alt: string };
 };
 

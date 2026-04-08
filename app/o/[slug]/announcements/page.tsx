@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useState, useEffect, useMemo, useLayoutEffect, useRef } from 'react'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Bell, Plus, Calendar, User, Tag, Eye, EyeOff, Shield, Play, MapPin, Users, Building2, ExternalLink, Clock, Info, FileCheck, Copy } from 'lucide-react'
+import { Bell, Plus, Calendar, User, Tag, Eye, EyeOff, Shield, Play, MapPin, Users, Building2, ExternalLink, Clock, Info, FileCheck, Copy, LayoutGrid, List } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { AnnouncementIdDisplay } from '@/components/admin/AnnouncementIdDisplay'
 import { BackgroundPattern } from '@/components/BackgroundPattern'
@@ -21,6 +21,9 @@ interface Announcement {
   visibility: string
   start_date: string | null
   end_date: string | null
+  starts_at?: string | null
+  ends_at?: string | null
+  scheduled_at?: string | null
   location: string | null
   key_people: any[]
   metadata: any
@@ -31,6 +34,38 @@ interface Announcement {
   updated_by: string
   image_url?: string | null
   image_layout?: string | null
+  sub_type?: string | null
+  tags?: string[] | null
+}
+
+function announcementDateRawForDisplay(a: Announcement): string {
+  return (
+    (a.end_date ||
+      a.start_date ||
+      a.starts_at ||
+      a.scheduled_at ||
+      a.created_at) as string
+  )
+}
+
+function isFilmPosterStylePromotion(a: Announcement): boolean {
+  const t = String(a.type || '').toLowerCase()
+  if (t === 'cinematic') return true
+  if (t !== 'promotion') return false
+  if (a.metadata?.image_only) return true
+  const tags = a.tags
+  if (!Array.isArray(tags)) return false
+  return tags.some((x) => /film|poster/i.test(String(x)))
+}
+
+function matchesEventsExhibitionsPreset(
+  a: Announcement,
+  includePosters: boolean
+): boolean {
+  if (isFilmPosterStylePromotion(a)) return includePosters
+  const t = String(a.type || '').toLowerCase()
+  const st = String(a.sub_type || '').toLowerCase()
+  return t === 'event' || st === 'exhibition'
 }
 
 interface Organization {
@@ -42,8 +77,11 @@ interface Organization {
 export default function OrganizationAnnouncementsPage() {
   const params = useParams()
   const slug = params.slug as string
+  const pathname = usePathname()
+  const router = useRouter()
   const { tenantConfig } = useTenant()
-  
+  const skipFirstUrlReplace = useRef(true)
+
   // Debug tenant config
   console.log('🎨 Announcements Page - Tenant Config:', tenantConfig)
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
@@ -51,6 +89,13 @@ export default function OrganizationAnnouncementsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<'all' | 'current' | 'expired' | 'active' | 'inactive' | 'public' | 'internal' | 'members_only'>('all')
+  /** `YYYY-MM` in local calendar, or '' for all months */
+  const [monthFilter, setMonthFilter] = useState<string>('')
+  /** Previously the list hid everything without an image — that dropped many real rows */
+  const [imagesOnly, setImagesOnly] = useState(false)
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
+  const [categoryPreset, setCategoryPreset] = useState<null | 'events_exhibitions'>(null)
+  const [includePosterPromotions, setIncludePosterPromotions] = useState(false)
   const [userRole, setUserRole] = useState<string>('')
   const [editingEndDate, setEditingEndDate] = useState<string | null>(null)
   const [tempEndDate, setTempEndDate] = useState<string>('')
@@ -136,12 +181,81 @@ export default function OrganizationAnnouncementsPage() {
     }
   }, [slug])
 
-  const filteredAnnouncements = announcements.filter(announcement => {
-    // Only show announcements with images
-    if (!announcement.image_url || announcement.image_url.trim() === '') {
+  useLayoutEffect(() => {
+    if (!slug || typeof window === 'undefined') return
+    const sp = new URLSearchParams(window.location.search)
+    const month = sp.get('month')
+    const view = sp.get('view')
+    if (month && /^\d{4}-\d{2}$/.test(month)) {
+      setMonthFilter(month)
+    }
+    if (view === 'list' || view === 'cards') {
+      setViewMode(view)
+    } else {
+      try {
+        const stored = localStorage.getItem(`announcements-view:${slug}`)
+        if (stored === 'list' || stored === 'cards') {
+          setViewMode(stored)
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [slug])
+
+  useEffect(() => {
+    if (!pathname) return
+    if (skipFirstUrlReplace.current) {
+      skipFirstUrlReplace.current = false
+      return
+    }
+    const params = new URLSearchParams()
+    if (monthFilter) params.set('month', monthFilter)
+    if (viewMode === 'list') params.set('view', 'list')
+    const q = params.toString()
+    const next = q ? `${pathname}?${q}` : pathname
+    router.replace(next, { scroll: false })
+  }, [monthFilter, viewMode, pathname, router])
+
+  function announcementMonthKey(a: Announcement): string | null {
+    const raw =
+      a.end_date ||
+      a.start_date ||
+      a.starts_at ||
+      a.scheduled_at ||
+      a.created_at
+    if (!raw) return null
+    const d = new Date(raw)
+    if (Number.isNaN(d.getTime())) return null
+    const y = d.getFullYear()
+    const m = d.getMonth() + 1
+    return `${y}-${String(m).padStart(2, '0')}`
+  }
+
+  const monthOptions = useMemo(() => {
+    const keys = new Set<string>()
+    for (const a of announcements) {
+      const k = announcementMonthKey(a)
+      if (k) keys.add(k)
+    }
+    return Array.from(keys).sort((a, b) => b.localeCompare(a))
+  }, [announcements])
+
+  const filteredAnnouncements = useMemo(() => {
+    return announcements.filter((announcement) => {
+    if (imagesOnly && (!announcement.image_url || announcement.image_url.trim() === '')) {
       return false
     }
-    
+    if (monthFilter) {
+      const k = announcementMonthKey(announcement)
+      if (k !== monthFilter) return false
+    }
+    if (categoryPreset === 'events_exhibitions') {
+      if (!matchesEventsExhibitionsPreset(announcement, includePosterPromotions)) {
+        return false
+      }
+    }
+
     if (filter === 'all') return true
     if (filter === 'current') {
       const hasEndDate = announcement.end_date
@@ -157,33 +271,43 @@ export default function OrganizationAnnouncementsPage() {
     if (filter === 'internal') return announcement.visibility === 'internal'
     if (filter === 'members_only') return announcement.visibility === 'members_only'
     return true
-  })
+    })
+  }, [
+    announcements,
+    imagesOnly,
+    monthFilter,
+    categoryPreset,
+    includePosterPromotions,
+    filter,
+  ])
 
-  // Remove duplicates by ID (in case API returns duplicates)
-  const uniqueAnnouncements = filteredAnnouncements.reduce((acc, announcement) => {
-    if (!acc.find(a => a.id === announcement.id)) {
-      acc.push(announcement)
-    }
-    return acc
-  }, [] as Announcement[])
+  const uniqueAnnouncements = useMemo(() => {
+    return filteredAnnouncements.reduce((acc, announcement) => {
+      if (!acc.find((a) => a.id === announcement.id)) {
+        acc.push(announcement)
+      }
+      return acc
+    }, [] as Announcement[])
+  }, [filteredAnnouncements])
 
-  // Debug: Log if duplicates were found
+  const sortedAnnouncements = useMemo(() => {
+    return [...uniqueAnnouncements].sort((a, b) => {
+      const da = new Date(announcementDateRawForDisplay(a)).getTime()
+      const db = new Date(announcementDateRawForDisplay(b)).getTime()
+      const na = Number.isNaN(da) ? 0 : da
+      const nb = Number.isNaN(db) ? 0 : db
+      return nb - na
+    })
+  }, [uniqueAnnouncements])
+
   if (filteredAnnouncements.length !== uniqueAnnouncements.length) {
     console.log('🔍 Found duplicates:', {
       before: filteredAnnouncements.length,
       after: uniqueAnnouncements.length,
-      removed: filteredAnnouncements.length - uniqueAnnouncements.length
+      removed: filteredAnnouncements.length - uniqueAnnouncements.length,
     })
   }
 
-  // Sort announcements by date (latest first)
-  const sortedAnnouncements = uniqueAnnouncements.sort((a, b) => {
-    const dateA = new Date(a.created_at)
-    const dateB = new Date(b.created_at)
-    return dateB.getTime() - dateA.getTime()
-  })
-  
-  // Debug: Log final count
   console.log('📋 Final announcements count:', sortedAnnouncements.length, 'unique announcements')
 
   // Utility functions for date handling
@@ -283,6 +407,15 @@ export default function OrganizationAnnouncementsPage() {
 
   const isAdmin = userRole === 'super_admin' || userRole === 'org_admin' || userRole === 'moderator'
 
+  const persistViewMode = (mode: 'cards' | 'list') => {
+    setViewMode(mode)
+    try {
+      localStorage.setItem(`announcements-view:${slug}`, mode)
+    } catch {
+      /* ignore */
+    }
+  }
+
   const getStatusColor = (isActive: boolean) => {
     return isActive 
       ? 'text-white'
@@ -346,6 +479,10 @@ export default function OrganizationAnnouncementsPage() {
       event: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Event' },
       opportunity: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Opportunity' },
       administrative: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Admin' },
+      promotion: { bg: 'bg-fuchsia-100', text: 'text-fuchsia-900', label: 'Promotion' },
+      cinematic: { bg: 'bg-violet-100', text: 'text-violet-900', label: 'Cinematic' },
+      news: { bg: 'bg-slate-100', text: 'text-slate-800', label: 'News' },
+      general: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'General' },
     };
     
     const style = typeStyles[type as keyof typeof typeStyles] || typeStyles.event;
@@ -488,7 +625,141 @@ export default function OrganizationAnnouncementsPage() {
         )}
 
         {/* Filters */}
-        <div className="mb-6">
+        <div className="mb-6 space-y-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <span className="whitespace-nowrap font-medium">Month</span>
+              <select
+                value={monthFilter}
+                onChange={(e) => setMonthFilter(e.target.value)}
+                className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-white min-w-[200px]"
+              >
+                <option value="">All months</option>
+                {monthOptions.map((key) => {
+                  const label = new Date(`${key}-01T12:00:00`).toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                  const count = announcements.filter((a) => announcementMonthKey(a) === key).length
+                  return (
+                    <option key={key} value={key}>
+                      {label} ({count})
+                    </option>
+                  )
+                })}
+              </select>
+            </label>
+            <div
+              className="inline-flex rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden"
+              role="group"
+              aria-label="Announcement layout"
+            >
+              <button
+                type="button"
+                aria-pressed={viewMode === 'cards'}
+                onClick={() => persistViewMode('cards')}
+                className={`px-3 py-2 text-sm flex items-center gap-1.5 transition-colors ${
+                  viewMode === 'cards'
+                    ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}
+                title="Card view"
+              >
+                <LayoutGrid className="h-4 w-4 shrink-0" />
+                <span className="hidden sm:inline">Cards</span>
+              </button>
+              <button
+                type="button"
+                aria-pressed={viewMode === 'list'}
+                onClick={() => persistViewMode('list')}
+                className={`px-3 py-2 text-sm flex items-center gap-1.5 border-l border-gray-300 dark:border-gray-600 transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}
+                title="List view"
+              >
+                <List className="h-4 w-4 shrink-0" />
+                <span className="hidden sm:inline">List</span>
+              </button>
+            </div>
+            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={imagesOnly}
+                onChange={(e) => setImagesOnly(e.target.checked)}
+                className="rounded border-gray-300"
+              />
+              <span>Image only</span>
+            </label>
+            {(monthFilter || imagesOnly || categoryPreset || includePosterPromotions) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMonthFilter('')
+                  setImagesOnly(false)
+                  setCategoryPreset(null)
+                  setIncludePosterPromotions(false)
+                }}
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Clear month, image & preset filters
+              </button>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mr-1">
+              Presets
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setMonthFilter('2026-04')
+                setCategoryPreset(null)
+              }}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                monthFilter === '2026-04'
+                  ? 'border-transparent text-white'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+              style={
+                monthFilter === '2026-04'
+                  ? { backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4' }
+                  : undefined
+              }
+            >
+              April 2026
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setCategoryPreset((p) => (p === 'events_exhibitions' ? null : 'events_exhibitions'))
+              }
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                categoryPreset === 'events_exhibitions'
+                  ? 'border-transparent text-white'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+              style={
+                categoryPreset === 'events_exhibitions'
+                  ? { backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4' }
+                  : undefined
+              }
+            >
+              Events & exhibitions
+            </button>
+            {categoryPreset === 'events_exhibitions' && (
+              <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer ml-1">
+                <input
+                  type="checkbox"
+                  checked={includePosterPromotions}
+                  onChange={(e) => setIncludePosterPromotions(e.target.checked)}
+                  className="rounded border-gray-300"
+                />
+                <span>Include film posters</span>
+              </label>
+            )}
+          </div>
           <div className="flex flex-wrap gap-2">
             {[
               { key: 'all', label: 'All', count: announcements.length },
@@ -545,10 +816,11 @@ export default function OrganizationAnnouncementsPage() {
                 No announcements found
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-4">
-                {filter === 'all' 
-                  ? 'No announcements have been created yet.'
-                  : `No ${filter} announcements found.`
-                }
+                {monthFilter || imagesOnly || categoryPreset || includePosterPromotions
+                  ? 'No announcements match the current filters. Try “All months”, turn off “Image only”, or clear presets.'
+                  : filter === 'all'
+                    ? 'No announcements have been created yet.'
+                    : `No ${filter} announcements found.`}
               </p>
               <Link
                 href={`/o/${slug}/announcements/create`}
@@ -558,10 +830,102 @@ export default function OrganizationAnnouncementsPage() {
                 <span>Create First Announcement</span>
               </Link>
             </div>
+          ) : viewMode === 'list' ? (
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 overflow-hidden">
+              {sortedAnnouncements.map((announcement) => {
+                const sortRaw = announcementDateRawForDisplay(announcement)
+                const detailHref = `/o/${slug}/announcements/${announcement.id}`
+                return (
+                  <div
+                    key={announcement.id}
+                    className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                  >
+                    <div className="flex shrink-0 items-center gap-3 sm:w-[220px]">
+                      {announcement.image_url ? (
+                        <Link href={detailHref} className="block h-12 w-12 shrink-0 overflow-hidden rounded-md border border-gray-200 dark:border-gray-600">
+                          <img
+                            src={announcement.image_url}
+                            alt=""
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none'
+                            }}
+                          />
+                        </Link>
+                      ) : (
+                        <div className="h-12 w-12 shrink-0 rounded-md border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/40" />
+                      )}
+                      <div className="min-w-0">
+                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Date</div>
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white tabular-nums">
+                          {formatDate(sortRaw)}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <Link
+                        href={detailHref}
+                        className="font-medium text-gray-900 dark:text-white hover:underline line-clamp-2"
+                      >
+                        {announcement.title}
+                      </Link>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                        {getTypeBadge(announcement.type)}
+                        {announcement.sub_type && String(announcement.sub_type).trim() !== '' && (
+                          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200 capitalize">
+                            {String(announcement.sub_type).replace(/_/g, ' ')}
+                          </span>
+                        )}
+                        {isAdmin && (
+                          <>
+                            <span
+                              className={`px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(announcement.is_active)}`}
+                              style={
+                                announcement.is_active
+                                  ? { backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4' }
+                                  : undefined
+                              }
+                            >
+                              {announcement.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 text-xs font-medium rounded-full ${getVisibilityColor(announcement.visibility)}`}
+                              style={
+                                announcement.visibility === 'public'
+                                  ? { backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4' }
+                                  : undefined
+                              }
+                            >
+                              {announcement.visibility}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-end">
+                      <Link
+                        href={detailHref}
+                        className="text-sm font-medium whitespace-nowrap"
+                        style={{ color: tenantConfig?.theme?.primaryColor || '#47abc4' }}
+                      >
+                        View
+                      </Link>
+                      {isAdmin && (
+                        <Link
+                          href={`/o/${slug}/announcements/${announcement.id}/edit`}
+                          className="text-sm text-gray-600 dark:text-gray-400 hover:underline whitespace-nowrap"
+                        >
+                          Edit
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           ) : (
             sortedAnnouncements.map((announcement) => {
-              // Determine the event date - prioritize end_date, then start_date, then created_at
-              const eventDate = announcement.end_date || announcement.start_date || announcement.created_at
+              const eventDate = announcementDateRawForDisplay(announcement)
               const formattedEventDate = formatEventDate(eventDate)
               
               // Get time information if available

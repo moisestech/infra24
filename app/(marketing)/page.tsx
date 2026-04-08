@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { MarketingSection } from '@/components/marketing/MarketingSection';
@@ -32,6 +31,8 @@ import {
   homeVisualProofEcho,
   homeVisualWhyMiami,
 } from '@/lib/marketing/home-visual-assets';
+import { marketingGradientSurfaceClass } from '@/lib/marketing/marketing-gradients';
+import { cn } from '@/lib/utils';
 
 const NARRATIVE_WEBCORE_ICONS = {
   problem: 'AlertCircle',
@@ -181,7 +182,7 @@ export default function MarketingHomePage() {
             Field texture
           </p>
           <p className="mt-1 max-w-2xl text-xs text-neutral-500">
-            Visual references from studio and field practice—texture, not stock photography.
+            Abstract gradient fields for rhythm and texture—no stock photography or repeated artwork.
           </p>
           <div className="mt-6">
             <HomeWebcoreVisualGrid lightbox mode="mosaic" items={[...homeVisualPostMarquee]} />
@@ -225,15 +226,14 @@ export default function MarketingHomePage() {
               key={step.id}
               className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-8"
             >
-              <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-xl border border-[var(--cdc-border)] bg-neutral-100 shadow-sm sm:aspect-square sm:w-40 md:w-48">
-                <Image
-                  src={step.image.src}
-                  alt={step.image.alt}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 192px"
-                  className="object-cover"
-                />
-              </div>
+              <div
+                className={cn(
+                  'relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-xl border border-[var(--cdc-border)] shadow-sm sm:aspect-square sm:w-40 md:w-48',
+                  marketingGradientSurfaceClass(step.visual.gradientId)
+                )}
+                role="img"
+                aria-label={step.visual.alt}
+              />
               <div className="min-w-0 flex-1">
                 <dt className="flex items-start gap-2.5 text-sm font-semibold text-neutral-900">
                   <WebcoreIcon

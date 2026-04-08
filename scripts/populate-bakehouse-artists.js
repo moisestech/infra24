@@ -2,8 +2,11 @@
 
 /**
  * Populate Bakehouse Artists Script
- * 
- * This script populates the artist_profiles table with all Bakehouse Art Complex artists
+ *
+ * DATA_SEED_SAFETY: DESTRUCTIVE (org-scoped)
+ * -----------------------------------------
+ * Deletes ALL artist_profiles for the Bakehouse organization_id, then inserts
+ * the list in this file. See scripts/DATA_SEED_REGISTRY.md
  */
 
 require('dotenv').config({ path: '.env.local' });
@@ -121,9 +124,12 @@ async function populateBakehouseArtists() {
     }
     
     if (existingArtists && existingArtists.length > 0) {
+      console.warn('\n' + '='.repeat(72));
+      console.warn('DESTRUCTIVE STEP: Deleting ALL artist_profiles for Bakehouse org', BAKEHOUSE_ORG_ID);
+      console.warn('Registry: scripts/DATA_SEED_REGISTRY.md');
+      console.warn('='.repeat(72) + '\n');
       console.log(`📋 Found ${existingArtists.length} existing artists. Clearing them first...`);
-      
-      // Delete existing artists
+
       const { error: deleteError } = await supabase
         .from('artist_profiles')
         .delete()

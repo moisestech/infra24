@@ -1,13 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { ArrowLeft, Eye, List, EyeOff, Building2, Menu, X } from 'lucide-react';
+import { ArrowLeft, Eye, List, EyeOff, Settings2, Copy, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
-import { AnnouncementCarousel, OrganizationThemeProvider } from '@/components/AnnouncementCarousel';
+import { OrganizationThemeProvider } from '@/components/AnnouncementCarousel';
+import { DisplayProgramOrchestrator } from '@/components/display/DisplayProgramOrchestrator';
 import { Announcement } from '@/types/announcement';
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo';
+import type { WorkshopGridItem, ArtistGridItem } from '@/components/display/DisplayGrid';
+import {
+  DEFAULT_DISPLAY_PROGRAM,
+  loadDisplayProgram,
+  saveDisplayProgram,
+  tryParseDisplayProgramJson,
+  encodeDisplayProgramForUrl,
+  type DisplayProgram,
+} from '@/lib/display/display-program';
 
 interface Organization {
   id: string;
@@ -18,108 +28,36 @@ interface Organization {
 }
 
 export default function AnnouncementDisplayPage() {
-  const { user, isLoaded } = useUser();
+  const { isLoaded } = useUser();
   const params = useParams();
+  const slug = params.slug as string;
+
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [workshops, setWorkshops] = useState<WorkshopGridItem[]>([]);
+  const [artists, setArtists] = useState<ArtistGridItem[]>([]);
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showNavigation, setShowNavigation] = useState(true);
   const [cleanViewMode, setCleanViewMode] = useState(false);
 
+  const [program, setProgram] = useState<DisplayProgram>(DEFAULT_DISPLAY_PROGRAM);
+  const [programJson, setProgramJson] = useState(() => JSON.stringify(DEFAULT_DISPLAY_PROGRAM, null, 2));
+  const [programEditorOpen, setProgramEditorOpen] = useState(false);
+  const [programError, setProgramError] = useState<string | null>(null);
+
   useEffect(() => {
-    async function loadData() {
-      if (!params.slug) return;
+    if (!slug) return;
+    const loaded = loadDisplayProgram(slug);
+    setProgram(loaded);
+    setProgramJson(JSON.stringify(loaded, null, 2));
+  }, [slug]);
 
-      try {
-        // Load announcements and organization data from public API
-        const announcementsResponse = await fetch(`/api/organizations/by-slug/${params.slug}/announcements/public`);
-        if (!announcementsResponse.ok) {
-          throw new Error('Failed to load announcements');
-        }
-        const announcementsData = await announcementsResponse.json();
-        
-        // Raw API response log removed to reduce console noise
-        
-        // Set organization data from the announcements response
-        setOrganization(announcementsData.organization);
-        
-        // Filter for active announcements and add type inference
-        const publishedAnnouncements = (announcementsData.announcements || [])
-          .filter((announcement: any) => announcement.is_active === true)
-          .map((announcement: any) => {
-            const mapped = {
-              ...announcement,
-              // Use body if available, otherwise fall back to content
-              body: announcement.body || announcement.content || '',
-              // Add status field for compatibility
-              status: announcement.status || 'published',
-              // Infer type from existing data if not set
-              type: announcement.type || inferAnnouncementType(announcement),
-              sub_type: announcement.sub_type || inferAnnouncementSubType(announcement),
-              // Ensure image_url and image_layout are preserved - check multiple possible field names
-              image_url: announcement.image_url || announcement.imageUrl || null,
-              image_layout: announcement.image_layout || announcement.imageLayout || null,
-              // Map people fields
-              people: announcement.people || announcement.key_people || [],
-            };
-            
-            // Log each announcement's image status
-            if (!mapped.image_url) {
-              console.warn('⚠️ Announcement missing image_url:', {
-                title: mapped.title,
-                rawImageUrl: announcement.image_url,
-                rawImageLayout: announcement.image_layout,
-                allKeys: Object.keys(announcement)
-              });
-            }
-            
-            return mapped;
-          });
-
-        // Limit to the last 30 days of content for display
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - 30);
-        const recentAnnouncements = publishedAnnouncements.filter((announcement: any) => {
-          const rawDate = announcement.created_at || announcement.starts_at || announcement.scheduled_at;
-          if (!rawDate) return false;
-          const announcementDate = new Date(rawDate);
-          return !Number.isNaN(announcementDate.getTime()) && announcementDate >= cutoffDate;
-        });
-        
-        // Summary log only
-        const announcementsWithImages = recentAnnouncements.filter((a: any) => a.image_url);
-        console.log('📋 Display Page:', {
-          total: recentAnnouncements.length,
-          withImages: announcementsWithImages.length
-        });
-        
-        setAnnouncements(recentAnnouncements);
-      } catch (error) {
-        console.error('Error loading data:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load data');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (isLoaded) {
-      loadData();
-    }
-  }, [isLoaded, params.slug]);
-
-  // Helper function to infer announcement type from existing data
-  function inferAnnouncementType(announcement: any): string {
-    // Check priority for urgent announcements
-    if (announcement.priority > 3) return 'urgent';
-    
-    // Check if it's scheduled (likely an event)
+  function inferAnnouncementType(announcement: Record<string, unknown>): string {
+    if ((announcement.priority as number) > 3) return 'urgent';
     if (announcement.starts_at || announcement.scheduled_at) return 'event';
-    
-    // Check tags for hints
-    const tags = announcement.tags || [];
+    const tags = (announcement.tags as string[]) || [];
     const tagString = tags.join(' ').toLowerCase();
-    
     if (tagString.includes('workshop') || tagString.includes('exhibition') || tagString.includes('performance')) {
       return 'event';
     }
@@ -132,70 +70,176 @@ export default function AnnouncementDisplayPage() {
     if (tagString.includes('survey') || tagString.includes('policy') || tagString.includes('deadline')) {
       return 'administrative';
     }
-    
-    // Default to event
     return 'event';
   }
 
-  // Helper function to infer announcement sub-type
-  function inferAnnouncementSubType(announcement: any): string {
-    const tags = announcement.tags || [];
+  function inferAnnouncementSubType(announcement: Record<string, unknown>): string {
+    const tags = (announcement.tags as string[]) || [];
     const tagString = tags.join(' ').toLowerCase();
-    const title = announcement.title.toLowerCase();
-    const body = (announcement.body || '').toLowerCase();
+    const title = String(announcement.title || '').toLowerCase();
+    const body = String(announcement.body || '').toLowerCase();
     const combined = `${title} ${body} ${tagString}`;
-    
-    // Event sub-types
+
     if (combined.includes('exhibition') || combined.includes('show')) return 'exhibition';
     if (combined.includes('workshop') || combined.includes('class')) return 'workshop';
     if (combined.includes('talk') || combined.includes('lecture') || combined.includes('presentation')) return 'talk';
     if (combined.includes('social') || combined.includes('party') || combined.includes('gathering')) return 'social';
-    if (combined.includes('performance') || combined.includes('concert') || combined.includes('show')) return 'performance';
+    if (combined.includes('performance') || combined.includes('concert')) return 'performance';
     if (combined.includes('open studio') || combined.includes('open studios')) return 'open_studios';
-    
-    // Urgent sub-types
     if (combined.includes('closure') || combined.includes('closed')) return 'closure';
     if (combined.includes('weather') || combined.includes('storm') || combined.includes('hurricane')) return 'weather';
     if (combined.includes('safety') || combined.includes('emergency')) return 'safety';
     if (combined.includes('parking') || combined.includes('park')) return 'parking';
-    
-    // Facility sub-types
     if (combined.includes('maintenance') || combined.includes('repair')) return 'maintenance';
     if (combined.includes('cleaning') || combined.includes('clean')) return 'cleaning';
     if (combined.includes('storage') || combined.includes('store')) return 'storage';
     if (combined.includes('renovation') || combined.includes('renovate')) return 'renovation';
-    
-    // Opportunity sub-types
     if (combined.includes('open call') || combined.includes('call for')) return 'open_call';
     if (combined.includes('job') || combined.includes('position') || combined.includes('hiring')) return 'job';
     if (combined.includes('commission') || combined.includes('commissioned')) return 'commission';
     if (combined.includes('residency') || combined.includes('resident')) return 'residency';
     if (combined.includes('funding') || combined.includes('grant') || combined.includes('fund')) return 'funding';
-    
-    // Administrative sub-types
     if (combined.includes('survey') || combined.includes('questionnaire')) return 'survey';
     if (combined.includes('document') || combined.includes('form')) return 'document';
     if (combined.includes('deadline') || combined.includes('due')) return 'deadline';
     if (combined.includes('policy') || combined.includes('rule')) return 'policy';
-    
-    // Default sub-types based on type
+
     switch (announcement.type) {
-      case 'event': return 'exhibition';
-      case 'urgent': return 'closure';
-      case 'facility': return 'maintenance';
-      case 'opportunity': return 'open_call';
-      case 'administrative': return 'survey';
-      default: return 'exhibition';
+      case 'event':
+        return 'exhibition';
+      case 'urgent':
+        return 'closure';
+      case 'facility':
+        return 'maintenance';
+      case 'opportunity':
+        return 'open_call';
+      case 'administrative':
+        return 'survey';
+      default:
+        return 'exhibition';
     }
   }
+
+  useEffect(() => {
+    async function loadData() {
+      if (!params.slug) return;
+
+      try {
+        const slugParam = params.slug as string;
+        const [annRes, wsRes, artRes] = await Promise.all([
+          fetch(`/api/organizations/by-slug/${slugParam}/announcements/public`),
+          fetch(`/api/organizations/by-slug/${slugParam}/workshops/public`),
+          fetch(`/api/organizations/by-slug/${slugParam}/artists/public`),
+        ]);
+
+        if (!annRes.ok) throw new Error('Failed to load announcements');
+
+        const announcementsData = await annRes.json();
+        setOrganization(announcementsData.organization);
+
+        const publishedAnnouncements = (announcementsData.announcements || [])
+          .filter((announcement: { is_active?: boolean }) => announcement.is_active === true)
+          .map((announcement: Record<string, unknown>) => {
+            const mapped = {
+              ...announcement,
+              body: (announcement.body as string) || (announcement.content as string) || '',
+              status: (announcement.status as string) || 'published',
+              type: (announcement.type as string) || inferAnnouncementType(announcement),
+              sub_type: (announcement.sub_type as string) || inferAnnouncementSubType(announcement),
+              image_url: (announcement.image_url as string) || (announcement.imageUrl as string) || null,
+              image_layout: (announcement.image_layout as string) || (announcement.imageLayout as string) || null,
+              people: (announcement.people as unknown[]) || (announcement.key_people as unknown[]) || [],
+            } as Announcement;
+            if (!mapped.image_url) {
+              console.warn('⚠️ Announcement missing image_url:', { title: mapped.title });
+            }
+            return mapped;
+          });
+
+        console.log('📋 Display Page:', { totalAnnouncements: publishedAnnouncements.length });
+
+        setAnnouncements(publishedAnnouncements);
+
+        if (wsRes.ok) {
+          const wsData = await wsRes.json();
+          const wsList = (wsData.workshops || []) as Record<string, unknown>[];
+          setWorkshops(
+            wsList.map((w) => ({
+              id: String(w.id),
+              title: String(w.title || ''),
+              description: (w.description as string) || null,
+              image_url: (w.image_url as string) || null,
+              category: (w.category as string) || null,
+            }))
+          );
+        } else {
+          setWorkshops([]);
+        }
+
+        if (artRes.ok) {
+          const artData = await artRes.json();
+          const arList = (artData.artists || []) as Record<string, unknown>[];
+          setArtists(
+            arList.map((a) => ({
+              id: String(a.id),
+              name: String(a.name || ''),
+              bio: (a.bio as string) || null,
+              profile_image: (a.profile_image as string) || null,
+              studio_type: (a.studio_type as string) || null,
+              metadata: (a.metadata as Record<string, unknown>) || null,
+            }))
+          );
+        } else {
+          setArtists([]);
+        }
+      } catch (e) {
+        console.error('Error loading data:', e);
+        setError(e instanceof Error ? e.message : 'Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (isLoaded) {
+      loadData();
+    }
+  }, [isLoaded, params.slug]);
+
+  const applyProgramJson = useCallback(() => {
+    if (!slug) return;
+    const parsed = tryParseDisplayProgramJson(programJson);
+    if (!parsed) {
+      setProgramError('Invalid display program JSON (version 1, segments with id/kind/durationMs ≥ 3000).');
+      return;
+    }
+    setProgramError(null);
+    setProgram(parsed);
+    saveDisplayProgram(slug, parsed);
+  }, [programJson, slug]);
+
+  const resetProgram = useCallback(() => {
+    if (!slug) return;
+    setProgram(DEFAULT_DISPLAY_PROGRAM);
+    setProgramJson(JSON.stringify(DEFAULT_DISPLAY_PROGRAM, null, 2));
+    setProgramError(null);
+    saveDisplayProgram(slug, DEFAULT_DISPLAY_PROGRAM);
+  }, [slug]);
+
+  const copyProgramUrl = useCallback(() => {
+    const parsed = tryParseDisplayProgramJson(programJson) ?? program;
+    const enc = encodeDisplayProgramForUrl(parsed);
+    if (!enc || typeof window === 'undefined') return;
+    const url = `${window.location.origin}${window.location.pathname}?program=${enc}`;
+    void navigator.clipboard.writeText(url);
+  }, [programJson, program]);
 
   if (!isLoaded || loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading announcements...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400">Loading display…</p>
           </div>
         </div>
       </div>
@@ -222,27 +266,27 @@ export default function AnnouncementDisplayPage() {
     );
   }
 
-
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900">
-      {/* Header with navigation */}
-      <div className={`absolute top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm transition-all duration-300 ${
-        showNavigation && !cleanViewMode ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'
-      }`}>
+      <div
+        className={`absolute top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm transition-all duration-300 ${
+          showNavigation && !cleanViewMode ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link
-                href={`/o/${params.slug}`}
+                href={`/o/${slug}`}
                 className="inline-flex items-center px-3 py-2 text-white hover:text-white/80 transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
               </Link>
-              
+
               <div className="hidden md:flex items-center space-x-4 text-white/80">
                 <div className="flex items-center space-x-3">
                   {organization && (
-                    <OrganizationLogo 
+                    <OrganizationLogo
                       organizationSlug={organization.slug}
                       size="md"
                       variant="horizontal"
@@ -252,10 +296,10 @@ export default function AnnouncementDisplayPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Link
-                href={`/o/${params.slug}/announcements`}
+                href={`/o/${slug}/announcements`}
                 className="inline-flex items-center px-3 py-2 text-white hover:text-white/80 transition-colors"
               >
                 <List className="w-4 h-4 mr-2" />
@@ -266,29 +310,88 @@ export default function AnnouncementDisplayPage() {
         </div>
       </div>
 
-      {/* Clean View Toggle Button */}
       <button
+        type="button"
         onClick={() => {
           setCleanViewMode(!cleanViewMode);
           if (!cleanViewMode) {
             setShowNavigation(false);
+            setProgramEditorOpen(false);
           }
         }}
         className={`fixed top-4 right-4 z-50 inline-flex items-center justify-center w-12 h-12 bg-black/60 backdrop-blur-md text-white hover:bg-black/80 transition-all duration-300 rounded-lg border border-white/20 ${
           cleanViewMode ? 'opacity-100' : 'opacity-70 hover:opacity-100'
         }`}
-        title={cleanViewMode ? "Exit clean view" : "Enter clean view"}
+        title={cleanViewMode ? 'Exit clean view' : 'Enter clean view'}
       >
-        {cleanViewMode ? (
-          <Eye className="w-5 h-5" />
-        ) : (
-          <EyeOff className="w-5 h-5" />
-        )}
+        {cleanViewMode ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
       </button>
 
-      {/* Carousel */}
-      <OrganizationThemeProvider initialSlug={params.slug as string}>
-        <AnnouncementCarousel announcements={announcements} organizationSlug={params.slug as string} cleanViewMode={cleanViewMode} />
+      <button
+        type="button"
+        onClick={() => setProgramEditorOpen((o) => !o)}
+        className="fixed top-4 right-[4.5rem] z-50 inline-flex items-center justify-center w-12 h-12 bg-black/60 backdrop-blur-md text-white hover:bg-black/80 transition-all duration-300 rounded-lg border border-white/20 opacity-70 hover:opacity-100"
+        title="Display program (JSON)"
+      >
+        <Settings2 className="w-5 h-5" />
+      </button>
+
+      {programEditorOpen && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 max-h-[45vh] flex flex-col bg-zinc-950/95 text-white border-t border-white/10 shadow-2xl">
+          <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-white/10">
+            <span className="text-sm font-medium">Display program (localStorage + optional ?program=)</span>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={applyProgramJson}
+                className="px-3 py-1.5 rounded-md bg-cyan-600 text-sm font-medium hover:bg-cyan-500"
+              >
+                Apply & save
+              </button>
+              <button
+                type="button"
+                onClick={resetProgram}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-white/10 text-sm hover:bg-white/15"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Reset default
+              </button>
+              <button
+                type="button"
+                onClick={copyProgramUrl}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-white/10 text-sm hover:bg-white/15"
+              >
+                <Copy className="w-4 h-4" />
+                Copy URL
+              </button>
+              <button
+                type="button"
+                onClick={() => setProgramEditorOpen(false)}
+                className="px-3 py-1.5 rounded-md bg-white/10 text-sm hover:bg-white/15"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          {programError && <p className="px-4 py-2 text-sm text-red-300">{programError}</p>}
+          <textarea
+            className="flex-1 min-h-[120px] w-full bg-black/40 font-mono text-xs p-3 resize-y outline-none border-0 text-white/90"
+            value={programJson}
+            onChange={(e) => setProgramJson(e.target.value)}
+            spellCheck={false}
+          />
+        </div>
+      )}
+
+      <OrganizationThemeProvider initialSlug={slug}>
+        <DisplayProgramOrchestrator
+          orgSlug={slug}
+          program={program}
+          allAnnouncements={announcements}
+          workshops={workshops}
+          artists={artists}
+          cleanViewMode={cleanViewMode}
+        />
       </OrganizationThemeProvider>
     </div>
   );

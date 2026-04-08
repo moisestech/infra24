@@ -64,6 +64,7 @@ export async function GET(
         status,
         tags,
         primary_link,
+        qr_destination_url,
         additional_info,
         created_at,
         updated_at,

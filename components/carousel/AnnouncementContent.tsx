@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapPin, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
 import { TypeStyle } from './announcement-styles';
 import { AnnouncementMetadata } from './AnnouncementMetadata';
 import QRCode from '@/components/ui/QRCode';
+import {
+  announcementHasScannableDestination,
+  buildAnnouncementScanPath,
+} from '@/lib/announcements/scan-target';
 
 interface AnnouncementContentProps {
   announcement: any;
@@ -37,6 +41,7 @@ interface AnnouncementContentProps {
   responsiveSizes?: any;
   isActive?: boolean;
   animationsPaused?: boolean;
+  hideAnnouncementDates?: boolean;
 }
 
 export function AnnouncementContent({ 
@@ -61,14 +66,19 @@ export function AnnouncementContent({
   iconSizeMultiplier = 1,
   showPriorityBadge = false,
   showVisibilityBadge = false,
-  showQRCodeButton = false, // Disabled until QR code is fully tested
+  showQRCodeButton = true,
   showLearnMore = true,
   layoutType = null,
   screenMetrics,
   responsiveSizes,
   isActive = false,
-  animationsPaused = false
+  animationsPaused = false,
+  hideAnnouncementDates = false,
 }: AnnouncementContentProps) {
+  const isImageOnly = announcement?.metadata?.image_only === true;
+  if (isImageOnly) {
+    return null;
+  }
   
   // Helper function to get responsive base icon size
   const getResponsiveBaseIconSize = (sizeType: 'small' | 'medium' | 'large') => {
@@ -176,6 +186,18 @@ export function AnnouncementContent({
   // DEBUG: colored backgrounds to see layout bounds (set true for debugging)
   const DEBUG_LAYOUT = false;
 
+  const [scanOrigin, setScanOrigin] = useState('');
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setScanOrigin(window.location.origin);
+    }
+  }, []);
+
+  const stableScanUrl =
+    scanOrigin && organizationSlug && announcement.id
+      ? `${scanOrigin}${buildAnnouncementScanPath(organizationSlug, announcement.id)}`
+      : '';
+
   return (
     <div 
       className={cn(
@@ -224,7 +246,7 @@ export function AnnouncementContent({
         </div>
 
         {/* Date - in-flow for card layout (no overlay). Only show event time from starts_at, not posted time from created_at */}
-        {layoutType === 'card' && (announcement.type as string) !== 'fun_fact' && (() => {
+        {!hideAnnouncementDates && layoutType === 'card' && (announcement.type as string) !== 'fun_fact' && (() => {
           const eventDate = announcement.starts_at || announcement.created_at;
           if (!eventDate) return null;
           const d = new Date(eventDate);
@@ -300,8 +322,10 @@ export function AnnouncementContent({
           </div>
         )}
 
-        {/* QR Code Display - Disabled until fully tested */}
-        {false && showQRCodeButton && announcement.primary_link && announcement.primary_link !== '#' && (
+        {/* QR encodes stable /scan URL → redirects to qr_destination_url or primary_link */}
+        {showQRCodeButton &&
+          stableScanUrl &&
+          announcementHasScannableDestination(announcement) && (
           <div
             className={cn(
               "flex flex-col items-start gap-4 xl:gap-6",
@@ -315,32 +339,20 @@ export function AnnouncementContent({
                 : "w-40 xl:w-48 2xl:w-56 3xl:w-64 4xl:w-72 h-40 xl:h-48 2xl:h-56 3xl:h-64 4xl:h-72"
             )}>
               {(() => {
-                // Calculate QR code size based on container dimensions
-                // Container sizes from className:
-                // Portrait: w-32(128px) xl:w-40(160px) 2xl:w-48(192px) 3xl:w-56(224px) 4xl:w-64(256px)
-                // Landscape: w-40(160px) xl:w-48(192px) 2xl:w-56(224px) 3xl:w-64(256px) 4xl:w-72(288px)
-                
                 let qrSize: number;
-                
                 if (screenMetrics?.width) {
-                  // Calculate based on screen width and orientation
                   if (orientation === 'portrait') {
-                    // Portrait: use 12-15% of screen width, max 256px
                     qrSize = Math.min(Math.floor(screenMetrics.width * 0.13), 256);
                   } else {
-                    // Landscape: use 10-12% of screen width, max 288px
                     qrSize = Math.min(Math.floor(screenMetrics.width * 0.11), 288);
                   }
-                  // Account for padding (p-2 = 8px on each side = 16px total)
-                  qrSize = Math.max(qrSize - 16, 100); // Minimum 100px
+                  qrSize = Math.max(qrSize - 16, 100);
                 } else {
-                  // Fallback sizes
                   qrSize = orientation === 'portrait' ? 120 : 150;
                 }
-                
                 return (
-                  <QRCode 
-                    value={announcement.primary_link} 
+                  <QRCode
+                    value={stableScanUrl}
                     size={qrSize}
                     className="w-full h-full"
                   />
@@ -353,7 +365,7 @@ export function AnnouncementContent({
                 ? "text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl 4xl:text-5xl"
                 : "text-2xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl 4xl:text-6xl"
             )}>
-              Scan to view event
+              Scan for more
             </p>
           </div>
         )}

@@ -2,8 +2,11 @@
 
 /**
  * Populate Sample Surveys Script
- * 
- * This script creates sample surveys for organizations using the new surveys table
+ *
+ * DATA_SEED_SAFETY: DESTRUCTIVE (global surveys table)
+ * ----------------------------------------------------
+ * If any surveys exist, deletes ALL rows in `surveys` (entire table), then inserts
+ * samples. Not org-scoped. See scripts/DATA_SEED_REGISTRY.md
  */
 
 require('dotenv').config({ path: '.env.local' });
@@ -193,9 +196,12 @@ async function populateSampleSurveys() {
     }
     
     if (existingSurveys && existingSurveys.length > 0) {
+      console.warn('\n' + '='.repeat(72));
+      console.warn('DESTRUCTIVE: Deleting ALL rows in surveys table (not org-scoped).');
+      console.warn('Registry: scripts/DATA_SEED_REGISTRY.md');
+      console.warn('='.repeat(72) + '\n');
       console.log(`📋 Found ${existingSurveys.length} existing surveys. Clearing them first...`);
-      
-      // Delete existing surveys
+
       const { error: deleteError } = await supabase
         .from('surveys')
         .delete()

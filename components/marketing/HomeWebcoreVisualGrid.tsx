@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import type { HomeVisualItem } from '@/lib/marketing/home-visual-assets';
+import { marketingGradientSurfaceClass } from '@/lib/marketing/marketing-gradients';
 import { cn } from '@/lib/utils';
 
 type LightboxProp = { lightbox?: boolean };
@@ -22,6 +23,44 @@ export type HomeWebcoreVisualGridProps =
   | ({ mode: 'row'; items: HomeVisualItem[]; className?: string } & LightboxProp)
   | ({ mode: 'strip'; items: HomeVisualItem[]; className?: string } & LightboxProp)
   | ({ mode: 'featured'; item: HomeVisualItem; className?: string } & LightboxProp);
+
+function itemKey(item: HomeVisualItem, index: number) {
+  return item.kind === 'image' ? item.src : `${item.gradientId}-${index}`;
+}
+
+function VisualSurface({
+  item,
+  className,
+  imageClassName,
+  priority,
+}: {
+  item: HomeVisualItem;
+  className?: string;
+  imageClassName?: string;
+  priority?: boolean;
+}) {
+  if (item.kind === 'gradient') {
+    return (
+      <div
+        className={cn(className, marketingGradientSurfaceClass(item.gradientId))}
+        role="img"
+        aria-label={item.alt}
+      />
+    );
+  }
+  return (
+    <Image
+      src={item.src}
+      alt={item.alt}
+      fill
+      priority={priority}
+      className={cn(
+        'object-cover transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.045] group-hover:contrast-[1.04] group-hover:saturate-[1.06]',
+        imageClassName
+      )}
+    />
+  );
+}
 
 function VisualFigure({
   item,
@@ -42,17 +81,6 @@ function VisualFigure({
   lightbox?: boolean;
   onOpenLightbox?: (item: HomeVisualItem) => void;
 }) {
-  const media = (
-    <Image
-      src={item.src}
-      alt={item.alt}
-      fill
-      sizes={sizes}
-      className="object-cover transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.045] group-hover:contrast-[1.04] group-hover:saturate-[1.06]"
-      priority={priority}
-    />
-  );
-
   const surfaceClass = cn(
     'cdc-webcore-visual-shine relative overflow-hidden bg-neutral-200/80',
     imageWrapperClassName
@@ -81,10 +109,20 @@ function VisualFigure({
           aria-haspopup="dialog"
           aria-label={`Open larger view: ${item.caption || item.alt}`}
         >
-          {media}
+          {item.kind === 'image' ? (
+            <VisualSurface item={item} imageClassName="object-cover" priority={priority} />
+          ) : (
+            <VisualSurface item={item} className="absolute inset-0" />
+          )}
         </button>
       ) : (
-        <div className={surfaceClass}>{media}</div>
+        <div className={surfaceClass}>
+          {item.kind === 'image' ? (
+            <VisualSurface item={item} imageClassName="object-cover" priority={priority} />
+          ) : (
+            <VisualSurface item={item} className="absolute inset-0" />
+          )}
+        </div>
       )}
       {(item.caption || item.credit || lightbox) && (
         <figcaption className="mt-2 space-y-0.5 px-0.5">
@@ -126,7 +164,7 @@ function LightboxDialog({
       >
         <DialogHeader className="space-y-1 text-left">
           <DialogTitle className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-neutral-300">
-            {item?.caption || 'Image'}
+            {item?.caption || (item?.kind === 'gradient' ? 'Texture' : 'Image')}
           </DialogTitle>
           {item?.credit ? (
             <p className="text-[11px] font-normal normal-case tracking-normal text-neutral-500">
@@ -139,17 +177,28 @@ function LightboxDialog({
         </DialogHeader>
         {item ? (
           <div className="relative mx-auto mt-1 max-h-[min(74vh,800px)] min-h-[220px] w-full">
-            <Image
-              src={item.src}
-              alt={item.alt}
-              fill
-              className="object-contain"
-              sizes="96vw"
-            />
+            {item.kind === 'image' ? (
+              <Image
+                src={item.src}
+                alt={item.alt}
+                fill
+                className="object-contain"
+                sizes="96vw"
+              />
+            ) : (
+              <div
+                className={cn(
+                  'h-[min(74vh,520px)] w-full rounded-md sm:h-[min(74vh,640px)]',
+                  marketingGradientSurfaceClass(item.gradientId)
+                )}
+                role="img"
+                aria-label={item.alt}
+              />
+            )}
           </div>
         ) : null}
         <p className="text-center font-mono text-[9px] uppercase tracking-[0.2em] text-neutral-500">
-          Esc or close · full resolution
+          Esc or close
         </p>
       </DialogContent>
     </Dialog>
@@ -206,22 +255,22 @@ export function HomeWebcoreVisualGrid(props: HomeWebcoreVisualGridProps) {
           )}
         >
           {items.map((item, i) => (
-            <div key={item.src} className="mb-3">
+            <div key={itemKey(item, i)} className="mb-3">
               <VisualFigure
                 item={item}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              priority={i < 3}
-              reduceMotion={reduceMotion}
-              lightbox={lightbox}
-              onOpenLightbox={openLightbox}
-            />
-          </div>
-        ))}
-      </div>
-      {dialog}
-    </>
-  );
-}
+                priority={i < 3}
+                reduceMotion={reduceMotion}
+                lightbox={lightbox}
+                onOpenLightbox={openLightbox}
+              />
+            </div>
+          ))}
+        </div>
+        {dialog}
+      </>
+    );
+  }
 
   if (props.mode === 'row') {
     return (
@@ -229,7 +278,7 @@ export function HomeWebcoreVisualGrid(props: HomeWebcoreVisualGridProps) {
         <div className={cn('grid gap-4 sm:grid-cols-2', className)}>
           {items.map((item, i) => (
             <VisualFigure
-              key={item.src}
+              key={itemKey(item, i)}
               item={item}
               sizes="(max-width: 768px) 100vw, 45vw"
               priority={i === 0}
@@ -254,7 +303,7 @@ export function HomeWebcoreVisualGrid(props: HomeWebcoreVisualGridProps) {
       >
         {items.map((item, i) => (
           <div
-            key={item.src}
+            key={itemKey(item, i)}
             className="w-[min(100%,280px)] shrink-0 snap-center sm:w-[min(100%,320px)]"
           >
             <VisualFigure

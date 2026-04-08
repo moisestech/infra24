@@ -355,6 +355,15 @@ export default function WorkshopDetailPage() {
                 }
               />
 
+              <Button asChild variant="outline" size="sm" className="w-full">
+                <Link
+                  href={`/o/${slug}/workshops/${encodeURIComponent(marketing.slug || workshopKey)}/packet`}
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Packet page
+                </Link>
+              </Button>
+
               <InstitutionalInquiryCta
                 landing={landing.institutionalInquiry}
                 workshopTitle={workshop.title}

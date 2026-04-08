@@ -15,8 +15,24 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// Oolite organization ID
-const OOLITE_ORG_ID = 'b94f704c-ad6a-4419-89c8-d88636f61ab3';
+const OOLITE_SLUG = 'oolite';
+
+async function resolveOoliteOrganizationId() {
+  const { data, error } = await supabase
+    .from('organizations')
+    .select('id')
+    .eq('slug', OOLITE_SLUG)
+    .maybeSingle();
+  if (error) {
+    console.error('❌ Failed to look up Oolite organization:', error.message);
+    return null;
+  }
+  if (!data?.id) {
+    console.error(`❌ No organization with slug "${OOLITE_SLUG}".`);
+    return null;
+  }
+  return data.id;
+}
 
 // 2025 Oolite Artists Data
 const artists2025 = {
@@ -68,16 +84,16 @@ const mediumsByType = {
   'Cinematic Resident': ['Video', 'Film', 'Digital Media', 'Photography', 'Animation', 'Documentary', 'Cinematography']
 };
 
-// Map residency types to allowed studio_type values
-const studioTypeMapping = {
-  'Studio Resident': 'Studio',
-  'Live In Art Resident': 'Associate', 
-  'Cinematic Resident': 'Gallery'
-};
-
 async function updateOolite2025Artists() {
   console.log('🎨 Starting Oolite 2025 Artists Update...\n');
-  
+
+  const OOLITE_ORG_ID = await resolveOoliteOrganizationId();
+  if (!OOLITE_ORG_ID) {
+    process.exitCode = 1;
+    return;
+  }
+  console.log(`📌 organization_id (${OOLITE_SLUG}): ${OOLITE_ORG_ID}\n`);
+
   try {
     // Get all current Oolite artists
     const { data: currentArtists, error: fetchError } = await supabase
@@ -118,7 +134,7 @@ async function updateOolite2025Artists() {
       if (existingArtist) {
         // Update existing artist
         const updateData = {
-          studio_type: studioTypeMapping[artist2025.type] || 'Studio',
+          studio_type: artist2025.type,
           studio_location: existingArtist.metadata?.studio || existingArtist.metadata?.apartment || 'TBD',
           skills: skillsByType[artist2025.type] || [],
           mediums: mediumsByType[artist2025.type] || [],
@@ -151,7 +167,7 @@ async function updateOolite2025Artists() {
           user_id: `oolite_${artist2025.name.toLowerCase().replace(/\s+/g, '_')}_2025_${Date.now()}`,
           name: artist2025.name,
           bio: `${artist2025.type} at Oolite Arts for 2025`,
-          studio_type: studioTypeMapping[artist2025.type] || 'Studio',
+          studio_type: artist2025.type,
           studio_location: 'TBD',
           skills: skillsByType[artist2025.type] || [],
           mediums: mediumsByType[artist2025.type] || [],

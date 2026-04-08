@@ -4,9 +4,7 @@
  */
 
 import type { WebcoreIconName } from '@/components/marketing/webcore-lucide';
-
-import { caseStudyCoverImages } from './image-assets';
-import { homePageStudioImagePool as studioImg } from './home-visual-assets';
+import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
 
 /** Lockup line — header + hero (place + public digital culture). */
 export const publicDigitalMiamiLine = 'PUBLIC DIGITAL MIAMI' as const;
@@ -16,7 +14,7 @@ export type MarketingHeroSubheadSegment =
   | {
       readonly kind: 'term';
       readonly text: string;
-      readonly image: { readonly src: string; readonly alt: string };
+      readonly preview: { readonly gradientId: MarketingGradientId; readonly alt: string };
       readonly caption?: string;
     };
 
@@ -27,84 +25,120 @@ export const marketingHeroSubheadSegments = [
     kind: 'term',
     text: 'Miami-based',
     caption: 'Place-based pilot in civic corridors',
-    image: { src: studioImg[0].src, alt: studioImg[0].alt },
+    preview: {
+      gradientId: 'stackTeal',
+      alt: 'Teal gradient suggesting place-based civic signal.',
+    },
   },
   { kind: 'text', text: ' platform for ' },
   {
     kind: 'term',
     text: 'artists',
     caption: 'Workshops, clinics, and experimental learning',
-    image: { src: studioImg[1].src, alt: studioImg[1].alt },
+    preview: {
+      gradientId: 'columnCoral',
+      alt: 'Warm gradient suggesting artist-centered energy.',
+    },
   },
   { kind: 'text', text: ', ' },
   {
     kind: 'term',
     text: 'public learning',
     caption: 'Programs that build literacy in the open',
-    image: { src: studioImg[2].src, alt: studioImg[2].alt },
+    preview: {
+      gradientId: 'fieldViolet',
+      alt: 'Violet field gradient suggesting open learning.',
+    },
   },
   { kind: 'text', text: ', and ' },
   {
     kind: 'term',
     text: 'civic-facing',
     caption: 'Interfaces the public actually encounters',
-    image: { src: studioImg[3].src, alt: studioImg[3].alt },
+    preview: {
+      gradientId: 'meshSlate',
+      alt: 'Slate mesh gradient suggesting institutional surfaces.',
+    },
   },
   { kind: 'text', text: ' ' },
   {
     kind: 'term',
     text: 'digital culture infrastructure',
     caption: 'Systems, not one-off installs',
-    image: { src: studioImg[4].src, alt: studioImg[4].alt },
+    preview: {
+      gradientId: 'pulseMagenta',
+      alt: 'Magenta pulse gradient suggesting networked infrastructure.',
+    },
   },
   { kind: 'text', text: '—' },
   {
     kind: 'term',
     text: 'workshops',
     caption: 'Hands-on skill building',
-    image: { src: studioImg[0].src, alt: studioImg[0].alt },
+    preview: {
+      gradientId: 'warmAmber',
+      alt: 'Amber gradient suggesting hands-on workshop space.',
+    },
   },
   { kind: 'text', text: ', ' },
   {
     kind: 'term',
     text: 'public programs',
     caption: 'Events and offerings made legible',
-    image: { src: studioImg[1].src, alt: studioImg[1].alt },
+    preview: {
+      gradientId: 'deepInk',
+      alt: 'Deep ink gradient suggesting program schedules and legibility.',
+    },
   },
   { kind: 'text', text: ', ' },
   {
     kind: 'term',
     text: 'artist support',
     caption: 'Visibility tools and pathways',
-    image: { src: studioImg[2].src, alt: studioImg[2].alt },
+    preview: {
+      gradientId: 'signalCyan',
+      alt: 'Cyan signal gradient suggesting visibility and support tools.',
+    },
   },
   { kind: 'text', text: ', and ' },
   {
     kind: 'term',
     text: 'updateable public interfaces',
     caption: 'Signs, maps, kiosks, portals—kept current',
-    image: { src: studioImg[3].src, alt: studioImg[3].alt },
+    preview: {
+      gradientId: 'roseMist',
+      alt: 'Rose mist gradient suggesting public-facing interfaces.',
+    },
   },
   { kind: 'text', text: '. ' },
   {
     kind: 'term',
     text: 'Infra24',
     caption: 'Implementation methodology behind CDC pilots',
-    image: { src: studioImg[4].src, alt: studioImg[4].alt },
+    preview: {
+      gradientId: 'indigoHaze',
+      alt: 'Indigo haze gradient suggesting systems methodology.',
+    },
   },
   { kind: 'text', text: ' is the systems methodology that makes this work ' },
   {
     kind: 'term',
     text: 'repeatable',
     caption: 'Patterns other partners can adopt',
-    image: { src: studioImg[0].src, alt: studioImg[0].alt },
+    preview: {
+      gradientId: 'stackTeal',
+      alt: 'Teal stack gradient suggesting repeatable patterns.',
+    },
   },
   { kind: 'text', text: ' and ' },
   {
     kind: 'term',
     text: 'deployable',
     caption: 'From pilot to operating practice',
-    image: { src: studioImg[1].src, alt: studioImg[1].alt },
+    preview: {
+      gradientId: 'columnCoral',
+      alt: 'Warm gradient suggesting deployment and scale.',
+    },
   },
   { kind: 'text', text: '.' },
 ] as const satisfies readonly MarketingHeroSubheadSegment[];
@@ -174,35 +208,50 @@ export const cdcNarrativeStack = [
     title: 'Problem',
     body:
       'Artists and cultural organizations are expected to operate in digital public space, but most lack usable systems, interfaces, workflows, and support. Information fragments across signs, PDFs, inboxes, and screens.',
-    image: { src: studioImg[0].src, alt: studioImg[0].alt },
+    visual: {
+      gradientId: 'stackTeal' as const satisfies MarketingGradientId,
+      alt: 'Teal gradient — fragmented signals across channels.',
+    },
   },
   {
     id: 'opportunity',
     title: 'Opportunity',
     body:
       'Miami can model artist-centered digital culture infrastructure that is visible, useful, and repeatable—across workshops, public interfaces, and documentation others can adopt.',
-    image: { src: studioImg[1].src, alt: studioImg[1].alt },
+    visual: {
+      gradientId: 'columnCoral' as const satisfies MarketingGradientId,
+      alt: 'Warm gradient — regional opportunity and visibility.',
+    },
   },
   {
     id: 'response',
     title: 'Response',
     body:
       'CDC builds public programs, tools, workshops, and prototypes grounded in neighborhood and field reality—not abstract “innovation” for its own sake.',
-    image: { src: studioImg[2].src, alt: studioImg[2].alt },
+    visual: {
+      gradientId: 'fieldViolet' as const satisfies MarketingGradientId,
+      alt: 'Violet field gradient — grounded response in public space.',
+    },
   },
   {
     id: 'method',
     title: 'Method',
     body:
       'Partners implement the technical layer: what to deploy, how updates flow, and how pilots become legible to staff, boards, and funders. Infra24 documents that systems grammar on the implementation site.',
-    image: { src: studioImg[3].src, alt: studioImg[3].alt },
+    visual: {
+      gradientId: 'meshSlate' as const satisfies MarketingGradientId,
+      alt: 'Slate mesh — method and technical legibility.',
+    },
   },
   {
     id: 'outcome',
     title: 'Outcome',
     body:
       'More access, clearer visibility, stronger public engagement, and infrastructure that can travel across partners—without losing accountability to the public.',
-    image: { src: studioImg[4].src, alt: studioImg[4].alt },
+    visual: {
+      gradientId: 'pulseMagenta' as const satisfies MarketingGradientId,
+      alt: 'Magenta pulse — outcomes and public engagement.',
+    },
   },
 ] as const;
 
@@ -212,20 +261,29 @@ export const cdcAudiencePathways = [
     title: 'For funders & grantmakers',
     description:
       'Miami pilot narrative, funding priorities, and materials—written for boards and program officers evaluating place-based digital culture.',
-    image: { src: studioImg[0].src, alt: studioImg[0].alt },
+    cover: {
+      gradientId: 'warmAmber' as const satisfies MarketingGradientId,
+      alt: 'Amber gradient — funder and grantmaking context.',
+    },
   },
   {
     href: '/programs/institutional-programs',
     title: 'For small cultural organizations',
     description:
       'Public interfaces, smart signs, artist-centered workflows, and staff training—scoped for organizations that need maintainable systems, not a one-off vendor.',
-    image: { src: studioImg[1].src, alt: studioImg[1].alt },
+    cover: {
+      gradientId: 'deepInk' as const satisfies MarketingGradientId,
+      alt: 'Deep ink gradient — institutional operations.',
+    },
   },
   {
     href: '/programs',
     title: 'For artists',
     description: 'Workshops, clinics, visibility tools, and experimental learning.',
-    image: { src: studioImg[2].src, alt: studioImg[2].alt },
+    cover: {
+      gradientId: 'signalCyan' as const satisfies MarketingGradientId,
+      alt: 'Cyan signal gradient — artist programs and visibility.',
+    },
   },
 ] as const;
 
@@ -510,8 +568,8 @@ export const caseStudyPreviews = [
     challenge: 'Event and hours data lived in three systems; on-site screens lagged the website by days.',
     whatWeDid: 'Pilot: single update path into smart signs and a public map.',
     outcome: 'Staff stopped re-keying the same copy; visitors saw consistent hours and programs.',
-    coverImage: caseStudyCoverImages['cultural-institution-wayfinding'].src,
-    coverAlt: caseStudyCoverImages['cultural-institution-wayfinding'].alt,
+    coverGradient: 'roseMist' as const satisfies MarketingGradientId,
+    coverAlt: 'Rose mist gradient — museum-scale public information and wayfinding.',
   },
   {
     slug: 'nonprofit-program-portal',
@@ -519,8 +577,8 @@ export const caseStudyPreviews = [
     challenge: 'Artist-facing requirements were buried in PDFs and email threads.',
     whatWeDid: 'Resident portal prototype tied to your existing program structure.',
     outcome: 'Clear expectations for artists; fewer “where do I find…?” questions to staff.',
-    coverImage: caseStudyCoverImages['nonprofit-program-portal'].src,
-    coverAlt: caseStudyCoverImages['nonprofit-program-portal'].alt,
+    coverGradient: 'indigoHaze' as const satisfies MarketingGradientId,
+    coverAlt: 'Indigo haze gradient — nonprofit program portals and clarity.',
   },
   {
     slug: 'multi-venue-events',
@@ -528,8 +586,8 @@ export const caseStudyPreviews = [
     challenge: 'Communications and programming each maintained separate calendars.',
     whatWeDid: 'Scoped workflow: one authoritative schedule, multiple public views.',
     outcome: 'One place to update; fewer last-minute corrections before openings.',
-    coverImage: caseStudyCoverImages['multi-venue-events'].src,
-    coverAlt: caseStudyCoverImages['multi-venue-events'].alt,
+    coverGradient: 'stackTeal' as const satisfies MarketingGradientId,
+    coverAlt: 'Teal stack gradient — multi-venue scheduling and coordination.',
   },
 ] as const;
 

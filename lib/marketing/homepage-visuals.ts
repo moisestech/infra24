@@ -1,9 +1,9 @@
 /**
- * Homepage image layout config (bento placement + visual kinds).
- * Remote URLs live in `image-assets.ts` for a single swap point when org assets are ready.
+ * Homepage layout config (bento placement + visual kinds).
+ * Photo cells use gradient ids from `image-assets.ts` (no remote placeholders).
  */
 
-export { heroCollagePanels, bentoPhotoSrc } from './image-assets';
+export { heroCollagePanels, bentoPhotoGradient } from './image-assets';
 
 /** Bento cell order matches `capabilities` indices: 0–5 */
 export type BentoVisualKind = 'photo' | 'ui' | 'diagram' | 'metrics' | 'handoff';

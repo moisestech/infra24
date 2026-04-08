@@ -31,7 +31,12 @@
     "supabase:push": "bash scripts/supabase-push-remote.sh",
     "smoke:display-control": "node scripts/smoke-display-control.mjs",
     "workshops:compile": "tsx scripts/build/compile-workshop-catalog.ts",
-    "workshops:seed": "npm run workshops:compile && node scripts/data/seed/seed-oolite-workshops-catalog.js"
+    "workshops:seed": "npm run workshops:compile && node scripts/data/seed/seed-oolite-workshops-catalog.js",
+    "seed:oolite-residents": "node scripts/data/seed/upsert-oolite-studio-residents-2026.js",
+    "seed:oolite-adult-classes": "node scripts/data/seed/seed-oolite-workshops-catalog.js && node scripts/data/seed/upsert-oolite-adult-art-classes-spring-2026.js",
+    "seed:oolite-adult-classes-announcements": "node scripts/data/seed/upsert-oolite-adult-art-classes-spring-2026.js",
+    "seed:oolite-artists": "node scripts/populate-oolite-artists.js",
+    "seed:oolite-announcements-2026": "node scripts/data/seed/update-oolite-announcements-2026.js"
   },
   "dependencies": {
     "@azure/msal-node": "^3.8.0",

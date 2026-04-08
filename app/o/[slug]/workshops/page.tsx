@@ -72,6 +72,17 @@ interface Workshop {
   metadata?: Record<string, unknown> | null
 }
 
+function isAdultStudioWorkshop(w: Workshop): boolean {
+  if (w.category === 'adult_studio_classes') return true
+  const meta = w.metadata as Record<string, unknown> | null | undefined
+  return meta?.program === 'adult_art_classes'
+}
+
+function sortWorkshopsFeaturedFirst(a: Workshop, b: Workshop) {
+  if (Boolean(a.featured) !== Boolean(b.featured)) return a.featured ? -1 : 1
+  return a.title.localeCompare(b.title)
+}
+
 // Animation variants
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -376,6 +387,26 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
   // Get unique categories
   const categories = Array.from(new Set(workshops.map(w => w.category))).sort()
 
+  const isOoliteLab = slug === 'oolite'
+  const digitalLabList = useMemo(
+    () =>
+      filteredWorkshops
+        .filter((w) => !isAdultStudioWorkshop(w) && w.status === 'published')
+        .sort(sortWorkshopsFeaturedFirst),
+    [filteredWorkshops]
+  )
+  const adultStudioList = useMemo(
+    () =>
+      filteredWorkshops
+        .filter((w) => isAdultStudioWorkshop(w) && w.status === 'published')
+        .sort(sortWorkshopsFeaturedFirst),
+    [filteredWorkshops]
+  )
+  const draftFiltered = useMemo(
+    () => filteredWorkshops.filter((w) => w.status === 'draft'),
+    [filteredWorkshops]
+  )
+
   if (loading) {
     return (
       <div className={`min-h-screen transition-colors duration-300 ${
@@ -416,93 +447,87 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      theme === 'dark' 
-        ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
-        : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
-    }`}>
-      
+    <div
+      className={`min-h-screen transition-colors duration-300 ${
+        isOoliteLab
+          ? theme === 'dark'
+            ? 'bg-neutral-950 text-neutral-100'
+            : 'bg-stone-50 text-neutral-900'
+          : theme === 'dark'
+            ? 'bg-gradient-to-b from-gray-900 to-black text-white'
+            : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
+      }`}
+    >
       {/* Navigation */}
       <div className="relative z-50">
         <UnifiedNavigation config={navigationConfig} userRole="admin" />
       </div>
-      
-      {/* Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-        <div className="absolute inset-0">
-          {/* Animated grid background */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#6366f133_1px,transparent_1px),linear-gradient(to_bottom,#6366f133_1px,transparent_1px)] bg-[size:14px_24px]" />
-          </div>
-          {/* Floating particles effect */}
-          <div className="absolute inset-0 overflow-hidden">
-            {[...Array(20)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 h-1 bg-indigo-500/30 rounded-full"
-                animate={{
-                  x: [
-                    Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-                    Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-                  ],
-                  y: [
-                    Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-                    Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-                  ],
-                }}
-                transition={{
-                  duration: Math.random() * 10 + 20,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-              />
-            ))}
-          </div>
-        </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center">
+      {/* Hero */}
+      {isOoliteLab ? (
+        <section
+          ref={heroRef}
+          className={`border-b pt-24 pb-16 md:pt-28 md:pb-20 ${
+            theme === 'dark' ? 'border-neutral-800 bg-neutral-950' : 'border-stone-200/80 bg-stone-50'
+          }`}
+        >
+          <div className="container mx-auto max-w-3xl px-4 text-center">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.5 }}
               className="space-y-6"
             >
               <p
-                className={`mb-3 text-sm font-medium uppercase tracking-widest ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                className={`text-xs font-semibold uppercase tracking-[0.2em] md:text-sm ${
+                  theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'
                 }`}
               >
                 {landingCopy.heroEyebrow}
               </p>
               <h1
-                className={`text-4xl font-bold leading-tight md:text-5xl lg:text-6xl ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
+                className={`text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl lg:text-[3.25rem] ${
+                  theme === 'dark' ? 'text-white' : 'text-neutral-900'
                 }`}
               >
                 <span className="block">{landingCopy.heroTitle}</span>
                 <span
-                  className="block bg-clip-text text-transparent"
-                  style={{
-                    backgroundImage: `linear-gradient(to right, ${tenantConfig?.theme?.primaryColor || '#3b82f6'}, ${tenantConfig?.theme?.secondaryColor || '#1d4ed8'}, ${tenantConfig?.theme?.accentColor || '#60a5fa'})`,
-                  }}
+                  className="mt-1 block"
+                  style={{ color: tenantConfig?.theme?.primaryColor || ooliteColors.primary }}
                 >
                   {landingCopy.heroTitleAccent}
                 </span>
               </h1>
-
               <p
-                className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed md:text-xl ${
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                className={`mx-auto max-w-2xl text-base leading-relaxed md:text-lg ${
+                  theme === 'dark' ? 'text-neutral-300' : 'text-neutral-600'
                 }`}
               >
                 {landingCopy.heroLead}
               </p>
-
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <a
+                  href={landingCopy.heroPrimaryCta.href}
+                  className="inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
+                  style={{ backgroundColor: tenantConfig?.theme?.primaryColor || ooliteColors.primary }}
+                >
+                  {landingCopy.heroPrimaryCta.label}
+                </a>
+                <a
+                  href={landingCopy.heroSecondaryCta.href}
+                  className={`inline-flex items-center justify-center rounded-full border px-6 py-2.5 text-sm font-medium transition hover:bg-black/5 dark:hover:bg-white/5 ${
+                    theme === 'dark'
+                      ? 'border-neutral-600 text-neutral-100'
+                      : 'border-neutral-300 text-neutral-900'
+                  }`}
+                >
+                  {landingCopy.heroSecondaryCta.label}
+                </a>
+              </div>
               {organization && (
                 <p
-                  className={`mt-4 text-base ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  className={`pt-2 text-sm ${
+                    theme === 'dark' ? 'text-neutral-500' : 'text-neutral-500'
                   }`}
                 >
                   {organization.name}
@@ -510,97 +535,150 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
               )}
             </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section ref={heroRef} className="relative flex min-h-screen items-center justify-center overflow-hidden pt-20">
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#6366f133_1px,transparent_1px),linear-gradient(to_bottom,#6366f133_1px,transparent_1px)] bg-[size:14px_24px]" />
+            </div>
+            {!reducedMotion && (
+              <div className="absolute inset-0 overflow-hidden">
+                {[...Array(20)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute h-1 w-1 rounded-full bg-indigo-500/30"
+                    animate={{
+                      x: [
+                        Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+                        Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
+                      ],
+                      y: [
+                        Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+                        Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+                      ],
+                    }}
+                    transition={{
+                      duration: Math.random() * 10 + 20,
+                      repeat: Infinity,
+                      ease: 'linear',
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="container relative z-10 mx-auto px-4">
+            <div className="text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="space-y-6"
+              >
+                <p
+                  className={`mb-3 text-sm font-medium uppercase tracking-widest ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  }`}
+                >
+                  {landingCopy.heroEyebrow}
+                </p>
+                <h1
+                  className={`text-4xl font-bold leading-tight md:text-5xl lg:text-6xl ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}
+                >
+                  <span className="block">{landingCopy.heroTitle}</span>
+                  <span
+                    className="block bg-clip-text text-transparent"
+                    style={{
+                      backgroundImage: `linear-gradient(to right, ${tenantConfig?.theme?.primaryColor || '#3b82f6'}, ${tenantConfig?.theme?.secondaryColor || '#1d4ed8'}, ${tenantConfig?.theme?.accentColor || '#60a5fa'})`,
+                    }}
+                  >
+                    {landingCopy.heroTitleAccent}
+                  </span>
+                </h1>
+
+                <p
+                  className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed md:text-xl ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                  }`}
+                >
+                  {landingCopy.heroLead}
+                </p>
+                <div className="flex flex-wrap justify-center gap-3 pt-2">
+                  <a
+                    href={landingCopy.heroPrimaryCta.href}
+                    className="inline-flex rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground"
+                  >
+                    {landingCopy.heroPrimaryCta.label}
+                  </a>
+                  <a
+                    href={landingCopy.heroSecondaryCta.href}
+                    className={`inline-flex rounded-full border px-6 py-2.5 text-sm font-medium ${
+                      theme === 'dark' ? 'border-gray-600 text-white' : 'border-gray-300 text-gray-900'
+                    }`}
+                  >
+                    {landingCopy.heroSecondaryCta.label}
+                  </a>
+                </div>
+                {organization && (
+                  <p
+                    className={`mt-4 text-base ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                    }`}
+                  >
+                    {organization.name}
+                  </p>
+                )}
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section
-        className={`mx-auto max-w-5xl px-4 pb-16 ${
-          theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+        className={`mx-auto max-w-3xl px-4 pb-12 pt-12 md:pb-16 md:pt-16 ${
+          theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'
         }`}
       >
-        <p className="text-center text-sm font-medium text-muted-foreground">
+        <h2
+          className={`text-center text-2xl font-semibold tracking-tight md:text-3xl ${
+            theme === 'dark' ? 'text-white' : 'text-neutral-900'
+          }`}
+        >
+          {landingCopy.framingSection.title}
+        </h2>
+        <p
+          className={`mx-auto mt-5 text-center text-base leading-relaxed md:text-lg ${
+            theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
+          }`}
+        >
+          {landingCopy.framingSection.body}
+        </p>
+
+        <p className="mt-12 text-center text-sm font-medium text-muted-foreground">
           {landingCopy.trustLine}
         </p>
-        <ul className="mt-6 flex flex-wrap justify-center gap-4 text-sm">
+        <ul className="mt-6 flex flex-wrap justify-center gap-3 text-sm">
           {landingCopy.trustItems.map((t) => (
             <li
               key={t}
               className={`rounded-full border px-4 py-2 ${
                 theme === 'dark'
-                  ? 'border-gray-700 bg-gray-900/40'
-                  : 'border-gray-200 bg-white/80'
+                  ? 'border-neutral-700 bg-neutral-900/50'
+                  : 'border-stone-200 bg-white shadow-sm'
               }`}
             >
               {t}
             </li>
           ))}
         </ul>
-
-        <h2 className="mt-16 text-center text-2xl font-semibold">
-          {landingCopy.howItWorks.title}
-        </h2>
-        <div className="mt-10 grid gap-10 md:grid-cols-3">
-          {landingCopy.howItWorks.steps.map((step, i) => (
-            <div key={`${step.title}-${i}`} className="text-center md:text-left">
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <h3 className="mt-2 text-lg font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {step.body}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <div
-          className={`mt-16 rounded-2xl border p-8 md:p-10 ${
-            theme === 'dark' ? 'border-gray-700 bg-gray-900/30' : 'border-gray-200 bg-white/60'
-          }`}
-        >
-          <h2 className="text-2xl font-semibold">{landingCopy.forInstitutions.title}</h2>
-          <p className="mt-3 max-w-2xl text-muted-foreground">{landingCopy.forInstitutions.body}</p>
-          <ul className="mt-6 list-disc space-y-2 pl-5 text-sm">
-            {landingCopy.forInstitutions.bullets.map((b) => (
-              <li key={b}>{b}</li>
-            ))}
-          </ul>
-          <div className="mt-8">
-            <InstitutionalInquiryCta
-              landing={landingCopy.institutionalInquiry}
-              orgSlug={slug}
-            />
-          </div>
-        </div>
-
-        <p className="mt-12 text-center text-sm text-muted-foreground">{landingCopy.proofLine}</p>
-
-        <div className="mt-12 space-y-6">
-          <h2 className="text-center text-2xl font-semibold">FAQ</h2>
-          <div className="mx-auto max-w-3xl space-y-6">
-            {landingCopy.faq.map((item) => (
-              <div key={item.q} className="border-b border-border pb-6 last:border-0">
-                <h3 className="font-medium">{item.q}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
 
-      <DecorativeDivider
-        icon={Sparkles}
-        gradientColors={{
-          from: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
-          via: theme === 'dark' ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.05)',
-          to: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
-        }}
-        iconColor={theme === 'dark' ? 'text-indigo-400/50' : 'text-indigo-500/50'}
-        className="my-16"
-      />
-      
       {/* Workshops Section */}
-      <section ref={workshopsRef} className="py-20">
+      <section ref={workshopsRef} id="workshops-catalog" className="scroll-mt-24 py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={staggerContainer}
@@ -609,15 +687,21 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>
-              Available Workshops
+            <h2
+              className={`mb-3 text-3xl font-semibold tracking-tight md:text-4xl ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              {isOoliteLab ? landingCopy.featuredSection.title : 'Available workshops'}
             </h2>
-            <p className={`text-xl ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-            } max-w-3xl mx-auto`}>
-              Choose from our curated selection of workshops designed for all skill levels
+            <p
+              className={`mx-auto max-w-2xl text-base leading-relaxed md:text-lg ${
+                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              }`}
+            >
+              {isOoliteLab
+                ? landingCopy.featuredSection.subcopy
+                : 'Choose from our curated selection of workshops designed for all skill levels.'}
             </p>
           </motion.div>
 
@@ -741,146 +825,257 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
             </div>
           </div>
 
-          {/* Featured Workshops */}
-          {featuredWorkshops.length > 0 && (
-            <div className="mb-16">
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="text-center mb-8"
-              >
-                <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
-                  <Star className="inline-block h-8 w-8 text-yellow-500 mr-2" />
-                  Featured Workshops
-                </h3>
-                <p className={`text-lg ${
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>
-                  Our most popular and highly recommended workshops
-                </p>
-              </motion.div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {featuredWorkshops.map((workshop) => (
-                  <motion.div
-                    key={workshop.id}
-                    variants={fadeIn}
-                    initial="initial"
-                    whileInView="animate"
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                    whileHover={reducedMotion ? {} : hoverScale}
-                  >
-                    <WorkshopCard
-                      workshop={workshop as WorkshopRow}
-                      orgSlug={slug}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          )}
+          {isOoliteLab && filteredWorkshops.length > 0 ? (
+            <p className="mb-10 text-center text-sm text-muted-foreground">
+              Filters apply to all workshops below.
+            </p>
+          ) : null}
 
-          {/* Workshop Category Voting */}
-          {organization && (
-            <div className="mb-16">
-              <WorkshopCategoryVotingUnified 
-                organizationId={organization.id} 
-                userId={user?.id}
-              />
-            </div>
-          )}
-
-          {/* Published Workshops */}
-          {publishedWorkshops.length > 0 && (
-            <div className="mb-16">
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="text-center mb-8"
-              >
-                <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
-                  Available Workshops
-                </h3>
-                <p className={`text-lg ${
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>
-                  Choose from our curated selection of workshops designed for all skill levels
-                </p>
-              </motion.div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {publishedWorkshops.map((workshop) => (
-                  <motion.div
-                    key={workshop.id}
-                    variants={fadeIn}
-                    initial="initial"
-                    whileInView="animate"
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                    whileHover={reducedMotion ? {} : hoverScale}
+          {isOoliteLab ? (
+            <>
+              {digitalLabList.length > 0 ? (
+                <div className="mb-16">
+                  <h3
+                    className={`mb-2 text-center text-xl font-semibold tracking-tight md:text-2xl ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}
                   >
-                    <WorkshopCard
-                      workshop={workshop as WorkshopRow}
-                      orgSlug={slug}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Unpublished Workshops (Draft) - Only show to admins */}
-          {unpublishedWorkshops.length > 0 && (
-            <div className="mb-16">
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="text-center mb-8"
-              >
-                <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}>
-                  <Edit className="inline-block h-8 w-8 text-orange-500 mr-2" />
-                  Draft Workshops
-                </h3>
-                <p className={`text-lg ${
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>
-                  Workshops currently in development - coming soon!
-                </p>
-              </motion.div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {unpublishedWorkshops.map((workshop) => (
-                  <motion.div
-                    key={workshop.id}
-                    variants={fadeIn}
-                    initial="initial"
-                    whileInView="animate"
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                    whileHover={reducedMotion ? {} : hoverScale}
+                    Digital Lab
+                  </h3>
+                  <p
+                    className={`mx-auto mb-8 max-w-xl text-center text-sm leading-relaxed ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}
                   >
-                    <WorkshopCard
-                      workshop={workshop as WorkshopRow}
-                      orgSlug={slug}
-                    />
+                    Websites, discoverability, documentation, AI literacy, creative coding, and sustainable
+                    digital workflows.
+                  </p>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {digitalLabList.map((workshop) => (
+                      <motion.div
+                        key={workshop.id}
+                        variants={fadeIn}
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        whileHover={reducedMotion ? {} : hoverScale}
+                      >
+                        <WorkshopCard workshop={workshop as WorkshopRow} orgSlug={slug} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {adultStudioList.length > 0 ? (
+                <div className="mb-16">
+                  <h3
+                    className={`mb-2 text-center text-xl font-semibold tracking-tight md:text-2xl ${
+                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    }`}
+                  >
+                    Adult studio classes
+                  </h3>
+                  <p
+                    className={`mx-auto mb-8 max-w-xl text-center text-sm leading-relaxed ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}
+                  >
+                    In-person painting, drawing, printmaking, and mixed-media sessions at Oolite Arts.
+                  </p>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {adultStudioList.map((workshop) => (
+                      <motion.div
+                        key={workshop.id}
+                        variants={fadeIn}
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        whileHover={reducedMotion ? {} : hoverScale}
+                      >
+                        <WorkshopCard workshop={workshop as WorkshopRow} orgSlug={slug} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {organization ? (
+                <div className="mb-16">
+                  <WorkshopCategoryVotingUnified organizationId={organization.id} userId={user?.id} />
+                </div>
+              ) : null}
+
+              {draftFiltered.length > 0 ? (
+                <div className="mb-16">
+                  <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="mb-8 text-center"
+                  >
+                    <h3
+                      className={`mb-4 text-2xl font-semibold md:text-3xl ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      }`}
+                    >
+                      <Edit className="mr-2 inline-block h-8 w-8 text-orange-500" />
+                      Draft workshops
+                    </h3>
+                    <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Workshops currently in development.
+                    </p>
                   </motion.div>
-                ))}
-              </div>
-            </div>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {draftFiltered.map((workshop) => (
+                      <motion.div
+                        key={workshop.id}
+                        variants={fadeIn}
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        whileHover={reducedMotion ? {} : hoverScale}
+                      >
+                        <WorkshopCard workshop={workshop as WorkshopRow} orgSlug={slug} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <>
+              {featuredWorkshops.length > 0 ? (
+                <div className="mb-16">
+                  <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="mb-8 text-center"
+                  >
+                    <h3
+                      className={`mb-4 text-2xl font-bold md:text-3xl ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      }`}
+                    >
+                      <Star className="mr-2 inline-block h-8 w-8 text-yellow-500" />
+                      Featured workshops
+                    </h3>
+                    <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Our most popular and highly recommended workshops
+                    </p>
+                  </motion.div>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {featuredWorkshops.map((workshop) => (
+                      <motion.div
+                        key={workshop.id}
+                        variants={fadeIn}
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        whileHover={reducedMotion ? {} : hoverScale}
+                      >
+                        <WorkshopCard workshop={workshop as WorkshopRow} orgSlug={slug} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {organization ? (
+                <div className="mb-16">
+                  <WorkshopCategoryVotingUnified organizationId={organization.id} userId={user?.id} />
+                </div>
+              ) : null}
+
+              {publishedWorkshops.length > 0 ? (
+                <div className="mb-16">
+                  <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="mb-8 text-center"
+                  >
+                    <h3
+                      className={`mb-4 text-2xl font-bold md:text-3xl ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      }`}
+                    >
+                      Available workshops
+                    </h3>
+                    <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Choose from our curated selection of workshops designed for all skill levels
+                    </p>
+                  </motion.div>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {publishedWorkshops.map((workshop) => (
+                      <motion.div
+                        key={workshop.id}
+                        variants={fadeIn}
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        whileHover={reducedMotion ? {} : hoverScale}
+                      >
+                        <WorkshopCard workshop={workshop as WorkshopRow} orgSlug={slug} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {unpublishedWorkshops.length > 0 ? (
+                <div className="mb-16">
+                  <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="mb-8 text-center"
+                  >
+                    <h3
+                      className={`mb-4 text-2xl font-bold md:text-3xl ${
+                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      }`}
+                    >
+                      <Edit className="mr-2 inline-block h-8 w-8 text-orange-500" />
+                      Draft workshops
+                    </h3>
+                    <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Workshops currently in development — coming soon!
+                    </p>
+                  </motion.div>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {unpublishedWorkshops.map((workshop) => (
+                      <motion.div
+                        key={workshop.id}
+                        variants={fadeIn}
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        whileHover={reducedMotion ? {} : hoverScale}
+                      >
+                        <WorkshopCard workshop={workshop as WorkshopRow} orgSlug={slug} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </>
           )}
 
           {/* Empty State */}
-          {workshops.length === 0 && (
+          {(workshops.length === 0 ||
+            (workshops.length > 0 && filteredWorkshops.length === 0)) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -901,20 +1096,133 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
           )}
         </div>
       </section>
-      
-      <DecorativeDivider 
+
+      <section
+        className={`mx-auto max-w-5xl px-4 py-16 md:py-20 ${
+          theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'
+        }`}
+      >
+        <h2 className="text-center text-2xl font-semibold tracking-tight md:text-3xl">
+          {landingCopy.howItWorks.title}
+        </h2>
+        <div className="mt-10 grid gap-10 md:grid-cols-3">
+          {landingCopy.howItWorks.steps.map((step, i) => (
+            <div key={`${step.title}-${i}`} className="text-center md:text-left">
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <h3 className="mt-2 text-lg font-semibold">{step.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-20 border-t border-border/60 pt-16">
+          <h2
+            className={`text-center text-2xl font-semibold tracking-tight md:text-3xl ${
+              theme === 'dark' ? 'text-white' : 'text-neutral-900'
+            }`}
+          >
+            {landingCopy.whySeriesSection.title}
+          </h2>
+          <p
+            className={`mx-auto mt-5 max-w-3xl text-center text-base leading-relaxed md:text-lg ${
+              theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
+            }`}
+          >
+            {landingCopy.whySeriesSection.body}
+          </p>
+        </div>
+
+        <div
+          className={`mt-16 rounded-2xl border p-8 md:p-10 ${
+            theme === 'dark' ? 'border-neutral-800 bg-neutral-900/40' : 'border-stone-200 bg-white/90 shadow-sm'
+          }`}
+        >
+          <h2 className="text-2xl font-semibold">{landingCopy.forInstitutions.title}</h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground">{landingCopy.forInstitutions.body}</p>
+          <ul className="mt-6 list-disc space-y-2 pl-5 text-sm">
+            {landingCopy.forInstitutions.bullets.map((b) => (
+              <li key={b}>{b}</li>
+            ))}
+          </ul>
+          {landingCopy.institutionCtas.length > 0 ? (
+            <div className="mt-6 flex flex-wrap gap-3">
+              {landingCopy.institutionCtas.map((cta) => (
+                <a
+                  key={cta.label}
+                  href={cta.href}
+                  className={`inline-flex rounded-full border px-4 py-2 text-sm font-medium transition hover:bg-black/5 dark:hover:bg-white/5 ${
+                    theme === 'dark' ? 'border-neutral-600 text-neutral-100' : 'border-neutral-300 text-neutral-900'
+                  }`}
+                >
+                  {cta.label}
+                </a>
+              ))}
+            </div>
+          ) : null}
+          <div className="mt-8">
+            <InstitutionalInquiryCta landing={landingCopy.institutionalInquiry} orgSlug={slug} />
+          </div>
+        </div>
+
+        <p className="mt-12 text-center text-sm text-muted-foreground">{landingCopy.proofLine}</p>
+
+        <div className="mt-12 space-y-6">
+          <h2 className="text-center text-2xl font-semibold">FAQ</h2>
+          <div className="mx-auto max-w-3xl space-y-6">
+            {landingCopy.faq.map((item) => (
+              <div key={item.q} className="border-b border-border pb-6 last:border-0">
+                <h3 className="font-medium">{item.q}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-20 border-t border-border/60 pt-16">
+          <h2 className="text-center text-2xl font-semibold">{landingCopy.comingSoonSection.title}</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-muted-foreground md:text-base">
+            {landingCopy.comingSoonSection.subcopy}
+          </p>
+        </div>
+
+        <div
+          className={`mt-16 rounded-2xl border p-8 text-center md:p-12 ${
+            theme === 'dark' ? 'border-neutral-800 bg-neutral-900/30' : 'border-stone-200 bg-stone-100/80'
+          }`}
+        >
+          <h2 className="text-xl font-semibold md:text-2xl">{landingCopy.footerCtaSection.title}</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+            {landingCopy.footerCtaSection.body}
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            {landingCopy.footerCtaSection.ctas.map((cta) => (
+              <a
+                key={cta.label}
+                href={cta.href}
+                className="inline-flex rounded-full px-5 py-2.5 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
+                style={{ backgroundColor: tenantConfig?.theme?.primaryColor || ooliteColors.primary }}
+              >
+                {cta.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <DecorativeDivider
         icon={Heart}
         gradientColors={{
-          from: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
-          via: theme === 'dark' ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.05)',
-          to: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'
+          from: theme === 'dark' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.04)',
+          via: theme === 'dark' ? 'rgba(168, 85, 247, 0.08)' : 'rgba(168, 85, 247, 0.04)',
+          to: theme === 'dark' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.04)',
         }}
-        iconColor={theme === 'dark' ? 'text-indigo-400/50' : 'text-indigo-500/50'}
-        className="my-16"
+        iconColor={theme === 'dark' ? 'text-indigo-400/40' : 'text-indigo-500/40'}
+        className="my-12"
       />
 
-      {/* Page Footer */}
-      <PageFooter 
+      <PageFooter
         organizationSlug={slug}
         showGetStarted={true}
         showGuidelines={true}

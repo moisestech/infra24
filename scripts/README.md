@@ -2,6 +2,8 @@
 
 This directory contains utility scripts for database management, testing, and system maintenance.
 
+**Before running seeds against shared or production data**, read **[`DATA_SEED_REGISTRY.md`](./DATA_SEED_REGISTRY.md)** for destructive vs safe scripts and npm script mapping.
+
 ## 🎉 **Latest Updates**
 
 ### **Build Success Milestone Scripts**

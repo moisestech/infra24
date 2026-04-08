@@ -1,15 +1,17 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+
+import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
+import { marketingGradientSurfaceClass } from '@/lib/marketing/marketing-gradients';
 import { cn } from '@/lib/utils';
 
 export type ProofStripItem = {
   slug: string;
   title: string;
   challenge: string;
-  coverImage: string;
+  coverGradient: MarketingGradientId;
   coverAlt: string;
 };
 
@@ -17,13 +19,14 @@ function ProofCard({
   item,
   className,
   imageClassName,
-  priority,
+  priority: _priority,
 }: {
   item: ProofStripItem;
   className?: string;
   imageClassName?: string;
   priority?: boolean;
 }) {
+  void _priority;
   return (
     <Link
       href={`/projects/${item.slug}`}
@@ -38,15 +41,15 @@ function ProofCard({
           imageClassName ?? 'aspect-[16/10]'
         )}
       >
-        <Image
-          src={item.coverImage}
-          alt={item.coverAlt}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-          sizes="(max-width: 1024px) 85vw, (max-width: 1280px) 50vw, 40vw"
-          priority={priority}
+        <div
+          className={cn(
+            'absolute inset-0 transition-transform duration-500 group-hover:scale-[1.02]',
+            marketingGradientSurfaceClass(item.coverGradient)
+          )}
+          role="img"
+          aria-label={item.coverAlt}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60 transition-opacity group-hover:opacity-80" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60 transition-opacity group-hover:opacity-80" />
         <p className="absolute bottom-3 left-3 right-3 text-sm font-semibold leading-snug text-white drop-shadow">
           {item.title}
         </p>

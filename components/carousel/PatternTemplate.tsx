@@ -16,6 +16,11 @@ import { ImageLayout } from './ImageLayouts';
 import { ImageLayoutType } from '@/types/announcement';
 import { LayoutDebugOverlay } from './LayoutDebugOverlay';
 import { type ScreenMetrics, type ResponsiveSizes } from './ResponsiveSizing';
+import QRCode from '@/components/ui/QRCode';
+import {
+  announcementHasScannableDestination,
+  buildAnnouncementScanPath,
+} from '@/lib/announcements/scan-target';
 
 interface ImageSettings {
   layout?: ImageLayoutType;
@@ -58,6 +63,8 @@ interface PatternTemplateProps {
   animationsPaused?: boolean;
   /** Carousel slide index — used to vary default image layout when `image_layout` is unset */
   slideIndex?: number;
+  /** Hide announcement date blocks (smart sign resident / custom segments) */
+  hideAnnouncementDates?: boolean;
 }
 
 export function PatternTemplate({ 
@@ -85,17 +92,25 @@ export function PatternTemplate({
   showTags = false,
   showPriorityBadge = false,
   showVisibilityBadge = false,
-  showQRCodeButton = false, // Disabled until QR code is fully tested
+  showQRCodeButton = true,
   showLearnMore = true,
   imageSettings,
   screenMetrics,
   responsiveSizes,
   isActive = false,
   animationsPaused = false,
-  slideIndex = 0
+  slideIndex = 0,
+  hideAnnouncementDates = false,
 }: PatternTemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
+  const [scanOrigin, setScanOrigin] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setScanOrigin(window.location.origin);
+    }
+  }, []);
 
   useEffect(() => {
     setIsMounted(true);
@@ -113,6 +128,7 @@ export function PatternTemplate({
 
   // Check if announcement has an image and determine layout
   const hasImage = announcement.image_url && announcement.image_url.trim() !== '';
+  const isImageOnly = announcement?.metadata?.image_only === true;
   // When DB/localStorage don't specify a layout, rotate for visual variety (still overridable per slide in dev tools)
   const ROTATING_DEFAULT_LAYOUTS: ImageLayoutType[] = [
     'card',
@@ -132,12 +148,15 @@ export function PatternTemplate({
   // Content wrapper component
   const ContentWrapper = () => (
     <>
+      {isImageOnly ? null : (
+        <>
       {/* Date Display - only use absolute positioning for non-card layouts (card has date in-flow) */}
       {imageLayout !== 'card' && (
         <AnnouncementDateDisplay
           announcement={announcement}
           orientation={orientation}
           organizationTheme={organizationTheme}
+          hideDates={hideAnnouncementDates}
           showDetailedMetadata={true}
           textSizes={textSizes}
           iconSizeMultiplier={iconSizeMultiplier}
@@ -191,6 +210,7 @@ export function PatternTemplate({
         responsiveSizes={responsiveSizes}
         isActive={isActive}
         animationsPaused={animationsPaused}
+        hideAnnouncementDates={hideAnnouncementDates}
       />
 
       {/* Learn More Button */}
@@ -209,6 +229,36 @@ export function PatternTemplate({
           orientation={orientation}
           textSizes={textSizes}
         />
+      )}
+        </>
+      )}
+      {isImageOnly && announcement.id && (
+        <>
+          {showQRCodeButton &&
+            organizationSlug &&
+            scanOrigin &&
+            announcementHasScannableDestination(announcement) && (
+              <div className="absolute bottom-6 left-6 z-30 rounded-lg bg-white p-2 shadow-2xl">
+                <QRCode
+                  value={`${scanOrigin}${buildAnnouncementScanPath(organizationSlug, announcement.id)}`}
+                  size={112}
+                  className="block"
+                />
+              </div>
+            )}
+          <div className="absolute bottom-6 right-6 z-30">
+            <a
+              href={
+                organizationSlug
+                  ? `/o/${organizationSlug}/announcements/${announcement.id}`
+                  : `/announcements/${announcement.id}`
+              }
+              className="inline-flex items-center gap-2 rounded-full bg-black/45 px-4 py-2 text-xs font-medium uppercase tracking-[0.14em] text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+            >
+              View details
+            </a>
+          </div>
+        </>
       )}
     </>
   );

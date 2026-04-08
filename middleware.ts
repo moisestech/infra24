@@ -10,6 +10,7 @@ function isPublicRoute(pathname: string): boolean {
     '/api/webhooks/clerk',
     '/api/organizations/by-slug',
     '/api/organizations',
+    '/api/artists',
     '/api/workshops',
     '/api/availability',
     '/api/bookings',

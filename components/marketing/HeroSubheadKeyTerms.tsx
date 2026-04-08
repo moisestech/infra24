@@ -1,9 +1,9 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useId, useMemo, useState } from 'react';
 
 import type { MarketingHeroSubheadSegment } from '@/lib/marketing/content';
+import { marketingGradientSurfaceClass } from '@/lib/marketing/marketing-gradients';
 import { cn } from '@/lib/utils';
 
 type HeroSubheadKeyTermsProps = {
@@ -14,22 +14,19 @@ type HeroSubheadKeyTermsProps = {
 
 function PreviewFigure({
   segment,
-  sizes,
 }: {
   segment: Extract<MarketingHeroSubheadSegment, { kind: 'term' }>;
-  sizes: string;
 }) {
   return (
     <figure className="overflow-hidden rounded-xl border border-[var(--cdc-border)] bg-neutral-100 shadow-[0_12px_40px_-12px_rgba(0,212,170,0.2)]">
-      <div className="relative aspect-square w-full max-w-[220px] sm:max-w-[240px] lg:max-w-none lg:w-44 xl:w-52">
-        <Image
-          src={segment.image.src}
-          alt={segment.image.alt}
-          fill
-          sizes={sizes}
-          className="object-cover"
-        />
-      </div>
+      <div
+        className={cn(
+          'relative aspect-square w-full max-w-[220px] sm:max-w-[240px] lg:max-w-none lg:w-44 xl:w-52',
+          marketingGradientSurfaceClass(segment.preview.gradientId)
+        )}
+        role="img"
+        aria-label={segment.preview.alt}
+      />
       {segment.caption ? (
         <figcaption className="border-t border-neutral-100 px-2.5 py-2 text-[11px] leading-snug text-neutral-600">
           {segment.caption}
@@ -129,7 +126,7 @@ export function HeroSubheadKeyTerms({
             aria-label="Term preview"
             className="absolute left-0 top-full z-20 mt-4 w-[min(100%,240px)] lg:left-full lg:top-0 lg:mt-0 lg:ml-5 lg:w-max lg:max-w-[min(100vw-2rem,13.5rem)]"
           >
-            <PreviewFigure segment={activeTerm} sizes="(max-width: 1024px) 240px, 208px" />
+            <PreviewFigure segment={activeTerm} />
           </div>
         ) : null}
       </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, X } from 'lucide-react'
@@ -8,6 +8,11 @@ import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/n
 import { UserPicker } from '@/components/ui/UserPicker'
 import { AnnouncementPerson } from '@/types/people'
 import { ImageLayoutType } from '@/types/announcement'
+import QRCode from '@/components/ui/QRCode'
+import {
+  announcementHasScannableDestination,
+  buildAnnouncementScanPath,
+} from '@/lib/announcements/scan-target'
 
 interface Announcement {
   id: string
@@ -67,10 +72,24 @@ export default function AnnouncementEditPage() {
     expires_time: '',
     author_clerk_id: '',
     image_url: '',
-    image_layout: '' as ImageLayoutType | ''
+    image_layout: '' as ImageLayoutType | '',
+    primary_link: '',
+    qr_destination_url: '',
   })
   
   const [selectedPeople, setSelectedPeople] = useState<AnnouncementPerson[]>([])
+  const [previewOrigin, setPreviewOrigin] = useState('')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setPreviewOrigin(window.location.origin)
+    }
+  }, [])
+
+  const stableScanPreviewUrl = useMemo(() => {
+    if (!previewOrigin || !announcement?.id) return ''
+    return `${previewOrigin}${buildAnnouncementScanPath(params.slug as string, announcement.id)}`
+  }, [previewOrigin, announcement?.id, params.slug])
 
   useEffect(() => {
     async function loadData() {
@@ -117,7 +136,9 @@ export default function AnnouncementEditPage() {
             expires_time: expiresDate ? expiresDate.toTimeString().slice(0, 5) : '',
             author_clerk_id: ann.author_clerk_id || '',
             image_url: ann.image_url || '',
-            image_layout: ann.image_layout || ''
+            image_layout: ann.image_layout || '',
+            primary_link: ann.primary_link || '',
+            qr_destination_url: ann.qr_destination_url || '',
           })
           
           // Set selected people
@@ -166,7 +187,9 @@ export default function AnnouncementEditPage() {
         ...apiData,
         key_people: selectedPeople,
         image_url: formData.image_url.trim() || null,
-        image_layout: formData.image_layout || (formData.image_url.trim() ? 'hero' : null) // Default to 'hero' if image exists but no layout selected
+        image_layout: formData.image_layout || (formData.image_url.trim() ? 'hero' : null), // Default to 'hero' if image exists but no layout selected
+        primary_link: formData.primary_link.trim() || null,
+        qr_destination_url: formData.qr_destination_url.trim() || null,
       }
       
       const response = await fetch(`/api/announcements/${id}`, {
@@ -427,6 +450,61 @@ export default function AnnouncementEditPage() {
                 </p>
               </div>
             )}
+
+            {/* Smart sign QR (stable URL redirects to destination below) */}
+            <div className="rounded-lg border border-gray-200 dark:border-gray-600 p-4 space-y-4 bg-gray-50/80 dark:bg-gray-900/40">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Smart sign QR</h3>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                The sign encodes a fixed link on this site; when someone scans it, they are redirected to the URL you set
+                below. You can change the destination anytime without changing the QR. Visibility must be public (or both)
+                and status published for scans to work.
+              </p>
+              <div>
+                <label htmlFor="qr_destination_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Scan destination URL (optional)
+                </label>
+                <input
+                  type="url"
+                  id="qr_destination_url"
+                  value={formData.qr_destination_url}
+                  onChange={(e) => setFormData({ ...formData, qr_destination_url: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="https://example.com/tickets"
+                />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  If set, used first. If empty, the primary link below is used when valid.
+                </p>
+              </div>
+              <div>
+                <label htmlFor="primary_link" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Primary / fallback link
+                </label>
+                <input
+                  type="url"
+                  id="primary_link"
+                  value={formData.primary_link}
+                  onChange={(e) => setFormData({ ...formData, primary_link: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="https://..."
+                />
+              </div>
+              {stableScanPreviewUrl &&
+                announcementHasScannableDestination({
+                  qr_destination_url: formData.qr_destination_url,
+                  primary_link: formData.primary_link,
+                }) && (
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2">
+                    <div className="rounded-lg bg-white p-2 shadow border border-gray-200 dark:border-gray-600">
+                      <QRCode value={stableScanPreviewUrl} size={128} />
+                    </div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 break-all">
+                      <span className="font-medium text-gray-800 dark:text-gray-200">Encoded URL</span>
+                      <br />
+                      {stableScanPreviewUrl}
+                    </div>
+                  </div>
+                )}
+            </div>
 
             {/* People */}
             <div>
