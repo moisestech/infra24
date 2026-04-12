@@ -52,6 +52,7 @@ export function OrganizationLogo({
       height={height}
       className={className}
       priority={priority}
+      unoptimized={logoUrl.includes('res.cloudinary.com')}
       style={{
         objectFit: 'contain',
         width: 'auto',

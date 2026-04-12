@@ -157,6 +157,7 @@ export const OrganizationLogo = memo(function OrganizationLogo({
         )}
         priority={priority}
         sizes="(max-width: 768px) 120px, (max-width: 1024px) 180px, (max-width: 1280px) 240px, 300px"
+        unoptimized
         onError={() => setImageError(true)}
       />
     </div>

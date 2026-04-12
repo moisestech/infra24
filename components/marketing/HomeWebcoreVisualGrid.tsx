@@ -54,6 +54,7 @@ function VisualSurface({
       alt={item.alt}
       fill
       priority={priority}
+      unoptimized={item.src.includes('res.cloudinary.com')}
       className={cn(
         'object-cover transition-[transform,filter] duration-500 ease-out group-hover:scale-[1.045] group-hover:contrast-[1.04] group-hover:saturate-[1.06]',
         imageClassName

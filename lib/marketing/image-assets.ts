@@ -5,11 +5,19 @@
 
 import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
 
+/** Main hero collage cell: real photo from Cloudinary (Next/Image uses `unoptimized` in `HeroCollage`). */
+export const marketingHeroCollageMainPhoto = {
+  src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758247127/smart-sign/orgs/oolite/oolite-digital-arts-program_ai-sketch_mqtbm9.png',
+  alt: 'Digital arts and public program collage — workshops and civic-facing interfaces.',
+} as const;
+
 export const heroCollagePanels = [
   {
     id: 'field',
     gradientId: 'stackTeal' as const satisfies MarketingGradientId,
     label: 'Layer stack',
+    /** When set, shown behind gradient scrim so Cloudinary assets visibly load on the homepage. */
+    photo: marketingHeroCollageMainPhoto,
   },
   {
     id: 'entanglement',

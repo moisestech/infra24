@@ -663,6 +663,10 @@ const CONTACT_AUDIENCES = [
   { slug: 'press', title: 'Press' },
   { slug: 'programs', title: 'Programs' },
   { slug: 'artist-support', title: 'Artist support' },
+  {
+    slug: 'artist-index',
+    title: 'Artist index listing',
+  },
 ] as const;
 
 for (const a of CONTACT_AUDIENCES) {

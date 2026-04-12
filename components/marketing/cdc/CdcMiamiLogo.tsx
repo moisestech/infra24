@@ -39,6 +39,7 @@ export function CdcMiamiLogo({
         sizes={sizesAttr}
         className="object-contain object-left"
         priority={priority}
+        unoptimized
       />
     </span>
   );

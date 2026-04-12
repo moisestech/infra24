@@ -17,6 +17,8 @@ type HomeHeroDigitalProps = {
   /** Prominent place + public digital culture lockup (larger than header). */
   publicDigitalMiamiLine?: string;
   headline: string;
+  /** Override H1 sizing (e.g. longer organization name with glitch). */
+  headlineClassName?: string;
   poweredByLine: string;
   /** Plain subhead (used with `TextAnimate` when `subheadSegments` is omitted). */
   subhead?: string;
@@ -29,6 +31,7 @@ export function HomeHeroDigital({
   eyebrow,
   publicDigitalMiamiLine,
   headline,
+  headlineClassName,
   poweredByLine,
   subhead,
   subheadSegments,
@@ -111,7 +114,8 @@ export function HomeHeroDigital({
         {reduceMotion ? (
           <h1
             className={cn(
-              'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
+              headlineClassName ??
+                'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
               publicDigitalMiamiLine || showEyebrow ? 'mt-4' : 'mt-5'
             )}
           >
@@ -124,7 +128,8 @@ export function HomeHeroDigital({
         ) : (
           <motion.h1
             className={cn(
-              'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
+              headlineClassName ??
+                'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
               publicDigitalMiamiLine || showEyebrow ? 'mt-4' : 'mt-5'
             )}
             initial={{ opacity: 0, y: 22, scale: 0.94 }}

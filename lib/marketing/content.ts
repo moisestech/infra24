@@ -165,10 +165,25 @@ export const marketingHeroPlainSubhead =
 
 export const marketingHero = {
   eyebrow: 'Miami · Public digital culture',
-  headline: 'DCC.miami',
+  /** Visible H1 in hero card (glitch styling); brand short name stays in metadata and chrome. */
+  headline: 'Digital Culture Center Miami',
   subhead: marketingHeroSubheadSegments.map((s) => s.text).join(''),
   microTrust:
     'Built for funders, partners, and communities who want cultural infrastructure that is visible, legible, and accountable—not a one-off vendor relationship.',
+} as const;
+
+/** Above-fold engagement on the homepage (newsletter + artist index). */
+export const marketingHeroEngagement = {
+  artistIndex: {
+    label: 'Add your practice to the artist index',
+    href: '/contact/artist-index',
+  },
+  newsletter: {
+    placeholder: 'Email for updates',
+    submitLabel: 'Subscribe',
+    /** Optional: full URL for POST (e.g. Mailchimp / Buttondown form action). If unset, submits to `/newsletter` with email query. */
+    formAction: process.env.NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_ACTION ?? '',
+  },
 } as const;
 
 /** Homepage ticker — Magic UI marquee strip (icons + pause on hover). */

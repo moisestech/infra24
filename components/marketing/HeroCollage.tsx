@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { heroCollagePanels } from '@/lib/marketing/homepage-visuals';
@@ -17,19 +18,38 @@ function GradientPanel({
   label,
   className,
   labelPosition = 'top',
+  photo,
 }: {
   gradientId: (typeof heroCollagePanels)[number]['gradientId'];
   label: string;
   className?: string;
   labelPosition?: 'top' | 'bottom';
+  photo?: { readonly src: string; readonly alt: string };
 }) {
   return (
     <div
       className={cn('relative overflow-hidden', className)}
       role="img"
-      aria-label={label}
+      aria-label={photo ? photo.alt : label}
     >
-      <div className={cn('absolute inset-0', marketingGradientSurfaceClass(gradientId))} />
+      {photo ? (
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          fill
+          unoptimized
+          className="object-cover"
+          sizes="(max-width: 1024px) 100vw, 55vw"
+          priority
+        />
+      ) : null}
+      <div
+        className={cn(
+          'absolute inset-0',
+          marketingGradientSurfaceClass(gradientId),
+          photo && 'opacity-75 mix-blend-multiply'
+        )}
+      />
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
       <span
         className={cn(
@@ -79,6 +99,7 @@ export function HeroCollage({
           gradientId={main.gradientId}
           label={main.label}
           className="h-full min-h-[240px] sm:min-h-[300px] lg:min-h-[360px]"
+          photo={'photo' in main ? main.photo : undefined}
         />
       </div>
 

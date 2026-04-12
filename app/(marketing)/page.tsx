@@ -56,6 +56,16 @@ const HomeWebcoreVisualGrid = dynamic(
   }
 );
 
+const HeroAboveFoldEngagement = dynamic(
+  () =>
+    import('@/components/marketing/HeroAboveFoldEngagement').then((m) => m.HeroAboveFoldEngagement),
+  { ssr: true }
+);
+
+/** Tighter scale for long glitch H1 (“Digital Culture Center Miami”). */
+const homeHeroHeadlineClassName =
+  'cdc-hero-headline max-w-4xl text-[1.65rem] font-bold leading-[1.11] tracking-tight text-neutral-900 sm:text-3xl sm:leading-[1.12] lg:text-4xl xl:text-[2.35rem] xl:leading-[1.1]';
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: marketingHomeMeta.title,
@@ -86,10 +96,12 @@ export default function MarketingHomePage() {
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-14">
             <HomeHeroDigital
               headline={marketingHero.headline}
+              headlineClassName={homeHeroHeadlineClassName}
               subhead={marketingHeroPlainSubhead}
               poweredByLine={dccSiteMeta.poweredByLine}
             >
-              <p className="mt-4 max-w-2xl text-sm text-neutral-500">{marketingHero.microTrust}</p>
+              <HeroAboveFoldEngagement />
+              <p className="mt-5 max-w-2xl text-sm text-neutral-500">{marketingHero.microTrust}</p>
               <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-5">
                 <form
                   action="/programs"

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { PageHero, Section } from '@/components/marketing/cdc';
+import { NewsletterPageForm } from '@/components/marketing/NewsletterPageForm';
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
@@ -7,7 +8,13 @@ const path = '/newsletter';
 
 export const metadata: Metadata = cdcPageMetadata(path);
 
-export default function NewsletterPage() {
+type Props = {
+  searchParams: { email?: string };
+};
+
+export default function NewsletterPage({ searchParams }: Props) {
+  const initialEmail = typeof searchParams.email === 'string' ? searchParams.email : '';
+
   return (
     <>
       <PageHero
@@ -17,9 +24,7 @@ export default function NewsletterPage() {
         breadcrumbs={getCdcBreadcrumbs(path)}
       />
       <Section className="bg-[#fafafa] pb-16">
-        <p className="max-w-2xl text-sm text-neutral-600">
-          Embed your mailing list provider here (Buttondown, Mailchimp, etc.).
-        </p>
+        <NewsletterPageForm initialEmail={initialEmail} />
       </Section>
     </>
   );
