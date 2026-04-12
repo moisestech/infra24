@@ -19,12 +19,17 @@ function GradientPanel({
   className,
   labelPosition = 'top',
   photo,
+  imagePriority = false,
+  imageSizes = '(max-width: 1024px) 100vw, 55vw',
 }: {
   gradientId: (typeof heroCollagePanels)[number]['gradientId'];
   label: string;
   className?: string;
   labelPosition?: 'top' | 'bottom';
   photo?: { readonly src: string; readonly alt: string };
+  /** Only the hero main cell should use priority for LCP. */
+  imagePriority?: boolean;
+  imageSizes?: string;
 }) {
   return (
     <div
@@ -39,18 +44,19 @@ function GradientPanel({
           fill
           unoptimized
           className="object-cover"
-          sizes="(max-width: 1024px) 100vw, 55vw"
-          priority
+          sizes={imageSizes}
+          priority={imagePriority}
         />
       ) : null}
       <div
         className={cn(
           'absolute inset-0',
           marketingGradientSurfaceClass(gradientId),
-          photo && 'opacity-75 mix-blend-multiply'
+          photo &&
+            'opacity-75 mix-blend-multiply dark:opacity-55 dark:mix-blend-normal'
         )}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent dark:from-black/65 dark:via-black/25" />
       <span
         className={cn(
           'absolute rounded bg-black/35 px-2 py-1 text-white/95 backdrop-blur-sm',
@@ -91,7 +97,7 @@ export function HeroCollage({
       className={cn(
         gridClassName,
         variant === 'embedded' &&
-          'rounded-xl bg-white/50 p-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.65)] ring-1 ring-[var(--cdc-border)] backdrop-blur-[2px]'
+          'rounded-xl bg-white/50 p-2 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.65)] ring-1 ring-[var(--cdc-border)] backdrop-blur-[2px] dark:bg-neutral-900/45 dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]'
       )}
     >
       <div className="relative col-span-8 row-span-3 overflow-hidden rounded-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_12px_40px_-16px_rgba(15,23,42,0.35)]">
@@ -100,6 +106,7 @@ export function HeroCollage({
           label={main.label}
           className="h-full min-h-[240px] sm:min-h-[300px] lg:min-h-[360px]"
           photo={'photo' in main ? main.photo : undefined}
+          imagePriority
         />
       </div>
 
@@ -114,6 +121,8 @@ export function HeroCollage({
           label={topRight.label}
           labelPosition="bottom"
           className="h-full min-h-[4.5rem]"
+          photo={'photo' in topRight ? topRight.photo : undefined}
+          imageSizes="(max-width: 1024px) 50vw, 28vw"
         />
       </div>
 
@@ -129,6 +138,8 @@ export function HeroCollage({
           label={midRight.label}
           labelPosition="bottom"
           className="h-full min-h-[4.5rem]"
+          photo={'photo' in midRight ? midRight.photo : undefined}
+          imageSizes="(max-width: 1024px) 50vw, 28vw"
         />
       </div>
 
@@ -144,6 +155,8 @@ export function HeroCollage({
           label={phone.label}
           labelPosition="bottom"
           className="h-full min-h-[4.5rem]"
+          photo={'photo' in phone ? phone.photo : undefined}
+          imageSizes="(max-width: 1024px) 50vw, 28vw"
         />
       </div>
     </motion.div>
@@ -156,7 +169,7 @@ export function HeroCollage({
   return (
     <div className={cn('relative', className)}>
       <div
-        className="relative overflow-hidden rounded-2xl border border-neutral-200/90 bg-neutral-100/50 p-2 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.25)]"
+        className="relative overflow-hidden rounded-2xl border border-neutral-200/90 bg-neutral-100/50 p-2 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.25)] dark:border-neutral-700/80 dark:bg-neutral-900/40"
         aria-hidden
       >
         <BorderBeam
@@ -168,7 +181,7 @@ export function HeroCollage({
         />
         {grid}
       </div>
-      <p className="mt-3 text-center text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500">
+      <p className="mt-3 text-center text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
         One communication layer across physical and digital surfaces
       </p>
     </div>

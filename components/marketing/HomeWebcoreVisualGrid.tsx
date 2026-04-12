@@ -83,7 +83,7 @@ function VisualFigure({
   onOpenLightbox?: (item: HomeVisualItem) => void;
 }) {
   const surfaceClass = cn(
-    'cdc-webcore-visual-shine relative overflow-hidden bg-neutral-200/80',
+    'cdc-webcore-visual-shine relative overflow-hidden bg-neutral-200/80 dark:bg-neutral-800/80',
     imageWrapperClassName
   );
 
@@ -128,12 +128,12 @@ function VisualFigure({
       {(item.caption || item.credit || lightbox) && (
         <figcaption className="mt-2 space-y-0.5 px-0.5">
           {item.caption && (
-            <span className="block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-500">
+            <span className="block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400">
               {item.caption}
             </span>
           )}
           {item.credit && (
-            <span className="block text-[11px] text-neutral-400">{item.credit}</span>
+            <span className="block text-[11px] text-neutral-400 dark:text-neutral-500">{item.credit}</span>
           )}
           {lightbox && onOpenLightbox ? (
             <span className="block font-mono text-[9px] font-normal normal-case tracking-normal text-neutral-400">
@@ -185,6 +185,7 @@ function LightboxDialog({
                 fill
                 className="object-contain"
                 sizes="96vw"
+                unoptimized={item.src.includes('res.cloudinary.com')}
               />
             ) : (
               <div
@@ -274,14 +275,16 @@ export function HomeWebcoreVisualGrid(props: HomeWebcoreVisualGridProps) {
   }
 
   if (props.mode === 'row') {
+    const rowCols =
+      items.length > 2 ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3' : 'grid gap-4 sm:grid-cols-2';
     return (
       <>
-        <div className={cn('grid gap-4 sm:grid-cols-2', className)}>
+        <div className={cn(rowCols, className)}>
           {items.map((item, i) => (
             <VisualFigure
               key={itemKey(item, i)}
               item={item}
-              sizes="(max-width: 768px) 100vw, 45vw"
+              sizes="(max-width: 768px) 100vw, 33vw"
               priority={i === 0}
               reduceMotion={reduceMotion}
               lightbox={lightbox}

@@ -42,7 +42,7 @@ export function HomeHeroDigital({
   const plainSubheadForSr = subhead ?? subheadSegments?.map((s) => s.text).join('') ?? '';
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-[var(--cdc-border)] bg-white/35 p-6 shadow-sm shadow-teal-950/[0.04] backdrop-blur-[2px] sm:p-8">
+    <div className="relative overflow-hidden rounded-2xl border border-[var(--cdc-border)] bg-white/35 p-6 shadow-sm shadow-teal-950/[0.04] backdrop-blur-[2px] dark:bg-neutral-900/45 dark:shadow-black/20 sm:p-8">
       {!reduceMotion && (
         <>
           <AnimatedGridPattern
@@ -115,7 +115,7 @@ export function HomeHeroDigital({
           <h1
             className={cn(
               headlineClassName ??
-                'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
+                'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
               publicDigitalMiamiLine || showEyebrow ? 'mt-4' : 'mt-5'
             )}
           >
@@ -129,7 +129,7 @@ export function HomeHeroDigital({
           <motion.h1
             className={cn(
               headlineClassName ??
-                'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
+                'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
               publicDigitalMiamiLine || showEyebrow ? 'mt-4' : 'mt-5'
             )}
             initial={{ opacity: 0, y: 22, scale: 0.94 }}
@@ -144,7 +144,7 @@ export function HomeHeroDigital({
           </motion.h1>
         )}
 
-        <p className="mt-2 text-sm font-medium text-neutral-500">{poweredByLine}</p>
+        <p className="mt-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">{poweredByLine}</p>
 
         {subheadSegments?.length ? (
           <>
@@ -153,7 +153,9 @@ export function HomeHeroDigital({
           </>
         ) : subhead ? (
           reduceMotion ? (
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600">{subhead}</p>
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-300">
+              {subhead}
+            </p>
           ) : (
             <TextAnimate
               as="p"
@@ -163,7 +165,7 @@ export function HomeHeroDigital({
               once
               delay={0.2}
               duration={0.65}
-              className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600"
+              className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-300"
             >
               {subhead}
             </TextAnimate>

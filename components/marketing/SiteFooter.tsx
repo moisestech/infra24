@@ -21,24 +21,24 @@ const footerOrganization = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-[var(--cdc-border)] bg-white">
+    <footer className="border-t border-[var(--cdc-border)] bg-white dark:border-neutral-700/80 dark:bg-neutral-950">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
             <Link href="/" className="mb-4 inline-block">
               <CdcMiamiLogo size="lg" />
             </Link>
-            <p className="text-sm font-semibold text-neutral-900">{dccSiteMeta.organizationName}</p>
-            <p className="mt-1 text-xs text-neutral-500">{dccSiteMeta.poweredByLine}</p>
-            <p className="mt-3 max-w-md text-sm font-medium leading-relaxed text-neutral-900">
+            <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{dccSiteMeta.organizationName}</p>
+            <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{dccSiteMeta.poweredByLine}</p>
+            <p className="mt-3 max-w-md text-sm font-medium leading-relaxed text-neutral-900 dark:text-neutral-100">
               {marketingHomeMeta.title}
             </p>
-            <p className="mt-2 max-w-md text-sm leading-relaxed text-neutral-600">
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
               {marketingHomeMeta.description}
             </p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+            <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
               Work
             </p>
             <ul className="mt-3 space-y-2">
@@ -46,7 +46,7 @@ export function SiteFooter() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="text-sm text-neutral-600 hover:text-neutral-900"
+                    className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
                   >
                     {l.label}
                   </Link>
@@ -55,7 +55,7 @@ export function SiteFooter() {
             </ul>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+            <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
               Organization
             </p>
             <ul className="mt-3 space-y-2">
@@ -63,7 +63,7 @@ export function SiteFooter() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="text-sm text-neutral-600 hover:text-neutral-900"
+                    className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
                   >
                     {l.label}
                   </Link>
@@ -72,15 +72,15 @@ export function SiteFooter() {
             </ul>
           </div>
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-neutral-100 pt-8 text-xs text-neutral-500 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2">
+        <div className="mt-10 flex flex-col gap-2 border-t border-neutral-100 pt-8 text-xs text-neutral-500 dark:border-neutral-800 dark:text-neutral-400 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2">
           <span>
             © {new Date().getFullYear()} {dccSiteMeta.organizationName}. All rights reserved.
           </span>
-          <span className="flex flex-wrap gap-x-4 gap-y-1 text-neutral-400">
-            <Link href="/platform" className="hover:text-neutral-600">
+          <span className="flex flex-wrap gap-x-4 gap-y-1 text-neutral-400 dark:text-neutral-500">
+            <Link href="/platform" className="hover:text-neutral-600 dark:hover:text-neutral-300">
               Platform login area
             </Link>
-            <Link href="/llms.txt" className="hover:text-neutral-600">
+            <Link href="/llms.txt" className="hover:text-neutral-600 dark:hover:text-neutral-300">
               For AI assistants
             </Link>
           </span>

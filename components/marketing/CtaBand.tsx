@@ -27,15 +27,17 @@ export function CtaBand({
   return (
     <div
       className={cn(
-        'rounded-lg border border-neutral-200 bg-neutral-50 px-6 py-10 sm:px-10',
+        'rounded-lg border border-neutral-200 bg-neutral-50 px-6 py-10 dark:border-neutral-700 dark:bg-neutral-950 sm:px-10',
         className
       )}
     >
-      <h2 className="text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
+      <h2 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-2xl">
         {headline}
       </h2>
       {body && (
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600">{body}</p>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+          {body}
+        </p>
       )}
       <div className="mt-6 flex flex-col flex-wrap gap-3 sm:flex-row sm:items-center">
         <Link
@@ -46,14 +48,14 @@ export function CtaBand({
         </Link>
         <Link
           href={secondaryHref}
-          className="inline-flex justify-center text-sm font-medium text-neutral-700 underline-offset-4 hover:underline"
+          className="inline-flex justify-center text-sm font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
         >
           {secondaryLabel}
         </Link>
         {tertiaryLabel && (
           <Link
             href={tertiaryHref}
-            className="inline-flex justify-center text-sm font-medium text-neutral-600 underline-offset-4 hover:underline"
+            className="inline-flex justify-center text-sm font-medium text-neutral-600 underline-offset-4 hover:underline dark:text-neutral-400"
           >
             {tertiaryLabel}
           </Link>

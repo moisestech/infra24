@@ -1,8 +1,13 @@
 'use client';
 
 import Image from 'next/image';
+import { useTheme } from '@/contexts/ThemeContext';
+import {
+  DCC_MIAMI_LOGO_ALT,
+  DCC_MIAMI_LOGO_URL_LIGHT,
+  DCC_MIAMI_LOGO_URL_WHITE,
+} from '@/lib/marketing/cdc-brand';
 import { cn } from '@/lib/utils';
-import { DCC_MIAMI_LOGO_ALT, DCC_MIAMI_LOGO_URL } from '@/lib/marketing/cdc-brand';
 
 const sizeBox: Record<'sm' | 'md' | 'lg' | 'hero', string> = {
   sm: 'h-8 w-[7.5rem]',
@@ -21,6 +26,9 @@ export function CdcMiamiLogo({
   size?: keyof typeof sizeBox;
   priority?: boolean;
 }) {
+  const { resolvedTheme } = useTheme();
+  const src = resolvedTheme === 'dark' ? DCC_MIAMI_LOGO_URL_WHITE : DCC_MIAMI_LOGO_URL_LIGHT;
+
   const sizesAttr =
     size === 'sm'
       ? '120px'
@@ -33,7 +41,7 @@ export function CdcMiamiLogo({
   return (
     <span className={cn('relative inline-block shrink-0', sizeBox[size], className)}>
       <Image
-        src={DCC_MIAMI_LOGO_URL}
+        src={src}
         alt={DCC_MIAMI_LOGO_ALT}
         fill
         sizes={sizesAttr}

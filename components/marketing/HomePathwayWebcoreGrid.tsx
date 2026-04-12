@@ -55,13 +55,13 @@ function PathwayCard({ item }: { item: CardGridItem }) {
   return (
     <div
       className={cn(
-        'cdc-webcore-path-card flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm',
+        'cdc-webcore-path-card flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm dark:border-neutral-700 dark:bg-neutral-900',
         open && 'ring-1 ring-[var(--cdc-teal)]/25'
       )}
     >
       <Link
         href={item.href}
-        className="group/link flex flex-1 flex-col transition-colors hover:bg-white/95"
+        className="group/link flex flex-1 flex-col transition-colors hover:bg-white/95 dark:hover:bg-neutral-800/40"
       >
         {item.cover ? (
           <div
@@ -85,13 +85,13 @@ function PathwayCard({ item }: { item: CardGridItem }) {
         ) : null}
         <div className="flex flex-1 flex-col p-5 pb-3">
           <span className="flex items-start justify-between gap-2">
-            <span className="text-sm font-semibold text-neutral-900">{item.title}</span>
+            <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{item.title}</span>
             <ArrowRight
-              className="mt-0.5 h-4 w-4 shrink-0 text-neutral-300 transition-colors duration-200 group-hover/link:text-[var(--cdc-teal)]"
+              className="mt-0.5 h-4 w-4 shrink-0 text-neutral-300 transition-colors duration-200 group-hover/link:text-[var(--cdc-teal)] dark:text-neutral-600"
               aria-hidden
             />
           </span>
-          <p className="cdc-webcore-path-desc mt-2 text-sm leading-relaxed text-neutral-600 transition-[color,transform] duration-200 group-hover/link:text-neutral-800 group-hover/link:[text-shadow:0_0_0.6px_rgba(15,23,42,0.12)] sm:group-hover/link:translate-x-px">
+          <p className="cdc-webcore-path-desc mt-2 text-sm leading-relaxed text-neutral-600 transition-[color,transform] duration-200 group-hover/link:text-neutral-800 group-hover/link:[text-shadow:0_0_0.6px_rgba(15,23,42,0.12)] dark:group-hover/link:text-neutral-200 sm:group-hover/link:translate-x-px dark:text-neutral-400">
             {item.description}
           </p>
         </div>

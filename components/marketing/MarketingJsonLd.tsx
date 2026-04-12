@@ -1,10 +1,10 @@
-import { DCC_MIAMI_LOGO_URL } from '@/lib/marketing/cdc-brand';
+import { DCC_MIAMI_LOGO_URL_SCHEMA } from '@/lib/marketing/cdc-brand';
 import { getSiteUrl } from '@/lib/marketing/site-url';
 import { dccSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
 
 export function MarketingJsonLd() {
   const base = getSiteUrl();
-  const logoUrl = DCC_MIAMI_LOGO_URL;
+  const logoUrl = DCC_MIAMI_LOGO_URL_SCHEMA;
   const orgName = dccSiteMeta.organizationName;
 
   const organization = {

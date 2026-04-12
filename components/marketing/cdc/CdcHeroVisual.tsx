@@ -35,14 +35,14 @@ export function CdcHeroVisual({ className }: { className?: string }) {
       )}
 
       <div className="relative z-[1]">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--cdc-border)] bg-white/40 px-3 py-3 backdrop-blur-sm sm:px-4 sm:py-3.5">
-          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[9px] font-medium uppercase tracking-[0.14em] text-neutral-600 sm:text-[10px]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--cdc-border)] bg-white/40 px-3 py-3 backdrop-blur-sm dark:bg-neutral-900/55 sm:px-4 sm:py-3.5">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[9px] font-medium uppercase tracking-[0.14em] text-neutral-600 dark:text-neutral-400 sm:text-[10px]">
             <span className="text-[var(--cdc-teal)]">{dccHeroDigital.systemLabels[0]}</span>
-            <span className="text-neutral-300" aria-hidden>
+            <span className="text-neutral-300 dark:text-neutral-600" aria-hidden>
               ·
             </span>
             <span className="text-[var(--cdc-coral)]">{dccHeroDigital.systemLabels[1]}</span>
-            <span className="text-neutral-300" aria-hidden>
+            <span className="text-neutral-300 dark:text-neutral-600" aria-hidden>
               ·
             </span>
             <span className="text-[var(--cdc-magenta)]">{dccHeroDigital.systemLabels[2]}</span>
@@ -56,7 +56,7 @@ export function CdcHeroVisual({ className }: { className?: string }) {
           <HeroCollage variant="embedded" />
         </div>
 
-        <p className="px-3 pb-3 pt-0 text-center text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500">
+        <p className="px-3 pb-3 pt-0 text-center text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">
           {dccHeroDigital.caption}
         </p>
       </div>

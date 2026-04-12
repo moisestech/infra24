@@ -31,7 +31,7 @@ function ProofCard({
     <Link
       href={`/projects/${item.slug}`}
       className={cn(
-        'group flex h-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-shadow hover:shadow-md',
+        'group flex h-full flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-neutral-700 dark:bg-neutral-900',
         className
       )}
     >
@@ -55,8 +55,8 @@ function ProofCard({
         </p>
       </div>
       <div className="flex flex-1 flex-col p-4">
-        <p className="line-clamp-3 text-sm text-neutral-600">{item.challenge}</p>
-        <span className="mt-4 text-sm font-medium text-neutral-900 underline-offset-4 group-hover:underline">
+        <p className="line-clamp-3 text-sm text-neutral-600 dark:text-neutral-400">{item.challenge}</p>
+        <span className="mt-4 text-sm font-medium text-neutral-900 underline-offset-4 group-hover:underline dark:text-neutral-100">
           Read the pattern
         </span>
       </div>

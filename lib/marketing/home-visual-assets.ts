@@ -1,4 +1,5 @@
 import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
+import { dccHomeProofPhotos, dccHomeWhyMiamiPhotos } from '@/lib/marketing/dcc-home-photography';
 
 export type HomeVisualItem =
   | {
@@ -29,6 +30,19 @@ const g = (
   credit,
 });
 
+const photo = (
+  src: string,
+  alt: string,
+  caption?: string,
+  credit?: string
+): HomeVisualItem => ({
+  kind: 'image',
+  src,
+  alt,
+  caption,
+  credit,
+});
+
 /** Full-bleed mosaic after marquee */
 export const homeVisualPostMarquee: HomeVisualItem[] = [
   g('stackTeal', 'Teal and slate gradient suggesting stacked digital layers.', 'Stacked signal'),
@@ -42,10 +56,20 @@ export const homeVisualNarrativeBridge: HomeVisualItem[] = [
   g('warmAmber', 'Amber gradient suggesting surfaces and retail-adjacent display.', 'Smart surface'),
 ];
 
-/** Why Miami — distinct pair */
+/** Why Miami — DCC photography row */
 export const homeVisualWhyMiami: HomeVisualItem[] = [
-  g('signalCyan', 'Cyan signal gradient suggesting pilot posture.', 'Pilot posture'),
-  g('meshSlate', 'Slate mesh gradient suggesting public institutional formats.', 'Public format'),
+  photo(
+    dccHomeWhyMiamiPhotos[0].src,
+    dccHomeWhyMiamiPhotos[0].alt,
+    'Public programs',
+    'DCC Miami'
+  ),
+  photo(
+    dccHomeWhyMiamiPhotos[1].src,
+    dccHomeWhyMiamiPhotos[1].alt,
+    'Pilot installations',
+    'DCC Miami'
+  ),
 ];
 
 /** Process section — Infra24 page strip */
@@ -54,9 +78,11 @@ export const homeVisualProcessStrip: HomeVisualItem[] = [
   g('indigoHaze', 'Indigo haze gradient — process phase texture.', 'Process B'),
 ];
 
-/** Proof section — single echo tile */
+/** Proof section — three artwork tiles */
 export const homeVisualProofEcho: HomeVisualItem[] = [
-  g('roseMist', 'Rose-neutral gradient echo tile.', 'Pattern echo'),
+  photo(dccHomeProofPhotos[0].src, dccHomeProofPhotos[0].alt, 'Field work', 'DCC Miami'),
+  photo(dccHomeProofPhotos[1].src, dccHomeProofPhotos[1].alt, 'Concept', 'DCC Miami'),
+  photo(dccHomeProofPhotos[2].src, dccHomeProofPhotos[2].alt, 'Systems art', 'DCC Miami'),
 ];
 
 /** Problem section — featured (Infra24) */

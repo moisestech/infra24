@@ -26,7 +26,7 @@ const CdcHeroVisual = dynamic(
   {
     loading: () => (
       <div
-        className="min-h-[320px] w-full animate-pulse rounded-2xl bg-neutral-100/90 shadow-inner ring-1 ring-[var(--cdc-border)] sm:min-h-[380px] lg:min-h-[440px]"
+        className="min-h-[320px] w-full animate-pulse rounded-2xl bg-neutral-100/90 shadow-inner ring-1 ring-[var(--cdc-border)] dark:bg-neutral-800/90 sm:min-h-[380px] lg:min-h-[440px]"
         aria-hidden
       />
     ),
@@ -51,7 +51,7 @@ const HomeWebcoreVisualGrid = dynamic(
   {
     ssr: true,
     loading: () => (
-      <div className="min-h-[200px] animate-pulse rounded-xl bg-neutral-100/90" aria-hidden />
+      <div className="min-h-[200px] animate-pulse rounded-xl bg-neutral-100/90 dark:bg-neutral-800/90" aria-hidden />
     ),
   }
 );
@@ -64,7 +64,7 @@ const HeroAboveFoldEngagement = dynamic(
 
 /** Tighter scale for long glitch H1 (“Digital Culture Center Miami”). */
 const homeHeroHeadlineClassName =
-  'cdc-hero-headline max-w-4xl text-[1.65rem] font-bold leading-[1.11] tracking-tight text-neutral-900 sm:text-3xl sm:leading-[1.12] lg:text-4xl xl:text-[2.35rem] xl:leading-[1.1]';
+  'cdc-hero-headline max-w-4xl text-[1.65rem] font-bold leading-[1.11] tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-3xl sm:leading-[1.12] lg:text-4xl xl:text-[2.35rem] xl:leading-[1.1]';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -101,7 +101,9 @@ export default function MarketingHomePage() {
               poweredByLine={dccSiteMeta.poweredByLine}
             >
               <HeroAboveFoldEngagement />
-              <p className="mt-5 max-w-2xl text-sm text-neutral-500">{marketingHero.microTrust}</p>
+              <p className="mt-5 max-w-2xl text-sm text-neutral-500 dark:text-neutral-400">
+                {marketingHero.microTrust}
+              </p>
               <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-5">
                 <form
                   action="/programs"
@@ -121,22 +123,22 @@ export default function MarketingHomePage() {
                 </form>
                 <Link
                   href="/for-funders"
-                  className="cdc-arcade-secondary-btn inline-flex min-h-[3.25rem] items-center justify-center px-6 text-base font-bold tracking-wide text-neutral-900 no-underline sm:px-8 sm:text-lg"
+                  className="cdc-arcade-secondary-btn inline-flex min-h-[3.25rem] items-center justify-center px-6 text-base font-bold tracking-wide text-neutral-900 no-underline sm:px-8 sm:text-lg dark:text-neutral-100"
                 >
                   For Funders
                 </Link>
               </div>
-              <p className="mt-8 text-sm text-neutral-500">
+              <p className="mt-8 text-sm text-neutral-500 dark:text-neutral-400">
                 <Link
                   href="/infra24"
-                  className="font-medium text-neutral-700 underline-offset-4 hover:underline"
+                  className="font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
                 >
                   What is Infra24?
                 </Link>
                 {' · '}
                 <Link
                   href="/grants"
-                  className="font-medium text-neutral-700 underline-offset-4 hover:underline"
+                  className="font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
                 >
                   Grants &amp; Miami pilot
                 </Link>
@@ -147,31 +149,39 @@ export default function MarketingHomePage() {
         </div>
       </section>
 
-      <MarketingSection id="what-dcc-is" className="scroll-mt-14 bg-white">
-        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
+      <MarketingSection id="what-dcc-is" className="scroll-mt-14 bg-white dark:bg-neutral-900">
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           What DCC is
         </h2>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">{dccWhatWeAreIntro}</p>
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+          {dccWhatWeAreIntro}
+        </p>
         <p className="mt-6">
           <Link
             href="/about"
-            className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline"
+            className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
           >
             About Digital Culture Center Miami →
           </Link>
         </p>
       </MarketingSection>
 
-      <MarketingSection id="pathways" className="scroll-mt-14 bg-[#fafafa]">
-        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
+      <MarketingSection id="pathways" className="scroll-mt-14 bg-[#fafafa] dark:bg-neutral-950">
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           Three ways to engage
         </h2>
-        <p className="mt-3 max-w-2xl text-sm text-neutral-600">
-          We are prioritizing <strong className="font-medium text-neutral-800">grantmakers</strong> and{' '}
-          <strong className="font-medium text-neutral-800">small cultural organizations</strong> first;
-          artists stay central through programs and workshops. For audits, signage systems, and
+        <p className="mt-3 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
+          We are prioritizing{' '}
+          <strong className="font-medium text-neutral-800 dark:text-neutral-200">grantmakers</strong> and{' '}
+          <strong className="font-medium text-neutral-800 dark:text-neutral-200">
+            small cultural organizations
+          </strong>{' '}
+          first; artists stay central through programs and workshops. For audits, signage systems, and
           implementation detail, see{' '}
-          <Link href="/infra24" className="font-medium text-neutral-800 underline-offset-4 hover:underline">
+          <Link
+            href="/infra24"
+            className="font-medium text-neutral-800 underline-offset-4 hover:underline dark:text-neutral-200"
+          >
             Infra24
           </Link>
           .
@@ -184,17 +194,19 @@ export default function MarketingHomePage() {
         </div>
       </MarketingSection>
 
-      <MarketingSection id="why-miami" className="scroll-mt-14 bg-white">
+      <MarketingSection id="why-miami" className="scroll-mt-14 bg-white dark:bg-neutral-900">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-12">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
+            <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
               {dccWhyMiami.title}
             </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">{dccWhyMiami.body}</p>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+              {dccWhyMiami.body}
+            </p>
             <p className="mt-6">
               <Link
                 href="/why-miami"
-                className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline"
+                className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
               >
                 Why Miami (full page) →
               </Link>
@@ -204,24 +216,24 @@ export default function MarketingHomePage() {
         </div>
       </MarketingSection>
 
-      <MarketingSection id="proof" className="scroll-mt-14 bg-[#fafafa]">
+      <MarketingSection id="proof" className="scroll-mt-14 bg-[#fafafa] dark:bg-neutral-950">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-neutral-900">
+            <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
               Selected project patterns
             </h2>
-            <p className="mt-2 max-w-xl text-sm text-neutral-600">
+            <p className="mt-2 max-w-xl text-sm text-neutral-600 dark:text-neutral-400">
               Case-style examples—challenge, intervention, and what scales next.
             </p>
           </div>
           <Link
             href="/projects"
-            className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline"
+            className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
           >
             View all projects
           </Link>
         </div>
-        <div className="mt-8 max-w-md">
+        <div className="mt-8 w-full max-w-6xl">
           <HomeWebcoreVisualGrid lightbox mode="row" items={[...homeVisualProofEcho]} />
         </div>
         <div className="mt-10">
@@ -229,28 +241,36 @@ export default function MarketingHomePage() {
         </div>
       </MarketingSection>
 
-      <MarketingSection id="infra24" className="scroll-mt-14 border-y border-[var(--cdc-border)] bg-white py-14 sm:py-16">
-        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
+      <MarketingSection
+        id="infra24"
+        className="scroll-mt-14 border-y border-[var(--cdc-border)] bg-white py-14 dark:border-neutral-800 dark:bg-neutral-900 sm:py-16"
+      >
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           Powered by Infra24
         </h2>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600">{dccSystemsIntro}</p>
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+          {dccSystemsIntro}
+        </p>
         <p className="mt-6">
           <Link
             href="/infra24"
-            className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline"
+            className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
           >
             What Infra24 does →
           </Link>
         </p>
       </MarketingSection>
 
-      <MarketingSection id="faq" className="scroll-mt-14 bg-[#fafafa]">
-        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
+      <MarketingSection id="faq" className="scroll-mt-14 bg-[#fafafa] dark:bg-neutral-950">
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           Common questions
         </h2>
-        <p className="mt-3 max-w-2xl text-sm text-neutral-600">
+        <p className="mt-3 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
           Straight answers for artists, organizations, and funders.{' '}
-          <Link href="/about" className="font-medium text-neutral-800 underline-offset-4 hover:underline">
+          <Link
+            href="/about"
+            className="font-medium text-neutral-800 underline-offset-4 hover:underline dark:text-neutral-200"
+          >
             More on About
           </Link>
           .
@@ -260,7 +280,7 @@ export default function MarketingHomePage() {
         </div>
       </MarketingSection>
 
-      <MarketingSection id="cta" className="scroll-mt-14 bg-white pb-20">
+      <MarketingSection id="cta" className="scroll-mt-14 bg-white pb-20 dark:bg-neutral-900">
         <CtaBand
           headline="Build public digital culture with us"
           body="Funding supports DCC Miami programs and the Infra24 implementation that keeps interfaces and workshops maintainable. Partners host pilots; funders help prove the model for Miami."

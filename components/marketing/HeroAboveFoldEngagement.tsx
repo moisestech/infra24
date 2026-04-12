@@ -26,13 +26,13 @@ export function HeroAboveFoldEngagement({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'mt-6 flex flex-col gap-3 rounded-xl border border-[var(--cdc-border)] bg-white/60 p-4 shadow-sm backdrop-blur-sm sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-4',
+        'mt-6 flex flex-col gap-3 rounded-xl border border-[var(--cdc-border)] bg-white/60 p-4 shadow-sm backdrop-blur-sm dark:bg-neutral-900/55 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-4',
         className
       )}
     >
       <Link
         href={artistIndex.href}
-        className="inline-flex min-h-[2.75rem] flex-1 items-center justify-center rounded-lg border border-teal-600/25 bg-teal-50/90 px-4 text-center text-sm font-semibold text-teal-950 no-underline transition-colors hover:bg-teal-100/90 sm:min-w-[12rem] sm:justify-center"
+        className="inline-flex min-h-[2.75rem] flex-1 items-center justify-center rounded-lg border border-teal-600/25 bg-teal-50/90 px-4 text-center text-sm font-semibold text-teal-950 no-underline transition-colors hover:bg-teal-100/90 dark:border-teal-500/35 dark:bg-teal-950/40 dark:text-teal-100 dark:hover:bg-teal-900/50 sm:min-w-[12rem] sm:justify-center"
       >
         {artistIndex.label}
       </Link>
@@ -58,7 +58,7 @@ export function HeroAboveFoldEngagement({ className }: { className?: string }) {
         />
         <button
           type="submit"
-          className="min-h-[2.75rem] shrink-0 rounded-lg bg-neutral-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-neutral-800"
+          className="min-h-[2.75rem] shrink-0 rounded-lg bg-neutral-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white"
         >
           {newsletter.submitLabel}
         </button>

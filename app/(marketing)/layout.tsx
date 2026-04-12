@@ -52,7 +52,7 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="cdc-marketing min-h-screen bg-[#fafafa] text-neutral-900 antialiased">
+    <div className="cdc-marketing min-h-screen bg-[#fafafa] text-neutral-900 antialiased transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-100">
       <MarketingJsonLd />
       <SiteHeader />
       <main className="min-h-[60vh]">{children}</main>
