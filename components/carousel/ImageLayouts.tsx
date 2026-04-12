@@ -36,6 +36,8 @@ interface ImageLayoutProps {
   responsiveSizes?: any;
   /** When true, skip enter animations (e.g. kiosk / reduced motion) */
   animationsPaused?: boolean;
+  /** Fullscreen smart-sign: flat image frame; for card layout, also no page gradient/pattern backdrop */
+  minimalImageFrame?: boolean;
 }
 
 // Hero Layout: Large image as background with content overlay
@@ -183,27 +185,55 @@ export function SplitRightImageLayout({ announcement, imageUrl, orientation, chi
 // Debug: set true to show colored backgrounds (red=outer, blue=content wrapper, green=stack, orange=image, yellow=text)
 const DEBUG_LAYOUT = false;
 
+/** Film-style rows: use a tall poster frame even on landscape kiosks (asset may still be 16:9). */
+function cardLayoutUsesPortraitPosterFrame(announcement: { type?: string; metadata?: { image_only?: boolean }; tags?: unknown[] }): boolean {
+  const t = String(announcement?.type || '').toLowerCase();
+  if (t === 'cinematic') return true;
+  if (t === 'promotion' && announcement?.metadata?.image_only === true) {
+    const tags = announcement?.tags;
+    if (!Array.isArray(tags)) return false;
+    return tags.some((x) => /film|poster|cinematic/i.test(String(x)));
+  }
+  return false;
+}
+
 // Card Layout: Image on top, all text stacked underneath
-export function CardImageLayout({ announcement, imageUrl, orientation, children, textSizes, styles, imageSettings, screenMetrics, responsiveSizes, animationsPaused }: ImageLayoutProps) {
+export function CardImageLayout({ announcement, imageUrl, orientation, children, textSizes, styles, imageSettings, screenMetrics, responsiveSizes, animationsPaused, minimalImageFrame }: ImageLayoutProps) {
   const imageScale = imageSettings?.scale !== undefined ? imageSettings.scale : 1;
   const imageOpacity = imageSettings?.opacity !== undefined ? imageSettings.opacity / 100 : 1;
-  
+  const posterPortrait = cardLayoutUsesPortraitPosterFrame(announcement);
+  const minimal = Boolean(minimalImageFrame);
+
   const debugBg = (color: string) => DEBUG_LAYOUT ? { backgroundColor: color } : {};
+
+  const imageFrameClass = cn(
+    'relative overflow-hidden rounded-2xl bg-transparent',
+    posterPortrait
+      ? 'aspect-[2/3] max-h-[min(82vh,1024px)] w-full mx-auto'
+      : orientation === 'portrait'
+        ? 'aspect-[4/3] max-h-[min(44vh,540px)] w-full max-w-lg mx-auto'
+        : 'aspect-[16/9] w-full mx-auto'
+  );
   
   return (
-    <div className="relative w-full max-w-full h-full overflow-hidden" style={debugBg('rgba(255,0,0,0.2)')}>
-      <div 
+    <div
+      className={cn(
+        'relative h-full max-h-full w-full max-w-full overflow-hidden',
+        minimal && 'bg-white'
+      )}
+      style={debugBg('rgba(255,0,0,0.2)')}
+    >
+      {!minimal && (
+        <div
+          className={cn('absolute inset-0', styles?.gradientStyle ? '' : '')}
+          style={styles?.gradientStyle}
+        />
+      )}
+
+      <div
         className={cn(
-          "absolute inset-0",
-          styles?.gradientStyle ? '' : ""
-        )}
-        style={styles?.gradientStyle}
-      />
-      
-      <div 
-        className={cn(
-          "relative z-20 w-full max-w-full h-full flex flex-col overflow-hidden",
-          responsiveSizes?.padding || "p-8 md:p-12 xl:p-16"
+          'relative z-20 flex h-full max-h-full w-full max-w-full flex-col overflow-hidden',
+          responsiveSizes?.padding || 'p-8 md:p-12 xl:p-16'
         )}
         style={debugBg('rgba(0,0,255,0.25)')}
       >
@@ -220,35 +250,44 @@ export function CardImageLayout({ announcement, imageUrl, orientation, children,
             style={debugBg('rgba(255,165,0,0.4)')}
           >
             <div
-              className="w-full max-w-4xl"
+              className={cn('w-full', posterPortrait ? 'max-w-lg md:max-w-xl' : 'max-w-4xl')}
               style={{
                 transform: `scale(${imageScale})`,
                 transformOrigin: 'center top',
                 opacity: imageOpacity,
               }}
             >
-              <div className="rounded-2xl p-[1px] bg-gradient-to-br from-white/50 via-white/15 to-emerald-400/25 shadow-[0_28px_90px_-24px_rgba(0,0,0,0.8)] ring-1 ring-white/15">
-                <div
-                  className={cn(
-                    'relative overflow-hidden rounded-2xl bg-neutral-950/40',
-                    orientation === 'portrait'
-                      ? 'aspect-[4/3] max-h-[min(44vh,540px)] w-full max-w-lg mx-auto'
-                      : 'aspect-[16/9] w-full mx-auto'
-                  )}
-                >
+              {minimal ? (
+                <div className={imageFrameClass}>
                   <Image
                     src={imageUrl}
                     alt={announcement.title || 'Announcement image'}
                     fill
-                    className="object-cover object-center"
+                    className={cn(
+                      'object-cover',
+                      posterPortrait ? 'object-top' : 'object-center'
+                    )}
                     sizes="(max-width: 768px) 100vw, min(85vw, 960px)"
                     priority={false}
                   />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/15" />
-                  <div className="pointer-events-none absolute top-3 left-3 h-9 w-9 border-l-2 border-t-2 border-white/40 rounded-tl-md" />
-                  <div className="pointer-events-none absolute bottom-3 right-3 h-9 w-9 border-r-2 border-b-2 border-white/40 rounded-br-md" />
                 </div>
-              </div>
+              ) : (
+                <div className="rounded-2xl p-[1px] bg-gradient-to-br from-white/50 via-white/15 to-emerald-400/25 ring-1 ring-white/15">
+                  <div className={imageFrameClass}>
+                    <Image
+                      src={imageUrl}
+                      alt={announcement.title || 'Announcement image'}
+                      fill
+                      className={cn(
+                        'object-cover',
+                        posterPortrait ? 'object-top' : 'object-center'
+                      )}
+                      sizes="(max-width: 768px) 100vw, min(85vw, 960px)"
+                      priority={false}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
           

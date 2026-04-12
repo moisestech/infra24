@@ -3,7 +3,7 @@ import { ImageResponse } from 'next/og';
 export const runtime = 'edge';
 
 export const alt =
-  'Center of Digital Culture — Miami platform for artists, public learning, and digital culture infrastructure';
+  'DCC.miami — Digital Culture Center Miami: artist-centered digital culture, public programs, and civic-facing creative technology';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -33,7 +33,7 @@ export default function OpenGraphImage() {
             color: '#525252',
           }}
         >
-          Center of Digital Culture
+          DCC.miami
         </p>
         <p
           style={{

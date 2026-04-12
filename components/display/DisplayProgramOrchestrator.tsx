@@ -7,6 +7,10 @@ import {
   filterAnnouncementsByRecentWindow,
   filterCinematicAnnouncements,
 } from '@/lib/display/display-program';
+import {
+  filterAnnouncementsByDisplayCalendarMonth,
+  isValidDisplayCalendarMonthKey,
+} from '@/lib/display/announcement-month';
 import { AnnouncementCarousel } from '@/components/carousel/AnnouncementCarousel';
 import { FullScreenAnnouncement } from '@/components/display/FullScreenAnnouncement';
 import {
@@ -17,6 +21,7 @@ import {
   type WorkshopGridItem,
   type ArtistGridItem,
 } from '@/components/display/DisplayGrid';
+import { mergeWorkshopGridItems } from '@/lib/display/workshop-announcements-merge';
 
 function isStudioResidentArtist(a: ArtistGridItem): boolean {
   const st = String(a.studio_type || '').toLowerCase();
@@ -97,6 +102,10 @@ export function DisplayProgramOrchestrator({
 
   const carouselList = useCallback(
     (seg: DisplaySegment) => {
+      const month = seg.params?.displayCalendarMonth?.trim() ?? '';
+      if (month && isValidDisplayCalendarMonthKey(month)) {
+        return filterAnnouncementsByDisplayCalendarMonth(allAnnouncements, month);
+      }
       const days = seg.params?.useRecentWindowDays ?? 30;
       return filterAnnouncementsByRecentWindow(allAnnouncements, days);
     },
@@ -105,19 +114,28 @@ export function DisplayProgramOrchestrator({
 
   const cinematicList = useCallback(
     (seg: DisplaySegment) => {
-      const list = filterCinematicAnnouncements(allAnnouncements);
+      let list = filterCinematicAnnouncements(allAnnouncements);
+      const month = seg.params?.displayCalendarMonth?.trim() ?? '';
+      if (month && isValidDisplayCalendarMonthKey(month)) {
+        list = filterAnnouncementsByDisplayCalendarMonth(list, month);
+      }
       const max = seg.params?.maxItems ?? 12;
       return list.slice(0, max);
     },
     [allAnnouncements]
   );
 
+  const mergedWorkshops = useMemo(
+    () => mergeWorkshopGridItems(allAnnouncements, workshops),
+    [allAnnouncements, workshops]
+  );
+
   const workshopItems = useCallback(
     (seg: DisplaySegment) => {
-      const max = seg.params?.maxItems ?? 12;
-      return workshops.slice(0, max);
+      const max = seg.params?.maxItems ?? 200;
+      return mergedWorkshops.slice(0, max);
     },
-    [workshops]
+    [mergedWorkshops]
   );
 
   const artistItems = useCallback(
@@ -158,7 +176,12 @@ export function DisplayProgramOrchestrator({
         );
       }
       case 'announcement_fullscreen': {
-        const ann = resolveFullscreenAnnouncement(allAnnouncements, segment);
+        const month = segment.params?.displayCalendarMonth?.trim() ?? '';
+        const pool =
+          month && isValidDisplayCalendarMonthKey(month)
+            ? filterAnnouncementsByDisplayCalendarMonth(allAnnouncements, month)
+            : allAnnouncements;
+        const ann = resolveFullscreenAnnouncement(pool, segment);
         if (!ann) {
           return (
             <div className="flex h-screen w-full items-center justify-center bg-gray-950 text-white">
@@ -186,7 +209,7 @@ export function DisplayProgramOrchestrator({
           );
         }
         return (
-          <DisplayGrid title="Workshops" columns={cols}>
+          <DisplayGrid title="Workshops" surfaceMode="light" columns={cols}>
             {items.map((w) => (
               <WorkshopGridCard key={w.id} item={w} />
             ))}
@@ -204,7 +227,7 @@ export function DisplayProgramOrchestrator({
           );
         }
         return (
-          <DisplayGrid title="Artists" columns={cols}>
+          <DisplayGrid title="Artists" subtitle="Studio residents" surfaceMode="light" columns={cols}>
             {items.map((a) => (
               <ArtistGridCard key={a.id} item={a} />
             ))}
@@ -222,7 +245,7 @@ export function DisplayProgramOrchestrator({
           );
         }
         return (
-          <DisplayGrid title="Cinematic" columns={cols}>
+          <DisplayGrid title="Cinematic" hideHeading surfaceMode="light" columns={cols}>
             {list.map((a) => (
               <CinematicGridCard key={a.id} announcement={a} />
             ))}
@@ -247,5 +270,9 @@ export function DisplayProgramOrchestrator({
     artistItems,
   ]);
 
-  return <div className="relative h-screen w-full max-w-full overflow-hidden">{body}</div>;
+  return (
+    <div className="relative min-h-screen min-h-[100dvh] w-full max-w-full overflow-x-hidden overflow-y-auto">
+      {body}
+    </div>
+  );
 }

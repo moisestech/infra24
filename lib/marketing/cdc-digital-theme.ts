@@ -1,5 +1,5 @@
 /**
- * CDC marketing “digital / Miami webcore” accents.
+ * DCC marketing “digital / Miami webcore” accents.
  * Mirrors CSS variables in app/(marketing)/cdc-marketing-theme.css — keep in sync.
  */
 export const cdcDigitalTheme = {

@@ -36,7 +36,8 @@
     "seed:oolite-adult-classes": "node scripts/data/seed/seed-oolite-workshops-catalog.js && node scripts/data/seed/upsert-oolite-adult-art-classes-spring-2026.js",
     "seed:oolite-adult-classes-announcements": "node scripts/data/seed/upsert-oolite-adult-art-classes-spring-2026.js",
     "seed:oolite-artists": "node scripts/populate-oolite-artists.js",
-    "seed:oolite-announcements-2026": "node scripts/data/seed/update-oolite-announcements-2026.js"
+    "seed:oolite-announcements-2026": "node scripts/data/seed/update-oolite-announcements-2026.js",
+    "audit:announcements-display-month": "npx tsx scripts/tools/audit-announcements-display-month.ts"
   },
   "dependencies": {
     "@azure/msal-node": "^3.8.0",
@@ -157,5 +158,6 @@
   "bugs": {
     "url": "https://github.com/your-org/infra24/issues"
   },
-  "homepage": "https://github.com/your-org/infra24#readme"
+  "homepage": "https://github.com/your-org/infra24#readme",
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }

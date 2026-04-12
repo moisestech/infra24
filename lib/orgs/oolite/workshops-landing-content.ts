@@ -56,11 +56,11 @@ const OOLITE: WorkshopsLandingContent = {
   heroLead:
     'Digital Lab Workshops are designed for artists, teaching artists, and cultural organizations navigating digital practice in real time. The series focuses on websites, discoverability, documentation, AI literacy, creative coding, and sustainable workflows — with an emphasis on clarity, experimentation, and long-term usefulness.',
   heroPrimaryCta: {
-    label: 'Explore workshops',
+    label: 'Explore Workshops',
     href: '#workshops-catalog',
   },
   heroSecondaryCta: {
-    label: 'Book a workshop',
+    label: 'Book a Workshop',
     href: 'mailto:info@oolitearts.org?subject=Workshop%20inquiry%20%E2%80%94%20Oolite%20Arts%20Digital%20Lab',
   },
   trustLine: 'Designed for artists, educators, and cultural organizations.',
@@ -72,10 +72,10 @@ const OOLITE: WorkshopsLandingContent = {
   framingSection: {
     title: 'A growing workshop system for contemporary artistic practice',
     body:
-      'These workshops are designed to meet artists where digital practice actually happens: across websites, writing, search visibility, documentation, browser-based publishing, AI-assisted workflows, and creative experimentation. The series is beginner-friendly overall, while leaving room for more advanced and experimental approaches as demand grows. Each workshop can function as a standalone learning experience or as part of a larger educational pathway.',
+      'These workshops are designed to meet artists where digital practice actually happens: across websites, writing, search visibility, documentation, browser-based publishing, AI-assisted workflows, and creative experimentation.\n\nThe series is beginner-friendly overall, while leaving room for more advanced and experimental approaches as demand grows. Each workshop can function as a standalone learning experience or as part of a larger educational pathway.',
   },
   featuredSection: {
-    title: 'Featured workshops',
+    title: 'Featured Workshops',
     subcopy:
       'Start with the core workshops in the Digital Lab series — designed for immediate relevance, strong public value, and future growth into packets, toolkits, and learning pathways.',
   },
@@ -113,20 +113,24 @@ const OOLITE: WorkshopsLandingContent = {
   },
   institutionCtas: [
     {
-      label: 'Book for your organization',
+      label: 'Book for Your Organization',
       href: 'mailto:info@oolitearts.org?subject=Institutional%20workshop%20%E2%80%94%20Oolite%20Arts',
     },
     {
-      label: 'Discuss institutional programming',
+      label: 'Discuss Institutional Programming',
       href: 'mailto:info@oolitearts.org?subject=Institutional%20programming%20%E2%80%94%20Digital%20Lab',
+    },
+    {
+      label: 'Bring This Workshop to Your Space',
+      href: 'mailto:info@oolitearts.org?subject=Bring%20a%20Digital%20Lab%20workshop%20to%20our%20space',
     },
   ],
   proofLine:
     'Oolite Arts has hosted digital lab programming and professional development for artists across Miami—this catalog grows from that work.',
   comingSoonSection: {
-    title: 'Coming soon',
+    title: 'Coming Soon',
     subcopy:
-      'The Digital Lab Workshops catalog is expanding into a larger system, including advanced creative coding, publishing workflows, digital archiving, and artist-centered AI practice.',
+      'The Digital Lab Workshops catalog is expanding into a larger 24-workshop system, including advanced creative coding, publishing workflows, digital archiving, and artist-centered AI practice.',
   },
   footerCtaSection: {
     title: 'Looking for a workshop for your cohort, residency, or organization?',
@@ -134,12 +138,16 @@ const OOLITE: WorkshopsLandingContent = {
       'We can adapt workshops for different group sizes, technical levels, and institutional contexts — from artist-centered public programs to more focused professional development sessions.',
     ctas: [
       {
-        label: 'Get in touch',
+        label: 'Get in Touch',
         href: 'mailto:info@oolitearts.org?subject=Workshop%20%E2%80%94%20Get%20in%20touch',
       },
       {
-        label: 'Request a workshop',
+        label: 'Request a Workshop',
         href: 'mailto:info@oolitearts.org?subject=Request%20a%20workshop',
+      },
+      {
+        label: 'Discuss a Program',
+        href: 'mailto:info@oolitearts.org?subject=Discuss%20a%20Digital%20Lab%20program',
       },
     ],
   },

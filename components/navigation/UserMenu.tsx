@@ -6,6 +6,7 @@ import { useUser, SignOutButton } from '@clerk/nextjs'
 import { ChevronDown, User, Settings, LogOut, Sun, Moon } from 'lucide-react'
 import { ThemeColors } from './types'
 import { useTheme } from '@/contexts/ThemeContext'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 interface UserMenuProps {
   colors: ThemeColors
@@ -35,6 +36,9 @@ export function UserMenu({ colors, className = '' }: UserMenuProps) {
   if (!isLoaded || !user) {
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
+        <span className="text-gray-700 dark:text-gray-200 [&_button]:text-current">
+          <ThemeToggle />
+        </span>
         <Link
           href="/sign-in"
           className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"

@@ -7,6 +7,9 @@
 
 import type { OrganizationBudgetConfig } from '@/lib/budget/budget-data'
 
+import type { AirtableRecord } from '@/lib/airtable/client'
+import { fetchAllRecords, patchAirtableRecord } from '@/lib/airtable/client'
+
 export type OoliteBudgetType = 'digital-lab' | 'summit'
 
 // Field mapping - matches "Budget Line Items-All Items.csv" / Airtable import
@@ -37,17 +40,6 @@ const FIELD_MAP = {
 const AIRTABLE_DIGITAL_LAB = process.env.AIRTABLE_VALUE_DIGITAL_LAB || 'Digital Lab'
 const AIRTABLE_DIGITAL_CONFERENCE = process.env.AIRTABLE_VALUE_DIGITAL_CONFERENCE || 'Digital Conference'
 
-interface AirtableRecord {
-  id: string
-  createdTime?: string
-  fields: Record<string, unknown>
-}
-
-interface AirtableResponse {
-  records: AirtableRecord[]
-  offset?: string
-}
-
 function parseAirtableDate(value: unknown): string | undefined {
   if (value == null) return undefined
   if (typeof value === 'string') {
@@ -72,70 +64,6 @@ function parseAmount(value: unknown): number {
     return Number.isNaN(parsed) ? 0 : parsed
   }
   return 0
-}
-
-/**
- * Fetch all records from an Airtable table with pagination
- */
-async function fetchAllRecords(
-  baseId: string,
-  tableId: string,
-  apiKey: string,
-  filterFormula?: string
-): Promise<AirtableRecord[]> {
-  const allRecords: AirtableRecord[] = []
-  let offset: string | undefined
-
-  do {
-    const url = new URL(`https://api.airtable.com/v0/${baseId}/${tableId}`)
-    if (filterFormula) url.searchParams.set('filterByFormula', filterFormula)
-    if (offset) url.searchParams.set('offset', offset)
-
-    const res = await fetch(url.toString(), {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (!res.ok) {
-      const text = await res.text()
-      throw new Error(`Airtable API error ${res.status}: ${text}`)
-    }
-
-    const data: AirtableResponse = await res.json()
-    allRecords.push(...data.records)
-    offset = data.offset
-  } while (offset)
-
-  return allRecords
-}
-
-/**
- * Update a single Airtable record (PATCH)
- */
-async function updateRecord(
-  baseId: string,
-  tableId: string,
-  apiKey: string,
-  recordId: string,
-  fields: Record<string, unknown>
-): Promise<AirtableRecord> {
-  const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableId}/${recordId}`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ fields })
-  })
-
-  if (!res.ok) {
-    const text = await res.text()
-    throw new Error(`Airtable PATCH error ${res.status}: ${text}`)
-  }
-
-  return res.json()
 }
 
 /**
@@ -323,7 +251,7 @@ export async function syncPurposeToAirtable(): Promise<{ updated: number; errors
       if (currentPurpose === purpose) continue
 
       try {
-        await updateRecord(baseId, budgetTableId, apiKey, record.id, {
+        await patchAirtableRecord(baseId, budgetTableId, apiKey, record.id, {
           [FIELD_MAP.purpose]: purpose
         })
         updated++

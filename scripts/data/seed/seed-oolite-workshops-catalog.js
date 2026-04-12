@@ -135,6 +135,15 @@ async function main() {
     metadata.slug = metadata.slug || entry.slug
     metadata.announcement_title =
       metadata.announcement_title || entry.title
+    const displaySchedule =
+      typeof entry.schedule === 'string' ? entry.schedule.trim() : ''
+    if (displaySchedule) metadata.displaySchedule = displaySchedule
+    if (typeof entry.start_date === 'string' && entry.start_date.trim()) {
+      metadata.sessionStartDate = entry.start_date.trim()
+    }
+    if (typeof entry.end_date === 'string' && entry.end_date.trim()) {
+      metadata.sessionEndDate = entry.end_date.trim()
+    }
     if (!metadata.slug) {
       throw new Error(`Workshop missing metadata.slug: ${entry.title}`)
     }

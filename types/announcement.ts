@@ -87,6 +87,8 @@ export interface Announcement {
   visibility?: 'internal' | 'external' | 'both';
   starts_at?: string;
   ends_at?: string;
+  start_date?: string;
+  end_date?: string;
   payload?: any;
   slug?: string;
   type?: AnnouncementType;
@@ -107,6 +109,8 @@ export interface Announcement {
   rsvp_url?: string;
   event_state?: 'scheduled' | 'postponed' | 'canceled';
   image_layout?: ImageLayoutType;
+  /** JSON from DB; e.g. smart-sign film posters use `{ image_only: true }` */
+  metadata?: { image_only?: boolean; [key: string]: unknown };
 }
 
 export interface AnnouncementAudienceMemberType {

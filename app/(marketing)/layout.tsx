@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SiteHeader } from '@/components/marketing/SiteHeader';
 import { SiteFooter } from '@/components/marketing/SiteFooter';
 import { MarketingJsonLd } from '@/components/marketing/MarketingJsonLd';
-import { cdcSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
+import { dccSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
 import { getSiteUrl } from '@/lib/marketing/site-url';
 import './cdc-marketing-theme.css';
 
@@ -12,12 +12,13 @@ const metadataBase = new URL(siteUrl);
 export const metadata: Metadata = {
   metadataBase,
   title: {
-    default: cdcSiteMeta.organizationName,
-    template: `%s | ${cdcSiteMeta.organizationName}`,
+    default: dccSiteMeta.organizationName,
+    template: `%s | ${dccSiteMeta.organizationName}`,
   },
   description: marketingHomeMeta.description,
   keywords: [
-    'Center of Digital Culture',
+    'Digital Culture Center Miami',
+    'DCC.miami',
     'Miami',
     'digital culture',
     'artist support',
@@ -33,14 +34,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     url: '/',
-    siteName: cdcSiteMeta.organizationName,
+    siteName: dccSiteMeta.organizationName,
     locale: 'en_US',
-    title: cdcSiteMeta.organizationName,
+    title: dccSiteMeta.organizationName,
     description: marketingHomeMeta.description,
   },
   twitter: {
     card: 'summary_large_image',
-    title: cdcSiteMeta.organizationName,
+    title: dccSiteMeta.organizationName,
     description: marketingHomeMeta.description,
   },
 };

@@ -1,15 +1,18 @@
 'use client'
 
-import { useState, useEffect, useMemo, useLayoutEffect, useRef } from 'react'
+import { useState, useEffect, useMemo, useLayoutEffect, useRef, type CSSProperties } from 'react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Bell, Plus, Calendar, User, Tag, Eye, EyeOff, Shield, Play, MapPin, Users, Building2, ExternalLink, Clock, Info, FileCheck, Copy, LayoutGrid, List } from 'lucide-react'
+import { Bell, Plus, Calendar, User, Tag, Eye, EyeOff, Shield, Play, MapPin, Users, Building2, ExternalLink, Clock, Info, FileCheck, Copy, LayoutGrid, List, ChevronDown } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { AnnouncementIdDisplay } from '@/components/admin/AnnouncementIdDisplay'
 import { BackgroundPattern } from '@/components/BackgroundPattern'
-import { AnnouncementType, AnnouncementSubType } from '@/types/announcement'
+import { AnnouncementType, AnnouncementSubType, type Announcement as AnnouncementSchema } from '@/types/announcement'
 import { PageFooter } from '@/components/common/PageFooter'
 import { useTenant } from '@/components/tenant/TenantProvider'
+import { useOrganizationTheme } from '@/components/carousel/OrganizationThemeContext'
+import { resolveOrgPrimary, orgChromeFromPrimary } from '@/lib/org/org-chrome'
+import { announcementDisplayMonthKey } from '@/lib/display/announcement-month'
 
 interface Announcement {
   id: string
@@ -38,14 +41,51 @@ interface Announcement {
   tags?: string[] | null
 }
 
+/**
+ * Prefer start anchors so the calendar column matches “when it starts” (end-only first hid April 9 workshops behind a wrong April 8 end).
+ */
 function announcementDateRawForDisplay(a: Announcement): string {
   return (
-    (a.end_date ||
-      a.start_date ||
+    (a.start_date ||
       a.starts_at ||
+      a.end_date ||
+      a.ends_at ||
       a.scheduled_at ||
       a.created_at) as string
   )
+}
+
+/** End of local calendar day for a date string (YYYY-MM-DD or ISO). */
+function parseToEndOfLocalDayMs(raw: string | null | undefined): number | null {
+  if (raw == null || String(raw).trim() === '') return null
+  const s = String(raw).trim()
+  const ymd = /^(\d{4})-(\d{2})-(\d{2})/.exec(s)
+  if (ymd) {
+    const d = new Date(Number(ymd[1]), Number(ymd[2]) - 1, Number(ymd[3]), 23, 59, 59, 999)
+    return Number.isNaN(d.getTime()) ? null : d.getTime()
+  }
+  const d = new Date(s)
+  if (Number.isNaN(d.getTime())) return null
+  const copy = new Date(d)
+  copy.setHours(23, 59, 59, 999)
+  return copy.getTime()
+}
+
+/** Latest event day among all anchors — not expired until that local day ends. */
+function announcementLatestEventDayEndMs(a: Announcement): number | null {
+  const ends: number[] = []
+  for (const raw of [a.starts_at, a.start_date, a.ends_at, a.end_date, a.scheduled_at]) {
+    const t = parseToEndOfLocalDayMs(raw as string | null | undefined)
+    if (t != null) ends.push(t)
+  }
+  if (ends.length === 0) return null
+  return Math.max(...ends)
+}
+
+function announcementEventIsCurrent(a: Announcement): boolean {
+  const last = announcementLatestEventDayEndMs(a)
+  if (last == null) return true
+  return last >= Date.now()
 }
 
 function isFilmPosterStylePromotion(a: Announcement): boolean {
@@ -68,6 +108,65 @@ function matchesEventsExhibitionsPreset(
   return t === 'event' || st === 'exhibition'
 }
 
+function announcementHasTag(a: Announcement, needle: string): boolean {
+  const tags = a.tags
+  if (!Array.isArray(tags)) return false
+  const n = needle.toLowerCase()
+  return tags.some((x) => String(x).toLowerCase() === n)
+}
+
+function matchesWorkshopsPreset(a: Announcement): boolean {
+  const st = String(a.sub_type || '').toLowerCase()
+  if (st === 'workshop') return true
+  return announcementHasTag(a, 'workshop')
+}
+
+function matchesCinematicPreset(a: Announcement): boolean {
+  const t = String(a.type || '').toLowerCase()
+  if (t === 'cinematic') return true
+  if (isFilmPosterStylePromotion(a)) return true
+  if (t === 'news' && announcementHasTag(a, 'cinematic')) return true
+  return false
+}
+
+function announcementTagContains(a: Announcement, needle: string): boolean {
+  const tags = a.tags
+  if (!Array.isArray(tags)) return false
+  const n = needle.toLowerCase()
+  return tags.some((x) => String(x).toLowerCase().includes(n))
+}
+
+/** Artist-facing comms: attention to artists, open studios, residency, member spotlights, etc. */
+function matchesArtistsPreset(a: Announcement): boolean {
+  const t = String(a.type || '').toLowerCase()
+  if (t === 'attention_artists') return true
+  const st = String(a.sub_type || '').toLowerCase()
+  if (st === 'open_studios' || st === 'residency') return true
+  if (
+    announcementHasTag(a, 'artists') ||
+    announcementHasTag(a, 'artist') ||
+    announcementHasTag(a, 'open-studios') ||
+    announcementHasTag(a, 'open_studios') ||
+    announcementHasTag(a, 'residency') ||
+    announcementHasTag(a, 'studio-resident') ||
+    announcementHasTag(a, 'members')
+  ) {
+    return true
+  }
+  if (announcementTagContains(a, 'open studio')) return true
+  if (announcementTagContains(a, 'open-studio')) return true
+  return false
+}
+
+/** Badge + display: film posters may still be stored as `promotion` until DB allows `cinematic`. */
+function effectiveTypeForBadge(a: Announcement): string {
+  const t = String(a.type || '').toLowerCase()
+  if (t === 'cinematic' || isFilmPosterStylePromotion(a)) return 'cinematic'
+  return t || 'general'
+}
+
+type AnnouncementCategoryPreset = 'events_exhibitions' | 'workshops' | 'cinematic' | 'artists'
+
 interface Organization {
   id: string
   name: string
@@ -80,7 +179,22 @@ export default function OrganizationAnnouncementsPage() {
   const pathname = usePathname()
   const router = useRouter()
   const { tenantConfig } = useTenant()
+  const { theme: orgTheme } = useOrganizationTheme()
   const skipFirstUrlReplace = useRef(true)
+
+  const orgPrimary = useMemo(
+    () => resolveOrgPrimary(tenantConfig?.theme?.primaryColor, orgTheme?.colors?.primary),
+    [tenantConfig?.theme?.primaryColor, orgTheme?.colors?.primary]
+  )
+  const chrome = useMemo(() => orgChromeFromPrimary(orgPrimary), [orgPrimary])
+
+  const pillOnChrome: CSSProperties = {
+    backgroundColor: chrome.softSurface,
+    color: chrome.text,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: chrome.softBorder,
+  }
 
   // Debug tenant config
   console.log('🎨 Announcements Page - Tenant Config:', tenantConfig)
@@ -94,7 +208,7 @@ export default function OrganizationAnnouncementsPage() {
   /** Previously the list hid everything without an image — that dropped many real rows */
   const [imagesOnly, setImagesOnly] = useState(false)
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards')
-  const [categoryPreset, setCategoryPreset] = useState<null | 'events_exhibitions'>(null)
+  const [categoryPreset, setCategoryPreset] = useState<null | AnnouncementCategoryPreset>(null)
   const [includePosterPromotions, setIncludePosterPromotions] = useState(false)
   const [userRole, setUserRole] = useState<string>('')
   const [editingEndDate, setEditingEndDate] = useState<string | null>(null)
@@ -217,25 +331,10 @@ export default function OrganizationAnnouncementsPage() {
     router.replace(next, { scroll: false })
   }, [monthFilter, viewMode, pathname, router])
 
-  function announcementMonthKey(a: Announcement): string | null {
-    const raw =
-      a.end_date ||
-      a.start_date ||
-      a.starts_at ||
-      a.scheduled_at ||
-      a.created_at
-    if (!raw) return null
-    const d = new Date(raw)
-    if (Number.isNaN(d.getTime())) return null
-    const y = d.getFullYear()
-    const m = d.getMonth() + 1
-    return `${y}-${String(m).padStart(2, '0')}`
-  }
-
   const monthOptions = useMemo(() => {
     const keys = new Set<string>()
     for (const a of announcements) {
-      const k = announcementMonthKey(a)
+      const k = announcementDisplayMonthKey(a as unknown as AnnouncementSchema)
       if (k) keys.add(k)
     }
     return Array.from(keys).sort((a, b) => b.localeCompare(a))
@@ -247,7 +346,7 @@ export default function OrganizationAnnouncementsPage() {
       return false
     }
     if (monthFilter) {
-      const k = announcementMonthKey(announcement)
+      const k = announcementDisplayMonthKey(announcement as unknown as AnnouncementSchema)
       if (k !== monthFilter) return false
     }
     if (categoryPreset === 'events_exhibitions') {
@@ -255,15 +354,22 @@ export default function OrganizationAnnouncementsPage() {
         return false
       }
     }
+    if (categoryPreset === 'workshops') {
+      if (!matchesWorkshopsPreset(announcement)) return false
+    }
+    if (categoryPreset === 'cinematic') {
+      if (!matchesCinematicPreset(announcement)) return false
+    }
+    if (categoryPreset === 'artists') {
+      if (!matchesArtistsPreset(announcement)) return false
+    }
 
     if (filter === 'all') return true
     if (filter === 'current') {
-      const hasEndDate = announcement.end_date
-      return hasEndDate ? new Date(announcement.end_date!) > new Date() : true
+      return announcementEventIsCurrent(announcement)
     }
     if (filter === 'expired') {
-      const hasEndDate = announcement.end_date
-      return hasEndDate ? new Date(announcement.end_date!) <= new Date() : false
+      return !announcementEventIsCurrent(announcement)
     }
     if (filter === 'active') return announcement.is_active
     if (filter === 'inactive') return !announcement.is_active
@@ -417,15 +523,15 @@ export default function OrganizationAnnouncementsPage() {
   }
 
   const getStatusColor = (isActive: boolean) => {
-    return isActive 
-      ? 'text-white'
+    return isActive
+      ? ''
       : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
   }
 
   const getVisibilityColor = (visibility: string) => {
     switch (visibility) {
       case 'public':
-        return 'text-white'
+        return ''
       case 'internal':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
       case 'members_only':
@@ -439,7 +545,9 @@ export default function OrganizationAnnouncementsPage() {
   const getAnnouncementType = (announcement: Announcement): AnnouncementType => {
     const title = announcement.title.toLowerCase()
     const type = announcement.type?.toLowerCase()
-    
+
+    if (type === 'cinematic' || isFilmPosterStylePromotion(announcement)) return 'cinematic'
+
     if (title.includes('urgent') || announcement.priority === 'high') return 'urgent'
     if (title.includes('event') || type === 'event') return 'event'
     if (title.includes('facility') || type === 'facility') return 'facility'
@@ -544,35 +652,80 @@ export default function OrganizationAnnouncementsPage() {
                 Manage and view all announcements for this organization
               </p>
             </div>
-            <div className="flex space-x-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Link
                 href={`/o/${slug}/announcements/display`}
-                className="text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                className="px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                 style={{
-                  background: `linear-gradient(135deg, ${tenantConfig?.theme?.primaryColor || '#47abc4'}, ${tenantConfig?.theme?.primaryColor || '#3a8ba3'})`
+                  background: chrome.gradient135,
+                  color: chrome.onSolid,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = `linear-gradient(135deg, ${tenantConfig?.theme?.primaryColor || '#3a8ba3'}, ${tenantConfig?.theme?.primaryColor || '#47abc4'})`
+                  e.currentTarget.style.background = chrome.gradient135Hover
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = `linear-gradient(135deg, ${tenantConfig?.theme?.primaryColor || '#47abc4'}, ${tenantConfig?.theme?.primaryColor || '#3a8ba3'})`
+                  e.currentTarget.style.background = chrome.gradient135
                 }}
               >
                 <Eye className="h-4 w-4" />
                 <span>Display Mode</span>
               </Link>
+
+              <details className="relative group">
+                <summary className="list-none cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 [&::-webkit-details-marker]:hidden">
+                  <LayoutGrid className="h-4 w-4 shrink-0" />
+                  <span>Preview segment</span>
+                  <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
+                </summary>
+                <div className="absolute right-0 z-50 mt-1 w-56 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-600 dark:bg-gray-800">
+                  <div className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    Smart sign
+                  </div>
+                  <Link
+                    href={`/o/${slug}/announcements/display?view=announcement_carousel`}
+                    className="block px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Carousel
+                  </Link>
+                  <Link
+                    href={`/o/${slug}/announcements/display?view=announcement_fullscreen`}
+                    className="block px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Fullscreen (first item)
+                  </Link>
+                  <Link
+                    href={`/o/${slug}/announcements/display?view=grid_workshops`}
+                    className="block px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Workshops grid
+                  </Link>
+                  <Link
+                    href={`/o/${slug}/announcements/display?view=grid_artists`}
+                    className="block px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Artists grid
+                  </Link>
+                  <Link
+                    href={`/o/${slug}/announcements/display?view=grid_cinematic`}
+                    className="block px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Cinematic grid
+                  </Link>
+                </div>
+              </details>
               
               <Link
                 href={`/o/${slug}/announcements/create`}
-                className="text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                className="px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
                 style={{
-                  backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4'
+                  backgroundColor: chrome.solid,
+                  color: chrome.onSolid,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryColor || '#3a8ba3'
+                  e.currentTarget.style.backgroundColor = chrome.solidHover
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = tenantConfig?.theme?.primaryColor || '#47abc4'
+                  e.currentTarget.style.backgroundColor = chrome.solid
                 }}
               >
                 <Plus className="h-4 w-4" />
@@ -640,7 +793,9 @@ export default function OrganizationAnnouncementsPage() {
                     month: 'long',
                     year: 'numeric',
                   })
-                  const count = announcements.filter((a) => announcementMonthKey(a) === key).length
+                  const count = announcements.filter(
+                    (a) => announcementDisplayMonthKey(a as unknown as AnnouncementSchema) === key
+                  ).length
                   return (
                     <option key={key} value={key}>
                       {label} ({count})
@@ -724,7 +879,7 @@ export default function OrganizationAnnouncementsPage() {
               }`}
               style={
                 monthFilter === '2026-04'
-                  ? { backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4' }
+                  ? { backgroundColor: chrome.solid, color: chrome.onSolid }
                   : undefined
               }
             >
@@ -742,11 +897,63 @@ export default function OrganizationAnnouncementsPage() {
               }`}
               style={
                 categoryPreset === 'events_exhibitions'
-                  ? { backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4' }
+                  ? { backgroundColor: chrome.solid, color: chrome.onSolid }
                   : undefined
               }
             >
               Events & exhibitions
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setCategoryPreset((p) => (p === 'workshops' ? null : 'workshops'))
+              }
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                categoryPreset === 'workshops'
+                  ? 'border-transparent text-white'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+              style={
+                categoryPreset === 'workshops'
+                  ? { backgroundColor: chrome.solid, color: chrome.onSolid }
+                  : undefined
+              }
+            >
+              Workshops
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setCategoryPreset((p) => (p === 'cinematic' ? null : 'cinematic'))
+              }
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                categoryPreset === 'cinematic'
+                  ? 'border-transparent text-white'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+              style={
+                categoryPreset === 'cinematic'
+                  ? { backgroundColor: chrome.solid, color: chrome.onSolid }
+                  : undefined
+              }
+            >
+              Cinematic
+            </button>
+            <button
+              type="button"
+              onClick={() => setCategoryPreset((p) => (p === 'artists' ? null : 'artists'))}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                categoryPreset === 'artists'
+                  ? 'border-transparent text-white'
+                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+              style={
+                categoryPreset === 'artists'
+                  ? { backgroundColor: chrome.solid, color: chrome.onSolid }
+                  : undefined
+              }
+            >
+              Artists
             </button>
             {categoryPreset === 'events_exhibitions' && (
               <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer ml-1">
@@ -763,14 +970,8 @@ export default function OrganizationAnnouncementsPage() {
           <div className="flex flex-wrap gap-2">
             {[
               { key: 'all', label: 'All', count: announcements.length },
-              { key: 'current', label: 'Current', count: announcements.filter(a => {
-                const hasEndDate = a.end_date
-                return hasEndDate ? new Date(a.end_date!) > new Date() : true
-              }).length },
-              { key: 'expired', label: 'Expired', count: announcements.filter(a => {
-                const hasEndDate = a.end_date
-                return hasEndDate ? new Date(a.end_date!) <= new Date() : false
-              }).length },
+              { key: 'current', label: 'Current', count: announcements.filter((a) => announcementEventIsCurrent(a)).length },
+              { key: 'expired', label: 'Expired', count: announcements.filter((a) => !announcementEventIsCurrent(a)).length },
               { key: 'active', label: 'Active', count: announcements.filter(a => a.is_active).length },
               { key: 'inactive', label: 'Inactive', count: announcements.filter(a => !a.is_active).length },
               { key: 'public', label: 'Public', count: announcements.filter(a => a.visibility === 'public').length },
@@ -785,19 +986,21 @@ export default function OrganizationAnnouncementsPage() {
                     ? 'text-white'
                     : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
-                style={filter === key ? {
-                  backgroundColor: `${tenantConfig?.theme?.primaryColor || '#47abc4'} !important`
-                } : {}}
+                style={
+                  filter === key
+                    ? { backgroundColor: chrome.solid, color: chrome.onSolid }
+                    : undefined
+                }
                 onMouseEnter={(e) => {
                   if (filter !== key) {
-                    e.currentTarget.style.setProperty('backgroundColor', tenantConfig?.theme?.primaryColor ? `${tenantConfig.theme.primaryColor}20` : 'rgba(71, 171, 196, 0.1)', 'important');
-                    e.currentTarget.style.setProperty('color', tenantConfig?.theme?.primaryColor || '#47abc4', 'important');
+                    e.currentTarget.style.backgroundColor = chrome.softSurface
+                    e.currentTarget.style.color = chrome.text
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (filter !== key) {
-                    e.currentTarget.style.removeProperty('backgroundColor');
-                    e.currentTarget.style.removeProperty('color');
+                    e.currentTarget.style.backgroundColor = ''
+                    e.currentTarget.style.color = ''
                   }
                 }}
               >
@@ -824,7 +1027,17 @@ export default function OrganizationAnnouncementsPage() {
               </p>
               <Link
                 href={`/o/${slug}/announcements/create`}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition-colors"
+                className="px-4 py-2 rounded-lg inline-flex items-center space-x-2 transition-colors"
+                style={{
+                  backgroundColor: chrome.solid,
+                  color: chrome.onSolid,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = chrome.solidHover
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = chrome.solid
+                }}
               >
                 <Plus className="h-4 w-4" />
                 <span>Create First Announcement</span>
@@ -856,8 +1069,13 @@ export default function OrganizationAnnouncementsPage() {
                         <div className="h-12 w-12 shrink-0 rounded-md border border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/40" />
                       )}
                       <div className="min-w-0">
-                        <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Date</div>
-                        <div className="text-sm font-semibold text-gray-900 dark:text-white tabular-nums">
+                        <div className="text-xs font-medium" style={{ color: chrome.textMuted }}>
+                          Date
+                        </div>
+                        <div
+                          className="text-sm font-semibold tabular-nums"
+                          style={{ color: chrome.text }}
+                        >
                           {formatDate(sortRaw)}
                         </div>
                       </div>
@@ -870,7 +1088,7 @@ export default function OrganizationAnnouncementsPage() {
                         {announcement.title}
                       </Link>
                       <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                        {getTypeBadge(announcement.type)}
+                        {getTypeBadge(effectiveTypeForBadge(announcement))}
                         {announcement.sub_type && String(announcement.sub_type).trim() !== '' && (
                           <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200 capitalize">
                             {String(announcement.sub_type).replace(/_/g, ' ')}
@@ -880,20 +1098,14 @@ export default function OrganizationAnnouncementsPage() {
                           <>
                             <span
                               className={`px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(announcement.is_active)}`}
-                              style={
-                                announcement.is_active
-                                  ? { backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4' }
-                                  : undefined
-                              }
+                              style={announcement.is_active ? pillOnChrome : undefined}
                             >
                               {announcement.is_active ? 'Active' : 'Inactive'}
                             </span>
                             <span
                               className={`px-2 py-0.5 text-xs font-medium rounded-full ${getVisibilityColor(announcement.visibility)}`}
                               style={
-                                announcement.visibility === 'public'
-                                  ? { backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4' }
-                                  : undefined
+                                announcement.visibility === 'public' ? pillOnChrome : undefined
                               }
                             >
                               {announcement.visibility}
@@ -906,7 +1118,7 @@ export default function OrganizationAnnouncementsPage() {
                       <Link
                         href={detailHref}
                         className="text-sm font-medium whitespace-nowrap"
-                        style={{ color: tenantConfig?.theme?.primaryColor || '#47abc4' }}
+                        style={{ color: chrome.text }}
                       >
                         View
                       </Link>
@@ -937,9 +1149,7 @@ export default function OrganizationAnnouncementsPage() {
               const isEventPast = isPast(eventDate)
               const isEventUpcoming = isUpcoming(eventDate)
               
-              // Additional logic: if announcement has end_date, check if it's still active
-              const hasEndDate = announcement.end_date
-              const isStillActive = hasEndDate ? new Date(announcement.end_date!) > new Date() : true
+              const isStillActive = announcementEventIsCurrent(announcement)
               
               return (
                 <div
@@ -991,9 +1201,11 @@ export default function OrganizationAnnouncementsPage() {
                             ? 'bg-green-50 dark:bg-green-900/20' 
                             : ''
                       }`}
-                      style={isStillActive && !isEventToday ? {
-                        backgroundColor: tenantConfig?.theme?.primaryColor ? `${tenantConfig.theme.primaryColor}20` : 'rgba(71, 171, 196, 0.1)'
-                      } : {}}
+                      style={
+                        isStillActive && !isEventToday
+                          ? { backgroundColor: chrome.softSurface }
+                          : {}
+                      }
                     >
                       {/* Background Pattern */}
                       <div className="absolute inset-0 opacity-5">
@@ -1021,9 +1233,7 @@ export default function OrganizationAnnouncementsPage() {
                                 ? 'text-green-600 dark:text-green-400' 
                                 : ''
                           }`}
-                          style={isStillActive && !isEventToday ? {
-                            color: tenantConfig?.theme?.primaryColor || '#47abc4'
-                          } : {}}
+                          style={isStillActive && !isEventToday ? { color: chrome.text } : {}}
                         >
                           {formattedEventDate.day}
                         </div>
@@ -1036,9 +1246,7 @@ export default function OrganizationAnnouncementsPage() {
                                   ? 'text-green-600 dark:text-green-400' 
                                   : ''
                             }`}
-                            style={isStillActive && !isEventToday ? {
-                              color: tenantConfig?.theme?.primaryColor || '#47abc4'
-                            } : {}}
+                            style={isStillActive && !isEventToday ? { color: chrome.text } : {}}
                           >
                             {formattedEventDate.month}
                           </div>
@@ -1050,9 +1258,7 @@ export default function OrganizationAnnouncementsPage() {
                                   ? 'text-green-500 dark:text-green-300' 
                                   : ''
                             }`}
-                            style={isStillActive && !isEventToday ? {
-                              color: tenantConfig?.theme?.primaryColor || '#6bb8d1'
-                            } : {}}
+                            style={isStillActive && !isEventToday ? { color: chrome.textMuted } : {}}
                           >
                             {formattedEventDate.year}
                           </div>
@@ -1065,9 +1271,7 @@ export default function OrganizationAnnouncementsPage() {
                                     ? 'text-green-500 dark:text-green-300' 
                                     : ''
                               }`}
-                              style={isStillActive && !isEventToday ? {
-                                color: tenantConfig?.theme?.primaryColor || '#6bb8d1'
-                              } : {}}
+                              style={isStillActive && !isEventToday ? { color: chrome.textMuted } : {}}
                             >
                               {timeInfo}
                             </div>
@@ -1090,17 +1294,13 @@ export default function OrganizationAnnouncementsPage() {
                             </h3>
                             <span 
                               className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(announcement.is_active)}`}
-                              style={announcement.is_active ? {
-                                backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4'
-                              } : {}}
+                              style={announcement.is_active ? pillOnChrome : undefined}
                             >
                               {announcement.is_active ? 'Active' : 'Inactive'}
                             </span>
                             <span 
                               className={`px-2 py-1 text-xs font-medium rounded-full ${getVisibilityColor(announcement.visibility)}`}
-                              style={announcement.visibility === 'public' ? {
-                                backgroundColor: tenantConfig?.theme?.primaryColor || '#47abc4'
-                              } : {}}
+                              style={announcement.visibility === 'public' ? pillOnChrome : undefined}
                             >
                               {announcement.visibility}
                             </span>
@@ -1120,7 +1320,7 @@ export default function OrganizationAnnouncementsPage() {
                                 Past Event
                               </span>
                             )}
-                            {getTypeBadge(announcement.type)}
+                            {getTypeBadge(effectiveTypeForBadge(announcement))}
                           </div>
                           
                           <p className={`mb-4 line-clamp-3 ${
@@ -1332,14 +1532,12 @@ export default function OrganizationAnnouncementsPage() {
                           <Link
                             href={`/o/${slug}/announcements/${announcement.id}`}
                             className="text-sm font-medium transition-colors"
-                            style={{
-                              color: `${tenantConfig?.theme?.primaryColor || '#47abc4'} !important`
-                            }}
+                            style={{ color: chrome.text }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.setProperty('color', tenantConfig?.theme?.primaryColor || '#3a8ba3', 'important');
+                              e.currentTarget.style.color = chrome.solidHover
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.setProperty('color', tenantConfig?.theme?.primaryColor || '#47abc4', 'important');
+                              e.currentTarget.style.color = chrome.text
                             }}
                           >
                             View
@@ -1375,11 +1573,11 @@ export default function OrganizationAnnouncementsPage() {
           )}
 
           {/* Page Footer */}
-          <PageFooter 
+          <PageFooter
             organizationSlug={slug}
             showGetStarted={true}
-            showGuidelines={true}
-            showTerms={true}
+            showGuidelines={false}
+            showTerms={false}
           />
         </div>
       </div>

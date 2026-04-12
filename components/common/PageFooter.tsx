@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Calendar, BookOpen, ExternalLink, Clock, Users, Wifi, FileText, Shield, HelpCircle, Sparkles } from 'lucide-react'
 import DecorativeDivider from '@/components/common/DecorativeDivider'
 import { useTenant } from '@/components/tenant/TenantProvider'
-import { useTheme } from 'next-themes'
 
 interface PageFooterProps {
   organizationSlug?: string
@@ -25,8 +24,7 @@ export function PageFooter({
   customActions
 }: PageFooterProps) {
   const { tenantConfig } = useTenant()
-  const { theme } = useTheme()
-  
+
   // Get organization colors from tenant config or fallback to Oolite colors
   const orgColors = tenantConfig ? {
     primary: tenantConfig.theme.primaryColor,

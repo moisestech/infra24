@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PageHero, Section, CardGrid, CtaBlock } from '@/components/marketing/cdc';
 import { getCdcBreadcrumbs, getCdcPageByPath, getPartnerSegmentSlugs } from '@/lib/cdc/routes';
-import { cdcInfra24TenantOrgs } from '@/lib/marketing/content';
+import { dccInfra24TenantOrgs } from '@/lib/marketing/content';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
 const path = '/partners';
@@ -34,11 +34,11 @@ export default function PartnersIndexPage() {
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600">
           Partner cultural organizations each have their own workspace, branding, and tools at a path
           like <span className="font-mono text-xs text-neutral-800">/o/your-org-slug</span>. That
-          product layer is unchanged by the CDC public site—it is how Infra24 delivers calendars,
+          product layer is unchanged by the DCC public site—it is how Infra24 delivers calendars,
           workshops, signage, and org-specific experiences.
         </p>
         <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-          {cdcInfra24TenantOrgs.map((org) => (
+          {dccInfra24TenantOrgs.map((org) => (
             <li key={org.href}>
               <Link
                 href={org.href}

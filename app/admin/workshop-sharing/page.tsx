@@ -92,7 +92,8 @@ const hoverScale = {
 }
 
 function WorkshopSharingAdminPageContent() {
-  const { theme } = useTheme()
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
   const [workshops, setWorkshops] = useState<Workshop[]>([])
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [sharingRelations, setSharingRelations] = useState<SharingRelation[]>([])
@@ -243,7 +244,7 @@ function WorkshopSharingAdminPageContent() {
   if (loading) {
     return (
       <div className={`min-h-screen transition-colors duration-300 ${
-        theme === 'dark' 
+        isDark 
           ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
           : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
       }`}>
@@ -251,21 +252,21 @@ function WorkshopSharingAdminPageContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className={`h-8 rounded w-1/3 mb-6 ${
-              theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+              isDark ? 'bg-gray-700' : 'bg-gray-200'
             }`}></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className={`${
-                  theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                  isDark ? 'bg-gray-800' : 'bg-white'
                 } rounded-lg shadow p-6`}>
                   <div className={`h-48 rounded mb-4 ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                    isDark ? 'bg-gray-700' : 'bg-gray-200'
                   }`}></div>
                   <div className={`h-4 rounded w-3/4 mb-2 ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                    isDark ? 'bg-gray-700' : 'bg-gray-200'
                   }`}></div>
                   <div className={`h-3 rounded w-1/2 ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                    isDark ? 'bg-gray-700' : 'bg-gray-200'
                   }`}></div>
                 </div>
               ))}
@@ -278,13 +279,13 @@ function WorkshopSharingAdminPageContent() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
-      theme === 'dark' 
+      isDark 
         ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
         : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
     }`}>
       {/* Navigation */}
       <div className={`fixed top-0 left-0 right-0 z-50 ${
-        theme === 'dark' 
+        isDark 
           ? 'bg-gray-900/80 backdrop-blur-md border-b border-gray-800' 
           : 'bg-white/80 backdrop-blur-md border-b border-gray-200'
       }`}>
@@ -314,7 +315,7 @@ function WorkshopSharingAdminPageContent() {
               className="space-y-6"
             >
               <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-tight ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+                isDark ? 'text-white' : 'text-gray-900'
               }`}>
                 <span className="block">Workshop Sharing</span>
                 <span className="block bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500">
@@ -323,7 +324,7 @@ function WorkshopSharingAdminPageContent() {
               </h1>
               
               <p className={`text-xl ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                isDark ? 'text-gray-300' : 'text-gray-600'
               } max-w-2xl mx-auto`}>
                 Manage workshop sharing between organizations and control access to educational content
               </p>
@@ -335,11 +336,11 @@ function WorkshopSharingAdminPageContent() {
       <DecorativeDivider 
         icon={Sparkles}
         gradientColors={{
-          from: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
-          via: theme === 'dark' ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.05)',
-          to: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'
+          from: isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
+          via: isDark ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.05)',
+          to: isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'
         }}
-        iconColor={theme === 'dark' ? 'text-indigo-400/50' : 'text-indigo-500/50'}
+        iconColor={isDark ? 'text-indigo-400/50' : 'text-indigo-500/50'}
         className="my-16"
       />
       
@@ -354,12 +355,12 @@ function WorkshopSharingAdminPageContent() {
             className="text-center mb-16"
           >
             <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
+              isDark ? 'text-white' : 'text-gray-900'
             }`}>
               Shareable Workshops
             </h2>
             <p className={`text-xl ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              isDark ? 'text-gray-300' : 'text-gray-600'
             } max-w-3xl mx-auto`}>
               Select workshops to share with other organizations
             </p>
@@ -383,7 +384,7 @@ function WorkshopSharingAdminPageContent() {
                 }}
               >
                 <Card className={`overflow-hidden transition-all duration-300 ${
-                  theme === 'dark' 
+                  isDark 
                     ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-indigo-500/50 hover:shadow-2xl' 
                     : 'bg-white/50 backdrop-blur-sm border-gray-200 hover:border-indigo-500/50 hover:shadow-2xl'
                 }`}>
@@ -447,7 +448,7 @@ function WorkshopSharingAdminPageContent() {
             className="text-center mb-8"
           >
             <h3 className={`text-2xl font-bold mb-4 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
+              isDark ? 'text-white' : 'text-gray-900'
             }`}>
               Current Sharing Relations
             </h3>
@@ -463,7 +464,7 @@ function WorkshopSharingAdminPageContent() {
                 viewport={{ once: true }}
               >
                 <Card className={`${
-                  theme === 'dark' 
+                  isDark 
                     ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700' 
                     : 'bg-white/50 backdrop-blur-sm border-gray-200'
                 }`}>
@@ -529,12 +530,12 @@ function WorkshopSharingAdminPageContent() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className={`${
-                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                isDark ? 'bg-gray-800' : 'bg-white'
               } rounded-lg max-w-md w-full p-6`}
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className={`text-xl font-bold mb-4 ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+                isDark ? 'text-white' : 'text-gray-900'
               }`}>
                 Share Workshop
               </h3>
@@ -542,12 +543,12 @@ function WorkshopSharingAdminPageContent() {
               <div className="space-y-4">
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    isDark ? 'text-gray-300' : 'text-gray-700'
                   }`}>
                     Workshop
                   </label>
                   <p className={`text-sm ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    isDark ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     {selectedWorkshop.title}
                   </p>
@@ -555,7 +556,7 @@ function WorkshopSharingAdminPageContent() {
 
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    isDark ? 'text-gray-300' : 'text-gray-700'
                   }`}>
                     Share with Organization
                   </label>
@@ -563,7 +564,7 @@ function WorkshopSharingAdminPageContent() {
                     value={selectedOrganization}
                     onChange={(e) => setSelectedOrganization(e.target.value)}
                     className={`w-full px-3 py-2 rounded-md border ${
-                      theme === 'dark' 
+                      isDark 
                         ? 'bg-gray-700 border-gray-600 text-white' 
                         : 'bg-white border-gray-300 text-gray-900'
                     }`}
@@ -579,7 +580,7 @@ function WorkshopSharingAdminPageContent() {
 
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    isDark ? 'text-gray-300' : 'text-gray-700'
                   }`}>
                     Expiration Date (Optional)
                   </label>
@@ -588,7 +589,7 @@ function WorkshopSharingAdminPageContent() {
                     value={expiresAt}
                     onChange={(e) => setExpiresAt(e.target.value)}
                     className={`w-full px-3 py-2 rounded-md border ${
-                      theme === 'dark' 
+                      isDark 
                         ? 'bg-gray-700 border-gray-600 text-white' 
                         : 'bg-white border-gray-300 text-gray-900'
                     }`}
@@ -597,7 +598,7 @@ function WorkshopSharingAdminPageContent() {
 
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    isDark ? 'text-gray-300' : 'text-gray-700'
                   }`}>
                     Notes (Optional)
                   </label>
@@ -606,7 +607,7 @@ function WorkshopSharingAdminPageContent() {
                     onChange={(e) => setSharingNotes(e.target.value)}
                     rows={3}
                     className={`w-full px-3 py-2 rounded-md border ${
-                      theme === 'dark' 
+                      isDark 
                         ? 'bg-gray-700 border-gray-600 text-white' 
                         : 'bg-white border-gray-300 text-gray-900'
                     }`}
@@ -639,11 +640,11 @@ function WorkshopSharingAdminPageContent() {
       <DecorativeDivider 
         icon={Heart}
         gradientColors={{
-          from: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
-          via: theme === 'dark' ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.05)',
-          to: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'
+          from: isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
+          via: isDark ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.05)',
+          to: isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'
         }}
-        iconColor={theme === 'dark' ? 'text-indigo-400/50' : 'text-indigo-500/50'}
+        iconColor={isDark ? 'text-indigo-400/50' : 'text-indigo-500/50'}
         className="my-16"
       />
     </div>

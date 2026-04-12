@@ -1,8 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface OrganizationLogoProps {
   organization: {
@@ -30,39 +29,11 @@ export function OrganizationLogo({
   height = 60,
   priority = false 
 }: OrganizationLogoProps) {
-  const { theme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    // Return a placeholder while theme is loading
-    return (
-      <div 
-        className={`bg-gray-200 dark:bg-gray-700 rounded animate-pulse ${className}`}
-        style={{ width, height }}
-      />
-    )
-  }
-
-  // Determine which logo to use based on theme
+  const { resolvedTheme } = useTheme()
   const isDarkMode = resolvedTheme === 'dark'
-  const logoUrl = isDarkMode 
+  const logoUrl = isDarkMode
     ? organization.logo_url_dark || organization.settings?.logos?.dark_mode || organization.logo_url
     : organization.logo_url_light || organization.settings?.logos?.light_mode || organization.logo_url
-
-  // Debug logging
-  console.log('🎨 OrganizationLogo Debug:', {
-    organizationName: organization.name,
-    isDarkMode,
-    resolvedTheme,
-    logo_url: organization.logo_url,
-    logo_url_light: organization.logo_url_light,
-    logo_url_dark: organization.logo_url_dark,
-    selectedLogoUrl: logoUrl
-  })
 
   if (!logoUrl) {
     // Fallback to organization name if no logo

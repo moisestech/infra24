@@ -37,9 +37,9 @@ export default function SupportFundersPage() {
       <Section className="bg-white">
         <h2 className="text-lg font-semibold text-neutral-900">Fiscal sponsorship</h2>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600">
-          CDC does not currently have a fiscal sponsor. If you represent a 501(c)(3) that sponsors
+          DCC Miami does not currently have a fiscal sponsor. If you represent a 501(c)(3) that sponsors
           arts or civic initiatives, we would like to explore whether your umbrella can help
-          foundations and donors support this work with clean grant and gift mechanics—while CDC
+          foundations and donors support this work with clean grant and gift mechanics—while DCC Miami
           stays focused on pilots, documentation, and public outcomes.
         </p>
       </Section>

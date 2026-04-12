@@ -65,6 +65,8 @@ interface PatternTemplateProps {
   slideIndex?: number;
   /** Hide announcement date blocks (smart sign resident / custom segments) */
   hideAnnouncementDates?: boolean;
+  /** Fullscreen segment: flat card image frame; card layout uses solid white (no type gradient / pattern backdrop) */
+  minimalImageFrame?: boolean;
 }
 
 export function PatternTemplate({ 
@@ -101,6 +103,7 @@ export function PatternTemplate({
   animationsPaused = false,
   slideIndex = 0,
   hideAnnouncementDates = false,
+  minimalImageFrame = false,
 }: PatternTemplateProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMounted, setIsMounted] = useState(false);
@@ -211,6 +214,7 @@ export function PatternTemplate({
         isActive={isActive}
         animationsPaused={animationsPaused}
         hideAnnouncementDates={hideAnnouncementDates}
+        minimalImageFrame={minimalImageFrame}
       />
 
       {/* Learn More Button */}
@@ -287,13 +291,15 @@ export function PatternTemplate({
           screenMetrics={screenMetrics}
           responsiveSizes={responsiveSizes}
           animationsPaused={animationsPaused}
+          minimalImageFrame={minimalImageFrame}
         >
           {/* Pattern overlay - only show if not using image background and not solid pattern */}
-          {isMounted && 
-           imageLayout !== 'hero' && 
-           imageLayout !== 'overlay' && 
-           imageLayout !== 'background' && 
-           styles.backgroundPattern !== 'solid' && (
+          {isMounted &&
+           imageLayout !== 'hero' &&
+           imageLayout !== 'overlay' &&
+           imageLayout !== 'background' &&
+           styles.backgroundPattern !== 'solid' &&
+           !(minimalImageFrame && imageLayout === 'card') && (
             <div className="absolute inset-0 z-10 pointer-events-none">
               <BackgroundPattern 
                 type={announcement.type || 'event'} 

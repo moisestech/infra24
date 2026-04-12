@@ -33,7 +33,8 @@ const WORKSHOP_CATEGORIES = [
 ];
 
 export default function WorkshopCategoryVoting({ organizationId, userId }: WorkshopCategoryVotingProps) {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
   const { tenantConfig } = useTenant();
 
   // Oolite theme colors
@@ -125,7 +126,7 @@ export default function WorkshopCategoryVoting({ organizationId, userId }: Works
     return (
       <div className="text-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-        <p className={`mt-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+        <p className={`mt-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
           Loading voting data...
         </p>
       </div>
@@ -142,13 +143,13 @@ export default function WorkshopCategoryVoting({ organizationId, userId }: Works
     >
       <motion.div variants={itemVariants} className="text-center">
         <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
+          isDark ? 'text-white' : 'text-gray-900'
         }`}>
           <Heart className="inline-block h-8 w-8 text-red-500 mr-2" />
           Help Shape Our Workshop Program
         </h3>
         <p className={`text-lg max-w-3xl mx-auto ${
-          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+          isDark ? 'text-gray-300' : 'text-gray-600'
         }`}>
           Vote for the workshop categories you'd like to see more of. Your input helps us prioritize 
           the most valuable learning opportunities for our community.
@@ -158,19 +159,19 @@ export default function WorkshopCategoryVoting({ organizationId, userId }: Works
       {hasVoted ? (
         <motion.div variants={itemVariants} className="text-center">
           <Card className={`max-w-md mx-auto ${
-            theme === 'dark' 
+            isDark 
               ? 'bg-green-900/20 border-green-800' 
               : 'bg-green-50 border-green-200'
           }`}>
             <CardContent className="pt-6">
               <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
               <h4 className={`text-lg font-semibold mb-2 ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+                isDark ? 'text-white' : 'text-gray-900'
               }`}>
                 Thank You for Voting!
               </h4>
               <p className={`text-sm ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                isDark ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 Your vote has been recorded. We'll use this feedback to plan future workshops.
               </p>
@@ -194,7 +195,7 @@ export default function WorkshopCategoryVoting({ organizationId, userId }: Works
                   className="group"
                 >
                   <Card className={`cursor-pointer transition-all duration-300 ${
-                    theme === 'dark' 
+                    isDark 
                       ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/20' 
                       : 'bg-white/50 backdrop-blur-sm border-gray-200 hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/20'
                   }`}>
@@ -202,7 +203,7 @@ export default function WorkshopCategoryVoting({ organizationId, userId }: Works
                       <div className="flex flex-col items-center text-center space-y-4">
                         <motion.div 
                           className={`p-4 rounded-full transition-all duration-300 group-hover:scale-110 ${
-                            theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-100/50'
+                            isDark ? 'bg-gray-700/50' : 'bg-gray-100/50'
                           }`}
                           whileHover={{ rotate: 5 }}
                         >
@@ -265,7 +266,7 @@ export default function WorkshopCategoryVoting({ organizationId, userId }: Works
       {categories.length > 0 && (
         <motion.div variants={itemVariants} className="mt-12">
           <h4 className={`text-xl font-semibold mb-6 text-center ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
+            isDark ? 'text-white' : 'text-gray-900'
           }`}>
             Current Voting Results
           </h4>
@@ -278,14 +279,14 @@ export default function WorkshopCategoryVoting({ organizationId, userId }: Works
                   key={category.category}
                   variants={itemVariants}
                   className={`p-4 rounded-lg border ${
-                    theme === 'dark' 
+                    isDark 
                       ? 'bg-gray-800/30 border-gray-700' 
                       : 'bg-gray-50 border-gray-200'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className={`font-medium ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      isDark ? 'text-white' : 'text-gray-900'
                     }`}>
                       {category.category}
                     </span>

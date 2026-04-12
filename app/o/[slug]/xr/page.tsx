@@ -101,7 +101,8 @@ export default function XRPage() {
         return ooliteConfig // Default fallback
     }
   }
-  const { theme } = useTheme()
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [projects, setProjects] = useState<XRProject[]>([])
   const [loading, setLoading] = useState(true)
@@ -221,7 +222,7 @@ export default function XRPage() {
   if (loading) {
     return (
       <div className={`min-h-screen transition-colors duration-300 ${
-        theme === 'dark' 
+        isDark 
           ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
           : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
       }`}>
@@ -229,21 +230,21 @@ export default function XRPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className={`h-8 rounded w-1/3 mb-6 ${
-              theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+              isDark ? 'bg-gray-700' : 'bg-gray-200'
             }`}></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className={`${
-                  theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                  isDark ? 'bg-gray-800' : 'bg-white'
                 } rounded-lg shadow p-6`}>
                   <div className={`h-48 rounded mb-4 ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                    isDark ? 'bg-gray-700' : 'bg-gray-200'
                   }`}></div>
                   <div className={`h-4 rounded w-3/4 mb-2 ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                    isDark ? 'bg-gray-700' : 'bg-gray-200'
                   }`}></div>
                   <div className={`h-3 rounded w-1/2 ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                    isDark ? 'bg-gray-700' : 'bg-gray-200'
                   }`}></div>
                 </div>
               ))}
@@ -256,13 +257,13 @@ export default function XRPage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
-      theme === 'dark' 
+      isDark 
         ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
         : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
     }`}>
       {/* Navigation */}
       <div className={`fixed top-0 left-0 right-0 z-50 ${
-        theme === 'dark' 
+        isDark 
           ? 'bg-gray-900/80 backdrop-blur-md border-b border-gray-800' 
           : 'bg-white/80 backdrop-blur-md border-b border-gray-200'
       }`}>
@@ -316,7 +317,7 @@ export default function XRPage() {
               className="space-y-6"
             >
               <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-tight ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+                isDark ? 'text-white' : 'text-gray-900'
               }`}>
                 <span className="block">XR Experiences</span>
                 <span className="block bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500">
@@ -325,14 +326,14 @@ export default function XRPage() {
               </h1>
               
               <p className={`text-xl ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                isDark ? 'text-gray-300' : 'text-gray-600'
               } max-w-2xl`}>
                 Explore our immersive virtual reality experiences, 3D maquettes, and interactive diagrams
               </p>
               
               {organization && (
                 <p className={`text-lg ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  isDark ? 'text-gray-400' : 'text-gray-500'
                 }`}>
                   {organization.name}
                 </p>
@@ -349,11 +350,11 @@ export default function XRPage() {
       <DecorativeDivider 
         icon={Sparkles}
         gradientColors={{
-          from: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
-          via: theme === 'dark' ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.05)',
-          to: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'
+          from: isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
+          via: isDark ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.05)',
+          to: isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'
         }}
-        iconColor={theme === 'dark' ? 'text-indigo-400/50' : 'text-indigo-500/50'}
+        iconColor={isDark ? 'text-indigo-400/50' : 'text-indigo-500/50'}
         className="my-16"
       />
       
@@ -368,12 +369,12 @@ export default function XRPage() {
             className="text-center mb-16"
           >
             <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
+              isDark ? 'text-white' : 'text-gray-900'
             }`}>
               Explore Our XR Projects
             </h2>
             <p className={`text-xl ${
-              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+              isDark ? 'text-gray-300' : 'text-gray-600'
             } max-w-3xl mx-auto`}>
               Discover immersive experiences, 3D visualizations, and interactive content
             </p>
@@ -431,7 +432,7 @@ export default function XRPage() {
                 onClick={() => setSelectedProject(project)}
               >
                 <Card className={`overflow-hidden transition-all duration-300 ${
-                  theme === 'dark' 
+                  isDark 
                     ? 'bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-indigo-500/50 hover:shadow-2xl' 
                     : 'bg-white/50 backdrop-blur-sm border-gray-200 hover:border-indigo-500/50 hover:shadow-2xl'
                 }`}>
@@ -491,14 +492,14 @@ export default function XRPage() {
               className="text-center py-12"
             >
               <VrBox className={`mx-auto h-12 w-12 mb-4 ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                isDark ? 'text-gray-400' : 'text-gray-500'
               }`} />
               <h3 className={`text-lg font-medium mb-2 ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+                isDark ? 'text-white' : 'text-gray-900'
               }`}>
                 No {filter === 'all' ? '' : filter} projects found
               </h3>
-              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+              <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>
                 Check back later for new XR experiences and visualizations.
               </p>
             </motion.div>
@@ -509,11 +510,11 @@ export default function XRPage() {
       <DecorativeDivider 
         icon={Heart}
         gradientColors={{
-          from: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
-          via: theme === 'dark' ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.05)',
-          to: theme === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'
+          from: isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)',
+          via: isDark ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.05)',
+          to: isDark ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)'
         }}
-        iconColor={theme === 'dark' ? 'text-indigo-400/50' : 'text-indigo-500/50'}
+        iconColor={isDark ? 'text-indigo-400/50' : 'text-indigo-500/50'}
         className="my-16"
       />
 
@@ -532,7 +533,7 @@ export default function XRPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className={`${
-                theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                isDark ? 'bg-gray-800' : 'bg-white'
               } rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto`}
               onClick={(e) => e.stopPropagation()}
             >
@@ -540,12 +541,12 @@ export default function XRPage() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h2 className={`text-2xl font-bold ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      isDark ? 'text-white' : 'text-gray-900'
                     }`}>
                       {selectedProject.title}
                     </h2>
                     <p className={`mt-2 ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      isDark ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {selectedProject.description}
                     </p>
@@ -560,14 +561,14 @@ export default function XRPage() {
                 </div>
               
                 <div className={`aspect-video rounded-lg mb-6 flex items-center justify-center ${
-                  theme === 'dark' 
+                  isDark 
                     ? 'bg-gradient-to-br from-purple-900 to-blue-900' 
                     : 'bg-gradient-to-br from-purple-100 to-blue-100'
                 }`}>
                   <div className="text-center">
                     {getTypeIcon(selectedProject.type)}
                     <p className={`mt-2 ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      isDark ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {selectedProject.type.toUpperCase()} Experience
                     </p>

@@ -6,7 +6,7 @@ type SectionProps = {
   children: React.ReactNode;
 };
 
-/** CDC marketing section shell (matches MarketingSection rhythm). */
+/** DCC marketing section shell (matches MarketingSection rhythm). */
 export function Section({ id, className, children }: SectionProps) {
   return (
     <section id={id} className={cn('py-14 sm:py-20 lg:py-24', className)}>

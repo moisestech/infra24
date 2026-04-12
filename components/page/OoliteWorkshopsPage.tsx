@@ -19,6 +19,7 @@ import {
   Box 
 } from 'lucide-react';
 import { getWorkshopsForOrganization, getWorkshopCategories } from '@/lib/workshops/shared-workshops';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const workshops = getWorkshopsForOrganization('oolite');
 const categories = getWorkshopCategories();
@@ -28,7 +29,11 @@ interface OoliteWorkshopsPageProps {
   bannerImage?: string;
 }
 
-export default function OoliteWorkshopsPage({ theme = 'light', bannerImage }: OoliteWorkshopsPageProps) {
+export default function OoliteWorkshopsPage({ theme: themeOverride, bannerImage }: OoliteWorkshopsPageProps) {
+  const { resolvedTheme } = useTheme();
+  const isDark =
+    themeOverride !== undefined ? themeOverride === 'dark' : resolvedTheme === 'dark';
+
   // Oolite organization colors
   const ooliteColors = {
     primary: '#47abc4',
@@ -48,7 +53,6 @@ export default function OoliteWorkshopsPage({ theme = 'light', bannerImage }: Oo
 
   // Theme-aware styles
   const getThemeStyles = () => {
-    const isDark = theme === 'dark';
     if (isDark) {
       return {
         background: `linear-gradient(135deg, ${ooliteColors.darkBackground} 0%, ${ooliteColors.darkSecondary} 50%, ${ooliteColors.darkAccent} 100%)`,
@@ -93,7 +97,7 @@ export default function OoliteWorkshopsPage({ theme = 'light', bannerImage }: Oo
   
   // Debug logging
   console.log('🎨 Workshops Page Theme Debug:');
-  console.log('Theme:', theme);
+  console.log('Theme:', themeOverride ?? resolvedTheme);
   console.log('Background gradient:', themeStyles.background);
   console.log('Text primary:', themeStyles.textPrimary);
   console.log('Card background:', themeStyles.cardBg);
@@ -165,7 +169,6 @@ export default function OoliteWorkshopsPage({ theme = 'light', bannerImage }: Oo
             {categories.map((category, index) => {
               const count = workshops.filter(w => w.category === category).length;
               const IconComponent = categoryIcons[category] || Code; // Default to Code icon
-              const isDark = theme === 'dark';
               const colors = isDark ? [
                 'bg-purple-900/30 text-purple-300 border-purple-700',
                 'bg-blue-900/30 text-blue-300 border-blue-700', 
@@ -198,7 +201,7 @@ export default function OoliteWorkshopsPage({ theme = 'light', bannerImage }: Oo
                       <div 
                         className="p-3 rounded-full"
                         style={{ 
-                          backgroundColor: theme === 'dark' ? ooliteColors.primaryAlphaDark : ooliteColors.primaryAlphaLight
+                          backgroundColor: isDark ? ooliteColors.primaryAlphaDark : ooliteColors.primaryAlphaLight
                         }}
                       >
                         <IconComponent 
@@ -234,7 +237,6 @@ export default function OoliteWorkshopsPage({ theme = 'light', bannerImage }: Oo
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {workshops.slice(0, 6).map((workshop) => {
-              const isDark = theme === 'dark';
               const levelColors = isDark ? {
                 beginner: 'bg-green-900/30 text-green-300 border-green-700',
                 intermediate: 'bg-yellow-900/30 text-yellow-300 border-yellow-700',

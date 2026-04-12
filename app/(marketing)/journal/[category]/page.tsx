@@ -29,7 +29,7 @@ export default function JournalCategoryPage({ params }: Props) {
   const items = posts.map((post) => ({
     href: `/journal/${post.category}/${post.slug}`,
     title: post.title,
-    description: 'Field note or essay from Center of Digital Culture.',
+    description: 'Field note or essay from Digital Culture Center Miami.',
   }));
 
   return (

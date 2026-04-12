@@ -27,6 +27,11 @@ export const workshopMarketingMetadataSchema = z.object({
   seoDescription: z.string().optional(),
   galleryImageUrls: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
+  /** Smart-sign workshop grid schedule block (multi-line). */
+  displaySchedule: z.string().optional(),
+  /** Optional source catalog dates for display/sorting helpers. */
+  sessionStartDate: z.string().optional(),
+  sessionEndDate: z.string().optional(),
   /** Controlled labels for filters, e.g. individual_artists */
   audienceTags: z.array(z.string()).optional(),
   format: z.enum(['in_person', 'online', 'hybrid', 'async_resources']),

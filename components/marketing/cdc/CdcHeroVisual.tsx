@@ -4,7 +4,7 @@ import { useReducedMotion } from 'framer-motion';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { HeroCollage } from '@/components/marketing/HeroCollage';
 import { CdcMiamiLogo } from '@/components/marketing/cdc/CdcMiamiLogo';
-import { cdcHeroDigital } from '@/lib/marketing/content';
+import { dccHeroDigital } from '@/lib/marketing/content';
 import { cdcDigitalBeam } from '@/lib/marketing/cdc-digital-theme';
 import { cn } from '@/lib/utils';
 
@@ -37,15 +37,15 @@ export function CdcHeroVisual({ className }: { className?: string }) {
       <div className="relative z-[1]">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--cdc-border)] bg-white/40 px-3 py-3 backdrop-blur-sm sm:px-4 sm:py-3.5">
           <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[9px] font-medium uppercase tracking-[0.14em] text-neutral-600 sm:text-[10px]">
-            <span className="text-[var(--cdc-teal)]">{cdcHeroDigital.systemLabels[0]}</span>
+            <span className="text-[var(--cdc-teal)]">{dccHeroDigital.systemLabels[0]}</span>
             <span className="text-neutral-300" aria-hidden>
               ·
             </span>
-            <span className="text-[var(--cdc-coral)]">{cdcHeroDigital.systemLabels[1]}</span>
+            <span className="text-[var(--cdc-coral)]">{dccHeroDigital.systemLabels[1]}</span>
             <span className="text-neutral-300" aria-hidden>
               ·
             </span>
-            <span className="text-[var(--cdc-magenta)]">{cdcHeroDigital.systemLabels[2]}</span>
+            <span className="text-[var(--cdc-magenta)]">{dccHeroDigital.systemLabels[2]}</span>
           </div>
           <div className="flex items-center justify-end gap-3">
             <CdcMiamiLogo size="hero" priority />
@@ -57,7 +57,7 @@ export function CdcHeroVisual({ className }: { className?: string }) {
         </div>
 
         <p className="px-3 pb-3 pt-0 text-center text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500">
-          {cdcHeroDigital.caption}
+          {dccHeroDigital.caption}
         </p>
       </div>
 

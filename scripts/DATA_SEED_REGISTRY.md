@@ -52,6 +52,9 @@ These scripts **delete all `artist_profiles` for the target organization** (afte
 
 - The display route `app/o/[slug]/announcements/display/page.tsx` uses a versioned JSON **DisplayProgram** (`lib/display/display-program.ts`): carousel, fullscreen announcement, and 3-column grids for workshops, artists, and cinematic announcements.
 - **V1 persistence**: `localStorage` key `display-program:v1:{orgSlug}`, optional kiosk URL `?program=` (base64url JSON). The same JSON shape can later be stored in `screens.settings` or playlist metadata when wired to the display control plane (`lib/display-plane/resolver.ts`).
+- **Single-segment preview**: query `?view=` with one of `announcement_carousel`, `announcement_fullscreen`, `grid_workshops`, `grid_artists`, or `grid_cinematic` locks the page to that layout (no rotation). If both `program` and `view` are present, **`program` wins**. Optional `announcementId=` with `view=announcement_fullscreen` targets a specific row.
+- **Calendar month on announcement segments**: segment param `displayCalendarMonth` (YYYY-MM, e.g. `2026-04`) limits the **carousel**, **fullscreen** pool, and **cinematic** grid to announcements whose date anchors fall in that month (`lib/display/announcement-month.ts`). **Workshop** and **artist** grids are unchanged. Default month is `SMART_SIGN_DEFAULT_DISPLAY_MONTH` in `lib/display/display-program.ts`.
+- **Audit / bulk deactivate by month** (mutating with `--apply`): `npm run audit:announcements-display-month -- --org=oolite --month=2026-04` prints a TSV (ids, month key, protected flag, title, description snippet). With `--apply`, sets `is_active: false` for active rows whose month ≠ target **excluding** workshop-class and artist/resident listing rows (`lib/display/announcement-deactivate-guards.ts`). Rows with no derivable month key are listed but not auto-deactivated.
 
 ## Safe / mostly additive (announcements & workshops)
 

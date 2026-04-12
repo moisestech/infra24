@@ -160,7 +160,8 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
     slug: navigationConfig.organization.slug,
     logoUrl: navigationConfig.organization.logo_url
   })
-  const { theme } = useTheme()
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [workshops, setWorkshops] = useState<Workshop[]>([])
   const [loading, setLoading] = useState(true)
@@ -410,7 +411,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
   if (loading) {
     return (
       <div className={`min-h-screen transition-colors duration-300 ${
-        theme === 'dark' 
+        isDark 
           ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
           : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
       }`}>
@@ -421,21 +422,21 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className={`h-8 rounded w-1/3 mb-6 ${
-              theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+              isDark ? 'bg-gray-700' : 'bg-gray-200'
             }`}></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className={`${
-                  theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+                  isDark ? 'bg-gray-800' : 'bg-white'
                 } rounded-lg shadow p-6`}>
                   <div className={`h-48 rounded mb-4 ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                    isDark ? 'bg-gray-700' : 'bg-gray-200'
                   }`}></div>
                   <div className={`h-4 rounded w-3/4 mb-2 ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                    isDark ? 'bg-gray-700' : 'bg-gray-200'
                   }`}></div>
                   <div className={`h-3 rounded w-1/2 ${
-                    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                    isDark ? 'bg-gray-700' : 'bg-gray-200'
                   }`}></div>
                 </div>
               ))}
@@ -450,10 +451,10 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
     <div
       className={`min-h-screen transition-colors duration-300 ${
         isOoliteLab
-          ? theme === 'dark'
+          ? isDark
             ? 'bg-neutral-950 text-neutral-100'
             : 'bg-stone-50 text-neutral-900'
-          : theme === 'dark'
+          : isDark
             ? 'bg-gradient-to-b from-gray-900 to-black text-white'
             : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
       }`}
@@ -468,7 +469,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
         <section
           ref={heroRef}
           className={`border-b pt-24 pb-16 md:pt-28 md:pb-20 ${
-            theme === 'dark' ? 'border-neutral-800 bg-neutral-950' : 'border-stone-200/80 bg-stone-50'
+            isDark ? 'border-neutral-800 bg-neutral-950' : 'border-stone-200/80 bg-stone-50'
           }`}
         >
           <div className="container mx-auto max-w-3xl px-4 text-center">
@@ -480,14 +481,14 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
             >
               <p
                 className={`text-xs font-semibold uppercase tracking-[0.2em] md:text-sm ${
-                  theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'
+                  isDark ? 'text-neutral-400' : 'text-neutral-500'
                 }`}
               >
                 {landingCopy.heroEyebrow}
               </p>
               <h1
                 className={`text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl lg:text-[3.25rem] ${
-                  theme === 'dark' ? 'text-white' : 'text-neutral-900'
+                  isDark ? 'text-white' : 'text-neutral-900'
                 }`}
               >
                 <span className="block">{landingCopy.heroTitle}</span>
@@ -500,7 +501,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
               </h1>
               <p
                 className={`mx-auto max-w-2xl text-base leading-relaxed md:text-lg ${
-                  theme === 'dark' ? 'text-neutral-300' : 'text-neutral-600'
+                  isDark ? 'text-neutral-300' : 'text-neutral-600'
                 }`}
               >
                 {landingCopy.heroLead}
@@ -516,7 +517,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                 <a
                   href={landingCopy.heroSecondaryCta.href}
                   className={`inline-flex items-center justify-center rounded-full border px-6 py-2.5 text-sm font-medium transition hover:bg-black/5 dark:hover:bg-white/5 ${
-                    theme === 'dark'
+                    isDark
                       ? 'border-neutral-600 text-neutral-100'
                       : 'border-neutral-300 text-neutral-900'
                   }`}
@@ -527,7 +528,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
               {organization && (
                 <p
                   className={`pt-2 text-sm ${
-                    theme === 'dark' ? 'text-neutral-500' : 'text-neutral-500'
+                    isDark ? 'text-neutral-500' : 'text-neutral-500'
                   }`}
                 >
                   {organization.name}
@@ -579,14 +580,14 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
               >
                 <p
                   className={`mb-3 text-sm font-medium uppercase tracking-widest ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                    isDark ? 'text-gray-400' : 'text-gray-500'
                   }`}
                 >
                   {landingCopy.heroEyebrow}
                 </p>
                 <h1
                   className={`text-4xl font-bold leading-tight md:text-5xl lg:text-6xl ${
-                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                    isDark ? 'text-white' : 'text-gray-900'
                   }`}
                 >
                   <span className="block">{landingCopy.heroTitle}</span>
@@ -602,7 +603,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
 
                 <p
                   className={`mx-auto mt-6 max-w-2xl text-lg leading-relaxed md:text-xl ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                    isDark ? 'text-gray-300' : 'text-gray-600'
                   }`}
                 >
                   {landingCopy.heroLead}
@@ -617,7 +618,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                   <a
                     href={landingCopy.heroSecondaryCta.href}
                     className={`inline-flex rounded-full border px-6 py-2.5 text-sm font-medium ${
-                      theme === 'dark' ? 'border-gray-600 text-white' : 'border-gray-300 text-gray-900'
+                      isDark ? 'border-gray-600 text-white' : 'border-gray-300 text-gray-900'
                     }`}
                   >
                     {landingCopy.heroSecondaryCta.label}
@@ -626,7 +627,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                 {organization && (
                   <p
                     className={`mt-4 text-base ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                      isDark ? 'text-gray-400' : 'text-gray-500'
                     }`}
                   >
                     {organization.name}
@@ -640,19 +641,19 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
 
       <section
         className={`mx-auto max-w-3xl px-4 pb-12 pt-12 md:pb-16 md:pt-16 ${
-          theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'
+          isDark ? 'text-neutral-300' : 'text-neutral-700'
         }`}
       >
         <h2
           className={`text-center text-2xl font-semibold tracking-tight md:text-3xl ${
-            theme === 'dark' ? 'text-white' : 'text-neutral-900'
+            isDark ? 'text-white' : 'text-neutral-900'
           }`}
         >
           {landingCopy.framingSection.title}
         </h2>
         <p
-          className={`mx-auto mt-5 text-center text-base leading-relaxed md:text-lg ${
-            theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
+          className={`mx-auto mt-5 whitespace-pre-line text-center text-base leading-relaxed md:text-lg ${
+            isDark ? 'text-neutral-400' : 'text-neutral-600'
           }`}
         >
           {landingCopy.framingSection.body}
@@ -666,7 +667,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
             <li
               key={t}
               className={`rounded-full border px-4 py-2 ${
-                theme === 'dark'
+                isDark
                   ? 'border-neutral-700 bg-neutral-900/50'
                   : 'border-stone-200 bg-white shadow-sm'
               }`}
@@ -689,14 +690,14 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
           >
             <h2
               className={`mb-3 text-3xl font-semibold tracking-tight md:text-4xl ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+                isDark ? 'text-white' : 'text-gray-900'
               }`}
             >
               {isOoliteLab ? landingCopy.featuredSection.title : 'Available workshops'}
             </h2>
             <p
               className={`mx-auto max-w-2xl text-base leading-relaxed md:text-lg ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                isDark ? 'text-gray-300' : 'text-gray-600'
               }`}
             >
               {isOoliteLab
@@ -710,7 +711,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
             {/* Search Bar */}
             <div className="relative max-w-md mx-auto">
               <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                isDark ? 'text-gray-400' : 'text-gray-500'
               }`} />
               <input
                 type="text"
@@ -718,7 +719,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
-                  theme === 'dark' 
+                  isDark 
                     ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-400' 
                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                 } focus:ring-2 focus:ring-indigo-500 focus:border-transparent`}
@@ -729,13 +730,13 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
             <div className="flex flex-wrap gap-4 justify-center">
               <div className="flex items-center gap-2">
                 <Filter className={`h-4 w-4 ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  isDark ? 'text-gray-400' : 'text-gray-500'
                 }`} />
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className={`px-3 py-1 rounded-md border ${
-                    theme === 'dark' 
+                    isDark 
                       ? 'bg-gray-800 border-gray-700 text-white' 
                       : 'bg-white border-gray-300 text-gray-900'
                   }`}
@@ -752,7 +753,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                   value={selectedLevel}
                   onChange={(e) => setSelectedLevel(e.target.value)}
                   className={`px-3 py-1 rounded-md border ${
-                    theme === 'dark' 
+                    isDark 
                       ? 'bg-gray-800 border-gray-700 text-white' 
                       : 'bg-white border-gray-300 text-gray-900'
                   }`}
@@ -769,7 +770,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                   value={selectedFormat}
                   onChange={(e) => setSelectedFormat(e.target.value)}
                   className={`rounded-md border px-3 py-1 ${
-                    theme === 'dark'
+                    isDark
                       ? 'border-gray-700 bg-gray-800 text-white'
                       : 'border-gray-300 bg-white text-gray-900'
                   }`}
@@ -787,7 +788,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                   value={selectedAudience}
                   onChange={(e) => setSelectedAudience(e.target.value)}
                   className={`rounded-md border px-3 py-1 ${
-                    theme === 'dark'
+                    isDark
                       ? 'border-gray-700 bg-gray-800 text-white'
                       : 'border-gray-300 bg-white text-gray-900'
                   }`}
@@ -808,7 +809,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                     value={selectedTrack}
                     onChange={(e) => setSelectedTrack(e.target.value)}
                     className={`rounded-md border px-3 py-1 ${
-                      theme === 'dark'
+                      isDark
                         ? 'border-gray-700 bg-gray-800 text-white'
                         : 'border-gray-300 bg-white text-gray-900'
                     }`}
@@ -837,14 +838,14 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                 <div className="mb-16">
                   <h3
                     className={`mb-2 text-center text-xl font-semibold tracking-tight md:text-2xl ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      isDark ? 'text-white' : 'text-gray-900'
                     }`}
                   >
                     Digital Lab
                   </h3>
                   <p
                     className={`mx-auto mb-8 max-w-xl text-center text-sm leading-relaxed ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      isDark ? 'text-gray-400' : 'text-gray-600'
                     }`}
                   >
                     Websites, discoverability, documentation, AI literacy, creative coding, and sustainable
@@ -872,14 +873,14 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                 <div className="mb-16">
                   <h3
                     className={`mb-2 text-center text-xl font-semibold tracking-tight md:text-2xl ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
+                      isDark ? 'text-white' : 'text-gray-900'
                     }`}
                   >
                     Adult studio classes
                   </h3>
                   <p
                     className={`mx-auto mb-8 max-w-xl text-center text-sm leading-relaxed ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                      isDark ? 'text-gray-400' : 'text-gray-600'
                     }`}
                   >
                     In-person painting, drawing, printmaking, and mixed-media sessions at Oolite Arts.
@@ -919,13 +920,13 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                   >
                     <h3
                       className={`mb-4 text-2xl font-semibold md:text-3xl ${
-                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        isDark ? 'text-white' : 'text-gray-900'
                       }`}
                     >
                       <Edit className="mr-2 inline-block h-8 w-8 text-orange-500" />
                       Draft workshops
                     </h3>
-                    <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                       Workshops currently in development.
                     </p>
                   </motion.div>
@@ -960,13 +961,13 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                   >
                     <h3
                       className={`mb-4 text-2xl font-bold md:text-3xl ${
-                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        isDark ? 'text-white' : 'text-gray-900'
                       }`}
                     >
                       <Star className="mr-2 inline-block h-8 w-8 text-yellow-500" />
                       Featured workshops
                     </h3>
-                    <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                       Our most popular and highly recommended workshops
                     </p>
                   </motion.div>
@@ -1005,12 +1006,12 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                   >
                     <h3
                       className={`mb-4 text-2xl font-bold md:text-3xl ${
-                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        isDark ? 'text-white' : 'text-gray-900'
                       }`}
                     >
                       Available workshops
                     </h3>
-                    <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                       Choose from our curated selection of workshops designed for all skill levels
                     </p>
                   </motion.div>
@@ -1043,13 +1044,13 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                   >
                     <h3
                       className={`mb-4 text-2xl font-bold md:text-3xl ${
-                        theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        isDark ? 'text-white' : 'text-gray-900'
                       }`}
                     >
                       <Edit className="mr-2 inline-block h-8 w-8 text-orange-500" />
                       Draft workshops
                     </h3>
-                    <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                       Workshops currently in development — coming soon!
                     </p>
                   </motion.div>
@@ -1082,14 +1083,14 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
               className="text-center py-12"
             >
               <BookOpen className={`mx-auto h-12 w-12 mb-4 ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                isDark ? 'text-gray-400' : 'text-gray-500'
               }`} />
               <h3 className={`text-lg font-medium mb-2 ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
+                isDark ? 'text-white' : 'text-gray-900'
               }`}>
                 No workshops found
               </h3>
-              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+              <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>
                 Try adjusting your search criteria or check back later for new workshops.
               </p>
             </motion.div>
@@ -1099,7 +1100,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
 
       <section
         className={`mx-auto max-w-5xl px-4 py-16 md:py-20 ${
-          theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'
+          isDark ? 'text-neutral-300' : 'text-neutral-700'
         }`}
       >
         <h2 className="text-center text-2xl font-semibold tracking-tight md:text-3xl">
@@ -1120,14 +1121,14 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
         <div className="mt-20 border-t border-border/60 pt-16">
           <h2
             className={`text-center text-2xl font-semibold tracking-tight md:text-3xl ${
-              theme === 'dark' ? 'text-white' : 'text-neutral-900'
+              isDark ? 'text-white' : 'text-neutral-900'
             }`}
           >
             {landingCopy.whySeriesSection.title}
           </h2>
           <p
             className={`mx-auto mt-5 max-w-3xl text-center text-base leading-relaxed md:text-lg ${
-              theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'
+              isDark ? 'text-neutral-400' : 'text-neutral-600'
             }`}
           >
             {landingCopy.whySeriesSection.body}
@@ -1136,7 +1137,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
 
         <div
           className={`mt-16 rounded-2xl border p-8 md:p-10 ${
-            theme === 'dark' ? 'border-neutral-800 bg-neutral-900/40' : 'border-stone-200 bg-white/90 shadow-sm'
+            isDark ? 'border-neutral-800 bg-neutral-900/40' : 'border-stone-200 bg-white/90 shadow-sm'
           }`}
         >
           <h2 className="text-2xl font-semibold">{landingCopy.forInstitutions.title}</h2>
@@ -1153,7 +1154,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                   key={cta.label}
                   href={cta.href}
                   className={`inline-flex rounded-full border px-4 py-2 text-sm font-medium transition hover:bg-black/5 dark:hover:bg-white/5 ${
-                    theme === 'dark' ? 'border-neutral-600 text-neutral-100' : 'border-neutral-300 text-neutral-900'
+                    isDark ? 'border-neutral-600 text-neutral-100' : 'border-neutral-300 text-neutral-900'
                   }`}
                 >
                   {cta.label}
@@ -1189,7 +1190,7 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
 
         <div
           className={`mt-16 rounded-2xl border p-8 text-center md:p-12 ${
-            theme === 'dark' ? 'border-neutral-800 bg-neutral-900/30' : 'border-stone-200 bg-stone-100/80'
+            isDark ? 'border-neutral-800 bg-neutral-900/30' : 'border-stone-200 bg-stone-100/80'
           }`}
         >
           <h2 className="text-xl font-semibold md:text-2xl">{landingCopy.footerCtaSection.title}</h2>
@@ -1214,11 +1215,11 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
       <DecorativeDivider
         icon={Heart}
         gradientColors={{
-          from: theme === 'dark' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.04)',
-          via: theme === 'dark' ? 'rgba(168, 85, 247, 0.08)' : 'rgba(168, 85, 247, 0.04)',
-          to: theme === 'dark' ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.04)',
+          from: isDark ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.04)',
+          via: isDark ? 'rgba(168, 85, 247, 0.08)' : 'rgba(168, 85, 247, 0.04)',
+          to: isDark ? 'rgba(99, 102, 241, 0.08)' : 'rgba(99, 102, 241, 0.04)',
         }}
-        iconColor={theme === 'dark' ? 'text-indigo-400/40' : 'text-indigo-500/40'}
+        iconColor={isDark ? 'text-indigo-400/40' : 'text-indigo-500/40'}
         className="my-12"
       />
 

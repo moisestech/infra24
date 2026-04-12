@@ -58,7 +58,8 @@ export default function WorkshopAnalyticsPage() {
   const slug = params.slug as string
   const { user } = useUser()
   const { tenantConfig } = useTenant()
-  const { theme } = useTheme()
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
   
   const [workshops, setWorkshops] = useState<WorkshopAnalytics[]>([])
   const [summaryStats, setSummaryStats] = useState<SummaryStats | null>(null)
@@ -136,7 +137,7 @@ export default function WorkshopAnalyticsPage() {
   if (loading) {
     return (
       <div className={`min-h-screen transition-colors duration-300 ${
-        theme === 'dark' 
+        isDark 
           ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
           : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
       }`}>
@@ -146,10 +147,10 @@ export default function WorkshopAnalyticsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className={`h-8 rounded w-1/3 mb-6 ${
-              theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+              isDark ? 'bg-gray-700' : 'bg-gray-200'
             }`}></div>
             <div className={`h-64 rounded mb-6 ${
-              theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+              isDark ? 'bg-gray-700' : 'bg-gray-200'
             }`}></div>
           </div>
         </div>
@@ -159,7 +160,7 @@ export default function WorkshopAnalyticsPage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
-      theme === 'dark' 
+      isDark 
         ? 'bg-gradient-to-b from-gray-900 to-black text-white' 
         : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
     }`}>

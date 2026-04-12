@@ -89,9 +89,9 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
     domain: 'oolite.infra24.com',
     subdomain: 'oolite',
     theme: {
-      primaryColor: '#1E40AF',
-      secondaryColor: '#3B82F6',
-      accentColor: '#60A5FA',
+      primaryColor: '#47abc4',
+      secondaryColor: '#2c5f6f',
+      accentColor: '#6bb6c7',
       logo: '/logos/oolite-logo.png',
       favicon: '/favicons/oolite-favicon.ico',
       banner: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758247127/smart-sign/orgs/oolite/oolite-digital-arts-program_ai-sketch_mqtbm9.png',

@@ -1,6 +1,6 @@
 /**
  * Marketing site copy (single source of truth).
- * Public narrative: Center of Digital Culture (CDC). Implementation layer: Infra24.
+ * Public narrative: Digital Culture Center Miami (DCC.miami). Implementation layer: Infra24.
  */
 
 import type { WebcoreIconName } from '@/components/marketing/webcore-lucide';
@@ -114,7 +114,7 @@ export const marketingHeroSubheadSegments = [
   {
     kind: 'term',
     text: 'Infra24',
-    caption: 'Implementation methodology behind CDC pilots',
+    caption: 'Implementation methodology behind DCC Miami pilots',
     preview: {
       gradientId: 'indigoHaze',
       alt: 'Indigo haze gradient suggesting systems methodology.',
@@ -144,24 +144,28 @@ export const marketingHeroSubheadSegments = [
 ] as const satisfies readonly MarketingHeroSubheadSegment[];
 
 /** Site-wide organization name + tagline (metadata, JSON-LD, header/footer). */
-export const cdcSiteMeta = {
-  organizationName: 'Center of Digital Culture',
-  shortName: 'CDC',
+export const dccSiteMeta = {
+  organizationName: 'Digital Culture Center Miami',
+  shortName: 'DCC.miami',
   poweredByLine: 'Powered by Infra24',
   infra24Descriptor:
-    'Infra24 is the operational methodology and systems layer that designs, deploys, and documents CDC programs and public interfaces.',
+    'Infra24 is the operational methodology and systems layer that designs, deploys, and documents DCC Miami programs and public interfaces.',
 } as const;
 
 /** Homepage meta title/description (also used for JSON-LD). */
 export const marketingHomeMeta = {
-  title: 'Center of Digital Culture — Miami platform for artists, public learning & digital culture',
+  title: 'DCC.miami | Digital Culture Center Miami',
   description:
-    'Center of Digital Culture is a Miami-based initiative for artist-centered digital culture, public programs, and civic-facing infrastructure. Infra24 powers the systems behind workshops, smart signs, maps, kiosks, and repeatable public interfaces.',
+    'Digital Culture Center Miami is a public-facing platform for artist-centered digital culture, public programs, workshops, and civic-facing creative technology powered by Infra24.',
 } as const;
+
+/** Single-sentence hero subhead (plain text; avoids repeating the interactive term loop on the homepage). */
+export const marketingHeroPlainSubhead =
+  'Digital Culture Center Miami is a public-facing platform for artist-centered digital culture, workshops, public interfaces, and civic-facing creative technology.' as const;
 
 export const marketingHero = {
   eyebrow: 'Miami · Public digital culture',
-  headline: 'Center of Digital Culture',
+  headline: 'DCC.miami',
   subhead: marketingHeroSubheadSegments.map((s) => s.text).join(''),
   microTrust:
     'Built for funders, partners, and communities who want cultural infrastructure that is visible, legible, and accountable—not a one-off vendor relationship.',
@@ -196,13 +200,13 @@ export const homeSysLogLines = [
 ] as const;
 
 /** Hero digital frame microcopy (homepage webcore strip). */
-export const cdcHeroDigital = {
+export const dccHeroDigital = {
   systemLabels: ['Public', 'Digital', 'Miami'] as const,
   caption: 'One communication layer across physical and digital surfaces',
 } as const;
 
 /** Homepage narrative sequence (grants, decks, and site). */
-export const cdcNarrativeStack = [
+export const dccNarrativeStack = [
   {
     id: 'problem',
     title: 'Problem',
@@ -227,7 +231,7 @@ export const cdcNarrativeStack = [
     id: 'response',
     title: 'Response',
     body:
-      'CDC builds public programs, tools, workshops, and prototypes grounded in neighborhood and field reality—not abstract “innovation” for its own sake.',
+      'DCC Miami builds public programs, tools, workshops, and prototypes grounded in neighborhood and field reality—not abstract “innovation” for its own sake.',
     visual: {
       gradientId: 'fieldViolet' as const satisfies MarketingGradientId,
       alt: 'Violet field gradient — grounded response in public space.',
@@ -255,9 +259,9 @@ export const cdcNarrativeStack = [
   },
 ] as const;
 
-export const cdcAudiencePathways = [
+export const dccAudiencePathways = [
   {
-    href: '/grants/funders',
+    href: '/for-funders',
     title: 'For funders & grantmakers',
     description:
       'Miami pilot narrative, funding priorities, and materials—written for boards and program officers evaluating place-based digital culture.',
@@ -267,7 +271,7 @@ export const cdcAudiencePathways = [
     },
   },
   {
-    href: '/programs/institutional-programs',
+    href: '/for-organizations',
     title: 'For small cultural organizations',
     description:
       'Public interfaces, smart signs, artist-centered workflows, and staff training—scoped for organizations that need maintainable systems, not a one-off vendor.',
@@ -277,7 +281,7 @@ export const cdcAudiencePathways = [
     },
   },
   {
-    href: '/programs',
+    href: '/for-artists',
     title: 'For artists',
     description: 'Workshops, clinics, visibility tools, and experimental learning.',
     cover: {
@@ -287,39 +291,51 @@ export const cdcAudiencePathways = [
   },
 ] as const;
 
-/** Miami-area orgs on the Infra24 multi-tenant platform (`/o/{slug}`). CDC marketing is separate; tenant apps are unchanged. */
-export const cdcInfra24TenantOrgs = [
+/** Miami-area orgs on the Infra24 multi-tenant platform (`/o/{slug}`). DCC marketing is separate; tenant apps are unchanged. */
+export const dccInfra24TenantOrgs = [
   { href: '/o/oolite', name: 'Oolite Arts' },
   { href: '/o/bakehouse', name: 'Bakehouse Art Complex' },
   { href: '/o/madarts', name: 'Mad Arts' },
   { href: '/o/locust', name: 'Locust Projects' },
 ] as const;
 
-export const cdcWhyMiami = {
+export const dccWhyMiami = {
   title: 'Why Miami',
   body:
-    'This region combines dense cultural production, multilingual publics, and visible civic corridors where digital culture can be tested in the open. CDC starts as a pilot platform and distributed programs; a dedicated hub can follow traction—not the other way around.',
+    'This region combines dense cultural production, multilingual publics, and visible civic corridors where digital culture can be tested in the open. DCC Miami starts as a pilot platform and distributed programs; a dedicated hub can follow traction—not the other way around.',
 } as const;
 
-export const cdcSystemsIntro =
-  'Across CDC programs, Infra24 implements the touchpoints where culture meets the public: updateable signs and screens, maps and wayfinding, kiosks, portals, and the workflows that keep them current.';
+export const dccSystemsIntro =
+  'Across DCC Miami programs, Infra24 implements the touchpoints where culture meets the public: updateable signs and screens, maps and wayfinding, kiosks, portals, and the workflows that keep them current.';
 
-/** Visible homepage FAQ + FAQPage JSON-LD (single source of truth). */
+/** Short “what we are” blurb for the homepage (links to /about for depth). */
+export const dccWhatWeAreIntro =
+  'We run public programs, workshops, and civic-facing interfaces so artists and cultural organizations can participate in digital public life with support and systems that last—not one-off installs. Infra24 is the implementation layer that keeps signs, maps, kiosks, and portals maintainable.' as const;
+
+/** First questions for the homepage FAQ band; full list remains in `marketingFaq` for About and JSON consumers. */
+export const marketingHomeFaqPreview = [
+  'What is Digital Culture Center Miami?',
+  'What is Infra24, and how does it relate to DCC Miami?',
+  'Who is this for?',
+  'What is a typical first step?',
+] as const;
+
+/** Visible site FAQ (single source of truth for copy). */
 export const marketingFaq = [
   {
-    question: 'What is Center of Digital Culture?',
+    question: 'What is Digital Culture Center Miami?',
     answer:
-      'Center of Digital Culture (CDC) is a public-facing Miami initiative for artist-centered digital culture: workshops, public programs, artist support, and civic-facing interfaces. It is structured so funders and partners can see public benefit, pilots, and measurable outcomes—not only commercial services.',
+      'Digital Culture Center Miami (DCC.miami) is a public-facing platform for artist-centered digital culture: workshops, public programs, artist support, and civic-facing interfaces. It is structured so funders and partners can see public benefit, pilots, and measurable outcomes—not only commercial services.',
     readout:
-      'CDC is modeled as cultural infrastructure with legible public surfaces: programs produce literacy, interfaces produce accountability, and pilots produce evidence—not a closed SaaS product narrative.',
-    hints: ['entity: cdc.public_mission', 'surface: workshops + civic_ui', 'output: pilot_evidence_bundle'],
+      'DCC is modeled as cultural infrastructure with legible public surfaces: programs produce literacy, interfaces produce accountability, and pilots produce evidence—not a closed SaaS product narrative.',
+    hints: ['entity: dcc.public_mission', 'surface: workshops + civic_ui', 'output: pilot_evidence_bundle'],
   },
   {
-    question: 'What is Infra24, and how does it relate to CDC?',
+    question: 'What is Infra24, and how does it relate to DCC Miami?',
     answer:
-      'Infra24 is the implementation layer: the methodology and systems studio that designs, deploys, and documents the infrastructure behind CDC programs—smart signage, maps, kiosks, portals, update workflows, and documentation so the model can repeat across institutions.',
+      'Infra24 is the implementation layer: the methodology and systems studio that designs, deploys, and documents the infrastructure behind DCC Miami programs—smart signage, maps, kiosks, portals, update workflows, and documentation so the model can repeat across institutions.',
     readout:
-      'Infra24 owns deployable patterns: schema for what ships, runbooks for who updates what, and documentation so the next org does not restart from zero—CDC stays the public story; Infra24 stays the systems grammar.',
+      'Infra24 owns deployable patterns: schema for what ships, runbooks for who updates what, and documentation so the next org does not restart from zero—DCC stays the public story; Infra24 stays the systems grammar.',
     hints: ['layer: implementation_studio', 'artifact: runbook + delta_feed', 'route: /infra24 · /platform'],
   },
   {
@@ -333,7 +349,7 @@ export const marketingFaq = [
   {
     question: 'How is this different from buying displays or digital signage?',
     answer:
-      'Buying screens answers hardware. CDC and Infra24 focus on communication systems: what must be visible, where it lives, who updates it, and how you know it works—so public culture stays legible over time.',
+      'Buying screens answers hardware. DCC Miami and Infra24 focus on communication systems: what must be visible, where it lives, who updates it, and how you know it works—so public culture stays legible over time.',
     readout:
       'Hardware procurement closes a PO; communication systems close a loop—content lifecycle, ownership, and measurement are the actual product, screens are just one render target.',
     hints: ['anti-pattern: screen_without_owner', 'target: update_graph + sla', 'signal: stale_public_info ↓'],
@@ -363,6 +379,13 @@ export const marketingFaq = [
     hints: ['nav: /programs · /projects · /grants', 'action: /contact/*', 'queue: routed_intake'],
   },
 ] as const;
+
+const marketingHomeFaqPreviewQuestionSet = new Set<string>(marketingHomeFaqPreview);
+
+/** Subset of FAQ items shown on the homepage; remaining answers live on About and in `marketingFaq`. */
+export function getMarketingFaqHomeItems() {
+  return marketingFaq.filter((item) => marketingHomeFaqPreviewQuestionSet.has(item.question));
+}
 
 export const problemSection = {
   headline: 'Most organizations do not have a signage problem. They have a communication systems problem.',
@@ -477,7 +500,7 @@ export const marketingNavSheetFooterHrefs = ['/contact', '/infra24'] as const;
 
 /** Dedicated public product page at /infra24 (institutions, RFPs, technical buyers). */
 export const infra24MarketingMeta = {
-  title: 'Infra24 — smart signage, maps, kiosks & public communication systems',
+  title: 'Infra24 | Public Interfaces, Signage, and Digital Culture Infrastructure',
   description:
     'Infra24 designs updateable public communication systems for nonprofits, museums, and cultural organizations: smart signage, wayfinding, kiosks, portals, and workflows so the public sees accurate information and your team can maintain it.',
 } as const;
@@ -489,8 +512,8 @@ export const infra24MarketingHero = {
     'Infra24 is a digital infrastructure partner for nonprofits, museums, libraries, residency programs, and cultural organizations. We build smart signage, maps, kiosks, portals, and communication workflows so the public sees accurate, current information—and your team can update and measure it without endless manual rework.',
   microTrust:
     'If your mission depends on clear public access, navigation, and program visibility, we align infrastructure with how you actually operate.',
-  cdcLinkLine:
-    'For Miami public programs, workshops, and the CDC mission layer, start at the home page.',
+  dccLinkLine:
+    'For Miami public programs, workshops, and the DCC Miami mission layer, start at the home page.',
 } as const;
 
 /** Service areas (legacy “what we do” template). */
@@ -555,15 +578,15 @@ export const infra24Faq = [
       'Most engagements start with a Communication Infrastructure Audit: how information moves today, prioritized gaps, and a recommended pilot sequence sized to your capacity.',
   },
   {
-    question: 'How does Infra24 relate to Center of Digital Culture?',
+    question: 'How does Infra24 relate to Digital Culture Center Miami?',
     answer:
-      'CDC is the public Miami initiative for digital culture programs; Infra24 is the implementation methodology and product layer that builds and runs the systems. This page is the institutional entry point for the Infra24 studio itself.',
+      'DCC Miami is the public platform for digital culture programs; Infra24 is the implementation methodology and product layer that builds and runs the systems. This page is the institutional entry point for the Infra24 studio itself.',
   },
 ] as const;
 
 export const caseStudyPreviews = [
   {
-    slug: 'cultural-institution-wayfinding',
+    slug: 'museum-scale-public-information',
     title: 'Museum-scale public information',
     challenge: 'Event and hours data lived in three systems; on-site screens lagged the website by days.',
     whatWeDid: 'Pilot: single update path into smart signs and a public map.',
@@ -572,7 +595,7 @@ export const caseStudyPreviews = [
     coverAlt: 'Rose mist gradient — museum-scale public information and wayfinding.',
   },
   {
-    slug: 'nonprofit-program-portal',
+    slug: 'program-heavy-nonprofit-portal',
     title: 'Program-heavy nonprofit',
     challenge: 'Artist-facing requirements were buried in PDFs and email threads.',
     whatWeDid: 'Resident portal prototype tied to your existing program structure.',
@@ -581,7 +604,7 @@ export const caseStudyPreviews = [
     coverAlt: 'Indigo haze gradient — nonprofit program portals and clarity.',
   },
   {
-    slug: 'multi-venue-events',
+    slug: 'multi-venue-events-calendar',
     title: 'Multi-venue events calendar',
     challenge: 'Communications and programming each maintained separate calendars.',
     whatWeDid: 'Scoped workflow: one authoritative schedule, multiple public views.',

@@ -1,12 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { UnifiedNavigation, ooliteConfig } from '@/components/navigation';
 import { PageFooter } from '@/components/common/PageFooter';
 import { useUser } from '@clerk/nextjs';
+import { useTenant } from '@/components/tenant/TenantProvider';
+import { useOrganizationTheme } from '@/components/carousel/OrganizationThemeContext';
+import { resolveOrgPrimary, orgChromeFromPrimary } from '@/lib/org/org-chrome';
 import { 
   Users, 
   Filter, 
@@ -85,7 +88,15 @@ export default function ArtistsPage() {
   const params = useParams();
   const slug = params.slug as string;
   const { user } = useUser();
-  
+  const { tenantConfig } = useTenant();
+  const { theme: orgTheme } = useOrganizationTheme();
+
+  const orgPrimary = useMemo(
+    () => resolveOrgPrimary(tenantConfig?.theme?.primaryColor, orgTheme?.colors?.primary),
+    [tenantConfig?.theme?.primaryColor, orgTheme?.colors?.primary]
+  );
+  const chrome = useMemo(() => orgChromeFromPrimary(orgPrimary), [orgPrimary]);
+
   const [artists, setArtists] = useState<Artist[]>([]);
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
@@ -93,16 +104,6 @@ export default function ArtistsPage() {
   const [studioTypeFilter, setStudioTypeFilter] = useState('');
   const [studioNumberFilter, setStudioNumberFilter] = useState('');
   const [userRole, setUserRole] = useState<string>('');
-
-  // Oolite theme colors
-  const ooliteColors = {
-    primary: '#47abc4',
-    primaryLight: '#6bb8d1',
-    primaryDark: '#3a8ba3',
-    primaryAlpha: 'rgba(71, 171, 196, 0.1)',
-    primaryAlphaLight: 'rgba(71, 171, 196, 0.05)',
-    primaryAlphaDark: 'rgba(71, 171, 196, 0.15)',
-  };
 
   useEffect(() => {
     async function loadData() {
@@ -196,7 +197,7 @@ export default function ArtistsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[calc(2rem+150px)] pb-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -213,12 +214,12 @@ export default function ArtistsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <UnifiedNavigation config={ooliteConfig} userRole="admin" />
-      <div className="max-w-7xl 4xl:max-w-none mx-auto px-4 sm:px-6 lg:px-8 4xl:px-12 py-8 4xl:py-16">
+      <div className="max-w-7xl 4xl:max-w-none mx-auto px-4 sm:px-6 lg:px-8 4xl:px-12 pt-[calc(2rem+150px)] pb-8 4xl:pt-[calc(4rem+150px)] 4xl:pb-16">
         {/* Header */}
         <div className="mb-8 4xl:mb-16">
           <div className="flex items-center space-x-4 mb-4">
-            <div className="p-3 rounded-lg" style={{ backgroundColor: ooliteColors.primaryAlpha }}>
-              <Users className="w-8 h-8" style={{ color: ooliteColors.primary }} />
+            <div className="p-3 rounded-lg" style={{ backgroundColor: chrome.iconTileBg }}>
+              <Users className="w-8 h-8" style={{ color: chrome.text }} />
             </div>
             <div>
               <h1 className="text-3xl 4xl:text-6xl font-bold text-gray-900 dark:text-white mb-2 4xl:mb-4">
@@ -234,16 +235,18 @@ export default function ArtistsPage() {
           {user && (
             <div className="flex justify-end">
               <button 
-                className="inline-flex items-center px-4 py-2 4xl:px-8 4xl:py-4 text-white rounded-lg transition-colors text-sm 4xl:text-2xl"
+                type="button"
+                className="inline-flex items-center px-4 py-2 4xl:px-8 4xl:py-4 rounded-lg transition-colors text-sm 4xl:text-2xl"
                 style={{ 
-                  backgroundColor: ooliteColors.primary,
-                  borderColor: ooliteColors.primary
+                  backgroundColor: chrome.solid,
+                  borderColor: chrome.solid,
+                  color: chrome.onSolid,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = ooliteColors.primaryLight
+                  e.currentTarget.style.backgroundColor = chrome.solidHover
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = ooliteColors.primary
+                  e.currentTarget.style.backgroundColor = chrome.solid
                 }}
               >
                 <Plus className="h-4 w-4 4xl:h-8 4xl:w-8 mr-2" />
@@ -422,16 +425,17 @@ export default function ArtistsPage() {
                   {/* View Profile Button - Smaller with icon */}
                   <Link href={`/o/${slug}/artists/${artist.id}`}>
                     <button 
+                      type="button"
                       className="flex items-center space-x-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
                       style={{ 
-                        backgroundColor: ooliteColors.primary,
-                        color: 'white'
+                        backgroundColor: chrome.solid,
+                        color: chrome.onSolid,
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = ooliteColors.primaryLight
+                        e.currentTarget.style.backgroundColor = chrome.solidHover
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = ooliteColors.primary
+                        e.currentTarget.style.backgroundColor = chrome.solid
                       }}
                     >
                       <Eye className="h-3 w-3" />

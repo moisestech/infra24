@@ -1,5 +1,5 @@
 /**
- * Center of Digital Culture — marketing route registry.
+ * Digital Culture Center Miami (DCC.miami) — marketing route registry.
  * Single source for breadcrumbs, static params, and sitemap URLs.
  */
 
@@ -30,7 +30,15 @@ const pages: CdcPageDef[] = [
     path: '/about',
     title: 'About',
     description:
-      'Center of Digital Culture: a Miami-based initiative for artist-centered digital culture, public learning, and civic-facing infrastructure—powered by Infra24.',
+      'Digital Culture Center Miami: a public-facing platform for artist-centered digital culture, public learning, and civic-facing infrastructure—powered by Infra24.',
+    layout: 'default',
+  }),
+  p({
+    path: '/why-miami',
+    title: 'Why Miami',
+    description:
+      'Why Miami is the right region for a pilot in artist-centered digital culture: dense production, multilingual publics, and visible civic corridors.',
+    parent: '/about',
     layout: 'default',
   }),
   p({
@@ -66,7 +74,7 @@ const pages: CdcPageDef[] = [
     path: '/grants',
     title: 'Grants',
     description:
-      'Funding priorities, funder narrative, and materials for the Miami pilot. CDC is building a public digital culture model; fiscal sponsorship and institutional partners can help make grants and donations administratively clean.',
+      'Funding priorities, funder narrative, and materials for the Miami pilot. DCC Miami is building a public digital culture model; fiscal sponsorship and institutional partners can help make grants and donations administratively clean.',
     layout: 'support',
   }),
   p({
@@ -80,14 +88,14 @@ const pages: CdcPageDef[] = [
     path: '/contact',
     title: 'Contact',
     description:
-      'Reach Center of Digital Culture for general inquiries, partnerships, funders, press, and programs.',
+      'Reach Digital Culture Center Miami for general inquiries, partnerships, funders, press, and programs.',
     layout: 'default',
   }),
   p({
     path: '/infra24',
     title: 'Infra24',
     description:
-      'Updateable public communication systems for nonprofits and cultural organizations: smart signage, wayfinding, kiosks, portals, and workflows you can maintain and measure. The systems studio behind Center of Digital Culture.',
+      'Updateable public communication systems for nonprofits and cultural organizations: smart signage, wayfinding, kiosks, portals, and workflows you can maintain and measure. The systems studio behind Digital Culture Center Miami.',
     parent: '/about',
     layout: 'default',
   }),
@@ -467,23 +475,23 @@ const PROJECT_ENTRIES: {
     kind: 'case',
     infra24Note: 'Public-space activation patterns.',
   },
-  /* Legacy case study slugs → projects (for redirects & continuity) */
+  /* Project pattern case studies (marketing-friendly slugs; legacy URLs redirect in next.config) */
   {
-    slug: 'cultural-institution-wayfinding',
+    slug: 'museum-scale-public-information',
     title: 'Museum-scale public information',
     description: 'Event and hours data unified for screens and maps.',
     kind: 'case',
     infra24Note: 'Single update path into signs and public map.',
   },
   {
-    slug: 'nonprofit-program-portal',
+    slug: 'program-heavy-nonprofit-portal',
     title: 'Program-heavy nonprofit',
     description: 'Artist-facing requirements surfaced outside PDFs and email.',
     kind: 'case',
     infra24Note: 'Resident portal tied to program structure.',
   },
   {
-    slug: 'multi-venue-events',
+    slug: 'multi-venue-events-calendar',
     title: 'Multi-venue events calendar',
     description: 'One authoritative schedule, multiple public views.',
     kind: 'case',
@@ -537,7 +545,7 @@ const PARTNER_INQUIRY = [
   {
     slug: 'host-a-workshop',
     title: 'Host a workshop',
-    description: 'Partner with CDC to host a workshop at your venue.',
+    description: 'Partner with DCC Miami to host a workshop at your venue.',
   },
   {
     slug: 'host-a-pilot',
@@ -629,7 +637,7 @@ for (const cat of JOURNAL_CATEGORIES) {
     p({
       path: `/journal/${cat.slug}`,
       title: cat.title,
-      description: `${cat.title} from Center of Digital Culture.`,
+      description: `${cat.title} from Digital Culture Center Miami.`,
       parent: '/journal',
       layout: 'default',
     })
@@ -662,7 +670,7 @@ for (const a of CONTACT_AUDIENCES) {
     p({
       path: `/contact/${a.slug}`,
       title: a.title,
-      description: `Contact Center of Digital Culture — ${a.title}.`,
+      description: `Contact Digital Culture Center Miami — ${a.title}.`,
       parent: '/contact',
       layout: 'default',
     })

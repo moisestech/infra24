@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { CdcMiamiLogo } from '@/components/marketing/cdc/CdcMiamiLogo';
-import { cdcSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
+import { dccSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
 
 const footerWork = [
   { href: '/programs', label: 'Programs' },
@@ -28,8 +28,8 @@ export function SiteFooter() {
             <Link href="/" className="mb-4 inline-block">
               <CdcMiamiLogo size="lg" />
             </Link>
-            <p className="text-sm font-semibold text-neutral-900">{cdcSiteMeta.organizationName}</p>
-            <p className="mt-1 text-xs text-neutral-500">{cdcSiteMeta.poweredByLine}</p>
+            <p className="text-sm font-semibold text-neutral-900">{dccSiteMeta.organizationName}</p>
+            <p className="mt-1 text-xs text-neutral-500">{dccSiteMeta.poweredByLine}</p>
             <p className="mt-3 max-w-md text-sm font-medium leading-relaxed text-neutral-900">
               {marketingHomeMeta.title}
             </p>
@@ -74,7 +74,7 @@ export function SiteFooter() {
         </div>
         <div className="mt-10 flex flex-col gap-2 border-t border-neutral-100 pt-8 text-xs text-neutral-500 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2">
           <span>
-            © {new Date().getFullYear()} {cdcSiteMeta.organizationName}. All rights reserved.
+            © {new Date().getFullYear()} {dccSiteMeta.organizationName}. All rights reserved.
           </span>
           <span className="flex flex-wrap gap-x-4 gap-y-1 text-neutral-400">
             <Link href="/platform" className="hover:text-neutral-600">

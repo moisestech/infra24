@@ -106,10 +106,10 @@ export default function Infra24ProductPage() {
           </div>
           <p className="mt-8 text-sm text-neutral-500">
             <Link href="/" className="font-medium text-neutral-700 underline-offset-4 hover:underline">
-              Center of Digital Culture
+              Digital Culture Center Miami
             </Link>
             {' — '}
-            {infra24MarketingHero.cdcLinkLine}{' '}
+            {infra24MarketingHero.dccLinkLine}{' '}
             <Link href="/platform" className="font-medium text-neutral-700 underline-offset-4 hover:underline">
               Platform area
             </Link>

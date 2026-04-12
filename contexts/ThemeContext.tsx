@@ -1,5 +1,10 @@
 'use client';
 
+/**
+ * App theme: `theme` is the stored user preference (light | dark | system).
+ * For UI styling (colors, gradients), use `resolvedTheme` so "system" matches `document.documentElement` / Tailwind `dark:`.
+ * Use `theme` only when reflecting the explicit choice (e.g. highlighting "System" in settings).
+ */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark' | 'system';

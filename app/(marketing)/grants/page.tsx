@@ -6,7 +6,19 @@ import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
 const path = '/grants';
 
-export const metadata: Metadata = cdcPageMetadata(path);
+const baseMeta = cdcPageMetadata(path);
+export const metadata: Metadata = {
+  ...baseMeta,
+  title: 'Grants | DCC Miami Pilot and Funding Priorities',
+  openGraph: {
+    ...baseMeta.openGraph,
+    title: 'Grants | DCC Miami Pilot and Funding Priorities',
+  },
+  twitter: {
+    ...baseMeta.twitter,
+    title: 'Grants | DCC Miami Pilot and Funding Priorities',
+  },
+};
 
 const grantCards = [
   {
@@ -42,7 +54,7 @@ export default function GrantsIndexPage() {
       <PageHero
         eyebrow="Grants"
         title="Fund public digital culture in Miami"
-        description="Grants and sponsorships fuel workshops, small-organization pilots, public interfaces, and documentation—not generic tech support. CDC does not yet have a fiscal sponsor; we welcome conversations with 501(c)(3) fiscal sponsors and institutional partners who want to strengthen how Miami’s cultural field shows up in digital public space."
+        description="Grants and sponsorships fuel workshops, small-organization pilots, public interfaces, and documentation—not generic tech support. DCC Miami does not yet have a fiscal sponsor; we welcome conversations with 501(c)(3) fiscal sponsors and institutional partners who want to strengthen how Miami’s cultural field shows up in digital public space."
         breadcrumbs={getCdcBreadcrumbs(path)}
       />
       <Section className="bg-[#fafafa]">

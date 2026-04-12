@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { ArrowLeft, Eye, List, EyeOff, Settings2, Copy, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
-import { OrganizationThemeProvider } from '@/components/AnnouncementCarousel';
 import { DisplayProgramOrchestrator } from '@/components/display/DisplayProgramOrchestrator';
 import { Announcement } from '@/types/announcement';
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo';
@@ -16,8 +15,12 @@ import {
   saveDisplayProgram,
   tryParseDisplayProgramJson,
   encodeDisplayProgramForUrl,
+  parseDisplayViewParam,
+  buildSingleSegmentPreviewProgram,
+  previewLabelForViewKind,
   type DisplayProgram,
 } from '@/lib/display/display-program';
+import { studioNumberFromArtistPayload } from '@/lib/display/artist-studio-number';
 
 interface Organization {
   id: string;
@@ -27,9 +30,10 @@ interface Organization {
   description?: string;
 }
 
-export default function AnnouncementDisplayPage() {
+function AnnouncementDisplayPageInner() {
   const { isLoaded } = useUser();
   const params = useParams();
+  const searchParams = useSearchParams();
   const slug = params.slug as string;
 
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -164,13 +168,21 @@ export default function AnnouncementDisplayPage() {
           const wsData = await wsRes.json();
           const wsList = (wsData.workshops || []) as Record<string, unknown>[];
           setWorkshops(
-            wsList.map((w) => ({
-              id: String(w.id),
-              title: String(w.title || ''),
-              description: (w.description as string) || null,
-              image_url: (w.image_url as string) || null,
-              category: (w.category as string) || null,
-            }))
+            wsList.map((w) => {
+              const meta = (w.metadata as Record<string, unknown>) || null;
+              const scheduleDetail =
+                (typeof meta?.displaySchedule === 'string' && meta.displaySchedule.trim()) ||
+                (typeof meta?.schedule === 'string' && meta.schedule.trim()) ||
+                null;
+              return {
+                id: String(w.id),
+                title: String(w.title || ''),
+                description: scheduleDetail ? null : (w.description as string) || null,
+                image_url: (w.image_url as string) || null,
+                category: (w.category as string) || null,
+                schedule_detail: scheduleDetail,
+              };
+            })
           );
         } else {
           setWorkshops([]);
@@ -180,14 +192,22 @@ export default function AnnouncementDisplayPage() {
           const artData = await artRes.json();
           const arList = (artData.artists || []) as Record<string, unknown>[];
           setArtists(
-            arList.map((a) => ({
-              id: String(a.id),
-              name: String(a.name || ''),
-              bio: (a.bio as string) || null,
-              profile_image: (a.profile_image as string) || null,
-              studio_type: (a.studio_type as string) || null,
-              metadata: (a.metadata as Record<string, unknown>) || null,
-            }))
+            arList.map((a) => {
+              const meta = (a.metadata as Record<string, unknown>) || null;
+              const studioNum = studioNumberFromArtistPayload({
+                studio_location: (a.studio_location as string) || null,
+                metadata: meta,
+              });
+              return {
+                id: String(a.id),
+                name: String(a.name || ''),
+                bio: (a.bio as string) || null,
+                profile_image: (a.profile_image as string) || null,
+                studio_type: (a.studio_type as string) || null,
+                studio_number: studioNum || null,
+                metadata: meta,
+              };
+            })
           );
         } else {
           setArtists([]);
@@ -232,6 +252,21 @@ export default function AnnouncementDisplayPage() {
     const url = `${window.location.origin}${window.location.pathname}?program=${enc}`;
     void navigator.clipboard.writeText(url);
   }, [programJson, program]);
+
+  const searchQs = searchParams.toString();
+  const previewKind = useMemo(
+    () => parseDisplayViewParam(searchQs ? `?${searchQs}` : ''),
+    [searchQs]
+  );
+
+  const effectiveProgram = useMemo(() => {
+    if (!previewKind) return program;
+    const q = new URLSearchParams(searchQs);
+    const aid = q.get('announcementId')?.trim();
+    return buildSingleSegmentPreviewProgram(previewKind, {
+      announcementId: aid || undefined,
+    });
+  }, [previewKind, program, searchQs]);
 
   if (!isLoaded || loading) {
     return (
@@ -383,16 +418,51 @@ export default function AnnouncementDisplayPage() {
         </div>
       )}
 
-      <OrganizationThemeProvider initialSlug={slug}>
-        <DisplayProgramOrchestrator
-          orgSlug={slug}
-          program={program}
-          allAnnouncements={announcements}
-          workshops={workshops}
-          artists={artists}
-          cleanViewMode={cleanViewMode}
-        />
-      </OrganizationThemeProvider>
+      {previewKind && !cleanViewMode && (
+        <div className="fixed bottom-6 left-4 right-4 z-40 flex justify-center pointer-events-none">
+          <div className="pointer-events-auto flex max-w-2xl flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-2xl border border-white/10 bg-zinc-950/90 px-4 py-3 text-center text-sm text-white/90 shadow-2xl backdrop-blur-md">
+            <span className="rounded-full bg-cyan-500/20 px-2.5 py-0.5 text-xs font-semibold text-cyan-100/95">
+              Preview
+            </span>
+            <span className="text-white/85">{previewLabelForViewKind(previewKind)}</span>
+            <span className="hidden sm:inline text-white/40" aria-hidden>
+              ·
+            </span>
+            <span className="text-white/55">
+              Remove the <span className="text-cyan-200/90">view</span> query to run your saved program.
+            </span>
+            <Link
+              href={`/o/${slug}/announcements/display`}
+              className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white hover:bg-white/18"
+            >
+              Full program
+            </Link>
+          </div>
+        </div>
+      )}
+
+      <DisplayProgramOrchestrator
+        orgSlug={slug}
+        program={effectiveProgram}
+        allAnnouncements={announcements}
+        workshops={workshops}
+        artists={artists}
+        cleanViewMode={cleanViewMode}
+      />
     </div>
+  );
+}
+
+export default function AnnouncementDisplayPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        </div>
+      }
+    >
+      <AnnouncementDisplayPageInner />
+    </Suspense>
   );
 }

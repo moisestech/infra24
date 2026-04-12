@@ -1,21 +1,21 @@
-import { CDC_MIAMI_LOGO_URL } from '@/lib/marketing/cdc-brand';
+import { DCC_MIAMI_LOGO_URL } from '@/lib/marketing/cdc-brand';
 import { getSiteUrl } from '@/lib/marketing/site-url';
-import { cdcSiteMeta, marketingFaq, marketingHomeMeta } from '@/lib/marketing/content';
+import { dccSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
 
 export function MarketingJsonLd() {
   const base = getSiteUrl();
-  const logoUrl = CDC_MIAMI_LOGO_URL;
-  const orgName = cdcSiteMeta.organizationName;
+  const logoUrl = DCC_MIAMI_LOGO_URL;
+  const orgName = dccSiteMeta.organizationName;
 
   const organization = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: orgName,
-    alternateName: cdcSiteMeta.shortName,
+    alternateName: dccSiteMeta.shortName,
     url: base,
     description: marketingHomeMeta.description,
     logo: logoUrl,
-    slogan: cdcSiteMeta.poweredByLine,
+    slogan: dccSiteMeta.poweredByLine,
   };
 
   const website = {
@@ -27,20 +27,7 @@ export function MarketingJsonLd() {
     publisher: { '@type': 'Organization', name: orgName, url: base, logo: logoUrl },
   };
 
-  const faqPage = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: marketingFaq.map((item) => ({
-      '@type': 'Question',
-      name: item.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: item.answer,
-      },
-    })),
-  };
-
-  const payload = [organization, website, faqPage];
+  const payload = [organization, website];
 
   return (
     <script

@@ -26,9 +26,13 @@ const LOGO_CONFIG = {
     },
     logos: {
       horizontal: {
-        light: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758209450/smart-sign/orgs/oolite/Oolite-Arts_Logotype_B_Blue_2019-01-29_gwaje2.png',
-        dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758209446/smart-sign/orgs/oolite/Oolite-Arts_Logotype_B_White_2019-01-29_mq3bw6.png',
-        highContrast: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1758209446/smart-sign/orgs/oolite/Oolite-Arts_Logotype_B_Black_2019-01-29_yx8zao.png',
+        // Light UI: black logotype (visible on light nav). Dark UI: white logotype.
+        light:
+          'https://res.cloudinary.com/dkod1at3i/image/upload/v1775673996/Oolite-Arts_Logotype_B_Black_2019-01-29_llhyty.png',
+        dark:
+          'https://res.cloudinary.com/dkod1at3i/image/upload/v1775674004/Oolite-Arts_Logotype_B_White_2019-01-29_h25lgc.png',
+        highContrast:
+          'https://res.cloudinary.com/dkod1at3i/image/upload/v1775673996/Oolite-Arts_Logotype_B_Black_2019-01-29_llhyty.png',
       },
     },
   },
@@ -98,7 +102,7 @@ export const OrganizationLogo = memo(function OrganizationLogo({
   alt,
   priority = false,
 }: OrganizationLogoProps) {
-  const { theme: currentTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [imageError, setImageError] = React.useState(false);
   
   // Get organization config
@@ -117,50 +121,25 @@ export const OrganizationLogo = memo(function OrganizationLogo({
     );
   }
 
-  // Determine which logo variant to use
-  const logoVariant = orgConfig.logos[variant as keyof typeof orgConfig.logos];
+  let logoVariant = orgConfig.logos[variant as keyof typeof orgConfig.logos];
   if (!logoVariant) {
-    // Fallback to horizontal if variant not available
-    const fallbackVariant = orgConfig.logos.horizontal;
-    if (!fallbackVariant) {
-      return (
-        <div className={cn(
-          'flex items-center justify-center font-semibold text-gray-600 dark:text-gray-300',
-          SIZE_CONFIG[size].className,
-          className
-        )}>
-          {orgConfig.name}
-        </div>
-      );
-    }
+    logoVariant = orgConfig.logos.horizontal;
+  }
+  if (!logoVariant) {
+    return (
+      <div className={cn(
+        'flex items-center justify-center font-semibold text-gray-600 dark:text-gray-300',
+        SIZE_CONFIG[size].className,
+        className
+      )}>
+        {orgConfig.name}
+      </div>
+    );
   }
 
-  // Determine theme
-  const effectiveTheme = theme === 'auto' ? currentTheme : theme;
-  
-  // Select appropriate logo based on theme
-  let logoSrc: string;
-  let logoSrcSet: string | undefined;
-  
-  if (effectiveTheme === 'dark') {
-    logoSrc = logoVariant.dark;
-  } else if (effectiveTheme === 'light') {
-    logoSrc = logoVariant.light;
-  } else {
-    // System theme - use light as default, will be overridden by CSS
-    logoSrc = logoVariant.light;
-  }
+  const effectiveTheme = theme === 'auto' ? resolvedTheme : theme;
 
-  // Create srcSet for responsive images
-  const baseUrl = logoSrc.split('/upload/')[0] + '/upload/';
-  const imagePath = logoSrc.split('/upload/')[1];
-  
-  logoSrcSet = [
-    `${baseUrl}w_120/${imagePath} 120w`,
-    `${baseUrl}w_180/${imagePath} 180w`,
-    `${baseUrl}w_240/${imagePath} 240w`,
-    `${baseUrl}w_300/${imagePath} 300w`,
-  ].join(', ');
+  const logoSrc = effectiveTheme === 'dark' ? logoVariant.dark : logoVariant.light;
 
   const sizeConfig = SIZE_CONFIG[size];
   const altText = alt || `${orgConfig.name} logo`;
@@ -174,42 +153,12 @@ export const OrganizationLogo = memo(function OrganizationLogo({
         height={sizeConfig.height}
         className={cn(
           'object-contain transition-opacity duration-200',
-          sizeConfig.className,
-          // Theme-specific styling
-          effectiveTheme === 'dark' ? 'dark:opacity-100 opacity-0' : 'opacity-100 dark:opacity-0'
+          sizeConfig.className
         )}
         priority={priority}
         sizes="(max-width: 768px) 120px, (max-width: 1024px) 180px, (max-width: 1280px) 240px, 300px"
         onError={() => setImageError(true)}
-        // Add a second image for dark theme if using auto theme
-        {...(theme === 'auto' && {
-          onLoad: (e) => {
-            // Preload dark theme image
-            if (typeof window !== 'undefined') {
-              const darkImg = new window.Image();
-              darkImg.src = logoVariant.dark;
-            }
-          }
-        })}
       />
-      
-      {/* Dark theme image for auto theme */}
-      {theme === 'auto' && (
-        <Image
-          src={logoVariant.dark}
-          alt={altText}
-          width={sizeConfig.width}
-          height={sizeConfig.height}
-          className={cn(
-            'object-contain transition-opacity duration-200 absolute top-0 left-0',
-            sizeConfig.className,
-            'opacity-0 dark:opacity-100'
-          )}
-          priority={priority}
-          sizes="(max-width: 768px) 120px, (max-width: 1024px) 180px, (max-width: 1280px) 240px, 300px"
-          onError={() => setImageError(true)}
-        />
-      )}
     </div>
   );
 });

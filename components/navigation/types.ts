@@ -24,6 +24,10 @@ export interface Organization {
   name: string
   slug: string
   logo_url?: string
+  /** Shown when the app is in light mode (typically a dark mark on light chrome). */
+  logo_url_light?: string
+  /** Shown when the app is in dark mode (typically a light mark on dark chrome). */
+  logo_url_dark?: string
   artist_icon?: string
   banner_image?: string
 }

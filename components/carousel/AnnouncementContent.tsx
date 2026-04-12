@@ -42,6 +42,8 @@ interface AnnouncementContentProps {
   isActive?: boolean;
   animationsPaused?: boolean;
   hideAnnouncementDates?: boolean;
+  /** Fullscreen smart-sign card: solid light surface (readable dark text) */
+  minimalImageFrame?: boolean;
 }
 
 export function AnnouncementContent({ 
@@ -74,8 +76,12 @@ export function AnnouncementContent({
   isActive = false,
   animationsPaused = false,
   hideAnnouncementDates = false,
+  minimalImageFrame = false,
 }: AnnouncementContentProps) {
   const isImageOnly = announcement?.metadata?.image_only === true;
+  const lightCardSurface = Boolean(minimalImageFrame && layoutType === 'card');
+  const fg = lightCardSurface ? 'text-gray-900' : styles.text || 'text-white';
+  const fgSoft = lightCardSurface ? 'text-gray-600' : styles.text || 'text-white';
   if (isImageOnly) {
     return null;
   }
@@ -212,7 +218,10 @@ export function AnnouncementContent({
         {/* Type Badge - icon and category side by side */}
         <div 
           className={cn(
-            "inline-flex items-center gap-2 flex-nowrap rounded-full bg-white/10 backdrop-blur-sm",
+            'inline-flex items-center gap-2 flex-nowrap rounded-full',
+            lightCardSurface
+              ? 'border border-gray-200 bg-gray-100'
+              : 'bg-white/10 backdrop-blur-sm',
             layoutType === 'card' 
               ? "gap-2 px-4 py-2 md:px-5 md:py-2.5 xl:px-6 xl:py-3" 
               : "gap-4 xl:gap-6 px-8 xl:px-12 py-4 xl:py-6",
@@ -221,14 +230,14 @@ export function AnnouncementContent({
         >
           <span className={cn("flex-shrink-0 flex items-center justify-center", DEBUG_LAYOUT && "bg-green-500/60 p-1 rounded")}>
             <IconComponent 
-              className={cn(styles.text || "text-white")} 
+              className={cn(fg)} 
               size={layoutType === 'card' ? getIconSize('small') : getIconSize('medium')} 
             />
           </span>
           <div className={cn("flex items-center gap-2 flex-nowrap min-w-0", DEBUG_LAYOUT && "bg-purple-500/60 px-2 py-1 rounded")}>
             <span className={cn(
               "font-bold break-words whitespace-normal",
-              styles.text || "text-white",
+              fg,
               textSizes.type
             )}>
               {announcement.type?.replace('_', ' ').toUpperCase() || 'EVENT'}
@@ -236,7 +245,7 @@ export function AnnouncementContent({
             {announcement.sub_type && (
               <span className={cn(
                 "font-medium opacity-70 break-words whitespace-normal",
-                styles.text || "text-white",
+                fgSoft,
                 textSizes.type
               )}>
                 • {announcement.sub_type.replace('_', ' ').toUpperCase()}
@@ -262,7 +271,7 @@ export function AnnouncementContent({
           const isToday = d.getTime() === today.getTime();
           return (
             <div className="flex flex-col gap-1">
-              <div className={cn("font-semibold text-white/90", textSizes.date)}>
+              <div className={cn('font-semibold', lightCardSurface ? 'text-gray-800' : 'text-white/90', textSizes.date)}>
                 {dayOfWeek} · {dateStr}
                 {showTime && ` · ${timeStr}`}
               </div>
@@ -279,7 +288,7 @@ export function AnnouncementContent({
         <h1 
           className={cn(
             "font-black leading-tight break-words whitespace-normal",
-            styles.text || "text-white",
+            fg,
             textSizes.title
           )}
           style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
@@ -393,8 +402,10 @@ export function AnnouncementContent({
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
-                "inline-flex items-center gap-4 xl:gap-6 px-12 xl:px-16 2xl:px-20 3xl:px-24 py-6 xl:py-8 2xl:py-10 3xl:py-12 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all font-bold",
-                styles.text || "text-white",
+                'inline-flex items-center gap-4 xl:gap-6 px-12 xl:px-16 2xl:px-20 3xl:px-24 py-6 xl:py-8 2xl:py-10 3xl:py-12 rounded-full font-bold transition-all',
+                lightCardSurface
+                  ? 'bg-gray-900 text-white hover:bg-gray-800'
+                  : 'bg-white/20 text-white backdrop-blur-sm hover:bg-white/30',
                 orientation === 'portrait'
                   ? "text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl 4xl:text-8xl"
                   : "text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl 4xl:text-9xl"
@@ -402,7 +413,7 @@ export function AnnouncementContent({
             >
               <span>Learn More</span>
               <ExternalLink 
-                className={cn(styles.text || "text-white")}
+                className={cn(lightCardSurface ? 'text-white' : fg)}
                 size={getIconSize('small')} 
               />
             </a>

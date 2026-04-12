@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { CDC_MIAMI_LOGO_ALT, CDC_MIAMI_LOGO_URL } from '@/lib/marketing/cdc-brand';
+import { DCC_MIAMI_LOGO_ALT, DCC_MIAMI_LOGO_URL } from '@/lib/marketing/cdc-brand';
 
 const sizeBox: Record<'sm' | 'md' | 'lg' | 'hero', string> = {
   sm: 'h-8 w-[7.5rem]',
@@ -33,8 +33,8 @@ export function CdcMiamiLogo({
   return (
     <span className={cn('relative inline-block shrink-0', sizeBox[size], className)}>
       <Image
-        src={CDC_MIAMI_LOGO_URL}
-        alt={CDC_MIAMI_LOGO_ALT}
+        src={DCC_MIAMI_LOGO_URL}
+        alt={DCC_MIAMI_LOGO_ALT}
         fill
         sizes={sizesAttr}
         className="object-contain object-left"

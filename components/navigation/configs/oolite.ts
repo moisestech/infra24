@@ -11,6 +11,7 @@ import {
   TrendingUp,
   LineChart,
   Users,
+  School,
   Bell,
   Mail,
   Monitor,
@@ -23,7 +24,12 @@ export const ooliteConfig: NavigationConfig = {
     id: '73339522-c672-40ac-a464-e027e9c99d13',
     name: 'Oolite Arts',
     slug: 'oolite',
-    logo_url: '/oolite-logo.png'
+    logo_url:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1775673996/Oolite-Arts_Logotype_B_Black_2019-01-29_llhyty.png',
+    logo_url_light:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1775673996/Oolite-Arts_Logotype_B_Black_2019-01-29_llhyty.png',
+    logo_url_dark:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1775674004/Oolite-Arts_Logotype_B_White_2019-01-29_h25lgc.png',
   },
   colors: {
     primary: '#47abc4',
@@ -86,6 +92,13 @@ export const ooliteConfig: NavigationConfig = {
         href: '/o/oolite/artists',
         icon: Users,
         description: 'Community artists and residents',
+        category: 'user'
+      },
+      {
+        name: 'Alumni',
+        href: '/o/oolite/alumni',
+        icon: School,
+        description: 'Alumni directory (Airtable)',
         category: 'user'
       },
       {

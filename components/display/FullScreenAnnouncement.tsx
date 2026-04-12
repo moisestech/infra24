@@ -86,6 +86,7 @@ export function FullScreenAnnouncement({
         animationsPaused={cleanViewMode}
         slideIndex={0}
         hideAnnouncementDates={hideDates}
+        minimalImageFrame
       />
     </div>
   );

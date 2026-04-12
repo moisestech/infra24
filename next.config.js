@@ -104,6 +104,21 @@ const nextConfig = {
       { source: '/case-studies', destination: '/projects', permanent: true },
       { source: '/case-studies/:slug', destination: '/projects/:slug', permanent: true },
       { source: '/pilots', destination: '/projects', permanent: true },
+      {
+        source: '/projects/cultural-institution-wayfinding',
+        destination: '/projects/museum-scale-public-information',
+        permanent: true,
+      },
+      {
+        source: '/projects/nonprofit-program-portal',
+        destination: '/projects/program-heavy-nonprofit-portal',
+        permanent: true,
+      },
+      {
+        source: '/projects/multi-venue-events',
+        destination: '/projects/multi-venue-events-calendar',
+        permanent: true,
+      },
       { source: '/what-we-do', destination: '/infra24', permanent: true },
       {
         source: '/audit',

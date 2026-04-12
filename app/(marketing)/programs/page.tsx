@@ -30,7 +30,7 @@ export default function ProgramsIndexPage() {
       <Section className="bg-white pb-16">
         <CtaBlock
           headline="Host or sponsor a program"
-          body="Venues, schools, and cultural partners can host workshops or pilots with CDC."
+          body="Venues, schools, and cultural partners can host workshops or pilots with DCC Miami."
           primaryLabel="Partner with us"
           primaryHref="/partners"
           secondaryLabel="Funder conversation"

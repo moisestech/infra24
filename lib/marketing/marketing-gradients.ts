@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 
 /**
- * Named gradient surfaces for CDC marketing — avoids repeating remote photos.
+ * Named gradient surfaces for DCC marketing — avoids repeating remote photos.
  * Pair each use with a concrete `alt` string where the block is decorative context.
  */
 export type MarketingGradientId =

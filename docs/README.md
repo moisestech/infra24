@@ -132,7 +132,19 @@ AIRTABLE_API_KEY=patXXXXXXXXXXXXXX
 AIRTABLE_BASE_ID=appXXXXXXXXXXXXXX
 AIRTABLE_BUDGET_TABLE_ID=tblXXXXXXXXXXXXXX
 # Budget Bucket filters "Digital Lab" vs "Digital Conference"
+
+# Airtable alumni (optional - per org; see docs/AIRTABLE_MULTI_BASE.md)
+# Preferred (example: Oolite Arts alumni base / table):
+# AIRTABLE_OOLITE_ALUMNI_BASE_ID=appBvA0pWq9XkthTc
+# AIRTABLE_OOLITE_ALUMNI_TABLE_ID=tblLvTGxkv6pHoUvp
+# AIRTABLE_OOLITE_ALUMNI_VIEW_ID=viwdItH4CtoSi4vzJ  # optional
+# Legacy flat keys still work for oolite only if prefixed vars are unset:
+# AIRTABLE_ALUMNI_BASE_ID=appXXXXXXXXXXXXXX
+# AIRTABLE_ALUMNI_TABLE_ID=tblXXXXXXXXXXXXXX
+# AIRTABLE_ALUMNI_API_KEY=patXXXXXXXXXXXXXX  # omit to reuse AIRTABLE_API_KEY
 ```
+
+For budget vs alumni bases, field overrides, and the alumni API route, see [Airtable multi-base setup](AIRTABLE_MULTI_BASE.md).
 
 ## 🏗️ Project Structure
 

@@ -111,8 +111,25 @@ async function updateOoliteAnnouncements() {
     console.log('✅ Found organization:', organization.name);
 
     const now = new Date();
-    
+
+    // Schedule anchors for /o/{slug}/announcements month filter + sort: the app prefers
+    // end_date || start_date || starts_at || scheduled_at || created_at. Rows without
+    // starts_at (or legacy start_date) fall back to created_at (the day the seed ran).
+    // Every announcement below should set starts_at so month chips stay stable.
+
     // Parse dates from content
+    const jan3_2026_anchor = new Date('2026-01-03T12:00:00');
+    const jan5_2026_anchor = new Date('2026-01-05T12:00:00');
+    const jan6_2026_anchor = new Date('2026-01-06T12:00:00');
+    const jan7_2026_anchor = new Date('2026-01-07T12:00:00');
+    const jan8_2026_anchor = new Date('2026-01-08T18:00:00');
+    const jan12_2026_anchor = new Date('2026-01-12T12:00:00');
+    const jan14_2026_anchor = new Date('2026-01-14T12:00:00');
+    const feb10_2026_anchor = new Date('2026-02-10T12:00:00');
+    const mar10_2026_anchor = new Date('2026-03-10T12:00:00');
+    const mar12_2026_anchor = new Date('2026-03-12T12:00:00');
+    const mar15_2026_anchor = new Date('2026-03-15T12:00:00');
+    const apr1_2026_anchor = new Date('2026-04-01T12:00:00');
     const jan10_2026 = new Date('2026-01-10T00:00:00');
     const jan31_2026 = new Date('2026-01-31T23:59:59');
     const feb11_2026 = new Date('2026-02-11T00:00:00');
@@ -132,11 +149,32 @@ async function updateOoliteAnnouncements() {
     const apr20_2026 = new Date('2026-04-20T18:00:00');
     const apr22_2026_7pm = new Date('2026-04-22T19:00:00');
     const apr25_2026 = new Date('2026-04-25T14:00:00');
+    const apr25_2026_end = new Date('2026-04-25T17:00:00');
     const apr27_2026 = new Date('2026-04-27T18:00:00');
     const apr29_2026 = new Date('2026-04-29T18:00:00');
     /** Month anchor for image-only film posters (month filter + April preset) */
     const apr15_2026 = new Date('2026-04-15T12:00:00');
     const may21_2026 = new Date('2026-05-21T18:00:00');
+    // Spring / summer 2026 workshops & classes (schedule anchors)
+    const apr19_2026_am = new Date('2026-04-19T10:00:00');
+    const apr21_2026_am = new Date('2026-04-21T10:00:00');
+    const apr21_2026_eve = new Date('2026-04-21T18:00:00');
+    const apr29_2026_am = new Date('2026-04-29T10:00:00');
+    const apr29_2026_eve = new Date('2026-04-29T18:00:00');
+    const apr30_2026_am = new Date('2026-04-30T10:00:00');
+    const apr30_2026_eve = new Date('2026-04-30T18:00:00');
+    const may2_2026_day = new Date('2026-05-02T10:00:00');
+    const may2_2026_day_end = new Date('2026-05-02T15:00:00');
+    const may5_2026_eve = new Date('2026-05-05T18:00:00');
+    const may10_2026_am_end = new Date('2026-05-10T13:00:00');
+    const may12_2026_eve_end = new Date('2026-05-12T21:00:00');
+    const may26_2026_am_end = new Date('2026-05-26T13:00:00');
+    const may27_2026_eve_end = new Date('2026-05-27T21:30:00');
+    const june2_2026_eve_end = new Date('2026-06-02T20:30:00');
+    const june3_2026_pm_end = new Date('2026-06-03T13:00:00');
+    const june3_2026_eve_end = new Date('2026-06-03T20:30:00');
+    const june4_2026_am_end = new Date('2026-06-04T12:30:00');
+    const june4_2026_eve_end = new Date('2026-06-04T21:00:00');
 
     // Create announcements from the provided content
     const announcements = [
@@ -154,6 +192,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'news',
         sub_type: 'general',
+        starts_at: jan5_2026_anchor.toISOString(),
         image_url: IMAGES.ceoMessage,
         image_layout: 'card',
         primary_link: '#', // Will be updated with actual audio link
@@ -180,6 +219,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'news',
         sub_type: 'general',
+        starts_at: jan6_2026_anchor.toISOString(),
         image_url: IMAGES.welcome2026Residents,
         image_layout: 'card',
         people: [
@@ -213,6 +253,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'event',
         sub_type: 'general',
+        starts_at: jan7_2026_anchor.toISOString(),
         image_url: IMAGES.youthResidents,
         image_layout: 'card',
         people: [
@@ -239,6 +280,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'event',
         sub_type: 'meeting',
+        starts_at: jan8_2026_anchor.toISOString(),
         image_url: IMAGES.artistTalk,
         image_layout: 'card',
         rsvp_label: 'RSVP',
@@ -321,6 +363,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'news',
         sub_type: 'general',
+        starts_at: jan12_2026_anchor.toISOString(),
         image_url: IMAGES.cinematicNews,
         image_layout: 'card',
         people: [
@@ -349,6 +392,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'news',
         sub_type: 'general',
+        starts_at: jan14_2026_anchor.toISOString(),
         image_url: IMAGES.media,
         image_layout: 'card',
         primary_link: '#', // Will be updated with actual article link
@@ -400,6 +444,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'news',
         sub_type: 'general',
+        starts_at: jan3_2026_anchor.toISOString(),
         image_url: IMAGES.miamiArtWeek,
         image_layout: 'card',
         published_at: now.toISOString()
@@ -418,6 +463,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'news',
         sub_type: 'general',
+        starts_at: feb10_2026_anchor.toISOString(),
         image_url: IMAGES.campusUpdate,
         image_layout: 'card',
         people: [
@@ -562,6 +608,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'news',
         sub_type: 'general',
+        starts_at: mar10_2026_anchor.toISOString(),
         image_url: IMAGES.crossingBridgeRecap,
         image_layout: 'card',
         published_at: now.toISOString()
@@ -580,6 +627,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'event',
         sub_type: 'general',
+        starts_at: mar12_2026_anchor.toISOString(),
         image_url: IMAGES.weeklyCuratorialTours,
         image_layout: 'card',
         published_at: now.toISOString()
@@ -598,6 +646,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'news',
         sub_type: 'general',
+        starts_at: mar15_2026_anchor.toISOString(),
         image_url: IMAGES.alumniGrantDanWeitendorf,
         image_layout: 'card',
         published_at: now.toISOString()
@@ -719,6 +768,7 @@ async function updateOoliteAnnouncements() {
         visibility: 'public',
         type: 'news',
         sub_type: 'general',
+        starts_at: apr1_2026_anchor.toISOString(),
         image_url: IMAGES.ooliteConversations,
         image_layout: 'card',
         published_at: now.toISOString()
@@ -847,7 +897,7 @@ async function updateOoliteAnnouncements() {
         created_by: 'system_oolite',
         updated_by: 'system_oolite',
         title: 'Vibe Coding & Net Art: Code Art into HTML',
-        body: 'In-person workshop: Vibe Coding & Net Art: Code Art into HTML. Saturday, April 25, 2026, 2–5 p.m. A beginner-friendly Digital Lab workshop exploring net art and building a simple website.',
+        body: 'Instructors Fabiola Larios & Moises Sanabria\n\nLearn how to turn the web into a creative space. In this beginner-friendly Digital Lab workshop, participants will explore net art and build a simple website they can personalize and share. No prior coding experience is required.\n\nOne-Day Workshop\nSaturday\nApril 25, 2026\n2 - 5 p.m.',
         status: 'published',
         priority: 'high',
         tags: ['digital-lab', 'workshop', 'net-art', 'april-2026'],
@@ -855,10 +905,251 @@ async function updateOoliteAnnouncements() {
         type: 'event',
         sub_type: 'workshop',
         starts_at: apr25_2026.toISOString(),
+        ends_at: apr25_2026_end.toISOString(),
         location: 'Oolite Arts, 924 Lincoln Rd., Studio 100, Miami, FL 33139',
         image_url: IMAGES.vibeCodingNetArt,
         image_layout: 'card',
         primary_link: 'https://oolitearts.org/event/vibe-coding-net-art-code-art-into-html-workshop/',
+        rsvp_label: 'Register Now',
+        people: [
+          { name: 'Fabiola Larios', role: 'instructor', avatar_url: placeholderImage(150, 150, 'FL') },
+          { name: 'Moises Sanabria', role: 'instructor', avatar_url: placeholderImage(150, 150, 'MS') }
+        ],
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: "Stitched Memories: A Mother's Day Bookmaking Workshop",
+        body: 'Instructors Diana Larrea and Kiki Chirinos\n\nThis workshop invites mothers and young adults to work together to create a handmade book using family photographs from their personal archives. Through simple embroidery techniques and Japanese stab bookbinding, participants will transform selected photographs into a small artist book that reflects shared memories and family history.\n\nOne-Day Workshop\nSaturday\nMay 2, 2026\n10 a.m. - 3 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['classes', 'education', 'workshop', 'bookmaking', 'may-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: may2_2026_day.toISOString(),
+        ends_at: may2_2026_day_end.toISOString(),
+        location: 'Oolite Arts',
+        image_url: IMAGES.winterClasses,
+        image_layout: 'card',
+        primary_link: 'https://oolitearts.org/classes/',
+        rsvp_label: 'Register Now',
+        people: [
+          { name: 'Diana Larrea', role: 'instructor', avatar_url: placeholderImage(150, 150, 'DL') },
+          { name: 'Kiki Chirinos', role: 'instructor', avatar_url: placeholderImage(150, 150, 'KC') }
+        ],
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'The Art of Portrait Drawing: Part II',
+        body: 'Instructor Michele Del Campo\n\nDeepen your understanding of portrait drawing. Through demonstrations, guided exercises, and personalized feedback, participants will continue developing the essential skills needed to capture the structure, likeness, and expressive qualities of the human face. This is Michele\'s last course until the fall. Don\'t miss it!\n\nFive-Week Course\nTuesdays\nMay 5 - June 2, 2026\n6 - 8:30 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['classes', 'education', 'workshop', 'drawing', 'may-2026', 'june-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: may5_2026_eve.toISOString(),
+        ends_at: june2_2026_eve_end.toISOString(),
+        location: 'Oolite Arts',
+        image_url: IMAGES.winterClasses,
+        image_layout: 'card',
+        primary_link: 'https://oolitearts.org/classes/',
+        rsvp_label: 'Register Now',
+        people: [
+          { name: 'Michele Del Campo', role: 'instructor', avatar_url: placeholderImage(150, 150, 'MDC') }
+        ],
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Impressionist Flower Painting',
+        body: 'Instructor José Delgado Zúñiga\n\nThis four-week course introduces Impressionist painting through the study of flowers. Open to beginners and intermediate artists, students will explore color, light, and composition while developing expressive brushwork through demonstrations, hands-on exercises, and critique.\n\nFour-Week Course\nSundays\nApril 19 - May 10, 2026\n10 a.m. - 1 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['classes', 'education', 'workshop', 'painting', 'april-2026', 'may-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr19_2026_am.toISOString(),
+        ends_at: may10_2026_am_end.toISOString(),
+        location: 'Oolite Arts',
+        image_url: IMAGES.winterClasses,
+        image_layout: 'card',
+        primary_link: 'https://oolitearts.org/classes/',
+        rsvp_label: 'Register Now',
+        people: [
+          { name: 'José Delgado Zúñiga', role: 'instructor', avatar_url: placeholderImage(150, 150, 'JDZ') }
+        ],
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Surrealist Still Life: Painting the Impossible',
+        body: 'Instructor José Delgado Zúñiga\n\nThis four-week course reimagines still life through Surrealism. Students will draw and paint everyday objects into dreamlike compositions, developing a finished surreal still-life through guided exercises and critique.\n\nFour-Week Course\nTuesdays\nApril 21 - May 12, 2026\n6 p.m. - 9 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['classes', 'education', 'workshop', 'painting', 'april-2026', 'may-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr21_2026_eve.toISOString(),
+        ends_at: may12_2026_eve_end.toISOString(),
+        location: 'Oolite Arts',
+        image_url: IMAGES.winterClasses,
+        image_layout: 'card',
+        primary_link: 'https://oolitearts.org/classes/',
+        rsvp_label: 'Register Now',
+        people: [
+          { name: 'José Delgado Zúñiga', role: 'instructor', avatar_url: placeholderImage(150, 150, 'JDZ') }
+        ],
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Painting with Acrylic or Oil',
+        body: 'Instructor Raul Perdomo\n\nThis six-week course covers acrylic and oil painting fundamentals, including color mixing, composition, brushwork, and technique. Students work through guided exercises and individualized feedback while developing finished paintings at their own pace.\n\nMorning Course (Six Weeks)\nApril 21 - May 26, 2026\nTuesdays, 10 a.m. - 1 p.m.\n\nEvening Course (Six Weeks)\nApril 22 - May 27, 2026\nWednesdays, 6:30 p.m. - 9:30 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['classes', 'education', 'workshop', 'painting', 'april-2026', 'may-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr21_2026_am.toISOString(),
+        ends_at: may27_2026_eve_end.toISOString(),
+        location: 'Oolite Arts',
+        image_url: IMAGES.winterClasses,
+        image_layout: 'card',
+        primary_link: 'https://oolitearts.org/classes/',
+        rsvp_label: 'Register Now',
+        people: [
+          { name: 'Raul Perdomo', role: 'instructor', avatar_url: placeholderImage(150, 150, 'RP') }
+        ],
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Painting with Water-Based Media',
+        body: 'Instructor Will McGaul\n\nThis six-week course introduces acrylic and watercolor painting for beginner and intermediate artists. Students will build skills in color, composition, and technique through hands-on instruction, demonstrations, and critique while exploring a range of subjects.\n\nSix-Week Course\nWednesdays\nApril 29 - June 3, 2026\n10 a.m. - 1 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['classes', 'education', 'workshop', 'painting', 'april-2026', 'may-2026', 'june-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr29_2026_am.toISOString(),
+        ends_at: june3_2026_pm_end.toISOString(),
+        location: 'Oolite Arts',
+        image_url: IMAGES.winterClasses,
+        image_layout: 'card',
+        primary_link: 'https://oolitearts.org/classes/',
+        rsvp_label: 'Register Now',
+        people: [
+          { name: 'Will McGaul', role: 'instructor', avatar_url: placeholderImage(150, 150, 'WM') }
+        ],
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Watercolor Techniques',
+        body: 'Instructor Will McGaul\n\nThis six-week course introduces the fundamentals of watercolor for beginners and intermediate artists. Students will learn essential techniques such as washes, glazing, and wet-into-wet through guided practice and critique while building confidence in composition, color, and brushwork.\n\nSix-Week Course\nWednesdays\nApril 30 - June 4, 2026\n6 - 9 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['classes', 'education', 'workshop', 'painting', 'watercolor', 'april-2026', 'may-2026', 'june-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr30_2026_eve.toISOString(),
+        ends_at: june4_2026_eve_end.toISOString(),
+        location: 'Oolite Arts',
+        image_url: IMAGES.winterClasses,
+        image_layout: 'card',
+        primary_link: 'https://oolitearts.org/classes/',
+        rsvp_label: 'Register Now',
+        people: [
+          { name: 'Will McGaul', role: 'instructor', avatar_url: placeholderImage(150, 150, 'WM') }
+        ],
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Draw The Line',
+        body: 'Instructor Will McGaul\n\nThis six-week course introduces classical drawing through a step-by-step approach. Students build skills in proportion, gesture, value, and shading while drawing still life, interiors, and portraits through guided practice and critique.\n\nSix-Week Course\nWednesdays\nApril 29 - June 3, 2026\n6 - 8:30 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['classes', 'education', 'workshop', 'drawing', 'april-2026', 'may-2026', 'june-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr29_2026_eve.toISOString(),
+        ends_at: june3_2026_eve_end.toISOString(),
+        location: 'Oolite Arts',
+        image_url: IMAGES.winterClasses,
+        image_layout: 'card',
+        primary_link: 'https://oolitearts.org/classes/',
+        rsvp_label: 'Register Now',
+        people: [
+          { name: 'Will McGaul', role: 'instructor', avatar_url: placeholderImage(150, 150, 'WM') }
+        ],
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Drawing: The Creative Process',
+        body: 'Instructor Will McGaul\n\nThis six-week course explores drawing through hands-on exercises and experimentation. Students build mark-making, composition, and personal expression using materials like charcoal and ink.\n\nSix-Week Course\nThursdays\nApril 30 - June 4, 2026\n10 a.m. - 12:30 p.m.',
+        status: 'published',
+        priority: 'normal',
+        tags: ['classes', 'education', 'workshop', 'drawing', 'april-2026', 'may-2026', 'june-2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'workshop',
+        starts_at: apr30_2026_am.toISOString(),
+        ends_at: june4_2026_am_end.toISOString(),
+        location: 'Oolite Arts',
+        image_url: IMAGES.winterClasses,
+        image_layout: 'card',
+        primary_link: 'https://oolitearts.org/classes/',
+        rsvp_label: 'Register Now',
+        people: [
+          { name: 'Will McGaul', role: 'instructor', avatar_url: placeholderImage(150, 150, 'WM') }
+        ],
         published_at: now.toISOString()
       },
       {
@@ -1054,6 +1345,12 @@ async function updateOoliteAnnouncements() {
     const archiveTitles = [
       'The Ellies 2026',
       'Alumni News: Gabriel de Varona at Miami Film Festival',
+      'Miami Art Week 2025: A Moment in Motion',
+      'Miami Art Week Highlights',
+      'Miami Art Week VIP Brunch',
+      'Winter Art Classes: Abstract Painting: Sonic Gesture',
+      'Alumni Grant Winner: Honoring Dan Weitendorf',
+      'Oolite Arts Student Showcase',
     ];
     const { error: archiveError } = await supabase
       .from('announcements')

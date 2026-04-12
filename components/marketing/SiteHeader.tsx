@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
 import { CdcMiamiLogo } from '@/components/marketing/cdc/CdcMiamiLogo';
 import {
-  cdcSiteMeta,
+  dccSiteMeta,
   marketingNavSheetFooterHrefs,
   marketingNavSheetGroups,
   navItems,
@@ -50,8 +50,8 @@ export function SiteHeader() {
           />
           <div className="min-w-0 flex flex-col">
             <span className="truncate text-sm font-semibold tracking-tight text-neutral-900 sm:text-[0.95rem]">
-              <span className="sm:hidden">{cdcSiteMeta.shortName}</span>
-              <span className="hidden sm:inline">{cdcSiteMeta.organizationName}</span>
+              <span className="sm:hidden">{dccSiteMeta.shortName}</span>
+              <span className="hidden sm:inline">{dccSiteMeta.organizationName}</span>
             </span>
           </div>
         </Link>
@@ -143,9 +143,9 @@ export function SiteHeader() {
               </div>
 
               <div className="mt-auto border-t border-[var(--cdc-border)] px-5 py-4">
-                <p className="text-[10px] text-neutral-400">{cdcSiteMeta.poweredByLine}</p>
+                <p className="text-[10px] text-neutral-400">{dccSiteMeta.poweredByLine}</p>
                 <p className="mt-1 text-[10px] leading-snug text-neutral-500">
-                  {cdcSiteMeta.infra24Descriptor}
+                  {dccSiteMeta.infra24Descriptor}
                 </p>
                 <SheetClose asChild>
                   <Link

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, X } from 'lucide-react'
+import { ArrowLeft, Save, X, Monitor } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { UserPicker } from '@/components/ui/UserPicker'
 import { AnnouncementPerson } from '@/types/people'
@@ -272,6 +272,17 @@ export default function AnnouncementEditPage() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             Edit Announcement
           </h1>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <Link
+              href={`/o/${organization.slug}/announcements/display?view=announcement_fullscreen&announcementId=${announcement.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+            >
+              <Monitor className="h-4 w-4 shrink-0" />
+              Preview on smart sign (fullscreen)
+            </Link>
+          </p>
         </div>
 
         {/* Edit Form */}

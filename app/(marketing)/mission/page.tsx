@@ -41,7 +41,7 @@ export default function MissionPage() {
       <PageHero
         eyebrow="Mission"
         title="Public digital culture, built for Miami"
-        description="Center of Digital Culture exists so artists, organizations, and communities can participate in digital public life with support, legibility, and infrastructure that lasts."
+        description="Digital Culture Center Miami exists so artists, organizations, and communities can participate in digital public life with support, legibility, and infrastructure that lasts."
         breadcrumbs={getCdcBreadcrumbs(path)}
       />
       {pillars.map((p, i) => (
@@ -60,7 +60,7 @@ export default function MissionPage() {
           <a href="/infra24" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
             Infra24
           </a>
-          , the implementation methodology behind CDC programs and interfaces.
+          , the implementation methodology behind DCC Miami programs and interfaces.
         </p>
       </Section>
     </>
