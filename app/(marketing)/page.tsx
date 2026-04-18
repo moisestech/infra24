@@ -7,7 +7,6 @@ import { ProofStrip } from '@/components/marketing/ProofStrip';
 import { HomeFaqWebcoreList } from '@/components/marketing/HomeFaqWebcoreList';
 import {
   marketingHero,
-  marketingHeroPlainSubhead,
   marketingHomeMeta,
   publicDigitalMiamiLine,
   getMarketingFaqHomeItems,
@@ -20,6 +19,7 @@ import {
 } from '@/lib/marketing/content';
 import {
   dccHeroRotatingHeadlines,
+  dccHeroRotatingSubheads,
   dccHomePathwaysSection,
   dccParticipantValue,
   dccPilotCtaBand,
@@ -115,7 +115,7 @@ export default function MarketingHomePage() {
               headline={marketingHero.headline}
               headlineClassName={homeHeroHeadlineClassName}
               rotatingHeadlines={dccHeroRotatingHeadlines}
-              subhead={marketingHeroPlainSubhead}
+              rotatingSubheads={dccHeroRotatingSubheads}
               poweredByLine={dccSiteMeta.poweredByLine}
             >
               <HeroAboveFoldEngagement />

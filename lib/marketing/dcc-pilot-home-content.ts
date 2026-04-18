@@ -4,24 +4,47 @@
  */
 
 export const dccPilotSeoDescription =
-  'Year 1 Artist Support Pilot: digital presence, technical presentation, career readiness, and public visibility for Miami artists and small cultural organizations—through clinics, workshops, and shared tools. Powered by Infra24.' as const;
+  'Digital Culture Center Miami: infrastructure for born-digital art—software, screens, networks, and public-facing systems for Miami artists and cultural organizations. Year 1 pilot: clinics, workshops, and shared tools. Powered by Infra24.' as const;
 
-/** Hero line rotation timing (marketing homepage). */
+/** Hero tier-1 line rotation (marketing homepage). */
 export const heroHeadlineRotateIntervalMs = 6000 as const;
 export const heroHeadlineRotateTransitionSec = 0.45 as const;
 
-/** Knight-first rotating headlines (order: strongest default first). */
+/** Hero tier-2 subhead rotation — offset from tier 1 so lines do not tick in lockstep. */
+export const heroSubheadRotateIntervalMs = 8500 as const;
+
+/**
+ * Tier 1 — field-native, funder-legible rotating taglines (ranked; strongest first).
+ * Stable H1 remains the legal org name in `marketingHero.headline`.
+ */
 export const dccHeroRotatingHeadlines = [
-  'Building Cultural Infrastructure for Miami’s Artists',
-  'A New Support Layer for Miami’s Cultural Life',
-  'Support for Miami’s Artists, Built for Public Culture',
+  'Infrastructure for Born-Digital Art',
+  'A Support System for Networked Art',
+  'Built for Internet-Native Artists',
+  'For Artists Working in Software, Screens, and Systems',
+  'A New Infrastructure for Digital Culture',
+  'Building Miami’s Digital Art Underground',
+  'Art for the Browser-Brained Era',
+  'Where Hardware, Software, and Culture Collide',
+] as const;
+
+/**
+ * Tier 2 — concrete subcopy: software/screens/hardware/online culture + pilot outputs.
+ * First line mirrors `supportingSubhead` for non-hero consumers and SEO-adjacent blurbs.
+ */
+export const dccHeroRotatingSubheads = [
+  'DCC helps artists working with software, screens, networks, hardware, and online culture strengthen visibility, technical presentation, and public connection in Miami.',
+  'From websites and documentation to screens, QR systems, installations, and public-facing tools, DCC supports artists working across digital culture, new media, and online aesthetics.',
+  'DCC is a Miami-based support layer for artists and cultural workers building with hardware, software, browser culture, memes, e-waste, and other born-digital forms.',
+  'DCC supports artists shaping culture through code, screens, networks, digital debris, and chronically online aesthetics.',
+  'DCC strengthens born-digital art and culture through practical infrastructure: workshops, clinics, public programs, and tools that stay accountable to artists and the public.',
+  'For creative technologists and organizations: clearer digital presence, better technical presentation of screen-based and networked work, and visibility in civic corridors.',
 ] as const;
 
 export const dccPilotHomeHero = {
   eyebrow: 'Artist Support Pilot · Year 1',
-  /** Plain subhead under the H1 (Knight-aligned one-liner). */
-  supportingSubhead:
-    'DCC is a distributed artist-support pilot helping artists and cultural organizations strengthen digital presence, technical presentation, public visibility, and opportunity readiness.',
+  /** Default plain subhead (first rotating tier-2 line); hero may cycle full `dccHeroRotatingSubheads`. */
+  supportingSubhead: dccHeroRotatingSubheads[0],
   trustLine:
     'We treat digital and technical support as cultural infrastructure: practical outputs, public learning, and systems that can travel—not a one-off vendor story.',
   primaryCta: { label: 'Explore Services', href: '/#year-1-services' },

@@ -6,6 +6,7 @@
 import type { WebcoreIconName } from '@/components/marketing/webcore-lucide';
 import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
 import {
+  dccHeroRotatingSubheads,
   dccPilotHomeHero,
   dccPilotSeoDescription,
   dccPilotWhatWeAreBlurb,
@@ -163,8 +164,8 @@ export const marketingHomeMeta = {
   description: dccPilotSeoDescription,
 } as const;
 
-/** Plain hero subhead (homepage); aligned with Year 1 Artist Support Pilot narrative. */
-export const marketingHeroPlainSubhead = dccPilotHomeHero.supportingSubhead;
+/** Plain hero subhead default (first tier-2 rotating line); homepage cycles full `dccHeroRotatingSubheads`. */
+export const marketingHeroPlainSubhead = dccHeroRotatingSubheads[0];
 
 export const marketingHero = {
   eyebrow: 'Miami · Public digital culture',

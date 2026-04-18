@@ -35,6 +35,8 @@ type HomeHeroDigitalProps = {
   pilotTagline?: string;
   /** When set, replaces static `pilotTagline` with a rotating Knight-first headline cycle. */
   rotatingHeadlines?: readonly string[];
+  /** When set, rotating tier-2 body copy after `poweredByLine`; static `subhead` is omitted. */
+  rotatingSubheads?: readonly string[];
   /** WebGL particle field behind the hero card (skipped when `prefers-reduced-motion` is set). */
   showHero3DBackground?: boolean;
   children: React.ReactNode;
@@ -50,6 +52,7 @@ export function HomeHeroDigital({
   subheadSegments,
   pilotTagline,
   rotatingHeadlines,
+  rotatingSubheads,
   showHero3DBackground = true,
   children,
 }: HomeHeroDigitalProps) {
@@ -59,11 +62,12 @@ export function HomeHeroDigital({
     rotatingHeadlines?.length && rotatingHeadlines[0]
       ? rotatingHeadlines[0]
       : pilotTagline?.trim() ?? '';
-  const plainSubheadForSr =
-    [pilotLineForSr, subhead ?? subheadSegments?.map((s) => s.text).join('')]
-      .filter(Boolean)
-      .join(' ') || '';
+  const subheadBodyForSr = rotatingSubheads?.length
+    ? rotatingSubheads[0]
+    : (subhead ?? subheadSegments?.map((s) => s.text).join('') ?? '');
+  const plainSubheadForSr = [pilotLineForSr, subheadBodyForSr].filter(Boolean).join(' ') || '';
   const showPilotBand = Boolean(rotatingHeadlines?.length) || Boolean(pilotTagline?.trim());
+  const showRotatingSubheads = Boolean(rotatingSubheads?.length);
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-[var(--cdc-border)] bg-white/35 p-6 shadow-sm shadow-teal-950/[0.04] backdrop-blur-[2px] dark:bg-neutral-900/45 dark:shadow-black/20 sm:p-8">
@@ -170,7 +174,7 @@ export function HomeHeroDigital({
         )}
 
         {rotatingHeadlines?.length ? (
-          <HomeHeroRotatingHeadline lines={rotatingHeadlines} />
+          <HomeHeroRotatingHeadline lines={rotatingHeadlines} variant="hero" />
         ) : pilotTagline?.trim() ? (
           <p className="mt-4 max-w-2xl text-lg font-semibold leading-snug tracking-tight text-neutral-800 dark:text-neutral-100 sm:text-xl">
             {pilotTagline.trim()}
@@ -186,12 +190,19 @@ export function HomeHeroDigital({
           {poweredByLine}
         </p>
 
+        {showRotatingSubheads && rotatingSubheads?.length ? (
+          <div className="mt-6">
+            <span className="sr-only">{plainSubheadForSr}</span>
+            <HomeHeroRotatingHeadline lines={rotatingSubheads} variant="subhead" />
+          </div>
+        ) : null}
+
         {subheadSegments?.length ? (
           <>
             <span className="sr-only">{plainSubheadForSr}</span>
             <HeroSubheadKeyTerms segments={subheadSegments} reduceMotion={Boolean(reduceMotion)} />
           </>
-        ) : subhead ? (
+        ) : subhead && !showRotatingSubheads ? (
           reduceMotion ? (
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-300">
               {subhead}
