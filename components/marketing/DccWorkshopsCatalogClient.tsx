@@ -6,11 +6,9 @@ import { Search } from 'lucide-react'
 import { WorkshopCard } from '@/components/workshops/marketing/WorkshopCard'
 import type { WorkshopRow } from '@/components/workshops/marketing/types'
 import { normalizeWorkshopForCatalog } from '@/lib/workshops/normalize-workshop-for-catalog'
-import { isAdultStudioWorkshop } from '@/lib/workshops/workshop-filters'
-import { getWorkshopsLandingContent } from '@/lib/orgs/oolite/workshops-landing-content'
+import { isExcludedFromDccPublicCatalog } from '@/lib/workshops/workshop-filters'
+import { getDccMarketingWorkshopsLandingContent } from '@/lib/marketing/dcc-workshops-landing-content'
 import { WORKSHOP_CATALOG_ORG_SLUG } from '@/lib/marketing/workshops-catalog-org'
-
-type Org = { id: string; name: string; slug: string; banner_image?: string; created_at: string }
 
 function sortFeaturedFirst<T extends { featured?: boolean; title: string }>(a: T, b: T) {
   if (Boolean(a.featured) !== Boolean(b.featured)) return a.featured ? -1 : 1
@@ -19,27 +17,53 @@ function sortFeaturedFirst<T extends { featured?: boolean; title: string }>(a: T
 
 export function DccWorkshopsCatalogClient() {
   const slug = WORKSHOP_CATALOG_ORG_SLUG
-  const [org, setOrg] = useState<Org | null>(null)
   const [rows, setRows] = useState<WorkshopRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+
+  const landingCopy = getDccMarketingWorkshopsLandingContent()
 
   useEffect(() => {
     let cancelled = false
     async function load() {
       setLoading(true)
+      setError(null)
       try {
         const res = await fetch(`/api/organizations/by-slug/${encodeURIComponent(slug)}/workshops/public`)
-        if (!res.ok || cancelled) return
+        if (cancelled) return
+        if (!res.ok) {
+          const msg =
+            res.status === 404
+              ? `No organization found for slug “${slug}”. Set NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG to the Supabase organizations.slug that owns your published workshops.`
+              : 'Could not load the workshop catalog. Please try again later.'
+          setError(msg)
+          setRows([])
+          return
+        }
         const pub = await res.json()
-        const o = pub.organization as Org | null
-        if (!o?.id || cancelled) return
-        setOrg(o)
+        const o = pub.organization as {
+          id: string
+          name: string
+          slug: string
+          banner_image?: string
+          created_at: string
+        } | null
+        if (!o?.id) {
+          setError('Catalog response was missing organization data.')
+          setRows([])
+          return
+        }
         const rawList = (pub.workshops || []) as Record<string, unknown>[]
         const normalized = rawList.map((w) =>
           normalizeWorkshopForCatalog(w, { id: o.id, name: o.name, slug: o.slug })
         )
-        if (!cancelled) setRows(normalized as unknown as WorkshopRow[])
+        setRows(normalized as unknown as WorkshopRow[])
+      } catch {
+        if (!cancelled) {
+          setError('Could not load the workshop catalog. Please try again later.')
+          setRows([])
+        }
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -50,13 +74,15 @@ export function DccWorkshopsCatalogClient() {
     }
   }, [slug])
 
-  const landingCopy = getWorkshopsLandingContent(slug)
+  const publishedRows = useMemo(
+    () => rows.filter((w) => w.status === 'published'),
+    [rows]
+  )
 
+  /** Published workshops eligible for the public DCC catalog (excludes Oolite studio-only classes). */
   const digitalLabList = useMemo(() => {
-    return rows
-      .filter((w) => !isAdultStudioWorkshop(w) && w.status === 'published')
-      .sort(sortFeaturedFirst)
-  }, [rows])
+    return publishedRows.filter((w) => !isExcludedFromDccPublicCatalog(w)).sort(sortFeaturedFirst)
+  }, [publishedRows])
 
   const filtered = useMemo(() => {
     const q = searchTerm.toLowerCase().trim()
@@ -67,9 +93,6 @@ export function DccWorkshopsCatalogClient() {
       return t.includes(q) || d.includes(q)
     })
   }, [digitalLabList, searchTerm])
-
-  const signInOolite = `/sign-in?redirect_url=${encodeURIComponent('/o/oolite/workshops')}`
-  const signInDigitalLab = `/sign-in?redirect_url=${encodeURIComponent('/o/oolite/workshops/digital-lab')}`
 
   if (loading) {
     return (
@@ -83,6 +106,26 @@ export function DccWorkshopsCatalogClient() {
       </div>
     )
   }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Workshop catalog unavailable</h1>
+        <p className="mt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{error}</p>
+        <p className="mt-6 text-sm text-neutral-500 dark:text-neutral-500">
+          <Link href="/contact" className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline">
+            Contact DCC
+          </Link>{' '}
+          if this persists.
+        </p>
+      </div>
+    )
+  }
+
+  const catalogEmpty = digitalLabList.length === 0
+  const allPublishedFilteredOut = catalogEmpty && publishedRows.length > 0
+  const searchActive = searchTerm.trim().length > 0
+  const searchNoHits = searchActive && filtered.length === 0 && !catalogEmpty
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
@@ -98,21 +141,20 @@ export function DccWorkshopsCatalogClient() {
           {landingCopy.heroLead}
         </p>
         <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
-          Public catalog on DCC.miami. Sign in to Oolite for drafts, voting, and the full Digital Lab
-          catalog with filters and readiness badges.
+          This is the public DCC.miami catalog. Listings show published workshops for the configured program org.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
-            href={signInOolite}
-            className="inline-flex rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 shadow-sm transition hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800/80"
+            href={landingCopy.heroPrimaryCta.href}
+            className="inline-flex rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900"
           >
-            Oolite member catalog
+            {landingCopy.heroPrimaryCta.label}
           </Link>
           <Link
-            href={signInDigitalLab}
+            href={landingCopy.heroSecondaryCta.href}
             className="inline-flex rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 shadow-sm transition hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800/80"
           >
-            Digital Lab (filters & badges)
+            {landingCopy.heroSecondaryCta.label}
           </Link>
         </div>
       </header>
@@ -129,8 +171,46 @@ export function DccWorkshopsCatalogClient() {
           />
         </div>
 
-        {filtered.length === 0 ? (
+        {searchNoHits ? (
           <p className="mt-12 text-center text-sm text-neutral-500">No workshops match your search.</p>
+        ) : catalogEmpty ? (
+          <div className="mx-auto mt-12 max-w-xl text-center text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            {allPublishedFilteredOut ? (
+              <>
+                <p>
+                  There are published workshops for this program org, but none are shown in the public DCC catalog
+                  right now (in-studio / member-only listings are filtered out).
+                </p>
+                <p className="mt-3">
+                  To surface a workshop here, set its category away from in-studio programs or add metadata such as{' '}
+                  <code className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs dark:bg-neutral-800">
+                    dcc_public_catalog: true
+                  </code>{' '}
+                  on the row if it is intentionally public on DCC.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>No published workshops are in this catalog yet.</p>
+                <p className="mt-3">
+                  If you expect listings here, confirm in the database that workshops are{' '}
+                  <strong className="font-medium text-neutral-800 dark:text-neutral-200">published</strong> for the
+                  organization whose slug matches{' '}
+                  <code className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs dark:bg-neutral-800">{slug}</code>{' '}
+                  (set{' '}
+                  <code className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs dark:bg-neutral-800">
+                    NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG
+                  </code>{' '}
+                  in production).
+                </p>
+              </>
+            )}
+            <p className="mt-4">
+              <Link href="/contact" className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline">
+                Contact DCC
+              </Link>
+            </p>
+          </div>
         ) : (
           <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((workshop) => (
@@ -167,11 +247,9 @@ export function DccWorkshopsCatalogClient() {
         </ul>
       </section>
 
-      {org?.name ? (
-        <p className="mt-12 text-center text-xs text-neutral-500">
-          Presented with {org.name}. Catalog shows published Digital Lab workshops.
-        </p>
-      ) : null}
+      <p className="mt-12 text-center text-xs text-neutral-500 dark:text-neutral-500">
+        Public Digital Lab series · Digital Culture Center Miami · Catalog shows published workshops
+      </p>
     </div>
   )
 }

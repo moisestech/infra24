@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ArrowLeft, FileText, GraduationCap, Star } from 'lucide-react'
 import { mergeWorkshopMetadata } from '@/lib/workshops/marketing-metadata'
-import { getWorkshopsLandingContent } from '@/lib/orgs/oolite/workshops-landing-content'
+import { getDccMarketingWorkshopsLandingContent } from '@/lib/marketing/dcc-workshops-landing-content'
 import { WorkshopHero } from '@/components/workshops/marketing/WorkshopHero'
 import { WorkshopOutcomeStrip } from '@/components/workshops/marketing/WorkshopOutcomeStrip'
 import { WorkshopAudienceSplit } from '@/components/workshops/marketing/WorkshopAudienceSplit'
@@ -21,6 +21,7 @@ import { LearnAiLanding } from '@/components/workshops/learn-ai/LearnAiLanding'
 import { WorkshopDetailMainColumn } from '@/components/workshops/marketing/WorkshopDetailMainColumn'
 import { WORKSHOP_CATALOG_ORG_SLUG } from '@/lib/marketing/workshops-catalog-org'
 import { normalizeWorkshopForCatalog } from '@/lib/workshops/normalize-workshop-for-catalog'
+import { isExcludedFromDccPublicCatalog } from '@/lib/workshops/workshop-filters'
 
 function signInRedirect(path: string) {
   return `/sign-in?redirect_url=${encodeURIComponent(path)}`
@@ -33,7 +34,7 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const landing = getWorkshopsLandingContent(slug)
+  const landing = getDccMarketingWorkshopsLandingContent()
 
   const fetchWorkshop = useCallback(async () => {
     if (!workshopKey) return
@@ -46,7 +47,17 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
       const data = await res.json()
       const row = data.data ?? data
       if (!row?.id) throw new Error('Workshop not found')
-      setWorkshop(row as WorkshopRow)
+      const candidate = row as WorkshopRow
+      if (
+        isExcludedFromDccPublicCatalog({
+          title: String(candidate.title ?? ''),
+          category: candidate.category,
+          metadata: candidate.metadata ?? null,
+        })
+      ) {
+        throw new Error('Workshop not found')
+      }
+      setWorkshop(candidate)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load workshop')
       setWorkshop(null)
@@ -72,17 +83,25 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
         const all = rawList.map((w) =>
           normalizeWorkshopForCatalog(w, { id: o.id, name: o.name, slug: o.slug })
         ) as unknown as WorkshopRow[]
+        const visible = all.filter(
+          (w) =>
+            !isExcludedFromDccPublicCatalog({
+              title: String(w.title ?? ''),
+              category: w.category,
+              metadata: w.metadata ?? null,
+            })
+        )
         const m = mergeWorkshopMetadata(workshop.metadata ?? undefined, {
           title: workshop.title,
           id: workshop.id,
         })
         const ids = m.relatedWorkshopIds
         if (ids?.length) {
-          setRelatedList(all.filter((w) => ids.includes(w.id)))
+          setRelatedList(visible.filter((w) => ids.includes(w.id)))
         } else {
           const cat = workshop.category
           setRelatedList(
-            all.filter((w) => w.id !== workshop.id && cat && w.category === cat).slice(0, 3)
+            visible.filter((w) => w.id !== workshop.id && cat && w.category === cat).slice(0, 3)
           )
         }
       } catch {
@@ -132,11 +151,14 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-6 rounded-lg border border-neutral-200 bg-white/90 px-4 py-3 text-sm text-neutral-700 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/60 dark:text-neutral-200">
-        You are viewing the public DCC catalog.{' '}
-        <Link href={signInRedirect(`/o/${slug}/workshops/${encodeURIComponent(segment)}`)} className="font-medium text-[var(--cdc-teal)] underline underline-offset-2">
-          Sign in to Oolite
+        You are viewing the public DCC.miami catalog.{' '}
+        <Link
+          href={signInRedirect(`/o/${slug}/workshops/${encodeURIComponent(segment)}`)}
+          className="font-medium text-[var(--cdc-teal)] underline underline-offset-2"
+        >
+          Sign in
         </Link>{' '}
-        for booking, drafts, learn materials, and member tools.
+        for booking, drafts, learn materials, and member tools in your organization workspace.
       </div>
 
       <div className="mb-8">
@@ -199,7 +221,7 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
               </TabsContent>
               <TabsContent value="learn" className="mt-8">
                 <p className="mb-4 text-sm text-muted-foreground">
-                  Learn content and progress sync when you sign in to your Oolite account.
+                  Learn content and progress sync when you sign in to your member account.
                 </p>
                 <WorkshopLearnTab workshop={workshop} orgSlug={slug} />
               </TabsContent>
