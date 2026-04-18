@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu } from 'lucide-react';
-import { CdcMiamiLogo } from '@/components/marketing/cdc/CdcMiamiLogo';
+import { ChevronDown, Menu } from 'lucide-react';
+import { MarketingHeaderCenterLogo } from '@/components/marketing/MarketingHeaderCenterLogo';
+import { MarketingHeaderSloganBar } from '@/components/marketing/MarketingHeaderSloganBar';
 import {
   dccSiteMeta,
   marketingHeaderApplyCta,
@@ -12,7 +13,6 @@ import {
   marketingNavSheetFooterHrefs,
   marketingNavSheetGroups,
   navItems,
-  publicDigitalMiamiLine,
 } from '@/lib/marketing/content';
 import { MarketingThemeToggle } from '@/components/marketing/MarketingThemeToggle';
 import { cn } from '@/lib/utils';
@@ -28,6 +28,12 @@ import {
 function navItemByHref(href: string) {
   return navItems.find((item) => item.href === href);
 }
+
+/** Mid-width desktop: same destinations as the split bar, for the compact Menu panel. */
+const marketingHeaderNavMidMenuLinks = [
+  ...marketingHeaderNavLeft,
+  ...marketingHeaderNavRight,
+] as const;
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -48,31 +54,72 @@ export function SiteHeader() {
         : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
     );
 
+  const desktopMenuPanelLinkClass = (href: string) =>
+    cn(
+      'cdc-font-display block rounded-md px-3 py-2 text-sm font-medium transition-colors',
+      pathname === href
+        ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
+        : 'text-neutral-700 hover:bg-neutral-50 dark:text-neutral-200 dark:hover:bg-neutral-800/80'
+    );
+
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--cdc-border)] bg-[#fafafa]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fafafa]/80 dark:border-neutral-700/80 dark:bg-neutral-950/90 dark:supports-[backdrop-filter]:bg-neutral-950/85">
-      <div className="relative mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-6 lg:px-8">
-        <div className="z-10 flex min-w-0 flex-1 basis-0 items-center gap-2 lg:gap-3">
-          <nav className="cdc-font-display hidden min-w-0 items-center gap-x-1 xl:gap-x-3 lg:flex" aria-label="Site sections">
+      <div className="mx-auto grid h-14 max-w-7xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-3 sm:h-16 sm:px-6 lg:gap-3 lg:px-8">
+        {/* Left: full nav at 2xl+; compact “Menu” lg–2xl */}
+        <div className="flex min-w-0 items-center gap-2 justify-self-start">
+          <nav
+            className="cdc-font-display hidden min-w-0 items-center gap-x-1 xl:gap-x-3 2xl:flex"
+            aria-label="Site sections"
+          >
             {marketingHeaderNavLeft.map(({ href, label }) => (
               <Link key={href} href={href} className={desktopLinkClass(href)}>
                 {label}
               </Link>
             ))}
           </nav>
+
+          <details className="relative hidden lg:block 2xl:hidden">
+            <summary
+              className="cdc-font-display flex cursor-pointer list-none items-center gap-1 rounded-md border border-[var(--cdc-border)] bg-white/90 px-3 py-1.5 text-sm font-medium text-neutral-800 shadow-sm marker:hidden hover:bg-white dark:border-neutral-600 dark:bg-neutral-900/80 dark:text-neutral-200 dark:hover:bg-neutral-800 [&::-webkit-details-marker]:hidden"
+              aria-label="Open pages menu"
+            >
+              Menu
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-70" aria-hidden />
+            </summary>
+            <div
+              className="absolute left-0 z-50 mt-1 min-w-[14rem] rounded-lg border border-[var(--cdc-border)] bg-white py-1.5 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+              role="menu"
+            >
+              <div className="border-b border-neutral-100 px-3 py-3 dark:border-neutral-700">
+                <MarketingHeaderCenterLogo size="menu" priority={false} className="mx-auto" />
+              </div>
+              {marketingHeaderNavMidMenuLinks.map(({ href, label }) => (
+                <Link key={href} href={href} className={desktopMenuPanelLinkClass(href)} role="menuitem">
+                  {label}
+                </Link>
+              ))}
+              <Link
+                href={marketingHeaderApplyCta.href}
+                className="cdc-font-display mt-1 block border-t border-neutral-100 px-3 py-2.5 text-sm font-semibold text-neutral-900 dark:border-neutral-700 dark:text-neutral-100"
+                role="menuitem"
+              >
+                {marketingHeaderApplyCta.label}
+              </Link>
+            </div>
+          </details>
+
           <MarketingThemeToggle className="ml-auto hidden sm:flex lg:hidden" />
         </div>
 
-        <Link
-          href="/"
-          className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 outline-none ring-offset-2 transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)]"
-          aria-label={`${dccSiteMeta.organizationName} — home`}
-        >
-          <CdcMiamiLogo size="hero" priority className="h-9 w-auto max-sm:h-8 sm:h-10" />
-        </Link>
+        {/* Center: wordmark — dedicated component, horizontally centered in column */}
+        <div className="relative z-20 flex w-full min-w-0 justify-center justify-self-center">
+          <MarketingHeaderCenterLogo size="header" priority />
+        </div>
 
-        <div className="z-10 flex min-w-0 flex-1 basis-0 items-center justify-end gap-2 sm:gap-3">
+        {/* Right: full nav + Apply at 2xl+; Apply + theme lg–2xl */}
+        <div className="flex min-w-0 items-center justify-end justify-self-end gap-2 sm:gap-3">
           <nav
-            className="cdc-font-display hidden min-w-0 items-center gap-x-1 xl:gap-x-3 lg:flex"
+            className="cdc-font-display hidden min-w-0 items-center gap-x-1 xl:gap-x-3 2xl:flex"
             aria-label="More pages"
           >
             {marketingHeaderNavRight.map(({ href, label }) => (
@@ -87,6 +134,16 @@ export function SiteHeader() {
               {marketingHeaderApplyCta.label}
             </Link>
           </nav>
+
+          <div className="hidden items-center gap-2 lg:flex 2xl:hidden">
+            <Link
+              href={marketingHeaderApplyCta.href}
+              className="whitespace-nowrap rounded-full border border-neutral-900 bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:opacity-95"
+            >
+              {marketingHeaderApplyCta.label}
+            </Link>
+          </div>
+
           <MarketingThemeToggle className="hidden lg:flex" />
           <Sheet>
             <SheetTrigger asChild>
@@ -104,20 +161,17 @@ export function SiteHeader() {
             >
               <SheetHeader className="border-b border-[var(--cdc-border)] px-5 pb-4 pt-5 text-center">
                 <div className="flex flex-col items-center gap-3">
-                  <SheetClose asChild>
-                    <Link
-                      href="/"
-                      className="outline-none ring-offset-2 transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)]"
-                      aria-label={`${dccSiteMeta.organizationName} — home`}
-                    >
-                      <CdcMiamiLogo size="md" objectAlign="center" className="h-10 w-auto max-w-[min(100%,14rem)]" />
-                    </Link>
-                  </SheetClose>
+                  <div className="flex w-full justify-center">
+                    <SheetClose asChild>
+                      <MarketingHeaderCenterLogo size="drawer" priority={false} />
+                    </SheetClose>
+                  </div>
                   <SheetTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
                     Menu
                   </SheetTitle>
-                  <p className="cdc-font-mono-accent max-w-full text-xs font-normal uppercase tracking-[0.18em] text-[var(--cdc-teal)]">
-                    {publicDigitalMiamiLine}
+                  <p className="cdc-font-mono-accent max-w-full text-[10px] font-normal leading-snug tracking-[0.12em] text-neutral-500 dark:text-neutral-400">
+                    Digital taglines rotate in the bar above — same voice, public programs &amp; pilot work in
+                    Miami.
                   </p>
                 </div>
               </SheetHeader>
@@ -214,6 +268,7 @@ export function SiteHeader() {
           </Sheet>
         </div>
       </div>
+      <MarketingHeaderSloganBar />
     </header>
   );
 }
