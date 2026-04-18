@@ -64,8 +64,8 @@ export const dccHomePhotos = {
 
 /** Hero collage: large cell + three stacked tiles (left-to-right column). */
 export const dccHomeHeroCollagePhotos = [
+  dccHomePhotos.galleryInteractiveStations,
   dccHomePhotos.fabiolaSurveillanceCutie2024,
-  dccHomePhotos.galleryCrowdOpening,
   dccHomePhotos.digitalDivinities,
   dccHomePhotos.vrHug,
 ] as const;

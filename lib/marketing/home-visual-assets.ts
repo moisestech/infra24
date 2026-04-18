@@ -99,7 +99,7 @@ export const homeVisualWhyMiami: HomeVisualItem[] = [
   ),
 ];
 
-/** Infra24 band — treadmill + gallery interactive (hero main replaced by Surveillance Cutie). */
+/** Infra24 band — treadmill + crowd opening (crowd tile swapped out for Surveillance Cutie in hero). */
 export const homeVisualInfra24Band: HomeVisualItem[] = [
   photo(
     dccHomePhotos.touchgrassTreadmillFigure.src,
@@ -108,9 +108,9 @@ export const homeVisualInfra24Band: HomeVisualItem[] = [
     'DCC Miami'
   ),
   photo(
-    dccHomePhotos.galleryInteractiveStations.src,
-    dccHomePhotos.galleryInteractiveStations.alt,
-    'Interactive floor',
+    dccHomePhotos.galleryCrowdOpening.src,
+    dccHomePhotos.galleryCrowdOpening.alt,
+    'Public programs',
     'DCC Miami'
   ),
 ];

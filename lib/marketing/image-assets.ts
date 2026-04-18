@@ -12,13 +12,13 @@ export const heroCollagePanels = [
   {
     id: 'field',
     gradientId: 'stackTeal' as const satisfies MarketingGradientId,
-    label: 'Surveillance Cutie',
+    label: 'Interactive floor',
     photo: heroMain,
   },
   {
     id: 'entanglement',
     gradientId: 'columnCoral' as const satisfies MarketingGradientId,
-    label: 'Public programs',
+    label: 'Surveillance Cutie',
     photo: heroTop,
   },
   {
