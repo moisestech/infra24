@@ -9,6 +9,21 @@ import { normalizeWorkshopForCatalog } from '@/lib/workshops/normalize-workshop-
 import { isExcludedFromDccPublicCatalog } from '@/lib/workshops/workshop-filters'
 import { getDccMarketingWorkshopsLandingContent } from '@/lib/marketing/dcc-workshops-landing-content'
 import { WORKSHOP_CATALOG_ORG_SLUG } from '@/lib/marketing/workshops-catalog-org'
+import {
+  DCC_CATALOG_PAGE_SIZE,
+  buildTagCounts,
+  emptyDccCatalogFilterState,
+  matchesDccCatalogFilters,
+  sortDccCatalogWorkshops,
+  type DccCatalogFilterState,
+  type DccCatalogSortMode,
+} from '@/lib/marketing/dcc-workshops-catalog-filters'
+import {
+  dccWorkshopsCatalogUi,
+  dccWorkshopsPromotedProgramSlides,
+} from '@/lib/marketing/dcc-workshops-catalog-ui'
+import { DccWorkshopsCatalogFilters } from '@/components/marketing/DccWorkshopsCatalogFilters'
+import { DccWorkshopsPromotedCarousel } from '@/components/marketing/DccWorkshopsPromotedCarousel'
 
 function sortFeaturedFirst<T extends { featured?: boolean; title: string }>(a: T, b: T) {
   if (Boolean(a.featured) !== Boolean(b.featured)) return a.featured ? -1 : 1
@@ -21,8 +36,12 @@ export function DccWorkshopsCatalogClient() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [filters, setFilters] = useState<DccCatalogFilterState>(() => emptyDccCatalogFilterState())
+  const [sortMode, setSortMode] = useState<DccCatalogSortMode>('popular')
+  const [page, setPage] = useState(1)
 
   const landingCopy = getDccMarketingWorkshopsLandingContent()
+  const catalogUi = dccWorkshopsCatalogUi
 
   useEffect(() => {
     let cancelled = false
@@ -79,12 +98,13 @@ export function DccWorkshopsCatalogClient() {
     [rows]
   )
 
-  /** Published workshops eligible for the public DCC catalog (excludes Oolite studio-only classes). */
   const digitalLabList = useMemo(() => {
     return publishedRows.filter((w) => !isExcludedFromDccPublicCatalog(w)).sort(sortFeaturedFirst)
   }, [publishedRows])
 
-  const filtered = useMemo(() => {
+  const tagOptions = useMemo(() => buildTagCounts(digitalLabList), [digitalLabList])
+
+  const searchFiltered = useMemo(() => {
     const q = searchTerm.toLowerCase().trim()
     if (!q) return digitalLabList
     return digitalLabList.filter((w) => {
@@ -94,9 +114,36 @@ export function DccWorkshopsCatalogClient() {
     })
   }, [digitalLabList, searchTerm])
 
+  const accordionFiltered = useMemo(
+    () => searchFiltered.filter((w) => matchesDccCatalogFilters(w, filters)),
+    [searchFiltered, filters]
+  )
+
+  const sortedList = useMemo(
+    () => sortDccCatalogWorkshops(accordionFiltered, sortMode),
+    [accordionFiltered, sortMode]
+  )
+
+  useEffect(() => {
+    setPage(1)
+  }, [searchTerm, filters, sortMode])
+
+  useEffect(() => {
+    const tp = Math.max(1, Math.ceil(accordionFiltered.length / DCC_CATALOG_PAGE_SIZE))
+    setPage((p) => Math.min(p, tp))
+  }, [accordionFiltered.length])
+
+  const total = sortedList.length
+  const totalPages = Math.max(1, Math.ceil(total / DCC_CATALOG_PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const pageStart = (safePage - 1) * DCC_CATALOG_PAGE_SIZE
+  const pageSlice = sortedList.slice(pageStart, pageStart + DCC_CATALOG_PAGE_SIZE)
+  const from = total === 0 ? 0 : pageStart + 1
+  const to = total === 0 ? 0 : pageStart + pageSlice.length
+
   if (loading) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-16">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto h-10 max-w-md animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-800" />
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -125,10 +172,15 @@ export function DccWorkshopsCatalogClient() {
   const catalogEmpty = digitalLabList.length === 0
   const allPublishedFilteredOut = catalogEmpty && publishedRows.length > 0
   const searchActive = searchTerm.trim().length > 0
-  const searchNoHits = searchActive && filtered.length === 0 && !catalogEmpty
+  const searchNoHits = searchActive && searchFiltered.length === 0 && !catalogEmpty
+  const filterNoHits =
+    !catalogEmpty &&
+    !searchNoHits &&
+    accordionFiltered.length === 0 &&
+    (searchActive || Object.values(filters).some((v) => v.length > 0))
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <header className="mx-auto max-w-3xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--cdc-teal)]">
           {landingCopy.heroEyebrow}
@@ -160,17 +212,6 @@ export function DccWorkshopsCatalogClient() {
       </header>
 
       <section className="mt-14 scroll-mt-24" id="catalog">
-        <div className="relative mx-auto max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-          <input
-            type="search"
-            placeholder="Search workshops…"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-neutral-200 bg-white py-2.5 pl-10 pr-3 text-sm text-neutral-900 shadow-sm focus:border-[var(--cdc-teal)] focus:outline-none focus:ring-1 focus:ring-[var(--cdc-teal)] dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
-          />
-        </div>
-
         {searchNoHits ? (
           <p className="mt-12 text-center text-sm text-neutral-500">No workshops match your search.</p>
         ) : catalogEmpty ? (
@@ -212,15 +253,107 @@ export function DccWorkshopsCatalogClient() {
             </p>
           </div>
         ) : (
-          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((workshop) => (
-              <WorkshopCard
-                key={workshop.id}
-                workshop={workshop}
-                orgSlug={slug}
-                catalogSurface="dcc"
-              />
-            ))}
+          <div className="mt-10 flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(260px,300px)_1fr] lg:items-start lg:gap-10">
+            <aside className="lg:sticky lg:top-24 lg:self-start">
+              <DccWorkshopsCatalogFilters value={filters} onChange={setFilters} tagOptions={tagOptions} />
+            </aside>
+
+            <div className="min-w-0 space-y-8">
+              <div className="relative max-w-full sm:max-w-md">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+                <input
+                  type="search"
+                  placeholder={catalogUi.searchPlaceholder}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full rounded-lg border border-neutral-200 bg-white py-2.5 pl-10 pr-3 text-sm text-neutral-900 shadow-sm focus:border-[var(--cdc-teal)] focus:outline-none focus:ring-1 focus:ring-[var(--cdc-teal)] dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                />
+              </div>
+
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+                  {catalogUi.programsSectionTitle}
+                </h2>
+                <div className="flex flex-col gap-1 sm:items-end">
+                  <label htmlFor="dcc-catalog-sort" className="text-xs font-medium text-neutral-500">
+                    {catalogUi.sortLabel}
+                  </label>
+                  <select
+                    id="dcc-catalog-sort"
+                    value={sortMode}
+                    onChange={(e) => setSortMode(e.target.value as DccCatalogSortMode)}
+                    className="rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-900 shadow-sm focus:border-[var(--cdc-teal)] focus:outline-none focus:ring-1 focus:ring-[var(--cdc-teal)] dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+                  >
+                    {catalogUi.sortOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
+                <div>
+                  <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+                    {catalogUi.coursesHeading}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                    {catalogUi.coursesSubcopy}
+                  </p>
+                </div>
+                <DccWorkshopsPromotedCarousel slides={dccWorkshopsPromotedProgramSlides} />
+              </div>
+
+              {filterNoHits ? (
+                <p className="text-center text-sm text-neutral-500">
+                  No workshops match these filters. Try clearing filters or broadening your search.
+                </p>
+              ) : (
+                <>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                    {catalogUi.paginationSummary(from, to, total)}
+                  </p>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {pageSlice.map((workshop) => (
+                      <WorkshopCard
+                        key={workshop.id}
+                        workshop={workshop}
+                        orgSlug={slug}
+                        catalogSurface="dcc"
+                      />
+                    ))}
+                  </div>
+
+                  {totalPages > 1 ? (
+                    <nav
+                      className="flex flex-col items-center justify-between gap-4 border-t border-neutral-200 pt-6 dark:border-neutral-800 sm:flex-row"
+                      aria-label="Catalog pagination"
+                    >
+                      <button
+                        type="button"
+                        disabled={safePage <= 1}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-800 disabled:opacity-40 dark:border-neutral-600 dark:text-neutral-200"
+                      >
+                        Previous
+                      </button>
+                      <span className="text-sm text-neutral-500">
+                        Page {safePage} of {totalPages}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={safePage >= totalPages}
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        className="rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-800 disabled:opacity-40 dark:border-neutral-600 dark:text-neutral-200"
+                      >
+                        Next
+                      </button>
+                    </nav>
+                  ) : null}
+                </>
+              )}
+            </div>
           </div>
         )}
       </section>

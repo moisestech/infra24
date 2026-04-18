@@ -14,6 +14,7 @@ function isPublicRoute(pathname: string): boolean {
   if (pathname === '/o' || pathname.startsWith('/o/')) return true
 
   const publicRoutes = [
+    '/network',
     '/sign-in',
     '/sign-up',
     '/api/webhooks/clerk',

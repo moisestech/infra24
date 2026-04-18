@@ -500,6 +500,7 @@ export const navItems = [
   { href: '/about', label: 'About' },
   { href: '/programs', label: 'Programs' },
   { href: '/workshops', label: 'Workshops' },
+  { href: '/network', label: 'Network' },
   { href: '/projects', label: 'Projects' },
   { href: '/partners', label: 'Partners' },
   { href: '/grants', label: 'Grants' },
@@ -510,7 +511,7 @@ export const navItems = [
 
 /** Grouped links for the marketing header Sheet (`<details>` sections). Hrefs must exist in `navItems`. */
 export const marketingNavSheetGroups = [
-  { title: 'Explore', hrefs: ['/programs', '/workshops', '/projects', '/partners'] as const },
+  { title: 'Explore', hrefs: ['/programs', '/workshops', '/network', '/projects', '/partners'] as const },
   { title: 'Organization', hrefs: ['/about', '/grants', '/journal'] as const },
 ] as const;
 
@@ -520,11 +521,13 @@ export const marketingNavSheetFooterHrefs = ['/contact', '/infra24'] as const;
 export const marketingHeaderNavLeft = [
   { href: '/about', label: 'About' },
   { href: '/programs', label: 'Services' },
+  { href: '/workshops', label: 'Workshops' },
   { href: '/grants', label: 'Pilot' },
 ] as const;
 
 /** Desktop header (`lg+`): right column text links before Apply + theme. */
 export const marketingHeaderNavRight = [
+  { href: '/network', label: 'Network' },
   { href: '/partners', label: 'Partners' },
   { href: '/contact', label: 'Contact' },
 ] as const;

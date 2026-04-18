@@ -79,6 +79,19 @@ const HomeBelowFoldHero = dynamic(
   { ssr: true }
 );
 
+const HomeDccNetworkSection = dynamic(
+  () => import('@/components/marketing/HomeDccNetworkSection').then((m) => m.HomeDccNetworkSection),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="min-h-[min(85dvh,720px)] border-b border-[var(--cdc-border)] bg-neutral-950"
+        aria-hidden
+      />
+    ),
+  }
+);
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: marketingHomeMeta.title,
@@ -105,7 +118,7 @@ export default function MarketingHomePage() {
         id="hero"
         className="cdc-mesh-hero-bg cdc-webcore-hero-shell scroll-mt-14 border-b border-[var(--cdc-border)]"
       >
-        <div className="mx-auto flex min-h-[min(88dvh,880px)] max-w-5xl flex-col justify-center px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <div className="mx-auto flex min-h-[min(92dvh,920px)] max-w-5xl flex-col justify-start px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <HomeHeroDigital
             layout="institutional"
             eyebrow={dccPilotHomeHero.eyebrow}
@@ -169,6 +182,8 @@ export default function MarketingHomePage() {
           <CdcHeroVisual />
         </div>
       </section>
+
+      <HomeDccNetworkSection />
 
       <MarketingSection
         id="hero-expanded"

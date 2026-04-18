@@ -33,6 +33,14 @@ export type WorkshopRow = {
   what_youll_learn?: string[] | null
   materials_needed?: string[] | null
   start_date?: string | null
+  /** Present on API-normalized catalog rows (public org workshops). */
+  total_bookings?: number | null
+  confirmed_bookings?: number | null
+  average_rating?: number | null
+  total_feedback?: number | null
+  updated_at?: string | null
+  created_at?: string | null
+  type?: string | null
 }
 
 export type WorkshopDetailModel = {

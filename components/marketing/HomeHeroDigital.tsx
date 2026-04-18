@@ -7,6 +7,7 @@ import { BorderBeam } from '@/components/ui/border-beam';
 import { AnimatedGridPattern } from '@/components/magicui/animated-grid-pattern';
 import { TextAnimate } from '@/components/magicui/text-animate';
 import { GlitchText } from '@/components/marketing/GlitchText';
+import { GlitchWords } from '@/components/marketing/GlitchWords';
 import { HeroSubheadKeyTerms } from '@/components/marketing/HeroSubheadKeyTerms';
 import { DccHeroAsciiStatus } from '@/components/marketing/DccHeroAsciiStatus';
 import { HomeHeroRotatingHeadline } from '@/components/marketing/HomeHeroRotatingHeadline';
@@ -63,11 +64,15 @@ const defaultHeadlineClass =
 const digitalFirstStaticHeadlineFallback =
   'cdc-hero-headline max-w-4xl text-[clamp(1.35rem,2.2vw+0.75rem,2.25rem)] font-semibold leading-[1.15] tracking-tight text-neutral-800 dark:text-neutral-200 sm:text-3xl';
 
-const institutionalMissionClass =
-  'cdc-font-display m-0 max-w-[min(100%,52rem)] text-[clamp(1.65rem,4.2vw+0.5rem,3.25rem)] font-bold leading-[1.1] tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-5xl lg:text-6xl';
+/** ~2× prior institutional mission scale — most of above-the-fold is this line. */
+const institutionalSloganHeadlineClass =
+  'cdc-font-display m-0 max-w-[min(100%,58rem)] text-[clamp(2.15rem,5.2vw+1.35rem,4.25rem)] font-extrabold leading-[1.03] tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-6xl sm:leading-[1.02] lg:text-7xl xl:text-8xl xl:leading-[0.98]';
 
 const institutionalOrgClass =
-  'cdc-font-display m-0 mt-4 max-w-3xl text-2xl font-semibold leading-snug tracking-tight text-neutral-800 dark:text-neutral-200 sm:text-3xl';
+  'cdc-font-display m-0 mt-5 max-w-4xl text-2xl font-semibold leading-snug tracking-tight text-neutral-800 dark:text-neutral-200 sm:mt-6 sm:text-3xl lg:text-4xl';
+
+const institutionalPdmClass =
+  'cdc-font-mono-accent font-mono text-xs font-bold uppercase tracking-[0.22em] text-[var(--cdc-teal)] sm:text-sm sm:tracking-[0.26em]';
 
 export function HomeHeroDigital({
   eyebrow,
@@ -94,7 +99,7 @@ export function HomeHeroDigital({
   const institutional = layout === 'institutional';
   const showEyebrow = Boolean(eyebrow?.trim());
   const pilotLineForSr = institutional
-    ? [headline, orgLine].filter(Boolean).join(' — ')
+    ? [headline, orgLine, publicDigitalMiamiLine, eyebrow].filter(Boolean).join(' — ')
     : rotatingHeadlines?.length && rotatingHeadlines[0]
       ? rotatingHeadlines[0]
       : pilotTagline?.trim() ?? '';
@@ -230,52 +235,54 @@ export function HomeHeroDigital({
     <p
       className={cn(
         'text-sm font-medium text-neutral-500 dark:text-neutral-400',
-        institutional ? 'mt-6' : digitalFirst ? 'mt-5' : showPilotBand ? 'mt-3' : 'mt-2'
+        institutional ? 'mt-0' : digitalFirst ? 'mt-5' : showPilotBand ? 'mt-3' : 'mt-2'
       )}
     >
       {poweredByLine}
     </p>
   );
 
-  const institutionalBlock = institutional ? (
-    <>
-      <span className="sr-only">
-        {[pilotLineForSr, subheadBodyForSr].filter(Boolean).join(' ')}
-      </span>
-      {metaBlock}
-      {reduceMotion ? (
-        <h1 className={cn(institutionalMissionClass, showEyebrow || publicDigitalMiamiLine ? 'mt-6' : 'mt-5')}>
-          <Balancer>{headline}</Balancer>
-        </h1>
+  const institutionalPdmBlock =
+    publicDigitalMiamiLine?.trim() ? (
+      reduceMotion ? (
+        <p className={cn(institutionalPdmClass, 'mt-4 sm:mt-5')}>{publicDigitalMiamiLine.trim()}</p>
       ) : (
-        <motion.h1
-          className={cn(institutionalMissionClass, showEyebrow || publicDigitalMiamiLine ? 'mt-6' : 'mt-5')}
-          initial={{ opacity: 0, y: 16 }}
+        <motion.p
+          className={cn(institutionalPdmClass, 'mt-4 sm:mt-5')}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
         >
-          <Balancer>{headline}</Balancer>
-        </motion.h1>
-      )}
-      {orgLine?.trim() ? (
+          {publicDigitalMiamiLine.trim()}
+        </motion.p>
+      )
+    ) : null;
+
+  const institutionalBottomMeta = (
+    <>
+      {showEyebrow ? (
         reduceMotion ? (
-          <h2 className={institutionalOrgClass}>
-            <Balancer>{orgLine.trim()}</Balancer>
-          </h2>
+          <p className="cdc-font-mono-accent font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400">
+            {eyebrow}
+          </p>
         ) : (
-          <motion.h2
-            className={institutionalOrgClass}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.06 }}
+          <TextAnimate
+            as="p"
+            by="word"
+            animation="blurInUp"
+            startOnView
+            once
+            delay={0.04}
+            duration={0.4}
+            className="cdc-font-mono-accent font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400"
           >
-            <Balancer>{orgLine.trim()}</Balancer>
-          </motion.h2>
+            {String(eyebrow)}
+          </TextAnimate>
         )
       ) : null}
       {subhead?.trim() ? (
         reduceMotion ? (
-          <p className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-600 dark:text-neutral-300 sm:text-lg">
+          <p className="max-w-3xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 sm:text-base">
             {subhead.trim()}
           </p>
         ) : (
@@ -285,19 +292,74 @@ export function HomeHeroDigital({
             animation="blurIn"
             startOnView
             once
-            delay={0.08}
-            duration={0.55}
-            className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-600 dark:text-neutral-300 sm:text-lg"
+            delay={0.06}
+            duration={0.5}
+            className="max-w-3xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 sm:text-base"
           >
             {subhead.trim()}
           </TextAnimate>
         )
       ) : null}
-      <div className="mt-5">
+      <div className="mt-1">
         <DccHeroAsciiStatus />
       </div>
       {poweredBlock}
     </>
+  );
+
+  const institutionalBlock = institutional ? (
+    <div className="flex min-h-[min(90dvh,940px)] flex-col">
+      <span className="sr-only">
+        {[pilotLineForSr, subheadBodyForSr].filter(Boolean).join(' ')}
+      </span>
+      {/* ~65% viewport band for mission + org + PDM — rest is CTAs + pilot meta */}
+      <div className="flex min-h-[min(65dvh,720px)] flex-1 flex-col justify-center">
+        {reduceMotion ? (
+          <h1 className={institutionalSloganHeadlineClass}>
+            <Balancer>
+              <GlitchWords text={headline} />
+            </Balancer>
+          </h1>
+        ) : (
+          <motion.h1
+            className={institutionalSloganHeadlineClass}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Balancer>
+              <GlitchWords text={headline} />
+            </Balancer>
+          </motion.h1>
+        )}
+        {orgLine?.trim() ? (
+          reduceMotion ? (
+            <h2 className={institutionalOrgClass}>
+              <Balancer>{orgLine.trim()}</Balancer>
+            </h2>
+          ) : (
+            <motion.h2
+              className={institutionalOrgClass}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+            >
+              <Balancer>{orgLine.trim()}</Balancer>
+            </motion.h2>
+          )
+        ) : null}
+        {institutionalPdmBlock}
+      </div>
+      <div
+        className={cn(
+          'mt-auto flex flex-col gap-5 pt-2 sm:gap-6 sm:pt-4',
+          !reduceMotion && 'transition-transform duration-300 hover:-translate-y-px'
+        )}
+      >
+        {children}
+        {institutionalBottomMeta}
+      </div>
+    </div>
   ) : null;
 
   return (
@@ -326,17 +388,7 @@ export function HomeHeroDigital({
 
       <div className="relative z-[1]">
         {institutional ? (
-          <>
-            {institutionalBlock}
-            <div
-              className={cn(
-                'mt-10',
-                !reduceMotion && 'transition-transform duration-300 hover:-translate-y-px'
-              )}
-            >
-              {children}
-            </div>
-          </>
+          institutionalBlock
         ) : digitalFirst ? (
           <>
             {rotatingTier1}
