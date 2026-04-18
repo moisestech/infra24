@@ -18,7 +18,7 @@ export const heroCollagePanels = [
   {
     id: 'entanglement',
     gradientId: 'columnCoral' as const satisfies MarketingGradientId,
-    label: 'Vertical buffer',
+    label: 'Public programs',
     photo: heroTop,
   },
   {

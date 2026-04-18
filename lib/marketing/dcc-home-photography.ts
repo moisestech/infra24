@@ -49,14 +49,14 @@ export const dccHomePhotos = {
 /** Hero collage: large cell + three stacked tiles (left-to-right column). */
 export const dccHomeHeroCollagePhotos = [
   dccHomePhotos.galleryInteractiveStations,
-  dccHomePhotos.touchgrassTreadmillFigure,
+  dccHomePhotos.galleryCrowdOpening,
   dccHomePhotos.digitalDivinities,
   dccHomePhotos.vrHug,
 ] as const;
 
 /** Why Miami section row. */
 export const dccHomeWhyMiamiPhotos = [
-  dccHomePhotos.galleryCrowdOpening,
+  dccHomePhotos.vrHug,
   dccHomePhotos.touchgrassTreadmillWide,
 ] as const;
 

@@ -1,5 +1,9 @@
 import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
-import { dccHomeProofPhotos, dccHomeWhyMiamiPhotos } from '@/lib/marketing/dcc-home-photography';
+import {
+  dccHomePhotos,
+  dccHomeProofPhotos,
+  dccHomeWhyMiamiPhotos,
+} from '@/lib/marketing/dcc-home-photography';
 
 export type HomeVisualItem =
   | {
@@ -61,13 +65,23 @@ export const homeVisualWhyMiami: HomeVisualItem[] = [
   photo(
     dccHomeWhyMiamiPhotos[0].src,
     dccHomeWhyMiamiPhotos[0].alt,
-    'Public programs',
+    'Collaborative practice',
     'DCC Miami'
   ),
   photo(
     dccHomeWhyMiamiPhotos[1].src,
     dccHomeWhyMiamiPhotos[1].alt,
     'Pilot installations',
+    'DCC Miami'
+  ),
+];
+
+/** Infra24 band on homepage (was text-only; receives the treadmill tile moved from hero). */
+export const homeVisualInfra24Band: HomeVisualItem[] = [
+  photo(
+    dccHomePhotos.touchgrassTreadmillFigure.src,
+    dccHomePhotos.touchgrassTreadmillFigure.alt,
+    'Public interfaces',
     'DCC Miami'
   ),
 ];

@@ -28,7 +28,11 @@ import {
   dccProofSectionIntro,
   dccYear1ServicePillars,
 } from '@/lib/marketing/dcc-pilot-home-content';
-import { homeVisualProofEcho, homeVisualWhyMiami } from '@/lib/marketing/home-visual-assets';
+import {
+  homeVisualInfra24Band,
+  homeVisualProofEcho,
+  homeVisualWhyMiami,
+} from '@/lib/marketing/home-visual-assets';
 
 const CdcHeroVisual = dynamic(
   () =>
@@ -324,6 +328,9 @@ export default function MarketingHomePage() {
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
           {dccSystemsIntro}
         </p>
+        <div className="mt-8 max-w-3xl">
+          <HomeWebcoreVisualGrid lightbox mode="row" items={[...homeVisualInfra24Band]} />
+        </div>
         <p className="mt-6">
           <Link
             href="/infra24"
