@@ -5,6 +5,11 @@
 
 import type { WebcoreIconName } from '@/components/marketing/webcore-lucide';
 import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
+import {
+  dccPilotHomeHero,
+  dccPilotSeoDescription,
+  dccPilotWhatWeAreBlurb,
+} from '@/lib/marketing/dcc-pilot-home-content';
 
 /** Lockup line — header + hero (place + public digital culture). */
 export const publicDigitalMiamiLine = 'PUBLIC DIGITAL MIAMI' as const;
@@ -155,21 +160,18 @@ export const dccSiteMeta = {
 /** Homepage meta title/description (also used for JSON-LD). */
 export const marketingHomeMeta = {
   title: 'DCC.miami | Digital Culture Center Miami',
-  description:
-    'Digital Culture Center Miami is a public-facing platform for artist-centered digital culture, public programs, workshops, and civic-facing creative technology powered by Infra24.',
+  description: dccPilotSeoDescription,
 } as const;
 
-/** Single-sentence hero subhead (plain text; avoids repeating the interactive term loop on the homepage). */
-export const marketingHeroPlainSubhead =
-  'Digital Culture Center Miami is a public-facing platform for artist-centered digital culture, workshops, public interfaces, and civic-facing creative technology.' as const;
+/** Plain hero subhead (homepage); aligned with Year 1 Artist Support Pilot narrative. */
+export const marketingHeroPlainSubhead = dccPilotHomeHero.supportingSubhead;
 
 export const marketingHero = {
   eyebrow: 'Miami · Public digital culture',
   /** Visible H1 in hero card (glitch styling); brand short name stays in metadata and chrome. */
   headline: 'Digital Culture Center Miami',
   subhead: marketingHeroSubheadSegments.map((s) => s.text).join(''),
-  microTrust:
-    'Built for funders, partners, and communities who want cultural infrastructure that is visible, legible, and accountable—not a one-off vendor relationship.',
+  microTrust: dccPilotHomeHero.trustLine,
 } as const;
 
 /** Above-fold engagement on the homepage (newsletter + artist index). */
@@ -324,8 +326,7 @@ export const dccSystemsIntro =
   'Across DCC Miami programs, Infra24 implements the touchpoints where culture meets the public: updateable signs and screens, maps and wayfinding, kiosks, portals, and the workflows that keep them current.';
 
 /** Short “what we are” blurb for the homepage (links to /about for depth). */
-export const dccWhatWeAreIntro =
-  'We run public programs, workshops, and civic-facing interfaces so artists and cultural organizations can participate in digital public life with support and systems that last—not one-off installs. Infra24 is the implementation layer that keeps signs, maps, kiosks, and portals maintainable.' as const;
+export const dccWhatWeAreIntro = dccPilotWhatWeAreBlurb;
 
 /** First questions for the homepage FAQ band; full list remains in `marketingFaq` for About and JSON consumers. */
 export const marketingHomeFaqPreview = [

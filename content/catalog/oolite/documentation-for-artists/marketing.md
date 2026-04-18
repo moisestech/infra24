@@ -29,6 +29,13 @@ relatedSlugs:
 metadata:
   slug: documentation-for-artists
   track: systems_archive
+  catalog: digital_lab
+  releaseStatus: website_ready
+  sessionFormat: one_day
+  marketingLevel: beginner
+  packetStatus: homepage_ready
+  websiteReadiness: ready
+  resourcesAvailability: packet_available
   buildPriority: 4
   subtitle: 'Checklists, file habits, and ethics for documenting live and installed work.'
   shortDescription: >-

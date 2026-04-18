@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import {
-  fetchAlumniFromAirtable,
+  fetchAlumniFromAirtableDetailed,
   isAlumniAirtableConfigured,
 } from '@/lib/airtable/alumni-service'
 
@@ -23,26 +23,43 @@ export async function GET(
     })
   }
 
-  const alumni = await fetchAlumniFromAirtable(slug)
-  if (alumni === null) {
-    return NextResponse.json(
-      {
-        organizationSlug: slug,
-        supported: true,
-        configured: true,
-        error: 'Failed to load alumni from Airtable',
-        count: 0,
-        alumni: [],
-      },
-      { status: 502 }
-    )
+  const result = await fetchAlumniFromAirtableDetailed(slug)
+  if (!result.ok) {
+    const isDev = process.env.NODE_ENV === 'development'
+    const body: Record<string, unknown> = {
+      organizationSlug: slug,
+      supported: true,
+      configured: true,
+      error: 'Failed to load alumni from Airtable',
+      count: 0,
+      alumni: [],
+    }
+    if (result.reason === 'airtable_error' && isDev) {
+      body.airtableErrorDetail = result.message
+    }
+    return NextResponse.json(body, { status: 502 })
   }
 
-  return NextResponse.json({
+  const body: Record<string, unknown> = {
     organizationSlug: slug,
     supported: true,
     configured: true,
-    count: alumni.length,
-    alumni,
-  })
+    count: result.alumni.length,
+    alumni: result.alumni,
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    body.dev = {
+      airtableRecordCount: result.airtableRecordCount,
+      skippedWithoutName: result.skippedWithoutName,
+      ...(result.airtableRecordCount > 0 && result.alumni.length === 0
+        ? {
+            hint:
+              'Airtable returned records but none had a value in the mapped name field (default column title: Name). Set AIRTABLE_*_ALUMNI_FIELD_NAME to your column’s exact title.',
+          }
+        : {}),
+    }
+  }
+
+  return NextResponse.json(body)
 }

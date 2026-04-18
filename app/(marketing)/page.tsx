@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { MarketingSection } from '@/components/marketing/MarketingSection';
 import { CtaBand } from '@/components/marketing/CtaBand';
 import { ProofStrip } from '@/components/marketing/ProofStrip';
@@ -10,6 +9,7 @@ import {
   marketingHero,
   marketingHeroPlainSubhead,
   marketingHomeMeta,
+  publicDigitalMiamiLine,
   getMarketingFaqHomeItems,
   caseStudyPreviews,
   dccAudiencePathways,
@@ -18,6 +18,15 @@ import {
   dccSystemsIntro,
   dccWhatWeAreIntro,
 } from '@/lib/marketing/content';
+import {
+  dccHomePathwaysSection,
+  dccParticipantValue,
+  dccPilotCtaBand,
+  dccPilotHomeHero,
+  dccPilotIntro,
+  dccProofSectionIntro,
+  dccYear1ServicePillars,
+} from '@/lib/marketing/dcc-pilot-home-content';
 import { homeVisualProofEcho, homeVisualWhyMiami } from '@/lib/marketing/home-visual-assets';
 
 const CdcHeroVisual = dynamic(
@@ -95,37 +104,30 @@ export default function MarketingHomePage() {
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-14">
             <HomeHeroDigital
+              eyebrow={dccPilotHomeHero.eyebrow}
+              publicDigitalMiamiLine={publicDigitalMiamiLine}
               headline={marketingHero.headline}
               headlineClassName={homeHeroHeadlineClassName}
+              pilotTagline={dccPilotHomeHero.tagline}
               subhead={marketingHeroPlainSubhead}
               poweredByLine={dccSiteMeta.poweredByLine}
             >
               <HeroAboveFoldEngagement />
               <p className="mt-5 max-w-2xl text-sm text-neutral-500 dark:text-neutral-400">
-                {marketingHero.microTrust}
+                {dccPilotHomeHero.trustLine}
               </p>
               <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-5">
-                <form
-                  action="/programs"
-                  method="get"
-                  className="inline-flex w-full justify-center sm:w-auto sm:justify-start"
-                >
-                  <ShimmerButton
-                    type="submit"
-                    borderRadius="0.5rem"
-                    background="rgb(15 23 42)"
-                    shimmerColor="rgb(45 212 191)"
-                    shimmerDuration="2.8s"
-                    className="cdc-arcade-primary-btn w-full border-2 border-teal-500/35 px-8 py-4 text-base font-bold tracking-wide sm:min-h-[3.25rem] sm:w-auto sm:px-10 sm:text-lg"
-                  >
-                    Explore Programs
-                  </ShimmerButton>
-                </form>
                 <Link
-                  href="/for-funders"
+                  href={dccPilotHomeHero.primaryCta.href}
+                  className="group relative z-0 inline-flex w-full min-h-[3.25rem] cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-teal-500/35 bg-slate-900 px-8 py-4 text-base font-bold tracking-wide text-white shadow-sm transition-transform duration-300 ease-in-out hover:opacity-95 active:translate-y-px sm:w-auto sm:px-10 sm:text-lg"
+                >
+                  {dccPilotHomeHero.primaryCta.label}
+                </Link>
+                <Link
+                  href={dccPilotHomeHero.secondaryCta.href}
                   className="cdc-arcade-secondary-btn inline-flex min-h-[3.25rem] items-center justify-center px-6 text-base font-bold tracking-wide text-neutral-900 no-underline sm:px-8 sm:text-lg dark:text-neutral-100"
                 >
-                  For Funders
+                  {dccPilotHomeHero.secondaryCta.label}
                 </Link>
               </div>
               <p className="mt-8 text-sm text-neutral-500 dark:text-neutral-400">
@@ -142,6 +144,13 @@ export default function MarketingHomePage() {
                 >
                   Grants &amp; Miami pilot
                 </Link>
+                {' · '}
+                <Link
+                  href="/for-funders"
+                  className="font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
+                >
+                  For funders
+                </Link>
               </p>
             </HomeHeroDigital>
             <CdcHeroVisual className="lg:justify-self-end" />
@@ -149,7 +158,70 @@ export default function MarketingHomePage() {
         </div>
       </section>
 
-      <MarketingSection id="what-dcc-is" className="scroll-mt-14 bg-white dark:bg-neutral-900">
+      <MarketingSection id="pilot-intro" className="scroll-mt-14 bg-white dark:bg-neutral-900">
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+          {dccPilotIntro.title}
+        </h2>
+        {dccPilotIntro.paragraphs.map((p, i) => (
+          <p
+            key={i}
+            className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400"
+          >
+            {p}
+          </p>
+        ))}
+      </MarketingSection>
+
+      <MarketingSection
+        id="year-1-services"
+        className="scroll-mt-24 border-y border-[var(--cdc-border)] bg-[#fafafa] py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16"
+      >
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+          Year 1 service menu
+        </h2>
+        <p className="mt-3 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
+          A defined set of pilot services—concrete deliverables, public learning, and partner-ready outputs.
+        </p>
+        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {dccYear1ServicePillars.map((pillar) => (
+            <li
+              key={pillar.id}
+              className="flex h-full flex-col rounded-lg border border-neutral-200 bg-white p-5 dark:border-neutral-700 dark:bg-neutral-900"
+            >
+              <h3 className="text-sm font-semibold leading-snug text-neutral-900 dark:text-neutral-100">
+                {pillar.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                {pillar.summary}
+              </p>
+              <p className="mt-3 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
+                Who it serves
+              </p>
+              <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">{pillar.whoItServes}</p>
+              <p className="mt-3 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
+                Deliverable
+              </p>
+              <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">{pillar.deliverable}</p>
+            </li>
+          ))}
+        </ul>
+      </MarketingSection>
+
+      <MarketingSection id="participant-value" className="scroll-mt-14 bg-white dark:bg-neutral-900">
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+          {dccParticipantValue.title}
+        </h2>
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+          {dccParticipantValue.intro}
+        </p>
+        <ul className="mt-6 max-w-2xl list-disc space-y-2 pl-5 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+          {dccParticipantValue.bullets.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </MarketingSection>
+
+      <MarketingSection id="what-dcc-is" className="scroll-mt-14 bg-[#fafafa] dark:bg-neutral-950">
         <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           What DCC is
         </h2>
@@ -166,9 +238,9 @@ export default function MarketingHomePage() {
         </p>
       </MarketingSection>
 
-      <MarketingSection id="pathways" className="scroll-mt-14 bg-[#fafafa] dark:bg-neutral-950">
+      <MarketingSection id="pathways" className="scroll-mt-14 bg-white dark:bg-neutral-900">
         <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-          Three ways to engage
+          {dccHomePathwaysSection.title}
         </h2>
         <p className="mt-3 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
           We are prioritizing{' '}
@@ -194,7 +266,7 @@ export default function MarketingHomePage() {
         </div>
       </MarketingSection>
 
-      <MarketingSection id="why-miami" className="scroll-mt-14 bg-white dark:bg-neutral-900">
+      <MarketingSection id="why-miami" className="scroll-mt-14 bg-[#fafafa] dark:bg-neutral-950">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-12">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
@@ -216,14 +288,14 @@ export default function MarketingHomePage() {
         </div>
       </MarketingSection>
 
-      <MarketingSection id="proof" className="scroll-mt-14 bg-[#fafafa] dark:bg-neutral-950">
+      <MarketingSection id="proof" className="scroll-mt-14 bg-white dark:bg-neutral-900">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-              Selected project patterns
+              {dccProofSectionIntro.title}
             </h2>
-            <p className="mt-2 max-w-xl text-sm text-neutral-600 dark:text-neutral-400">
-              Case-style examples—challenge, intervention, and what scales next.
+            <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
+              {dccProofSectionIntro.subcopy}
             </p>
           </div>
           <Link
@@ -243,7 +315,7 @@ export default function MarketingHomePage() {
 
       <MarketingSection
         id="infra24"
-        className="scroll-mt-14 border-y border-[var(--cdc-border)] bg-white py-14 dark:border-neutral-800 dark:bg-neutral-900 sm:py-16"
+        className="scroll-mt-14 border-y border-[var(--cdc-border)] bg-[#fafafa] py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16"
       >
         <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           Powered by Infra24
@@ -261,7 +333,7 @@ export default function MarketingHomePage() {
         </p>
       </MarketingSection>
 
-      <MarketingSection id="faq" className="scroll-mt-14 bg-[#fafafa] dark:bg-neutral-950">
+      <MarketingSection id="faq" className="scroll-mt-14 bg-white dark:bg-neutral-900">
         <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           Common questions
         </h2>
@@ -280,16 +352,16 @@ export default function MarketingHomePage() {
         </div>
       </MarketingSection>
 
-      <MarketingSection id="cta" className="scroll-mt-14 bg-white pb-20 dark:bg-neutral-900">
+      <MarketingSection id="cta" className="scroll-mt-14 bg-[#fafafa] pb-20 dark:bg-neutral-950">
         <CtaBand
-          headline="Build public digital culture with us"
-          body="Funding supports DCC Miami programs and the Infra24 implementation that keeps interfaces and workshops maintainable. Partners host pilots; funders help prove the model for Miami."
-          primaryLabel="Grants"
-          primaryHref="/grants"
-          secondaryLabel="Explore projects"
-          secondaryHref="/projects"
-          tertiaryLabel="Partnership contact"
-          tertiaryHref="/contact/partnerships"
+          headline={dccPilotCtaBand.headline}
+          body={dccPilotCtaBand.body}
+          primaryLabel={dccPilotCtaBand.primaryLabel}
+          primaryHref={dccPilotCtaBand.primaryHref}
+          secondaryLabel={dccPilotCtaBand.secondaryLabel}
+          secondaryHref={dccPilotCtaBand.secondaryHref}
+          tertiaryLabel={dccPilotCtaBand.tertiaryLabel}
+          tertiaryHref={dccPilotCtaBand.tertiaryHref}
         />
       </MarketingSection>
     </>

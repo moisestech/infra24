@@ -24,6 +24,8 @@ type HomeHeroDigitalProps = {
   subhead?: string;
   /** Structured subhead with interactive key terms; takes precedence over `subhead` for visible body. */
   subheadSegments?: readonly MarketingHeroSubheadSegment[];
+  /** Optional one-line value prop between H1 and powered-by (e.g. pilot tagline). */
+  pilotTagline?: string;
   children: React.ReactNode;
 };
 
@@ -35,11 +37,15 @@ export function HomeHeroDigital({
   poweredByLine,
   subhead,
   subheadSegments,
+  pilotTagline,
   children,
 }: HomeHeroDigitalProps) {
   const reduceMotion = useReducedMotion();
   const showEyebrow = Boolean(eyebrow?.trim());
-  const plainSubheadForSr = subhead ?? subheadSegments?.map((s) => s.text).join('') ?? '';
+  const plainSubheadForSr =
+    [pilotTagline?.trim(), subhead ?? subheadSegments?.map((s) => s.text).join('')]
+      .filter(Boolean)
+      .join(' ') || '';
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-[var(--cdc-border)] bg-white/35 p-6 shadow-sm shadow-teal-950/[0.04] backdrop-blur-[2px] dark:bg-neutral-900/45 dark:shadow-black/20 sm:p-8">
@@ -81,7 +87,7 @@ export function HomeHeroDigital({
               duration={0.45}
               className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--cdc-teal)]"
             >
-              {eyebrow}
+              {String(eyebrow)}
             </TextAnimate>
           )
         ) : null}
@@ -144,7 +150,20 @@ export function HomeHeroDigital({
           </motion.h1>
         )}
 
-        <p className="mt-2 text-sm font-medium text-neutral-500 dark:text-neutral-400">{poweredByLine}</p>
+        {pilotTagline?.trim() ? (
+          <p className="mt-4 max-w-2xl text-lg font-semibold leading-snug tracking-tight text-neutral-800 dark:text-neutral-100 sm:text-xl">
+            {pilotTagline.trim()}
+          </p>
+        ) : null}
+
+        <p
+          className={cn(
+            'text-sm font-medium text-neutral-500 dark:text-neutral-400',
+            pilotTagline?.trim() ? 'mt-3' : 'mt-2'
+          )}
+        >
+          {poweredByLine}
+        </p>
 
         {subheadSegments?.length ? (
           <>

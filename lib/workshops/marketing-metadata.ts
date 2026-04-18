@@ -106,6 +106,50 @@ export const workshopMarketingMetadataSchema = z.object({
   placeholderImagePrompt: z.string().optional(),
   /** Long-form packet / LMS primer copy for the workshop page */
   packetConcept: z.string().optional(),
+
+  /** When set, row is explicitly part of the Digital Lab catalog surface */
+  catalog: z.enum(['digital_lab']).optional(),
+  /** Public readiness for Digital Lab catalog cards and filters */
+  releaseStatus: z
+    .enum(['website_ready', 'in_development', 'coming_soon'])
+    .optional(),
+  /** Session shape (distinct from delivery `format`: in_person / online / …) */
+  sessionFormat: z
+    .enum(['one_day', 'series', 'talk_demo', 'clinic_lab'])
+    .optional(),
+  /** Marketing level for catalog filters (falls back from DB `level` when unset) */
+  marketingLevel: z
+    .enum([
+      'beginner',
+      'beginner_intermediate',
+      'intermediate',
+      'advanced_experimental',
+    ])
+    .optional(),
+  /** Packet / LMS pipeline stage for secondary badges */
+  packetStatus: z
+    .enum([
+      'strategy_defined',
+      'homepage_ready',
+      'syllabus_ready',
+      'packet_in_progress',
+      'packet_ready',
+      'lms_ready',
+    ])
+    .optional(),
+  /** Website build readiness (Digital Lab catalog filter) */
+  websiteReadiness: z.enum(['ready', 'needs_build']).optional(),
+  /** Learning packet availability for Resources filter */
+  resourcesAvailability: z
+    .enum(['packet_available', 'packet_coming_soon'])
+    .optional(),
+  /**
+   * Optional override for duration bucket chips.
+   * If omitted, Digital Lab catalog derives from `duration_minutes`.
+   */
+  durationBucket: z
+    .enum(['two_h', 'two_to_three_h', 'three_h', 'three_to_four_h'])
+    .optional(),
 })
 
 export type WorkshopMarketingMetadata = z.infer<typeof workshopMarketingMetadataSchema>

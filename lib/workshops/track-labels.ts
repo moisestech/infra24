@@ -4,7 +4,7 @@ export type WorkshopTrackId = NonNullable<WorkshopMarketingMetadata['track']>
 
 export const WORKSHOP_TRACK_LABELS: Record<WorkshopTrackId, string> = {
   presence: 'Presence',
-  ai_literacy: 'AI literacy',
+  ai_literacy: 'AI Literacy',
   creative_coding: 'Creative coding',
   systems_archive: 'Systems + archive',
 }

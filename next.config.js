@@ -69,6 +69,19 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      // Airtable attachment CDN (alumni headshots via next/image)
+      {
+        protocol: 'https',
+        hostname: 'v5.airtableusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dl.airtable.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 

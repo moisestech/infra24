@@ -57,7 +57,7 @@ const OOLITE: WorkshopsLandingContent = {
     'Digital Lab Workshops are designed for artists, teaching artists, and cultural organizations navigating digital practice in real time. The series focuses on websites, discoverability, documentation, AI literacy, creative coding, and sustainable workflows — with an emphasis on clarity, experimentation, and long-term usefulness.',
   heroPrimaryCta: {
     label: 'Explore Workshops',
-    href: '#workshops-catalog',
+    href: '/o/oolite/workshops/digital-lab',
   },
   heroSecondaryCta: {
     label: 'Book a Workshop',

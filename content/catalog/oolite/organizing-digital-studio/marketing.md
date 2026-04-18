@@ -28,6 +28,13 @@ relatedSlugs:
 metadata:
   slug: organizing-digital-studio
   track: systems_archive
+  catalog: digital_lab
+  releaseStatus: website_ready
+  sessionFormat: series
+  marketingLevel: intermediate
+  packetStatus: strategy_defined
+  websiteReadiness: ready
+  resourcesAvailability: packet_available
   buildPriority: 7
   subtitle: 'Files, backups, and handoffs—systems that survive busy studio seasons.'
   shortDescription: Templates and habits for digital projects without enterprise IT overhead.

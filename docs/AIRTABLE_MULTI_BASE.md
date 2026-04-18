@@ -53,6 +53,10 @@ Replace `{ORG}` with that token, e.g. for Oolite Arts:
 | `FIELD_DIGITALARTIST` | Digital artist | Checkbox → “Digital artists” filter |
 | `FIELD_INCOLLECTION` | In collection | Checkbox → “In collection” filter |
 | `FIELD_VIDEOART` | Video art | Checkbox; combined with medium containing “video”, “film”, “moving image” |
+| `FIELD_PHOTO` | Photo | Attachments (first image `url`) or a URL string; alumni card avatar |
+| `FIELD_ARTISTNAME` | *(empty default)* | Optional; if set to a column title, that value is shown on cards instead of `FIELD_NAME` when present |
+
+`FIELD_ARTISTNAME` defaults to empty: leave unset unless you have a separate “artist name” column. If you set it, use the exact Airtable column title.
 
 Concrete Oolite example:
 

@@ -147,24 +147,36 @@ export default function OrganizationSurveysPage() {
 
   useEffect(() => {
     const loadData = async () => {
+      const slugParam = params.slug as string
+      if (!slugParam) return
+
       try {
-        console.log('Loading data for slug:', params.slug)
-        
-        // Load organization data from announcements API
-        const announcementsResponse = await fetch(`/api/organizations/by-slug/${params.slug}/announcements/public`)
-        
-        if (announcementsResponse.ok) {
-          const announcementsData = await announcementsResponse.json()
-          setOrganization(announcementsData.organization)
+        console.log('Loading surveys page data for slug:', slugParam)
+
+        const [orgResponse, surveysResponse] = await Promise.all([
+          fetch(`/api/organizations/by-slug/${slugParam}`, { cache: 'no-store' }),
+          fetch(`/api/organizations/by-slug/${slugParam}/surveys`, { cache: 'no-store' }),
+        ])
+
+        let resolvedOrg: Organization | null = null
+        if (orgResponse.ok) {
+          const orgData = await orgResponse.json()
+          resolvedOrg = orgData.organization ?? null
         }
 
-        // Load surveys
-        const surveysResponse = await fetch(`/api/organizations/by-slug/${params.slug}/surveys`)
-        
         if (surveysResponse.ok) {
           const surveysData = await surveysResponse.json()
           setSurveys(surveysData.surveys || [])
+          if (!resolvedOrg && surveysData.organization) {
+            resolvedOrg = surveysData.organization as Organization
+          }
+        } else {
+          setSurveys([])
         }
+
+        setOrganization(resolvedOrg)
+
+        const orgName = resolvedOrg?.name || 'Organization'
 
         // Load user's survey submissions (mock data for now - in production this would be a real API)
         const mockSubmissions: SurveySubmission[] = [
@@ -172,8 +184,8 @@ export default function OrganizationSurveysPage() {
             id: '1',
             surveyId: 'survey-1',
             surveyTitle: 'Staff Digital Skills Assessment',
-            organizationName: organization?.name || 'Oolite Arts',
-            organizationSlug: params.slug as string,
+            organizationName: orgName,
+            organizationSlug: slugParam,
             status: 'submitted',
             submittedAt: '2024-01-15T10:30:00Z',
             lastModified: '2024-01-15T10:30:00Z',
@@ -189,8 +201,8 @@ export default function OrganizationSurveysPage() {
             id: '2',
             surveyId: 'survey-2',
             surveyTitle: 'Digital Lab Interest Survey',
-            organizationName: organization?.name || 'Oolite Arts',
-            organizationSlug: params.slug as string,
+            organizationName: orgName,
+            organizationSlug: slugParam,
             status: 'draft',
             submittedAt: '',
             lastModified: '2024-01-20T09:15:00Z',
@@ -212,10 +224,8 @@ export default function OrganizationSurveysPage() {
       }
     }
 
-    if (params.slug) {
-      loadData()
-    }
-  }, [params.slug, organization?.name])
+    loadData()
+  }, [params.slug])
 
   // Filter submissions based on search and status
   useEffect(() => {

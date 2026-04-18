@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -334,13 +335,16 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
   }, [workshops])
 
   const filteredWorkshops = workshops.filter((workshop) => {
+    const title = (workshop.title ?? '').toString().toLowerCase()
+    const description = (workshop.description ?? '').toString().toLowerCase()
+    const instructor = (workshop.instructor ?? '').toString().toLowerCase()
+    const q = searchTerm.toLowerCase()
     const matchesSearch =
-      workshop.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      workshop.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      workshop.instructor.toLowerCase().includes(searchTerm.toLowerCase())
+      title.includes(q) || description.includes(q) || instructor.includes(q)
 
     const matchesCategory =
-      selectedCategory === 'all' || workshop.category === selectedCategory
+      selectedCategory === 'all' ||
+      (workshop.category ?? '') === selectedCategory
     const matchesLevel = selectedLevel === 'all' || workshop.level === selectedLevel
 
     const m = mergeWorkshopMetadata(workshop.metadata ?? undefined, {
@@ -677,6 +681,29 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
           ))}
         </ul>
       </section>
+
+      {isOoliteLab ? (
+        <div className="mx-auto max-w-4xl px-4 pb-6 sm:px-6 lg:px-8">
+          <div
+            className={`rounded-xl border px-4 py-4 text-center text-sm sm:text-base ${
+              isDark
+                ? 'border-neutral-700 bg-neutral-900/40 text-neutral-200'
+                : 'border-stone-200 bg-stone-50 text-stone-800'
+            }`}
+          >
+            <span className="font-medium">Digital Lab workshop catalog</span>
+            {' — '}
+            <Link
+              href="/o/oolite/workshops/digital-lab"
+              className="font-semibold text-primary underline underline-offset-2"
+            >
+              Open the Digital Lab workshop catalog
+            </Link>
+            {' '}
+            (filters, sort, and readiness badges).
+          </div>
+        </div>
+      ) : null}
 
       {/* Workshops Section */}
       <section ref={workshopsRef} id="workshops-catalog" className="scroll-mt-24 py-16 md:py-20">
@@ -1088,10 +1115,24 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
               <h3 className={`text-lg font-medium mb-2 ${
                 isDark ? 'text-white' : 'text-gray-900'
               }`}>
-                No workshops found
+                {workshops.length === 0
+                  ? 'No workshops in the catalog'
+                  : 'No workshops match your filters'}
               </h3>
-              <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>
-                Try adjusting your search criteria or check back later for new workshops.
+              <p className={`max-w-lg mx-auto ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                {workshops.length === 0 ? (
+                  <>
+                    There are no rows in the{' '}
+                    <code className="text-xs bg-black/10 dark:bg-white/10 px-1 rounded">workshops</code>{' '}
+                    table for this organization yet. Seed or import workshops in Supabase for this org’s ID, or check
+                    that you are viewing the correct tenant slug.
+                  </>
+                ) : (
+                  <>
+                    Clear search and set category, level, format, audience, and track filters to &quot;All&quot; to see
+                    everything again.
+                  </>
+                )}
               </p>
             </motion.div>
           )}

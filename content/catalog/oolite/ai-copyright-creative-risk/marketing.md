@@ -28,6 +28,13 @@ relatedSlugs:
 metadata:
   slug: ai-copyright-creative-risk
   track: ai_literacy
+  catalog: digital_lab
+  releaseStatus: coming_soon
+  sessionFormat: talk_demo
+  marketingLevel: intermediate
+  packetStatus: packet_in_progress
+  websiteReadiness: needs_build
+  resourcesAvailability: packet_coming_soon
   buildPriority: 8
   subtitle: 'Contracts, terms, and studio risk—framed for artists and small orgs.'
   shortDescription: >-

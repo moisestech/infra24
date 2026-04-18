@@ -16,7 +16,7 @@ export function SparklesText({
   sparklesCount = 20,
   colors = ["#FFD700", "#FFA500", "#FF69B4", "#00BFFF", "#32CD32"],
 }: SparklesTextProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -53,9 +53,9 @@ export function SparklesText({
   }, [colors]);
 
   return (
-    <div ref={containerRef} className={cn("relative inline-block", className)}>
+    <span ref={containerRef} className={cn("relative inline-block", className)}>
       <span className="relative z-10">{text}</span>
-    </div>
+    </span>
   );
 }
 

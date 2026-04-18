@@ -29,6 +29,13 @@ relatedSlugs:
 metadata:
   slug: seo-workshop
   track: presence
+  catalog: digital_lab
+  releaseStatus: website_ready
+  sessionFormat: one_day
+  marketingLevel: beginner
+  packetStatus: packet_in_progress
+  websiteReadiness: ready
+  resourcesAvailability: packet_available
   buildPriority: 2
   subtitle: 'Ethical, practical discoverability for artists and small cultural orgs.'
   shortDescription: >-

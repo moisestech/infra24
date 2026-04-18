@@ -28,6 +28,10 @@ export type AlumniFieldMap = {
   inCollection: string
   /** Checkbox or tag: video art emphasis */
   videoArt: string
+  /** Attachments or image URL for directory avatar */
+  photo: string
+  /** Optional display / professional name; card shows this when set, else Name */
+  artistName: string
 }
 
 export type OrgAlumniConnection = {
@@ -53,6 +57,9 @@ const DEFAULT_FIELDS: AlumniFieldMap = {
   digitalArtist: 'Digital artist',
   inCollection: 'In collection',
   videoArt: 'Video art',
+  photo: 'Photo',
+  /** Empty = do not read a separate column (use Name only) */
+  artistName: '',
 }
 
 /** Slug `oolite` → `OOLITE`, `mad-arts` → `MAD_ARTS` */
@@ -89,6 +96,8 @@ function fieldMapForPrefix(fullPrefix: string): AlumniFieldMap {
     digitalArtist: pick('digitalArtist'),
     inCollection: pick('inCollection'),
     videoArt: pick('videoArt'),
+    photo: pick('photo'),
+    artistName: pick('artistName'),
   }
 }
 
@@ -113,6 +122,8 @@ function fieldMapLegacy(): AlumniFieldMap {
     digitalArtist: pick('digitalArtist'),
     inCollection: pick('inCollection'),
     videoArt: pick('videoArt'),
+    photo: pick('photo'),
+    artistName: pick('artistName'),
   }
 }
 

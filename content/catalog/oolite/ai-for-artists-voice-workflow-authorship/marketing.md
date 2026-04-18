@@ -30,6 +30,13 @@ relatedSlugs:
 metadata:
   slug: ai-for-artists-voice-workflow-authorship
   track: ai_literacy
+  catalog: digital_lab
+  releaseStatus: website_ready
+  sessionFormat: talk_demo
+  marketingLevel: beginner
+  packetStatus: lms_ready
+  websiteReadiness: ready
+  resourcesAvailability: packet_available
   buildPriority: 5
   subtitle: >-
     Policies, prompts, and critique—AI as studio assistant, not author

@@ -211,6 +211,37 @@ export default function ArtistsPage() {
     );
   }
 
+  if (!organization) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <UnifiedNavigation config={ooliteConfig} userRole="admin" />
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-[calc(2rem+150px)] pb-16 text-center">
+          <Users className="h-14 w-14 text-gray-400 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Organization not found
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-3">
+            We could not load an organization for{' '}
+            <span className="font-mono text-sm bg-gray-200/80 dark:bg-gray-800 px-1.5 py-0.5 rounded">
+              {slug}
+            </span>
+            . That usually means there is no matching row in the database, or the request failed.
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-500">
+            Signing in does not fix a missing organization record. Ask an admin to confirm the org slug and Supabase{' '}
+            <code className="text-xs bg-gray-200/80 dark:bg-gray-800 px-1 rounded">organizations</code> data.
+          </p>
+        </div>
+        <PageFooter
+          organizationSlug={slug}
+          showGetStarted={true}
+          showGuidelines={true}
+          showTerms={true}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <UnifiedNavigation config={ooliteConfig} userRole="admin" />
@@ -226,7 +257,17 @@ export default function ArtistsPage() {
                 Artists & Members
               </h1>
               <p className="text-lg 4xl:text-3xl text-gray-600 dark:text-gray-400">
-                {organization?.name} - {artists.length} members
+                {organization.name} — {artists.length} members
+              </p>
+              <p className="text-sm 4xl:text-lg text-gray-500 dark:text-gray-500 mt-2 max-w-3xl">
+                This list is the in-app member directory (database). The{' '}
+                <Link
+                  href={`/o/${slug}/alumni`}
+                  className="text-primary underline-offset-2 hover:underline font-medium"
+                >
+                  alumni directory
+                </Link>{' '}
+                is separate and comes from Airtable when configured.
               </p>
             </div>
           </div>
@@ -453,12 +494,21 @@ export default function ArtistsPage() {
           <div className="text-center py-12">
             <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              No artists found
+              {artists.length === 0 ? 'No members in the directory yet' : 'No matching members'}
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              {searchTerm || studioTypeFilter || studioNumberFilter
-                ? 'Try adjusting your filters to see more results.'
-                : 'Get started by adding your first artist profile.'}
+            <p className="text-gray-600 dark:text-gray-400 max-w-lg mx-auto">
+              {artists.length === 0 ? (
+                <>
+                  There are no artist profiles for this organization in the app database yet. For Airtable-backed alumni,
+                  use the{' '}
+                  <Link href={`/o/${slug}/alumni`} className="text-primary underline-offset-2 hover:underline font-medium">
+                    alumni directory
+                  </Link>
+                  .
+                </>
+              ) : (
+                'Try adjusting your filters to see more results.'
+              )}
             </p>
           </div>
         )}

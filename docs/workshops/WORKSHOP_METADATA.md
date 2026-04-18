@@ -16,6 +16,23 @@ Rich marketing and future LMS fields live in `workshops.metadata` alongside core
 - **`placeholderImagePrompt`**: string — brief for batch image generation; not shown on the public page by default.
 - **`packetConcept`**: string — long-form packet / async primer; shown on the workshop detail page when set.
 
+## Digital Lab catalog (`/o/{org}/workshops/digital-lab`)
+
+Optional fields for the Digital Lab workshop catalog filters, cards, and sorting. All are optional; the catalog derives sensible defaults from `status`, `level`, and `duration_minutes` when omitted.
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `catalog` | `digital_lab` | Explicit membership in the Digital Lab catalog (rows with `track` already qualify). |
+| `releaseStatus` | `website_ready` \| `in_development` \| `coming_soon` | Primary card badge and “Status” filter. Default: `published` → `website_ready`, `draft` → `in_development`, else `coming_soon`. |
+| `sessionFormat` | `one_day` \| `series` \| `talk_demo` \| `clinic_lab` | “Format” filter (not the same as delivery `format`). |
+| `marketingLevel` | `beginner` \| `beginner_intermediate` \| `intermediate` \| `advanced_experimental` | “Level” filter; default inferred from DB `level`. |
+| `packetStatus` | `strategy_defined` \| `homepage_ready` \| `syllabus_ready` \| `packet_in_progress` \| `packet_ready` \| `lms_ready` | Secondary badge + “Packet Status” filter. |
+| `websiteReadiness` | `ready` \| `needs_build` | “Website” filter. |
+| `resourcesAvailability` | `packet_available` \| `packet_coming_soon` | “Resources” filter + secondary badge. |
+| `durationBucket` | `two_h` \| `two_to_three_h` \| `three_h` \| `three_to_four_h` | Chip override; if omitted, derived from `duration_minutes`. |
+
+**Audience:** reuse `audienceTags` with slugs such as `artists`, `teaching_artists`, `residents`, `educators`, `interdisciplinary_practitioners`, `arts_organizations` (see `lib/workshops/digital-lab-catalog-constants.ts`).
+
 ## Markdown authoring (preferred)
 
 - Edit **`content/catalog/<org>/<slug>/marketing.md`** — see [`content/catalog/README.md`](../../content/catalog/README.md) for the frontmatter contract and [`CATALOG_VS_LEARN_SLUGS.md`](./CATALOG_VS_LEARN_SLUGS.md) for aligning Learn folders with slugs.

@@ -15,6 +15,20 @@ The Infra24 Platform is a sophisticated multi-tenant SaaS platform that powers d
 - **Role-Based Access**: Granular permissions for users, admins, and super admins
 - **Scalable Design**: Ready for unlimited organizations
 
+### Data sources by org surface (Supabase vs Airtable)
+
+Most tenant routes under `/o/[slug]/…` resolve the org from the **`organizations`** table in Supabase (`slug` → `id`). If that row is missing, APIs and pages that depend on it return 404 or show an empty state—not an Airtable configuration issue.
+
+| Surface | Primary source | Notes |
+|--------|----------------|--------|
+| Organization profile / theme | Supabase `organizations` | Slug is the tenant key |
+| Artists & members directory | Supabase `artist_profiles` via `/api/artists?orgId=` | Separate from alumni |
+| Surveys listing | Supabase `surveys` | Scoped by `organization_id` |
+| Workshops catalog | Supabase `workshops` | Scoped by `organization_id`; list API returns all rows for the org |
+| Public announcements (carousel, etc.) | Supabase `announcements` | Org + visibility rules |
+| Alumni directory | **Airtable** | Per-org env: `AIRTABLE_{ORG}_ALUMNI_BASE_ID` / `TABLE_ID` (+ PAT); see `docs/AIRTABLE_MULTI_BASE.md` |
+| Budget / certain fiscal views | **Airtable** | Shared PAT; budget base env vars |
+
 ### Authentication & Security
 - **Clerk Integration**: JWT-based authentication with social login
 - **Role Management**: User, admin, and super admin roles

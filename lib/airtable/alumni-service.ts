@@ -12,7 +12,12 @@ import { getAlumniConnectionForOrg } from '@/lib/airtable/org-alumni-config'
 
 export type AlumniAirtableRow = {
   id: string
+  /** Required for row identity / filters (mapped name field) */
   name: string
+  /** Optional professional or display name shown on cards when set */
+  artistName?: string
+  /** First attachment URL or URL string from mapped photo field */
+  photoUrl?: string
   email?: string
   cohort?: string
   program?: string
@@ -28,6 +33,13 @@ export type AlumniAirtableRow = {
   digitalArtist?: boolean
   inCollection?: boolean
   videoArt?: boolean
+}
+
+/** Label for cards: artist name when mapped, else legal/display name */
+export function alumniDisplayName(row: AlumniAirtableRow): string {
+  const a = row.artistName?.trim()
+  if (a) return a
+  return row.name
 }
 
 function cellToString(value: unknown): string | undefined {
@@ -81,6 +93,30 @@ function normalizeWebsiteUrl(href: string): string {
   return `https://${t}`
 }
 
+/** Airtable attachment cell or URL / string field */
+function cellToPhotoUrl(
+  fields: Record<string, unknown>,
+  airtableFieldName: string
+): string | undefined {
+  if (!airtableFieldName.trim()) return undefined
+  const raw = fields[airtableFieldName]
+  if (raw == null) return undefined
+  if (typeof raw === 'string') {
+    const t = raw.trim()
+    if (!t) return undefined
+    if (/^https?:\/\//i.test(t)) return t
+    return undefined
+  }
+  if (Array.isArray(raw) && raw.length > 0) {
+    const first = raw[0]
+    if (first && typeof first === 'object' && 'url' in first) {
+      const u = (first as { url?: unknown }).url
+      if (typeof u === 'string' && u.trim()) return u.trim()
+    }
+  }
+  return undefined
+}
+
 function mapRecordToAlumni(
   record: AirtableRecord,
   fieldMap: AlumniFieldMap
@@ -92,9 +128,17 @@ function mapRecordToAlumni(
   const websiteRaw = cellToString(fields[fieldMap.website])
   const website = websiteRaw ? normalizeWebsiteUrl(websiteRaw) : undefined
 
+  const artistField = fieldMap.artistName?.trim()
+  const artistName = artistField
+    ? cellToString(fields[artistField])
+    : undefined
+  const photoUrl = cellToPhotoUrl(fields, fieldMap.photo)
+
   return {
     id: record.id,
     name,
+    ...(artistName ? { artistName } : {}),
+    ...(photoUrl ? { photoUrl } : {}),
     email: cellToString(fields[fieldMap.email]),
     cohort: cellToString(fields[fieldMap.cohort]),
     program: cellToString(fields[fieldMap.program]),
@@ -122,15 +166,34 @@ export function parseAlumniYearValue(year?: string): number | null {
   return null
 }
 
+/** Short year label for cards (first 4-digit year in cell if messy) */
+export function alumniYearLabel(year?: string): string {
+  if (!year?.trim()) return ''
+  const y = parseAlumniYearValue(year)
+  if (y != null) return String(y)
+  return year.trim()
+}
+
+export type FetchAlumniDetailedResult =
+  | {
+      ok: true
+      alumni: AlumniAirtableRow[]
+      /** Total Airtable rows returned (before name filter) */
+      airtableRecordCount: number
+      /** Rows dropped because the mapped name field was empty */
+      skippedWithoutName: number
+    }
+  | { ok: false; reason: 'not_configured' }
+  | { ok: false; reason: 'airtable_error'; message: string }
+
 /**
- * Fetch mapped alumni rows from Airtable for an org with env configured.
- * Returns null if not configured or fetch fails.
+ * Same as {@link fetchAlumniFromAirtable} but includes Airtable error text when the request fails.
  */
-export async function fetchAlumniFromAirtable(
+export async function fetchAlumniFromAirtableDetailed(
   orgSlug: string
-): Promise<AlumniAirtableRow[] | null> {
+): Promise<FetchAlumniDetailedResult> {
   const conn = getAlumniConnectionForOrg(orgSlug)
-  if (!conn) return null
+  if (!conn) return { ok: false, reason: 'not_configured' }
 
   try {
     const records = await fetchAllRecords(conn.baseId, conn.tableId, conn.apiKey, {
@@ -141,11 +204,29 @@ export async function fetchAlumniFromAirtable(
       const row = mapRecordToAlumni(r, conn.fieldMap)
       if (row) rows.push(row)
     }
-    return rows
+    return {
+      ok: true,
+      alumni: rows,
+      airtableRecordCount: records.length,
+      skippedWithoutName: records.length - rows.length,
+    }
   } catch (err) {
     console.error('Airtable alumni fetch error:', err)
-    return null
+    const message = err instanceof Error ? err.message : String(err)
+    return { ok: false, reason: 'airtable_error', message }
   }
+}
+
+/**
+ * Fetch mapped alumni rows from Airtable for an org with env configured.
+ * Returns null if not configured or fetch fails.
+ */
+export async function fetchAlumniFromAirtable(
+  orgSlug: string
+): Promise<AlumniAirtableRow[] | null> {
+  const r = await fetchAlumniFromAirtableDetailed(orgSlug)
+  if (r.ok) return r.alumni
+  return null
 }
 
 export function isAlumniAirtableConfigured(orgSlug: string): boolean {

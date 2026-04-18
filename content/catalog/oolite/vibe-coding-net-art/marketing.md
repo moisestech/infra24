@@ -31,6 +31,13 @@ relatedSlugs:
 metadata:
   slug: vibe-coding-net-art
   track: creative_coding
+  catalog: digital_lab
+  releaseStatus: in_development
+  sessionFormat: clinic_lab
+  marketingLevel: beginner
+  packetStatus: syllabus_ready
+  websiteReadiness: needs_build
+  resourcesAvailability: packet_available
   buildPriority: 6
   subtitle: 'Creative coding meets critical publishing—fast iteration, clear intent.'
   shortDescription: >-

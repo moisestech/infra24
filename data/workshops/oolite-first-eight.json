@@ -37,9 +37,11 @@
         "seoTitle": "Own Your Digital Presence — Oolite Arts",
         "seoDescription": "Plan your artist site, socials, and updates with a checklist you can actually maintain.",
         "audienceTags": [
+          "artists",
+          "teaching_artists",
+          "educators",
           "individual_artists",
-          "emerging_artists",
-          "educators"
+          "emerging_artists"
         ],
         "format": "in_person",
         "materialsRequired": [
@@ -123,7 +125,14 @@
         "track": "presence",
         "buildPriority": 1,
         "placeholderImagePrompt": "Editorial photo: artist at laptop, soft daylight, minimal desk, subtle Miami pastel wall, no logos, candid not stock-smile",
-        "packetConcept": "A 12-page facilitator packet: learning goals, timing blocks, slide outline, copy worksheet (hero, about, contact), platform comparison one-pager, and a 30-day maintenance calendar template."
+        "packetConcept": "A 12-page facilitator packet: learning goals, timing blocks, slide outline, copy worksheet (hero, about, contact), platform comparison one-pager, and a 30-day maintenance calendar template.",
+        "catalog": "digital_lab",
+        "releaseStatus": "website_ready",
+        "sessionFormat": "one_day",
+        "marketingLevel": "beginner",
+        "packetStatus": "packet_ready",
+        "websiteReadiness": "ready",
+        "resourcesAvailability": "packet_available"
       }
     },
     {
@@ -248,7 +257,14 @@
         "track": "presence",
         "buildPriority": 2,
         "placeholderImagePrompt": "Abstract diagram aesthetic: search results morphing into chat bubble, muted teal and coral, museum-quality typography, no brand marks",
-        "packetConcept": "Facilitator guide with AI-search vs classic SERP comparison sheet, rewrite exercises for three page types (bio, exhibition, program), and a metrics appendix focused on meaningful referrals—not vanity counts."
+        "packetConcept": "Facilitator guide with AI-search vs classic SERP comparison sheet, rewrite exercises for three page types (bio, exhibition, program), and a metrics appendix focused on meaningful referrals—not vanity counts.",
+        "catalog": "digital_lab",
+        "releaseStatus": "website_ready",
+        "sessionFormat": "one_day",
+        "marketingLevel": "beginner",
+        "packetStatus": "packet_in_progress",
+        "websiteReadiness": "ready",
+        "resourcesAvailability": "packet_available"
       }
     },
     {
@@ -372,7 +388,14 @@
         "track": "presence",
         "buildPriority": 3,
         "placeholderImagePrompt": "Close-up of handwritten notes next to keyboard, warm light, creative mess, no readable private text",
-        "packetConcept": "Printable scaffolds: one-page bios (50/100/250 words), process paragraph templates, glossary of common digital terms for funders, and panel prep question bank."
+        "packetConcept": "Printable scaffolds: one-page bios (50/100/250 words), process paragraph templates, glossary of common digital terms for funders, and panel prep question bank.",
+        "catalog": "digital_lab",
+        "releaseStatus": "in_development",
+        "sessionFormat": "clinic_lab",
+        "marketingLevel": "beginner_intermediate",
+        "packetStatus": "packet_in_progress",
+        "websiteReadiness": "needs_build",
+        "resourcesAvailability": "packet_available"
       }
     },
     {
@@ -500,7 +523,14 @@
         "track": "systems_archive",
         "buildPriority": 4,
         "placeholderImagePrompt": "Gallery interior, tripod and camera in soft focus, neutral walls, documentary not glamorous",
-        "packetConcept": "Shot list templates for install, performance, and public program; model release notes; ingest checklist for orgs; and a one-page 'minimum viable documentation' for tight budgets."
+        "packetConcept": "Shot list templates for install, performance, and public program; model release notes; ingest checklist for orgs; and a one-page 'minimum viable documentation' for tight budgets.",
+        "catalog": "digital_lab",
+        "releaseStatus": "website_ready",
+        "sessionFormat": "one_day",
+        "marketingLevel": "beginner",
+        "packetStatus": "homepage_ready",
+        "websiteReadiness": "ready",
+        "resourcesAvailability": "packet_available"
       }
     },
     {
@@ -627,7 +657,14 @@
         "track": "ai_literacy",
         "buildPriority": 5,
         "placeholderImagePrompt": "Split composition: human hand sketching beside abstract neural motif, editorial illustration style, restrained palette",
-        "packetConcept": "Sample policies (short/medium), facilitator notes on common objections, bibliography of arts-AI readings, and a peer critique rubric for AI-assisted writing and images."
+        "packetConcept": "Sample policies (short/medium), facilitator notes on common objections, bibliography of arts-AI readings, and a peer critique rubric for AI-assisted writing and images.",
+        "catalog": "digital_lab",
+        "releaseStatus": "website_ready",
+        "sessionFormat": "talk_demo",
+        "marketingLevel": "beginner",
+        "packetStatus": "lms_ready",
+        "websiteReadiness": "ready",
+        "resourcesAvailability": "packet_available"
       }
     },
     {
@@ -769,7 +806,14 @@
         "track": "creative_coding",
         "buildPriority": 6,
         "placeholderImagePrompt": "Browser window with abstract generative art, terminal snippet blurred, dark mode aesthetic, arts context not corporate",
-        "packetConcept": "Starter repo README, history-of-net-art reading links (short), documentation worksheet for prompts/commits, deploy checklist (static host)."
+        "packetConcept": "Starter repo README, history-of-net-art reading links (short), documentation worksheet for prompts/commits, deploy checklist (static host).",
+        "catalog": "digital_lab",
+        "releaseStatus": "in_development",
+        "sessionFormat": "clinic_lab",
+        "marketingLevel": "beginner",
+        "packetStatus": "syllabus_ready",
+        "websiteReadiness": "needs_build",
+        "resourcesAvailability": "packet_available"
       }
     },
     {
@@ -891,7 +935,14 @@
         "track": "systems_archive",
         "buildPriority": 7,
         "placeholderImagePrompt": "Neat folder icons as subtle abstract shapes, paper texture overlay, calm green-gray palette",
-        "packetConcept": "Printable folder tree diagrams, password-manager onboarding checklist, collaborator handoff one-pager, and optional Obsidian/Drive comparison for artists."
+        "packetConcept": "Printable folder tree diagrams, password-manager onboarding checklist, collaborator handoff one-pager, and optional Obsidian/Drive comparison for artists.",
+        "catalog": "digital_lab",
+        "releaseStatus": "website_ready",
+        "sessionFormat": "series",
+        "marketingLevel": "intermediate",
+        "packetStatus": "strategy_defined",
+        "websiteReadiness": "ready",
+        "resourcesAvailability": "packet_available"
       }
     },
     {
@@ -1011,7 +1062,14 @@
         "track": "ai_literacy",
         "buildPriority": 8,
         "placeholderImagePrompt": "Scales and stylus overlapping creative tools, monochrome ink illustration, serious but approachable",
-        "packetConcept": "Case-vignette deck for discussion, glossary of IP terms, sample rider language prompts (non-legal), and resource list for regional legal aid for artists."
+        "packetConcept": "Case-vignette deck for discussion, glossary of IP terms, sample rider language prompts (non-legal), and resource list for regional legal aid for artists.",
+        "catalog": "digital_lab",
+        "releaseStatus": "coming_soon",
+        "sessionFormat": "talk_demo",
+        "marketingLevel": "intermediate",
+        "packetStatus": "packet_in_progress",
+        "websiteReadiness": "needs_build",
+        "resourcesAvailability": "packet_coming_soon"
       }
     }
   ]

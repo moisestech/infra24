@@ -4,9 +4,8 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { TenantProvider } from '@/components/tenant/TenantProvider'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -18,14 +17,19 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { AlumniAirtableRow } from '@/lib/airtable/alumni-service'
-import { parseAlumniYearValue } from '@/lib/airtable/alumni-service'
+import {
+  alumniDisplayName,
+  parseAlumniYearValue,
+} from '@/lib/airtable/alumni-service'
 import { orgSlugToEnvToken } from '@/lib/airtable/org-alumni-config'
+import { SparklesText } from '@/components/magicui/sparkles-text'
+import { AlumniArtistCard } from '@/components/organization/AlumniArtistCard'
+import { AlumniDetailSheet } from '@/components/organization/AlumniDetailSheet'
 import {
   School,
   Search,
   AlertCircle,
   Database,
-  ExternalLink,
   Layers,
   Sparkles,
   Library,
@@ -81,6 +85,7 @@ export function AlumniDirectoryPage({
   const [onlyDigital, setOnlyDigital] = useState(false)
   const [onlyCollection, setOnlyCollection] = useState(false)
   const [onlyVideo, setOnlyVideo] = useState(false)
+  const [selectedRow, setSelectedRow] = useState<AlumniAirtableRow | null>(null)
 
   const navConfig = getNavigationConfig(slug)
 
@@ -96,13 +101,13 @@ export function AlumniDirectoryPage({
       }
     }
     return {
-      cohortOptions: [...cohorts].sort((a, b) => a.localeCompare(b)),
-      yearOptions: [...years].sort((a, b) => {
+      cohortOptions: Array.from(cohorts).sort((a, b) => a.localeCompare(b)),
+      yearOptions: Array.from(years).sort((a, b) => {
         const na = parseAlumniYearValue(a) ?? 0
         const nb = parseAlumniYearValue(b) ?? 0
         return nb - na
       }),
-      topicOptions: [...topics].sort((a, b) => a.localeCompare(b)),
+      topicOptions: Array.from(topics).sort((a, b) => a.localeCompare(b)),
     }
   }, [alumni])
 
@@ -122,6 +127,8 @@ export function AlumniDirectoryPage({
       if (!q) return true
       const hay = [
         row.name,
+        row.artistName,
+        alumniDisplayName(row),
         row.email,
         row.cohort,
         row.program,
@@ -138,9 +145,11 @@ export function AlumniDirectoryPage({
     })
 
     const sorted = [...rows].sort((a, b) => {
+      const nameA = alumniDisplayName(a)
+      const nameB = alumniDisplayName(b)
       switch (sortMode) {
         case 'name-desc':
-          return b.name.localeCompare(a.name)
+          return nameB.localeCompare(nameA)
         case 'year-desc': {
           const ya = parseAlumniYearValue(a.year) ?? -Infinity
           const yb = parseAlumniYearValue(b.year) ?? -Infinity
@@ -156,11 +165,11 @@ export function AlumniDirectoryPage({
           const cb = b.cohort ?? '\uffff'
           const c = ca.localeCompare(cb)
           if (c !== 0) return c
-          return a.name.localeCompare(b.name)
+          return nameA.localeCompare(nameB)
         }
         case 'name-asc':
         default:
-          return a.name.localeCompare(b.name)
+          return nameA.localeCompare(nameB)
       }
     })
 
@@ -180,7 +189,7 @@ export function AlumniDirectoryPage({
       if (!map.has(k)) map.set(k, [])
       map.get(k)!.push(row)
     }
-    const keys = [...map.keys()].sort((a, b) => a.localeCompare(b))
+    const keys = Array.from(map.keys()).sort((a, b) => a.localeCompare(b))
     return {
       sections: keys.map((k) => ({ key: k, label: k, rows: map.get(k)! })),
       totalShown: sorted.length,
@@ -203,29 +212,41 @@ export function AlumniDirectoryPage({
       ? 'bg-primary text-primary-foreground border-primary'
       : 'border-border text-muted-foreground hover:bg-muted/60'
 
+  const sortChips: { mode: SortMode; label: string }[] = [
+    { mode: 'name-asc', label: 'Name A–Z' },
+    { mode: 'name-desc', label: 'Name Z–A' },
+    { mode: 'year-desc', label: 'Newest year' },
+    { mode: 'year-asc', label: 'Oldest year' },
+  ]
+
   return (
     <TenantProvider>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <div className="min-h-screen bg-background">
         <UnifiedNavigation config={navConfig} userRole="user" />
-        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-6xl">
+        <main className="container mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mb-8">
-            <div className="flex items-center gap-2 text-primary mb-2">
-              <School className="h-8 w-8" aria-hidden />
-              <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white">
-                Alumni directory
+            <div className="mb-2 flex flex-wrap items-center gap-3 text-primary">
+              <School className="h-8 w-8 shrink-0" aria-hidden />
+              <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">
+                <SparklesText
+                  text="Alumni directory"
+                  className="text-2xl font-semibold sm:text-3xl"
+                  sparklesCount={12}
+                />
               </h1>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 max-w-3xl text-sm sm:text-base">
+            <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
               {orgName} alumni data comes from Airtable on each request (
-              <code className="text-xs bg-gray-200/80 dark:bg-gray-800 px-1 rounded">
+              <code className="rounded bg-muted px-1 text-xs">
                 fetchAlumniFromAirtable
               </code>
               ). Rich filters (digital practice, collection, video, topics) only light up when those
               columns exist—map them with{' '}
-              <code className="text-xs bg-muted px-1 rounded">
+              <code className="rounded bg-muted px-1 text-xs">
                 AIRTABLE_*_ALUMNI_FIELD_*
               </code>{' '}
-              if your field names differ. JSON:{' '}
+              if your field names differ. Cards show name, photo, medium, and Oolite year; open a
+              profile for full details. JSON:{' '}
               <Link
                 href={`/api/organizations/by-slug/${slug}/alumni/airtable`}
                 className="text-primary underline-offset-2 hover:underline"
@@ -274,8 +295,11 @@ export function AlumniDirectoryPage({
 
           {configured && !fetchError && alumni.length === 0 && (
             <Card>
-              <CardContent className="py-12 text-center text-gray-600 dark:text-gray-400">
-                No rows with a <strong>Name</strong> field were found in the alumni table.
+              <CardContent className="py-12 text-center text-muted-foreground">
+                No rows with a value in the mapped name field (default{' '}
+                <strong>Name</strong>; override with{' '}
+                <code className="rounded bg-muted px-1 text-xs">FIELD_NAME</code>) were found in the
+                alumni table.
               </CardContent>
             </Card>
           )}
@@ -284,7 +308,7 @@ export function AlumniDirectoryPage({
             <>
               <div className="space-y-4 mb-6">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="search"
                     placeholder="Search name, notes, medium, artifacts, topics…"
@@ -337,11 +361,25 @@ export function AlumniDirectoryPage({
                 </p>
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <div className="space-y-2">
+                  <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="alumni-sort">Sort</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {sortChips.map(({ mode, label }) => (
+                        <Button
+                          key={mode}
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className={toggleBtn(sortMode === mode)}
+                          onClick={() => setSortMode(mode)}
+                        >
+                          {label}
+                        </Button>
+                      ))}
+                    </div>
                     <Select value={sortMode} onValueChange={(v) => setSortMode(v as SortMode)}>
-                      <SelectTrigger id="alumni-sort">
-                        <SelectValue />
+                      <SelectTrigger id="alumni-sort" className="max-w-xs">
+                        <SelectValue placeholder="Sort order" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="name-asc">Name (A–Z)</SelectItem>
@@ -420,9 +458,10 @@ export function AlumniDirectoryPage({
                 )}
               </div>
 
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 flex items-center gap-2">
-                <Layers className="h-4 w-4" />
-                Showing <strong>{totalShown}</strong> of {alumni.length} alumni
+              <p className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+                <Layers className="h-4 w-4 shrink-0" aria-hidden />
+                Showing <strong className="text-foreground">{totalShown}</strong> of{' '}
+                {alumni.length} alumni
               </p>
 
               <div className="space-y-10">
@@ -431,7 +470,7 @@ export function AlumniDirectoryPage({
                     {section.label ? (
                       <h2
                         id={`grp-${section.key}`}
-                        className="text-lg font-semibold text-gray-900 dark:text-white mb-4 pb-2 border-b border-border"
+                        className="mb-4 border-b border-border pb-2 text-lg font-semibold text-foreground"
                       >
                         {section.label}
                         <span className="text-muted-foreground font-normal text-sm ml-2">
@@ -439,94 +478,13 @@ export function AlumniDirectoryPage({
                         </span>
                       </h2>
                     ) : null}
-                    <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                       {section.rows.map((row) => (
                         <li key={row.id}>
-                          <Card className="h-full border-gray-200 dark:border-gray-800 flex flex-col">
-                            <CardHeader className="pb-2">
-                              <CardTitle className="text-lg leading-snug">{row.name}</CardTitle>
-                              <div className="flex flex-wrap gap-1.5 pt-1">
-                                {row.digitalArtist === true && (
-                                  <Badge className="bg-violet-600 hover:bg-violet-600">Digital</Badge>
-                                )}
-                                {row.inCollection === true && (
-                                  <Badge variant="secondary">Collection</Badge>
-                                )}
-                                {isVideoRow(row) && (
-                                  <Badge variant="outline" className="border-amber-500/50 text-amber-800 dark:text-amber-200">
-                                    Video
-                                  </Badge>
-                                )}
-                                {row.cohort && <Badge variant="secondary">{row.cohort}</Badge>}
-                                {row.program && <Badge variant="outline">{row.program}</Badge>}
-                                {row.year && <Badge variant="outline">{row.year}</Badge>}
-                                {row.medium && (
-                                  <Badge variant="outline" className="font-normal">
-                                    {row.medium}
-                                  </Badge>
-                                )}
-                              </div>
-                              {row.topics.length > 0 && (
-                                <div className="flex flex-wrap gap-1 pt-2">
-                                  {row.topics.map((t) => (
-                                    <span
-                                      key={t}
-                                      className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground"
-                                    >
-                                      {t}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </CardHeader>
-                            <CardContent className="text-sm text-gray-600 dark:text-gray-400 space-y-2 flex-1 flex flex-col">
-                              {row.website && (
-                                <p>
-                                  <a
-                                    href={row.website}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 text-primary font-medium hover:underline"
-                                  >
-                                    Website
-                                    <ExternalLink className="h-3 w-3" aria-hidden />
-                                  </a>
-                                </p>
-                              )}
-                              {row.email && (
-                                <p>
-                                  <span className="text-gray-500 dark:text-gray-500">Email: </span>
-                                  <a
-                                    href={`mailto:${row.email}`}
-                                    className="text-primary hover:underline"
-                                  >
-                                    {row.email}
-                                  </a>
-                                </p>
-                              )}
-                              {row.phone && (
-                                <p>
-                                  <span className="text-gray-500 dark:text-gray-500">Phone: </span>
-                                  {row.phone}
-                                </p>
-                              )}
-                              {row.artifacts && (
-                                <div className="pt-1 border-t border-border/60 mt-auto">
-                                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                                    Work at Oolite
-                                  </p>
-                                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap line-clamp-6">
-                                    {row.artifacts}
-                                  </p>
-                                </div>
-                              )}
-                              {row.notes && !row.artifacts && (
-                                <p className="text-gray-700 dark:text-gray-300 pt-1 line-clamp-4">
-                                  {row.notes}
-                                </p>
-                              )}
-                            </CardContent>
-                          </Card>
+                          <AlumniArtistCard
+                            row={row}
+                            onOpen={() => setSelectedRow(row)}
+                          />
                         </li>
                       ))}
                     </ul>
@@ -536,6 +494,12 @@ export function AlumniDirectoryPage({
             </>
           )}
         </main>
+
+        <AlumniDetailSheet
+          row={selectedRow}
+          onClose={() => setSelectedRow(null)}
+          orgName={orgName}
+        />
       </div>
     </TenantProvider>
   )

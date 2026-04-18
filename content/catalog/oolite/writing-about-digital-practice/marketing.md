@@ -29,6 +29,13 @@ relatedSlugs:
 metadata:
   slug: writing-about-digital-practice
   track: presence
+  catalog: digital_lab
+  releaseStatus: in_development
+  sessionFormat: clinic_lab
+  marketingLevel: beginner_intermediate
+  packetStatus: packet_in_progress
+  websiteReadiness: needs_build
+  resourcesAvailability: packet_available
   buildPriority: 3
   subtitle: 'Statements, bios, and panel language that match how you actually work.'
   shortDescription: >-

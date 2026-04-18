@@ -28,6 +28,13 @@ relatedSlugs:
 metadata:
   slug: own-your-digital-presence
   track: presence
+  catalog: digital_lab
+  releaseStatus: website_ready
+  sessionFormat: one_day
+  marketingLevel: beginner
+  packetStatus: packet_ready
+  websiteReadiness: ready
+  resourcesAvailability: packet_available
   buildPriority: 1
   subtitle: >-
     Portfolio clarity, owned infrastructure, and humane habits for showing work
@@ -41,9 +48,11 @@ metadata:
     actually maintain.
   format: in_person
   audienceTags:
+    - artists
+    - teaching_artists
+    - educators
     - individual_artists
     - emerging_artists
-    - educators
   materialsRequired:
     - Laptop
     - Links to existing site or socials if any
