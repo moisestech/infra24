@@ -161,7 +161,7 @@ export const dccSiteMeta = {
 /** Homepage meta title/description (also used for JSON-LD). */
 export const marketingHomeMeta = {
   title: 'DCC.miami | Digital Culture Center Miami',
-  description: dccPilotSeoDescription,
+  description: `Building cultural infrastructure for Miami\u2019s artists. ${dccPilotSeoDescription}`,
 } as const;
 
 /** Plain hero subhead default (first tier-2 rotating line); homepage cycles full `dccHeroRotatingSubheads`. */
@@ -515,6 +515,25 @@ export const marketingNavSheetGroups = [
 ] as const;
 
 export const marketingNavSheetFooterHrefs = ['/contact', '/infra24'] as const;
+
+/** Desktop header (`lg+`): left column — `href` must exist in `navItems`; `label` may differ for bar copy (e.g. Services → /programs). */
+export const marketingHeaderNavLeft = [
+  { href: '/about', label: 'About' },
+  { href: '/programs', label: 'Services' },
+  { href: '/grants', label: 'Pilot' },
+] as const;
+
+/** Desktop header (`lg+`): right column text links before Apply + theme. */
+export const marketingHeaderNavRight = [
+  { href: '/partners', label: 'Partners' },
+  { href: '/contact', label: 'Contact' },
+] as const;
+
+/** Primary CTA in desktop header; same destination as artist index engagement. */
+export const marketingHeaderApplyCta = {
+  href: '/contact/artist-index',
+  label: 'Apply',
+} as const;
 
 /** Dedicated public product page at /infra24 (institutions, RFPs, technical buyers). */
 export const infra24MarketingMeta = {

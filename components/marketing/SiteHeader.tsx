@@ -6,6 +6,9 @@ import { Menu } from 'lucide-react';
 import { CdcMiamiLogo } from '@/components/marketing/cdc/CdcMiamiLogo';
 import {
   dccSiteMeta,
+  marketingHeaderApplyCta,
+  marketingHeaderNavLeft,
+  marketingHeaderNavRight,
   marketingNavSheetFooterHrefs,
   marketingNavSheetGroups,
   navItems,
@@ -37,39 +40,59 @@ export function SiteHeader() {
         : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:hover:text-neutral-100'
     );
 
+  const desktopLinkClass = (href: string) =>
+    cn(
+      'cdc-font-display whitespace-nowrap rounded-md px-2 py-1.5 text-sm font-medium transition-colors',
+      pathname === href
+        ? 'text-neutral-900 dark:text-neutral-100'
+        : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
+    );
+
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--cdc-border)] bg-[#fafafa]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fafafa]/80 dark:border-neutral-700/80 dark:bg-neutral-950/90 dark:supports-[backdrop-filter]:bg-neutral-950/85">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-6 lg:px-8">
+      <div className="relative mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-6 lg:px-8">
+        <div className="z-10 flex min-w-0 flex-1 basis-0 items-center gap-2 lg:gap-3">
+          <nav className="cdc-font-display hidden min-w-0 items-center gap-x-1 xl:gap-x-3 lg:flex" aria-label="Site sections">
+            {marketingHeaderNavLeft.map(({ href, label }) => (
+              <Link key={href} href={href} className={desktopLinkClass(href)}>
+                {label}
+              </Link>
+            ))}
+          </nav>
+          <MarketingThemeToggle className="ml-auto hidden sm:flex lg:hidden" />
+        </div>
+
         <Link
           href="/"
-          className="group flex min-w-0 flex-1 items-center gap-2.5 leading-tight sm:gap-3"
+          className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 outline-none ring-offset-2 transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)]"
+          aria-label={`${dccSiteMeta.organizationName} — home`}
         >
-          <CdcMiamiLogo
-            size="hero"
-            priority
-            className="max-sm:h-10 max-sm:w-[9.5rem]"
-          />
-          <div className="min-w-0 flex flex-col">
-            <span className="truncate text-sm font-semibold tracking-tight text-neutral-900 sm:text-[0.95rem] dark:text-neutral-100">
-              <span className="sm:hidden">{dccSiteMeta.shortName}</span>
-              <span className="hidden sm:inline">{dccSiteMeta.organizationName}</span>
-            </span>
-          </div>
+          <CdcMiamiLogo size="hero" priority className="h-9 w-auto max-sm:h-8 sm:h-10" />
         </Link>
 
-        <div className="flex shrink-0 items-center gap-2">
-          <MarketingThemeToggle className="hidden sm:inline-flex" />
-          <Link
-            href="/grants"
-            className="hidden rounded-md bg-neutral-900 px-2.5 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 sm:inline-flex sm:px-3 sm:text-sm dark:bg-neutral-100 dark:text-neutral-900 dark:hover:opacity-95"
+        <div className="z-10 flex min-w-0 flex-1 basis-0 items-center justify-end gap-2 sm:gap-3">
+          <nav
+            className="cdc-font-display hidden min-w-0 items-center gap-x-1 xl:gap-x-3 lg:flex"
+            aria-label="More pages"
           >
-            Grants
-          </Link>
+            {marketingHeaderNavRight.map(({ href, label }) => (
+              <Link key={href} href={href} className={desktopLinkClass(href)}>
+                {label}
+              </Link>
+            ))}
+            <Link
+              href={marketingHeaderApplyCta.href}
+              className="whitespace-nowrap rounded-full border border-neutral-900 bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:opacity-95"
+            >
+              {marketingHeaderApplyCta.label}
+            </Link>
+          </nav>
+          <MarketingThemeToggle className="hidden lg:flex" />
           <Sheet>
             <SheetTrigger asChild>
               <button
                 type="button"
-                className="inline-flex h-12 w-12 items-center justify-center rounded-md border border-[var(--cdc-border)] bg-white/80 text-neutral-800 shadow-sm transition-colors hover:bg-white hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)] focus-visible:ring-offset-2 dark:border-neutral-600 dark:bg-neutral-900/80 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-offset-neutral-950"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-md border border-[var(--cdc-border)] bg-white/80 text-neutral-800 shadow-sm transition-colors hover:bg-white hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)] focus-visible:ring-offset-2 dark:border-neutral-600 dark:bg-neutral-900/80 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-offset-neutral-950 lg:hidden"
                 aria-label="Open menu"
               >
                 <Menu className="h-10 w-10" aria-hidden />
@@ -79,24 +102,45 @@ export function SiteHeader() {
               side="right"
               className="flex w-[min(100vw-1rem,20rem)] flex-col border-[var(--cdc-border)] bg-[#fafafa] p-0 sm:max-w-sm dark:border-neutral-700 dark:bg-neutral-950"
             >
-              <SheetHeader className="border-b border-[var(--cdc-border)] px-5 pb-4 pt-5 text-left">
-                <SheetTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
-                  Menu
-                </SheetTitle>
-                <p className="text-xs font-normal font-mono uppercase tracking-[0.18em] text-[var(--cdc-teal)]">
-                  {publicDigitalMiamiLine}
-                </p>
+              <SheetHeader className="border-b border-[var(--cdc-border)] px-5 pb-4 pt-5 text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <SheetClose asChild>
+                    <Link
+                      href="/"
+                      className="outline-none ring-offset-2 transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)]"
+                      aria-label={`${dccSiteMeta.organizationName} — home`}
+                    >
+                      <CdcMiamiLogo size="md" objectAlign="center" className="h-10 w-auto max-w-[min(100%,14rem)]" />
+                    </Link>
+                  </SheetClose>
+                  <SheetTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                    Menu
+                  </SheetTitle>
+                  <p className="cdc-font-mono-accent max-w-full text-xs font-normal uppercase tracking-[0.18em] text-[var(--cdc-teal)]">
+                    {publicDigitalMiamiLine}
+                  </p>
+                </div>
               </SheetHeader>
 
               <div className="flex flex-1 flex-col overflow-y-auto px-3 py-4">
-                <SheetClose asChild>
-                  <Link
-                    href="/grants"
-                    className="mb-4 block rounded-lg bg-neutral-900 px-4 py-3 text-center text-sm font-medium text-white sm:hidden"
-                  >
-                    Grants
-                  </Link>
-                </SheetClose>
+                <div className="mb-4 flex flex-col gap-2">
+                  <SheetClose asChild>
+                    <Link
+                      href={marketingHeaderApplyCta.href}
+                      className="block rounded-lg bg-neutral-900 px-4 py-3 text-center text-sm font-semibold text-white dark:bg-neutral-100 dark:text-neutral-900"
+                    >
+                      {marketingHeaderApplyCta.label}
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link
+                      href="/grants"
+                      className="block rounded-lg border border-[var(--cdc-border)] bg-white/90 px-4 py-2.5 text-center text-sm font-medium text-neutral-800 dark:border-neutral-600 dark:bg-neutral-900/80 dark:text-neutral-200"
+                    >
+                      Pilot (Grants)
+                    </Link>
+                  </SheetClose>
+                </div>
 
                 <nav className="space-y-2" aria-label="Primary">
                   {marketingNavSheetGroups.map((group) => (

@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import Link from 'next/link';
 import { MarketingSection } from '@/components/marketing/MarketingSection';
+import { SectionWithRightImageFade } from '@/components/marketing/SectionWithRightImageFade';
 import { CtaBand } from '@/components/marketing/CtaBand';
 import { ProofStrip } from '@/components/marketing/ProofStrip';
 import { HomeFaqWebcoreList } from '@/components/marketing/HomeFaqWebcoreList';
 import {
-  marketingHero,
+  marketingHeroEngagement,
   marketingHomeMeta,
   publicDigitalMiamiLine,
   getMarketingFaqHomeItems,
@@ -18,8 +20,9 @@ import {
   dccWhatWeAreIntro,
 } from '@/lib/marketing/content';
 import {
-  dccHeroRotatingHeadlines,
-  dccHeroRotatingSubheads,
+  dccHomeFunderSubline,
+  dccHomeMissionHeadline,
+  dccHomeOrgLine,
   dccHomePathwaysSection,
   dccParticipantValue,
   dccPilotCtaBand,
@@ -71,15 +74,10 @@ const HomeWebcoreVisualGrid = dynamic(
   }
 );
 
-const HeroAboveFoldEngagement = dynamic(
-  () =>
-    import('@/components/marketing/HeroAboveFoldEngagement').then((m) => m.HeroAboveFoldEngagement),
+const HomeBelowFoldHero = dynamic(
+  () => import('@/components/marketing/HomeBelowFoldHero').then((m) => m.HomeBelowFoldHero),
   { ssr: true }
 );
-
-/** Tighter scale for long glitch H1 (“Digital Culture Center Miami”). */
-const homeHeroHeadlineClassName =
-  'cdc-hero-headline max-w-4xl text-[1.65rem] font-bold leading-[1.11] tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-3xl sm:leading-[1.12] lg:text-4xl xl:text-[2.35rem] xl:leading-[1.1]';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -107,64 +105,83 @@ export default function MarketingHomePage() {
         id="hero"
         className="cdc-mesh-hero-bg cdc-webcore-hero-shell scroll-mt-14 border-b border-[var(--cdc-border)]"
       >
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-14">
-            <HomeHeroDigital
-              eyebrow={dccPilotHomeHero.eyebrow}
-              publicDigitalMiamiLine={publicDigitalMiamiLine}
-              headline={marketingHero.headline}
-              headlineClassName={homeHeroHeadlineClassName}
-              rotatingHeadlines={dccHeroRotatingHeadlines}
-              rotatingSubheads={dccHeroRotatingSubheads}
-              poweredByLine={dccSiteMeta.poweredByLine}
-            >
-              <HeroAboveFoldEngagement />
-              <p className="mt-5 max-w-2xl text-sm text-neutral-500 dark:text-neutral-400">
-                {dccPilotHomeHero.trustLine}
-              </p>
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-5">
-                <Link
-                  href={dccPilotHomeHero.primaryCta.href}
-                  className="group relative z-0 inline-flex w-full min-h-[3.25rem] cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-teal-500/35 bg-slate-900 px-8 py-4 text-base font-bold tracking-wide text-white shadow-sm transition-transform duration-300 ease-in-out hover:opacity-95 active:translate-y-px sm:w-auto sm:px-10 sm:text-lg"
-                >
-                  {dccPilotHomeHero.primaryCta.label}
-                </Link>
-                <Link
-                  href={dccPilotHomeHero.secondaryCta.href}
-                  className="cdc-arcade-secondary-btn inline-flex min-h-[3.25rem] items-center justify-center px-6 text-base font-bold tracking-wide text-neutral-900 no-underline sm:px-8 sm:text-lg dark:text-neutral-100"
-                >
-                  {dccPilotHomeHero.secondaryCta.label}
-                </Link>
-              </div>
-              <p className="mt-8 text-sm text-neutral-500 dark:text-neutral-400">
-                <Link
-                  href="/infra24"
-                  className="font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
-                >
-                  What is Infra24?
-                </Link>
-                {' · '}
-                <Link
-                  href="/grants"
-                  className="font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
-                >
-                  Grants &amp; Miami pilot
-                </Link>
-                {' · '}
-                <Link
-                  href="/for-funders"
-                  className="font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
-                >
-                  For funders
-                </Link>
-              </p>
-            </HomeHeroDigital>
-            <CdcHeroVisual className="lg:justify-self-end" />
-          </div>
+        <div className="mx-auto flex min-h-[min(88dvh,880px)] max-w-5xl flex-col justify-center px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+          <HomeHeroDigital
+            layout="institutional"
+            eyebrow={dccPilotHomeHero.eyebrow}
+            publicDigitalMiamiLine={publicDigitalMiamiLine}
+            headline={dccHomeMissionHeadline}
+            orgLine={dccHomeOrgLine}
+            subhead={dccHomeFunderSubline}
+            poweredByLine={dccSiteMeta.poweredByLine}
+          >
+            <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-5">
+              <Link
+                href={marketingHeroEngagement.artistIndex.href}
+                className="group relative z-0 inline-flex w-full min-h-[3.5rem] cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-teal-500/35 bg-slate-900 px-8 py-4 text-center text-base font-bold tracking-wide text-white shadow-sm transition-transform duration-300 ease-in-out hover:opacity-95 active:translate-y-px sm:w-auto sm:min-w-[16rem] sm:px-10 sm:text-lg"
+              >
+                {marketingHeroEngagement.artistIndex.label}
+              </Link>
+              <Link
+                href="/workshops"
+                className="cdc-arcade-secondary-btn inline-flex min-h-[3.5rem] items-center justify-center px-6 text-center text-base font-bold tracking-wide text-neutral-900 no-underline sm:px-8 sm:text-lg dark:text-neutral-100"
+              >
+                Public workshops
+              </Link>
+              <Link
+                href={dccPilotHomeHero.secondaryCta.href}
+                className="cdc-arcade-secondary-btn inline-flex min-h-[3.5rem] items-center justify-center px-6 text-center text-base font-bold tracking-wide text-neutral-900 no-underline sm:px-8 sm:text-lg dark:text-neutral-100"
+              >
+                {dccPilotHomeHero.secondaryCta.label}
+              </Link>
+            </div>
+            <p className="mt-8 text-sm text-neutral-500 dark:text-neutral-400">
+              <Link
+                href="/infra24"
+                className="font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
+              >
+                What is Infra24?
+              </Link>
+              {' · '}
+              <Link
+                href="/grants"
+                className="font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
+              >
+                Grants &amp; Miami pilot
+              </Link>
+              {' · '}
+              <Link
+                href="/for-funders"
+                className="font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
+              >
+                For funders
+              </Link>
+            </p>
+          </HomeHeroDigital>
         </div>
       </section>
 
-      <MarketingSection id="pilot-intro" className="scroll-mt-14 bg-white dark:bg-neutral-900">
+      <section
+        id="hero-collage"
+        className="scroll-mt-14 border-b border-[var(--cdc-border)] bg-[#fafafa] py-12 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16"
+      >
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <CdcHeroVisual />
+        </div>
+      </section>
+
+      <MarketingSection
+        id="hero-expanded"
+        className="scroll-mt-14 border-b border-[var(--cdc-border)] bg-white py-14 dark:border-neutral-800 dark:bg-neutral-900 sm:py-16"
+      >
+        <HomeBelowFoldHero />
+      </MarketingSection>
+
+      <SectionWithRightImageFade
+        id="pilot-intro"
+        className="scroll-mt-14 bg-white py-16 sm:py-20 lg:py-24 dark:bg-neutral-900"
+        image={dccPilotIntro.backgroundImage}
+      >
         <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           {dccPilotIntro.title}
         </h2>
@@ -176,7 +193,7 @@ export default function MarketingHomePage() {
             {p}
           </p>
         ))}
-      </MarketingSection>
+      </SectionWithRightImageFade>
 
       <MarketingSection
         id="year-1-services"
@@ -192,28 +209,43 @@ export default function MarketingHomePage() {
           {dccYear1ServicePillars.map((pillar) => (
             <li
               key={pillar.id}
-              className="flex h-full flex-col rounded-lg border border-neutral-200 bg-white p-5 dark:border-neutral-700 dark:bg-neutral-900"
+              className="flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900"
             >
-              <h3 className="text-sm font-semibold leading-snug text-neutral-900 dark:text-neutral-100">
-                {pillar.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-                {pillar.summary}
-              </p>
-              <p className="mt-3 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
-                Who it serves
-              </p>
-              <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">{pillar.whoItServes}</p>
-              <p className="mt-3 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
-                Deliverable
-              </p>
-              <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">{pillar.deliverable}</p>
+              <div className="relative aspect-[16/10] w-full shrink-0 bg-neutral-100 dark:bg-neutral-800">
+                <Image
+                  src={pillar.image.src}
+                  alt={pillar.image.alt}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              </div>
+              <div className="flex flex-1 flex-col p-5">
+                <h3 className="text-sm font-semibold leading-snug text-neutral-900 dark:text-neutral-100">
+                  {pillar.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                  {pillar.summary}
+                </p>
+                <p className="mt-3 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
+                  Who it serves
+                </p>
+                <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">{pillar.whoItServes}</p>
+                <p className="mt-3 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
+                  Deliverable
+                </p>
+                <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">{pillar.deliverable}</p>
+              </div>
             </li>
           ))}
         </ul>
       </MarketingSection>
 
-      <MarketingSection id="participant-value" className="scroll-mt-14 bg-white dark:bg-neutral-900">
+      <SectionWithRightImageFade
+        id="participant-value"
+        className="scroll-mt-14 bg-white py-16 sm:py-20 lg:py-24 dark:bg-neutral-900"
+        image={dccParticipantValue.backgroundImage}
+      >
         <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           {dccParticipantValue.title}
         </h2>
@@ -225,7 +257,7 @@ export default function MarketingHomePage() {
             <li key={item}>{item}</li>
           ))}
         </ul>
-      </MarketingSection>
+      </SectionWithRightImageFade>
 
       <MarketingSection id="what-dcc-is" className="scroll-mt-14 bg-[#fafafa] dark:bg-neutral-950">
         <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">

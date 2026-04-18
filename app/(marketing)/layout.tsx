@@ -1,10 +1,27 @@
 import type { Metadata } from 'next';
+import { IBM_Plex_Mono, Space_Grotesk } from 'next/font/google';
 import { SiteHeader } from '@/components/marketing/SiteHeader';
 import { SiteFooter } from '@/components/marketing/SiteFooter';
 import { MarketingJsonLd } from '@/components/marketing/MarketingJsonLd';
 import { dccSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
 import { getSiteUrl } from '@/lib/marketing/site-url';
+import { cn } from '@/lib/utils';
 import './cdc-marketing-theme.css';
+
+/** Marketing-only (OFL): Space Grotesk for UI + display; IBM Plex Mono for labels / mono strip. */
+const dccDisplay = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-dcc-display',
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+});
+
+const dccMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-dcc-mono',
+  display: 'swap',
+});
 
 const siteUrl = getSiteUrl();
 const metadataBase = new URL(siteUrl);
@@ -52,7 +69,13 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="cdc-marketing min-h-screen bg-[#fafafa] text-neutral-900 antialiased transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-100">
+    <div
+      className={cn(
+        'cdc-marketing min-h-screen bg-[#fafafa] text-neutral-900 antialiased transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-100',
+        dccDisplay.variable,
+        dccMono.variable
+      )}
+    >
       <MarketingJsonLd />
       <SiteHeader />
       <main className="min-h-[60vh]">{children}</main>

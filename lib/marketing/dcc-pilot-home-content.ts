@@ -1,21 +1,43 @@
 /**
  * Homepage copy for the Year 1 Artist Support Pilot narrative (DCC Miami).
- * Legal org name remains in dccSiteMeta / marketingHero.headline; this module is the pilot frame + services.
+ * Institutional homepage uses `dccHomeMissionHeadline` + `dccHomeOrgLine`; other surfaces may still use `marketingHero.headline`.
  */
+
+import { dccHomePhotos } from '@/lib/marketing/dcc-home-photography';
 
 export const dccPilotSeoDescription =
   'Digital Culture Center Miami: infrastructure for born-digital art—software, screens, networks, and public-facing systems for Miami artists and cultural organizations. Year 1 pilot: clinics, workshops, and shared tools. Powered by Infra24.' as const;
+
+/** Homepage institutional hero — static mission H1 (funder-facing). */
+export const dccHomeMissionHeadline =
+  'Building Cultural Infrastructure for Miami\u2019s Artists' as const;
+
+export const dccHomeOrgLine = 'Digital Culture Center Miami' as const;
+
+export const dccHomeFunderSubline =
+  'DCC is a distributed artist-support pilot helping artists and cultural organizations strengthen digital presence, technical presentation, public visibility, and opportunity readiness.' as const;
+
+/** Mono accent strip: short phrases, animated in `DccHeroAsciiStatus`. */
+export const dccHomeMonoAccentPhrases = [
+  'website support_',
+  'technical presentation_',
+  'public visibility_',
+  'shared tools_',
+] as const;
 
 /** Hero tier-1 line rotation (marketing homepage). */
 export const heroHeadlineRotateIntervalMs = 6000 as const;
 export const heroHeadlineRotateTransitionSec = 0.45 as const;
 
+/** Typewriter tier-1: per-character delay and pause after a full line before advancing. */
+export const heroHeadlineTypewriterMsPerChar = 26 as const;
+export const heroHeadlineTypewriterHoldMs = 2200 as const;
+
 /** Hero tier-2 subhead rotation — offset from tier 1 so lines do not tick in lockstep. */
 export const heroSubheadRotateIntervalMs = 8500 as const;
 
 /**
- * Tier 1 — field-native, funder-legible rotating taglines (ranked; strongest first).
- * Stable H1 remains the legal org name in `marketingHero.headline`.
+ * Tier 1 — rotating taglines (e.g. alternate marketing heroes). Homepage institutional layout uses a static mission H1 instead.
  */
 export const dccHeroRotatingHeadlines = [
   'Infrastructure for Born-Digital Art',
@@ -53,6 +75,7 @@ export const dccPilotHomeHero = {
 
 export const dccPilotIntro = {
   title: 'Why this pilot',
+  backgroundImage: dccHomePhotos.galleryCrowdOpening,
   paragraphs: [
     'Miami has a strong arts community, but many artists and smaller cultural organizations still lack practical support for the digital and technical systems that shape how work is presented, discovered, and sustained.',
     'DCC addresses that gap through one-on-one clinics, workshops, shared tools, and public programs—so participants can improve websites, documentation, technical presentation, communications, and public-facing cultural visibility with support that stays accountable to the public.',
@@ -65,6 +88,7 @@ export type DccYear1ServicePillar = {
   summary: string;
   whoItServes: string;
   deliverable: string;
+  image: { src: string; alt: string };
 };
 
 export const dccYear1ServicePillars: readonly DccYear1ServicePillar[] = [
@@ -75,6 +99,7 @@ export const dccYear1ServicePillars: readonly DccYear1ServicePillar[] = [
       'One-on-one support on websites, portfolios, bios, navigation, visibility, and audience-facing clarity.',
     whoItServes: 'Miami artists and small cultural organizations.',
     deliverable: 'Written audit + prioritized action plan.',
+    image: dccHomePhotos.fabiolaGemsOfObsolescence,
   },
   {
     id: 'technical-excellence',
@@ -83,6 +108,7 @@ export const dccYear1ServicePillars: readonly DccYear1ServicePillar[] = [
       'Support for digital installations, screens, QR systems, livestream setups, projections, documentation workflows, and exhibition-facing tech.',
     whoItServes: 'Artists, curators, nonprofits, and host spaces.',
     deliverable: 'Technical recommendation memo or setup plan.',
+    image: dccHomePhotos.galleryInteractiveStations,
   },
   {
     id: 'workshops',
@@ -91,6 +117,7 @@ export const dccYear1ServicePillars: readonly DccYear1ServicePillar[] = [
       'Public workshops on artist websites, digital storytelling, AI and art tools, documentation, audience engagement, and practical digital skills.',
     whoItServes: 'Artists, small organizations, and creative publics.',
     deliverable: 'Workshop sessions + reusable learning materials.',
+    image: dccHomePhotos.vrHug,
   },
   {
     id: 'career-readiness',
@@ -99,6 +126,7 @@ export const dccYear1ServicePillars: readonly DccYear1ServicePillar[] = [
       'Support for applications, artist statements, documentation packages, portfolio readiness, and presentation to curators and opportunities.',
     whoItServes: 'Emerging and mid-career artists.',
     deliverable: 'Revised packet, feedback memo, or opportunity prep checklist.',
+    image: dccHomePhotos.meditationBattlestation,
   },
   {
     id: 'visibility-infrastructure',
@@ -107,6 +135,7 @@ export const dccYear1ServicePillars: readonly DccYear1ServicePillar[] = [
       'Artist indexing, spotlighting, and lightweight systems that increase discoverability and connection.',
     whoItServes: 'Artists, curators, and organizations.',
     deliverable: 'Artist profiles, showcases, curated introductions.',
+    image: dccHomePhotos.fabiolaEyeseeyouWatch,
   },
   {
     id: 'partner-infrastructure',
@@ -115,11 +144,13 @@ export const dccYear1ServicePillars: readonly DccYear1ServicePillar[] = [
       'Small systems for cultural organizations: event pages, digital signage, communications templates, lightweight tools.',
     whoItServes: 'Miami arts partners.',
     deliverable: 'Pilot workflow, template, or public-facing tool.',
+    image: dccHomePhotos.digitalDivinities,
   },
 ] as const;
 
 export const dccParticipantValue = {
   title: 'What participants leave with',
+  backgroundImage: dccHomePhotos.touchgrassTreadmillWide,
   intro:
     'DCC does not only “support artists.” We help artists and small cultural organizations leave with concrete, public-facing progress:',
   bullets: [

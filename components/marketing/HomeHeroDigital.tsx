@@ -8,6 +8,7 @@ import { AnimatedGridPattern } from '@/components/magicui/animated-grid-pattern'
 import { TextAnimate } from '@/components/magicui/text-animate';
 import { GlitchText } from '@/components/marketing/GlitchText';
 import { HeroSubheadKeyTerms } from '@/components/marketing/HeroSubheadKeyTerms';
+import { DccHeroAsciiStatus } from '@/components/marketing/DccHeroAsciiStatus';
 import { HomeHeroRotatingHeadline } from '@/components/marketing/HomeHeroRotatingHeadline';
 import { cdcDigitalBeam } from '@/lib/marketing/cdc-digital-theme';
 import type { MarketingHeroSubheadSegment } from '@/lib/marketing/content';
@@ -18,14 +19,20 @@ const Hero3DField = dynamic(
   { ssr: false, loading: () => null }
 );
 
+export type HomeHeroDigitalLayout = 'standard' | 'digital-first' | 'institutional';
+
 type HomeHeroDigitalProps = {
   /** Optional small line above PDM / headline (omit when using `publicDigitalMiamiLine` only). */
   eyebrow?: string;
   /** Prominent place + public digital culture lockup (larger than header). */
   publicDigitalMiamiLine?: string;
   headline: string;
+  /** Organization line under mission H1 when `layout` is `institutional`. */
+  orgLine?: string;
   /** Override H1 sizing (e.g. longer organization name with glitch). */
   headlineClassName?: string;
+  /** When `layout` is `digital-first`, applied to the legal org line (smaller than rotating hero). */
+  staticHeadlineClassName?: string;
   poweredByLine: string;
   /** Plain subhead (used with `TextAnimate` when `subheadSegments` is omitted). */
   subhead?: string;
@@ -37,40 +44,264 @@ type HomeHeroDigitalProps = {
   rotatingHeadlines?: readonly string[];
   /** When set, rotating tier-2 body copy after `poweredByLine`; static `subhead` is omitted. */
   rotatingSubheads?: readonly string[];
+  /** `digital-first`: rotating digital lines as dominant H1, org name + pilot lines follow. */
+  layout?: HomeHeroDigitalLayout;
+  /** Larger type scale for the tier-1 rotating line (homepage digital-first). */
+  rotatingHeadlineScale?: 'default' | 'dominant';
+  /** Tier-1 rotating line motion (see `HomeHeroRotatingHeadline`). */
+  rotatingHeadlineMotion?: 'glitch' | 'typewriter';
+  /** Tier-2 rotating subheads when used. */
+  rotatingSubheadMotion?: 'glitch' | 'typewriter';
   /** WebGL particle field behind the hero card (skipped when `prefers-reduced-motion` is set). */
   showHero3DBackground?: boolean;
   children: React.ReactNode;
 };
 
+const defaultHeadlineClass =
+  'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-5xl lg:text-6xl lg:leading-[1.08]';
+
+const digitalFirstStaticHeadlineFallback =
+  'cdc-hero-headline max-w-4xl text-[clamp(1.35rem,2.2vw+0.75rem,2.25rem)] font-semibold leading-[1.15] tracking-tight text-neutral-800 dark:text-neutral-200 sm:text-3xl';
+
+const institutionalMissionClass =
+  'cdc-font-display m-0 max-w-[min(100%,52rem)] text-[clamp(1.65rem,4.2vw+0.5rem,3.25rem)] font-bold leading-[1.1] tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-5xl lg:text-6xl';
+
+const institutionalOrgClass =
+  'cdc-font-display m-0 mt-4 max-w-3xl text-2xl font-semibold leading-snug tracking-tight text-neutral-800 dark:text-neutral-200 sm:text-3xl';
+
 export function HomeHeroDigital({
   eyebrow,
   publicDigitalMiamiLine,
   headline,
+  orgLine,
   headlineClassName,
+  staticHeadlineClassName,
   poweredByLine,
   subhead,
   subheadSegments,
   pilotTagline,
   rotatingHeadlines,
   rotatingSubheads,
+  layout = 'standard',
+  rotatingHeadlineScale = 'default',
+  rotatingHeadlineMotion = 'glitch',
+  rotatingSubheadMotion = 'glitch',
   showHero3DBackground = true,
   children,
 }: HomeHeroDigitalProps) {
   const reduceMotion = useReducedMotion();
+  const digitalFirst = layout === 'digital-first';
+  const institutional = layout === 'institutional';
   const showEyebrow = Boolean(eyebrow?.trim());
-  const pilotLineForSr =
-    rotatingHeadlines?.length && rotatingHeadlines[0]
+  const pilotLineForSr = institutional
+    ? [headline, orgLine].filter(Boolean).join(' — ')
+    : rotatingHeadlines?.length && rotatingHeadlines[0]
       ? rotatingHeadlines[0]
       : pilotTagline?.trim() ?? '';
   const subheadBodyForSr = rotatingSubheads?.length
     ? rotatingSubheads[0]
     : (subhead ?? subheadSegments?.map((s) => s.text).join('') ?? '');
   const plainSubheadForSr = [pilotLineForSr, subheadBodyForSr].filter(Boolean).join(' ') || '';
-  const showPilotBand = Boolean(rotatingHeadlines?.length) || Boolean(pilotTagline?.trim());
+  const showPilotBand =
+    !institutional && (Boolean(rotatingHeadlines?.length) || Boolean(pilotTagline?.trim()));
   const showRotatingSubheads = Boolean(rotatingSubheads?.length);
 
+  const metaBlock = (
+    <>
+      {showEyebrow ? (
+        reduceMotion ? (
+          <p className="cdc-font-mono-accent font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--cdc-teal)]">
+            {eyebrow}
+          </p>
+        ) : (
+          <TextAnimate
+            as="p"
+            by="word"
+            animation="blurInUp"
+            startOnView
+            once
+            delay={0.05}
+            duration={0.45}
+            className="cdc-font-mono-accent font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--cdc-teal)]"
+          >
+            {String(eyebrow)}
+          </TextAnimate>
+        )
+      ) : null}
+
+      {publicDigitalMiamiLine ? (
+        reduceMotion ? (
+          <p
+            className={cn(
+              'cdc-font-mono-accent font-mono text-sm font-bold uppercase tracking-[0.24em] text-[var(--cdc-teal)] sm:text-base sm:tracking-[0.28em]',
+              showEyebrow ? 'mt-3' : 'mt-0'
+            )}
+          >
+            {publicDigitalMiamiLine}
+          </p>
+        ) : (
+          <motion.p
+            className={cn(
+              'cdc-font-mono-accent font-mono text-sm font-bold uppercase tracking-[0.24em] text-[var(--cdc-teal)] sm:text-base sm:tracking-[0.28em]',
+              showEyebrow ? 'mt-3' : 'mt-0'
+            )}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.04 }}
+          >
+            {publicDigitalMiamiLine}
+          </motion.p>
+        )
+      ) : null}
+    </>
+  );
+
+  const staticHeadlineMargin = digitalFirst
+    ? 'mt-8'
+    : publicDigitalMiamiLine || showEyebrow
+      ? 'mt-4'
+      : 'mt-5';
+
+  const staticHeadlineClass = digitalFirst
+    ? staticHeadlineClassName ?? digitalFirstStaticHeadlineFallback
+    : headlineClassName ?? defaultHeadlineClass;
+
+  const staticHeadlineBlock = digitalFirst ? (
+    reduceMotion ? (
+      <h2 className={cn(staticHeadlineClass, staticHeadlineMargin)}>
+        <Balancer>
+          <GlitchText as="span" disabled className="inline">
+            {headline}
+          </GlitchText>
+        </Balancer>
+      </h2>
+    ) : (
+      <motion.h2
+        className={cn(staticHeadlineClass, staticHeadlineMargin)}
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <Balancer>
+          <GlitchText as="span" className="inline" interactive={false}>
+            {headline}
+          </GlitchText>
+        </Balancer>
+      </motion.h2>
+    )
+  ) : reduceMotion ? (
+    <h1 className={cn(staticHeadlineClass, staticHeadlineMargin)}>
+      <Balancer>
+        <GlitchText as="span" disabled className="inline">
+          {headline}
+        </GlitchText>
+      </Balancer>
+    </h1>
+  ) : (
+    <motion.h1
+      className={cn(staticHeadlineClass, staticHeadlineMargin)}
+      initial={{ opacity: 0, y: 22, scale: 0.94 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <Balancer>
+        <GlitchText as="span" className="inline">
+          {headline}
+        </GlitchText>
+      </Balancer>
+    </motion.h1>
+  );
+
+  const rotatingTier1 = rotatingHeadlines?.length ? (
+    <HomeHeroRotatingHeadline
+      lines={rotatingHeadlines}
+      variant="hero"
+      textScale={rotatingHeadlineScale}
+      headlineAs={digitalFirst ? 'h1' : 'p'}
+      textMotion={rotatingHeadlineMotion}
+    />
+  ) : pilotTagline?.trim() ? (
+    <p className="mt-4 max-w-2xl text-lg font-semibold leading-snug tracking-tight text-neutral-800 dark:text-neutral-100 sm:text-xl">
+      {pilotTagline.trim()}
+    </p>
+  ) : null;
+
+  const poweredBlock = (
+    <p
+      className={cn(
+        'text-sm font-medium text-neutral-500 dark:text-neutral-400',
+        institutional ? 'mt-6' : digitalFirst ? 'mt-5' : showPilotBand ? 'mt-3' : 'mt-2'
+      )}
+    >
+      {poweredByLine}
+    </p>
+  );
+
+  const institutionalBlock = institutional ? (
+    <>
+      <span className="sr-only">
+        {[pilotLineForSr, subheadBodyForSr].filter(Boolean).join(' ')}
+      </span>
+      {metaBlock}
+      {reduceMotion ? (
+        <h1 className={cn(institutionalMissionClass, showEyebrow || publicDigitalMiamiLine ? 'mt-6' : 'mt-5')}>
+          <Balancer>{headline}</Balancer>
+        </h1>
+      ) : (
+        <motion.h1
+          className={cn(institutionalMissionClass, showEyebrow || publicDigitalMiamiLine ? 'mt-6' : 'mt-5')}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <Balancer>{headline}</Balancer>
+        </motion.h1>
+      )}
+      {orgLine?.trim() ? (
+        reduceMotion ? (
+          <h2 className={institutionalOrgClass}>
+            <Balancer>{orgLine.trim()}</Balancer>
+          </h2>
+        ) : (
+          <motion.h2
+            className={institutionalOrgClass}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.06 }}
+          >
+            <Balancer>{orgLine.trim()}</Balancer>
+          </motion.h2>
+        )
+      ) : null}
+      {subhead?.trim() ? (
+        reduceMotion ? (
+          <p className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-600 dark:text-neutral-300 sm:text-lg">
+            {subhead.trim()}
+          </p>
+        ) : (
+          <TextAnimate
+            as="p"
+            by="word"
+            animation="blurIn"
+            startOnView
+            once
+            delay={0.08}
+            duration={0.55}
+            className="mt-5 max-w-3xl text-base leading-relaxed text-neutral-600 dark:text-neutral-300 sm:text-lg"
+          >
+            {subhead.trim()}
+          </TextAnimate>
+        )
+      ) : null}
+      <div className="mt-5">
+        <DccHeroAsciiStatus />
+      </div>
+      {poweredBlock}
+    </>
+  ) : null;
+
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-[var(--cdc-border)] bg-white/35 p-6 shadow-sm shadow-teal-950/[0.04] backdrop-blur-[2px] dark:bg-neutral-900/45 dark:shadow-black/20 sm:p-8">
+    <div className="relative overflow-hidden rounded-2xl border border-[var(--cdc-border)] bg-white/35 p-6 shadow-sm shadow-teal-950/[0.04] backdrop-blur-[2px] dark:bg-neutral-900/45 dark:shadow-black/20 sm:p-8 lg:p-10">
       {!reduceMotion && showHero3DBackground ? <Hero3DField /> : null}
       {!reduceMotion && (
         <>
@@ -94,115 +325,56 @@ export function HomeHeroDigital({
       )}
 
       <div className="relative z-[1]">
-        {showEyebrow ? (
-          reduceMotion ? (
-            <p className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--cdc-teal)]">
-              {eyebrow}
-            </p>
-          ) : (
-            <TextAnimate
-              as="p"
-              by="word"
-              animation="blurInUp"
-              startOnView
-              once
-              delay={0.05}
-              duration={0.45}
-              className="font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--cdc-teal)]"
-            >
-              {String(eyebrow)}
-            </TextAnimate>
-          )
-        ) : null}
-
-        {publicDigitalMiamiLine ? (
-          reduceMotion ? (
-            <p
+        {institutional ? (
+          <>
+            {institutionalBlock}
+            <div
               className={cn(
-                'font-mono text-sm font-bold uppercase tracking-[0.24em] text-[var(--cdc-teal)] sm:text-base sm:tracking-[0.28em]',
-                showEyebrow ? 'mt-3' : 'mt-0'
+                'mt-10',
+                !reduceMotion && 'transition-transform duration-300 hover:-translate-y-px'
               )}
             >
-              {publicDigitalMiamiLine}
-            </p>
-          ) : (
-            <motion.p
-              className={cn(
-                'font-mono text-sm font-bold uppercase tracking-[0.24em] text-[var(--cdc-teal)] sm:text-base sm:tracking-[0.28em]',
-                showEyebrow ? 'mt-3' : 'mt-0'
-              )}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.04 }}
-            >
-              {publicDigitalMiamiLine}
-            </motion.p>
-          )
-        ) : null}
-
-        {reduceMotion ? (
-          <h1
-            className={cn(
-              headlineClassName ??
-                'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
-              publicDigitalMiamiLine || showEyebrow ? 'mt-4' : 'mt-5'
-            )}
-          >
-            <Balancer>
-              <GlitchText as="span" disabled className="inline">
-                {headline}
-              </GlitchText>
-            </Balancer>
-          </h1>
+              {children}
+            </div>
+          </>
+        ) : digitalFirst ? (
+          <>
+            {rotatingTier1}
+            {staticHeadlineBlock}
+            {showEyebrow || publicDigitalMiamiLine ? (
+              <div className="mt-5 flex flex-col gap-3 border-t border-[var(--cdc-border)]/60 pt-5 dark:border-neutral-700/60">
+                {digitalFirst ? <DccHeroAsciiStatus /> : null}
+                <div className="flex flex-col gap-1">{metaBlock}</div>
+              </div>
+            ) : null}
+            {poweredBlock}
+          </>
         ) : (
-          <motion.h1
-            className={cn(
-              headlineClassName ??
-                'cdc-hero-headline max-w-4xl text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-5xl lg:text-6xl lg:leading-[1.08]',
-              publicDigitalMiamiLine || showEyebrow ? 'mt-4' : 'mt-5'
-            )}
-            initial={{ opacity: 0, y: 22, scale: 0.94 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <Balancer>
-              <GlitchText as="span" className="inline">
-                {headline}
-              </GlitchText>
-            </Balancer>
-          </motion.h1>
+          <>
+            {metaBlock}
+            {staticHeadlineBlock}
+            {rotatingTier1}
+            {poweredBlock}
+          </>
         )}
 
-        {rotatingHeadlines?.length ? (
-          <HomeHeroRotatingHeadline lines={rotatingHeadlines} variant="hero" />
-        ) : pilotTagline?.trim() ? (
-          <p className="mt-4 max-w-2xl text-lg font-semibold leading-snug tracking-tight text-neutral-800 dark:text-neutral-100 sm:text-xl">
-            {pilotTagline.trim()}
-          </p>
-        ) : null}
-
-        <p
-          className={cn(
-            'text-sm font-medium text-neutral-500 dark:text-neutral-400',
-            showPilotBand ? 'mt-3' : 'mt-2'
-          )}
-        >
-          {poweredByLine}
-        </p>
-
-        {showRotatingSubheads && rotatingSubheads?.length ? (
+        {digitalFirst ? null : showRotatingSubheads && rotatingSubheads?.length ? (
           <div className="mt-6">
             <span className="sr-only">{plainSubheadForSr}</span>
-            <HomeHeroRotatingHeadline lines={rotatingSubheads} variant="subhead" />
+            <HomeHeroRotatingHeadline
+              lines={rotatingSubheads}
+              variant="subhead"
+              textMotion={rotatingSubheadMotion}
+            />
           </div>
         ) : null}
 
-        {subheadSegments?.length ? (
+        {!digitalFirst && subheadSegments?.length ? (
           <>
             <span className="sr-only">{plainSubheadForSr}</span>
             <HeroSubheadKeyTerms segments={subheadSegments} reduceMotion={Boolean(reduceMotion)} />
           </>
-        ) : subhead && !showRotatingSubheads ? (
+        ) : subhead && !digitalFirst && !showRotatingSubheads ? (
           reduceMotion ? (
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-300">
               {subhead}
@@ -225,8 +397,8 @@ export function HomeHeroDigital({
 
         <div
           className={cn(
-            'mt-1',
-            !reduceMotion && 'transition-transform duration-300 hover:-translate-y-px'
+            institutional ? 'hidden' : digitalFirst ? 'mt-10' : 'mt-1',
+            !reduceMotion && !institutional && 'transition-transform duration-300 hover:-translate-y-px'
           )}
         >
           {children}

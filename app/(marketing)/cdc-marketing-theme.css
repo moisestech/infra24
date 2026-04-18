@@ -3,6 +3,9 @@
  * Miami-inflected webcore accents — use with restraint outside hero/special UI.
  */
 .cdc-marketing {
+  /* Space Grotesk (--font-dcc-display) for body + headings on marketing pages. */
+  font-family: var(--font-dcc-display), ui-sans-serif, system-ui, sans-serif;
+
   /* Brighter RGB-forward accents (cyan / orange / magenta) */
   --cdc-teal: rgb(0, 212, 170);
   --cdc-coral: rgb(255, 107, 53);
@@ -15,6 +18,52 @@
   --cdc-mesh-teal: rgba(0, 212, 170, 0.18);
   --cdc-mesh-coral: rgba(255, 107, 53, 0.14);
   --cdc-mesh-magenta: rgba(255, 0, 136, 0.1);
+}
+
+.cdc-font-display {
+  font-family: var(--font-dcc-display), system-ui, sans-serif;
+}
+
+.cdc-font-mono-accent {
+  font-family: var(--font-dcc-mono), ui-monospace, monospace;
+}
+
+@keyframes cdc-ascii-line-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+
+.cdc-hero-ascii-status {
+  max-width: 100%;
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre;
+  font-size: 0.65rem;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: rgba(15, 23, 42, 0.55);
+  border-left: 2px solid rgba(0, 212, 170, 0.35);
+  padding-left: 0.65rem;
+}
+
+.dark .cdc-hero-ascii-status {
+  color: rgba(250, 250, 250, 0.45);
+  border-left-color: rgba(0, 212, 170, 0.4);
+}
+
+.cdc-hero-ascii-status--animate {
+  animation: cdc-ascii-line-pulse 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdc-hero-ascii-status--animate {
+    animation: none;
+  }
 }
 
 .cdc-mesh-hero-bg {

@@ -10,6 +10,8 @@ type HeroSubheadKeyTermsProps = {
   segments: readonly MarketingHeroSubheadSegment[];
   reduceMotion: boolean;
   className?: string;
+  /** Applied to the flowing paragraph (e.g. larger below-the-fold body). */
+  paragraphClassName?: string;
 };
 
 function PreviewFigure({
@@ -40,6 +42,7 @@ export function HeroSubheadKeyTerms({
   segments,
   reduceMotion,
   className,
+  paragraphClassName,
 }: HeroSubheadKeyTermsProps) {
   const reactId = useId();
   const previewId = `${reactId}-hero-term-preview`;
@@ -80,7 +83,12 @@ export function HeroSubheadKeyTerms({
       }}
     >
       <div className="relative inline-block w-full max-w-2xl">
-        <p className="text-lg leading-relaxed text-neutral-600">
+        <p
+          className={cn(
+            'leading-relaxed text-neutral-600 dark:text-neutral-300',
+            paragraphClassName ?? 'text-lg',
+          )}
+        >
           {segments.map((seg, i) => {
             if (seg.kind === 'text') {
               return <span key={i}>{seg.text}</span>;

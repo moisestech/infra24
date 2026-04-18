@@ -21,10 +21,13 @@ export function CdcMiamiLogo({
   className,
   size = 'md',
   priority = false,
+  /** `center` for drawer / symmetric layouts; default `left` matches sticky header. */
+  objectAlign = 'left',
 }: {
   className?: string;
   size?: keyof typeof sizeBox;
   priority?: boolean;
+  objectAlign?: 'left' | 'center';
 }) {
   const { resolvedTheme } = useTheme();
   const src = resolvedTheme === 'dark' ? DCC_MIAMI_LOGO_URL_WHITE : DCC_MIAMI_LOGO_URL_LIGHT;
@@ -45,7 +48,7 @@ export function CdcMiamiLogo({
         alt={DCC_MIAMI_LOGO_ALT}
         fill
         sizes={sizesAttr}
-        className="object-contain object-left"
+        className={cn('object-contain', objectAlign === 'center' ? 'object-center' : 'object-left')}
         priority={priority}
         unoptimized
       />
