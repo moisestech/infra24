@@ -56,11 +56,15 @@ export const dccHomePhotos = {
     src: `${BASE}/v1776479294/dccmiami/artists/fabiola-larios/Fabiola_Larios_eyeseeyou_watch_pdzqns.webp`,
     alt: 'eye see you watch by Fabiola Larios: a mannequin with a rhinestone-encrusted security-camera head and lens details, beside a wall-mounted monitor showing a surveillance feed.',
   },
+  fabiolaSurveillanceCutie2024: {
+    src: `${BASE}/v1776479297/dccmiami/artists/fabiola-larios/Fabiola_Larios_Surveillance_Cutie_2024_srek0k.webp`,
+    alt: 'Surveillance Cutie (2024) by Fabiola Larios: rhinestone-covered CRT monitors on wire shelving, pink neon “Smile” sign, and crumpled silver foil backdrop.',
+  },
 } as const satisfies Record<string, DccHomePhoto>;
 
 /** Hero collage: large cell + three stacked tiles (left-to-right column). */
 export const dccHomeHeroCollagePhotos = [
-  dccHomePhotos.galleryInteractiveStations,
+  dccHomePhotos.fabiolaSurveillanceCutie2024,
   dccHomePhotos.galleryCrowdOpening,
   dccHomePhotos.digitalDivinities,
   dccHomePhotos.vrHug,

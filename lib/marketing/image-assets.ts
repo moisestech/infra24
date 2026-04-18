@@ -12,7 +12,7 @@ export const heroCollagePanels = [
   {
     id: 'field',
     gradientId: 'stackTeal' as const satisfies MarketingGradientId,
-    label: 'Layer stack',
+    label: 'Surveillance Cutie',
     photo: heroMain,
   },
   {

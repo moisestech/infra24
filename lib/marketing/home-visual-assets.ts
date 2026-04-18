@@ -99,12 +99,18 @@ export const homeVisualWhyMiami: HomeVisualItem[] = [
   ),
 ];
 
-/** Infra24 band on homepage (was text-only; receives the treadmill tile moved from hero). */
+/** Infra24 band — treadmill + gallery interactive (hero main replaced by Surveillance Cutie). */
 export const homeVisualInfra24Band: HomeVisualItem[] = [
   photo(
     dccHomePhotos.touchgrassTreadmillFigure.src,
     dccHomePhotos.touchgrassTreadmillFigure.alt,
     'Public interfaces',
+    'DCC Miami'
+  ),
+  photo(
+    dccHomePhotos.galleryInteractiveStations.src,
+    dccHomePhotos.galleryInteractiveStations.alt,
+    'Interactive floor',
     'DCC Miami'
   ),
 ];
