@@ -53,6 +53,8 @@ export interface UpdateSurveyRequest {
   description?: string;
   status?: 'draft' | 'active' | 'closed';
   settings?: any;
+  /** List on anonymous org portal (/surveys/public) */
+  is_public?: boolean;
 }
 
 export interface SurveyFilters {

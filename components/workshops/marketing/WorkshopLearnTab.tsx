@@ -1,14 +1,27 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Clock, Users, BookOpen, Play, GraduationCap } from 'lucide-react'
+import { Clock, Users, BookOpen, Play, GraduationCap, FlaskConical, Mic } from 'lucide-react'
 import type { WorkshopRow } from './types'
+import { mergeWorkshopMetadata } from '@/lib/workshops/marketing-metadata'
+import {
+  isLearnAiWorkshopSlug,
+  learnAiWorkshopPaths,
+} from '@/lib/workshops/learn-ai-without-losing-yourself/constants'
+import { learnAiCurriculumIntro } from '@/lib/workshops/learn-ai-without-losing-yourself/curriculum-chapters'
+import { learnAiLabIntro } from '@/lib/workshops/learn-ai-without-losing-yourself/lab-content'
 
-export function WorkshopLearnTab({ workshop }: { workshop: WorkshopRow }) {
+export function WorkshopLearnTab({
+  workshop,
+  orgSlug,
+}: {
+  workshop: WorkshopRow
+  orgSlug: string
+}) {
   const [chapters, setChapters] = useState<
     Array<{
       id: string
@@ -22,7 +35,23 @@ export function WorkshopLearnTab({ workshop }: { workshop: WorkshopRow }) {
   >([])
   const [loading, setLoading] = useState(true)
 
+  const marketing = mergeWorkshopMetadata(workshop.metadata ?? undefined, {
+    title: workshop.title,
+    id: workshop.id,
+  })
+  const isLearnAi = useMemo(
+    () => isLearnAiWorkshopSlug(marketing.slug),
+    [marketing.slug]
+  )
+  const learnPaths = learnAiWorkshopPaths(orgSlug)
+
   useEffect(() => {
+    if (isLearnAi) {
+      setChapters([])
+      setLoading(false)
+      return
+    }
+
     const fetchChapters = async () => {
       try {
         setLoading(true)
@@ -65,8 +94,72 @@ export function WorkshopLearnTab({ workshop }: { workshop: WorkshopRow }) {
 
     if (workshop.has_learn_content) {
       fetchChapters()
+    } else {
+      setLoading(false)
     }
-  }, [workshop.has_learn_content])
+  }, [workshop.has_learn_content, isLearnAi])
+
+  if (isLearnAi) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5" />
+              Learn AI — materials
+            </CardTitle>
+            <CardDescription>
+              Chapters, facilitator lab, and presenter rehearsal live on dedicated routes.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-3">
+            <Card className="border-primary/20 bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <BookOpen className="h-4 w-4" />
+                  Curriculum
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>{learnAiCurriculumIntro}</p>
+                <Button asChild size="sm">
+                  <Link href={learnPaths.curriculum}>Open curriculum</Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="border-primary/20 bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <FlaskConical className="h-4 w-4" />
+                  Lab
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>{learnAiLabIntro}</p>
+                <Button asChild size="sm" variant="secondary">
+                  <Link href={learnPaths.lab}>Open lab</Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="border-primary/20 bg-muted/30">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Mic className="h-4 w-4" />
+                  Rehearse
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>Cue beats, facilitator guide, and printable long-form script.</p>
+                <Button asChild size="sm" variant="outline">
+                  <Link href={learnPaths.rehearse}>Open rehearse</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   if (loading) {
     return (

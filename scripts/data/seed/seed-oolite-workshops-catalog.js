@@ -67,6 +67,17 @@ async function upsertWorkshop(orgId, row, metadataForDb) {
       ? String(row.image_url).trim()
       : null
 
+  const galleryUrls = metadataForDb.galleryImageUrls
+  const imageFromGallery =
+    Array.isArray(galleryUrls) &&
+    galleryUrls.length > 0 &&
+    typeof galleryUrls[0] === 'string' &&
+    galleryUrls[0].trim()
+      ? galleryUrls[0].trim()
+      : null
+
+  const resolvedImage = imageFromRow || imageFromGallery || PLACEHOLDER
+
   const payload = {
     organization_id: orgId,
     title: row.title,
@@ -87,7 +98,7 @@ async function upsertWorkshop(orgId, row, metadataForDb) {
     is_shared: false,
     featured: row.featured,
     status: row.status,
-    image_url: imageFromRow || PLACEHOLDER,
+    image_url: resolvedImage,
     metadata: metadataForDb,
     created_by: 'seed_oolite_workshops_catalog',
   }

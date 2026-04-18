@@ -1,0 +1,18 @@
+@media print {
+  .learn-ai-rehearse-print-hide {
+    display: none !important;
+  }
+
+  .learn-ai-rehearse-print-root {
+    background: white !important;
+    color: black !important;
+  }
+
+  .learn-ai-rehearse-script-print {
+    display: block !important;
+  }
+
+  .learn-ai-rehearse-script-print .prose {
+    max-width: none !important;
+  }
+}

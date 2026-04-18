@@ -138,11 +138,11 @@ export function DigitalLabCatalogClient({ slug }: DigitalLabCatalogClientProps) 
           <main className="container mx-auto max-w-lg px-4 py-16 text-center">
             <h1 className="text-2xl font-semibold text-foreground">Digital Lab catalog</h1>
             <p className="mt-4 text-muted-foreground">
-              The full Digital Lab workshop catalog is available for{' '}
-              <Link href="/o/oolite/workshops/digital-lab" className="text-primary underline">
-                Oolite Arts
+              Browse the public workshop catalog on{' '}
+              <Link href="/workshops" className="text-primary underline">
+                DCC.miami / workshops
               </Link>
-              .
+              , or sign in to Oolite for the full Digital Lab catalog.
             </p>
           </main>
         </div>

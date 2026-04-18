@@ -499,6 +499,7 @@ export const auditDeliverables = [
 export const navItems = [
   { href: '/about', label: 'About' },
   { href: '/programs', label: 'Programs' },
+  { href: '/workshops', label: 'Workshops' },
   { href: '/projects', label: 'Projects' },
   { href: '/partners', label: 'Partners' },
   { href: '/grants', label: 'Grants' },
@@ -509,7 +510,7 @@ export const navItems = [
 
 /** Grouped links for the marketing header Sheet (`<details>` sections). Hrefs must exist in `navItems`. */
 export const marketingNavSheetGroups = [
-  { title: 'Explore', hrefs: ['/programs', '/projects', '/partners'] as const },
+  { title: 'Explore', hrefs: ['/programs', '/workshops', '/projects', '/partners'] as const },
   { title: 'Organization', hrefs: ['/about', '/grants', '/journal'] as const },
 ] as const;
 

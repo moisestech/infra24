@@ -3,16 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { WorkshopRow } from './types'
 import { mergeWorkshopMetadata } from '@/lib/workshops/marketing-metadata'
-import { getWorkshopPublicPath } from '@/lib/workshops/workshop-routing'
+import { getDccWorkshopPublicPath, getWorkshopPublicPath } from '@/lib/workshops/workshop-routing'
 
 export function WorkshopRelated({
   currentId,
   related,
   orgSlug,
+  catalogSurface = 'org',
 }: {
   currentId: string
   related: WorkshopRow[]
   orgSlug: string
+  catalogSurface?: 'org' | 'dcc'
 }) {
   const others = related.filter((w) => w.id !== currentId).slice(0, 3)
   if (!others.length) return null
@@ -26,7 +28,8 @@ export function WorkshopRelated({
             id: w.id,
             title: w.title,
           })
-          const href = getWorkshopPublicPath(orgSlug, w)
+          const href =
+            catalogSurface === 'dcc' ? getDccWorkshopPublicPath(w) : getWorkshopPublicPath(orgSlug, w)
           return (
             <Link key={w.id} href={href} className="group block">
               <Card className="h-full transition-shadow group-hover:shadow-md">

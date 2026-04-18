@@ -15,6 +15,9 @@ const publicRoutes = [
   '/api/health',
   '/api/organizations/by-slug/(.*)/public',
   '/api/organizations/by-slug/(.*)/announcements/public',
+  '/api/organizations/by-slug/(.*)/workshops/public',
+  '/api/organizations/by-slug/(.*)/artists/public',
+  '/api/organizations/by-slug/(.*)/surveys/public',
   '/o/(.*)/announcements/display(.*)',
   '/o/(.*)/public(.*)',
 ];

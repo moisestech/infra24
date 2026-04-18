@@ -39,6 +39,9 @@ metadata:
   websiteReadiness: needs_build
   resourcesAvailability: packet_available
   buildPriority: 6
+  galleryImageUrls:
+    - >-
+      https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525117/dccmiami/workshops/vibe-coding-with-net-art_dtead3.png
   subtitle: 'Creative coding meets critical publishing—fast iteration, clear intent.'
   shortDescription: >-
     Prototype net art with AI-assisted workflows while keeping authorship

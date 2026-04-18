@@ -37,6 +37,9 @@ metadata:
   websiteReadiness: needs_build
   resourcesAvailability: packet_available
   buildPriority: 3
+  galleryImageUrls:
+    - >-
+      https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525120/dccmiami/workshops/writing-video-for-artists_pkxgsl.png
   subtitle: 'Statements, bios, and panel language that match how you actually work.'
   shortDescription: >-
     From studio notes and links to clear writing for grants, sites, and public

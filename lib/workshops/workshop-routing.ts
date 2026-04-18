@@ -21,3 +21,16 @@ export function getWorkshopPublicPath(
   const segment = m.slug || workshop.id
   return `/o/${orgSlug}/workshops/${segment}`
 }
+
+/** Public DCC marketing path (no org segment). */
+export function getDccWorkshopPublicPath(workshop: {
+  id: string
+  metadata?: Record<string, unknown> | null
+}): string {
+  const m = mergeWorkshopMetadata(workshop.metadata ?? undefined, {
+    id: workshop.id,
+    title: '',
+  })
+  const segment = m.slug || workshop.id
+  return `/workshops/${encodeURIComponent(segment)}`
+}

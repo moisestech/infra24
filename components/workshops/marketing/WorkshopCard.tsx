@@ -1,10 +1,10 @@
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Clock, Package, Sparkles } from 'lucide-react'
+import { Clock, Package, Search, Sparkles } from 'lucide-react'
 import type { WorkshopRow } from './types'
 import { mergeWorkshopMetadata } from '@/lib/workshops/marketing-metadata'
-import { getWorkshopPublicPath } from '@/lib/workshops/workshop-routing'
+import { getDccWorkshopPublicPath, getWorkshopPublicPath } from '@/lib/workshops/workshop-routing'
 import { workshopTrackLabel } from '@/lib/workshops/track-labels'
 import { WorkshopMediaPlaceholder } from './WorkshopMediaPlaceholder'
 import { workshopCategoryLabel } from './workshop-category-labels'
@@ -21,23 +21,27 @@ function formatDuration(minutes?: number | null) {
 export function WorkshopCard({
   workshop,
   orgSlug,
+  catalogSurface = 'org',
 }: {
   workshop: WorkshopRow
   orgSlug: string
+  /** `dcc` → links to `/workshops/{slug}`; default tenant catalog paths. */
+  catalogSurface?: 'org' | 'dcc'
 }) {
   const m = mergeWorkshopMetadata(workshop.metadata ?? undefined, {
     id: workshop.id,
     title: workshop.title,
   })
-  const href = getWorkshopPublicPath(orgSlug, workshop)
+  const href =
+    catalogSurface === 'dcc' ? getDccWorkshopPublicPath(workshop) : getWorkshopPublicPath(orgSlug, workshop)
+  const externalListingUrl = m.catalogListingExternalUrl
   const blurb = m.shortDescription ?? workshop.description ?? ''
   const outcomePreview =
     workshop.outcomes && workshop.outcomes[0] ? workshop.outcomes[0] : null
   const trackLabel = workshopTrackLabel(m.track)
   const categoryLabel = workshopCategoryLabel(workshop.category)
 
-  return (
-    <Link href={href} className="group block h-full">
+  const card = (
       <Card
         className={cn(
           'flex h-full flex-col overflow-hidden border-border/80 bg-card/80 transition-all duration-300',
@@ -45,7 +49,17 @@ export function WorkshopCard({
         )}
       >
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-          {workshop.image_url ? (
+          {externalListingUrl ? (
+            <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-muted to-muted/60">
+              <Search
+                className="h-14 w-14 text-primary/50 transition-transform duration-300 group-hover:scale-105"
+                strokeWidth={1.25}
+                aria-hidden
+              />
+              <span className="sr-only">Opens workshop materials in a new tab</span>
+              <span className="text-xs font-medium text-muted-foreground">Opens in new tab</span>
+            </div>
+          ) : workshop.image_url ? (
             <>
               <img
                 src={workshop.image_url}
@@ -119,6 +133,24 @@ export function WorkshopCard({
           </div>
         </CardContent>
       </Card>
+  )
+
+  if (externalListingUrl) {
+    return (
+      <a
+        href={externalListingUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group block h-full"
+      >
+        {card}
+      </a>
+    )
+  }
+
+  return (
+    <Link href={href} className="group block h-full">
+      {card}
     </Link>
   )
 }

@@ -38,6 +38,9 @@ metadata:
   websiteReadiness: ready
   resourcesAvailability: packet_available
   buildPriority: 5
+  galleryImageUrls:
+    - >-
+      https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525106/dccmiami/workshops/ai-for-artists_dnwikc.png
   subtitle: >-
     Policies, prompts, and critique—AI as studio assistant, not author
     replacement.

@@ -36,6 +36,9 @@ metadata:
   websiteReadiness: ready
   resourcesAvailability: packet_available
   buildPriority: 1
+  galleryImageUrls:
+    - >-
+      https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525117/dccmiami/workshops/social-profiles-links-hubs-public-presence_zevdko.png
   subtitle: >-
     Portfolio clarity, owned infrastructure, and humane habits for showing work
     online.

@@ -36,6 +36,9 @@
         "shortDescription": "A structured pass through site architecture, copy, and presence for working artists.",
         "seoTitle": "Own Your Digital Presence — Oolite Arts",
         "seoDescription": "Plan your artist site, socials, and updates with a checklist you can actually maintain.",
+        "galleryImageUrls": [
+          "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525117/dccmiami/workshops/social-profiles-links-hubs-public-presence_zevdko.png"
+        ],
         "audienceTags": [
           "artists",
           "teaching_artists",
@@ -136,6 +139,124 @@
       }
     },
     {
+      "slug": "learn-ai-without-losing-yourself",
+      "title": "Learn AI Without Losing Yourself",
+      "description": "A facilitator-led workshop on using AI tools with clarity, boundaries, and voice intact—pressure, prompts, problems, and practice in one session.",
+      "category": "digital_literacy",
+      "level": "beginner",
+      "duration_minutes": 180,
+      "max_participants": 20,
+      "price": 0,
+      "instructor": "Digital Lab",
+      "outcomes": [
+        "Name where AI helps vs where human judgment must stay",
+        "Run a short critique loop on AI-assisted drafts without losing voice",
+        "Leave with a one-page “use policy” you can share with collaborators",
+        "Map one real workflow from prompt to publication with guardrails"
+      ],
+      "prerequisites": [
+        "Laptop",
+        "Willingness to try one browser-based AI tool (free tier ok)"
+      ],
+      "materials": [
+        "Laptop"
+      ],
+      "featured": true,
+      "status": "published",
+      "is_active": true,
+      "is_public": true,
+      "content": "This workshop treats AI as infrastructure you steer—not a replacement author. We work through pressure (what the room feels), prompts (how you ask), problems (what actually needs solving), and practice (repeatable loops you can reuse). Bring a real project or admin task; leave with language for grants, collaborators, and your future self.",
+      "relatedSlugs": [
+        "ai-for-artists-voice-workflow-authorship",
+        "ai-copyright-creative-risk"
+      ],
+      "metadata": {
+        "slug": "learn-ai-without-losing-yourself",
+        "subtitle": "Editorial, human-centered AI literacy—voice, boundaries, and repeatable practice.",
+        "shortDescription": "Pressure, prompt, problem, and practice: a single session that keeps authorship visible and workflows sustainable.",
+        "galleryImageUrls": [
+          "https://res.cloudinary.com/du1ysiumj/image/upload/v1774826962/learn-ai-without-loosing-yourself-bg-no-text_pz3qno.png"
+        ],
+        "audienceTags": [
+          "individual_artists",
+          "emerging_artists",
+          "educators",
+          "staff_teams"
+        ],
+        "format": "hybrid",
+        "materialsRequired": [
+          "Laptop",
+          "Account on one public AI chat tool (free tier ok)"
+        ],
+        "materialsProvided": [
+          "Session outline",
+          "Printable rehearsal notes (presenter)"
+        ],
+        "agenda": [
+          {
+            "title": "Opening — stakes and language",
+            "durationMinutes": 25,
+            "summary": "Why “losing yourself” matters; session promises."
+          },
+          {
+            "title": "Pressure / Prompt / Problem / Practice",
+            "durationMinutes": 55,
+            "summary": "Four moves with live examples and pair prompts."
+          },
+          {
+            "title": "Scenarios and differentiation",
+            "durationMinutes": 40,
+            "summary": "Table reads; when automation is appropriate vs not."
+          },
+          {
+            "title": "Formats, proof, next steps",
+            "durationMinutes": 40,
+            "summary": "30/45/60/custom; inquiry and optional deep dives."
+          }
+        ],
+        "instructors": [
+          {
+            "name": "Moises Sanabria",
+            "title": "Digital practice",
+            "bio": "Facilitation focused on critical tool use, documentation, and artist-centered workflows."
+          }
+        ],
+        "deliveryHistory": {
+          "firstOfferedYear": 2026,
+          "runsCount": 0,
+          "venues": [
+            "Oolite Arts"
+          ]
+        },
+        "ctas": {
+          "primary": {
+            "label": "Express interest",
+            "action": "interest"
+          },
+          "institutional": {
+            "label": "Institutional inquiry",
+            "action": "external"
+          }
+        },
+        "whoFor": [
+          "Artists and educators new to structured AI use",
+          "Teams setting norms for disclosure and critique"
+        ],
+        "whoNotFor": [
+          "Uncritical tool hype or vendor-specific certification prep"
+        ],
+        "track": "ai_literacy",
+        "buildPriority": 2,
+        "catalog": "digital_lab",
+        "releaseStatus": "website_ready",
+        "sessionFormat": "talk_demo",
+        "marketingLevel": "beginner",
+        "packetStatus": "syllabus_ready",
+        "websiteReadiness": "ready",
+        "resourcesAvailability": "packet_coming_soon"
+      }
+    },
+    {
       "slug": "seo-workshop",
       "title": "SEO for Artists in the Age of AI Search",
       "description": "Foundational SEO when summaries and chat-style answers change how people discover culture—language, structure, and credibility without gimmicks.",
@@ -170,6 +291,7 @@
         "slug": "seo-workshop",
         "subtitle": "Ethical, practical discoverability for artists and small cultural orgs.",
         "shortDescription": "Intent, structure, and credibility—search basics that respect arts contexts and new AI interfaces.",
+        "catalogListingExternalUrl": "https://fabiola.io/workshop_seo/index.html",
         "audienceTags": [
           "staff_teams",
           "educators",
@@ -302,6 +424,9 @@
         "slug": "writing-about-digital-practice",
         "subtitle": "Statements, bios, and panel language that match how you actually work.",
         "shortDescription": "From studio notes and links to clear writing for grants, sites, and public talks.",
+        "galleryImageUrls": [
+          "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525120/dccmiami/workshops/writing-video-for-artists_pkxgsl.png"
+        ],
         "audienceTags": [
           "individual_artists",
           "emerging_artists",
@@ -432,6 +557,9 @@
         "slug": "documentation-for-artists",
         "subtitle": "Checklists, file habits, and ethics for documenting live and installed work.",
         "shortDescription": "From capture plan to folder structure—documentation that scales from studio to archive.",
+        "galleryImageUrls": [
+          "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525110/dccmiami/workshops/documentation-for-artitsts_akddqm.png"
+        ],
         "audienceTags": [
           "individual_artists",
           "emerging_artists",
@@ -569,6 +697,9 @@
         "slug": "ai-for-artists-voice-workflow-authorship",
         "subtitle": "Policies, prompts, and critique—AI as studio assistant, not author replacement.",
         "shortDescription": "Practical frameworks for voice, disclosure, and workflow when AI is in the room.",
+        "galleryImageUrls": [
+          "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525106/dccmiami/workshops/ai-for-artists_dnwikc.png"
+        ],
         "audienceTags": [
           "individual_artists",
           "emerging_artists",
@@ -704,6 +835,9 @@
         "slug": "vibe-coding-net-art",
         "subtitle": "Creative coding meets critical publishing—fast iteration, clear intent.",
         "shortDescription": "Prototype net art with AI-assisted workflows while keeping authorship visible.",
+        "galleryImageUrls": [
+          "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525117/dccmiami/workshops/vibe-coding-with-net-art_dtead3.png"
+        ],
         "audienceTags": [
           "individual_artists",
           "emerging_artists",
@@ -849,6 +983,9 @@
         "slug": "organizing-digital-studio",
         "subtitle": "Files, backups, and handoffs—systems that survive busy studio seasons.",
         "shortDescription": "Templates and habits for digital projects without enterprise IT overhead.",
+        "galleryImageUrls": [
+          "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525113/dccmiami/workshops/organizing-your-digital-studio_fverto.png"
+        ],
         "audienceTags": [
           "individual_artists",
           "emerging_artists",
@@ -978,6 +1115,9 @@
         "slug": "ai-copyright-creative-risk",
         "subtitle": "Contracts, terms, and studio risk—framed for artists and small orgs.",
         "shortDescription": "Navigate AI and IP conversations with clearer vocabulary and safer habits—not a substitute for legal counsel.",
+        "galleryImageUrls": [
+          "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525104/dccmiami/workshops/ai-copyright-and-creative-risk_kwjci9.png"
+        ],
         "audienceTags": [
           "individual_artists",
           "staff_teams",

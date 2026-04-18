@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
+import { useUser } from "@clerk/nextjs"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -56,6 +57,7 @@ interface Organization {
 
 export function ThemeAwareSurveysPage() {
   const params = useParams()
+  const { user, isLoaded: clerkLoaded } = useUser()
   const { theme, setOrganizationSlug } = useOrganizationTheme()
   const [surveys, setSurveys] = useState<Survey[]>([])
   const [organization, setOrganization] = useState<Organization | null>(null)
@@ -86,8 +88,10 @@ export function ThemeAwareSurveysPage() {
           console.error('Failed to load announcements:', announcementsResponse.statusText)
         }
 
-        // Load surveys
-        const surveysResponse = await fetch(`/api/organizations/by-slug/${params.slug}/surveys`)
+        const surveysPath = user
+          ? `/api/organizations/by-slug/${params.slug}/surveys`
+          : `/api/organizations/by-slug/${params.slug}/surveys/public`
+        const surveysResponse = await fetch(surveysPath)
         console.log('Surveys response status:', surveysResponse.status)
         
         if (surveysResponse.ok) {
@@ -106,13 +110,13 @@ export function ThemeAwareSurveysPage() {
       }
     }
 
-    if (params.slug) {
-      console.log('Slug available, calling loadData')
-      loadData()
-    } else {
-      console.log('No slug available')
+    if (!clerkLoaded || !params.slug) {
+      if (!params.slug) console.log('No slug available')
+      return
     }
-  }, [params.slug])
+    console.log('Slug available, calling loadData')
+    loadData()
+  }, [params.slug, user, clerkLoaded])
 
   const generateMagicLink = async (surveyId: string) => {
     setGeneratingLink(surveyId)

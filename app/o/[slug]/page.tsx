@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
 import { useParams } from 'next/navigation'
 import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap, Copy, Check, Grid3x3, ArrowRight } from 'lucide-react'
@@ -11,6 +12,10 @@ import { MiniAnalyticsWidget } from '@/components/analytics/WorkshopAnalyticsWid
 import { PageFooter } from '@/components/common/PageFooter'
 import { BackgroundPattern } from '@/components/BackgroundPattern'
 import { AnnouncementType, AnnouncementSubType } from '@/types/announcement'
+import { getTenantConfig } from '@/lib/tenant'
+import { WorkshopCard } from '@/components/workshops/marketing/WorkshopCard'
+import type { WorkshopRow } from '@/components/workshops/marketing/types'
+import { normalizeWorkshopForCatalog } from '@/lib/workshops/normalize-workshop-for-catalog'
 
 interface Organization {
   id: string
@@ -53,7 +58,7 @@ interface User {
 }
 
 export default function OrganizationPage() {
-  const { user, isLoaded } = useUser()
+  const { user, isLoaded: clerkLoaded } = useUser()
   const params = useParams()
   const slug = params.slug as string
 
@@ -78,6 +83,38 @@ export default function OrganizationPage() {
   const [loading, setLoading] = useState(true)
   const [userRole, setUserRole] = useState('')
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [workshopCatalogPreview, setWorkshopCatalogPreview] = useState<WorkshopRow[]>([])
+
+  useEffect(() => {
+    if (!clerkLoaded || !params.slug) return
+    const s = params.slug as string
+    const tenant = getTenantConfig(s)
+    if (tenant && tenant.dashboard.showWorkshops === false) {
+      setWorkshopCatalogPreview([])
+      return
+    }
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch(
+          `/api/organizations/by-slug/${encodeURIComponent(s)}/workshops/public`
+        )
+        if (!res.ok || cancelled) return
+        const data = await res.json()
+        const org = data.organization as { id: string; name: string; slug: string } | null
+        if (!org || cancelled) return
+        const rows = ((data.workshops || []) as Record<string, unknown>[]).map((w) =>
+          normalizeWorkshopForCatalog(w, org)
+        )
+        if (!cancelled) setWorkshopCatalogPreview(rows as unknown as WorkshopRow[])
+      } catch {
+        if (!cancelled) setWorkshopCatalogPreview([])
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [clerkLoaded, params.slug])
 
   useEffect(() => {
     async function loadData() {
@@ -193,15 +230,26 @@ export default function OrganizationPage() {
             setArtistCount(artistProfiles.length)
           }
         } else {
-          // Set default public values when not authenticated
           setUserCount(0)
           setStaffCount(0)
-          setArtistCount(0)
+          try {
+            const artistsRes = await fetch(`/api/organizations/by-slug/${slug}/artists/public`)
+            if (artistsRes.ok) {
+              const artistsData = await artistsRes.json()
+              setArtistCount(artistsData.artists?.length || 0)
+            } else {
+              setArtistCount(0)
+            }
+          } catch {
+            setArtistCount(0)
+          }
         }
 
-        // Get survey count for all users (public information)
         try {
-          const surveysResponse = await fetch(`/api/organizations/by-slug/${slug}/surveys`)
+          const surveysUrl = user
+            ? `/api/organizations/by-slug/${slug}/surveys`
+            : `/api/organizations/by-slug/${slug}/surveys/public`
+          const surveysResponse = await fetch(surveysUrl)
           if (surveysResponse.ok) {
             const surveysData = await surveysResponse.json()
             setSurveyCount(surveysData.surveys?.length || 0)
@@ -218,12 +266,12 @@ export default function OrganizationPage() {
       }
     }
 
-    if (isLoaded) {
+    if (clerkLoaded) {
       loadData()
     }
-  }, [user, isLoaded, params.slug])
+  }, [user, clerkLoaded, params.slug])
 
-  if (!isLoaded || loading) {
+  if (!clerkLoaded || loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
@@ -555,6 +603,33 @@ export default function OrganizationPage() {
             )}
           </div>
         </div>
+
+        {(getTenantConfig(organization.slug)?.dashboard?.showWorkshops ?? true) ? (
+          <div className="mb-6 xl:mb-8 2xl:mb-10 3xl:mb-12">
+            <div className="flex items-center justify-between mb-3 xl:mb-4">
+              <h2 className="text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl font-semibold text-gray-900 dark:text-white">
+                Workshops
+              </h2>
+              <Link
+                href={`/o/${organization.slug}/workshops`}
+                className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                View all →
+              </Link>
+            </div>
+            {workshopCatalogPreview.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {workshopCatalogPreview.slice(0, 6).map((w) => (
+                  <WorkshopCard key={w.id} workshop={w} orgSlug={organization.slug} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                No published public workshops yet. Open the full list to manage drafts and visibility in Supabase.
+              </p>
+            )}
+          </div>
+        ) : null}
 
         {/* Recent Activity - Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

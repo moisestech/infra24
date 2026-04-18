@@ -36,6 +36,9 @@ metadata:
   websiteReadiness: needs_build
   resourcesAvailability: packet_coming_soon
   buildPriority: 8
+  galleryImageUrls:
+    - >-
+      https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525104/dccmiami/workshops/ai-copyright-and-creative-risk_kwjci9.png
   subtitle: 'Contracts, terms, and studio risk—framed for artists and small orgs.'
   shortDescription: >-
     Navigate AI and IP conversations with clearer vocabulary and safer

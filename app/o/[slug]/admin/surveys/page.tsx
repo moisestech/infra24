@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
 // Using custom implementations instead of missing shadcn components
 import { 
   Plus, 
@@ -40,6 +41,8 @@ interface Survey {
   description: string;
   status: 'draft' | 'active' | 'closed' | 'archived';
   is_anonymous: boolean;
+  /** When true, survey appears on org portal for anonymous visitors (see /surveys/public). */
+  is_public?: boolean;
   language_default: string;
   languages_supported: string[];
   opens_at: string | null;
@@ -363,6 +366,7 @@ export default function AdminSurveysPage() {
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Public portal</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Responses</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
@@ -382,6 +386,21 @@ export default function AdminSurveysPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {getStatusBadge(survey)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex flex-col gap-1">
+                            <Switch
+                              checked={survey.is_public === true}
+                              onCheckedChange={(checked) =>
+                                handleUpdateSurvey(survey.id, { is_public: checked })
+                              }
+                              disabled={updatingSurvey}
+                              aria-label={`List “${survey.title}” on public org portal`}
+                            />
+                            <span className="text-xs text-gray-500 max-w-[10rem] leading-tight">
+                              Anonymous /o/{tenantConfig?.slug ?? 'org'} home
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <Badge variant="default">

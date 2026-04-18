@@ -106,14 +106,39 @@ export async function PUT(
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    // Update survey
+    const b = body as Record<string, unknown>;
+    const allowedKeys = [
+      'title',
+      'description',
+      'status',
+      'is_anonymous',
+      'is_public',
+      'requires_authentication',
+      'allowed_roles',
+      'opens_at',
+      'closes_at',
+      'max_responses',
+      'max_responses_per_user',
+      'survey_schema',
+      'settings',
+      'metadata',
+      'template_id',
+      'language_default',
+      'languages_supported',
+    ] as const;
+
+    const patch: Record<string, unknown> = {
+      updated_by: userId,
+      updated_at: new Date().toISOString(),
+    };
+    for (const key of allowedKeys) {
+      if (b[key] !== undefined) patch[key] = b[key];
+    }
+    if (b.isPublic !== undefined) patch.is_public = b.isPublic === true;
+
     const { data: survey, error } = await supabase
       .from('surveys')
-      .update({
-        ...body,
-        updated_by: userId,
-        updated_at: new Date().toISOString()
-      })
+      .update(patch)
       .eq('id', id)
       .select()
       .single();

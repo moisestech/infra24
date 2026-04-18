@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation"
 import { useState, useEffect } from "react"
+import { useUser } from "@clerk/nextjs"
 import { useTheme } from "next-themes"
 import { motion } from "framer-motion"
 import { 
@@ -83,6 +84,7 @@ interface SurveySubmission {
 export default function OrganizationSurveysPage() {
   const params = useParams()
   const slug = params.slug as string
+  const { user, isLoaded: clerkLoaded } = useUser()
   const { resolvedTheme } = useTheme()
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [surveys, setSurveys] = useState<Survey[]>([])
@@ -153,9 +155,13 @@ export default function OrganizationSurveysPage() {
       try {
         console.log('Loading surveys page data for slug:', slugParam)
 
+        const surveysPath = user
+          ? `/api/organizations/by-slug/${slugParam}/surveys`
+          : `/api/organizations/by-slug/${slugParam}/surveys/public`
+
         const [orgResponse, surveysResponse] = await Promise.all([
           fetch(`/api/organizations/by-slug/${slugParam}`, { cache: 'no-store' }),
-          fetch(`/api/organizations/by-slug/${slugParam}/surveys`, { cache: 'no-store' }),
+          fetch(surveysPath, { cache: 'no-store' }),
         ])
 
         let resolvedOrg: Organization | null = null
@@ -224,8 +230,9 @@ export default function OrganizationSurveysPage() {
       }
     }
 
+    if (!clerkLoaded) return
     loadData()
-  }, [params.slug])
+  }, [params.slug, user, clerkLoaded])
 
   // Filter submissions based on search and status
   useEffect(() => {

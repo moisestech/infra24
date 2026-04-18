@@ -36,6 +36,9 @@ metadata:
   websiteReadiness: ready
   resourcesAvailability: packet_available
   buildPriority: 7
+  galleryImageUrls:
+    - >-
+      https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525113/dccmiami/workshops/organizing-your-digital-studio_fverto.png
   subtitle: 'Files, backups, and handoffs—systems that survive busy studio seasons.'
   shortDescription: Templates and habits for digital projects without enterprise IT overhead.
   format: online

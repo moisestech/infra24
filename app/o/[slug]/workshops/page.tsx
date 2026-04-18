@@ -31,6 +31,8 @@ import {
   type WorkshopTrackId,
 } from '@/lib/workshops/track-labels'
 import type { WorkshopRow } from '@/components/workshops/marketing/types'
+import { normalizeWorkshopForCatalog } from '@/lib/workshops/normalize-workshop-for-catalog'
+import { isAdultStudioWorkshop } from '@/lib/workshops/workshop-filters'
 
 interface Organization {
   id: string
@@ -73,12 +75,6 @@ interface Workshop {
   metadata?: Record<string, unknown> | null
 }
 
-function isAdultStudioWorkshop(w: Workshop): boolean {
-  if (w.category === 'adult_studio_classes') return true
-  const meta = w.metadata as Record<string, unknown> | null | undefined
-  return meta?.program === 'adult_art_classes'
-}
-
 function sortWorkshopsFeaturedFirst(a: Workshop, b: Workshop) {
   if (Boolean(a.featured) !== Boolean(b.featured)) return a.featured ? -1 : 1
   return a.title.localeCompare(b.title)
@@ -116,7 +112,7 @@ interface WorkshopsPageProps {
 export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {}) {
   const params = useParams()
   const slug = (params.slug as string) || propSlug || 'oolite'
-  const { user } = useUser()
+  const { user, isLoaded: clerkLoaded } = useUser()
   const { tenantConfig } = useTenant()
 
   // Oolite theme colors
@@ -194,109 +190,69 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
   const [workshopsRef, workshopsInView] = useInView({ threshold: 0.5 })
 
   useEffect(() => {
-    console.log('🔍 useEffect triggered, slug:', slug)
-    
-    async function loadData() {
-      console.log('🔍 loadData function called')
-      if (!slug) {
-        console.log('❌ No slug provided, returning early')
-        return
-      }
-      
-      try {
-        console.log('🔍 Starting data load for slug:', slug)
+    if (!clerkLoaded) return
 
-        // Get organization details
-        console.log('🔍 Fetching organization data from:', `/api/organizations/by-slug/${slug}`)
-        const orgResponse = await fetch(`/api/organizations/by-slug/${slug}`)
-        console.log('🔍 Organization API response status:', orgResponse.status)
-        
-        let orgData = null
+    async function loadData() {
+      if (!slug) return
+      setLoading(true)
+
+      try {
+        if (!user) {
+          const pubRes = await fetch(
+            `/api/organizations/by-slug/${encodeURIComponent(slug)}/workshops/public`
+          )
+          if (pubRes.ok) {
+            const pub = await pubRes.json()
+            const org = pub.organization as Organization | null
+            if (!org?.id) {
+              setWorkshops([])
+              return
+            }
+            setOrganization(org)
+            const rawList = (pub.workshops || []) as Record<string, unknown>[]
+            const normalized = rawList.map((w) =>
+              normalizeWorkshopForCatalog(w, {
+                id: org.id,
+                name: org.name,
+                slug: org.slug,
+              })
+            )
+            setWorkshops(normalized as unknown as Workshop[])
+          } else {
+            setWorkshops([])
+          }
+          return
+        }
+
+        const orgResponse = await fetch(`/api/organizations/by-slug/${encodeURIComponent(slug)}`)
+        let orgData: { organization?: Organization } | null = null
         if (orgResponse.ok) {
           orgData = await orgResponse.json()
-          console.log('🔍 Organization data received:', orgData)
-          console.log('🔍 Organization data structure:', {
-            hasOrganization: !!orgData.organization,
-            organizationId: orgData.organization?.id,
-            organizationName: orgData.organization?.name,
-            organizationSlug: orgData.organization?.slug
-          })
-          setOrganization(orgData.organization)
-        } else {
-          console.error('❌ Failed to fetch organization:', orgResponse.status, orgResponse.statusText)
-          const errorText = await orgResponse.text()
-          console.error('❌ Organization API error response:', errorText)
+          if (orgData?.organization) setOrganization(orgData.organization)
         }
 
-        // Get workshops for this organization
-        console.log('🔍 Fetching workshops for organization:', orgData?.organization?.id)
         if (orgData?.organization?.id) {
-          const workshopsUrl = `/api/organizations/${orgData.organization.id}/workshops`
-          console.log('🔍 Fetching workshops from:', workshopsUrl)
-          const workshopsResponse = await fetch(workshopsUrl)
-          console.log('🔍 Workshops API response status:', workshopsResponse.status)
-          
+          const workshopsResponse = await fetch(
+            `/api/organizations/${orgData.organization.id}/workshops`
+          )
           if (workshopsResponse.ok) {
             const workshopsData = await workshopsResponse.json()
-            console.log('📚 Workshops data received:', workshopsData)
-            console.log('📊 Total workshops fetched:', workshopsData.workshops?.length || 0)
-            
-            // Debug each workshop
-            workshopsData.workshops?.forEach((workshop: any, index: number) => {
-              console.log(`📝 Workshop ${index + 1}:`, {
-                id: workshop.id,
-                title: workshop.title,
-                instructor: workshop.instructor,
-                status: workshop.status,
-                featured: workshop.featured,
-                is_public: workshop.is_public,
-                is_active: workshop.is_active,
-                level: workshop.level,
-                duration_minutes: workshop.duration_minutes,
-                category: workshop.category
+            const org = orgData.organization
+            const rawList = (workshopsData.workshops || []) as Record<string, unknown>[]
+            const normalized = rawList.map((w) =>
+              normalizeWorkshopForCatalog(w, {
+                id: org.id,
+                name: org.name,
+                slug: org.slug,
               })
-            })
-            
-            // Check specifically for Video Performance workshop by Tere Garcia
-            const videoPerformanceWorkshop = workshopsData.workshops?.find((w: any) => 
-              w.title.toLowerCase().includes('video') || 
-              w.title.toLowerCase().includes('performance') ||
-              w.instructor?.toLowerCase().includes('tere') ||
-              w.instructor?.toLowerCase().includes('garcia')
             )
-            
-            if (videoPerformanceWorkshop) {
-              console.log('🎬 ✅ Video Performance Workshop by Tere Garcia Found!')
-              console.log('🎬 Workshop Details:', {
-                id: videoPerformanceWorkshop.id,
-                title: videoPerformanceWorkshop.title,
-                instructor: videoPerformanceWorkshop.instructor,
-                status: videoPerformanceWorkshop.status,
-                featured: videoPerformanceWorkshop.featured,
-                level: videoPerformanceWorkshop.level,
-                duration: videoPerformanceWorkshop.duration_minutes,
-                category: videoPerformanceWorkshop.category,
-                organization_id: videoPerformanceWorkshop.organization_id
-              })
-            } else {
-              console.log('❌ Video Performance Workshop by Tere Garcia NOT found')
-              console.log('🔍 Available workshops:')
-              workshopsData.workshops?.forEach((w: any, i: number) => {
-                console.log(`   ${i + 1}. "${w.title}" by ${w.instructor}`)
-              })
-            }
-            
-            setWorkshops(workshopsData.workshops || [])
+            setWorkshops(normalized as unknown as Workshop[])
           } else {
-            console.error('❌ Failed to fetch workshops:', workshopsResponse.status, workshopsResponse.statusText)
-            const errorText = await workshopsResponse.text()
-            console.error('❌ Workshops API error response:', errorText)
+            setWorkshops([])
           }
         } else {
-          console.error('❌ No organization ID found for slug:', slug)
-          console.error('❌ Organization data:', orgData)
+          setWorkshops([])
         }
-
       } catch (error) {
         console.error('Error loading workshops data:', error)
       } finally {
@@ -304,9 +260,8 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
       }
     }
 
-    console.log('🔍 About to call loadData()')
     loadData()
-  }, [slug])
+  }, [slug, user, clerkLoaded])
 
   // Reduced motion detection
   useEffect(() => {
@@ -643,68 +598,6 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
         </section>
       )}
 
-      <section
-        className={`mx-auto max-w-3xl px-4 pb-12 pt-12 md:pb-16 md:pt-16 ${
-          isDark ? 'text-neutral-300' : 'text-neutral-700'
-        }`}
-      >
-        <h2
-          className={`text-center text-2xl font-semibold tracking-tight md:text-3xl ${
-            isDark ? 'text-white' : 'text-neutral-900'
-          }`}
-        >
-          {landingCopy.framingSection.title}
-        </h2>
-        <p
-          className={`mx-auto mt-5 whitespace-pre-line text-center text-base leading-relaxed md:text-lg ${
-            isDark ? 'text-neutral-400' : 'text-neutral-600'
-          }`}
-        >
-          {landingCopy.framingSection.body}
-        </p>
-
-        <p className="mt-12 text-center text-sm font-medium text-muted-foreground">
-          {landingCopy.trustLine}
-        </p>
-        <ul className="mt-6 flex flex-wrap justify-center gap-3 text-sm">
-          {landingCopy.trustItems.map((t) => (
-            <li
-              key={t}
-              className={`rounded-full border px-4 py-2 ${
-                isDark
-                  ? 'border-neutral-700 bg-neutral-900/50'
-                  : 'border-stone-200 bg-white shadow-sm'
-              }`}
-            >
-              {t}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {isOoliteLab ? (
-        <div className="mx-auto max-w-4xl px-4 pb-6 sm:px-6 lg:px-8">
-          <div
-            className={`rounded-xl border px-4 py-4 text-center text-sm sm:text-base ${
-              isDark
-                ? 'border-neutral-700 bg-neutral-900/40 text-neutral-200'
-                : 'border-stone-200 bg-stone-50 text-stone-800'
-            }`}
-          >
-            <span className="font-medium">Digital Lab workshop catalog</span>
-            {' — '}
-            <Link
-              href="/o/oolite/workshops/digital-lab"
-              className="font-semibold text-primary underline underline-offset-2"
-            >
-              Open the Digital Lab workshop catalog
-            </Link>
-            {' '}
-            (filters, sort, and readiness badges).
-          </div>
-        </div>
-      ) : null}
-
       {/* Workshops Section */}
       <section ref={workshopsRef} id="workshops-catalog" className="scroll-mt-24 py-16 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -930,6 +823,69 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                 </div>
               ) : null}
 
+              {/* Framing + audience + Digital Lab catalog CTA (directly after published workshop cards) */}
+              <div className="mt-4 border-t border-border/40 pt-14 md:pt-16">
+                <section
+                  className={`mx-auto max-w-3xl px-0 pb-2 md:pb-4 ${
+                    isDark ? 'text-neutral-300' : 'text-neutral-700'
+                  }`}
+                >
+                  <h2
+                    className={`text-center text-2xl font-semibold tracking-tight md:text-3xl ${
+                      isDark ? 'text-white' : 'text-neutral-900'
+                    }`}
+                  >
+                    {landingCopy.framingSection.title}
+                  </h2>
+                  <p
+                    className={`mx-auto mt-5 whitespace-pre-line text-center text-base leading-relaxed md:text-lg ${
+                      isDark ? 'text-neutral-400' : 'text-neutral-600'
+                    }`}
+                  >
+                    {landingCopy.framingSection.body}
+                  </p>
+
+                  <p className="mt-12 text-center text-sm font-medium text-muted-foreground">
+                    {landingCopy.trustLine}
+                  </p>
+                  <ul className="mt-6 flex flex-wrap justify-center gap-3 text-sm">
+                    {landingCopy.trustItems.map((t) => (
+                      <li
+                        key={t}
+                        className={`rounded-full border px-4 py-2 ${
+                          isDark
+                            ? 'border-neutral-700 bg-neutral-900/50'
+                            : 'border-stone-200 bg-white shadow-sm'
+                        }`}
+                      >
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+
+                <div className="mx-auto mt-10 max-w-4xl">
+                  <div
+                    className={`rounded-xl border px-4 py-4 text-center text-sm sm:text-base ${
+                      isDark
+                        ? 'border-neutral-700 bg-neutral-900/40 text-neutral-200'
+                        : 'border-stone-200 bg-stone-50 text-stone-800'
+                    }`}
+                  >
+                    <span className="font-medium">Digital Lab workshop catalog</span>
+                    {' — '}
+                    <Link
+                      href="/o/oolite/workshops/digital-lab"
+                      className="font-semibold text-primary underline underline-offset-2"
+                    >
+                      Open the Digital Lab workshop catalog
+                    </Link>
+                    {' '}
+                    (filters, sort, and readiness badges).
+                  </div>
+                </div>
+              </div>
+
               {organization ? (
                 <div className="mb-16">
                   <WorkshopCategoryVotingUnified organizationId={organization.id} userId={user?.id} />
@@ -1138,6 +1094,48 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
           )}
         </div>
       </section>
+
+      {/* Framing + trust (other orgs: still after catalog section; Oolite uses block above cards) */}
+      {!isOoliteLab ? (
+        <section
+          className={`mx-auto max-w-3xl px-4 pb-12 pt-4 md:pb-16 md:pt-10 ${
+            isDark ? 'text-neutral-300' : 'text-neutral-700'
+          }`}
+        >
+          <h2
+            className={`text-center text-2xl font-semibold tracking-tight md:text-3xl ${
+              isDark ? 'text-white' : 'text-neutral-900'
+            }`}
+          >
+            {landingCopy.framingSection.title}
+          </h2>
+          <p
+            className={`mx-auto mt-5 whitespace-pre-line text-center text-base leading-relaxed md:text-lg ${
+              isDark ? 'text-neutral-400' : 'text-neutral-600'
+            }`}
+          >
+            {landingCopy.framingSection.body}
+          </p>
+
+          <p className="mt-12 text-center text-sm font-medium text-muted-foreground">
+            {landingCopy.trustLine}
+          </p>
+          <ul className="mt-6 flex flex-wrap justify-center gap-3 text-sm">
+            {landingCopy.trustItems.map((t) => (
+              <li
+                key={t}
+                className={`rounded-full border px-4 py-2 ${
+                  isDark
+                    ? 'border-neutral-700 bg-neutral-900/50'
+                    : 'border-stone-200 bg-white shadow-sm'
+                }`}
+              >
+                {t}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section
         className={`mx-auto max-w-5xl px-4 py-16 md:py-20 ${

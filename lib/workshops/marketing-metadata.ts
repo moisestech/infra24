@@ -26,6 +26,11 @@ export const workshopMarketingMetadataSchema = z.object({
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
   galleryImageUrls: z.array(z.string()).optional(),
+  /**
+   * When set, catalog cards link to this URL (e.g. primary materials off-site)
+   * instead of the internal workshop path; card media can use a simple icon treatment.
+   */
+  catalogListingExternalUrl: z.string().url().optional(),
   tags: z.array(z.string()).optional(),
   /** Smart-sign workshop grid schedule block (multi-line). */
   displaySchedule: z.string().optional(),

@@ -57,6 +57,9 @@ export async function GET(request: NextRequest) {
         description,
         status,
         is_anonymous,
+        is_public,
+        requires_authentication,
+        allowed_roles,
         language_default,
         languages_supported,
         opens_at,
@@ -139,8 +142,14 @@ export async function POST(request: NextRequest) {
       maxResponsesPerUser = 1,
       surveySchema,
       settings = {},
-      metadata = {}
+      metadata = {},
+      isPublic: isPublicCamel
     } = body;
+    const isPublicRaw =
+      isPublicCamel !== undefined
+        ? isPublicCamel
+        : (body as { is_public?: boolean }).is_public;
+    const isPublic = isPublicRaw === true;
 
     if (!organizationId || !title) {
       return NextResponse.json({ error: 'Organization ID and title are required' }, { status: 400 });
@@ -215,6 +224,7 @@ export async function POST(request: NextRequest) {
         survey_schema: finalSurveySchema,
         settings,
         metadata,
+        is_public: Boolean(isPublic),
         created_by: userId,
         updated_by: userId
       })

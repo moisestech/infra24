@@ -37,6 +37,7 @@ metadata:
   websiteReadiness: ready
   resourcesAvailability: packet_available
   buildPriority: 2
+  catalogListingExternalUrl: 'https://fabiola.io/workshop_seo/index.html'
   subtitle: 'Ethical, practical discoverability for artists and small cultural orgs.'
   shortDescription: >-
     Intent, structure, and credibility—search basics that respect arts contexts

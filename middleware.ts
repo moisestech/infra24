@@ -4,6 +4,15 @@ import { authMiddleware } from '@clerk/nextjs'
 function isPublicRoute(pathname: string): boolean {
   if (pathname === '/') return true
 
+  /** DCC public workshop catalog (published listings only on the page). */
+  if (pathname === '/workshops' || pathname.startsWith('/workshops/')) return true
+
+  /** Tenant workshop UI under `/o/{org}/workshops` requires sign-in (full catalog, drafts, digital-lab tools). */
+  if (/^\/o\/[^/]+\/workshops(\/.*)?$/.test(pathname)) return false
+
+  /** Other org tenant surfaces stay public unless individually protected elsewhere. */
+  if (pathname === '/o' || pathname.startsWith('/o/')) return true
+
   const publicRoutes = [
     '/sign-in',
     '/sign-up',
@@ -19,10 +28,10 @@ function isPublicRoute(pathname: string): boolean {
     '/api/marketing',
     '/book',
     '/bookings',
-    '/o',
     '/platform',
     '/infra24',
     '/programs',
+    '/grants',
     '/projects',
     '/partners',
     '/journal',
@@ -57,7 +66,10 @@ export default authMiddleware({
     
     if (!isPublicRoute(pathname) && !userId) {
       console.log('❌ Auth protection failed: User not authenticated')
-      return Response.redirect(new URL('/sign-in', req.url))
+      const signIn = new URL('/sign-in', req.url)
+      const returnPath = `${pathname}${req.nextUrl.search || ''}`
+      signIn.searchParams.set('redirect_url', returnPath)
+      return Response.redirect(signIn)
     }
     
     if (userId) {

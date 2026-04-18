@@ -37,6 +37,9 @@ metadata:
   websiteReadiness: ready
   resourcesAvailability: packet_available
   buildPriority: 4
+  galleryImageUrls:
+    - >-
+      https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525110/dccmiami/workshops/documentation-for-artitsts_akddqm.png
   subtitle: 'Checklists, file habits, and ethics for documenting live and installed work.'
   shortDescription: >-
     From capture plan to folder structure—documentation that scales from studio
