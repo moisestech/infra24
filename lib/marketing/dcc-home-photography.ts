@@ -6,7 +6,7 @@ export type DccHomePhoto = { readonly src: string; readonly alt: string };
 
 const BASE = 'https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto' as const;
 
-/** Full artwork set (nine distinct installations). */
+/** Full artwork set (installations + DCC artist documentation). */
 export const dccHomePhotos = {
   galleryInteractiveStations: {
     src: `${BASE}/v1738040056/art/moisestech-website/tumblr_npjvqvIkQK1r1ubs7o1_1280_uvwuly.jpg`,
@@ -44,6 +44,18 @@ export const dccHomePhotos = {
     src: `${BASE}/v1717961679/art/moisestech-website/moisesdsanabria-babyagi_ewquhe.webp`,
     alt: 'BabyAGI — multi-screen sculpture with AI-related text, digital figure, and glitch display. Moises Sanabria.',
   },
+  fabiolaEwaste2022: {
+    src: `${BASE}/v1776479298/dccmiami/artists/fabiola-larios/Fabiola_Larios_Ewaste_2022_bxogl5.webp`,
+    alt: 'Ewaste (2022) by Fabiola Larios: vintage computers and CRT monitors tangled with cyan, magenta, and lime neon strips in a dark gallery; screens glow with blue abstract imagery.',
+  },
+  fabiolaGemsOfObsolescence: {
+    src: `${BASE}/v1776479295/dccmiami/artists/fabiola-larios/Fabiola_Larios_Gems_of_Obsolescence_kowwm4.webp`,
+    alt: 'Gems of Obsolescence by Fabiola Larios: a laptop with a rhinestone-trimmed screen rests on draped shimmering fabric, lit from beneath with a soft glow.',
+  },
+  fabiolaEyeseeyouWatch: {
+    src: `${BASE}/v1776479294/dccmiami/artists/fabiola-larios/Fabiola_Larios_eyeseeyou_watch_pdzqns.webp`,
+    alt: 'eye see you watch by Fabiola Larios: a mannequin with a rhinestone-encrusted security-camera head and lens details, beside a wall-mounted monitor showing a surveillance feed.',
+  },
 } as const satisfies Record<string, DccHomePhoto>;
 
 /** Hero collage: large cell + three stacked tiles (left-to-right column). */
@@ -65,4 +77,11 @@ export const dccHomeProofPhotos = [
   dccHomePhotos.meditationBattlestation,
   dccHomePhotos.smartShoppers,
   dccHomePhotos.babyAgi,
+] as const;
+
+/** What DCC is — Fabiola Larios documentation (three tiles). */
+export const dccHomeFabiolaLariosFeaturedPhotos = [
+  dccHomePhotos.fabiolaEwaste2022,
+  dccHomePhotos.fabiolaGemsOfObsolescence,
+  dccHomePhotos.fabiolaEyeseeyouWatch,
 ] as const;

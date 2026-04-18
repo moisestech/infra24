@@ -1,5 +1,6 @@
 import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
 import {
+  dccHomeFabiolaLariosFeaturedPhotos,
   dccHomePhotos,
   dccHomeProofPhotos,
   dccHomeWhyMiamiPhotos,
@@ -58,6 +59,28 @@ export const homeVisualPostMarquee: HomeVisualItem[] = [
 export const homeVisualNarrativeBridge: HomeVisualItem[] = [
   g('pulseMagenta', 'Magenta pulse gradient suggesting networked public formats.', 'Data social'),
   g('warmAmber', 'Amber gradient suggesting surfaces and retail-adjacent display.', 'Smart surface'),
+];
+
+/** What DCC is — featured artist work (Fabiola Larios) */
+export const homeVisualWhatDccIs: HomeVisualItem[] = [
+  photo(
+    dccHomeFabiolaLariosFeaturedPhotos[0].src,
+    dccHomeFabiolaLariosFeaturedPhotos[0].alt,
+    'Ewaste (2022)',
+    'Fabiola Larios'
+  ),
+  photo(
+    dccHomeFabiolaLariosFeaturedPhotos[1].src,
+    dccHomeFabiolaLariosFeaturedPhotos[1].alt,
+    'Gems of Obsolescence',
+    'Fabiola Larios'
+  ),
+  photo(
+    dccHomeFabiolaLariosFeaturedPhotos[2].src,
+    dccHomeFabiolaLariosFeaturedPhotos[2].alt,
+    'eye see you watch',
+    'Fabiola Larios'
+  ),
 ];
 
 /** Why Miami — DCC photography row */

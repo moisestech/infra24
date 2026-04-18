@@ -31,6 +31,7 @@ import {
 import {
   homeVisualInfra24Band,
   homeVisualProofEcho,
+  homeVisualWhatDccIs,
   homeVisualWhyMiami,
 } from '@/lib/marketing/home-visual-assets';
 
@@ -233,7 +234,10 @@ export default function MarketingHomePage() {
         <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
           {dccWhatWeAreIntro}
         </p>
-        <p className="mt-6">
+        <div className="mt-10 max-w-6xl">
+          <HomeWebcoreVisualGrid lightbox mode="row" items={[...homeVisualWhatDccIs]} />
+        </div>
+        <p className="mt-8">
           <Link
             href="/about"
             className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
