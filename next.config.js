@@ -3,6 +3,8 @@
 // Keep all build-critical options here (Vercel reads this file).
 
 const nextConfig = {
+  transpilePackages: ['three', '@react-three/fiber'],
+
   typescript: {
     // Repo has TS errors in tests/features outside the app bundle; Vercel runs `tsc` during build
     ignoreBuildErrors: true,

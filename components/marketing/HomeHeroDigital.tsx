@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Balancer } from 'react-wrap-balancer';
 import { BorderBeam } from '@/components/ui/border-beam';
@@ -7,9 +8,15 @@ import { AnimatedGridPattern } from '@/components/magicui/animated-grid-pattern'
 import { TextAnimate } from '@/components/magicui/text-animate';
 import { GlitchText } from '@/components/marketing/GlitchText';
 import { HeroSubheadKeyTerms } from '@/components/marketing/HeroSubheadKeyTerms';
+import { HomeHeroRotatingHeadline } from '@/components/marketing/HomeHeroRotatingHeadline';
 import { cdcDigitalBeam } from '@/lib/marketing/cdc-digital-theme';
 import type { MarketingHeroSubheadSegment } from '@/lib/marketing/content';
 import { cn } from '@/lib/utils';
+
+const Hero3DField = dynamic(
+  () => import('@/components/marketing/hero/Hero3DField').then((m) => m.Hero3DField),
+  { ssr: false, loading: () => null }
+);
 
 type HomeHeroDigitalProps = {
   /** Optional small line above PDM / headline (omit when using `publicDigitalMiamiLine` only). */
@@ -26,6 +33,10 @@ type HomeHeroDigitalProps = {
   subheadSegments?: readonly MarketingHeroSubheadSegment[];
   /** Optional one-line value prop between H1 and powered-by (e.g. pilot tagline). */
   pilotTagline?: string;
+  /** When set, replaces static `pilotTagline` with a rotating Knight-first headline cycle. */
+  rotatingHeadlines?: readonly string[];
+  /** WebGL particle field behind the hero card (skipped when `prefers-reduced-motion` is set). */
+  showHero3DBackground?: boolean;
   children: React.ReactNode;
 };
 
@@ -38,17 +49,25 @@ export function HomeHeroDigital({
   subhead,
   subheadSegments,
   pilotTagline,
+  rotatingHeadlines,
+  showHero3DBackground = true,
   children,
 }: HomeHeroDigitalProps) {
   const reduceMotion = useReducedMotion();
   const showEyebrow = Boolean(eyebrow?.trim());
+  const pilotLineForSr =
+    rotatingHeadlines?.length && rotatingHeadlines[0]
+      ? rotatingHeadlines[0]
+      : pilotTagline?.trim() ?? '';
   const plainSubheadForSr =
-    [pilotTagline?.trim(), subhead ?? subheadSegments?.map((s) => s.text).join('')]
+    [pilotLineForSr, subhead ?? subheadSegments?.map((s) => s.text).join('')]
       .filter(Boolean)
       .join(' ') || '';
+  const showPilotBand = Boolean(rotatingHeadlines?.length) || Boolean(pilotTagline?.trim());
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-[var(--cdc-border)] bg-white/35 p-6 shadow-sm shadow-teal-950/[0.04] backdrop-blur-[2px] dark:bg-neutral-900/45 dark:shadow-black/20 sm:p-8">
+      {!reduceMotion && showHero3DBackground ? <Hero3DField /> : null}
       {!reduceMotion && (
         <>
           <AnimatedGridPattern
@@ -150,7 +169,9 @@ export function HomeHeroDigital({
           </motion.h1>
         )}
 
-        {pilotTagline?.trim() ? (
+        {rotatingHeadlines?.length ? (
+          <HomeHeroRotatingHeadline lines={rotatingHeadlines} />
+        ) : pilotTagline?.trim() ? (
           <p className="mt-4 max-w-2xl text-lg font-semibold leading-snug tracking-tight text-neutral-800 dark:text-neutral-100 sm:text-xl">
             {pilotTagline.trim()}
           </p>
@@ -159,7 +180,7 @@ export function HomeHeroDigital({
         <p
           className={cn(
             'text-sm font-medium text-neutral-500 dark:text-neutral-400',
-            pilotTagline?.trim() ? 'mt-3' : 'mt-2'
+            showPilotBand ? 'mt-3' : 'mt-2'
           )}
         >
           {poweredByLine}

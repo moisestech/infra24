@@ -6,12 +6,22 @@
 export const dccPilotSeoDescription =
   'Year 1 Artist Support Pilot: digital presence, technical presentation, career readiness, and public visibility for Miami artists and small cultural organizations—through clinics, workshops, and shared tools. Powered by Infra24.' as const;
 
+/** Hero line rotation timing (marketing homepage). */
+export const heroHeadlineRotateIntervalMs = 6000 as const;
+export const heroHeadlineRotateTransitionSec = 0.45 as const;
+
+/** Knight-first rotating headlines (order: strongest default first). */
+export const dccHeroRotatingHeadlines = [
+  'Building Cultural Infrastructure for Miami’s Artists',
+  'A New Support Layer for Miami’s Cultural Life',
+  'Support for Miami’s Artists, Built for Public Culture',
+] as const;
+
 export const dccPilotHomeHero = {
   eyebrow: 'Artist Support Pilot · Year 1',
-  tagline: 'Digital support for Miami’s cultural ecosystem.',
-  /** Plain subhead under the H1 (distributed pilot + value). */
+  /** Plain subhead under the H1 (Knight-aligned one-liner). */
   supportingSubhead:
-    'Digital Culture Center Miami is a distributed artist-services and cultural infrastructure pilot—helping artists and small cultural organizations strengthen digital presence, technical presentation, public visibility, and professional readiness through direct services, workshops, and shared tools.',
+    'DCC is a distributed artist-support pilot helping artists and cultural organizations strengthen digital presence, technical presentation, public visibility, and opportunity readiness.',
   trustLine:
     'We treat digital and technical support as cultural infrastructure: practical outputs, public learning, and systems that can travel—not a one-off vendor story.',
   primaryCta: { label: 'Explore Services', href: '/#year-1-services' },

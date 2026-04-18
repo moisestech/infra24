@@ -19,6 +19,7 @@ import {
   dccWhatWeAreIntro,
 } from '@/lib/marketing/content';
 import {
+  dccHeroRotatingHeadlines,
   dccHomePathwaysSection,
   dccParticipantValue,
   dccPilotCtaBand,
@@ -108,7 +109,7 @@ export default function MarketingHomePage() {
               publicDigitalMiamiLine={publicDigitalMiamiLine}
               headline={marketingHero.headline}
               headlineClassName={homeHeroHeadlineClassName}
-              pilotTagline={dccPilotHomeHero.tagline}
+              rotatingHeadlines={dccHeroRotatingHeadlines}
               subhead={marketingHeroPlainSubhead}
               poweredByLine={dccSiteMeta.poweredByLine}
             >
