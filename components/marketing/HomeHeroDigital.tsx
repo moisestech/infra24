@@ -1,7 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Balancer } from 'react-wrap-balancer';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { AnimatedGridPattern } from '@/components/magicui/animated-grid-pattern';
@@ -13,7 +14,10 @@ import { DccHeroAsciiStatus } from '@/components/marketing/DccHeroAsciiStatus';
 import { HomeHeroRotatingHeadline } from '@/components/marketing/HomeHeroRotatingHeadline';
 import { cdcDigitalBeam } from '@/lib/marketing/cdc-digital-theme';
 import type { MarketingHeroSubheadSegment } from '@/lib/marketing/content';
+import { marketingHeaderSloganLines } from '@/lib/marketing/marketing-header-slogans';
 import { cn } from '@/lib/utils';
+
+const INSTITUTIONAL_HEADLINE_ROTATE_MS = 5200;
 
 const Hero3DField = dynamic(
   () => import('@/components/marketing/hero/Hero3DField').then((m) => m.Hero3DField),
@@ -55,6 +59,11 @@ type HomeHeroDigitalProps = {
   rotatingSubheadMotion?: 'glitch' | 'typewriter';
   /** WebGL particle field behind the hero card (skipped when `prefers-reduced-motion` is set). */
   showHero3DBackground?: boolean;
+  /**
+   * Institutional layout: rotating H1 lines (per-word glitch). Defaults to site marketing slogans;
+   * `headline` is only used if this list resolves empty.
+   */
+  institutionalHeadlineLines?: readonly string[];
   children: React.ReactNode;
 };
 
@@ -92,14 +101,37 @@ export function HomeHeroDigital({
   rotatingHeadlineMotion = 'glitch',
   rotatingSubheadMotion = 'glitch',
   showHero3DBackground = true,
+  institutionalHeadlineLines,
   children,
 }: HomeHeroDigitalProps) {
   const reduceMotion = useReducedMotion();
   const digitalFirst = layout === 'digital-first';
   const institutional = layout === 'institutional';
+
+  const institutionalLines = useMemo(() => {
+    if (institutionalHeadlineLines?.length) return [...institutionalHeadlineLines];
+    const fromMarketing = [...marketingHeaderSloganLines];
+    return fromMarketing.length > 0 ? fromMarketing : [headline];
+  }, [institutionalHeadlineLines, headline]);
+
+  const [institutionalIdx, setInstitutionalIdx] = useState(0);
+
+  useEffect(() => {
+    if (!institutional || reduceMotion || institutionalLines.length <= 1) return undefined;
+    const t = window.setInterval(() => {
+      setInstitutionalIdx((i) => (i + 1) % institutionalLines.length);
+    }, INSTITUTIONAL_HEADLINE_ROTATE_MS);
+    return () => window.clearInterval(t);
+  }, [institutional, reduceMotion, institutionalLines.length]);
+
+  const institutionalCurrentLine =
+    institutional && institutionalLines.length > 0
+      ? institutionalLines[institutionalIdx % institutionalLines.length]!
+      : headline;
+
   const showEyebrow = Boolean(eyebrow?.trim());
   const pilotLineForSr = institutional
-    ? [headline, orgLine, publicDigitalMiamiLine, eyebrow].filter(Boolean).join(' — ')
+    ? [institutionalCurrentLine, orgLine, publicDigitalMiamiLine, eyebrow].filter(Boolean).join(' — ')
     : rotatingHeadlines?.length && rotatingHeadlines[0]
       ? rotatingHeadlines[0]
       : pilotTagline?.trim() ?? '';
@@ -314,24 +346,26 @@ export function HomeHeroDigital({
       </span>
       {/* ~65% viewport band for mission + org + PDM — rest is CTAs + pilot meta */}
       <div className="flex min-h-[min(65dvh,720px)] flex-1 flex-col justify-center">
-        {reduceMotion ? (
-          <h1 className={institutionalSloganHeadlineClass}>
-            <Balancer>
-              <GlitchWords text={headline} />
-            </Balancer>
-          </h1>
-        ) : (
-          <motion.h1
-            className={institutionalSloganHeadlineClass}
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <Balancer>
-              <GlitchWords text={headline} />
-            </Balancer>
-          </motion.h1>
-        )}
+        <h1 className={institutionalSloganHeadlineClass} aria-live="polite">
+          <Balancer>
+            {reduceMotion ? (
+              <GlitchWords text={institutionalLines[0] ?? headline} />
+            ) : (
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={institutionalCurrentLine}
+                  className="block"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <GlitchWords text={institutionalCurrentLine} />
+                </motion.span>
+              </AnimatePresence>
+            )}
+          </Balancer>
+        </h1>
         {orgLine?.trim() ? (
           reduceMotion ? (
             <h2 className={institutionalOrgClass}>

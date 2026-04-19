@@ -12,16 +12,17 @@ import {
 import { dccSiteMeta } from '@/lib/marketing/content';
 import { cn } from '@/lib/utils';
 
-const sizeClass: Record<'header' | 'menu' | 'drawer', string> = {
-  /** Main sticky bar — centered wordmark */
+const sizeClass: Record<'topBar' | 'header' | 'menu' | 'drawer', string> = {
+  /** First row under sticky — centered, matches primary wordmark scale */
+  topBar: 'h-14 w-[15rem] sm:h-16 sm:w-[15rem]',
+  /** Legacy inline bar (unused in two-row header; kept for callers) */
   header: 'h-9 w-[min(100%,13.5rem)] sm:h-11 sm:w-[min(100%,15.5rem)]',
-  /** Compact desktop Menu dropdown */
   menu: 'h-9 w-[min(100%,12rem)]',
-  /** Mobile sheet */
   drawer: 'h-10 w-[min(100%,14rem)]',
 };
 
 const sizesAttr: Record<keyof typeof sizeClass, string> = {
+  topBar: '240px',
   header: '(max-width: 640px) 200px, 248px',
   menu: '192px',
   drawer: '224px',

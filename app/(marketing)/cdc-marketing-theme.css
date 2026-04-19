@@ -334,32 +334,6 @@
   }
 }
 
-/* Sticky header — rotating mono tagline (slight RGB edge, scanline feel) */
-@keyframes cdc-header-slogan-chroma {
-  0%,
-  92%,
-  100% {
-    text-shadow: none;
-  }
-  94% {
-    text-shadow:
-      1px 0 0 rgba(0, 220, 255, 0.35),
-      -1px 0 0 rgba(255, 0, 136, 0.28);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .cdc-marketing .cdc-header-slogan-text {
-    animation: cdc-header-slogan-chroma 6s ease-in-out infinite;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cdc-marketing .cdc-header-slogan-text {
-    animation: none;
-  }
-}
-
 /* Arcade / menu-style hero CTAs */
 .cdc-arcade-primary-btn {
   box-shadow:

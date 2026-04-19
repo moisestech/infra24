@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, Menu } from 'lucide-react';
 import { MarketingHeaderCenterLogo } from '@/components/marketing/MarketingHeaderCenterLogo';
-import { MarketingHeaderSloganBar } from '@/components/marketing/MarketingHeaderSloganBar';
 import {
   dccSiteMeta,
   marketingHeaderApplyCta,
@@ -64,7 +63,10 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--cdc-border)] bg-[#fafafa]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fafafa]/80 dark:border-neutral-700/80 dark:bg-neutral-950/90 dark:supports-[backdrop-filter]:bg-neutral-950/85">
-      <div className="mx-auto grid h-14 max-w-7xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-3 sm:h-16 sm:px-6 lg:gap-3 lg:px-8">
+      <div className="mx-auto flex max-w-7xl justify-center border-b border-[var(--cdc-border)]/70 px-3 py-2 sm:px-6 dark:border-neutral-700/60">
+        <MarketingHeaderCenterLogo size="topBar" priority />
+      </div>
+      <div className="mx-auto grid h-12 max-w-7xl grid-cols-2 items-center gap-2 px-3 sm:h-14 sm:px-6 lg:h-16 lg:gap-3 lg:px-8">
         {/* Left: full nav at 2xl+; compact “Menu” lg–2xl */}
         <div className="flex min-w-0 items-center gap-2 justify-self-start">
           <nav
@@ -109,11 +111,6 @@ export function SiteHeader() {
           </details>
 
           <MarketingThemeToggle className="ml-auto hidden sm:flex lg:hidden" />
-        </div>
-
-        {/* Center: wordmark — dedicated component, horizontally centered in column */}
-        <div className="relative z-20 flex w-full min-w-0 justify-center justify-self-center">
-          <MarketingHeaderCenterLogo size="header" priority />
         </div>
 
         {/* Right: full nav + Apply at 2xl+; Apply + theme lg–2xl */}
@@ -170,8 +167,7 @@ export function SiteHeader() {
                     Menu
                   </SheetTitle>
                   <p className="cdc-font-mono-accent max-w-full text-[10px] font-normal leading-snug tracking-[0.12em] text-neutral-500 dark:text-neutral-400">
-                    Digital taglines rotate in the bar above — same voice, public programs &amp; pilot work in
-                    Miami.
+                    Taglines rotate on the homepage hero — public programs and pilot work in Miami.
                   </p>
                 </div>
               </SheetHeader>
@@ -268,7 +264,6 @@ export function SiteHeader() {
           </Sheet>
         </div>
       </div>
-      <MarketingHeaderSloganBar />
     </header>
   );
 }
