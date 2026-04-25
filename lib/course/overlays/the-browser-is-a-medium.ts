@@ -6,6 +6,8 @@ const P2 =
   'https://images.unsplash.com/photo-1517694712202-3dd5178143fa?w=1200&q=80&auto=format&fit=crop'
 const P3 =
   'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80&auto=format&fit=crop'
+const RAFAEL_ALMOST_THERE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125902/dccmiami/workshops/vibe-coding-net-art/almost-there-rafel-rozenthal-2015_slobsc.jpg'
 
 const starterLinks: TemplateLink[] = [
   { label: 'Open a new CodePen', href: 'https://codepen.io/pen/', kind: 'codepen' },
@@ -71,9 +73,9 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
       },
     ],
     chapterBanner: {
-      src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18d5?w=1800&q=80&auto=format&fit=crop',
-      alt: 'Muted abstract grid suggesting windows and depth — chapter banner placeholder.',
-      caption: 'Swap for anthology frame still, artport capture, or your own slide export.',
+      src: RAFAEL_ALMOST_THERE,
+      alt: 'Browser-based composition reference for Almost There (2015).',
+      caption: 'Rafaël Rozendaal — Almost There (2015) reference.',
     },
     anchorWorks: [
       {
@@ -101,8 +103,8 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
           'A Whitney-commissioned browser work where the page, visibility, and cursor-based interaction become compositional material.',
         institution: 'Whitney Museum of American Art / artport',
         image: {
-          src: P2,
-          alt: 'Placeholder still for Almost There — replace with documentation capture.',
+          src: RAFAEL_ALMOST_THERE,
+          alt: 'Reference still for Almost There showing browser-native composition and cursor behavior.',
         },
         links: [
           { label: 'Whitney exhibition page', href: 'https://whitney.org/exhibitions/rafael-rozendaal' },
@@ -123,6 +125,10 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
         description:
           'A major browser-based artist whose works treat the website itself as pictorial and experiential form.',
         website: 'https://newrafael.com/',
+        image: {
+          src: RAFAEL_ALMOST_THERE,
+          alt: 'Rafaël Rozendaal reference still from Almost There (2015).',
+        },
         tags: ['browser composition', 'site as artwork', 'internet as canvas'],
       },
     ],
@@ -206,9 +212,9 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
         caption: 'Placeholder — replace with rights-cleared capture.',
       },
       {
-        src: P2,
-        alt: 'Chapter 2 anchor image for Almost There',
-        caption: 'Placeholder — replace with rights-cleared capture.',
+        src: RAFAEL_ALMOST_THERE,
+        alt: 'Chapter 2 reference image for Almost There (2015).',
+        caption: 'Whitney / artport context reference.',
       },
       {
         src: P3,

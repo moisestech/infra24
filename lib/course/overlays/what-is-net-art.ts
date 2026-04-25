@@ -1,9 +1,13 @@
 import type { Chapter, TemplateLink } from '@/lib/course/types'
 
-const P1 =
-  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&q=80&auto=format&fit=crop'
-const P2 =
-  'https://images.unsplash.com/photo-1517694712202-3dd5178143fa?w=1200&q=80&auto=format&fit=crop'
+const BANNER =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125564/dccmiami/workshops/vibe-coding-net-art/simple-net-art-diagram-rhizome_zdvktb.jpg'
+const OLIA_FRAME =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125599/dccmiami/workshops/vibe-coding-net-art/olia-lialina-my-boyfriend-came-back-from-war-rhizome_l05f0q.jpg'
+const MBFBFTW_NETSCAPE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125356/dccmiami/workshops/vibe-coding-net-art/mbcbftw-netscape-3_olia-lialina_dvhbug.png'
+const PETRA_MOMA =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125598/dccmiami/workshops/vibe-coding-net-art/petra-cortright-moma_lvnrrn.jpg'
 
 const starterLinks: TemplateLink[] = [
   { label: 'Open a new CodePen', href: 'https://codepen.io/pen/', kind: 'codepen' },
@@ -69,9 +73,9 @@ export function whatIsNetArtAsChapter(): Chapter {
       },
     ],
     chapterBanner: {
-      src: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1800&q=80&auto=format&fit=crop',
-      alt: 'Soft abstract light suggesting a gallery wall and screen glow — chapter banner placeholder.',
-      caption: 'Replace with anthology or artport capture when rights-cleared.',
+      src: BANNER,
+      alt: 'Diagram-style visual introducing net art through browser, network, and link structure.',
+      caption: 'Net Art Anthology context diagram.',
     },
     anchorWorks: [
       {
@@ -82,9 +86,9 @@ export function whatIsNetArtAsChapter(): Chapter {
           'Rhizome’s Net Art Anthology presents this work as foundational: browser frames and sparse text produce a nonlinear narrative through web structure.',
         institution: 'Rhizome Net Art Anthology',
         image: {
-          src: P1,
-          alt: 'Placeholder still for My Boyfriend Came Back from the War — replace with anthology capture.',
-          caption: 'Placeholder — replace with rights-cleared frame still.',
+          src: OLIA_FRAME,
+          alt: 'Still from My Boyfriend Came Back from the War showing frame-based browser composition.',
+          caption: 'Rhizome anthology still.',
         },
         links: [
           { label: 'Anthology (work page)', href: 'https://anthology.rhizome.org/my-boyfriend-came-back-from-the-war' },
@@ -99,8 +103,8 @@ export function whatIsNetArtAsChapter(): Chapter {
           'Anthology presentation of a YouTube-era webcam piece: clip-art and platform-native graphics turn self-presentation into artistic material.',
         institution: 'Rhizome Net Art Anthology',
         image: {
-          src: P2,
-          alt: 'Placeholder still suggesting webcam-era layered graphics — replace with anthology capture.',
+          src: PETRA_MOMA,
+          alt: 'Reference image for Petra Cortright with webcam-era internet vernacular aesthetics.',
         },
         links: [{ label: 'Anthology (work page)', href: 'https://anthology.rhizome.org/vvebcam' }],
       },
@@ -110,12 +114,20 @@ export function whatIsNetArtAsChapter(): Chapter {
         name: 'Olia Lialina',
         description: 'Foundational net artist: browser narrative, frames, and early web aesthetics.',
         website: 'https://art.teleportacia.org/',
+        image: {
+          src: MBFBFTW_NETSCAPE,
+          alt: 'Netscape-era frame from My Boyfriend Came Back from the War.',
+        },
         tags: ['hypertext', 'browser narrative', 'net art canon'],
       },
       {
         name: 'Petra Cortright',
         description: 'Webcam aesthetics, platform-native self-presentation, and internet vernacular as material.',
         website: 'https://www.petrapaulacortright.com/',
+        image: {
+          src: PETRA_MOMA,
+          alt: 'Petra Cortright reference image from museum context.',
+        },
         tags: ['platform-native', 'vernacular', 'digital self-image'],
       },
     ],
@@ -167,6 +179,12 @@ export function whatIsNetArtAsChapter(): Chapter {
     ],
     tools: [
       {
+        name: 'Net Art Anthology',
+        category: 'quick-start',
+        description: 'Primary entry point for canonical web-native works and contextual framing.',
+        website: 'https://anthology.rhizome.org/',
+      },
+      {
         name: 'CodePen',
         category: 'quick-start',
         description: 'Fast path for a one-page definition study in the browser.',
@@ -194,9 +212,14 @@ export function whatIsNetArtAsChapter(): Chapter {
     ],
     imageAssets: [
       {
-        src: P1,
-        alt: 'Chapter still placeholder — anthology mood.',
-        caption: 'Replace with rights-cleared anthology still.',
+        src: OLIA_FRAME,
+        alt: 'My Boyfriend Came Back from the War anthology still.',
+        caption: 'Rhizome anthology reference.',
+      },
+      {
+        src: PETRA_MOMA,
+        alt: 'Petra Cortright museum-context reference image.',
+        caption: 'Platform-native portrait context.',
       },
     ],
     dossierLayout: 'phase',
