@@ -21,7 +21,6 @@ import { NextChapterCard } from '@/components/course/NextChapterCard'
 import { LessonAmbientBackdrop } from '@/components/course/LessonAmbientBackdrop'
 import { GettingStartedOfficialHubs } from '@/components/course/GettingStartedOfficialHubs'
 import { LessonFullReadingCard } from '@/components/course/LessonFullReadingCard'
-import { LessonImageAssetStrip } from '@/components/course/LessonImageAssetStrip'
 import { LessonChapterBanner } from '@/components/course/LessonChapterBanner'
 import { VibecodingInThisChapterCard } from '@/components/course/VibecodingInThisChapterCard'
 import { PromptingTipCard } from '@/components/course/PromptingTipCard'
@@ -212,7 +211,6 @@ export function VcnVibeNetArtLesson({
           ...(showReaderAtAGlance ? [{ id: 'reader-at-a-glance', label: 'At a glance' }] : []),
           ...(overlay.makingPreview?.length ? [{ id: 'what-you-are-making', label: "What you're making" }] : []),
           ...(overlay.anchorWorks.length > 0 ? [{ id: 'anchor-works', label: 'Anchor works' }] : []),
-          ...(overlay.imageAssets.length > 0 ? [{ id: 'chapter-media', label: 'Chapter media' }] : []),
           { id: 'full-reading', label: 'Full chapter reading' },
         ],
       },
@@ -386,7 +384,6 @@ export function VcnVibeNetArtLesson({
                   presentation={presentation}
                   components={studioSpecsAfterConceptsCore(enrichment)}
                 />
-                <LessonImageAssetStrip assets={overlay.imageAssets} />
                 <ChapterSpecificComponentRenderer
                   presentation={presentation}
                   components={studioSpecsPageAsSpaceOnly(enrichment)}
@@ -413,7 +410,6 @@ export function VcnVibeNetArtLesson({
               </>
             ) : (
               <>
-                <LessonImageAssetStrip assets={overlay.imageAssets} />
                 <LessonFullReadingCard html={diskChapter.html} variant="overlay" />
                 <div className="space-y-6">
                   {overlay.sections.map((s) => (

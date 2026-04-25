@@ -8,6 +8,8 @@ const MBFBFTW_NETSCAPE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125356/dccmiami/workshops/vibe-coding-net-art/mbcbftw-netscape-3_olia-lialina_dvhbug.png'
 const RHIZOME_ANTHOLOGY_LANDSCAPE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128953/dccmiami/workshops/vibe-coding-net-art/rhizome-net-art-anthology-landscape_agltis.webp'
+const MICHAEL_CONNOR_PFP =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777129047/dccmiami/workshops/vibe-coding-net-art/MichaelConnor_PhotobyScottRudd_cqgyau.webp'
 
 /** Chapter 3 — hypertext as narrative structure; Olia Lialina / MBFBFTW + Rhizome + Tate spines. */
 export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
@@ -149,6 +151,10 @@ export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
         description:
           'Rhizome’s interpretive essay on *My Boyfriend Came Back from the War* is a clear reading of how browser frames, fragmentation, and clicking become emotional narrative form.',
         website: 'https://rhizome.org/editorial/2016/nov/10/my-boyfriend-came-back-from-the-war/',
+        image: {
+          src: MICHAEL_CONNOR_PFP,
+          alt: 'Portrait photo of Michael Connor used for curator lens context.',
+        },
       },
     ],
     books: [
