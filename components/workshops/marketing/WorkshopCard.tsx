@@ -8,6 +8,7 @@ import { getDccWorkshopPublicPath, getWorkshopPublicPath } from '@/lib/workshops
 import { workshopTrackLabel } from '@/lib/workshops/track-labels'
 import { WorkshopMediaPlaceholder } from './WorkshopMediaPlaceholder'
 import { workshopCategoryLabel } from './workshop-category-labels'
+import { resolveWorkshopHeroImageUrl } from '@/lib/workshops/workshop-visual-image'
 import { cn } from '@/lib/utils'
 
 function formatDuration(minutes?: number | null) {
@@ -40,6 +41,7 @@ export function WorkshopCard({
     workshop.outcomes && workshop.outcomes[0] ? workshop.outcomes[0] : null
   const trackLabel = workshopTrackLabel(m.track)
   const categoryLabel = workshopCategoryLabel(workshop.category)
+  const cardImageUrl = resolveWorkshopHeroImageUrl(workshop, m)
 
   const card = (
       <Card
@@ -59,10 +61,10 @@ export function WorkshopCard({
               <span className="sr-only">Opens workshop materials in a new tab</span>
               <span className="text-xs font-medium text-muted-foreground">Opens in new tab</span>
             </div>
-          ) : workshop.image_url ? (
+          ) : cardImageUrl ? (
             <>
               <img
-                src={workshop.image_url}
+                src={cardImageUrl}
                 alt=""
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               />

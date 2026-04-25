@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@clerk/nextjs'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,6 +11,7 @@ import { ArrowLeft, FileText, GraduationCap, Star } from 'lucide-react'
 import { mergeWorkshopMetadata } from '@/lib/workshops/marketing-metadata'
 import { getDccMarketingWorkshopsLandingContent } from '@/lib/marketing/dcc-workshops-landing-content'
 import { WorkshopHero } from '@/components/workshops/marketing/WorkshopHero'
+import { WorkshopSkillsYoullLearn } from '@/components/workshops/marketing/WorkshopSkillsYoullLearn'
 import { WorkshopOutcomeStrip } from '@/components/workshops/marketing/WorkshopOutcomeStrip'
 import { WorkshopAudienceSplit } from '@/components/workshops/marketing/WorkshopAudienceSplit'
 import { WorkshopCtaBand } from '@/components/workshops/marketing/WorkshopCtaBand'
@@ -22,12 +24,23 @@ import { WorkshopDetailMainColumn } from '@/components/workshops/marketing/Works
 import { WORKSHOP_CATALOG_ORG_SLUG } from '@/lib/marketing/workshops-catalog-org'
 import { normalizeWorkshopForCatalog } from '@/lib/workshops/normalize-workshop-for-catalog'
 import { isExcludedFromDccPublicCatalog } from '@/lib/workshops/workshop-filters'
+import {
+  workshopDiskChapterFolderSlug,
+  workshopSlugHasPublicMarkdownChapters,
+} from '@/lib/workshops/public-chapter-slugs'
+import {
+  resolveWorkshopHeroBannerImageUrl,
+  workshopGalleryThumbsExcludingHero,
+} from '@/lib/workshops/workshop-visual-image'
+import { resolveWorkshopEnrollCta } from '@/lib/workshops/workshop-enroll-cta'
+import { getWorkshopSkillsYoullLearn } from '@/lib/workshops/workshop-skills-list'
 
 function signInRedirect(path: string) {
   return `/sign-in?redirect_url=${encodeURIComponent(path)}`
 }
 
 export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }) {
+  const { isSignedIn } = useAuth()
   const slug = WORKSHOP_CATALOG_ORG_SLUG
   const [workshop, setWorkshop] = useState<WorkshopRow | null>(null)
   const [relatedList, setRelatedList] = useState<WorkshopRow[]>([])
@@ -134,6 +147,7 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
     title: workshop.title,
     id: workshop.id,
   })
+  const workshopUrlKey = marketing.slug || workshopKey
 
   const levelLabel = workshop.level || workshop.learn_difficulty || 'beginner'
   const outcomes =
@@ -143,7 +157,28 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
   const bookHref = signInRedirect(orgBookPath)
 
   const isLearnAi = isLearnAiWorkshopSlug(workshopKey) || isLearnAiWorkshopSlug(marketing.slug)
-  const showLearnTabs = Boolean(workshop.has_learn_content) || isLearnAi
+  const hasPublicMarkdownChapters = workshopSlugHasPublicMarkdownChapters(marketing.slug)
+  const showLearnTabs =
+    Boolean(workshop.has_learn_content) || isLearnAi || hasPublicMarkdownChapters
+
+  const listPriceUsd =
+    typeof marketing.publicListPriceUsd === 'number'
+      ? marketing.publicListPriceUsd
+      : workshop.price != null && workshop.price > 0
+        ? workshop.price
+        : null
+  const ooliteRegistrationUsd = marketing.ooliteRegistrationUsd
+
+  const bannerImageUrl = resolveWorkshopHeroBannerImageUrl(workshop, marketing)
+  const galleryThumbs = workshopGalleryThumbsExcludingHero(marketing, bannerImageUrl)
+
+  const enrollCta = resolveWorkshopEnrollCta(marketing, bookHref, {
+    workshopId: workshop.id,
+    isSignedIn: Boolean(isSignedIn),
+    orgSlug: slug,
+    workshopUrlKey,
+  })
+  const skillsList = getWorkshopSkillsYoullLearn(marketing, workshop)
 
   const segment = marketing.slug || workshopKey
   const packetMemberPath = `/o/${slug}/workshops/${encodeURIComponent(segment)}/packet`
@@ -176,11 +211,20 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
             <LearnAiLanding orgSlug={slug} workshopTitle={workshop.title} />
           ) : (
             <>
-              <WorkshopHero workshop={workshop} marketing={marketing} levelLabel={levelLabel} />
+              <WorkshopHero
+                workshop={workshop}
+                marketing={marketing}
+                levelLabel={levelLabel}
+                enrollCta={enrollCta}
+              />
 
-              {marketing.galleryImageUrls && marketing.galleryImageUrls.length > 0 && (
+              {skillsList.length > 0 ? (
+                <WorkshopSkillsYoullLearn skills={skillsList} />
+              ) : null}
+
+              {galleryThumbs.length > 0 && (
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                  {marketing.galleryImageUrls.map((url, i) => (
+                  {galleryThumbs.map((url, i) => (
                     <div key={i} className="aspect-square overflow-hidden rounded-lg bg-muted">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={url} alt="" className="h-full w-full object-cover" />
@@ -223,6 +267,25 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
                 <p className="mb-4 text-sm text-muted-foreground">
                   Learn content and progress sync when you sign in to your member account.
                 </p>
+                {hasPublicMarkdownChapters ? (
+                  <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-neutral-800 dark:border-primary/25 dark:bg-primary/10 dark:text-neutral-100">
+                    <span className="font-medium">Course handbook</span> — sequence, modules, tools, and glossary
+                    in one place:{' '}
+                    <Link
+                      className="font-semibold text-primary underline-offset-4 hover:underline"
+                      href={`/workshop/${encodeURIComponent(workshopDiskChapterFolderSlug(marketing.slug))}/`}
+                    >
+                      open handbook
+                    </Link>
+                    {' · '}
+                    <Link
+                      className="font-semibold text-primary underline-offset-4 hover:underline"
+                      href={`/workshop/${encodeURIComponent(workshopDiskChapterFolderSlug(marketing.slug))}/glossary`}
+                    >
+                      glossary
+                    </Link>
+                  </div>
+                ) : null}
                 <WorkshopLearnTab workshop={workshop} orgSlug={slug} />
               </TabsContent>
             </Tabs>
@@ -247,12 +310,39 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
                 <span className="text-muted-foreground">Status</span>
                 <Badge variant="secondary">{workshop.status ?? '—'}</Badge>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Price</span>
-                <span className="font-medium">
-                  {workshop.price === 0 || workshop.price == null ? 'Free' : `$${workshop.price}`}
-                </span>
-              </div>
+              {listPriceUsd != null && listPriceUsd > 0 ? (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Public list</span>
+                  <span className="font-medium">${listPriceUsd}</span>
+                </div>
+              ) : (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Price</span>
+                  <span className="font-medium">
+                    {workshop.price === 0 || workshop.price == null ? 'Free' : `$${workshop.price}`}
+                  </span>
+                </div>
+              )}
+              {ooliteRegistrationUsd != null && ooliteRegistrationUsd > 0 ? (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Oolite members</span>
+                  <span className="font-medium">${ooliteRegistrationUsd}</span>
+                </div>
+              ) : null}
+              {marketing.alumniCouponCode ? (
+                <div className="rounded-md border border-dashed border-muted-foreground/30 bg-muted/40 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+                  <span className="font-medium text-foreground">Alumni coupon </span>
+                  <span className="font-mono text-foreground">{marketing.alumniCouponCode}</span>
+                  {marketing.alumniCouponShortNote ? (
+                    <p className="mt-1">{marketing.alumniCouponShortNote}</p>
+                  ) : (
+                    <p className="mt-1">
+                      Enter this code on the Oolite registration or ticketing page at checkout (50%
+                      off member pricing).
+                    </p>
+                  )}
+                </div>
+              ) : null}
               {workshop.featured && (
                 <div className="flex items-center gap-1 text-amber-600">
                   <Star className="h-4 w-4" />

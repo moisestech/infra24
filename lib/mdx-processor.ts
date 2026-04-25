@@ -1,10 +1,14 @@
 import matter from 'gray-matter'
-import { remark } from 'remark'
-import remarkGfm from 'remark-gfm'
-import { rehype } from 'rehype'
 import rehypeHighlight from 'rehype-highlight'
+import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
+import rehypeStringify from 'rehype-stringify'
 import rehypeToc from 'rehype-toc'
+import remarkGfm from 'remark-gfm'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import { unified } from 'unified'
+import { rehypeExternalLessonLinks } from '@/lib/workshops/rehype-external-lesson-links'
 
 export interface ProcessedMDX {
   content: string
@@ -13,38 +17,36 @@ export interface ProcessedMDX {
 }
 
 export class MDXProcessor {
-  private processor = remark()
-    .use(remarkGfm)
-
-  private rehypeProcessor = rehype()
-    .use(rehypeHighlight)
-    .use(rehypeSlug)
-    .use(rehypeToc as any, {
-      headings: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-      cssClasses: {
-        toc: 'toc',
-        link: 'toc-link',
-        list: 'toc-list',
-        listItem: 'toc-list-item',
-      },
-    })
-
   async processMDX(content: string): Promise<ProcessedMDX> {
     try {
-      // Parse frontmatter
       const { data: metadata, content: mdxContent } = matter(content)
-      
-      // Process markdown to HTML
-      const processed = await this.processor.process(mdxContent)
-      const html = await this.rehypeProcessor.process(processed)
-      
-      // Generate table of contents
+
+      const file = await unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkRehype, { allowDangerousHtml: true })
+        .use(rehypeRaw)
+        .use(rehypeHighlight)
+        .use(rehypeSlug)
+        .use(rehypeToc as any, {
+          headings: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+          cssClasses: {
+            toc: 'toc',
+            link: 'toc-link',
+            list: 'toc-list',
+            listItem: 'toc-list-item',
+          },
+        })
+        .use(rehypeExternalLessonLinks)
+        .use(rehypeStringify)
+        .process(mdxContent)
+
       const toc = this.generateTableOfContents(mdxContent)
-      
+
       return {
-        content: html.toString(),
+        content: String(file),
         metadata: metadata || {},
-        toc
+        toc,
       }
     } catch (error) {
       console.error('Error processing MDX:', error)
@@ -61,7 +63,7 @@ export class MDXProcessor {
       const level = match[1].length
       const text = match[2].trim()
       const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-      
+
       toc.push({ id, text, level })
     }
 

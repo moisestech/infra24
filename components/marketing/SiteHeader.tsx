@@ -2,7 +2,17 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Menu } from 'lucide-react';
+import {
+  Flag,
+  GraduationCap,
+  HeartHandshake,
+  Info,
+  LayoutGrid,
+  Mail,
+  Menu,
+  Share2,
+  type LucideIcon,
+} from 'lucide-react';
 import { MarketingHeaderCenterLogo } from '@/components/marketing/MarketingHeaderCenterLogo';
 import {
   dccSiteMeta,
@@ -12,9 +22,11 @@ import {
   marketingNavSheetFooterHrefs,
   marketingNavSheetGroups,
   navItems,
+  type MarketingHeaderNavIconKey,
 } from '@/lib/marketing/content';
 import { MarketingThemeToggle } from '@/components/marketing/MarketingThemeToggle';
 import { cn } from '@/lib/utils';
+import Tooltip from '@/components/ui/Tooltip';
 import {
   Sheet,
   SheetClose,
@@ -28,11 +40,15 @@ function navItemByHref(href: string) {
   return navItems.find((item) => item.href === href);
 }
 
-/** Mid-width desktop: same destinations as the split bar, for the compact Menu panel. */
-const marketingHeaderNavMidMenuLinks = [
-  ...marketingHeaderNavLeft,
-  ...marketingHeaderNavRight,
-] as const;
+const marketingHeaderNavIconMap: Record<MarketingHeaderNavIconKey, LucideIcon> = {
+  info: Info,
+  'layout-grid': LayoutGrid,
+  'graduation-cap': GraduationCap,
+  flag: Flag,
+  'share-2': Share2,
+  handshake: HeartHandshake,
+  mail: Mail,
+};
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -45,111 +61,61 @@ export function SiteHeader() {
         : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:hover:text-neutral-100'
     );
 
-  const desktopLinkClass = (href: string) =>
+  const iconNavLinkClass = (href: string) =>
     cn(
-      'cdc-font-display whitespace-nowrap rounded-md px-2 py-1.5 text-sm font-medium transition-colors',
-      pathname === href
-        ? 'text-neutral-900 dark:text-neutral-100'
-        : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
+      'inline-flex h-10 w-10 items-center justify-center rounded-md transition-colors',
+      pathname === href || (href !== '/' && pathname.startsWith(href))
+        ? 'bg-neutral-200 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
+        : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:hover:text-neutral-100'
     );
 
-  const desktopMenuPanelLinkClass = (href: string) =>
-    cn(
-      'cdc-font-display block rounded-md px-3 py-2 text-sm font-medium transition-colors',
-      pathname === href
-        ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
-        : 'text-neutral-700 hover:bg-neutral-50 dark:text-neutral-200 dark:hover:bg-neutral-800/80'
-    );
+  const desktopApplyClass =
+    'whitespace-nowrap rounded-full border border-neutral-900 bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:opacity-95';
+
+  const headerNavEntries = [...marketingHeaderNavLeft, ...marketingHeaderNavRight] as const;
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--cdc-border)] bg-[#fafafa]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fafafa]/80 dark:border-neutral-700/80 dark:bg-neutral-950/90 dark:supports-[backdrop-filter]:bg-neutral-950/85">
       <div className="mx-auto flex max-w-7xl justify-center border-b border-[var(--cdc-border)]/70 px-3 py-2 sm:px-6 dark:border-neutral-700/60">
         <MarketingHeaderCenterLogo size="topBar" priority />
       </div>
-      <div className="mx-auto grid h-12 max-w-7xl grid-cols-2 items-center gap-2 px-3 sm:h-14 sm:px-6 lg:h-16 lg:gap-3 lg:px-8">
-        {/* Left: full nav at 2xl+; compact “Menu” lg–2xl */}
-        <div className="flex min-w-0 items-center gap-2 justify-self-start">
-          <nav
-            className="cdc-font-display hidden min-w-0 items-center gap-x-1 xl:gap-x-3 2xl:flex"
-            aria-label="Site sections"
-          >
-            {marketingHeaderNavLeft.map(({ href, label }) => (
-              <Link key={href} href={href} className={desktopLinkClass(href)}>
-                {label}
-              </Link>
-            ))}
-          </nav>
-
-          <details className="relative hidden lg:block 2xl:hidden">
-            <summary
-              className="cdc-font-display flex cursor-pointer list-none items-center gap-1 rounded-md border border-[var(--cdc-border)] bg-white/90 px-3 py-1.5 text-sm font-medium text-neutral-800 shadow-sm marker:hidden hover:bg-white dark:border-neutral-600 dark:bg-neutral-900/80 dark:text-neutral-200 dark:hover:bg-neutral-800 [&::-webkit-details-marker]:hidden"
-              aria-label="Open pages menu"
-            >
-              Menu
-              <ChevronDown className="h-4 w-4 shrink-0 opacity-70" aria-hidden />
-            </summary>
-            <div
-              className="absolute left-0 z-50 mt-1 min-w-[14rem] rounded-lg border border-[var(--cdc-border)] bg-white py-1.5 shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
-              role="menu"
-            >
-              <div className="border-b border-neutral-100 px-3 py-3 dark:border-neutral-700">
-                <MarketingHeaderCenterLogo size="menu" priority={false} className="mx-auto" />
-              </div>
-              {marketingHeaderNavMidMenuLinks.map(({ href, label }) => (
-                <Link key={href} href={href} className={desktopMenuPanelLinkClass(href)} role="menuitem">
-                  {label}
+      <div className="mx-auto flex h-12 max-w-7xl w-full items-center justify-between gap-2 px-3 sm:h-14 sm:px-6 lg:h-16 lg:gap-3 lg:px-8">
+        <nav
+          className="cdc-font-display mr-auto hidden min-w-0 items-center gap-0.5 md:flex"
+          aria-label="Site sections"
+        >
+          {headerNavEntries.map(({ href, label, icon }) => {
+            const Icon = marketingHeaderNavIconMap[icon];
+            return (
+              <Tooltip key={href} content={label} position="bottom">
+                <Link
+                  href={href}
+                  className={iconNavLinkClass(href)}
+                  aria-label={label}
+                  aria-current={pathname === href ? 'page' : undefined}
+                >
+                  <Icon className="h-5 w-5 shrink-0" aria-hidden />
                 </Link>
-              ))}
-              <Link
-                href={marketingHeaderApplyCta.href}
-                className="cdc-font-display mt-1 block border-t border-neutral-100 px-3 py-2.5 text-sm font-semibold text-neutral-900 dark:border-neutral-700 dark:text-neutral-100"
-                role="menuitem"
-              >
-                {marketingHeaderApplyCta.label}
-              </Link>
-            </div>
-          </details>
+              </Tooltip>
+            );
+          })}
+        </nav>
 
-          <MarketingThemeToggle className="ml-auto hidden sm:flex lg:hidden" />
-        </div>
+        <div className="ml-auto flex min-w-0 items-center justify-end gap-2 sm:gap-3 md:ml-0">
+          <Link href={marketingHeaderApplyCta.href} className={cn(desktopApplyClass, 'hidden sm:inline-flex')}>
+            {marketingHeaderApplyCta.label}
+          </Link>
 
-        {/* Right: full nav + Apply at 2xl+; Apply + theme lg–2xl */}
-        <div className="flex min-w-0 items-center justify-end justify-self-end gap-2 sm:gap-3">
-          <nav
-            className="cdc-font-display hidden min-w-0 items-center gap-x-1 xl:gap-x-3 2xl:flex"
-            aria-label="More pages"
-          >
-            {marketingHeaderNavRight.map(({ href, label }) => (
-              <Link key={href} href={href} className={desktopLinkClass(href)}>
-                {label}
-              </Link>
-            ))}
-            <Link
-              href={marketingHeaderApplyCta.href}
-              className="whitespace-nowrap rounded-full border border-neutral-900 bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:opacity-95"
-            >
-              {marketingHeaderApplyCta.label}
-            </Link>
-          </nav>
+          <MarketingThemeToggle className="hidden md:flex" />
 
-          <div className="hidden items-center gap-2 lg:flex 2xl:hidden">
-            <Link
-              href={marketingHeaderApplyCta.href}
-              className="whitespace-nowrap rounded-full border border-neutral-900 bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:opacity-95"
-            >
-              {marketingHeaderApplyCta.label}
-            </Link>
-          </div>
-
-          <MarketingThemeToggle className="hidden lg:flex" />
           <Sheet>
             <SheetTrigger asChild>
               <button
                 type="button"
-                className="inline-flex h-12 w-12 items-center justify-center rounded-md border border-[var(--cdc-border)] bg-white/80 text-neutral-800 shadow-sm transition-colors hover:bg-white hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)] focus-visible:ring-offset-2 dark:border-neutral-600 dark:bg-neutral-900/80 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-offset-neutral-950 lg:hidden"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-[var(--cdc-border)] bg-white/80 text-neutral-800 shadow-sm transition-colors hover:bg-white hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)] focus-visible:ring-offset-2 dark:border-neutral-600 dark:bg-neutral-900/80 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-offset-neutral-950 md:hidden"
                 aria-label="Open menu"
               >
-                <Menu className="h-10 w-10" aria-hidden />
+                <Menu className="h-5 w-5" aria-hidden />
               </button>
             </SheetTrigger>
             <SheetContent

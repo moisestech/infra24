@@ -5,7 +5,6 @@ import { NavigationBrand } from './NavigationBrand'
 import { NavigationMenu } from './NavigationMenu'
 import { AdminTools } from './AdminTools'
 import { UserMenu } from './UserMenu'
-import { MobileMenu } from './MobileMenu'
 
 export function UnifiedNavigation({ 
   config, 
@@ -82,39 +81,19 @@ export function UnifiedNavigation({
       className={`bg-white dark:bg-gray-900 shadow-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 ${className}`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          {/* Brand */}
-          <NavigationBrand organization={organization} />
+        <div className="flex h-16 items-center justify-between gap-2">
+          <NavigationBrand organization={organization} className="min-w-0 shrink-0" />
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {/* User Navigation */}
-            <NavigationMenu 
-              items={filteredUserItems} 
-              colors={colors}
-            />
-
-            {/* Admin Tools */}
-            {features.adminTools && (
-              <AdminTools 
-                items={filteredAdminItems} 
-                colors={colors}
-                userRole={userRole}
-              />
-            )}
-
-            {/* User Menu */}
+          {/* Icon rail — all breakpoints (scroll on small screens) */}
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-1">
+            <div className="flex min-w-0 max-w-full flex-1 justify-end overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <NavigationMenu items={filteredUserItems} colors={colors} />
+            </div>
+            {features.adminTools ? (
+              <AdminTools items={filteredAdminItems} colors={colors} userRole={userRole} />
+            ) : null}
             <UserMenu colors={colors} />
           </div>
-
-          {/* Mobile Menu */}
-          <MobileMenu
-            organization={organization}
-            userItems={filteredUserItems}
-            adminItems={filteredAdminItems}
-            colors={colors}
-            userRole={userRole}
-          />
         </div>
       </div>
     </nav>

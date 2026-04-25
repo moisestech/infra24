@@ -1,54 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { mdxProcessor } from '@/lib/mdx-processor'
-import fs from 'fs'
-import path from 'path'
+import { loadDiskChapterMarkdown } from '@/lib/workshops/workshop-disk-chapters'
+import { resolveLearnWorkshopFolderSlug } from '@/lib/workshops/learn-workshop-folder-slug'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { workshopId: string; chapterSlug: string } }
+  _request: NextRequest,
+  { params }: { params: Promise<{ workshopId: string; chapterSlug: string }> }
 ) {
   try {
-    const { workshopId, chapterSlug } = params
-
-    // Construct the file path
-    const filePath = path.join(
-      process.cwd(),
-      'content',
-      'workshops',
-      workshopId,
-      'chapters',
-      `${chapterSlug}.md`
-    )
-
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
+    const { workshopId, chapterSlug } = await params
+    if (!workshopId?.trim() || !chapterSlug?.trim()) {
       return NextResponse.json(
-        { error: 'Chapter not found' },
-        { status: 404 }
+        { error: 'Workshop ID and chapter slug are required' },
+        { status: 400 }
       )
     }
 
-    // Read the file
-    const fileContent = fs.readFileSync(filePath, 'utf8')
+    const resolved = await resolveLearnWorkshopFolderSlug(workshopId)
+    if (!resolved) {
+      return NextResponse.json({ error: 'Workshop not found' }, { status: 404 })
+    }
 
-    // Process the MDX content
-    const processed = await mdxProcessor.processMDX(fileContent)
+    const disk = await loadDiskChapterMarkdown(resolved.folderSlug, chapterSlug)
+    if (!disk) {
+      return NextResponse.json({ error: 'Chapter not found' }, { status: 404 })
+    }
+
+    const processed = await mdxProcessor.processMDX(disk.raw)
 
     return NextResponse.json({
       success: true,
       data: {
         workshopId,
+        folderSlug: resolved.folderSlug,
+        workshopTitle: resolved.workshopTitle,
         chapterSlug,
-        ...processed
-      }
+        ...processed,
+      },
     })
   } catch (error) {
-    console.error('Error fetching chapter:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch chapter' },
-      { status: 500 }
-    )
+    console.error('Error fetching learn chapter:', error)
+    return NextResponse.json({ error: 'Failed to fetch chapter' }, { status: 500 })
   }
 }

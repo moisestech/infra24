@@ -7,8 +7,14 @@ function isPublicRoute(pathname: string): boolean {
   /** DCC public workshop catalog (published listings only on the page). */
   if (pathname === '/workshops' || pathname.startsWith('/workshops/')) return true
 
+  /** Public workshop reader chapters: canonical `/workshop/{slug}/{chapter}`. */
+  if (pathname === '/workshop' || pathname.startsWith('/workshop/')) return true
+
   /** Tenant workshop UI under `/o/{org}/workshops` requires sign-in (full catalog, drafts, digital-lab tools). */
   if (/^\/o\/[^/]+\/workshops(\/.*)?$/.test(pathname)) return false
+
+  /** Org-scoped reader chapters under `/o/{org}/workshop/.../chapters/...` require sign-in. */
+  if (/^\/o\/[^/]+\/workshop(\/.*)?$/.test(pathname)) return false
 
   /** Other org tenant surfaces stay public unless individually protected elsewhere. */
   if (pathname === '/o' || pathname.startsWith('/o/')) return true

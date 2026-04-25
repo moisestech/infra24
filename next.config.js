@@ -140,6 +140,31 @@ const nextConfig = {
         destination: '/programs/artist-support/digital-audits',
         permanent: true,
       },
+      {
+        source: '/workshops/vibe-coding-net-art',
+        destination: '/workshops/vibe-coding-and-net-art',
+        permanent: true,
+      },
+      {
+        source: '/workshops/vibe-coding-net-art/:path*',
+        destination: '/workshops/vibe-coding-and-net-art/:path*',
+        permanent: true,
+      },
+      {
+        source: '/learn/getting-started-with-vibecoding',
+        destination: '/workshop/vibe-coding-and-net-art/chapters/getting-started-with-vibecoding',
+        permanent: false,
+      },
+      {
+        source: '/learn/what-is-net-art',
+        destination: '/workshop/vibe-coding-and-net-art/chapters/what-is-net-art',
+        permanent: false,
+      },
+      {
+        source: '/learn/the-browser-as-medium',
+        destination: '/workshop/vibe-coding-and-net-art/chapters/the-browser-is-a-medium',
+        permanent: false,
+      },
     ];
   },
 

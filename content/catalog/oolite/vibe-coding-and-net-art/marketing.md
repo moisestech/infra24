@@ -1,6 +1,6 @@
 ---
-slug: vibe-coding-net-art
-title: Vibe-coding with Net Art
+slug: vibe-coding-and-net-art
+title: Vibe Coding & Net Art
 description: >-
   Use contemporary AI-assisted workflows to sketch, prototype, and publish small
   net art pieces—without losing authorship or critical intent.
@@ -8,7 +8,8 @@ category: creative_coding_net_art
 level: beginner
 duration_minutes: 180
 max_participants: 16
-price: 0
+has_learn_content: true
+price: 90
 instructor: Digital Lab
 outcomes:
   - Ship a small browser-based sketch or micro-site
@@ -29,7 +30,14 @@ relatedSlugs:
   - organizing-digital-studio
   - documentation-for-artists
 metadata:
-  slug: vibe-coding-net-art
+  slug: vibe-coding-and-net-art
+  heroTitle: Vibe Coding & Net Art
+  publicListPriceUsd: 90
+  ooliteRegistrationUsd: 45
+  alumniCouponCode: OOLITE-ALUMNI-50
+  alumniCouponShortNote: >-
+    Oolite alumni save 50% at checkout—enter the coupon code on the registration
+    or ticketing page when you book through Oolite.
   track: creative_coding
   catalog: digital_lab
   releaseStatus: in_development
@@ -39,6 +47,8 @@ metadata:
   websiteReadiness: needs_build
   resourcesAvailability: packet_available
   buildPriority: 6
+  headerImageUrl: >-
+    https://res.cloudinary.com/dkod1at3i/image/upload/v1776612065/vibe-code-and-net-art_mx7emv.webp
   galleryImageUrls:
     - >-
       https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525117/dccmiami/workshops/vibe-coding-with-net-art_dtead3.png
@@ -46,6 +56,18 @@ metadata:
   shortDescription: >-
     Prototype net art with AI-assisted workflows while keeping authorship
     visible.
+  catalogContentUpdatedAt: '2026-04-19'
+  skillsYoullLearn:
+    - Structure and edit HTML/CSS from starter templates
+    - Run a tight vibe-coding loop (sketch, refine, document)
+    - Pair AI assistants with clear authorship and disclosure
+    - Ship a small static sketch or micro-site to the public web
+    - Capture prompts, commits, and decisions for portfolio context
+    - Give and receive critique on browser-based work
+    - Map your piece to net art histories and ethics (compact lens)
+    - Choose lightweight hosting and shareable URLs
+    - Draft portfolio language for net-native projects
+    - Apply basic accessibility and performance checks before publishing
   format: hybrid
   audienceTags:
     - individual_artists

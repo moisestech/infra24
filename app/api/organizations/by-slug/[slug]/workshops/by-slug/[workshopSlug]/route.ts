@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { workshopMarketingSlugLookupKeys } from '@/lib/workshops/workshop-metadata-slug-aliases'
 
 export const dynamic = 'force-dynamic'
 
@@ -28,11 +29,14 @@ export async function GET(
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 })
     }
 
+    const slugKeys = workshopMarketingSlugLookupKeys(workshopSlug)
+    const orFilter = slugKeys.map((k) => `metadata->>slug.eq.${k}`).join(',')
+
     const { data: rows, error } = await supabase
       .from('workshops')
       .select('*')
       .eq('organization_id', org.id)
-      .eq('metadata->>slug', workshopSlug)
+      .or(orFilter)
       .limit(1)
 
     if (error) {

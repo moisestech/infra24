@@ -12,6 +12,9 @@ interface TooltipProps {
 export default function Tooltip({ content, children, position = 'top', className = '' }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false)
 
+  const show = () => setIsVisible(true)
+  const hide = () => setIsVisible(false)
+
   const positionClasses = {
     top: 'bottom-full left-1/2 transform -translate-x-1/2 mb-2',
     bottom: 'top-full left-1/2 transform -translate-x-1/2 mt-2',
@@ -27,17 +30,22 @@ export default function Tooltip({ content, children, position = 'top', className
   }
 
   return (
-    <div 
-      className={`relative group ${className}`}
-      onMouseEnter={() => setIsVisible(true)}
-      onMouseLeave={() => setIsVisible(false)}
+    <div
+      className={`relative ${className}`}
+      onMouseEnter={show}
+      onMouseLeave={hide}
+      onFocusCapture={show}
+      onBlurCapture={hide}
     >
       {children}
-      <div 
-        className={`absolute ${positionClasses[position]} px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10`}
+      <div
+        className={`pointer-events-none absolute z-50 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white transition-opacity ${
+          positionClasses[position]
+        } ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        role="tooltip"
       >
         {content}
-        <div className={arrowClasses[position]}></div>
+        <div className={arrowClasses[position]} />
       </div>
     </div>
   )

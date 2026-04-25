@@ -24,7 +24,7 @@ status: published
 is_active: true
 is_public: true
 relatedSlugs:
-  - vibe-coding-net-art
+  - vibe-coding-and-net-art
   - ai-copyright-creative-risk
   - writing-about-digital-practice
 metadata:
@@ -38,6 +38,8 @@ metadata:
   websiteReadiness: ready
   resourcesAvailability: packet_available
   buildPriority: 5
+  headerImageUrl: >-
+    https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525106/dccmiami/workshops/ai-for-artists_dnwikc.png
   galleryImageUrls:
     - >-
       https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525106/dccmiami/workshops/ai-for-artists_dnwikc.png

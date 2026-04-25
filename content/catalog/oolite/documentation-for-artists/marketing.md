@@ -37,6 +37,8 @@ metadata:
   websiteReadiness: ready
   resourcesAvailability: packet_available
   buildPriority: 4
+  headerImageUrl: >-
+    https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525110/dccmiami/workshops/documentation-for-artitsts_akddqm.png
   galleryImageUrls:
     - >-
       https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525110/dccmiami/workshops/documentation-for-artitsts_akddqm.png

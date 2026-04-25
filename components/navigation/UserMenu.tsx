@@ -2,8 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useUser, SignOutButton } from '@clerk/nextjs'
-import { ChevronDown, User, Settings, LogOut, Sun, Moon } from 'lucide-react'
+import { ChevronDown, User, Settings, LogOut, Sun, Moon, LogIn } from 'lucide-react'
+import Tooltip from '@/components/ui/Tooltip'
 import { ThemeColors } from './types'
 import { useTheme } from '@/contexts/ThemeContext'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -19,7 +21,6 @@ export function UserMenu({ colors, className = '' }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -35,99 +36,111 @@ export function UserMenu({ colors, className = '' }: UserMenuProps) {
 
   if (!isLoaded || !user) {
     return (
-      <div className={`flex items-center space-x-2 ${className}`}>
+      <div className={`flex shrink-0 items-center gap-1 ${className}`}>
         <span className="text-gray-700 dark:text-gray-200 [&_button]:text-current">
           <ThemeToggle />
         </span>
-        <Link
-          href="/sign-in"
-          className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
-          style={{ color: 'inherit' }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = colors.primary
-            e.currentTarget.style.color = 'white'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent'
-            e.currentTarget.style.color = ''
-          }}
-        >
-          Sign In
-        </Link>
+        <Tooltip content="Sign in" position="bottom">
+          <Link
+            href="/sign-in"
+            className="flex size-9 items-center justify-center rounded-md text-sm font-medium text-gray-700 transition-colors dark:text-gray-300 sm:size-10"
+            style={{ color: 'inherit' }}
+            aria-label="Sign in"
+            title="Sign in"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colors.primary
+              e.currentTarget.style.color = 'white'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+              e.currentTarget.style.color = ''
+            }}
+          >
+            <LogIn className="h-4 w-4" aria-hidden />
+            <span className="sr-only">Sign in</span>
+          </Link>
+        </Tooltip>
       </div>
     )
   }
 
+  const displayName =
+    user.firstName?.trim() ||
+    user.primaryEmailAddress?.emailAddress ||
+    user.emailAddresses[0]?.emailAddress ||
+    'Account'
+
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors"
-        style={{
-          backgroundColor: isOpen ? colors.primary : 'transparent',
-          color: isOpen ? 'white' : undefined,
-        }}
-        onMouseEnter={(e) => {
-          if (!isOpen) {
-            e.currentTarget.style.backgroundColor = colors.primary
-            e.currentTarget.style.color = 'white'
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!isOpen) {
-            e.currentTarget.style.backgroundColor = 'transparent'
-            e.currentTarget.style.color = ''
-          }
-        }}
-      >
-        <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
-            <User className="w-4 h-4" />
+    <div className={`relative shrink-0 ${className}`} ref={dropdownRef}>
+      <Tooltip content={displayName} position="bottom">
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex size-9 items-center justify-center gap-0.5 rounded-md text-sm font-medium text-gray-700 transition-colors dark:text-gray-300 sm:size-10"
+          style={{
+            backgroundColor: isOpen ? colors.primary : 'transparent',
+            color: isOpen ? 'white' : undefined,
+          }}
+          aria-label="Account menu"
+          aria-expanded={isOpen}
+          title={displayName}
+          onMouseEnter={(e) => {
+            if (!isOpen) {
+              e.currentTarget.style.backgroundColor = colors.primary
+              e.currentTarget.style.color = 'white'
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isOpen) {
+              e.currentTarget.style.backgroundColor = 'transparent'
+              e.currentTarget.style.color = ''
+            }
+          }}
+        >
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-300 dark:bg-gray-600 sm:h-8 sm:w-8">
+            {user.imageUrl ? (
+              <Image src={user.imageUrl} alt="" width={32} height={32} className="h-full w-full object-cover" />
+            ) : (
+              <User className="h-4 w-4" aria-hidden />
+            )}
           </div>
-          <span className="hidden xl:inline text-sm">
-            {user.firstName || user.emailAddresses[0]?.emailAddress}
-          </span>
-        </div>
-        <ChevronDown className={`w-4 h-4 ml-1 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
+          <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden />
+        </button>
+      </Tooltip>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+        <div className="absolute right-0 z-50 mt-2 w-64 rounded-md border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
           <div className="py-1">
-            {/* User Info */}
-            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
               <div className="text-sm font-medium text-gray-900 dark:text-white">
-                {user.firstName && user.lastName 
+                {user.firstName && user.lastName
                   ? `${user.firstName} ${user.lastName}`
-                  : user.emailAddresses[0]?.emailAddress
-                }
+                  : user.emailAddresses[0]?.emailAddress}
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
                 {user.emailAddresses[0]?.emailAddress}
               </div>
             </div>
 
-            {/* Menu Items */}
             <Link
               href="/profile"
-              className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
               onClick={() => setIsOpen(false)}
             >
-              <User className="w-4 h-4 mr-3" />
+              <User className="mr-3 h-4 w-4" />
               Profile
             </Link>
 
             <Link
               href="/profile/settings"
-              className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
               onClick={() => setIsOpen(false)}
             >
-              <Settings className="w-4 h-4 mr-3" />
+              <Settings className="mr-3 h-4 w-4" />
               Settings
             </Link>
 
-            {/* Theme Toggle */}
-            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="border-t border-gray-200 px-4 py-3 dark:border-gray-700">
               <div className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                 Appearance
               </div>
@@ -159,12 +172,13 @@ export function UserMenu({ colors, className = '' }: UserMenuProps) {
               </div>
             </div>
 
-
-            {/* Sign Out */}
-            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="border-t border-gray-200 px-4 py-3 dark:border-gray-700">
               <SignOutButton>
-                <button className="flex items-center w-full text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors">
-                  <LogOut className="w-4 h-4 mr-3" />
+                <button
+                  type="button"
+                  className="flex w-full items-center text-sm text-red-600 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                >
+                  <LogOut className="mr-3 h-4 w-4" />
                   Sign Out
                 </button>
               </SignOutButton>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { useAuth } from '@clerk/nextjs'
 import Link from 'next/link'
 import { useTenant } from '@/components/tenant/TenantProvider'
 import { TenantLayout } from '@/components/tenant/TenantLayout'
@@ -20,6 +21,7 @@ import { mergeWorkshopMetadata } from '@/lib/workshops/marketing-metadata'
 import { isWorkshopUuid } from '@/lib/workshops/workshop-routing'
 import { getWorkshopsLandingContent } from '@/lib/orgs/oolite/workshops-landing-content'
 import { WorkshopHero } from '@/components/workshops/marketing/WorkshopHero'
+import { WorkshopSkillsYoullLearn } from '@/components/workshops/marketing/WorkshopSkillsYoullLearn'
 import { WorkshopOutcomeStrip } from '@/components/workshops/marketing/WorkshopOutcomeStrip'
 import { WorkshopAudienceSplit } from '@/components/workshops/marketing/WorkshopAudienceSplit'
 import { WorkshopCtaBand } from '@/components/workshops/marketing/WorkshopCtaBand'
@@ -30,6 +32,13 @@ import { isLearnAiWorkshopSlug } from '@/lib/workshops/learn-ai-without-losing-y
 import { LearnAiWorkshopNav } from '@/components/workshops/learn-ai/LearnAiWorkshopNav'
 import { LearnAiLanding } from '@/components/workshops/learn-ai/LearnAiLanding'
 import { WorkshopDetailMainColumn } from '@/components/workshops/marketing/WorkshopDetailMainColumn'
+import { workshopSlugHasPublicMarkdownChapters } from '@/lib/workshops/public-chapter-slugs'
+import {
+  resolveWorkshopHeroBannerImageUrl,
+  workshopGalleryThumbsExcludingHero,
+} from '@/lib/workshops/workshop-visual-image'
+import { resolveWorkshopEnrollCta } from '@/lib/workshops/workshop-enroll-cta'
+import { getWorkshopSkillsYoullLearn } from '@/lib/workshops/workshop-skills-list'
 
 interface WorkshopInterest {
   interest_count: number
@@ -39,6 +48,7 @@ interface WorkshopInterest {
 export default function WorkshopDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const { isSignedIn } = useAuth()
   const slug = params.slug as string
   const workshopKey = params.workshopKey as string
   const { tenantId, isLoading: tenantLoading, error: tenantError } = useTenant()
@@ -231,7 +241,20 @@ export default function WorkshopDetailPage() {
 
   const isLearnAi =
     isLearnAiWorkshopSlug(workshopKey) || isLearnAiWorkshopSlug(marketing.slug)
-  const showLearnTabs = Boolean(workshop.has_learn_content) || isLearnAi
+  const hasPublicMarkdownChapters = workshopSlugHasPublicMarkdownChapters(marketing.slug)
+  const showLearnTabs =
+    Boolean(workshop.has_learn_content) || isLearnAi || hasPublicMarkdownChapters
+
+  const bannerImageUrl = resolveWorkshopHeroBannerImageUrl(workshop, marketing)
+  const galleryThumbs = workshopGalleryThumbsExcludingHero(marketing, bannerImageUrl)
+
+  const enrollCta = resolveWorkshopEnrollCta(marketing, bookHref, {
+    workshopId: workshop.id,
+    isSignedIn: Boolean(isSignedIn),
+    orgSlug: slug,
+    workshopUrlKey: workshopKey,
+  })
+  const skillsList = getWorkshopSkillsYoullLearn(marketing, workshop)
 
   return (
     <TenantLayout>
@@ -260,11 +283,17 @@ export default function WorkshopDetailPage() {
                     workshop={workshop}
                     marketing={marketing}
                     levelLabel={levelLabel}
+                    enrollCta={enrollCta}
+                    enrollSurface="tenant"
                   />
 
-                  {marketing.galleryImageUrls && marketing.galleryImageUrls.length > 0 && (
+                  {skillsList.length > 0 ? (
+                    <WorkshopSkillsYoullLearn skills={skillsList} />
+                  ) : null}
+
+                  {galleryThumbs.length > 0 && (
                     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                      {marketing.galleryImageUrls.map((url, i) => (
+                      {galleryThumbs.map((url, i) => (
                         <div
                           key={i}
                           className="aspect-square overflow-hidden rounded-lg bg-muted"
@@ -286,14 +315,22 @@ export default function WorkshopDetailPage() {
 
               {showLearnTabs ? (
                 <Tabs defaultValue="workshop" className="w-full">
-                  <TabsList className="grid w-full max-w-md grid-cols-2">
-                    <TabsTrigger value="workshop" className="gap-2">
-                      <FileText className="h-4 w-4" />
-                      Workshop
+                  <TabsList className="inline-flex h-11 gap-1 p-1">
+                    <TabsTrigger
+                      value="workshop"
+                      className="size-9 shrink-0 p-0 sm:size-10"
+                      title="Workshop"
+                    >
+                      <FileText className="h-4 w-4 shrink-0" aria-hidden />
+                      <span className="sr-only">Workshop</span>
                     </TabsTrigger>
-                    <TabsTrigger value="learn" className="gap-2">
-                      <GraduationCap className="h-4 w-4" />
-                      Learn
+                    <TabsTrigger
+                      value="learn"
+                      className="size-9 shrink-0 p-0 sm:size-10"
+                      title="Learn"
+                    >
+                      <GraduationCap className="h-4 w-4 shrink-0" aria-hidden />
+                      <span className="sr-only">Learn</span>
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="workshop" className="mt-8 space-y-12">

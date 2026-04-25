@@ -28,6 +28,13 @@ export function WorkshopCtaBand({
     primary.href &&
     (primary.action === 'external' || primary.action === undefined)
 
+  const ooliteUsd = marketing.ooliteRegistrationUsd
+  const showOolitePricingNote =
+    typeof ooliteUsd === 'number' &&
+    ooliteUsd > 0 &&
+    (typeof marketing.publicListPriceUsd !== 'number' ||
+      marketing.publicListPriceUsd > ooliteUsd)
+
   return (
     <div className="space-y-3 rounded-xl border bg-card p-6 shadow-sm">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -82,6 +89,23 @@ export function WorkshopCtaBand({
           </Button>
         )}
       </div>
+      {showOolitePricingNote || marketing.alumniCouponCode ? (
+        <div className="border-t pt-3 text-xs leading-relaxed text-muted-foreground">
+          {showOolitePricingNote ? (
+            <p>
+              Oolite member registration is <span className="font-medium text-foreground">${ooliteUsd}</span>{' '}
+              when you book through Oolite (public list price is shown in the Join card above).
+            </p>
+          ) : null}
+          {marketing.alumniCouponCode ? (
+            <p className={showOolitePricingNote ? 'mt-2' : ''}>
+              Oolite alumni: use coupon{' '}
+              <span className="font-mono font-medium text-foreground">{marketing.alumniCouponCode}</span>{' '}
+              at checkout for the published alumni discount.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }

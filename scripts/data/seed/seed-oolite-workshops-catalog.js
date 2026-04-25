@@ -67,6 +67,11 @@ async function upsertWorkshop(orgId, row, metadataForDb) {
       ? String(row.image_url).trim()
       : null
 
+  const imageFromHeader =
+    metadataForDb.headerImageUrl && String(metadataForDb.headerImageUrl).trim()
+      ? String(metadataForDb.headerImageUrl).trim()
+      : null
+
   const galleryUrls = metadataForDb.galleryImageUrls
   const imageFromGallery =
     Array.isArray(galleryUrls) &&
@@ -76,7 +81,7 @@ async function upsertWorkshop(orgId, row, metadataForDb) {
       ? galleryUrls[0].trim()
       : null
 
-  const resolvedImage = imageFromRow || imageFromGallery || PLACEHOLDER
+  const resolvedImage = imageFromRow || imageFromHeader || imageFromGallery || PLACEHOLDER
 
   const payload = {
     organization_id: orgId,
@@ -88,6 +93,7 @@ async function upsertWorkshop(orgId, row, metadataForDb) {
     level: row.level,
     duration_minutes: row.duration_minutes,
     max_participants: row.max_participants,
+    has_learn_content: Boolean(row.has_learn_content),
     price: row.price,
     instructor: row.instructor,
     prerequisites: row.prerequisites,

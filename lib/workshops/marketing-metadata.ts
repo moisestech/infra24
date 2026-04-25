@@ -21,10 +21,14 @@ const ctasSchema = z.object({
 
 export const workshopMarketingMetadataSchema = z.object({
   slug: z.string().min(1),
+  /** Workshop detail hero `<h1>` when it should differ from `workshops.title` (DB/catalog drift). */
+  heroTitle: z.string().min(1).optional(),
   subtitle: z.string().optional(),
   shortDescription: z.string().optional(),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
+  /** Wide hero image when `workshops.image_url` is unset (catalog / marketing YAML). */
+  headerImageUrl: z.string().url().optional(),
   galleryImageUrls: z.array(z.string()).optional(),
   /**
    * When set, catalog cards link to this URL (e.g. primary materials off-site)
@@ -111,6 +115,13 @@ export const workshopMarketingMetadataSchema = z.object({
   placeholderImagePrompt: z.string().optional(),
   /** Long-form packet / LMS primer copy for the workshop page */
   packetConcept: z.string().optional(),
+  /**
+   * ISO-ish date string for hero "Updated" line (e.g. `2026-04-19` or full ISO).
+   * Falls back to `workshops.updated_at` when unset.
+   */
+  catalogContentUpdatedAt: z.string().optional(),
+  /** Short bullet labels for "Skills you'll learn" (shown first 8 + count). */
+  skillsYoullLearn: z.array(z.string().min(1)).max(48).optional(),
 
   /** When set, row is explicitly part of the Digital Lab catalog surface */
   catalog: z.enum(['digital_lab']).optional(),
@@ -144,6 +155,13 @@ export const workshopMarketingMetadataSchema = z.object({
     .optional(),
   /** Website build readiness (Digital Lab catalog filter) */
   websiteReadiness: z.enum(['ready', 'needs_build']).optional(),
+  /** General public list price (USD whole dollars) for DCC catalog / workshop page */
+  publicListPriceUsd: z.number().optional(),
+  /** Oolite org registration price (USD whole dollars) */
+  ooliteRegistrationUsd: z.number().optional(),
+  /** Manual checkout coupon for alumni discount (e.g. 50% off Oolite registration) */
+  alumniCouponCode: z.string().optional(),
+  alumniCouponShortNote: z.string().optional(),
   /** Learning packet availability for Resources filter */
   resourcesAvailability: z
     .enum(['packet_available', 'packet_coming_soon'])

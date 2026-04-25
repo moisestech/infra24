@@ -24,7 +24,7 @@ is_public: true
 relatedSlugs:
   - documentation-for-artists
   - own-your-digital-presence
-  - vibe-coding-net-art
+  - vibe-coding-and-net-art
 metadata:
   slug: organizing-digital-studio
   track: systems_archive
@@ -36,6 +36,8 @@ metadata:
   websiteReadiness: ready
   resourcesAvailability: packet_available
   buildPriority: 7
+  headerImageUrl: >-
+    https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525113/dccmiami/workshops/organizing-your-digital-studio_fverto.png
   galleryImageUrls:
     - >-
       https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525113/dccmiami/workshops/organizing-your-digital-studio_fverto.png

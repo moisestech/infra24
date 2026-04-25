@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@clerk/nextjs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -14,6 +15,10 @@ import {
 } from '@/lib/workshops/learn-ai-without-losing-yourself/constants'
 import { learnAiCurriculumIntro } from '@/lib/workshops/learn-ai-without-losing-yourself/curriculum-chapters'
 import { learnAiLabIntro } from '@/lib/workshops/learn-ai-without-losing-yourself/lab-content'
+import {
+  workshopDiskChapterFolderSlug,
+  workshopSlugHasPublicMarkdownChapters,
+} from '@/lib/workshops/public-chapter-slugs'
 
 export function WorkshopLearnTab({
   workshop,
@@ -22,6 +27,7 @@ export function WorkshopLearnTab({
   workshop: WorkshopRow
   orgSlug: string
 }) {
+  const { isSignedIn } = useAuth()
   const [chapters, setChapters] = useState<
     Array<{
       id: string
@@ -43,6 +49,10 @@ export function WorkshopLearnTab({
     () => isLearnAiWorkshopSlug(marketing.slug),
     [marketing.slug]
   )
+  const hasPublicMarkdownChapters = useMemo(
+    () => workshopSlugHasPublicMarkdownChapters(marketing.slug),
+    [marketing.slug]
+  )
   const learnPaths = learnAiWorkshopPaths(orgSlug)
 
   useEffect(() => {
@@ -50,6 +60,45 @@ export function WorkshopLearnTab({
       setChapters([])
       setLoading(false)
       return
+    }
+
+    if (hasPublicMarkdownChapters) {
+      let cancelled = false
+      ;(async () => {
+        try {
+          setLoading(true)
+          const res = await fetch(
+            `/api/marketing/workshops/${encodeURIComponent(workshopDiskChapterFolderSlug(marketing.slug))}/chapters`
+          )
+          if (!res.ok) throw new Error('chapters')
+          const data = (await res.json()) as {
+            chapters?: Array<{
+              slug: string
+              title: string
+              description: string
+              estimatedTime: number
+            }>
+          }
+          const rows =
+            data.chapters?.map((c) => ({
+              id: c.slug,
+              title: c.title,
+              description: c.description,
+              estimatedTime: c.estimatedTime,
+              difficulty: 'beginner' as const,
+              locked: false,
+              slug: c.slug,
+            })) ?? []
+          if (!cancelled) setChapters(rows)
+        } catch {
+          if (!cancelled) setChapters([])
+        } finally {
+          if (!cancelled) setLoading(false)
+        }
+      })()
+      return () => {
+        cancelled = true
+      }
     }
 
     const fetchChapters = async () => {
@@ -93,11 +142,17 @@ export function WorkshopLearnTab({
     }
 
     if (workshop.has_learn_content) {
-      fetchChapters()
+      void fetchChapters()
     } else {
       setLoading(false)
     }
-  }, [workshop.has_learn_content, isLearnAi])
+  }, [
+    workshop.has_learn_content,
+    isLearnAi,
+    hasPublicMarkdownChapters,
+    marketing.slug,
+    isSignedIn,
+  ])
 
   if (isLearnAi) {
     return (
@@ -176,8 +231,17 @@ export function WorkshopLearnTab({
     )
   }
 
+  const publicChapterGuide =
+    hasPublicMarkdownChapters && chapters.length === 0 ? (
+      <p className="mb-4 text-sm text-muted-foreground">
+        Public chapter notes are not available for this slug yet. Check back soon or sign in for
+        member-only materials when they ship.
+      </p>
+    ) : null
+
   return (
     <div className="space-y-6">
+      {publicChapterGuide}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -185,7 +249,9 @@ export function WorkshopLearnTab({
             Learning progress
           </CardTitle>
           <CardDescription>
-            Track your progress through this workshop&apos;s learning content
+            {hasPublicMarkdownChapters
+              ? 'Open each chapter to read the public outline and exercises. Sign in for booking and member tools.'
+              : "Track your progress through this workshop\u2019s learning content"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -287,10 +353,18 @@ export function WorkshopLearnTab({
                         Locked
                       </Button>
                     ) : (
-                      <Link href={`/learn/${workshop.id}/${chapter.slug}`}>
+                      <Link
+                        href={
+                          hasPublicMarkdownChapters && !isSignedIn
+                            ? `/workshop/${encodeURIComponent(workshopDiskChapterFolderSlug(marketing.slug))}/chapters/${encodeURIComponent(chapter.slug)}`
+                            : hasPublicMarkdownChapters && isSignedIn
+                              ? `/o/${encodeURIComponent(orgSlug)}/workshop/${encodeURIComponent(marketing.slug)}/chapters/${encodeURIComponent(chapter.slug)}`
+                              : `/learn/${workshop.id}/${chapter.slug}`
+                        }
+                      >
                         <Button size="sm">
                           <Play className="mr-2 h-4 w-4" />
-                          Start
+                          {hasPublicMarkdownChapters ? 'Open' : 'Start'}
                         </Button>
                       </Link>
                     )}

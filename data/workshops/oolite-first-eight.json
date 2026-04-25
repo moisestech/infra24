@@ -557,6 +557,7 @@
         "slug": "documentation-for-artists",
         "subtitle": "Checklists, file habits, and ethics for documenting live and installed work.",
         "shortDescription": "From capture plan to folder structure—documentation that scales from studio to archive.",
+        "headerImageUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525110/dccmiami/workshops/documentation-for-artitsts_akddqm.png",
         "galleryImageUrls": [
           "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525110/dccmiami/workshops/documentation-for-artitsts_akddqm.png"
         ],
@@ -689,7 +690,7 @@
       "is_public": true,
       "content": "We separate experimentation from publication, build personal policies for disclosure, and map where AI saves time vs where it erases judgment. Includes hands-on prompts for research, drafting, and iteration—not a single-tool tutorial tied to one vendor.",
       "relatedSlugs": [
-        "vibe-coding-net-art",
+        "vibe-coding-and-net-art",
         "ai-copyright-creative-risk",
         "writing-about-digital-practice"
       ],
@@ -697,6 +698,7 @@
         "slug": "ai-for-artists-voice-workflow-authorship",
         "subtitle": "Policies, prompts, and critique—AI as studio assistant, not author replacement.",
         "shortDescription": "Practical frameworks for voice, disclosure, and workflow when AI is in the room.",
+        "headerImageUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525106/dccmiami/workshops/ai-for-artists_dnwikc.png",
         "galleryImageUrls": [
           "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525106/dccmiami/workshops/ai-for-artists_dnwikc.png"
         ],
@@ -799,14 +801,15 @@
       }
     },
     {
-      "slug": "vibe-coding-net-art",
-      "title": "Vibe-coding with Net Art",
+      "slug": "vibe-coding-and-net-art",
+      "title": "Vibe Coding & Net Art",
       "description": "Use contemporary AI-assisted workflows to sketch, prototype, and publish small net art pieces—without losing authorship or critical intent.",
       "category": "creative_coding_net_art",
       "level": "beginner",
       "duration_minutes": 180,
       "max_participants": 16,
-      "price": 0,
+      "has_learn_content": true,
+      "price": 90,
       "instructor": "Digital Lab",
       "outcomes": [
         "Ship a small browser-based sketch or micro-site",
@@ -832,9 +835,11 @@
         "documentation-for-artists"
       ],
       "metadata": {
-        "slug": "vibe-coding-net-art",
+        "slug": "vibe-coding-and-net-art",
+        "heroTitle": "Vibe Coding & Net Art",
         "subtitle": "Creative coding meets critical publishing—fast iteration, clear intent.",
         "shortDescription": "Prototype net art with AI-assisted workflows while keeping authorship visible.",
+        "headerImageUrl": "https://res.cloudinary.com/dkod1at3i/image/upload/v1776612065/vibe-code-and-net-art_mx7emv.webp",
         "galleryImageUrls": [
           "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525117/dccmiami/workshops/vibe-coding-with-net-art_dtead3.png"
         ],
@@ -941,12 +946,29 @@
         "buildPriority": 6,
         "placeholderImagePrompt": "Browser window with abstract generative art, terminal snippet blurred, dark mode aesthetic, arts context not corporate",
         "packetConcept": "Starter repo README, history-of-net-art reading links (short), documentation worksheet for prompts/commits, deploy checklist (static host).",
+        "catalogContentUpdatedAt": "2026-04-19",
+        "skillsYoullLearn": [
+          "Structure and edit HTML/CSS from starter templates",
+          "Run a tight vibe-coding loop (sketch, refine, document)",
+          "Pair AI assistants with clear authorship and disclosure",
+          "Ship a small static sketch or micro-site to the public web",
+          "Capture prompts, commits, and decisions for portfolio context",
+          "Give and receive critique on browser-based work",
+          "Map your piece to net art histories and ethics (compact lens)",
+          "Choose lightweight hosting and shareable URLs",
+          "Draft portfolio language for net-native projects",
+          "Apply basic accessibility and performance checks before publishing"
+        ],
         "catalog": "digital_lab",
         "releaseStatus": "in_development",
         "sessionFormat": "clinic_lab",
         "marketingLevel": "beginner",
         "packetStatus": "syllabus_ready",
         "websiteReadiness": "needs_build",
+        "publicListPriceUsd": 90,
+        "ooliteRegistrationUsd": 45,
+        "alumniCouponCode": "OOLITE-ALUMNI-50",
+        "alumniCouponShortNote": "Oolite alumni save 50% at checkout—enter the coupon code on the registration or ticketing page when you book through Oolite.",
         "resourcesAvailability": "packet_available"
       }
     },
@@ -977,12 +999,13 @@
       "relatedSlugs": [
         "documentation-for-artists",
         "own-your-digital-presence",
-        "vibe-coding-net-art"
+        "vibe-coding-and-net-art"
       ],
       "metadata": {
         "slug": "organizing-digital-studio",
         "subtitle": "Files, backups, and handoffs—systems that survive busy studio seasons.",
         "shortDescription": "Templates and habits for digital projects without enterprise IT overhead.",
+        "headerImageUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525113/dccmiami/workshops/organizing-your-digital-studio_fverto.png",
         "galleryImageUrls": [
           "https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525113/dccmiami/workshops/organizing-your-digital-studio_fverto.png"
         ],

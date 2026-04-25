@@ -272,7 +272,7 @@ const PROGRAM_LEAVES: Record<
     },
     {
       slug: 'vibe-coding-and-net-art',
-      title: 'Vibe coding & net art',
+      title: 'Vibe Coding & Net Art',
       description: 'Experimental coding and network-native creative practice.',
     },
     {

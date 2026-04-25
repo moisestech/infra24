@@ -517,19 +517,29 @@ export const marketingNavSheetGroups = [
 
 export const marketingNavSheetFooterHrefs = ['/contact', '/infra24'] as const;
 
-/** Desktop header (`lg+`): left column — `href` must exist in `navItems`; `label` may differ for bar copy (e.g. Services → /programs). */
+/** Lucide icon keys for compact marketing header (see `SiteHeader`). */
+export type MarketingHeaderNavIconKey =
+  | 'info'
+  | 'layout-grid'
+  | 'graduation-cap'
+  | 'flag'
+  | 'share-2'
+  | 'handshake'
+  | 'mail';
+
+/** Desktop header: left cluster — `href` must exist in `navItems`; `label` for tooltips and `aria-label`. */
 export const marketingHeaderNavLeft = [
-  { href: '/about', label: 'About' },
-  { href: '/programs', label: 'Services' },
-  { href: '/workshops', label: 'Workshops' },
-  { href: '/grants', label: 'Pilot' },
+  { href: '/about', label: 'About', icon: 'info' satisfies MarketingHeaderNavIconKey },
+  { href: '/programs', label: 'Services', icon: 'layout-grid' satisfies MarketingHeaderNavIconKey },
+  { href: '/workshops', label: 'Workshops', icon: 'graduation-cap' satisfies MarketingHeaderNavIconKey },
+  { href: '/grants', label: 'Pilot', icon: 'flag' satisfies MarketingHeaderNavIconKey },
 ] as const;
 
-/** Desktop header (`lg+`): right column text links before Apply + theme. */
+/** Desktop header: right cluster before Apply + theme. */
 export const marketingHeaderNavRight = [
-  { href: '/network', label: 'Network' },
-  { href: '/partners', label: 'Partners' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/network', label: 'Network', icon: 'share-2' satisfies MarketingHeaderNavIconKey },
+  { href: '/partners', label: 'Partners', icon: 'handshake' satisfies MarketingHeaderNavIconKey },
+  { href: '/contact', label: 'Contact', icon: 'mail' satisfies MarketingHeaderNavIconKey },
 ] as const;
 
 /** Primary CTA in desktop header; same destination as artist index engagement. */

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import type { WorkshopRow } from './types'
 import { mergeWorkshopMetadata } from '@/lib/workshops/marketing-metadata'
 import { getDccWorkshopPublicPath, getWorkshopPublicPath } from '@/lib/workshops/workshop-routing'
+import { resolveWorkshopHeroImageUrl } from '@/lib/workshops/workshop-visual-image'
 
 export function WorkshopRelated({
   currentId,
@@ -28,15 +29,16 @@ export function WorkshopRelated({
             id: w.id,
             title: w.title,
           })
+          const thumb = resolveWorkshopHeroImageUrl(w, m)
           const href =
             catalogSurface === 'dcc' ? getDccWorkshopPublicPath(w) : getWorkshopPublicPath(orgSlug, w)
           return (
             <Link key={w.id} href={href} className="group block">
               <Card className="h-full transition-shadow group-hover:shadow-md">
-                {w.image_url && (
+                {thumb && (
                   <div className="aspect-[16/10] w-full overflow-hidden rounded-t-xl">
                     <img
-                      src={w.image_url}
+                      src={thumb}
                       alt=""
                       className="h-full w-full object-cover"
                     />

@@ -7,7 +7,8 @@ Rich marketing and future LMS fields live in `workshops.metadata` alongside core
 - **`metadata.slug`** must be **unique per `organization_id`**.
 - Public URLs use `/o/{orgSlug}/workshops/{slug}` when set; otherwise the workshop UUID is used.
 - **Short marketing URL**: `/workshops/{slug}` redirects to `/o/{defaultOrg}/workshops/{slug}`. Set `NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG` (default `oolite`) to choose the catalog org.
-- Use **lowercase kebab-case** (e.g. `vibe-coding-net-art`). Avoid spaces and special characters beyond hyphens.
+- **Disk-backed reader chapters (Vibe Coding & Net Art style)**: canonical paths are **`/workshop/{slug}/{chapter-slug}`** (public) and **`/o/{org}/workshop/{key}/chapters/{chapter-slug}`** (signed-in org shell). Legacy **`/workshops/...`** and **`/o/.../workshops/.../chapters/...`** redirect to those URLs.
+- Use **lowercase kebab-case** (e.g. `vibe-coding-and-net-art`). Avoid spaces and special characters beyond hyphens.
 
 ## Roadmap fields (optional)
 
