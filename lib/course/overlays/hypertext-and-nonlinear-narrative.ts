@@ -2,6 +2,12 @@ import type { Chapter } from '@/lib/course/types'
 
 const PLACEHOLDER_STILL =
   'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&q=80&auto=format&fit=crop'
+const RHIZOME_BANNER =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127371/dccmiami/workshops/vibe-coding-net-art/rhizome-net-art-anthology_ap6nto.png'
+const MBFBFTW_NETSCAPE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125356/dccmiami/workshops/vibe-coding-net-art/mbcbftw-netscape-3_olia-lialina_dvhbug.png'
+const RHIZOME_ANTHOLOGY_LANDSCAPE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128953/dccmiami/workshops/vibe-coding-net-art/rhizome-net-art-anthology-landscape_agltis.webp'
 
 /** Chapter 3 — hypertext as narrative structure; Olia Lialina / MBFBFTW + Rhizome + Tate spines. */
 export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
@@ -62,9 +68,9 @@ export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
       },
     ],
     chapterBanner: {
-      src: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18d5?w=1800&q=80&auto=format&fit=crop',
-      alt: 'Muted abstract grid suggesting links and windows — chapter banner placeholder.',
-      caption: 'Swap for a Rhizome anthology capture, frame still, or your own slide export.',
+      src: RHIZOME_BANNER,
+      alt: 'Rhizome Net Art Anthology visual used as chapter banner.',
+      caption: 'Rhizome Net Art Anthology reference.',
     },
     anchorWorks: [
       {
@@ -75,9 +81,9 @@ export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
           'Rhizome’s Net Art Anthology presents this work as foundational: clicking splits the frame into smaller frames, producing nonlinear narrative through browser structure. Pair the live anthology page with Michael Connor’s essay for interpretive language.',
         institution: 'Rhizome Net Art Anthology',
         image: {
-          src: PLACEHOLDER_STILL,
-          alt: 'Placeholder still for My Boyfriend Came Back from the War — replace with anthology or documentation capture.',
-          caption: 'Placeholder — replace with rights-cleared frame still.',
+          src: MBFBFTW_NETSCAPE,
+          alt: 'My Boyfriend Came Back from the War Netscape frame capture.',
+          caption: 'MBFBFTW frame reference.',
         },
         links: [
           {
@@ -132,8 +138,8 @@ export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
           'Curated online presentations of historically significant born-digital art—primary spine for this chapter.',
         website: 'https://anthology.rhizome.org/',
         image: {
-          src: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80&auto=format&fit=crop',
-          alt: 'Placeholder suggesting networked archives — replace with anthology UI capture.',
+          src: RHIZOME_ANTHOLOGY_LANDSCAPE,
+          alt: 'Rhizome Net Art Anthology landscape visual.',
         },
       },
     ],
@@ -194,9 +200,9 @@ export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
     ],
     imageAssets: [
       {
-        src: PLACEHOLDER_STILL,
-        alt: 'Chapter still placeholder — hypertext / frames mood.',
-        caption: 'Hero still — replace with anthology or documentation capture.',
+        src: MBFBFTW_NETSCAPE,
+        alt: 'My Boyfriend Came Back from the War Netscape frame image.',
+        caption: 'Hypertext frame structure reference.',
       },
       {
         src: 'https://images.unsplash.com/photo-1517694712202-3dd5178143fa?w=1200&q=80&auto=format&fit=crop',
