@@ -8,12 +8,16 @@ const P3 =
   'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80&auto=format&fit=crop'
 const RAFAEL_ALMOST_THERE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125902/dccmiami/workshops/vibe-coding-net-art/almost-there-rafel-rozenthal-2015_slobsc.jpg'
+const OLIA_PFP =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127227/dccmiami/workshops/vibe-coding-net-art/Olia_Lialina_at_the_GeoCities_Research_Institute_Library_at_Merz_Akademie_Stuttgart_pfp_xmn1yl.jpg'
 const RAFAEL_PFP =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127697/dccmiami/workshops/vibe-coding-net-art/Rafael-Rozendaal_pfp_idh71i.jpg'
 const WHITNEY_ARTPORT_IMAGE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128008/dccmiami/workshops/vibe-coding-net-art/whitney-art-port_jsbsyv.png'
 const TATE_INTERNET_IMAGE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128101/dccmiami/workshops/vibe-coding-net-art/tate-internet-art_bhplg0.jpg'
+const RHIZOME_LOGO =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128623/dccmiami/workshops/vibe-coding-net-art/rhizome-logo-square_mfrc9o.png'
 
 const starterLinks: TemplateLink[] = [
   { label: 'Open a new CodePen', href: 'https://codepen.io/pen/', kind: 'codepen' },
@@ -124,6 +128,10 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
         description:
           'A foundational net artist whose work demonstrates how browser frames, text, and images can become the medium of the piece.',
         website: 'https://art.teleportacia.org/',
+        image: {
+          src: OLIA_PFP,
+          alt: 'Portrait photo of Olia Lialina used for chapter artist spotlight.',
+        },
         tags: ['browser frames', 'hypertext', 'net art canon'],
       },
       {
@@ -143,6 +151,10 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
         name: 'Rhizome — Net Art Anthology',
         description: 'A major institutional frame for historically significant browser-native internet art.',
         website: 'https://anthology.rhizome.org/',
+        image: {
+          src: RHIZOME_LOGO,
+          alt: 'Rhizome logo.',
+        },
       },
       {
         name: 'Whitney artport',
@@ -169,6 +181,10 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
         description:
           'Useful for understanding how frames, subdivisions, and browser-native structure contribute to narrative and feeling.',
         website: 'https://rhizome.org/editorial/2016/nov/10/my-boyfriend-came-back-from-the-war/',
+        image: {
+          src: RHIZOME_LOGO,
+          alt: 'Rhizome logo used for Michael Connor lens context.',
+        },
       },
       {
         name: 'Whitney framing of Rafaël Rozendaal',
