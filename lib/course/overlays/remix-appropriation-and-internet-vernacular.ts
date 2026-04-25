@@ -12,6 +12,10 @@ const P5 =
   'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80&auto=format&fit=crop'
 const P6 =
   'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80&auto=format&fit=crop'
+const CH6_BANNER =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777129378/dccmiami/workshops/vibe-coding-net-art/photoshop-gradient-demonstrations-cory-arcangel-whitney-museum_pgtvww.webp'
+const NASTY_NETS_IMAGE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777129454/dccmiami/workshops/vibe-coding-net-art/nasty-nets-rhizome-net-art-anthology_bkiowi.jpg'
 
 /** Chapter 6 — remix / vernacular / platform aesthetics; Rhizome anthology + Whitney + collective feeds. */
 export function remixAppropriationAsChapter(): Chapter {
@@ -69,9 +73,9 @@ export function remixAppropriationAsChapter(): Chapter {
       },
     ],
     chapterBanner: {
-      src: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=1800&q=80&auto=format&fit=crop',
-      alt: 'Saturated abstract gradient suggesting collage and digital color culture — chapter banner placeholder.',
-      caption: 'Replace with rights-cleared stills from VVEBCAM, Whitney documentation, or your own capture grid.',
+      src: CH6_BANNER,
+      alt: 'Photoshop Gradient Demonstrations reference image from Whitney context.',
+      caption: 'Cory Arcangel gradient demonstrations reference.',
     },
     anchorWorks: [
       {
@@ -112,8 +116,8 @@ export function remixAppropriationAsChapter(): Chapter {
           'Rhizome describes this collaborative blog as a space for sharing found online artifacts alongside original collages—vernacular browsing turned into collective composition.',
         institution: 'Rhizome Net Art Anthology',
         image: {
-          src: P2,
-          alt: 'Placeholder suggesting feed collage and found artifacts — replace with Nasty Nets capture.',
+          src: NASTY_NETS_IMAGE,
+          alt: 'Nasty Nets reference image from Rhizome Net Art Anthology context.',
           caption: 'Collaborative artifact-sharing as artistic method.',
           credit: 'Source page: Rhizome Net Art Anthology',
         },
@@ -128,8 +132,8 @@ export function remixAppropriationAsChapter(): Chapter {
         website: 'https://www.petrapaulacortright.com/',
         instagram: 'https://www.instagram.com/petracortright/',
         image: {
-          src: P4,
-          alt: 'Placeholder portrait tile for Petra Cortright.',
+          src: P3,
+          alt: 'Petra Cortright avatar using VVEBCAM reference still.',
         },
         tags: ['webcam aesthetics', 'YouTube vernacular', 'internet selfhood'],
       },
