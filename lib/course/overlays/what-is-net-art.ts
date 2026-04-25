@@ -8,6 +8,12 @@ const MBFBFTW_NETSCAPE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125356/dccmiami/workshops/vibe-coding-net-art/mbcbftw-netscape-3_olia-lialina_dvhbug.png'
 const PETRA_MOMA =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125598/dccmiami/workshops/vibe-coding-net-art/petra-cortright-moma_lvnrrn.jpg'
+const OLIA_PFP =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127227/dccmiami/workshops/vibe-coding-net-art/Olia_Lialina_at_the_GeoCities_Research_Institute_Library_at_Merz_Akademie_Stuttgart_pfp_xmn1yl.jpg'
+const RHIZOME_ANTHOLOGY_LOGO =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127371/dccmiami/workshops/vibe-coding-net-art/rhizome-net-art-anthology_ap6nto.png'
+const TATE_LOGO =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127470/dccmiami/workshops/vibe-coding-net-art/tate-logo-white-bg_rqvdww.webp'
 
 const starterLinks: TemplateLink[] = [
   { label: 'Open a new CodePen', href: 'https://codepen.io/pen/', kind: 'codepen' },
@@ -115,8 +121,8 @@ export function whatIsNetArtAsChapter(): Chapter {
         description: 'Foundational net artist: browser narrative, frames, and early web aesthetics.',
         website: 'https://art.teleportacia.org/',
         image: {
-          src: MBFBFTW_NETSCAPE,
-          alt: 'Netscape-era frame from My Boyfriend Came Back from the War.',
+          src: OLIA_PFP,
+          alt: 'Portrait photo of Olia Lialina used for chapter artist spotlight.',
         },
         tags: ['hypertext', 'browser narrative', 'net art canon'],
       },
@@ -136,6 +142,10 @@ export function whatIsNetArtAsChapter(): Chapter {
         name: 'Rhizome — Net Art Anthology',
         description: 'Curated presentation and preservation context for historically significant internet artworks.',
         website: 'https://anthology.rhizome.org/',
+        image: {
+          src: RHIZOME_ANTHOLOGY_LOGO,
+          alt: 'Rhizome Net Art Anthology logo.',
+        },
       },
       {
         name: 'Whitney artport',
@@ -147,6 +157,10 @@ export function whatIsNetArtAsChapter(): Chapter {
         name: 'Tate — internet art',
         description: 'Institutional framing: internet art is made on and for the internet, not only shown there.',
         website: 'https://www.tate.org.uk/art/art-terms/i/internet-art',
+        image: {
+          src: TATE_LOGO,
+          alt: 'Tate logo on white background.',
+        },
       },
     ],
     curatorLenses: [
