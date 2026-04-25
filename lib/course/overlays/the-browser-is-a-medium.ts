@@ -8,6 +8,12 @@ const P3 =
   'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80&auto=format&fit=crop'
 const RAFAEL_ALMOST_THERE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125902/dccmiami/workshops/vibe-coding-net-art/almost-there-rafel-rozenthal-2015_slobsc.jpg'
+const RAFAEL_PFP =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127697/dccmiami/workshops/vibe-coding-net-art/Rafael-Rozendaal_pfp_idh71i.jpg'
+const WHITNEY_ARTPORT_IMAGE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128008/dccmiami/workshops/vibe-coding-net-art/whitney-art-port_jsbsyv.png'
+const TATE_INTERNET_IMAGE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128101/dccmiami/workshops/vibe-coding-net-art/tate-internet-art_bhplg0.jpg'
 
 const starterLinks: TemplateLink[] = [
   { label: 'Open a new CodePen', href: 'https://codepen.io/pen/', kind: 'codepen' },
@@ -126,8 +132,8 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
           'A major browser-based artist whose works treat the website itself as pictorial and experiential form.',
         website: 'https://newrafael.com/',
         image: {
-          src: RAFAEL_ALMOST_THERE,
-          alt: 'Rafaël Rozendaal reference still from Almost There (2015).',
+          src: RAFAEL_PFP,
+          alt: 'Portrait image of Rafaël Rozendaal used for chapter artist spotlight.',
         },
         tags: ['browser composition', 'site as artwork', 'internet as canvas'],
       },
@@ -142,11 +148,19 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
         name: 'Whitney artport',
         description: 'The Whitney Museum’s portal to internet art and browser-native online commissions.',
         website: 'https://whitney.org/artport',
+        image: {
+          src: WHITNEY_ARTPORT_IMAGE,
+          alt: 'Whitney artport website visual reference.',
+        },
       },
       {
         name: 'Tate — Internet art',
         description: 'A concise institutional definition of internet art as art made on and for the internet.',
         website: 'https://www.tate.org.uk/art/art-terms/i/internet-art',
+        image: {
+          src: TATE_INTERNET_IMAGE,
+          alt: 'Tate internet art reference image.',
+        },
       },
     ],
     curatorLenses: [
