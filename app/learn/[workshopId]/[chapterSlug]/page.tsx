@@ -12,7 +12,7 @@ export default function ChapterReaderPage() {
 
   const org = encodeURIComponent(WORKSHOP_CATALOG_ORG_SLUG)
   const key = encodeURIComponent(workshopId)
-  const backHref = `/o/${org}/workshops/${key}`
+  const backHref = `/o/${org}/workshop/${key}`
 
   return (
     <>

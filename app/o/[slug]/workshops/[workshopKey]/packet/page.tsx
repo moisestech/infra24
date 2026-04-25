@@ -56,7 +56,7 @@ export default function WorkshopPacketPage() {
   const navConfig =
     slug === 'bakehouse' ? bakehouseConfig : slug === 'madarts' ? madartsConfig : ooliteConfig
 
-  const detailHref = `/o/${slug}/workshops/${encodeURIComponent(workshopKey)}`
+  const detailHref = `/o/${slug}/workshop/${encodeURIComponent(workshopKey)}`
 
   if (loading) {
     return (
@@ -77,7 +77,7 @@ export default function WorkshopPacketPage() {
           <h1 className="text-2xl font-semibold">Workshop not found</h1>
           <p className="mt-2 text-muted-foreground">{error}</p>
           <Button asChild className="mt-8">
-            <Link href={`/o/${slug}/workshops`}>Back to workshops</Link>
+            <Link href={`/o/${slug}/workshop`}>Back to workshops</Link>
           </Button>
         </div>
       </div>

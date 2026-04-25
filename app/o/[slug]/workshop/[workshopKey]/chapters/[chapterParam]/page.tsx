@@ -37,7 +37,7 @@ export default async function OrgWorkshopChapterCanonicalPage({
     const encOrg = encodeURIComponent(slug)
     const encKey = encodeURIComponent(workshopKey)
     const chaptersHrefPrefix = `/o/${encOrg}/workshop/${encKey}/chapters/`
-    const workshopListingHref = `/o/${encOrg}/workshops/${encKey}`
+    const workshopListingHref = `/o/${encOrg}/workshop/${encKey}`
 
     const topLinks = (
       <div className="mb-6 flex flex-wrap gap-3 text-sm text-neutral-600 dark:text-neutral-400">

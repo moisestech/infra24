@@ -2,7 +2,7 @@
 export const LEARN_AI_WORKSHOP_SLUG = 'learn-ai-without-losing-yourself' as const
 
 export function learnAiWorkshopBasePath(orgSlug: string): string {
-  return `/o/${orgSlug}/workshops/${LEARN_AI_WORKSHOP_SLUG}`
+  return `/o/${orgSlug}/workshop/${LEARN_AI_WORKSHOP_SLUG}`
 }
 
 export function learnAiWorkshopPaths(orgSlug: string) {

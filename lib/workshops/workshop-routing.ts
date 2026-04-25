@@ -19,7 +19,7 @@ export function getWorkshopPublicPath(
     title: '',
   })
   const segment = m.slug || workshop.id
-  return `/o/${orgSlug}/workshops/${segment}`
+  return `/o/${orgSlug}/workshop/${segment}`
 }
 
 /** Public DCC marketing path (no org segment). */

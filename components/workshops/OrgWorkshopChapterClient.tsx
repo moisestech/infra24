@@ -46,7 +46,7 @@ export function OrgWorkshopChapterClient({
             workshopId={workshopId}
             chapterSlug={chapterSlug}
             shell="org"
-            backHref={`/o/${encodeURIComponent(orgSlug)}/workshops/${encKey}`}
+            backHref={`/o/${encodeURIComponent(orgSlug)}/workshop/${encKey}`}
             chapterHref={(slug) => `${base}/${encodeURIComponent(slug)}`}
           />
         )}

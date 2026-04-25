@@ -98,7 +98,7 @@ export default function WorkshopDetailPage() {
       id: workshop.id,
     })
     if (isWorkshopUuid(workshopKey) && m.slug) {
-      router.replace(`/o/${slug}/workshops/${m.slug}`)
+      router.replace(`/o/${slug}/workshop/${m.slug}`)
     }
   }, [workshop, workshopKey, slug, router])
 
@@ -210,7 +210,7 @@ export default function WorkshopDetailPage() {
           <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
           <div className="mx-auto max-w-4xl px-4 py-16 text-center">
             <h1 className="mb-4 text-3xl font-bold">Workshop not found</h1>
-            <Link href={`/o/${slug}/workshops`}>
+            <Link href={`/o/${slug}/workshop`}>
               <Button>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to workshops
@@ -262,7 +262,7 @@ export default function WorkshopDetailPage() {
         <UnifiedNavigation config={getNavigationConfig()} userRole="admin" />
         <div className="mx-auto max-w-6xl px-4 py-10">
           <div className="mb-8">
-            <Link href={`/o/${slug}/workshops`}>
+            <Link href={`/o/${slug}/workshop`}>
               <Button variant="outline" size="sm">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to workshops
@@ -402,7 +402,7 @@ export default function WorkshopDetailPage() {
 
               <Button asChild variant="outline" size="sm" className="w-full">
                 <Link
-                  href={`/o/${slug}/workshops/${encodeURIComponent(marketing.slug || workshopKey)}/packet`}
+                  href={`/o/${slug}/workshop/${encodeURIComponent(marketing.slug || workshopKey)}/packet`}
                 >
                   <FileText className="mr-2 h-4 w-4" />
                   Packet page
