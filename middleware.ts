@@ -49,6 +49,8 @@ function isPublicRoute(pathname: string): boolean {
     '/about',
     '/contact',
     '/grant',
+    /** Funder-facing packet hub (must stay public; not under /grant). */
+    '/knight',
   ]
 
   return publicRoutes.some((route) => pathname.startsWith(route))
