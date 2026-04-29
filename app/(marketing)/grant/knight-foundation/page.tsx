@@ -22,9 +22,17 @@ export default function KnightFoundationGrantPage() {
         className="scroll-mt-14 border-b border-neutral-200 bg-white"
       >
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-          <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-            Knight Foundation–aligned pilot overview
-          </p>
+          <div className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+            <p>Knight Foundation–aligned pilot overview</p>
+            <p className="mt-2 font-normal normal-case tracking-normal text-neutral-600">
+              <Link
+                href="/knight"
+                className="font-medium text-neutral-800 underline-offset-4 hover:underline"
+              >
+                Reviewer packet (downloads + context) → dcc.miami/knight
+              </Link>
+            </p>
+          </div>
           <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-neutral-900 sm:text-4xl lg:text-[2.5rem] lg:leading-[1.15]">
             {p.hero.headline}
           </h1>

@@ -8,3 +8,4 @@ export { CardGrid, type CardGridItem } from './CardGrid';
 export { ProgramLayout } from './ProgramLayout';
 export { CaseStudyLayout } from './CaseStudyLayout';
 export { SupportLayout } from './SupportLayout';
+export { PacketDownloadList } from './PacketDownloadList';

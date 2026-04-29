@@ -200,6 +200,14 @@ const pages: CdcPageDef[] = [
     parent: '/grants',
     layout: 'support',
   }),
+  p({
+    path: '/knight',
+    title: 'Knight pilot packet',
+    description:
+      'Single hub for the Knight-aligned Miami pilot: narrative, DCC identity, downloads (as published), evidence, and contact.',
+    parent: '/grants',
+    layout: 'support',
+  }),
 ];
 
 const SUPPORT_PRIORITY_SLUGS = [

@@ -46,6 +46,11 @@ const grantCards = [
     title: 'Materials',
     description: 'One-pager, bios, deck, and press-ready descriptions (as they are published).',
   },
+  {
+    href: '/knight',
+    title: 'Knight pilot packet',
+    description: 'Single short URL for reviewers: narrative, identity, downloads, evidence, and contact.',
+  },
 ] as const;
 
 export default function GrantsIndexPage() {
@@ -97,13 +102,20 @@ export default function GrantsIndexPage() {
           body="We can share priorities, timelines, and how Infra24 implements the technical layer."
           primaryLabel="Contact funders"
           primaryHref="/contact/funders"
-          secondaryLabel="Download hub"
-          secondaryHref="/grants/materials"
+          secondaryLabel="Knight pilot packet (one link)"
+          secondaryHref="/knight"
         />
         <p className="mt-8 text-sm text-neutral-500">
-          Legacy reference:{' '}
+          <Link href="/knight" className="font-medium text-neutral-700 underline-offset-4 hover:underline">
+            dcc.miami/knight
+          </Link>
+          {' · '}
+          <Link href="/grants/materials" className="underline-offset-4 hover:underline">
+            Materials index
+          </Link>
+          {' · '}
           <Link href="/grant/knight-foundation" className="underline-offset-4 hover:underline">
-            Knight Miami pilot note
+            Full narrative page
           </Link>
         </p>
       </Section>
