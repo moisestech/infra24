@@ -123,7 +123,12 @@ export const homeVisualProcessStrip: HomeVisualItem[] = [
 
 /** Proof section — three artwork tiles */
 export const homeVisualProofEcho: HomeVisualItem[] = [
-  photo(dccHomeProofPhotos[0].src, dccHomeProofPhotos[0].alt, 'Field work', 'DCC Miami'),
+  photo(
+    dccHomeProofPhotos[0].src,
+    dccHomeProofPhotos[0].alt,
+    'ART/TEC — value of the image',
+    'Moises Sanabria'
+  ),
   photo(dccHomeProofPhotos[1].src, dccHomeProofPhotos[1].alt, 'Concept', 'DCC Miami'),
   photo(dccHomeProofPhotos[2].src, dccHomeProofPhotos[2].alt, 'Systems art', 'DCC Miami'),
 ];

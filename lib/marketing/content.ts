@@ -517,7 +517,7 @@ export const marketingNavSheetGroups = [
 
 export const marketingNavSheetFooterHrefs = ['/contact', '/infra24'] as const;
 
-/** Lucide icon keys for compact marketing header (see `SiteHeader`). */
+/** Lucide icon keys for the marketing header icon strip at `lg+` (see `SiteHeader`). */
 export type MarketingHeaderNavIconKey =
   | 'info'
   | 'layout-grid'
@@ -527,7 +527,7 @@ export type MarketingHeaderNavIconKey =
   | 'handshake'
   | 'mail';
 
-/** Desktop header: left cluster — `href` must exist in `navItems`; `label` for tooltips and `aria-label`. */
+/** Header icon strip (`lg+` only) — left cluster; `href` must exist in `navItems`; `label` for tooltips and `aria-label`. */
 export const marketingHeaderNavLeft = [
   { href: '/about', label: 'About', icon: 'info' satisfies MarketingHeaderNavIconKey },
   { href: '/programs', label: 'Services', icon: 'layout-grid' satisfies MarketingHeaderNavIconKey },
@@ -535,7 +535,7 @@ export const marketingHeaderNavLeft = [
   { href: '/grants', label: 'Pilot', icon: 'flag' satisfies MarketingHeaderNavIconKey },
 ] as const;
 
-/** Desktop header: right cluster before Apply + theme. */
+/** Header icon strip (`lg+` only) — right cluster of icons (rendered after left cluster in DOM). */
 export const marketingHeaderNavRight = [
   { href: '/network', label: 'Network', icon: 'share-2' satisfies MarketingHeaderNavIconKey },
   { href: '/partners', label: 'Partners', icon: 'handshake' satisfies MarketingHeaderNavIconKey },

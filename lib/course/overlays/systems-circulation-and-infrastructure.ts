@@ -1,11 +1,17 @@
 import type { Chapter, TemplateLink } from '@/lib/course/types'
 
-const P1 =
-  'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80&auto=format&fit=crop'
-const P2 =
-  'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80&auto=format&fit=crop'
 const P3 =
   'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80&auto=format&fit=crop'
+const BRANDON_SHU_LEA_CHEANG_IMAGE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777134988/dccmiami/workshops/vibe-coding-net-art/ShuLeaCheang_Opening_Photo_MilenaWojhan-56-landscape_e3lczs.webp'
+const HEATH_BUNTING_PROFILE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777135084/dccmiami/workshops/vibe-coding-net-art/heath-bunting-profile_gvpkin.jpg'
+const SHU_LEA_CHEANG_PROFILE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777136786/dccmiami/workshops/vibe-coding-net-art/shu-lea-cheang-profile_tsnlfc.webp'
+const RHIZOME_LOGO =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128623/dccmiami/workshops/vibe-coding-net-art/rhizome-logo-square_mfrc9o.png'
+const COMMUNICATION_CREATES_CONFLICT_BANNER =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777137523/dccmiami/workshops/vibe-coding-net-art/communication-creates-conflict-rhizome-banner_ofil8c.png'
 
 const starterLinks: TemplateLink[] = [
   { label: 'Open a new CodePen', href: 'https://codepen.io/pen/', kind: 'codepen' },
@@ -84,9 +90,10 @@ export function systemsCirculationAndInfrastructureAsChapter(): Chapter {
           'An online platform through which users could send messages via postcard, fax, or a sign held in a Tokyo subway station—routing the internet across public and private channels.',
         institution: 'Rhizome Net Art Anthology',
         image: {
-          src: P1,
-          alt: 'Placeholder mood image for Communication Creates Conflict — replace with anthology capture.',
-          caption: 'Placeholder — replace when cleared.',
+          src: COMMUNICATION_CREATES_CONFLICT_BANNER,
+          alt: 'Heath Bunting, 1995 — Communication Creates Conflict (Rhizome Net Art Anthology banner).',
+          caption: 'Heath Bunting · 1995 — Communication Creates Conflict.',
+          credit: 'Rhizome Net Art Anthology',
         },
         links: [
           { label: 'View anthology page', href: 'https://anthology.rhizome.org/communication-creates-conflict' },
@@ -101,8 +108,9 @@ export function systemsCirculationAndInfrastructureAsChapter(): Chapter {
           'A year-long web narrative and performance exploring what Cheang called the “digi gender social body,” connecting public space and cyberspace through a collaborative online project (Rhizome anthology; Guggenheim commission context).',
         institution: 'Rhizome Net Art Anthology',
         image: {
-          src: P2,
-          alt: 'Placeholder mood image for Brandon — replace with anthology capture.',
+          src: BRANDON_SHU_LEA_CHEANG_IMAGE,
+          alt: 'Shu Lea Cheang — Brandon project opening context (landscape reference).',
+          caption: 'Brandon — reference still.',
         },
         links: [
           { label: 'View anthology page', href: 'https://anthology.rhizome.org/brandon' },
@@ -116,6 +124,10 @@ export function systemsCirculationAndInfrastructureAsChapter(): Chapter {
         description:
           'British artist known for repurposing communications channels and developing open, democratic communication systems across the internet and public space.',
         website: 'https://www.irational.org/',
+        image: {
+          src: HEATH_BUNTING_PROFILE,
+          alt: 'Heath Bunting profile portrait.',
+        },
         tags: ['communication systems', 'public space', 'network intervention'],
       },
       {
@@ -123,6 +135,10 @@ export function systemsCirculationAndInfrastructureAsChapter(): Chapter {
         description:
           'Pioneering figure in internet-based art whose work often links interface, social systems, techno-bodies, and institutional power.',
         website: 'https://mauvaiscontact.info/',
+        image: {
+          src: SHU_LEA_CHEANG_PROFILE,
+          alt: 'Shu Lea Cheang profile portrait.',
+        },
         tags: ['networked installation', 'systems', 'techno-body politics'],
       },
     ],
@@ -154,12 +170,20 @@ export function systemsCirculationAndInfrastructureAsChapter(): Chapter {
         website: 'https://anthology.rhizome.org/',
         quote:
           "Rhizome has defined 'net art' as 'art that acts on the network, or is acted on by it.'",
+        image: {
+          src: RHIZOME_LOGO,
+          alt: 'Rhizome logo used for Net Art Anthology definition lens context.',
+        },
       },
       {
         name: 'Anthology: Communication Creates Conflict',
         description:
           'How a browser work can route messages through urban space and communication infrastructures rather than staying inside one screen.',
         website: 'https://anthology.rhizome.org/communication-creates-conflict',
+        image: {
+          src: RHIZOME_LOGO,
+          alt: 'Rhizome logo used for Communication Creates Conflict lens context.',
+        },
       },
     ],
     books: [
@@ -205,14 +229,15 @@ export function systemsCirculationAndInfrastructureAsChapter(): Chapter {
     ],
     imageAssets: [
       {
-        src: P1,
-        alt: 'Chapter 8 mood image — Communication Creates Conflict placeholder.',
-        caption: 'Placeholder — replace when cleared.',
+        src: COMMUNICATION_CREATES_CONFLICT_BANNER,
+        alt: 'Heath Bunting, 1995 — Communication Creates Conflict (Rhizome anthology banner).',
+        caption: 'Heath Bunting · 1995 — Communication Creates Conflict.',
+        credit: 'Rhizome Net Art Anthology',
       },
       {
-        src: P2,
-        alt: 'Chapter 8 mood image — Brandon placeholder.',
-        caption: 'Placeholder — replace when cleared.',
+        src: BRANDON_SHU_LEA_CHEANG_IMAGE,
+        alt: 'Shu Lea Cheang — Brandon reference still.',
+        caption: 'Brandon — reference still.',
       },
       {
         src: P3,

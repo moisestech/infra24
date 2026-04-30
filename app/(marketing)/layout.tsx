@@ -78,7 +78,7 @@ export default function MarketingLayout({
     >
       <MarketingJsonLd />
       <SiteHeader />
-      <main className="min-h-[60vh]">{children}</main>
+      <main className="min-h-[60vh] scroll-smooth">{children}</main>
       <SiteFooter />
     </div>
   );

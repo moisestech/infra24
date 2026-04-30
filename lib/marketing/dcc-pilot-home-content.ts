@@ -69,7 +69,7 @@ export const dccPilotHomeHero = {
   supportingSubhead: dccHeroRotatingSubheads[0],
   trustLine:
     'We treat digital and technical support as cultural infrastructure: practical outputs, public learning, and systems that can travel—not a one-off vendor story.',
-  primaryCta: { label: 'Explore Services', href: '/#year-1-services' },
+  primaryCta: { label: 'Explore Services', href: '/#what-dcc-does' },
   secondaryCta: { label: 'Partner With DCC', href: '/partners' },
 } as const;
 

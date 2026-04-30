@@ -74,6 +74,15 @@
     radial-gradient(ellipse 55% 50% at 50% 100%, var(--cdc-mesh-magenta), transparent 45%);
 }
 
+/* Dark: deeper base so headline + mesh read clearly on marketing pages */
+.dark .cdc-mesh-hero-bg {
+  background-color: rgb(10 14 26);
+  background-image:
+    radial-gradient(ellipse 90% 55% at 15% 35%, rgba(0, 212, 170, 0.14), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 85% 55%, rgba(255, 107, 53, 0.1), transparent 50%),
+    radial-gradient(ellipse 55% 50% at 50% 100%, rgba(255, 0, 136, 0.09), transparent 45%);
+}
+
 .cdc-grid-overlay {
   background-size: 24px 24px;
   background-image:
@@ -684,4 +693,280 @@ html.dark .cdc-webcore-faq-shell {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 12px 40px -28px rgba(0, 212, 170, 0.08);
+}
+
+/* —— Knight packet: audience heading (gradient + chromatic glitch, light/dark) —— */
+
+@keyframes cdc-knight-audience-gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes cdc-knight-audience-glitch {
+  0%,
+  91%,
+  100% {
+    text-shadow: none;
+  }
+  92% {
+    text-shadow:
+      1px 0 rgba(255, 0, 136, 0.45),
+      -1px 0 rgba(0, 212, 170, 0.4);
+  }
+  93% {
+    text-shadow:
+      -1px 0 rgba(255, 107, 53, 0.45),
+      1px 0 rgba(124, 58, 237, 0.35);
+  }
+  94% {
+    text-shadow: 0.5px 0 rgba(0, 212, 170, 0.35);
+  }
+}
+
+.cdc-marketing .knight-audience-link__label {
+  position: relative;
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  background-image: linear-gradient(
+    105deg,
+    #0f172a 0%,
+    rgb(0, 160, 130) 32%,
+    #7c3aed 58%,
+    #0f172a 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation:
+    cdc-knight-audience-gradient 7s ease-in-out infinite,
+    cdc-knight-audience-glitch 4.8s steps(1, end) infinite;
+}
+
+.dark .cdc-marketing .knight-audience-link__label {
+  background-image: linear-gradient(
+    105deg,
+    #e2e8f0 0%,
+    rgb(110, 231, 200) 34%,
+    #c084fc 68%,
+    #f8fafc 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdc-marketing .knight-audience-link__label {
+    animation: none;
+    background-position: 40% 50%;
+  }
+}
+
+/* —— Knight packet: partner card titles (gradient + pixel / sleek hover, in-packet anchors) —— */
+
+@keyframes cdc-knight-partner-dcc-flow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes cdc-knight-partner-knight-shine {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 40%;
+  }
+}
+
+@keyframes cdc-knight-partner-knight-scan {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  45% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translateX(220%) skewX(-12deg);
+    opacity: 0;
+  }
+}
+
+.cdc-marketing .knight-partner-title-link {
+  isolation: isolate;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* DCC: teal/violet gradient + 4px web-core grid on hover */
+.cdc-marketing .knight-partner-title-link--dcc::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: -3px -4px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(45, 212, 191, 0.14) 3px,
+      rgba(45, 212, 191, 0.14) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      rgba(99, 102, 241, 0.12) 3px,
+      rgba(99, 102, 241, 0.12) 4px
+    );
+  image-rendering: pixelated;
+}
+
+.cdc-marketing .knight-partner-title-link--dcc:hover::before,
+.cdc-marketing .knight-partner-title-link--dcc:focus-visible::before {
+  opacity: 1;
+}
+
+.cdc-marketing .knight-partner-title-link--dcc .knight-partner-title-link__label {
+  position: relative;
+  z-index: 1;
+  display: inline;
+  font-weight: 600;
+  color: inherit;
+  transition:
+    filter 0.2s ease,
+    text-shadow 0.2s ease;
+}
+
+.cdc-marketing .knight-partner-title-link--dcc:hover .knight-partner-title-link__label,
+.cdc-marketing .knight-partner-title-link--dcc:focus-visible .knight-partner-title-link__label {
+  background-image: linear-gradient(
+    102deg,
+    #0f766e 0%,
+    #14b8a6 28%,
+    #5eead4 42%,
+    #6366f1 72%,
+    #4338ca 100%
+  );
+  background-size: 220% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: cdc-knight-partner-dcc-flow 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(45, 212, 191, 0.35));
+}
+
+.dark .cdc-marketing .knight-partner-title-link--dcc:hover .knight-partner-title-link__label,
+.dark .cdc-marketing .knight-partner-title-link--dcc:focus-visible .knight-partner-title-link__label {
+  background-image: linear-gradient(
+    102deg,
+    #5eead4 0%,
+    #2dd4bf 22%,
+    #a78bfa 55%,
+    #e9d5ff 100%
+  );
+}
+
+/* Knight Arts: amber chrome gradient + sweep highlight */
+.cdc-marketing .knight-partner-title-link--knight::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: -2px;
+  bottom: -2px;
+  left: 0;
+  width: 42%;
+  pointer-events: none;
+  border-radius: 4px;
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(251, 191, 36, 0.22) 38%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(251, 146, 60, 0.2) 62%,
+    transparent 100%
+  );
+  transform: translateX(-120%) skewX(-11deg);
+  transition: opacity 0.2s ease;
+}
+
+.cdc-marketing .knight-partner-title-link--knight:hover::after,
+.cdc-marketing .knight-partner-title-link--knight:focus-visible::after {
+  opacity: 1;
+  animation: cdc-knight-partner-knight-scan 1.1s ease-out;
+}
+
+.cdc-marketing .knight-partner-title-link--knight .knight-partner-title-link__label {
+  position: relative;
+  z-index: 1;
+  display: inline;
+  font-weight: 600;
+  color: inherit;
+}
+
+.cdc-marketing .knight-partner-title-link--knight:hover .knight-partner-title-link__label,
+.cdc-marketing .knight-partner-title-link--knight:focus-visible .knight-partner-title-link__label {
+  background-image: linear-gradient(
+    118deg,
+    #92400e 0%,
+    #d97706 22%,
+    #fbbf24 48%,
+    #fb923c 72%,
+    #f59e0b 100%
+  );
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: cdc-knight-partner-knight-shine 2.4s ease-in-out infinite;
+}
+
+.dark .cdc-marketing .knight-partner-title-link--knight:hover .knight-partner-title-link__label,
+.dark .cdc-marketing .knight-partner-title-link--knight:focus-visible .knight-partner-title-link__label {
+  background-image: linear-gradient(
+    118deg,
+    #fcd34d 0%,
+    #fbbf24 28%,
+    #fdba74 55%,
+    #fed7aa 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdc-marketing .knight-partner-title-link--dcc:hover .knight-partner-title-link__label,
+  .cdc-marketing .knight-partner-title-link--dcc:focus-visible .knight-partner-title-link__label,
+  .cdc-marketing .knight-partner-title-link--knight:hover .knight-partner-title-link__label,
+  .cdc-marketing .knight-partner-title-link--knight:focus-visible .knight-partner-title-link__label {
+    animation: none;
+  }
+
+  .cdc-marketing .knight-partner-title-link--knight:hover::after,
+  .cdc-marketing .knight-partner-title-link--knight:focus-visible::after {
+    animation: none;
+    transform: translateX(0) skewX(-11deg);
+    opacity: 0.45;
+    width: 100%;
+  }
 }

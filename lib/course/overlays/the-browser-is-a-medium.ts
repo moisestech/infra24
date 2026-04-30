@@ -8,6 +8,8 @@ const P3 =
   'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80&auto=format&fit=crop'
 const RAFAEL_ALMOST_THERE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125902/dccmiami/workshops/vibe-coding-net-art/almost-there-rafel-rozenthal-2015_slobsc.jpg'
+const MBFBFTW_RHIZOME_IMAGE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777125599/dccmiami/workshops/vibe-coding-net-art/olia-lialina-my-boyfriend-came-back-from-war-rhizome_l05f0q.jpg'
 const OLIA_PFP =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127227/dccmiami/workshops/vibe-coding-net-art/Olia_Lialina_at_the_GeoCities_Research_Institute_Library_at_Merz_Akademie_Stuttgart_pfp_xmn1yl.jpg'
 const RAFAEL_PFP =
@@ -18,6 +20,8 @@ const TATE_INTERNET_IMAGE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128101/dccmiami/workshops/vibe-coding-net-art/tate-internet-art_bhplg0.jpg'
 const RHIZOME_LOGO =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128623/dccmiami/workshops/vibe-coding-net-art/rhizome-logo-square_mfrc9o.png'
+const WHITNEY_LOGO =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127857/dccmiami/workshops/vibe-coding-net-art/whitney_museum_logo-square_nd7hef.png'
 
 const starterLinks: TemplateLink[] = [
   { label: 'Open a new CodePen', href: 'https://codepen.io/pen/', kind: 'codepen' },
@@ -96,9 +100,9 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
           'A foundational net artwork where browser frames and subdivision are part of the work’s emotional and narrative structure.',
         institution: 'Rhizome Net Art Anthology',
         image: {
-          src: P1,
-          alt: 'Placeholder still for My Boyfriend Came Back from the War — replace with anthology capture.',
-          caption: 'Placeholder — replace with rights-cleared frame still.',
+          src: MBFBFTW_RHIZOME_IMAGE,
+          alt: 'My Boyfriend Came Back from the War reference image from Rhizome.',
+          caption: 'Rhizome reference still.',
         },
         links: [
           { label: 'View work', href: 'https://anthology.rhizome.org/my-boyfriend-came-back-from-the-war' },
@@ -191,6 +195,10 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
         description: 'Useful for understanding the website itself as a visual and experiential medium, not just a delivery surface.',
         website: 'https://whitney.org/artists/17027',
         quote: 'uses the Internet as his canvas',
+        image: {
+          src: WHITNEY_LOGO,
+          alt: 'Whitney Museum logo used for curator lens context.',
+        },
       },
     ],
     books: [
@@ -235,23 +243,7 @@ export function theBrowserIsAMediumAsChapter(): Chapter {
       { slug: 'scroll', term: 'Scroll' },
       { slug: 'url', term: 'URL' },
     ],
-    imageAssets: [
-      {
-        src: P1,
-        alt: 'Chapter 2 anchor image for My Boyfriend Came Back from the War',
-        caption: 'Placeholder — replace with rights-cleared capture.',
-      },
-      {
-        src: RAFAEL_ALMOST_THERE,
-        alt: 'Chapter 2 reference image for Almost There (2015).',
-        caption: 'Whitney / artport context reference.',
-      },
-      {
-        src: P3,
-        alt: 'Whitney artport reference mood image',
-        caption: 'Placeholder mood still for institutional framing.',
-      },
-    ],
+    imageAssets: [],
     lessonEnrichment: {
       themeWrapperClass: 'lesson-theme-browser-as-medium',
       browserFrameAnatomy: {

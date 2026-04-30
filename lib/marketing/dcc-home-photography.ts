@@ -60,6 +60,20 @@ export const dccHomePhotos = {
     src: `${BASE}/v1776479297/dccmiami/artists/fabiola-larios/Fabiola_Larios_Surveillance_Cutie_2024_srek0k.webp`,
     alt: 'Surveillance Cutie (2024) by Fabiola Larios: rhinestone-covered CRT monitors on wire shelving, pink neon “Smile” sign, and crumpled silver foil backdrop.',
   },
+  /** Moises Sanabria — public research talk (ART/TEC). Used on homepage proof band and Knight packet banner. */
+  moisesArtec2024Talk: {
+    src: `${BASE}/v1739628542/art/moisestech-website/talks/24_artec_moises-sanabria_valor-de-la-imagen_dfbhqb.webp`,
+    alt: 'Moises Sanabria presenting on the value of the image at an ART/TEC session, projected slides and stage lighting.',
+  },
+  /** Knight packet / grants — ART/TEC 2025 event documentation. */
+  knightArtTec2025Talk: {
+    src: `${BASE}/v1777517851/dccmiami/knight/ART_TEC_2025_talk_h4u9wd.jpg`,
+    alt: 'ART/TEC 2025 — presentation and audience in the conference room.',
+  },
+  knightFabiolaArtTec2025: {
+    src: `${BASE}/v1777518092/dccmiami/knight/fabiola_ART_TEC_2025_fsp8fv.png`,
+    alt: 'Fabiola Larios presenting at ART/TEC 2025, on stage with projection.',
+  },
 } as const satisfies Record<string, DccHomePhoto>;
 
 /** Hero collage: large cell + three stacked tiles (left-to-right column). */
@@ -78,7 +92,7 @@ export const dccHomeWhyMiamiPhotos = [
 
 /** Proof / patterns intro row (three tiles). */
 export const dccHomeProofPhotos = [
-  dccHomePhotos.meditationBattlestation,
+  dccHomePhotos.moisesArtec2024Talk,
   dccHomePhotos.smartShoppers,
   dccHomePhotos.babyAgi,
 ] as const;

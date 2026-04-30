@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import Link from 'next/link';
 import { MarketingSection } from '@/components/marketing/MarketingSection';
 import { SectionWithRightImageFade } from '@/components/marketing/SectionWithRightImageFade';
@@ -29,7 +28,6 @@ import {
   dccPilotHomeHero,
   dccPilotIntro,
   dccProofSectionIntro,
-  dccYear1ServicePillars,
 } from '@/lib/marketing/dcc-pilot-home-content';
 import {
   homeVisualInfra24Band,
@@ -90,6 +88,12 @@ const HomeDccNetworkSection = dynamic(
       />
     ),
   }
+);
+
+const ServiceEvidenceSection = dynamic(
+  () =>
+    import('@/components/marketing/dcc/ServiceEvidenceSection').then((m) => m.ServiceEvidenceSection),
+  { ssr: true }
 );
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -211,49 +215,10 @@ export default function MarketingHomePage() {
       </SectionWithRightImageFade>
 
       <MarketingSection
-        id="year-1-services"
+        id="what-dcc-does"
         className="scroll-mt-24 border-y border-[var(--cdc-border)] bg-[#fafafa] py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16"
       >
-        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-          Year 1 service menu
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
-          A defined set of pilot services—concrete deliverables, public learning, and partner-ready outputs.
-        </p>
-        <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {dccYear1ServicePillars.map((pillar) => (
-            <li
-              key={pillar.id}
-              className="flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900"
-            >
-              <div className="relative aspect-[16/10] w-full shrink-0 bg-neutral-100 dark:bg-neutral-800">
-                <Image
-                  src={pillar.image.src}
-                  alt={pillar.image.alt}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-              </div>
-              <div className="flex flex-1 flex-col p-5">
-                <h3 className="text-sm font-semibold leading-snug text-neutral-900 dark:text-neutral-100">
-                  {pillar.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-                  {pillar.summary}
-                </p>
-                <p className="mt-3 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
-                  Who it serves
-                </p>
-                <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">{pillar.whoItServes}</p>
-                <p className="mt-3 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
-                  Deliverable
-                </p>
-                <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">{pillar.deliverable}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <ServiceEvidenceSection />
       </MarketingSection>
 
       <SectionWithRightImageFade

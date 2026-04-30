@@ -2,10 +2,18 @@ import type { Chapter } from '@/lib/course/types'
 
 const P =
   'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&q=80&auto=format&fit=crop'
-const P2 =
-  'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80&auto=format&fit=crop'
 const P3 =
   'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=1200&q=80&auto=format&fit=crop'
+const CH9_BANNER =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777137045/dccmiami/workshops/vibe-coding-net-art/rafael-rozenthal-almost-there-whitney-artport_zdbv2j.png'
+const GITHUB_PAGES_BANNER =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777137137/dccmiami/workshops/vibe-coding-net-art/github-pages-banner_m7owgv.jpg'
+const TATE_LOGO =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127470/dccmiami/workshops/vibe-coding-net-art/tate-logo-white-bg_rqvdww.webp'
+const CHRISTIANE_PAUL_PROFILE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777137299/dccmiami/workshops/vibe-coding-net-art/christiane-paul-curator_ep2egw.webp'
+const RAFAEL_ROZENDAAL_PFP =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127697/dccmiami/workshops/vibe-coding-net-art/Rafael-Rozendaal_pfp_idh71i.jpg'
 
 /** Chapter 9 — publishing, liveness, URLs; Whitney / Rozendaal / artport + GitHub Pages spine. */
 export function publishingLivenessAndTheArtworkAsWebsiteAsChapter(): Chapter {
@@ -63,9 +71,9 @@ export function publishingLivenessAndTheArtworkAsWebsiteAsChapter(): Chapter {
       },
     ],
     chapterBanner: {
-      src: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1800&q=80&auto=format&fit=crop',
-      alt: 'Calm abstract green gradient suggesting a live public interface — chapter banner placeholder.',
-      caption: 'Replace with Almost There / artport captures or your own documentation stills.',
+      src: CH9_BANNER,
+      alt: 'Rafaël Rozendaal Almost There reference image from Whitney artport context.',
+      caption: 'Almost There — Whitney artport reference.',
     },
     anchorWorks: [
       {
@@ -113,8 +121,8 @@ export function publishingLivenessAndTheArtworkAsWebsiteAsChapter(): Chapter {
           'Dutch-Brazilian artist whose browser-based works and commissions treat the site itself as artwork; Whitney materials describe him as an artist who “uses the Internet as his canvas.”',
         website: 'https://newrafael.com/',
         image: {
-          src: P2,
-          alt: 'Placeholder portrait tile for Rafaël Rozendaal.',
+          src: RAFAEL_ROZENDAAL_PFP,
+          alt: 'Rafaël Rozendaal profile portrait.',
         },
         tags: ['site as artwork', 'browser composition', 'internet as canvas'],
       },
@@ -136,8 +144,8 @@ export function publishingLivenessAndTheArtworkAsWebsiteAsChapter(): Chapter {
           'Official static hosting from a repository—ideal for teaching how HTML, CSS, and JavaScript become a public site.',
         website: 'https://docs.github.com/en/pages/getting-started-with-github-pages/about-github-pages',
         image: {
-          src: P2,
-          alt: 'Placeholder suggesting docs / deployment — replace with GitHub Pages screenshot.',
+          src: GITHUB_PAGES_BANNER,
+          alt: 'GitHub Pages documentation banner reference.',
         },
       },
     ],
@@ -147,6 +155,10 @@ export function publishingLivenessAndTheArtworkAsWebsiteAsChapter(): Chapter {
         description:
           'Curator of Digital Art at the Whitney; Sunrise/Sunset and related commissions frame browser-native, timed internet art inside the museum’s live site.',
         website: 'https://whitney.org/exhibitions/rafael-rozendaal',
+        image: {
+          src: CHRISTIANE_PAUL_PROFILE,
+          alt: 'Christiane Paul profile portrait used for curator lens context.',
+        },
       },
       {
         name: 'Tate — keeping web-based art online',
@@ -154,6 +166,10 @@ export function publishingLivenessAndTheArtworkAsWebsiteAsChapter(): Chapter {
           'Research framing on why keeping a work online and functional is part of meaning and preservation for web-based art.',
         website:
           'https://www.tate.org.uk/research/reshaping-the-collectible/net-art-uncomfortable-proximity-keeping-web-based-art-online',
+        image: {
+          src: TATE_LOGO,
+          alt: 'Tate logo on white background used for Tate research lens context.',
+        },
       },
     ],
     books: [
@@ -268,9 +284,9 @@ export function publishingLivenessAndTheArtworkAsWebsiteAsChapter(): Chapter {
         credit: 'Whitney Museum of American Art',
       },
       {
-        src: P2,
-        alt: 'Second placeholder — deployment / docs mood.',
-        caption: 'Secondary still for GitHub Pages workflow.',
+        src: GITHUB_PAGES_BANNER,
+        alt: 'GitHub Pages documentation banner reference.',
+        caption: 'GitHub Pages publishing workflow reference.',
         credit: 'GitHub Docs',
       },
     ],

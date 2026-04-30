@@ -10,6 +10,10 @@ const RHIZOME_ANTHOLOGY_LANDSCAPE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128953/dccmiami/workshops/vibe-coding-net-art/rhizome-net-art-anthology-landscape_agltis.webp'
 const MICHAEL_CONNOR_PFP =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777129047/dccmiami/workshops/vibe-coding-net-art/MichaelConnor_PhotobyScottRudd_cqgyau.webp'
+const REMIX_LINEAGE_IMAGE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777132960/dccmiami/workshops/vibe-coding-net-art/remix-rhizome-net-art-anthology_plmesx.png'
+const OLIA_LIALINA_PORTRAIT =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127227/dccmiami/workshops/vibe-coding-net-art/Olia_Lialina_at_the_GeoCities_Research_Institute_Library_at_Merz_Akademie_Stuttgart_pfp_xmn1yl.jpg'
 
 /** Chapter 3 — hypertext as narrative structure; Olia Lialina / MBFBFTW + Rhizome + Tate spines. */
 export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
@@ -110,8 +114,8 @@ export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
           'The work’s many remakes show that hypertext is a transferable structure—frame logic and emotional fragmentation reinterpreted across later web platforms.',
         institution: 'Rhizome Net Art Anthology',
         image: {
-          src: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=80&auto=format&fit=crop',
-          alt: 'Placeholder suggesting circulation and reinterpretation — replace with remake documentation.',
+          src: REMIX_LINEAGE_IMAGE,
+          alt: 'Remake and remix lineage image from Rhizome Net Art Anthology context.',
         },
         links: [
           {
@@ -128,8 +132,8 @@ export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
           'Foundational net artist: browser-native narrative, hypertext structure, and early web aesthetics. Keep *My Boyfriend Came Back from the War* open in one tab while you read.',
         website: 'https://art.teleportacia.org/',
         image: {
-          src: PLACEHOLDER_STILL,
-          alt: 'Portrait or representative image placeholder for Olia Lialina.',
+          src: OLIA_LIALINA_PORTRAIT,
+          alt: 'Olia Lialina portrait.',
         },
       },
     ],
@@ -204,18 +208,7 @@ export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
       { slug: 'link-as-structure', term: 'Link as structure' },
       { slug: 'nonlinear-narrative', term: 'Nonlinear narrative' },
     ],
-    imageAssets: [
-      {
-        src: MBFBFTW_NETSCAPE,
-        alt: 'My Boyfriend Came Back from the War Netscape frame image.',
-        caption: 'Hypertext frame structure reference.',
-      },
-      {
-        src: 'https://images.unsplash.com/photo-1517694712202-3dd5178143fa?w=1200&q=80&auto=format&fit=crop',
-        alt: 'Second placeholder for remakes / circulation.',
-        caption: 'Secondary still for remake lineage section.',
-      },
-    ],
+    imageAssets: [],
     artifact: {
       title: 'Hypertext fragment',
       description:
@@ -307,8 +300,8 @@ export function hypertextAndNonlinearNarrativeAsChapter(): Chapter {
       },
     ],
     previousChapterSlug: 'the-browser-is-a-medium',
-    /** Benchmark preview handoff: Chapter 3 → 6 (full sequence still available from handbook / reader). */
-    nextChapterSlug: 'remix-appropriation-and-internet-vernacular',
+    /** Sequential handoff: Chapter 3 → 4 (anti-interface / JODI). */
+    nextChapterSlug: 'anti-interface-jodi',
     lessonEnrichment: {
       themeWrapperClass: 'lesson-theme-hypertext-bw',
       frameSplitSteps: [

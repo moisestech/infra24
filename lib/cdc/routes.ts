@@ -208,6 +208,22 @@ const pages: CdcPageDef[] = [
     parent: '/grants',
     layout: 'support',
   }),
+  p({
+    path: '/knight/founders',
+    title: 'Founder bios',
+    description:
+      'Founding team bios for Digital Culture Center Miami — context for funders and partners.',
+    parent: '/knight',
+    layout: 'support',
+  }),
+  p({
+    path: '/knight/budget',
+    title: 'Knight Cities budget',
+    description:
+      'How $400,000 becomes cultural infrastructure: Knight anchor funding, match and partner support, allocation toward public programs and artists, 10x network goals, measurement, and transparency.',
+    parent: '/knight',
+    layout: 'support',
+  }),
 ];
 
 const SUPPORT_PRIORITY_SLUGS = [

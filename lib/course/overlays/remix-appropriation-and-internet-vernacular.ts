@@ -16,6 +16,10 @@ const CH6_BANNER =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777129378/dccmiami/workshops/vibe-coding-net-art/photoshop-gradient-demonstrations-cory-arcangel-whitney-museum_pgtvww.webp'
 const NASTY_NETS_IMAGE =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777129454/dccmiami/workshops/vibe-coding-net-art/nasty-nets-rhizome-net-art-anthology_bkiowi.jpg'
+const RHIZOME_LOGO =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777128623/dccmiami/workshops/vibe-coding-net-art/rhizome-logo-square_mfrc9o.png'
+const WHITNEY_ARTPORT_IMAGE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777132606/dccmiami/workshops/vibe-coding-net-art/whitney-artport-2002_eiri6t.png'
 
 /** Chapter 6 — remix / vernacular / platform aesthetics; Rhizome anthology + Whitney + collective feeds. */
 export function remixAppropriationAsChapter(): Chapter {
@@ -132,8 +136,8 @@ export function remixAppropriationAsChapter(): Chapter {
         website: 'https://www.petrapaulacortright.com/',
         instagram: 'https://www.instagram.com/petracortright/',
         image: {
-          src: P3,
-          alt: 'Petra Cortright avatar using VVEBCAM reference still.',
+          src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777132687/dccmiami/workshops/vibe-coding-net-art/petra-cortright-portrait_vaekih.png',
+          alt: 'Petra Cortright portrait.',
         },
         tags: ['webcam aesthetics', 'YouTube vernacular', 'internet selfhood'],
       },
@@ -144,8 +148,8 @@ export function remixAppropriationAsChapter(): Chapter {
         website: 'https://coryarcangel.com/',
         instagram: 'https://www.instagram.com/coryarcangel/',
         image: {
-          src: P5,
-          alt: 'Placeholder portrait tile for Cory Arcangel.',
+          src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777132349/dccmiami/workshops/vibe-coding-net-art/Photograph_of_artist_Cory_Arcangel_t2xbeg.jpg',
+          alt: 'Cory Arcangel profile portrait.',
         },
         tags: ['software culture', 'defaults', 'internet interventions'],
       },
@@ -156,8 +160,8 @@ export function remixAppropriationAsChapter(): Chapter {
         website: 'https://0100101110101101.org/',
         instagram: 'https://www.instagram.com/evafrancomattes/',
         image: {
-          src: P6,
-          alt: 'Placeholder portrait tile for Eva and Franco Mattes.',
+          src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777132073/dccmiami/workshops/vibe-coding-net-art/eva-and-franco-matters-pfp_k58rol.jpg',
+          alt: 'Eva and Franco Mattes profile portrait.',
         },
         tags: ['internet traces', 'appropriation', 'digital residue'],
       },
@@ -169,7 +173,7 @@ export function remixAppropriationAsChapter(): Chapter {
           'A key institutional frame for historicizing browser-native and platform-native internet artworks such as VVEBCAM and Nasty Nets.',
         website: 'https://anthology.rhizome.org/',
         image: {
-          src: P2,
+          src: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777132460/dccmiami/workshops/vibe-coding-net-art/rhizome-anthology-2017-08-database-ih-1b_bjtsae.jpg',
           alt: 'Placeholder suggesting networked archives — replace with anthology UI capture.',
         },
       },
@@ -179,8 +183,8 @@ export function remixAppropriationAsChapter(): Chapter {
           'A major anchor for internet and software-based practices—including Arcangel exhibitions and Artport commissions that mix professional and amateur technological vernaculars.',
         website: 'https://whitney.org/',
         image: {
-          src: P,
-          alt: 'Placeholder suggesting museum digital context — replace with Whitney capture.',
+          src: WHITNEY_ARTPORT_IMAGE,
+          alt: 'Whitney Artport reference image.',
         },
       },
     ],
@@ -190,12 +194,20 @@ export function remixAppropriationAsChapter(): Chapter {
         description:
           'Useful for understanding how software defaults, internet interventions, and mixed technological vernaculars can be framed institutionally as art.',
         website: 'https://whitney.org/exhibitions/cory-arcangel',
+        image: {
+          src: WHITNEY_ARTPORT_IMAGE,
+          alt: 'Whitney Artport logo used for curator lens context.',
+        },
       },
       {
         name: 'Rhizome’s VVEBCAM presentation',
         description:
           'Useful for reading webcam aesthetics and platform-native self-presentation as historical net art material rather than disposable online ephemera.',
         website: 'https://anthology.rhizome.org/vvebcam',
+        image: {
+          src: RHIZOME_LOGO,
+          alt: 'Rhizome logo used for curator lens context.',
+        },
       },
     ],
     books: [
@@ -243,26 +255,7 @@ export function remixAppropriationAsChapter(): Chapter {
       { slug: 'platform-aesthetics', term: 'Platform aesthetics' },
       { slug: 'software-default', term: 'Software default' },
     ],
-    imageAssets: [
-      {
-        src: P3,
-        alt: 'Chapter still placeholder — webcam / layered UI mood.',
-        caption: 'Hero still — replace with anthology or documentation capture.',
-        credit: 'Source page: Rhizome Net Art Anthology',
-      },
-      {
-        src: P,
-        alt: 'Second placeholder — gradients / software defaults mood.',
-        caption: 'Secondary still for software-default aesthetics.',
-        credit: 'Whitney Museum / work documentation (replace)',
-      },
-      {
-        src: P2,
-        alt: 'Placeholder suggesting collaborative feeds and found artifacts.',
-        caption: 'Tertiary still — Nasty Nets / surf-club collage culture (replace).',
-        credit: 'Source page: Rhizome Net Art Anthology',
-      },
-    ],
+    imageAssets: [],
     artifact: {
       title: 'Vernacular remix study',
       description:
@@ -286,9 +279,9 @@ export function remixAppropriationAsChapter(): Chapter {
       'What cultural baggage came with the material you used?',
       'How did remix change the meaning of the original material?',
     ],
-    /** Benchmark preview: Chapter 3 → 6 */
-    previousChapterSlug: 'hypertext-and-nonlinear-narrative',
-    /** Benchmark preview handoff: Chapter 6 → 9 */
+    /** Sequential handoff: Chapter 6 follows Chapter 5 (interaction / motion). */
+    previousChapterSlug: 'interaction-motion-and-responsive-behavior',
+    /** Handoff: Chapter 6 → 9 (publishing / liveness; benchmark path). */
     nextChapterSlug: 'publishing-liveness-and-the-artwork-as-website',
     lessonEnrichment: {
       themeWrapperClass: 'lesson-theme-remix-collage',

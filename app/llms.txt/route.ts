@@ -13,6 +13,7 @@ export function GET() {
     '## Key pages',
     ...navItems.map((item) => `- ${base}${item.href} (${item.label})`),
     `- ${base}/knight (Knight pilot packet — hub)`,
+    `- ${base}/knight/founders (Founder bios — linked from packet)`,
     `- ${base}/grant/knight-foundation (Miami pilot, Knight Foundation — full narrative)`,
     `- ${base}/platform (platform login / overview)`,
     '',

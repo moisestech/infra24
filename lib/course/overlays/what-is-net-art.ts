@@ -11,7 +11,9 @@ const PETRA_MOMA =
 const OLIA_PFP =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127227/dccmiami/workshops/vibe-coding-net-art/Olia_Lialina_at_the_GeoCities_Research_Institute_Library_at_Merz_Akademie_Stuttgart_pfp_xmn1yl.jpg'
 const RHIZOME_ANTHOLOGY_LOGO =
-  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127371/dccmiami/workshops/vibe-coding-net-art/rhizome-net-art-anthology_ap6nto.png'
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777134683/dccmiami/workshops/vibe-coding-net-art/rhizome-net-art-anthology-browser_rncjy0.png'
+const WHITNEY_ARTPORT_IMAGE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777134590/dccmiami/workshops/vibe-coding-net-art/whitney-artport-image-2_lfqnwb.png'
 const TATE_LOGO =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777127470/dccmiami/workshops/vibe-coding-net-art/tate-logo-white-bg_rqvdww.webp'
 
@@ -152,6 +154,10 @@ export function whatIsNetArtAsChapter(): Chapter {
         description:
           'The Whitney’s portal to internet art and online commissions of net art and new media—including timed browser works on whitney.org.',
         website: 'https://whitney.org/artport',
+        image: {
+          src: WHITNEY_ARTPORT_IMAGE,
+          alt: 'Whitney artport reference image.',
+        },
       },
       {
         name: 'Tate — internet art',
@@ -224,18 +230,7 @@ export function whatIsNetArtAsChapter(): Chapter {
       { slug: 'publishing', term: 'Publishing' },
       { slug: 'vibecoding', term: 'Vibecoding' },
     ],
-    imageAssets: [
-      {
-        src: OLIA_FRAME,
-        alt: 'My Boyfriend Came Back from the War anthology still.',
-        caption: 'Rhizome anthology reference.',
-      },
-      {
-        src: PETRA_MOMA,
-        alt: 'Petra Cortright museum-context reference image.',
-        caption: 'Platform-native portrait context.',
-      },
-    ],
+    imageAssets: [],
     dossierLayout: 'phase',
     resources: [
       {

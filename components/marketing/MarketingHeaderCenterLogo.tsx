@@ -13,7 +13,7 @@ import { dccSiteMeta } from '@/lib/marketing/content';
 import { cn } from '@/lib/utils';
 
 const sizeClass: Record<'topBar' | 'header' | 'menu' | 'drawer', string> = {
-  /** First row under sticky — centered, matches primary wordmark scale */
+  /** Unified header — centered column, primary wordmark scale */
   topBar: 'h-14 w-[15rem] sm:h-16 sm:w-[15rem]',
   /** Legacy inline bar (unused in two-row header; kept for callers) */
   header: 'h-9 w-[min(100%,13.5rem)] sm:h-11 sm:w-[min(100%,15.5rem)]',
