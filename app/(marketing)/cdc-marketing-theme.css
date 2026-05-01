@@ -970,3 +970,728 @@ html.dark .cdc-webcore-faq-shell {
     width: 100%;
   }
 }
+
+/* —— Knight packet banner (webcore overlays; pairs with scroll parallax in component) —— */
+
+@keyframes knight-banner-aurora-drift {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  38% {
+    opacity: 0.9;
+    transform: translate3d(2.5%, -1.5%, 0) scale(1.03);
+  }
+  72% {
+    opacity: 0.86;
+    transform: translate3d(-1.8%, 1.2%, 0) scale(1.02);
+  }
+}
+
+@keyframes knight-banner-grid-pan {
+  0% {
+    background-position:
+      0 0,
+      0 0;
+  }
+  100% {
+    background-position:
+      28px 28px,
+      -28px -28px;
+  }
+}
+
+/* Slow zoom on inner wrapper only — compositor-friendly scale, pairs with outer translate parallax */
+@keyframes knight-banner-kenburns {
+  0% {
+    transform: scale(1.025);
+  }
+  100% {
+    transform: scale(1.075);
+  }
+}
+
+/* Bottom rim: animates background-position only (no layout thrash) */
+@keyframes knight-banner-rim-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* Occasional light sweep — transform + opacity on a pseudo element */
+@keyframes knight-banner-sheen-x {
+  0% {
+    transform: translate3d(-55%, 0, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  55% {
+    transform: translate3d(55%, 0, 0);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(55%, 0, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes knight-budget-promo-shimmer {
+  0% {
+    transform: translateX(-120%) skewX(-14deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.85;
+  }
+  38% {
+    transform: translateX(160%) skewX(-14deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(160%) skewX(-14deg);
+    opacity: 0;
+  }
+}
+
+.cdc-marketing .knight-packet-banner__aurora {
+  opacity: 0.52;
+  background-image:
+    radial-gradient(ellipse 85% 65% at 18% 42%, rgba(0, 212, 170, 0.26), transparent 58%),
+    radial-gradient(ellipse 72% 55% at 82% 58%, rgba(167, 139, 250, 0.22), transparent 52%),
+    radial-gradient(ellipse 55% 48% at 48% 92%, rgba(255, 107, 53, 0.14), transparent 48%);
+  mix-blend-mode: soft-light;
+  animation: knight-banner-aurora-drift 22s ease-in-out infinite;
+}
+
+.dark .cdc-marketing .knight-packet-banner__aurora {
+  opacity: 0.48;
+  background-image:
+    radial-gradient(ellipse 85% 65% at 18% 42%, rgba(45, 212, 191, 0.18), transparent 58%),
+    radial-gradient(ellipse 72% 55% at 82% 58%, rgba(167, 139, 250, 0.16), transparent 52%),
+    radial-gradient(ellipse 55% 48% at 48% 92%, rgba(251, 146, 60, 0.1), transparent 48%);
+}
+
+.cdc-marketing .knight-packet-banner__grid {
+  opacity: 0.22;
+  background-size:
+    28px 28px,
+    28px 28px;
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.07) 1px, transparent 1px);
+  mix-blend-mode: overlay;
+  mask-image: radial-gradient(ellipse 92% 85% at 50% 45%, black 25%, transparent 72%);
+  animation: knight-banner-grid-pan 28s linear infinite;
+}
+
+.dark .cdc-marketing .knight-packet-banner__grid {
+  opacity: 0.17;
+  background-image:
+    linear-gradient(to right, rgba(250, 250, 250, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(250, 250, 250, 0.06) 1px, transparent 1px);
+  mix-blend-mode: soft-light;
+}
+
+.cdc-marketing .knight-packet-banner__scan {
+  opacity: 0.2;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(15, 23, 42, 0.045) 2px,
+    rgba(15, 23, 42, 0.045) 3px
+  );
+  mix-blend-mode: multiply;
+  mask-image: radial-gradient(ellipse 95% 80% at 50% 42%, black 20%, transparent 76%);
+}
+
+.dark .cdc-marketing .knight-packet-banner__scan {
+  opacity: 0.13;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.32) 2px,
+    rgba(0, 0, 0, 0.32) 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* Ken Burns — long period alternate = calm “alive” photo without scroll listeners */
+.cdc-marketing .knight-packet-banner__kenburns {
+  transform-origin: 50% 42%;
+  animation: knight-banner-kenburns 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Soft specular pass; masked so it stays subtle in both themes */
+.cdc-marketing .knight-packet-banner__sheen {
+  overflow: hidden;
+  mask-image: radial-gradient(ellipse 92% 78% at 50% 48%, black 22%, transparent 72%);
+}
+
+.cdc-marketing .knight-packet-banner__sheen::before {
+  content: '';
+  position: absolute;
+  top: -25%;
+  left: 0;
+  width: 48%;
+  height: 150%;
+  background: linear-gradient(
+    108deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.14) 45%,
+    transparent 78%
+  );
+  animation: knight-banner-sheen-x 19s ease-in-out infinite;
+}
+
+.dark .cdc-marketing .knight-packet-banner__sheen::before {
+  background: linear-gradient(
+    108deg,
+    transparent 0%,
+    rgba(45, 212, 191, 0.11) 42%,
+    rgba(167, 139, 250, 0.08) 52%,
+    transparent 78%
+  );
+}
+
+/* Thin spectral bar — high chroma, low height = cheap fill */
+.cdc-marketing .knight-packet-banner__rim {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 212, 170, 0.65) 22%,
+    rgba(124, 58, 237, 0.55) 48%,
+    rgba(255, 107, 53, 0.5) 72%,
+    transparent 100%
+  );
+  background-size: 220% 100%;
+  opacity: 0.88;
+  animation: knight-banner-rim-flow 11s linear infinite;
+}
+
+.dark .cdc-marketing .knight-packet-banner__rim {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(45, 212, 191, 0.55) 22%,
+    rgba(167, 139, 250, 0.48) 48%,
+    rgba(251, 146, 60, 0.42) 72%,
+    transparent 100%
+  );
+  opacity: 0.92;
+}
+
+/* Knight packet files — terminal shell (bezel + inset screen; light + dark marketing themes) */
+.cdc-marketing .knight-packet-files-terminal {
+  border-color: rgba(13, 148, 136, 0.38);
+  background: linear-gradient(
+    155deg,
+    rgb(236 249 247) 0%,
+    rgb(226 241 238) 42%,
+    rgb(216 234 230) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.65) inset,
+    0 3px 10px rgb(15 23 42 / 0.06),
+    0 20px 46px rgb(15 23 42 / 0.09),
+    0 0 36px -12px rgb(13 148 136 / 0.14),
+    0 0 48px -16px rgb(124 58 237 / 0.08);
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal {
+  border-color: rgba(45, 212, 191, 0.32);
+  background: linear-gradient(165deg, rgb(12 20 24) 0%, rgb(6 10 16) 55%, rgb(4 8 14) 100%);
+  box-shadow:
+    0 0 0 1px rgba(45, 212, 191, 0.07) inset,
+    0 22px 56px rgba(0, 0, 0, 0.48),
+    0 0 40px -14px rgba(45, 212, 191, 0.12),
+    0 0 56px -18px rgba(167, 139, 250, 0.08);
+}
+
+/* Title strip (“window chrome”) — readable on light bezel */
+.cdc-marketing .knight-packet-files-terminal__header {
+  border-color: rgb(13 148 136 / 0.2);
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.97) 0%,
+    rgb(247 252 251 / 0.94) 55%,
+    rgb(238 248 246 / 0.92) 100%
+  );
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__header {
+  border-color: rgba(45, 212, 191, 0.12);
+  background: linear-gradient(180deg, rgb(14 22 32 / 0.99), rgb(8 14 24 / 0.97));
+}
+
+.cdc-marketing .knight-packet-files-terminal__prompt {
+  color: rgb(15 118 110 / 0.88);
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__prompt {
+  color: rgba(167, 243, 208, 0.65);
+}
+
+.cdc-marketing .knight-packet-files-terminal__title {
+  color: rgb(15 23 42);
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__title {
+  color: rgb(248 250 252);
+}
+
+.cdc-marketing .knight-packet-files-terminal__sub {
+  color: rgb(51 65 85 / 0.95);
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__sub {
+  color: rgba(209, 250, 229, 0.78);
+}
+
+/* Links inside terminal header copy */
+.cdc-marketing .knight-packet-files-terminal__inline-link {
+  font-weight: 600;
+  color: rgb(13 116 110);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.cdc-marketing .knight-packet-files-terminal__inline-link:hover {
+  color: rgb(15 95 90);
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__inline-link {
+  color: rgb(153 246 228);
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__inline-link:hover {
+  color: rgb(204 251 241);
+}
+
+.cdc-marketing .knight-packet-files-terminal__ascii {
+  margin-top: 0.15rem;
+  padding: 0.55rem 0.65rem 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(13 148 136 / 0.22);
+  background: rgb(255 255 255 / 0.55);
+  color: rgb(15 118 110 / 0.78);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.85) inset;
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__ascii {
+  border-color: rgba(45, 212, 191, 0.18);
+  background: rgb(6 12 20 / 0.55);
+  color: rgba(110, 231, 183, 0.58);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset;
+}
+
+/* Inset “screen” — light panel (light theme) vs CRT-style dark panel (dark theme) */
+.cdc-marketing .knight-packet-files-terminal__body {
+  background: linear-gradient(180deg, rgb(252 252 253) 0%, rgb(248 250 252) 42%, rgb(241 245 249) 100%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9);
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__body {
+  background: linear-gradient(180deg, rgb(10 14 22 / 0.98), rgb(4 8 14 / 0.99));
+  box-shadow: inset 0 1px 0 rgb(45 212 191 / 0.07);
+}
+
+/* Preview thumbnails — scrim follows panel luminance */
+.cdc-marketing .knight-packet-files-terminal__preview-scrim {
+  background: linear-gradient(
+    to right,
+    rgb(255 255 255) 0%,
+    rgb(255 255 255) 22%,
+    rgba(255, 255, 255, 0.97) 38%,
+    rgba(255, 255, 255, 0.62) 58%,
+    rgba(255, 255, 255, 0.14) 82%,
+    transparent 100%
+  );
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__preview-scrim {
+  background: linear-gradient(
+    to right,
+    rgb(6 10 16) 0%,
+    rgb(6 10 16) 22%,
+    rgba(6, 10, 16, 0.97) 38%,
+    rgba(6, 10, 16, 0.5) 58%,
+    rgba(6, 10, 16, 0.08) 82%,
+    transparent 100%
+  );
+}
+
+.cdc-marketing .knight-packet-files-terminal__group-label {
+  color: rgb(30 41 59 / 0.92);
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__group-label {
+  color: rgba(209, 250, 229, 0.94);
+}
+
+.cdc-marketing .knight-packet-files-terminal__scan {
+  opacity: 0.055;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(15, 23, 42, 0.045) 2px,
+    rgba(15, 23, 42, 0.045) 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__scan {
+  opacity: 0.14;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 212, 170, 0.075) 2px,
+    rgba(0, 212, 170, 0.075) 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+.cdc-marketing .knight-packet-files-terminal__card:hover {
+  border-color: rgba(13, 148, 136, 0.38);
+  box-shadow:
+    0 0 0 1px rgba(13, 148, 136, 0.12),
+    0 12px 28px rgba(15, 23, 42, 0.09),
+    0 0 24px -10px rgba(124, 58, 237, 0.12);
+}
+
+.dark .cdc-marketing .knight-packet-files-terminal__card:hover {
+  border-color: rgba(45, 212, 191, 0.38);
+  box-shadow:
+    0 0 0 1px rgba(45, 212, 191, 0.22),
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    0 0 32px -8px rgba(167, 139, 250, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdc-marketing .knight-packet-files-terminal__card:hover,
+  .dark .cdc-marketing .knight-packet-files-terminal__card:hover {
+    box-shadow: none;
+  }
+}
+
+/* Knight People cards — top accent bar matches packet banner rim (teal → violet → orange) */
+.cdc-marketing .knight-people-card__accent {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 212, 170, 0.44) 0%,
+    rgba(124, 58, 237, 0.38) 48%,
+    rgba(255, 107, 53, 0.4) 100%
+  );
+}
+
+.dark .cdc-marketing .knight-people-card__accent {
+  background: linear-gradient(
+    90deg,
+    rgba(45, 212, 191, 0.34) 0%,
+    rgba(167, 139, 250, 0.28) 48%,
+    rgba(251, 146, 60, 0.3) 100%
+  );
+}
+
+/* Knight hero — isometric packet stack (CSS 3D, transform-only motion) */
+@keyframes knight-packet-volume-float {
+  0%,
+  100% {
+    transform: rotateX(52deg) rotateZ(-42deg) translateY(0);
+  }
+  50% {
+    transform: rotateX(52deg) rotateZ(-42deg) translateY(-7px);
+  }
+}
+
+.cdc-marketing .knight-packet-volume-mark {
+  position: relative;
+  width: min(260px, 72vw);
+  height: 200px;
+  flex-shrink: 0;
+}
+
+.cdc-marketing .knight-packet-volume-mark__stage {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  perspective: 920px;
+  perspective-origin: 52% 32%;
+}
+
+.cdc-marketing .knight-packet-volume-mark__stack {
+  position: relative;
+  width: 118px;
+  height: 148px;
+  transform-style: preserve-3d;
+  transform: rotateX(52deg) rotateZ(-42deg);
+  animation: knight-packet-volume-float 7s ease-in-out infinite;
+}
+
+.cdc-marketing .knight-packet-volume-mark__sheet {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.cdc-marketing .knight-packet-volume-mark__sheet--back {
+  transform: translate3d(26px, -22px, -62px);
+  background: linear-gradient(
+    148deg,
+    rgba(124, 58, 237, 0.82) 0%,
+    rgba(91, 33, 182, 0.92) 48%,
+    rgba(76, 29, 149, 0.96) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 24px 48px rgba(76, 29, 149, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.cdc-marketing .knight-packet-volume-mark__sheet--mid {
+  transform: translate3d(13px, -11px, -31px);
+  background: linear-gradient(
+    152deg,
+    rgba(20, 184, 166, 0.78) 0%,
+    rgba(13, 148, 136, 0.9) 55%,
+    rgba(15, 118, 110, 0.94) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 20px 42px rgba(13, 148, 136, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.cdc-marketing .knight-packet-volume-mark__sheet--front {
+  transform: translate3d(0, 0, 0);
+  background: linear-gradient(
+    158deg,
+    rgba(255, 255, 255, 0.97) 0%,
+    rgba(236, 253, 245, 0.92) 38%,
+    rgba(204, 251, 241, 0.72) 72%,
+    rgba(167, 243, 208, 0.55) 100%
+  );
+  border: 1px solid rgba(15, 118, 110, 0.25);
+  box-shadow:
+    0 28px 56px rgba(15, 23, 42, 0.18),
+    0 10px 22px rgba(13, 148, 136, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(13, 148, 136, 0.06);
+}
+
+.cdc-marketing .knight-packet-volume-mark__sheet--front::after {
+  content: '';
+  position: absolute;
+  inset: 18% 14%;
+  border-radius: 10px;
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0) 42%
+  );
+  pointer-events: none;
+}
+
+.dark .cdc-marketing .knight-packet-volume-mark__sheet--back {
+  background: linear-gradient(
+    148deg,
+    rgba(167, 139, 250, 0.55) 0%,
+    rgba(109, 40, 217, 0.72) 50%,
+    rgba(88, 28, 135, 0.85) 100%
+  );
+  border-color: rgba(196, 181, 253, 0.14);
+  box-shadow:
+    0 26px 52px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.dark .cdc-marketing .knight-packet-volume-mark__sheet--mid {
+  background: linear-gradient(
+    152deg,
+    rgba(45, 212, 191, 0.42) 0%,
+    rgba(15, 118, 110, 0.62) 55%,
+    rgba(17, 94, 89, 0.72) 100%
+  );
+  border-color: rgba(153, 246, 228, 0.12);
+  box-shadow:
+    0 22px 46px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.dark .cdc-marketing .knight-packet-volume-mark__sheet--front {
+  background: linear-gradient(
+    158deg,
+    rgba(23, 37, 34, 0.94) 0%,
+    rgba(15, 51, 46, 0.82) 42%,
+    rgba(6, 78, 71, 0.58) 100%
+  );
+  border-color: rgba(45, 212, 191, 0.22);
+  box-shadow:
+    0 28px 56px rgba(0, 0, 0, 0.5),
+    0 8px 20px rgba(45, 212, 191, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.dark .cdc-marketing .knight-packet-volume-mark__sheet--front::after {
+  background: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0) 50%
+  );
+}
+
+.cdc-marketing .knight-packet-volume-mark__seal {
+  background: radial-gradient(
+    circle at 32% 28%,
+    rgba(255, 255, 255, 0.55),
+    rgba(124, 58, 237, 0.35) 42%,
+    rgba(91, 33, 182, 0.65) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 6px 14px rgba(76, 29, 149, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.dark .cdc-marketing .knight-packet-volume-mark__seal {
+  background: radial-gradient(
+    circle at 32% 28%,
+    rgba(167, 243, 208, 0.35),
+    rgba(139, 92, 246, 0.28) 45%,
+    rgba(76, 29, 149, 0.55) 100%
+  );
+  border-color: rgba(167, 243, 208, 0.22);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Banner CLI overlay — dark chrome in both themes for readable “terminal” legibility on photo */
+@keyframes knight-terminal-cursor-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.cdc-marketing .knight-banner-terminal {
+  border-color: rgba(16, 185, 129, 0.35);
+  background: rgba(15, 23, 42, 0.72);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 12px 40px rgba(0, 0, 0, 0.28);
+}
+
+.cdc-marketing .knight-banner-terminal__chrome {
+  color: rgba(167, 243, 208, 0.72);
+}
+
+.cdc-marketing .knight-banner-terminal__body {
+  color: rgba(209, 250, 229, 0.95);
+  text-shadow: 0 0 18px rgba(16, 185, 129, 0.12);
+}
+
+.cdc-marketing .knight-banner-terminal__cursor {
+  color: rgba(52, 211, 153, 0.95);
+  animation: knight-terminal-cursor-blink 1.05s step-end infinite;
+}
+
+.dark .cdc-marketing .knight-banner-terminal {
+  border-color: rgba(45, 212, 191, 0.38);
+  background: rgba(3, 7, 18, 0.78);
+  box-shadow:
+    0 0 0 1px rgba(45, 212, 191, 0.08) inset,
+    0 14px 44px rgba(0, 0, 0, 0.45);
+}
+
+.dark .cdc-marketing .knight-banner-terminal__chrome {
+  color: rgba(153, 246, 228, 0.62);
+}
+
+.dark .cdc-marketing .knight-banner-terminal__body {
+  color: rgba(204, 251, 241, 0.94);
+  text-shadow: 0 0 22px rgba(45, 212, 191, 0.14);
+}
+
+.dark .cdc-marketing .knight-banner-terminal__cursor {
+  color: rgba(94, 234, 212, 0.98);
+}
+
+.cdc-marketing .knight-banner-terminal__cursor--static {
+  animation: none;
+}
+
+.cdc-marketing .knight-budget-promo-shimmer {
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.42) 42%,
+    transparent 68%
+  );
+  animation: knight-budget-promo-shimmer 5s ease-in-out infinite;
+}
+
+.dark .cdc-marketing .knight-budget-promo-shimmer {
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(45, 212, 191, 0.14) 38%,
+    transparent 70%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdc-marketing .knight-packet-banner__aurora,
+  .cdc-marketing .knight-packet-banner__grid {
+    animation: none;
+  }
+
+  .cdc-marketing .knight-packet-banner__kenburns {
+    animation: none !important;
+    will-change: auto;
+  }
+
+  .cdc-marketing .knight-packet-banner__sheen::before {
+    animation: none !important;
+  }
+
+  .cdc-marketing .knight-packet-banner__rim {
+    animation: none !important;
+    background-position: 35% 50%;
+  }
+
+  .cdc-marketing .knight-banner-terminal__cursor {
+    animation: none !important;
+    opacity: 1;
+  }
+
+  .cdc-marketing .knight-packet-volume-mark__stack {
+    animation: none !important;
+    transform: rotateX(52deg) rotateZ(-42deg);
+  }
+
+  .cdc-marketing .knight-budget-promo-shimmer {
+    animation: none;
+    opacity: 0;
+  }
+}

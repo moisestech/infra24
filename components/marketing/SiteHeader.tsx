@@ -80,12 +80,13 @@ export function SiteHeader() {
   return (
     <header
       data-site-header="marketing"
-      className="sticky top-0 z-50 border-b border-[var(--cdc-border)] bg-[#fafafa]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fafafa]/80 dark:border-neutral-700/80 dark:bg-neutral-950/90 dark:supports-[backdrop-filter]:bg-neutral-950/85"
+      className="sticky top-0 z-[100] border-b border-[var(--cdc-border)] bg-[#fafafa]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fafafa]/80 dark:border-neutral-700/80 dark:bg-neutral-950/90 dark:supports-[backdrop-filter]:bg-neutral-950/85"
     >
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-1.5 gap-y-1 px-3 py-2.5 sm:gap-x-2 sm:px-6 sm:py-3 lg:gap-x-3 lg:px-8">
-        <div className="relative z-20 flex min-w-0 items-center justify-start">
+      <div className="relative mx-auto flex min-h-[3.25rem] w-full max-w-7xl items-center px-3 py-2.5 sm:min-h-[3.5rem] sm:px-6 sm:py-3 lg:px-8">
+        {/* Left icon strip — width-capped so it never paints across the centered logo hit area */}
+        <div className="relative z-10 hidden min-w-0 max-w-[min(26rem,46vw)] shrink lg:block">
           <nav
-            className="cdc-font-display hidden min-w-0 items-center gap-0.5 lg:flex"
+            className="cdc-font-display flex min-w-0 flex-row flex-wrap items-center gap-1"
             aria-label="Site sections"
           >
             {headerNavEntries.map(({ href, label, icon }) => {
@@ -106,15 +107,15 @@ export function SiteHeader() {
           </nav>
         </div>
 
-        <div className="relative z-10 flex min-w-0 justify-center px-0.5">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 justify-center">
           <MarketingHeaderCenterLogo
             size="topBar"
             priority
-            className="w-[min(15rem,calc(100vw-4rem))] lg:w-[min(15rem,calc(100vw-11rem))] sm:w-[15rem]"
+            className="pointer-events-auto w-[min(15rem,calc(100vw-9rem))] sm:w-[min(15rem,calc(100vw-10rem))] lg:w-[min(15rem,calc(100vw-11rem))]"
           />
         </div>
 
-        <div className="relative z-20 flex min-w-0 items-center justify-end gap-1 sm:gap-2">
+        <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
           <Link href={marketingHeaderApplyCta.href} className={cn(applyBarClass, 'hidden lg:inline-flex')}>
             {marketingHeaderApplyCta.label}
           </Link>
@@ -140,22 +141,42 @@ export function SiteHeader() {
                     Menu
                   </SheetTitle>
                   <p className="cdc-font-mono-accent max-w-full text-[11px] font-normal leading-relaxed tracking-[0.12em] text-neutral-500 dark:text-neutral-400">
-                    On smaller screens, Apply and appearance live here; on large screens they stay in the header with icon shortcuts.
+                    Icon row matches the desktop header. Apply and theme controls are below on smaller screens.
                   </p>
                 </div>
               </SheetHeader>
 
+              <nav
+                className="flex flex-row flex-wrap items-center justify-center gap-2 border-b border-[var(--cdc-border)] px-4 py-4 dark:border-neutral-700"
+                aria-label="Site sections"
+              >
+                {headerNavEntries.map(({ href, label, icon }) => {
+                  const Icon = marketingHeaderNavIconMap[icon];
+                  return (
+                    <SheetClose key={href} asChild>
+                      <Link
+                        href={href}
+                        className={cn(iconNavLinkClass(href), 'h-11 w-11 border border-transparent hover:border-neutral-200 dark:hover:border-neutral-600')}
+                        aria-label={label}
+                        aria-current={pathname === href ? 'page' : undefined}
+                      >
+                        <Icon className="h-5 w-5 shrink-0" aria-hidden />
+                      </Link>
+                    </SheetClose>
+                  );
+                })}
+              </nav>
+
               <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5">
                 <div className="mb-5 flex flex-col gap-3">
                   <div className="flex flex-col gap-3 lg:hidden">
-                    <SheetClose asChild>
-                      <Link
-                        href={marketingHeaderApplyCta.href}
-                        className="block rounded-xl bg-neutral-900 px-4 py-4 text-center text-base font-semibold text-white dark:bg-neutral-100 dark:text-neutral-900"
-                      >
-                        {marketingHeaderApplyCta.label}
-                      </Link>
-                    </SheetClose>
+                    {/* Plain Link avoids Radix SheetClose + navigation race that can error on client */}
+                    <Link
+                      href={marketingHeaderApplyCta.href}
+                      className="block rounded-xl bg-neutral-900 px-4 py-4 text-center text-base font-semibold text-white dark:bg-neutral-100 dark:text-neutral-900"
+                    >
+                      {marketingHeaderApplyCta.label}
+                    </Link>
                     <div className="flex items-center justify-between gap-3 rounded-xl border border-[var(--cdc-border)] bg-white/90 px-4 py-3 dark:border-neutral-600 dark:bg-neutral-900/80">
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
                         Appearance

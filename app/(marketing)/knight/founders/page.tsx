@@ -5,6 +5,7 @@ import { PageHero, Section } from '@/components/marketing/cdc';
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 import {
+  knightDriveFabiolaCvUrl,
   knightDriveFoundersCvsUrl,
   knightDriveRecommendationLetterUrl,
   knightFoundersHeroPhoto,
@@ -55,10 +56,18 @@ export default function KnightFoundersPage() {
           >
             Founders’ CVs (Google Drive)
           </a>
+          <a
+            href={knightDriveFabiolaCvUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 transition hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-900"
+          >
+            Fabiola Larios — individual CV (PDF)
+          </a>
         </div>
         <p className="mt-4 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
-          Fabiola’s standalone CV file is still being finalized; the people row on the packet shows
-          that link as soon when it is ready.
+          The founders’ CV packet is one Drive PDF; Fabiola’s standalone CV is linked separately on the packet people
+          row and above.
         </p>
 
         <ul className="mt-10 max-w-2xl list-disc space-y-2 pl-5 text-sm text-neutral-600 dark:text-neutral-400">

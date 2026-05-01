@@ -31,7 +31,7 @@ export default function Tooltip({ content, children, position = 'top', className
 
   return (
     <div
-      className={`relative ${className}`}
+      className={`relative inline-flex shrink-0 ${className}`}
       onMouseEnter={show}
       onMouseLeave={hide}
       onFocusCapture={show}

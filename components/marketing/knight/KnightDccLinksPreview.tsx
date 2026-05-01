@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import type { KnightPacketContextLink } from '@/lib/marketing/knight-packet';
+import type { KnightPacketContextLink, KnightPacketStoryPhoto } from '@/lib/marketing/knight-packet';
+import { KnightPacketFieldPhotoMosaic } from '@/components/marketing/knight/KnightPacketFieldPhotoMosaic';
 import { KnightContextIconBadge } from '@/components/marketing/knight/KnightContextIcon';
 import { dccHomePhotos } from '@/lib/marketing/dcc-home-photography';
 import { cn } from '@/lib/utils';
@@ -39,9 +40,16 @@ const ACCENT_ACTIVE: Record<KnightPacketContextLink['accent'], string> = {
 
 type KnightDccLinksPreviewProps = {
   items: KnightPacketContextLink[];
+  /** Field documentation mosaic (horizontal row + grid) — sits under the header, above destination tiles. */
+  fieldPhotos?: KnightPacketStoryPhoto[];
+  fieldPhotosHorizontal?: KnightPacketStoryPhoto[];
 };
 
-export function KnightDccLinksPreview({ items }: KnightDccLinksPreviewProps) {
+export function KnightDccLinksPreview({
+  items,
+  fieldPhotos = [],
+  fieldPhotosHorizontal,
+}: KnightDccLinksPreviewProps) {
   /** `null` = ambient ART/TEC slideshow; otherwise show that destination’s preview image. */
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [ambientPhase, setAmbientPhase] = useState(0);
@@ -149,7 +157,14 @@ export function KnightDccLinksPreview({ items }: KnightDccLinksPreviewProps) {
           )}
         </header>
 
-        <div className="mt-auto w-full pt-10 lg:pt-16">
+        <KnightPacketFieldPhotoMosaic
+          surface="darkHero"
+          className="mt-8 sm:mt-10"
+          horizontalItems={fieldPhotosHorizontal}
+          items={fieldPhotos}
+        />
+
+        <div className="mt-auto w-full pt-8 lg:pt-12">
           <ul
             className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3 xl:grid-cols-4 [&::-webkit-scrollbar]:hidden"
             onMouseLeave={handleLeaveList}

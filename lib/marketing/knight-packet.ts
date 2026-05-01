@@ -5,6 +5,7 @@
 
 import { dccHomePhotos } from '@/lib/marketing/dcc-home-photography';
 import {
+  knightDriveFabiolaCvUrl,
   knightDriveFoundersCvsUrl,
   knightDriveRecommendationLetterUrl,
 } from '@/lib/marketing/knight-people';
@@ -24,6 +25,9 @@ export type FunderMaterialRow = {
   status: 'ready' | 'soon';
   href?: string;
   external?: boolean;
+  /** Optional thumbnail shown on the right of card layouts (e.g. /knight packet grid). */
+  previewSrc?: string;
+  previewAlt?: string;
 };
 
 export const FUNDER_MATERIAL_GROUP_LABEL: Record<FunderMaterialGroup, string> = {
@@ -45,6 +49,8 @@ export const funderMaterialDownloadRows: FunderMaterialRow[] = [
     kind: 'pdf',
     group: 'core',
     status: 'soon',
+    previewSrc: dccHomePhotos.galleryCrowdOpening.src,
+    previewAlt: dccHomePhotos.galleryCrowdOpening.alt,
   },
   {
     id: 'funder-deck',
@@ -53,6 +59,8 @@ export const funderMaterialDownloadRows: FunderMaterialRow[] = [
     kind: 'slides',
     group: 'core',
     status: 'soon',
+    previewSrc: dccHomePhotos.digitalDivinities.src,
+    previewAlt: dccHomePhotos.digitalDivinities.alt,
   },
   {
     id: 'pilot-impact',
@@ -61,6 +69,8 @@ export const funderMaterialDownloadRows: FunderMaterialRow[] = [
     kind: 'pdf',
     group: 'core',
     status: 'soon',
+    previewSrc: dccHomePhotos.babyAgi.src,
+    previewAlt: dccHomePhotos.babyAgi.alt,
   },
   {
     id: 'rina-letter',
@@ -71,6 +81,8 @@ export const funderMaterialDownloadRows: FunderMaterialRow[] = [
     status: 'ready',
     href: knightDriveRecommendationLetterUrl,
     external: true,
+    previewSrc: dccHomePhotos.knightArtTec2025Talk.src,
+    previewAlt: dccHomePhotos.knightArtTec2025Talk.alt,
   },
   {
     id: 'cv-moises',
@@ -81,6 +93,8 @@ export const funderMaterialDownloadRows: FunderMaterialRow[] = [
     status: 'ready',
     href: knightDriveFoundersCvsUrl,
     external: true,
+    previewSrc: dccHomePhotos.moisesArtec2024Talk.src,
+    previewAlt: dccHomePhotos.moisesArtec2024Talk.alt,
   },
   {
     id: 'cv-fabiola',
@@ -88,7 +102,11 @@ export const funderMaterialDownloadRows: FunderMaterialRow[] = [
     fileHint: 'PDF',
     kind: 'pdf',
     group: 'people',
-    status: 'soon',
+    status: 'ready',
+    href: knightDriveFabiolaCvUrl,
+    external: true,
+    previewSrc: dccHomePhotos.knightFabiolaArtTec2025.src,
+    previewAlt: dccHomePhotos.knightFabiolaArtTec2025.alt,
   },
   {
     id: 'founder-bios',
@@ -98,6 +116,8 @@ export const funderMaterialDownloadRows: FunderMaterialRow[] = [
     group: 'people',
     status: 'ready',
     href: '/knight/founders',
+    previewSrc: dccHomePhotos.digitalDivinities.src,
+    previewAlt: dccHomePhotos.digitalDivinities.alt,
   },
   {
     id: 'budget-summary',
@@ -106,6 +126,8 @@ export const funderMaterialDownloadRows: FunderMaterialRow[] = [
     kind: 'sheet',
     group: 'program',
     status: 'soon',
+    previewSrc: dccHomePhotos.smartShoppers.src,
+    previewAlt: dccHomePhotos.smartShoppers.alt,
   },
   {
     id: 'press-blurb',
@@ -114,6 +136,8 @@ export const funderMaterialDownloadRows: FunderMaterialRow[] = [
     kind: 'doc',
     group: 'brand',
     status: 'soon',
+    previewSrc: dccHomePhotos.fabiolaGemsOfObsolescence.src,
+    previewAlt: dccHomePhotos.fabiolaGemsOfObsolescence.alt,
   },
   {
     id: 'logo-kit',
@@ -122,6 +146,8 @@ export const funderMaterialDownloadRows: FunderMaterialRow[] = [
     kind: 'archive',
     group: 'brand',
     status: 'soon',
+    previewSrc: dccHomePhotos.fabiolaEwaste2022.src,
+    previewAlt: dccHomePhotos.fabiolaEwaste2022.alt,
   },
 ];
 
@@ -272,3 +298,70 @@ export const knightPacketPlaceholderImageAlts = {
   identity: dccHomePhotos.knightFabiolaArtTec2025.alt,
   evidence: dccHomePhotos.moisesArtec2024Talk.alt,
 } as const;
+
+/** Field / program photography on `/knight` (documentation context). */
+export type KnightPacketStoryPhoto = {
+  src: string;
+  alt: string;
+  caption: string;
+};
+
+/** Miami aerial — grants / funders visual context (Knight packet). */
+export const knightPacketMiamiDronePhoto = {
+  src:
+    'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777604067/dccmiami/knight/fabiolaio_miami_drone_view_connected_through_an_invisible_netwo_4cce78ea-f937-4104-92bf-0c75ffc8345c_hahk6z.webp',
+  alt:
+    'Aerial view over Miami — conceptual visualization of neighborhoods and cultural activity linked through shared digital infrastructure.',
+  caption: 'Miami — place-based digital culture and connected public programs.',
+} as const satisfies KnightPacketStoryPhoto;
+
+/** PAMM TV Bay — public event photography (wide / horizontal treatment on packet pages). */
+export const knightPacketPammPublicEventPhotos: KnightPacketStoryPhoto[] = [
+  {
+    src:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777604603/dccmiami/knight/pamm-tv-bay-fabiola_ly8dnk.jpg',
+    alt: 'PAMM TV Bay — public program with Fabiola Larios speaking at the event.',
+    caption: 'PAMM TV Bay — public program · Fabiola Larios',
+  },
+  {
+    src:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777604606/dccmiami/knight/pamm-tv-bay-moises_fk9gim.jpg',
+    alt: 'PAMM TV Bay — public program with Moises Sanabria speaking at the event.',
+    caption: 'PAMM TV Bay — public program · Moises Sanabria',
+  },
+];
+
+export const knightPacketStoryPhotos: KnightPacketStoryPhoto[] = [
+  {
+    src:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777603093/dccmiami/knight/022525-CDebora-1520.jpg_jwhmcp.jpg',
+    alt:
+      'Event photograph — Miami cultural programming documentation for the Knight pilot packet (photo credit: C. Debora).',
+    caption: 'Field documentation — February 2025.',
+  },
+  {
+    src:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777603092/dccmiami/knight/Inkling_SeedAi_SXSW24-158.jpg_jegosx.jpg',
+    alt:
+      'Inkling / Seed AI at SXSW 2024 — public research and programs adjacent to the pilot narrative.',
+    caption: 'SXSW 2024 — Inkling · Seed AI.',
+  },
+  {
+    src:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777603269/dccmiami/knight/yami-ichi-2023-4.JPG_cxjrvo.webp',
+    alt: 'Yami-Ichi 2023 — program documentation (series image 4).',
+    caption: 'Yami-Ichi 2023.',
+  },
+  {
+    src:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777603270/dccmiami/knight/yami-ichi-2023-2_hhiaou.webp',
+    alt: 'Yami-Ichi 2023 — program documentation (series image 2).',
+    caption: 'Yami-Ichi 2023.',
+  },
+  {
+    src:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777603271/dccmiami/knight/yami-ichi-2023-3_xcc41o.webp',
+    alt: 'Yami-Ichi 2023 — program documentation (series image 3).',
+    caption: 'Yami-Ichi 2023.',
+  },
+];

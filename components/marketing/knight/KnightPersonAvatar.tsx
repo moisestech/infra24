@@ -7,7 +7,7 @@ type KnightPersonAvatarProps = {
   initialsClass: string;
   portraitSrc?: string;
   portraitAlt: string;
-  size?: 'md' | 'lg';
+  size?: 'md' | 'lg' | 'xl';
 };
 
 export function KnightPersonAvatar({
@@ -18,18 +18,32 @@ export function KnightPersonAvatar({
   portraitAlt,
   size = 'lg',
 }: KnightPersonAvatarProps) {
-  const dim = size === 'lg' ? 'h-20 w-20 sm:h-24 sm:w-24' : 'h-16 w-16';
-  const textSize = size === 'lg' ? 'text-xl sm:text-2xl' : 'text-lg';
+  const dim =
+    size === 'xl'
+      ? 'h-28 w-28 sm:h-32 sm:w-32'
+      : size === 'lg'
+        ? 'h-20 w-20 sm:h-24 sm:w-24'
+        : 'h-16 w-16';
+  const textSize = size === 'xl' ? 'text-2xl sm:text-3xl' : size === 'lg' ? 'text-xl sm:text-2xl' : 'text-lg';
 
   if (portraitSrc) {
     return (
       <div
         className={cn(
-          'relative shrink-0 overflow-hidden rounded-full ring-2 ring-white shadow-md dark:ring-neutral-800',
+          'relative shrink-0 overflow-hidden rounded-full shadow-md',
+          /* Light: neutral ring + white offset so faces stay visible on cards & gradients */
+          'ring-neutral-300/95 ring-offset-white dark:ring-neutral-400 dark:ring-offset-2 dark:ring-offset-neutral-900',
+          size === 'xl' ? 'ring-[3.5px] ring-offset-[6px] dark:ring-4 dark:ring-offset-2' : 'ring-2 ring-offset-2',
           dim
         )}
       >
-        <Image src={portraitSrc} alt={portraitAlt} fill className="object-cover" sizes="96px" />
+        <Image
+          src={portraitSrc}
+          alt={portraitAlt}
+          fill
+          className="object-cover object-center"
+          sizes={size === 'xl' ? '128px' : '96px'}
+        />
       </div>
     );
   }
@@ -37,7 +51,8 @@ export function KnightPersonAvatar({
   return (
     <div
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full ring-2 ring-inset ring-white/80 dark:ring-neutral-700/80',
+        'flex shrink-0 items-center justify-center rounded-full ring-inset ring-[var(--cdc-border)] dark:ring-neutral-600',
+        size === 'xl' ? 'ring-4' : 'ring-2',
         initialsClass,
         dim,
         textSize,

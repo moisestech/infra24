@@ -4,12 +4,19 @@ import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { getOrganizationFont, getOrgSlugFromPath } from '@/lib/organization-fonts';
 
+function stripOrgBodyClasses() {
+  if (typeof document === 'undefined') return;
+  for (const c of [...document.body.classList]) {
+    if (c.startsWith('org-')) document.body.classList.remove(c);
+  }
+}
+
 /**
  * OrganizationFontProvider
- * 
- * Dynamically applies organization-specific fonts based on the URL path.
- * Detects organization slug from paths like /o/oolite and applies the
- * corresponding font family to the document.
+ *
+ * Applies org fonts from `/o/{slug}` paths. Uses `classList` only so we never
+ * overwrite React-managed `body.className` (Inter from root layout) — assigning
+ * `document.body.className` directly can strip classes and break navigation/hydration.
  */
 export function OrganizationFontProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -18,35 +25,25 @@ export function OrganizationFontProvider({ children }: { children: React.ReactNo
     const orgSlug = getOrgSlugFromPath(pathname);
     const fontConfig = getOrganizationFont(orgSlug);
 
-    // Apply font family to document root as CSS variables
     const root = document.documentElement;
     root.style.setProperty('--font-organization', fontConfig.fontFamily);
     root.style.setProperty('--font-organization-heading', fontConfig.headingFont || fontConfig.fontFamily);
     root.style.setProperty('--font-organization-body', fontConfig.bodyFont || fontConfig.fontFamily);
 
-    // Apply font class and inline style to body for organization pages
+    stripOrgBodyClasses();
+
     if (orgSlug) {
-      // Remove any existing org classes first
-      document.body.className = document.body.className.replace(/org-\w+/g, '').trim();
-      // Add the new org class
       document.body.classList.add(`org-${orgSlug}`);
-      // Apply font family directly to body (this will override the Inter class)
       document.body.style.fontFamily = fontConfig.fontFamily;
     } else {
-      // Remove org classes and reset font if not on org page
-      document.body.className = document.body.className.replace(/org-\w+/g, '').trim();
       document.body.style.fontFamily = '';
     }
 
     return () => {
-      // Cleanup: remove org class and reset font when component unmounts or pathname changes
-      document.body.className = document.body.className.replace(/org-\w+/g, '').trim();
-      if (!getOrgSlugFromPath(pathname)) {
-        document.body.style.fontFamily = '';
-      }
+      stripOrgBodyClasses();
+      document.body.style.fontFamily = '';
     };
   }, [pathname]);
 
   return <>{children}</>;
 }
-
