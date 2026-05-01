@@ -187,90 +187,29 @@ export const knightFullNarrativeLink: KnightPacketContextLink = {
   previewAlt: dccHomePhotos.digitalDivinities.alt,
 };
 
-/** DCC identity, evidence, and adjacent grants pages (grid on /knight). */
-export const knightPacketContextLinks: KnightPacketContextLink[] = [
-  {
-    id: 'home',
-    title: 'DCC Miami — public site',
-    description: 'Homepage and public identity for Digital Culture Center Miami.',
-    href: '/',
-    icon: 'home',
-    accent: 'teal',
-    previewSrc: dccHomePhotos.galleryCrowdOpening.src,
-    previewAlt: dccHomePhotos.galleryCrowdOpening.alt,
-  },
-  {
-    id: 'about',
-    title: 'About DCC Miami',
-    description: 'What the center is and how it shows up in Miami’s digital culture field.',
-    href: '/about',
-    icon: 'about',
-    accent: 'teal',
-    previewSrc: dccHomePhotos.fabiolaGemsOfObsolescence.src,
-    previewAlt: dccHomePhotos.fabiolaGemsOfObsolescence.alt,
-  },
-  {
-    id: 'mission',
-    title: 'Mission',
-    description: 'Public benefit, artist-centered infrastructure, and civic-facing programs.',
-    href: '/mission',
-    icon: 'mission',
-    accent: 'coral',
-    previewSrc: dccHomePhotos.vrHug.src,
-    previewAlt: dccHomePhotos.vrHug.alt,
-  },
-  {
-    id: 'infra24',
-    title: 'Infra24 (systems studio)',
-    description: 'Implementation layer behind DCC: signage, maps, portals, and repeatable workflows.',
-    href: '/infra24',
-    icon: 'infra24',
-    accent: 'magenta',
-    previewSrc: dccHomePhotos.touchgrassTreadmillWide.src,
-    previewAlt: dccHomePhotos.touchgrassTreadmillWide.alt,
-  },
-  {
-    id: 'projects',
-    title: 'Projects and case studies',
-    description: 'Work samples: public interfaces, pilots, and institutional systems.',
-    href: '/projects',
-    icon: 'projects',
-    accent: 'indigo',
-    previewSrc: dccHomePhotos.galleryInteractiveStations.src,
-    previewAlt: dccHomePhotos.galleryInteractiveStations.alt,
-  },
-  {
-    id: 'grants-funders',
-    title: 'For funders',
-    description: 'Grantmaker-facing narrative and impact framing beyond this packet.',
-    href: '/grants/funders',
-    icon: 'funders',
-    accent: 'coral',
-    previewSrc: dccHomePhotos.fabiolaSurveillanceCutie2024.src,
-    previewAlt: dccHomePhotos.fabiolaSurveillanceCutie2024.alt,
-  },
-  {
-    id: 'priorities',
-    title: 'Funding priorities',
-    description: 'Current buckets for the Miami pilot (interfaces, workshops, documentation, and more).',
-    href: '/grants/priorities',
-    icon: 'priorities',
-    accent: 'magenta',
-    previewSrc: dccHomePhotos.babyAgi.src,
-    previewAlt: dccHomePhotos.babyAgi.alt,
-  },
-];
+/** Field / program photography on `/knight` (documentation context). */
+export type KnightPacketStoryPhoto = {
+  src: string;
+  alt: string;
+  caption: string;
+};
 
-/** Full-width hero banners for /knight (theme-aware brand strips). */
+/** Miami aerial — Knight packet banner, grants visuals (`/grants/funders`), shared Cloudinary asset. */
+export const knightPacketMiamiDronePhoto = {
+  src:
+    'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777604067/dccmiami/knight/fabiolaio_miami_drone_view_connected_through_an_invisible_netwo_4cce78ea-f937-4104-92bf-0c75ffc8345c_hahk6z.webp',
+  alt:
+    'Aerial view over Miami — conceptual visualization of neighborhoods and cultural activity linked through shared digital infrastructure.',
+  caption: 'Miami — place-based digital culture and connected public programs.',
+} as const satisfies KnightPacketStoryPhoto;
+
+/** Full-width `/knight` banner — same photograph; light/dark treatments applied in CSS (`knight-packet-banner__photo-img`). */
 export const knightPacketBannerImages = {
-  light:
-    'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777512878/dccmiami/banners/dcc-miami-banner-light-1_krpjny.png',
-  dark:
-    'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777512878/dccmiami/banners/dcc-miami-banner-dark-1_uc5bbs.png',
+  light: knightPacketMiamiDronePhoto.src,
+  dark: knightPacketMiamiDronePhoto.src,
 } as const;
 
-export const knightPacketBannerAlt =
-  'Digital Culture Center Miami — banner graphic for the Knight pilot packet.';
+export const knightPacketBannerAlt = knightPacketMiamiDronePhoto.alt;
 
 /** Knight Foundation mark — subtle lockup beside hero eyebrow on /knight. */
 export const knightFoundationLogoSrc =
@@ -298,22 +237,6 @@ export const knightPacketPlaceholderImageAlts = {
   identity: dccHomePhotos.knightFabiolaArtTec2025.alt,
   evidence: dccHomePhotos.moisesArtec2024Talk.alt,
 } as const;
-
-/** Field / program photography on `/knight` (documentation context). */
-export type KnightPacketStoryPhoto = {
-  src: string;
-  alt: string;
-  caption: string;
-};
-
-/** Miami aerial — grants / funders visual context (Knight packet). */
-export const knightPacketMiamiDronePhoto = {
-  src:
-    'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777604067/dccmiami/knight/fabiolaio_miami_drone_view_connected_through_an_invisible_netwo_4cce78ea-f937-4104-92bf-0c75ffc8345c_hahk6z.webp',
-  alt:
-    'Aerial view over Miami — conceptual visualization of neighborhoods and cultural activity linked through shared digital infrastructure.',
-  caption: 'Miami — place-based digital culture and connected public programs.',
-} as const satisfies KnightPacketStoryPhoto;
 
 /** PAMM TV Bay — public event photography (wide / horizontal treatment on packet pages). */
 export const knightPacketPammPublicEventPhotos: KnightPacketStoryPhoto[] = [
@@ -363,5 +286,79 @@ export const knightPacketStoryPhotos: KnightPacketStoryPhoto[] = [
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777603271/dccmiami/knight/yami-ichi-2023-3_xcc41o.webp',
     alt: 'Yami-Ichi 2023 — program documentation (series image 3).',
     caption: 'Yami-Ichi 2023.',
+  },
+];
+
+/** DCC identity, evidence, and adjacent grants pages (grid on /knight). */
+export const knightPacketContextLinks: KnightPacketContextLink[] = [
+  {
+    id: 'home',
+    title: 'DCC Miami — public site',
+    description: 'Homepage and public identity for Digital Culture Center Miami.',
+    href: '/',
+    icon: 'home',
+    accent: 'teal',
+    previewSrc: knightPacketPammPublicEventPhotos[0].src,
+    previewAlt: knightPacketPammPublicEventPhotos[0].alt,
+  },
+  {
+    id: 'about',
+    title: 'About DCC Miami',
+    description: 'What the center is and how it shows up in Miami’s digital culture field.',
+    href: '/about',
+    icon: 'about',
+    accent: 'teal',
+    previewSrc: knightPacketPammPublicEventPhotos[1].src,
+    previewAlt: knightPacketPammPublicEventPhotos[1].alt,
+  },
+  {
+    id: 'mission',
+    title: 'Mission',
+    description: 'Public benefit, artist-centered infrastructure, and civic-facing programs.',
+    href: '/mission',
+    icon: 'mission',
+    accent: 'coral',
+    previewSrc: knightPacketStoryPhotos[0].src,
+    previewAlt: knightPacketStoryPhotos[0].alt,
+  },
+  {
+    id: 'infra24',
+    title: 'Infra24 (systems studio)',
+    description: 'Implementation layer behind DCC: signage, maps, portals, and repeatable workflows.',
+    href: '/infra24',
+    icon: 'infra24',
+    accent: 'magenta',
+    previewSrc: knightPacketStoryPhotos[1].src,
+    previewAlt: knightPacketStoryPhotos[1].alt,
+  },
+  {
+    id: 'projects',
+    title: 'Projects and case studies',
+    description: 'Work samples: public interfaces, pilots, and institutional systems.',
+    href: '/projects',
+    icon: 'projects',
+    accent: 'indigo',
+    previewSrc: dccHomePhotos.galleryInteractiveStations.src,
+    previewAlt: dccHomePhotos.galleryInteractiveStations.alt,
+  },
+  {
+    id: 'grants-funders',
+    title: 'For funders',
+    description: 'Grantmaker-facing narrative and impact framing beyond this packet.',
+    href: '/grants/funders',
+    icon: 'funders',
+    accent: 'coral',
+    previewSrc: knightPacketStoryPhotos[2].src,
+    previewAlt: knightPacketStoryPhotos[2].alt,
+  },
+  {
+    id: 'priorities',
+    title: 'Funding priorities',
+    description: 'Current buckets for the Miami pilot (interfaces, workshops, documentation, and more).',
+    href: '/grants/priorities',
+    icon: 'priorities',
+    accent: 'magenta',
+    previewSrc: knightPacketStoryPhotos[3].src,
+    previewAlt: knightPacketStoryPhotos[3].alt,
   },
 ];

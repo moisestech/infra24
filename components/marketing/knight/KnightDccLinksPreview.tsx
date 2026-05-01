@@ -32,10 +32,10 @@ const ACCENT_GLOW: Record<KnightPacketContextLink['accent'], string> = {
 };
 
 const ACCENT_ACTIVE: Record<KnightPacketContextLink['accent'], string> = {
-  teal: 'ring-2 ring-teal-200/90 shadow-[0_0_48px_rgba(45,212,191,0.65)] bg-white/22',
-  coral: 'ring-2 ring-orange-200/85 shadow-[0_0_48px_rgba(251,146,60,0.58)] bg-white/22',
-  magenta: 'ring-2 ring-fuchsia-200/85 shadow-[0_0_48px_rgba(232,121,249,0.58)] bg-white/22',
-  indigo: 'ring-2 ring-indigo-200/85 shadow-[0_0_48px_rgba(129,140,248,0.58)] bg-white/22',
+  teal: 'ring-2 ring-teal-200/90 shadow-[0_0_48px_rgba(45,212,191,0.65)]',
+  coral: 'ring-2 ring-orange-200/85 shadow-[0_0_48px_rgba(251,146,60,0.58)]',
+  magenta: 'ring-2 ring-fuchsia-200/85 shadow-[0_0_48px_rgba(232,121,249,0.58)]',
+  indigo: 'ring-2 ring-indigo-200/85 shadow-[0_0_48px_rgba(129,140,248,0.58)]',
 };
 
 type KnightDccLinksPreviewProps = {
@@ -181,30 +181,46 @@ export function KnightDccLinksPreview({
                   <Link
                     href={item.href}
                     className={cn(
-                      'group relative flex min-h-[11rem] flex-col gap-3 rounded-2xl border border-white/18 bg-white/12 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-white/12 backdrop-blur-md transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:min-h-[12.5rem] sm:p-5',
+                      'group relative isolate flex min-h-[11rem] flex-col overflow-hidden rounded-2xl border border-white/20 p-5 shadow-[0_12px_40px_rgba(0,0,0,0.45)] ring-1 ring-white/15 transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent sm:min-h-[12.5rem] sm:p-5',
                       ACCENT_GLOW[item.accent],
-                      'hover:-translate-y-1 hover:border-white/45 hover:bg-white/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.45)]',
+                      'hover:-translate-y-1 hover:border-white/50 hover:shadow-[0_22px_56px_rgba(0,0,0,0.55)]',
                       'focus-visible:ring-white/85',
                       isHighlighted && ACCENT_ACTIVE[item.accent],
                       isHighlighted && '-translate-y-0.5'
                     )}
                     {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                   >
-                    <div className="flex items-start gap-3">
-                      <KnightContextIconBadge icon={item.icon} accent={item.accent} size="compact" />
-                      <div className="min-w-0 flex-1">
-                        <span className="line-clamp-2 text-left text-base font-semibold leading-snug text-white sm:text-xl">
-                          {item.title}
-                        </span>
-                      </div>
+                    <div className="pointer-events-none absolute inset-0 z-0">
+                      <Image
+                        src={item.previewSrc}
+                        alt=""
+                        fill
+                        className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                        sizes="(max-width: 640px) 70vw, (max-width: 1024px) 40vw, 280px"
+                        aria-hidden
+                      />
                     </div>
-                    <p className="line-clamp-3 text-left text-sm leading-snug text-white/72 transition duration-300 group-hover:text-white/90 sm:text-lg">
-                      {item.description}
-                    </p>
                     <div
-                      className="mt-auto h-[3px] w-0 rounded-full bg-gradient-to-r from-transparent via-white/90 to-transparent transition-all duration-500 ease-out group-hover:w-full"
+                      className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black/88 via-black/52 to-black/28 transition-opacity duration-300 group-hover:from-black/82 group-hover:via-black/45 group-hover:to-black/22"
                       aria-hidden
                     />
+                    <div className="relative z-[2] flex min-h-0 flex-1 flex-col gap-3">
+                      <div className="flex items-start gap-3">
+                        <KnightContextIconBadge icon={item.icon} accent={item.accent} size="compact" />
+                        <div className="min-w-0 flex-1">
+                          <span className="line-clamp-2 text-left text-base font-semibold leading-snug text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.75)] sm:text-xl">
+                            {item.title}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="line-clamp-3 text-left text-sm leading-snug text-white/85 transition duration-300 group-hover:text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.65)] sm:text-lg">
+                        {item.description}
+                      </p>
+                      <div
+                        className="mt-auto h-[3px] w-0 rounded-full bg-gradient-to-r from-transparent via-white/90 to-transparent transition-all duration-500 ease-out group-hover:w-full"
+                        aria-hidden
+                      />
+                    </div>
                   </Link>
                 </li>
               );

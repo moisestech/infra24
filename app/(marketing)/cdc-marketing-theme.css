@@ -1059,6 +1059,48 @@ html.dark .cdc-webcore-faq-shell {
   }
 }
 
+/* Banner photograph — one asset; CSS grade + wash differ by marketing light / dark */
+.cdc-marketing .knight-packet-banner__photo-frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.cdc-marketing .knight-packet-banner__photo-img {
+  filter: saturate(1.08) contrast(1.04) brightness(1.06);
+  transition: filter 0.35s ease;
+}
+
+.dark .cdc-marketing .knight-packet-banner__photo-img {
+  filter: saturate(0.86) contrast(1.14) brightness(0.8) hue-rotate(-5deg);
+}
+
+.cdc-marketing .knight-packet-banner__photo-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    transparent 40%,
+    rgba(15, 23, 42, 0.2) 100%
+  );
+  mix-blend-mode: soft-light;
+}
+
+.dark .cdc-marketing .knight-packet-banner__photo-frame::after {
+  background: linear-gradient(
+    180deg,
+    rgba(4, 10, 22, 0.58) 0%,
+    transparent 44%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+  mix-blend-mode: multiply;
+}
+
 .cdc-marketing .knight-packet-banner__aurora {
   opacity: 0.52;
   background-image:

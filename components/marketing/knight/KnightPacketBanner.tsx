@@ -79,23 +79,16 @@ export function KnightPacketBanner() {
               !reduceMotion && 'knight-packet-banner__kenburns'
             )}
           >
-            <Image
-              src={knightPacketBannerImages.light}
-              alt={knightPacketBannerAlt}
-              fill
-              priority
-              className="object-cover object-[center_42%] dark:hidden"
-              sizes="100vw"
-            />
-            <Image
-              src={knightPacketBannerImages.dark}
-              alt=""
-              fill
-              priority
-              className="hidden object-cover object-[center_42%] dark:block"
-              sizes="100vw"
-              aria-hidden
-            />
+            <div className="knight-packet-banner__photo-frame relative h-full w-full">
+              <Image
+                src={knightPacketBannerImages.light}
+                alt={knightPacketBannerAlt}
+                fill
+                priority
+                className="knight-packet-banner__photo-img object-cover object-[center_38%]"
+                sizes="100vw"
+              />
+            </div>
           </div>
         </div>
       </div>
