@@ -6,10 +6,23 @@ import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
 type Props = { params: { category: string; slug: string } };
 
+/**
+ * Slugs that have a literal static page file under `app/(marketing)/programs/<category>/<slug>/page.tsx`.
+ * Static routes win in Next.js routing, but excluding them from `generateStaticParams` here keeps the
+ * build clean and avoids accidentally pre-rendering the generic shell for an overridden surface.
+ */
+const STATIC_OVERRIDES: ReadonlyArray<{ category: string; slug: string }> = [
+  { category: 'public-programs', slug: 'open-lab' },
+];
+
 export function generateStaticParams() {
   const out: { category: string; slug: string }[] = [];
   for (const category of getProgramCategorySlugs()) {
     for (const leaf of getProgramLeaves(category)) {
+      const overridden = STATIC_OVERRIDES.some(
+        (o) => o.category === category && o.slug === leaf.slug
+      );
+      if (overridden) continue;
       out.push({ category, slug: leaf.slug });
     }
   }

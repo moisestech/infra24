@@ -1,10 +1,13 @@
 import Link from 'next/link';
+import { DigitalCultureFooterTicker } from '@/components/marketing/DigitalCultureFooterTicker';
 import { CdcMiamiLogo } from '@/components/marketing/cdc/CdcMiamiLogo';
-import { dccSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
+import { dccSiteMeta, marketingFooterBlurb } from '@/lib/marketing/content';
 
 const footerWork = [
   { href: '/programs', label: 'Programs' },
-  { href: '/projects', label: 'Projects' },
+  { href: '/workshops', label: 'Workshops' },
+  { href: '/contact/artist-index', label: 'Artist Index' },
+  { href: '/network', label: 'Network' },
   { href: '/partners', label: 'Partners' },
   { href: '/grants', label: 'Grants' },
 ];
@@ -12,8 +15,9 @@ const footerWork = [
 const footerOrganization = [
   { href: '/about', label: 'About' },
   { href: '/mission', label: 'Mission' },
-  { href: '/infra24', label: 'Infra24' },
-  { href: '/journal', label: 'Journal' },
+  { href: '/who-we-work-with', label: 'Who We Work With' },
+  { href: '/projects/public-interfaces', label: 'Public Interfaces' },
+  { href: '/newsletter', label: 'Newsletter' },
   { href: '/contact', label: 'Contact' },
   { href: '/privacy', label: 'Privacy' },
   { href: '/terms', label: 'Terms' },
@@ -30,11 +34,8 @@ export function SiteFooter() {
             </Link>
             <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{dccSiteMeta.organizationName}</p>
             <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{dccSiteMeta.poweredByLine}</p>
-            <p className="mt-3 max-w-md text-sm font-medium leading-relaxed text-neutral-900 dark:text-neutral-100">
-              {marketingHomeMeta.title}
-            </p>
-            <p className="mt-2 max-w-md text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-              {marketingHomeMeta.description}
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+              {marketingFooterBlurb}
             </p>
           </div>
           <div>
@@ -72,20 +73,12 @@ export function SiteFooter() {
             </ul>
           </div>
         </div>
-        <div className="mt-10 flex flex-col gap-2 border-t border-neutral-100 pt-8 text-xs text-neutral-500 dark:border-neutral-800 dark:text-neutral-400 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2">
-          <span>
-            © {new Date().getFullYear()} {dccSiteMeta.organizationName}. All rights reserved.
-          </span>
-          <span className="flex flex-wrap gap-x-4 gap-y-1 text-neutral-400 dark:text-neutral-500">
-            <Link href="/platform" className="hover:text-neutral-600 dark:hover:text-neutral-300">
-              Platform login area
-            </Link>
-            <Link href="/llms.txt" className="hover:text-neutral-600 dark:hover:text-neutral-300">
-              For AI assistants
-            </Link>
-          </span>
+
+        <div className="mt-10 text-xs text-neutral-500 dark:text-neutral-400">
+          © {new Date().getFullYear()} {dccSiteMeta.organizationName}. All rights reserved.
         </div>
       </div>
+      <DigitalCultureFooterTicker />
     </footer>
   );
 }

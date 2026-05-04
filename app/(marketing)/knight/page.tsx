@@ -19,6 +19,7 @@ import { KnightNarrativeStoryCallout } from '@/components/marketing/knight/Knigh
 import { KnightPartnerStrip } from '@/components/marketing/knight/KnightPartnerStrip';
 import { KnightPacketFilesTerminalFrame } from '@/components/marketing/knight/KnightPacketFilesTerminalFrame';
 import { KnightPacketNav } from '@/components/marketing/knight/KnightPacketNav';
+import { KnightPilotDepthSections } from '@/components/marketing/knight/KnightPilotDepthSections';
 import { KnightFounders360Carousel } from '@/components/marketing/knight/KnightFounders360Carousel';
 import { KnightPeopleCredentials } from '@/components/marketing/knight/KnightPeopleCredentials';
 import { knightFounderMomentoEmbeds, knightPersonCredentials } from '@/lib/marketing/knight-people';
@@ -54,6 +55,8 @@ export default function KnightPilotPacketPage() {
       <KnightNarrativeMapSection>
         <KnightNarrativeStoryCallout />
       </KnightNarrativeMapSection>
+
+      <KnightPilotDepthSections />
 
       <KnightDccLinksPreview
         items={knightPacketContextLinks}

@@ -6,8 +6,13 @@ import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
 type Props = { params: { slug: string } };
 
+/** Slugs that have a literal static page file under `app/(marketing)/projects/<slug>/page.tsx`. */
+const STATIC_OVERRIDE_SLUGS: ReadonlyArray<string> = ['public-interfaces'];
+
 export function generateStaticParams() {
-  return getProjectSlugs().map((slug) => ({ slug }));
+  return getProjectSlugs()
+    .filter((slug) => !STATIC_OVERRIDE_SLUGS.includes(slug))
+    .map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

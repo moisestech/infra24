@@ -4,6 +4,7 @@ export const knightPacketNavItems = [
   { href: '#knight-top', label: 'Overview' },
   { href: '#partners', label: 'Partners' },
   { href: '#narrative', label: 'Narrative' },
+  { href: '#pilot-depth', label: 'Pilot depth' },
   { href: '#identity', label: 'DCC links' },
   { href: '#people', label: 'People' },
   { href: '#knight-founders-360', label: 'Studios' },

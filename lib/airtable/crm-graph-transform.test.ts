@@ -1,6 +1,6 @@
 import { buildCrmGraphElements } from './crm-graph-transform'
 import { CRM_GRAPH_FIELD_MAP } from './crm-graph-field-map'
-import { filterGraphForHome, scorePersonNode } from './crm-graph-home-filter'
+import { filterGraphForHome, HOME_GRAPH_MAX_TOTAL_NODES, scorePersonNode } from './crm-graph-home-filter'
 import { getSampleCrmTables, getSampleGraphPayload } from '@/lib/marketing/fixtures/dcc-crm-graph-sample'
 import type { DccGraphNodeData } from '@/lib/marketing/dcc-crm-graph-types'
 
@@ -12,7 +12,7 @@ describe('buildCrmGraphElements', () => {
     const els = buildCrmGraphElements(tables, 'home')
     const nodes = els.filter((e) => 'kind' in e.data && !('source' in e.data)).map((e) => e.data as DccGraphNodeData)
     expect(nodes.some((n) => n.kind === 'person' && n.label === 'Alex Rivera')).toBe(true)
-    expect(nodes.some((n) => n.kind === 'institution' && n.label === 'Oolite Arts')).toBe(true)
+    expect(nodes.some((n) => n.kind === 'institution' && n.label === 'Bakehouse Art Complex')).toBe(true)
   })
 
   it('includes opportunities on explorer surface', () => {
@@ -63,6 +63,12 @@ describe('filterGraphForHome', () => {
       (e) => 'kind' in e.data && !('source' in e.data) && (e.data as DccGraphNodeData).kind === 'person'
     )
     expect(people.length).toBeLessThanOrEqual(2)
+  })
+
+  it('home sample payload fills up to HOME_GRAPH_MAX_TOTAL_NODES', () => {
+    const home = getSampleGraphPayload('home')
+    expect(home.meta.nodeCount).toBeLessThanOrEqual(HOME_GRAPH_MAX_TOTAL_NODES)
+    expect(home.meta.nodeCount).toBeGreaterThanOrEqual(40)
   })
 })
 

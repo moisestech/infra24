@@ -5,12 +5,13 @@
 
 import { dccHomePhotos } from '@/lib/marketing/dcc-home-photography';
 
+/** Long-form SEO blurb; keep aligned with `marketingHomeMeta.description` in `content.ts`. */
 export const dccPilotSeoDescription =
-  'Digital Culture Center Miami: infrastructure for born-digital art—software, screens, networks, and public-facing systems for Miami artists and cultural organizations. Year 1 pilot: clinics, workshops, and shared tools. Powered by Infra24.' as const;
+  'Digital Culture Center Miami is a public platform for born-digital art, artist support, workshops, public programs, and cultural infrastructure across Miami. DCC helps artists and organizations work with software, screens, networks, documentation, and updateable public interfaces.' as const;
 
-/** Homepage institutional hero — static mission H1 (funder-facing). */
+/** Homepage institutional hero — fallback H1 when slogan list is empty; may surface elsewhere. */
 export const dccHomeMissionHeadline =
-  'Building Cultural Infrastructure for Miami\u2019s Artists' as const;
+  'Building digital culture infrastructure for Miami\u2019s artists, organizations, and public life.' as const;
 
 export const dccHomeOrgLine = 'Digital Culture Center Miami' as const;
 
@@ -19,10 +20,14 @@ export const dccHomeFunderSubline =
 
 /** Mono accent strip: short phrases, animated in `DccHeroAsciiStatus`. */
 export const dccHomeMonoAccentPhrases = [
-  'website support_',
+  'artist websites_',
+  'public screens_',
+  'digital archives_',
+  'workshops_',
+  'QR systems_',
+  'network maps_',
+  'open tools_',
   'technical presentation_',
-  'public visibility_',
-  'shared tools_',
 ] as const;
 
 /** Hero tier-1 line rotation (marketing homepage). */
@@ -55,12 +60,12 @@ export const dccHeroRotatingHeadlines = [
  * First line mirrors `supportingSubhead` for non-hero consumers and SEO-adjacent blurbs.
  */
 export const dccHeroRotatingSubheads = [
-  'DCC helps artists working with software, screens, networks, hardware, and online culture strengthen visibility, technical presentation, and public connection in Miami.',
-  'From websites and documentation to screens, QR systems, installations, and public-facing tools, DCC supports artists working across digital culture, new media, and online aesthetics.',
-  'DCC is a Miami-based support layer for artists and cultural workers building with hardware, software, browser culture, memes, e-waste, and other born-digital forms.',
-  'DCC supports artists shaping culture through code, screens, networks, digital debris, and chronically online aesthetics.',
-  'DCC strengthens born-digital art and culture through practical infrastructure: workshops, clinics, public programs, and tools that stay accountable to artists and the public.',
-  'For creative technologists and organizations: clearer digital presence, better technical presentation of screen-based and networked work, and visibility in civic corridors.',
+  'DCC supports artists working with software, screens, hardware, networks, websites, archives, and online culture.',
+  'DCC helps Miami artists and organizations strengthen digital presence, technical presentation, public visibility, and shared infrastructure.',
+  'From workshops and clinics to artist indexes, QR systems, public screens, and digital maps, DCC turns digital culture into civic infrastructure.',
+  'DCC is for artists, cultural workers, creative technologists, and organizations building public culture after the internet.',
+  'DCC creates practical support systems for born-digital art: learning, documentation, visibility, tools, and public-facing interfaces.',
+  "DCC connects Miami's digital culture field through workshops, public programs, artist support, and a living network of people, spaces, and opportunities.",
 ] as const;
 
 export const dccPilotHomeHero = {
@@ -174,6 +179,17 @@ export const dccProofSectionIntro = {
 
 export const dccHomePathwaysSection = {
   title: 'Who we work with',
+  teaser:
+    'Grantmakers, cultural organizations, and artists each have a clear on-ramp into the Miami pilot—programs, pathways, and field support.',
+} as const;
+
+/** Homepage hero — primary CTAs only (no duplicate intro; footer carries org links). */
+export const dccHomeHeroActionBand = {
+  primaries: [
+    { label: 'Join the artist index', href: '/for-artists' },
+    { label: 'Explore workshops', href: '/workshops' },
+    { label: 'Partner with DCC', href: '/partners' },
+  ],
 } as const;
 
 /** Homepage “What DCC is” band — short; About page carries depth. */

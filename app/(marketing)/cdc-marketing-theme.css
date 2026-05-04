@@ -343,6 +343,346 @@
   }
 }
 
+/* Partners /marketing — pixel overlay on cards (CSS fallback + optional Houdini paint) */
+.cdc-marketing .partners-card-pixel-overlay {
+  --partners-hue: 165;
+  --partners-hue-accent: 210;
+  --partners-density: 11;
+  mix-blend-mode: multiply;
+  background-color: transparent;
+  background-image:
+    linear-gradient(
+      135deg,
+      hsla(var(--partners-hue), 55%, 52%, 0.14) 25%,
+      transparent 25%,
+      transparent 50%,
+      hsla(var(--partners-hue), 55%, 52%, 0.1) 50%,
+      hsla(var(--partners-hue), 55%, 52%, 0.14) 75%,
+      transparent 75%,
+      transparent
+    ),
+    linear-gradient(
+      45deg,
+      hsla(var(--partners-hue-accent), 48%, 48%, 0.12) 25%,
+      transparent 25%,
+      transparent 50%,
+      hsla(var(--partners-hue-accent), 48%, 48%, 0.08) 50%,
+      hsla(var(--partners-hue-accent), 48%, 48%, 0.12) 75%,
+      transparent 75%,
+      transparent
+    );
+  background-size:
+    calc(var(--partners-density) * 1px) calc(var(--partners-density) * 1px),
+    calc(var(--partners-density) * 1px) calc(var(--partners-density) * 1px);
+  background-position:
+    0 0,
+    calc(var(--partners-density) * 0.5px) calc(var(--partners-density) * 0.5px);
+}
+
+.dark .cdc-marketing .partners-card-pixel-overlay {
+  mix-blend-mode: screen;
+  background-image:
+    linear-gradient(
+      135deg,
+      hsla(var(--partners-hue), 50%, 62%, 0.18) 25%,
+      transparent 25%,
+      transparent 50%,
+      hsla(var(--partners-hue), 50%, 62%, 0.12) 50%,
+      hsla(var(--partners-hue), 50%, 62%, 0.18) 75%,
+      transparent 75%,
+      transparent
+    ),
+    linear-gradient(
+      45deg,
+      hsla(var(--partners-hue-accent), 45%, 58%, 0.14) 25%,
+      transparent 25%,
+      transparent 50%,
+      hsla(var(--partners-hue-accent), 45%, 58%, 0.1) 50%,
+      hsla(var(--partners-hue-accent), 45%, 58%, 0.14) 75%,
+      transparent 75%,
+      transparent
+    );
+}
+
+@supports (background: paint(partners-pixel-grid)) {
+  html.cdc-partners-paint-ready .cdc-marketing .partners-card-pixel-overlay {
+    background-image: paint(partners-pixel-grid);
+    background-size: auto;
+    background-position: 0 0;
+  }
+}
+
+.cdc-marketing .partners-grid-card {
+  transform-style: preserve-3d;
+  transition:
+    transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.38s ease,
+    border-color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cdc-marketing .partners-grid-card:hover {
+    transform: perspective(880px) rotateX(5deg) translateY(-5px);
+    box-shadow:
+      0 22px 48px -20px rgba(15, 23, 42, 0.22),
+      0 0 0 1px rgba(0, 212, 170, 0.12);
+  }
+
+  .dark .cdc-marketing .partners-grid-card:hover {
+    box-shadow:
+      0 22px 48px -18px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(0, 212, 170, 0.15);
+  }
+}
+
+/* /workshops — full-bleed catalog hero (mesh + pixel overlay in markup) */
+.cdc-marketing .dcc-workshops-hero-band {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 0 rgba(15, 23, 42, 0.06);
+}
+
+.dark .cdc-marketing .dcc-workshops-hero-band {
+  box-shadow:
+    inset 0 1px 0 0 rgba(0, 212, 170, 0.08),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.35);
+}
+
+/* /newsletter — full-bleed band + gradient shell form */
+.cdc-marketing .newsletter-landing-band {
+  position: relative;
+  isolation: isolate;
+}
+
+.cdc-marketing .newsletter-landing-band::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.55;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 20%, rgba(0, 212, 170, 0.14), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 92% 10%, rgba(255, 107, 53, 0.1), transparent 50%),
+    radial-gradient(ellipse 55% 40% at 80% 90%, rgba(255, 0, 136, 0.08), transparent 45%);
+  pointer-events: none;
+}
+
+.dark .cdc-marketing .newsletter-landing-band::before {
+  opacity: 0.85;
+  background:
+    radial-gradient(ellipse 80% 50% at 12% 18%, rgba(0, 212, 170, 0.12), transparent 55%),
+    radial-gradient(ellipse 65% 40% at 88% 12%, rgba(255, 107, 53, 0.08), transparent 48%),
+    radial-gradient(ellipse 50% 45% at 75% 88%, rgba(168, 85, 247, 0.1), transparent 42%);
+}
+
+.cdc-marketing .newsletter-hero-signal {
+  position: relative;
+  isolation: isolate;
+}
+
+.cdc-marketing .newsletter-hero-signal__bars span {
+  display: block;
+  min-height: 4px;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, rgba(0, 212, 170, 0.75), rgba(0, 212, 170, 0.25));
+  box-shadow: 0 0 12px rgba(0, 212, 170, 0.25);
+}
+
+.dark .cdc-marketing .newsletter-hero-signal__bars span {
+  background: linear-gradient(180deg, rgba(45, 250, 200, 0.85), rgba(0, 212, 170, 0.2));
+  box-shadow: 0 0 16px rgba(0, 212, 170, 0.2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cdc-marketing .newsletter-hero-signal__bars span {
+    animation: newsletter-bar-pulse 2.8s ease-in-out infinite;
+  }
+
+  .cdc-marketing .newsletter-hero-signal__bars span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .cdc-marketing .newsletter-hero-signal__bars span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  .cdc-marketing .newsletter-hero-signal__bars span:nth-child(4) {
+    animation-delay: 0.08s;
+  }
+  .cdc-marketing .newsletter-hero-signal__bars span:nth-child(5) {
+    animation-delay: 0.22s;
+  }
+  .cdc-marketing .newsletter-hero-signal__bars span:nth-child(6) {
+    animation-delay: 0.4s;
+  }
+  .cdc-marketing .newsletter-hero-signal__bars span:nth-child(7) {
+    animation-delay: 0.05s;
+  }
+}
+
+@keyframes newsletter-bar-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdc-marketing .newsletter-hero-signal__bars span {
+    animation: none;
+  }
+}
+
+.cdc-marketing .newsletter-form-shell {
+  position: relative;
+  border-radius: 1.5rem;
+  padding: 1px;
+  background: linear-gradient(
+    125deg,
+    rgba(0, 212, 170, 0.55),
+    rgba(255, 107, 53, 0.28),
+    rgba(255, 0, 136, 0.32),
+    rgba(0, 212, 170, 0.42)
+  );
+  box-shadow:
+    0 28px 64px -28px rgba(15, 23, 42, 0.22),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
+}
+
+.dark .cdc-marketing .newsletter-form-shell {
+  background: linear-gradient(
+    125deg,
+    rgba(0, 212, 170, 0.35),
+    rgba(168, 85, 247, 0.28),
+    rgba(255, 107, 53, 0.15),
+    rgba(0, 212, 170, 0.25)
+  );
+  box-shadow:
+    0 32px 70px -24px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 0 rgba(0, 212, 170, 0.12);
+}
+
+.cdc-marketing .newsletter-form-shell__inner {
+  border-radius: calc(1.5rem - 1px);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  padding: 1.75rem 1.75rem 2rem;
+}
+
+@media (min-width: 640px) {
+  .cdc-marketing .newsletter-form-shell__inner {
+    padding: 2.25rem 2.5rem 2.5rem;
+  }
+}
+
+.dark .cdc-marketing .newsletter-form-shell__inner {
+  background: rgba(10, 14, 26, 0.88);
+}
+
+.cdc-marketing .newsletter-benefit-card {
+  border-radius: 1.25rem;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.72), rgba(246, 248, 255, 0.5));
+  box-shadow: 0 18px 40px -22px rgba(15, 23, 42, 0.18);
+}
+
+.dark .cdc-marketing .newsletter-benefit-card {
+  border-color: rgba(0, 212, 170, 0.12);
+  background: linear-gradient(165deg, rgba(23, 31, 52, 0.75), rgba(10, 14, 26, 0.65));
+  box-shadow: 0 22px 48px -20px rgba(0, 0, 0, 0.45);
+}
+
+.cdc-marketing .newsletter-benefit-card li {
+  position: relative;
+  padding-left: 1.35rem;
+}
+
+.cdc-marketing .newsletter-benefit-card li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 1px;
+  background: rgb(0, 212, 170);
+  box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.2);
+}
+
+.dark .cdc-marketing .newsletter-benefit-card li::before {
+  box-shadow: 0 0 10px rgba(0, 212, 170, 0.35);
+}
+
+.cdc-marketing .newsletter-submit-btn {
+  width: 100%;
+  margin-top: 0.25rem;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #fff;
+  background: rgb(15, 23, 42);
+  border: none;
+  cursor: pointer;
+  box-shadow:
+    5px 5px 0 0 rgba(0, 212, 170, 0.48),
+    10px 10px 0 -3px rgba(15, 23, 42, 0.06);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease;
+}
+
+.cdc-marketing .newsletter-submit-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow:
+    6px 6px 0 0 rgba(0, 212, 170, 0.55),
+    12px 12px 0 -2px rgba(15, 23, 42, 0.07);
+}
+
+.cdc-marketing .newsletter-submit-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow:
+    3px 3px 0 0 rgba(0, 212, 170, 0.4),
+    5px 5px 0 -1px rgba(15, 23, 42, 0.05);
+}
+
+.cdc-marketing .newsletter-submit-btn:focus-visible {
+  outline: 2px solid rgb(0, 212, 170);
+  outline-offset: 3px;
+}
+
+.dark .cdc-marketing .newsletter-submit-btn {
+  color: rgb(15, 23, 42);
+  background: rgb(0, 212, 170);
+  box-shadow:
+    5px 5px 0 0 rgba(45, 250, 200, 0.35),
+    10px 10px 0 -3px rgba(0, 0, 0, 0.35);
+}
+
+.dark .cdc-marketing .newsletter-submit-btn:hover {
+  background: rgb(45, 250, 200);
+  box-shadow:
+    6px 6px 0 0 rgba(0, 212, 170, 0.4),
+    12px 12px 0 -2px rgba(0, 0, 0, 0.4);
+}
+
+.dark .cdc-marketing .newsletter-submit-btn:active {
+  background: rgb(0, 212, 170);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cdc-marketing .newsletter-submit-btn:hover,
+  .cdc-marketing .newsletter-submit-btn:active {
+    transform: none;
+  }
+}
+
 /* Arcade / menu-style hero CTAs */
 .cdc-arcade-primary-btn {
   box-shadow:

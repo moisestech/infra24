@@ -1,6 +1,6 @@
 import { fetchAllRecords, isAirtableConnectionConfigured } from '@/lib/airtable/client'
 import { buildCrmGraphElements } from '@/lib/airtable/crm-graph-transform'
-import { filterGraphForHome } from '@/lib/airtable/crm-graph-home-filter'
+import { filterGraphForHome, HOME_GRAPH_MAX_TOTAL_NODES } from '@/lib/airtable/crm-graph-home-filter'
 import { getSampleGraphPayload } from '@/lib/marketing/fixtures/dcc-crm-graph-sample'
 import type { DccNetworkGraphPayload, DccNetworkGraphSurface } from '@/lib/marketing/dcc-crm-graph-types'
 
@@ -68,7 +68,7 @@ export async function fetchDccCrmGraphPayload(surface: DccNetworkGraphSurface): 
   }
 
   if (surface === 'home') {
-    payload = filterGraphForHome(payload, 60)
+    payload = filterGraphForHome(payload, { maxPeople: 80, maxTotalNodes: HOME_GRAPH_MAX_TOTAL_NODES })
   }
 
   return payload

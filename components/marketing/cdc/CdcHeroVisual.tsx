@@ -2,8 +2,7 @@
 
 import { useReducedMotion } from 'framer-motion';
 import { BorderBeam } from '@/components/ui/border-beam';
-import { HeroCollage } from '@/components/marketing/HeroCollage';
-import { CdcMiamiLogo } from '@/components/marketing/cdc/CdcMiamiLogo';
+import { CdcHeroCollageCarousel } from '@/components/marketing/cdc/CdcHeroCollageCarousel';
 import { dccHeroDigital } from '@/lib/marketing/content';
 import { cdcDigitalBeam } from '@/lib/marketing/cdc-digital-theme';
 import { cn } from '@/lib/utils';
@@ -47,13 +46,13 @@ export function CdcHeroVisual({ className }: { className?: string }) {
             </span>
             <span className="text-[var(--cdc-magenta)]">{dccHeroDigital.systemLabels[2]}</span>
           </div>
-          <div className="flex items-center justify-end gap-3">
-            <CdcMiamiLogo size="hero" priority />
-          </div>
+          <p className="max-w-[14rem] text-right text-[10px] font-medium uppercase leading-snug tracking-[0.16em] text-neutral-500 dark:text-neutral-400 sm:max-w-none sm:text-[11px] sm:tracking-[0.18em]">
+            Explore the field · tap arrows or dots
+          </p>
         </div>
 
         <div className="p-2 sm:p-3">
-          <HeroCollage variant="embedded" />
+          <CdcHeroCollageCarousel />
         </div>
 
         <p className="px-3 pb-3 pt-0 text-center text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400">

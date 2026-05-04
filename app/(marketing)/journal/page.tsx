@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { PageHero, Section, CardGrid } from '@/components/marketing/cdc';
+import { EraPill } from '@/components/era/EraPill';
 import { getCdcBreadcrumbs, getJournalCategorySlugs } from '@/lib/cdc/routes';
 import { getCdcPageByPath } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
@@ -19,6 +20,11 @@ export default function JournalIndexPage() {
 
   return (
     <>
+      <div className="bg-white pt-6 dark:bg-neutral-950">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <EraPill />
+        </div>
+      </div>
       <PageHero
         eyebrow="Journal"
         title="Notes from the field"

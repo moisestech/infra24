@@ -17,7 +17,8 @@ export function HomeDccNetworkSection() {
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-neutral-400">
             People and institutions connected through DCC’s CRM pilot — edge strength reflects interactions, not a
-            decorative chart.
+            decorative chart. The homepage preview shows up to fifty scored contacts plus their adjacent
+            organizations; the full explorer opens on the network page.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link

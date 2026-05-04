@@ -154,13 +154,118 @@ const pages: CdcPageDef[] = [
   p({
     path: '/newsletter',
     title: 'Newsletter',
-    description: 'Subscribe for updates on programs and pilots.',
+    description: 'Subscribe for updates on workshops, artists, programs, and the DCC network.',
     layout: 'default',
   }),
   p({
     path: '/events',
     title: 'Events',
     description: 'Public programs and upcoming events.',
+    layout: 'default',
+  }),
+  p({
+    path: '/events/born-digital-era-open-studio-may',
+    title: 'Born-Digital Era: Open Studio #1',
+    description:
+      'First convergence event of the Born-Digital Era — open studio at Bakehouse with a workshop demo, clinic mini-session, newsletter live read, and a walkthrough of the network graph.',
+    parent: '/events',
+    layout: 'default',
+  }),
+  p({
+    path: '/network',
+    title: 'Network explorer',
+    description:
+      'Interactive cultural network — people, institutions, and opportunities connected through Digital Culture Center Miami.',
+    layout: 'default',
+  }),
+  p({
+    path: '/network/living',
+    title: 'Living network',
+    description:
+      'Full-width map of people, institutions, programs, and opportunities shaping Miami’s digital culture field — connection strength reflects real collaboration.',
+    parent: '/network',
+    layout: 'default',
+  }),
+  p({
+    path: '/powered-by-infra24',
+    title: 'Powered by Infra24',
+    description:
+      'How Infra24 implements DCC Miami’s public touchpoints: signs, maps, kiosks, portals, and the workflows that keep them current.',
+    layout: 'default',
+  }),
+  p({
+    path: '/faq',
+    title: 'Common questions',
+    description:
+      'Straight answers for artists, organizations, and funders about Digital Culture Center Miami, Infra24, and first steps.',
+    layout: 'default',
+  }),
+  p({
+    path: '/who-we-work-with',
+    title: 'Who we work with',
+    description:
+      'Grantmakers, cultural organizations, and artists—clear on-ramps into the Miami pilot, programs, and field support.',
+    layout: 'default',
+  }),
+  p({
+    path: '/era',
+    title: 'Born-Digital Era',
+    description:
+      'Seven pathways, one shared cultural network — how DCC organizes workshops, events, clinics, public interfaces, the newsletter, and the living map of Miami’s digital culture field.',
+    layout: 'default',
+  }),
+  p({
+    path: '/era/network',
+    title: 'Living Network',
+    description:
+      'A public-facing map of artists, organizations, spaces, programs, and opportunities shaping Miami’s digital culture field.',
+    parent: '/era',
+    layout: 'default',
+  }),
+  p({
+    path: '/era/irl-events',
+    title: 'Public Events',
+    description:
+      'Gatherings, talks, screenings, studio activations, and community moments where digital culture becomes public.',
+    parent: '/era',
+    layout: 'default',
+  }),
+  p({
+    path: '/era/workshops',
+    title: 'Workshops',
+    description: 'Hands-on public learning that compounds into the network.',
+    parent: '/era',
+    layout: 'default',
+  }),
+  p({
+    path: '/era/clinics',
+    title: 'Clinics & 1:1 Support',
+    description:
+      'Focused support sessions for artists and small organizations on digital presence, documentation, technical presentation, and public-facing systems.',
+    parent: '/era',
+    layout: 'default',
+  }),
+  p({
+    path: '/era/open-lab',
+    title: 'Open Lab',
+    description: 'Drop-in studio days at Bakehouse — the lowest-friction physical entry point.',
+    parent: '/era',
+    layout: 'default',
+  }),
+  p({
+    path: '/era/public-corridor',
+    title: 'Public Interfaces',
+    description:
+      'Screens, signs, QR systems, maps, and displays that make digital culture visible in shared spaces.',
+    parent: '/era',
+    layout: 'default',
+  }),
+  p({
+    path: '/era/newsletter',
+    title: 'Newsletter',
+    description:
+      'A recurring digest of workshops, artists, opportunities, tools, public programs, and updates from the DCC network.',
+    parent: '/era',
     layout: 'default',
   }),
   /* Support subpages */
@@ -680,7 +785,11 @@ for (const post of JOURNAL_POSTS) {
   );
 }
 
-const CONTACT_AUDIENCES = [
+const CONTACT_AUDIENCES: ReadonlyArray<{
+  readonly slug: string;
+  readonly title: string;
+  readonly description?: string;
+}> = [
   { slug: 'general', title: 'General inquiry' },
   { slug: 'partnerships', title: 'Partnerships' },
   { slug: 'funders', title: 'Funders & sponsors' },
@@ -691,6 +800,12 @@ const CONTACT_AUDIENCES = [
     slug: 'artist-index',
     title: 'Artist index listing',
   },
+  {
+    slug: 'host-a-screen',
+    title: 'Host a public interface',
+    description:
+      'For venues, schools, libraries, lobbies, storefronts, or studios that want to host a screen, smart sign, kiosk, or QR system that surfaces artists and programs to the public.',
+  },
 ] as const;
 
 for (const a of CONTACT_AUDIENCES) {
@@ -698,7 +813,7 @@ for (const a of CONTACT_AUDIENCES) {
     p({
       path: `/contact/${a.slug}`,
       title: a.title,
-      description: `Contact Digital Culture Center Miami — ${a.title}.`,
+      description: a.description ?? `Contact Digital Culture Center Miami — ${a.title}.`,
       parent: '/contact',
       layout: 'default',
     })
@@ -806,4 +921,17 @@ export function getInfra24LeafSlugs(): string[] {
 
 export function getSupportPrioritySlugs(): string[] {
   return [...SUPPORT_PRIORITY_SLUGS];
+}
+
+/** Slugs for the seven priority Born-Digital Era channels (see `/era/[channel]`). */
+export function getEraChannelSlugs(): string[] {
+  return [
+    'network',
+    'irl-events',
+    'workshops',
+    'clinics',
+    'open-lab',
+    'public-corridor',
+    'newsletter',
+  ];
 }

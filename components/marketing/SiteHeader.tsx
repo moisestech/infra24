@@ -11,6 +11,7 @@ import {
   Mail,
   Menu,
   Share2,
+  Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 import { MarketingHeaderCenterLogo } from '@/components/marketing/MarketingHeaderCenterLogo';
@@ -26,7 +27,6 @@ import {
 } from '@/lib/marketing/content';
 import { MarketingThemeToggle } from '@/components/marketing/MarketingThemeToggle';
 import { cn } from '@/lib/utils';
-import Tooltip from '@/components/ui/Tooltip';
 import {
   Sheet,
   SheetClose,
@@ -42,6 +42,7 @@ function navItemByHref(href: string) {
 
 const marketingHeaderNavIconMap: Record<MarketingHeaderNavIconKey, LucideIcon> = {
   info: Info,
+  sparkles: Sparkles,
   'layout-grid': LayoutGrid,
   'graduation-cap': GraduationCap,
   flag: Flag,
@@ -69,13 +70,10 @@ export function SiteHeader() {
         : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800/80 dark:hover:text-neutral-100'
     );
 
-  const applyBarClass =
-    'inline-flex min-h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-neutral-900 bg-neutral-900 px-2.5 text-[11px] font-semibold text-white transition-opacity hover:opacity-90 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:opacity-95 sm:px-3 sm:text-xs';
-
   const headerNavEntries = [...marketingHeaderNavLeft, ...marketingHeaderNavRight] as const;
 
   const menuButtonClass =
-    'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-[var(--cdc-border)] bg-white/80 text-neutral-800 shadow-sm transition-colors hover:bg-white hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)] focus-visible:ring-offset-2 dark:border-neutral-600 dark:bg-neutral-900/80 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-offset-neutral-950';
+    'group inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-md bg-white/80 text-neutral-900 shadow-sm transition-colors hover:bg-white hover:text-neutral-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cdc-teal)] focus-visible:ring-offset-2 dark:bg-neutral-900/80 dark:text-neutral-100 dark:hover:bg-neutral-800 dark:hover:text-white dark:focus-visible:ring-offset-neutral-950 sm:h-[3.75rem] sm:w-[3.75rem]';
 
   return (
     <header
@@ -83,47 +81,23 @@ export function SiteHeader() {
       className="sticky top-0 z-[100] border-b border-[var(--cdc-border)] bg-[#fafafa]/95 backdrop-blur supports-[backdrop-filter]:bg-[#fafafa]/80 dark:border-neutral-700/80 dark:bg-neutral-950/90 dark:supports-[backdrop-filter]:bg-neutral-950/85"
     >
       <div className="relative mx-auto flex min-h-[3.25rem] w-full max-w-7xl items-center px-3 py-2.5 sm:min-h-[3.5rem] sm:px-6 sm:py-3 lg:px-8">
-        {/* Left icon strip — width-capped so it never paints across the centered logo hit area */}
-        <div className="relative z-10 hidden min-w-0 max-w-[min(26rem,46vw)] shrink lg:block">
-          <nav
-            className="cdc-font-display flex min-w-0 flex-row flex-wrap items-center gap-1"
-            aria-label="Site sections"
-          >
-            {headerNavEntries.map(({ href, label, icon }) => {
-              const Icon = marketingHeaderNavIconMap[icon];
-              return (
-                <Tooltip key={href} content={label} position="bottom">
-                  <Link
-                    href={href}
-                    className={iconNavLinkClass(href)}
-                    aria-label={label}
-                    aria-current={pathname === href ? 'page' : undefined}
-                  >
-                    <Icon className="h-5 w-5 shrink-0" aria-hidden />
-                  </Link>
-                </Tooltip>
-              );
-            })}
-          </nav>
-        </div>
-
         <div className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 justify-center">
           <MarketingHeaderCenterLogo
             size="topBar"
             priority
-            className="pointer-events-auto w-[min(15rem,calc(100vw-9rem))] sm:w-[min(15rem,calc(100vw-10rem))] lg:w-[min(15rem,calc(100vw-11rem))]"
+            className="pointer-events-auto w-[min(15rem,calc(100vw-9rem))] sm:w-[min(15rem,calc(100vw-10rem))]"
           />
         </div>
 
         <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
-          <Link href={marketingHeaderApplyCta.href} className={cn(applyBarClass, 'hidden lg:inline-flex')}>
-            {marketingHeaderApplyCta.label}
-          </Link>
-
           <Sheet>
             <SheetTrigger asChild>
               <button type="button" className={menuButtonClass} aria-label="Open menu" aria-haspopup="dialog">
-                <Menu className="h-5 w-5" aria-hidden />
+                <Menu
+                  className="h-10 w-10 shrink-0 transition-[filter] duration-300 ease-out drop-shadow-[0_0_10px_rgba(0,212,170,0.42)] group-hover:drop-shadow-[0_0_16px_rgba(0,212,170,0.58)]"
+                  strokeWidth={2.75}
+                  aria-hidden
+                />
               </button>
             </SheetTrigger>
             <SheetContent
@@ -141,48 +115,50 @@ export function SiteHeader() {
                     Menu
                   </SheetTitle>
                   <p className="cdc-font-mono-accent max-w-full text-[11px] font-normal leading-relaxed tracking-[0.12em] text-neutral-500 dark:text-neutral-400">
-                    Icon row matches the desktop header. Apply and theme controls are below on smaller screens.
+                    {pathname === '/'
+                      ? 'Apply and Appearance above the list; open sections for pages.'
+                      : 'Icon row when shown; then Apply, Appearance, and grouped links.'}
                   </p>
                 </div>
               </SheetHeader>
 
-              <nav
-                className="flex flex-row flex-wrap items-center justify-center gap-2 border-b border-[var(--cdc-border)] px-4 py-4 dark:border-neutral-700"
-                aria-label="Site sections"
-              >
-                {headerNavEntries.map(({ href, label, icon }) => {
-                  const Icon = marketingHeaderNavIconMap[icon];
-                  return (
-                    <SheetClose key={href} asChild>
-                      <Link
-                        href={href}
-                        className={cn(iconNavLinkClass(href), 'h-11 w-11 border border-transparent hover:border-neutral-200 dark:hover:border-neutral-600')}
-                        aria-label={label}
-                        aria-current={pathname === href ? 'page' : undefined}
-                      >
-                        <Icon className="h-5 w-5 shrink-0" aria-hidden />
-                      </Link>
-                    </SheetClose>
-                  );
-                })}
-              </nav>
+              {pathname !== '/' ? (
+                <nav
+                  className="flex flex-row flex-wrap items-center justify-center gap-2 border-b border-[var(--cdc-border)] px-4 py-4 dark:border-neutral-700"
+                  aria-label="Site sections"
+                >
+                  {headerNavEntries.map(({ href, label, icon }) => {
+                    const Icon = marketingHeaderNavIconMap[icon];
+                    return (
+                      <SheetClose key={href} asChild>
+                        <Link
+                          href={href}
+                          className={cn(
+                            iconNavLinkClass(href),
+                            'h-11 w-11 border border-transparent hover:border-neutral-200 dark:hover:border-neutral-600'
+                          )}
+                          aria-label={label}
+                          aria-current={pathname === href ? 'page' : undefined}
+                        >
+                          <Icon className="h-5 w-5 shrink-0" aria-hidden />
+                        </Link>
+                      </SheetClose>
+                    );
+                  })}
+                </nav>
+              ) : null}
 
               <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5">
                 <div className="mb-5 flex flex-col gap-3">
-                  <div className="flex flex-col gap-3 lg:hidden">
-                    {/* Plain Link avoids Radix SheetClose + navigation race that can error on client */}
-                    <Link
-                      href={marketingHeaderApplyCta.href}
-                      className="block rounded-xl bg-neutral-900 px-4 py-4 text-center text-base font-semibold text-white dark:bg-neutral-100 dark:text-neutral-900"
-                    >
-                      {marketingHeaderApplyCta.label}
-                    </Link>
-                    <div className="flex items-center justify-between gap-3 rounded-xl border border-[var(--cdc-border)] bg-white/90 px-4 py-3 dark:border-neutral-600 dark:bg-neutral-900/80">
-                      <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
-                        Appearance
-                      </span>
-                      <MarketingThemeToggle className="h-11 w-11 shrink-0" />
-                    </div>
+                  <Link
+                    href={marketingHeaderApplyCta.href}
+                    className="block rounded-xl bg-neutral-900 px-4 py-4 text-center text-base font-semibold text-white dark:bg-neutral-100 dark:text-neutral-900"
+                  >
+                    {marketingHeaderApplyCta.label}
+                  </Link>
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-[var(--cdc-border)] bg-white/90 px-4 py-3 dark:border-neutral-600 dark:bg-neutral-900/80">
+                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200">Appearance</span>
+                    <MarketingThemeToggle className="h-11 w-11 shrink-0" />
                   </div>
                   <SheetClose asChild>
                     <Link
@@ -258,8 +234,6 @@ export function SiteHeader() {
               </div>
             </SheetContent>
           </Sheet>
-
-          <MarketingThemeToggle className="hidden h-11 w-11 shrink-0 lg:inline-flex" />
         </div>
       </div>
     </header>

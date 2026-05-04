@@ -37,6 +37,8 @@ function isPublicRoute(pathname: string): boolean {
     '/bookings',
     '/platform',
     '/infra24',
+    '/powered-by-infra24',
+    '/faq',
     '/programs',
     '/grants',
     '/projects',
@@ -47,10 +49,15 @@ function isPublicRoute(pathname: string): boolean {
     '/pilots',
     '/case-studies',
     '/about',
+    '/who-we-work-with',
     '/contact',
     '/grant',
     /** Funder-facing packet hub (must stay public; not under /grant). */
     '/knight',
+    /** Born-Digital Era public marketing surfaces. */
+    '/era',
+    '/events',
+    '/newsletter',
   ]
 
   return publicRoutes.some((route) => pathname.startsWith(route))

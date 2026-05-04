@@ -33,8 +33,56 @@ module.exports = {
         'bounce-in': 'bounceIn 0.6s ease-out',
         marquee: 'marquee var(--duration, 40s) linear infinite',
         'marquee-vertical': 'marquee-vertical var(--duration, 40s) linear infinite',
+        'dcc-pilot-heading-shimmer': 'dccPilotHeadingShimmer 7s ease-in-out infinite',
+        'dcc-engagement-grid': 'dccEngagementGrid 22s linear infinite',
+        'dcc-engagement-shine': 'dccEngagementShine 3.5s ease-in-out infinite',
+        /** Footer digital ticker — RGB split / jitter on phrase hover */
+        'dcc-ticker-glitch': 'dccTickerGlitch 0.38s steps(1, end) infinite',
+        /** Symbol swap pulse on ticker hover */
+        'dcc-ticker-mark-pulse': 'dccTickerMarkPulse 0.55s ease-in-out infinite',
       },
       keyframes: {
+        dccTickerGlitch: {
+          '0%, 100%': {
+            transform: 'translate(0, 0)',
+            textShadow: 'none',
+          },
+          '12.5%': {
+            transform: 'translate(-2px, 1px)',
+            textShadow:
+              '2px 0 0 rgba(255, 0, 136, 0.75), -2px 0 0 rgba(0, 212, 170, 0.65)',
+          },
+          '25%': {
+            transform: 'translate(2px, -1px)',
+            textShadow:
+              '-2px 0 0 rgba(0, 212, 170, 0.8), 2px 0 0 rgba(255, 0, 136, 0.55)',
+          },
+          '37.5%': { transform: 'translate(-1px, -2px)', textShadow: '1px 0 0 rgba(255, 107, 53, 0.7)' },
+          '50%': { transform: 'translate(1px, 2px)', textShadow: '-1px 0 0 rgba(0, 212, 170, 0.6)' },
+          '62.5%': { transform: 'translate(-2px, 0)', textShadow: 'none' },
+          '75%': { transform: 'translate(2px, 1px)', textShadow: '0 0 12px rgba(0, 212, 170, 0.45)' },
+          '87.5%': { transform: 'translate(0, -1px)', textShadow: '0 0 10px rgba(255, 0, 136, 0.35)' },
+        },
+        dccTickerMarkPulse: {
+          '0%, 100%': {
+            filter: 'brightness(1.12) saturate(1.2) drop-shadow(0 0 10px rgba(0, 212, 170, 0.4))',
+          },
+          '50%': {
+            filter: 'brightness(1.38) saturate(1.55) drop-shadow(0 0 18px rgba(255, 0, 136, 0.4))',
+          },
+        },
+        dccPilotHeadingShimmer: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        dccEngagementGrid: {
+          '0%': { transform: 'translate3d(0, 0, 0)' },
+          '100%': { transform: 'translate3d(22px, 22px, 0)' },
+        },
+        dccEngagementShine: {
+          '0%': { backgroundPosition: '0% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },

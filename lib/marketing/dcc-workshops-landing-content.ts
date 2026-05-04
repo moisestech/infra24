@@ -10,12 +10,11 @@ export const DCC_WORKSHOPS_SEO_BANNER_IMAGE_URL =
  */
 export const DCC_MARKETING_WORKSHOPS_LANDING: WorkshopsLandingContent = {
   heroEyebrow: 'Digital Culture Center Miami',
-  heroTitle: 'Public workshops',
+  heroTitle: 'Workshop catalog',
   heroTitleAccent: 'for digital practice',
-  heroLead:
-    'Hands-on sessions for artists, teaching artists, and cultural organizations navigating websites, discoverability, documentation, AI literacy, creative tooling, and sustainable workflows — with emphasis on clarity, experimentation, and public-facing digital culture in Miami.',
+  heroLead: '',
   heroPrimaryCta: {
-    label: 'Browse catalog',
+    label: 'Browse Catalog',
     href: '#catalog',
   },
   heroSecondaryCta: {

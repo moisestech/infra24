@@ -5,10 +5,10 @@
 
 import type { WebcoreIconName } from '@/components/marketing/webcore-lucide';
 import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
+import { dccHomePhotos } from '@/lib/marketing/dcc-home-photography';
 import {
   dccHeroRotatingSubheads,
   dccPilotHomeHero,
-  dccPilotSeoDescription,
   dccPilotWhatWeAreBlurb,
 } from '@/lib/marketing/dcc-pilot-home-content';
 
@@ -20,7 +20,12 @@ export type MarketingHeroSubheadSegment =
   | {
       readonly kind: 'term';
       readonly text: string;
-      readonly preview: { readonly gradientId: MarketingGradientId; readonly alt: string };
+      readonly preview: {
+        readonly gradientId: MarketingGradientId;
+        readonly alt: string;
+        /** Optional photograph in hover/tap preview (falls back to gradient only). */
+        readonly imageSrc?: string;
+      };
       readonly caption?: string;
     };
 
@@ -30,120 +35,114 @@ export const marketingHeroSubheadSegments = [
   {
     kind: 'term',
     text: 'Miami-based',
-    caption: 'Place-based pilot in civic corridors',
+    caption:
+      "Rooted in Miami's artists, neighborhoods, institutions, and public corridors.",
     preview: {
       gradientId: 'stackTeal',
-      alt: 'Teal gradient suggesting place-based civic signal.',
+      alt: dccHomePhotos.galleryInteractiveStations.alt,
+      imageSrc: dccHomePhotos.galleryInteractiveStations.src,
     },
   },
   { kind: 'text', text: ' platform for ' },
   {
     kind: 'term',
     text: 'artists',
-    caption: 'Workshops, clinics, and experimental learning',
+    caption:
+      'Supporting artists working with screens, software, networks, media, archives, and digital culture.',
     preview: {
       gradientId: 'columnCoral',
-      alt: 'Warm gradient suggesting artist-centered energy.',
-    },
-  },
-  { kind: 'text', text: ', ' },
-  {
-    kind: 'term',
-    text: 'public learning',
-    caption: 'Programs that build literacy in the open',
-    preview: {
-      gradientId: 'fieldViolet',
-      alt: 'Violet field gradient suggesting open learning.',
-    },
-  },
-  { kind: 'text', text: ', and ' },
-  {
-    kind: 'term',
-    text: 'civic-facing',
-    caption: 'Interfaces the public actually encounters',
-    preview: {
-      gradientId: 'meshSlate',
-      alt: 'Slate mesh gradient suggesting institutional surfaces.',
-    },
-  },
-  { kind: 'text', text: ' ' },
-  {
-    kind: 'term',
-    text: 'digital culture infrastructure',
-    caption: 'Systems, not one-off installs',
-    preview: {
-      gradientId: 'pulseMagenta',
-      alt: 'Magenta pulse gradient suggesting networked infrastructure.',
-    },
-  },
-  { kind: 'text', text: '—' },
-  {
-    kind: 'term',
-    text: 'workshops',
-    caption: 'Hands-on skill building',
-    preview: {
-      gradientId: 'warmAmber',
-      alt: 'Amber gradient suggesting hands-on workshop space.',
-    },
-  },
-  { kind: 'text', text: ', ' },
-  {
-    kind: 'term',
-    text: 'public programs',
-    caption: 'Events and offerings made legible',
-    preview: {
-      gradientId: 'deepInk',
-      alt: 'Deep ink gradient suggesting program schedules and legibility.',
-    },
-  },
-  { kind: 'text', text: ', ' },
-  {
-    kind: 'term',
-    text: 'artist support',
-    caption: 'Visibility tools and pathways',
-    preview: {
-      gradientId: 'signalCyan',
-      alt: 'Cyan signal gradient suggesting visibility and support tools.',
-    },
-  },
-  { kind: 'text', text: ', and ' },
-  {
-    kind: 'term',
-    text: 'updateable public interfaces',
-    caption: 'Signs, maps, kiosks, portals—kept current',
-    preview: {
-      gradientId: 'roseMist',
-      alt: 'Rose mist gradient suggesting public-facing interfaces.',
-    },
-  },
-  { kind: 'text', text: '. ' },
-  {
-    kind: 'term',
-    text: 'Infra24',
-    caption: 'Implementation methodology behind DCC Miami pilots',
-    preview: {
-      gradientId: 'indigoHaze',
-      alt: 'Indigo haze gradient suggesting systems methodology.',
-    },
-  },
-  { kind: 'text', text: ' is the systems methodology that makes this work ' },
-  {
-    kind: 'term',
-    text: 'repeatable',
-    caption: 'Patterns other partners can adopt',
-    preview: {
-      gradientId: 'stackTeal',
-      alt: 'Teal stack gradient suggesting repeatable patterns.',
+      alt: dccHomePhotos.digitalDivinities.alt,
+      imageSrc: dccHomePhotos.digitalDivinities.src,
     },
   },
   { kind: 'text', text: ' and ' },
   {
     kind: 'term',
-    text: 'deployable',
-    caption: 'From pilot to operating practice',
+    text: 'cultural workers',
+    caption:
+      'For organizers, educators, curators, technologists, and institutions shaping public culture.',
     preview: {
-      gradientId: 'columnCoral',
-      alt: 'Warm gradient suggesting deployment and scale.',
+      gradientId: 'fieldViolet',
+      alt: dccHomePhotos.galleryCrowdOpening.alt,
+      imageSrc: dccHomePhotos.galleryCrowdOpening.src,
+    },
+  },
+  { kind: 'text', text: ' shaping ' },
+  {
+    kind: 'term',
+    text: 'public life',
+    caption: 'Digital culture belongs in shared spaces, not only on private platforms.',
+    preview: {
+      gradientId: 'meshSlate',
+      alt: dccHomePhotos.vrHug.alt,
+      imageSrc: dccHomePhotos.vrHug.src,
+    },
+  },
+  { kind: 'text', text: ' through ' },
+  {
+    kind: 'term',
+    text: 'software',
+    caption: 'Tools, workflows, websites, databases, automations, and creative systems.',
+    preview: {
+      gradientId: 'pulseMagenta',
+      alt: dccHomePhotos.babyAgi.alt,
+      imageSrc: dccHomePhotos.babyAgi.src,
+    },
+  },
+  { kind: 'text', text: ', ' },
+  {
+    kind: 'term',
+    text: 'screens',
+    caption: 'Public displays, projections, kiosks, signage, interfaces, and screen-based artworks.',
+    preview: {
+      gradientId: 'warmAmber',
+      alt: dccHomePhotos.moisesArtec2024Talk.alt,
+      imageSrc: dccHomePhotos.moisesArtec2024Talk.src,
+    },
+  },
+  { kind: 'text', text: ', ' },
+  {
+    kind: 'term',
+    text: 'networks',
+    caption:
+      'The relationships between artists, organizations, funders, spaces, audiences, and opportunities.',
+    preview: {
+      gradientId: 'deepInk',
+      alt: dccHomePhotos.knightArtTec2025Talk.alt,
+      imageSrc: dccHomePhotos.knightArtTec2025Talk.src,
+    },
+  },
+  { kind: 'text', text: ', ' },
+  {
+    kind: 'term',
+    text: 'workshops',
+    caption: 'Hands-on learning for artists and cultural workers building digital capacity.',
+    preview: {
+      gradientId: 'signalCyan',
+      alt: dccHomePhotos.fabiolaGemsOfObsolescence.alt,
+      imageSrc: dccHomePhotos.fabiolaGemsOfObsolescence.src,
+    },
+  },
+  { kind: 'text', text: ', ' },
+  {
+    kind: 'term',
+    text: 'documentation',
+    caption: 'Clearer websites, archives, media kits, project pages, and public-facing materials.',
+    preview: {
+      gradientId: 'indigoHaze',
+      alt: dccHomePhotos.meditationBattlestation.alt,
+      imageSrc: dccHomePhotos.meditationBattlestation.src,
+    },
+  },
+  { kind: 'text', text: ', and ' },
+  {
+    kind: 'term',
+    text: 'updateable civic interfaces',
+    caption: 'Signs, maps, kiosks, portals, and public tools that can stay current over time.',
+    preview: {
+      gradientId: 'roseMist',
+      alt: dccHomePhotos.fabiolaSurveillanceCutie2024.alt,
+      imageSrc: dccHomePhotos.fabiolaSurveillanceCutie2024.src,
     },
   },
   { kind: 'text', text: '.' },
@@ -153,7 +152,7 @@ export const marketingHeroSubheadSegments = [
 export const dccSiteMeta = {
   organizationName: 'Digital Culture Center Miami',
   shortName: 'DCC.miami',
-  poweredByLine: 'Powered by Infra24',
+  poweredByLine: 'Built with Infra24',
   infra24Descriptor:
     'Infra24 is the operational methodology and systems layer that designs, deploys, and documents DCC Miami programs and public interfaces.',
 } as const;
@@ -161,8 +160,13 @@ export const dccSiteMeta = {
 /** Homepage meta title/description (also used for JSON-LD). */
 export const marketingHomeMeta = {
   title: 'DCC.miami | Digital Culture Center Miami',
-  description: `Building cultural infrastructure for Miami\u2019s artists. ${dccPilotSeoDescription}`,
+  description:
+    'Digital Culture Center Miami is a public platform for born-digital art, artist support, workshops, public programs, and cultural infrastructure across Miami. DCC helps artists and organizations work with software, screens, networks, documentation, and updateable public interfaces.',
 } as const;
+
+/** Footer column blurb (distinct from SEO meta; more navigational / field-level). */
+export const marketingFooterBlurb =
+  'DCC.miami is a public platform for Miami\u2019s digital culture field: artist support, workshops, public programs, digital documentation, network mapping, and updateable civic interfaces.' as const;
 
 /** Plain hero subhead default (first tier-2 rotating line); homepage cycles full `dccHeroRotatingSubheads`. */
 export const marketingHeroPlainSubhead = dccHeroRotatingSubheads[0];
@@ -182,7 +186,7 @@ export const marketingHeroEngagement = {
     href: '/contact/artist-index',
   },
   newsletter: {
-    placeholder: 'Email for updates',
+    placeholder: 'Your email',
     submitLabel: 'Subscribe',
     /** Optional: full URL for POST (e.g. Mailchimp / Buttondown form action). If unset, submits to `/newsletter` with email query. */
     formAction: process.env.NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_ACTION ?? '',
@@ -220,7 +224,7 @@ export const homeSysLogLines = [
 /** Hero digital frame microcopy (homepage webcore strip). */
 export const dccHeroDigital = {
   systemLabels: ['Public', 'Digital', 'Miami'] as const,
-  caption: 'One communication layer across physical and digital surfaces',
+  caption: 'A public layer for digital culture across screens, spaces, and networks.',
 } as const;
 
 /** Homepage narrative sequence (grants, decks, and site). */
@@ -404,6 +408,11 @@ export function getMarketingFaqHomeItems() {
   return marketingFaq.filter((item) => marketingHomeFaqPreviewQuestionSet.has(item.question));
 }
 
+/** Full FAQ list for `/faq` (same objects as `marketingFaq`, typed for accordion consumers). */
+export function getMarketingFaqAllItems() {
+  return marketingFaq;
+}
+
 export const problemSection = {
   headline: 'Most organizations do not have a signage problem. They have a communication systems problem.',
   lead:
@@ -498,6 +507,7 @@ export const auditDeliverables = [
 
 export const navItems = [
   { href: '/about', label: 'About' },
+  { href: '/era', label: 'Era' },
   { href: '/programs', label: 'Programs' },
   { href: '/workshops', label: 'Workshops' },
   { href: '/network', label: 'Network' },
@@ -511,7 +521,10 @@ export const navItems = [
 
 /** Grouped links for the marketing header Sheet (`<details>` sections). Hrefs must exist in `navItems`. */
 export const marketingNavSheetGroups = [
-  { title: 'Explore', hrefs: ['/programs', '/workshops', '/network', '/projects', '/partners'] as const },
+  {
+    title: 'Explore',
+    hrefs: ['/era', '/programs', '/workshops', '/network', '/projects', '/partners'] as const,
+  },
   { title: 'Organization', hrefs: ['/about', '/grants', '/journal'] as const },
 ] as const;
 
@@ -520,6 +533,7 @@ export const marketingNavSheetFooterHrefs = ['/contact', '/infra24'] as const;
 /** Lucide icon keys for the marketing header icon strip at `lg+` (see `SiteHeader`). */
 export type MarketingHeaderNavIconKey =
   | 'info'
+  | 'sparkles'
   | 'layout-grid'
   | 'graduation-cap'
   | 'flag'
@@ -530,6 +544,7 @@ export type MarketingHeaderNavIconKey =
 /** Header icon strip (`lg+` only) — left cluster; `href` must exist in `navItems`; `label` for tooltips and `aria-label`. */
 export const marketingHeaderNavLeft = [
   { href: '/about', label: 'About', icon: 'info' satisfies MarketingHeaderNavIconKey },
+  { href: '/era', label: 'Born-Digital Era', icon: 'sparkles' satisfies MarketingHeaderNavIconKey },
   { href: '/programs', label: 'Services', icon: 'layout-grid' satisfies MarketingHeaderNavIconKey },
   { href: '/workshops', label: 'Workshops', icon: 'graduation-cap' satisfies MarketingHeaderNavIconKey },
   { href: '/grants', label: 'Pilot', icon: 'flag' satisfies MarketingHeaderNavIconKey },
@@ -542,7 +557,7 @@ export const marketingHeaderNavRight = [
   { href: '/contact', label: 'Contact', icon: 'mail' satisfies MarketingHeaderNavIconKey },
 ] as const;
 
-/** Primary CTA in desktop header; same destination as artist index engagement. */
+/** Apply CTA in the marketing menu sheet (top bar stays logo + menu only). */
 export const marketingHeaderApplyCta = {
   href: '/contact/artist-index',
   label: 'Apply',
@@ -739,3 +754,149 @@ export const measurementSection = {
   supporting:
     'Depending on the system, organizations can track scans, visits, update frequency, kiosk interactions, event engagement, facility activation, staff adoption, and reduction in outdated public information. That makes infrastructure easier to justify and more useful in grant, board, and reporting contexts.',
 } as const;
+
+/**
+ * Born-Digital Era — banner frame for the seven priority growth channels.
+ * Additive: existing rotating headlines and DCC copy stay; this layer wraps
+ * them with a single phrase that threads through `/era`, the homepage band,
+ * and per-channel pages. Replaces "AI Era" framing without privileging one tech.
+ */
+export const bornDigitalEra = {
+  banner: 'Born-Digital Era',
+  bannerLower: 'born-digital era',
+  /** Mono accent eyebrow used above section titles and inflection cards. */
+  eyebrow: 'BORN-DIGITAL ERA',
+  /** One-line thesis tying network-as-spine to the seven channels. */
+  thesis:
+    'Money goes down, information goes down, humans go up, networks go up. The Born-Digital Era is the operating frame for art, learning, and public life when the network is the most valuable layer.',
+  /** Homepage era-band lede + hero / pill supporting copy. */
+  tagline:
+    'DCC organizes digital culture through seven connected pathways. Each pathway creates public value on its own. Together, they connect artists, organizations, programs, tools, and opportunities into one living field.',
+  /** Used by `<Link>` pills on existing program/network/journal pages. */
+  pillLabel: 'Part of the Born-Digital Era',
+  pillHref: '/era',
+} as const;
+
+/** Channel ids used as keys across copy, metrics, routes, and inflection cards. */
+export type BornDigitalEraChannelId =
+  | 'irl-events'
+  | 'workshops'
+  | 'clinics'
+  | 'open-lab'
+  | 'public-corridor'
+  | 'newsletter'
+  | 'network';
+
+export type BornDigitalEraChannel = {
+  readonly id: BornDigitalEraChannelId;
+  readonly title: string;
+  readonly shortLabel: string;
+  readonly group: string;
+  readonly description: string;
+  readonly siteHref: string;
+  readonly eraHref: string;
+  readonly converge: string;
+  readonly cardEffect:
+    | 'mesh-field'
+    | 'venue-node'
+    | 'knowledge-lattice'
+    | 'signal-pulse'
+    | 'live-loop'
+    | 'city-scan'
+    | 'particle-dispatch';
+};
+
+/**
+ * The seven priority channels (v1). YouTube / podcast / social are deliberately
+ * phase-2 and are not represented here yet.
+ */
+export const bornDigitalEraChannels: readonly BornDigitalEraChannel[] = [
+  {
+    id: 'network',
+    title: 'Living Network',
+    shortLabel: 'NET',
+    group: 'Artists and cultural workers showing up in the same map.',
+    description:
+      "See who's working on what across Miami's digital culture field, and add yourself to the artist index.",
+    siteHref: '/network',
+    eraHref: '/era/network',
+    converge: 'Each new profile makes the field a little easier to find your way through.',
+    cardEffect: 'mesh-field',
+  },
+  {
+    id: 'irl-events',
+    title: 'Public Events',
+    shortLabel: 'IRL',
+    group: 'Artists, neighbors, and anyone showing up in person.',
+    description:
+      'Upcoming gatherings, talks, screenings, and studio activations open to artists and neighbors.',
+    siteHref: '/events',
+    eraHref: '/era/irl-events',
+    converge: 'Showing up is how the network gets real.',
+    cardEffect: 'venue-node',
+  },
+  {
+    id: 'workshops',
+    title: 'Workshops',
+    shortLabel: 'LEARN',
+    group: 'Artists and cultural workers building practical digital chops.',
+    description:
+      'Hands-on classes for artists and cultural workers — websites, AI, archives, automation, media, and the tools that make a practice legible online.',
+    siteHref: '/workshops',
+    eraHref: '/era/workshops',
+    converge: 'Every workshop turns into shared capacity in the network.',
+    cardEffect: 'knowledge-lattice',
+  },
+  {
+    id: 'clinics',
+    title: 'Clinics & 1:1 Support',
+    shortLabel: 'CLINIC',
+    group: 'Artists and small orgs who want one-on-one time.',
+    description:
+      "Book free 1:1 time with DCC for digital presence, documentation, archives, or any other piece of your practice that's stuck.",
+    siteHref: 'https://calendly.com/dccmiami',
+    eraHref: '/era/clinics',
+    converge: 'One conversation usually unblocks the next month of work.',
+    cardEffect: 'signal-pulse',
+  },
+  {
+    id: 'open-lab',
+    title: 'Open Lab',
+    shortLabel: 'LAB',
+    group: 'Drop-ins, peers, and first-time visitors at Bakehouse.',
+    description:
+      'Drop in at Bakehouse on Mondays and Fridays, 3–7pm. Bring a question, a project, or just yourself — no appointment needed.',
+    siteHref: '/programs/public-programs/open-lab',
+    eraHref: '/era/open-lab',
+    converge: 'The studio is the easiest door into everything else DCC does.',
+    cardEffect: 'live-loop',
+  },
+  {
+    id: 'public-corridor',
+    title: 'Public Interfaces',
+    shortLabel: 'CIVIC',
+    group: 'Artists with work to show and venues with screens to share.',
+    description:
+      'Where digital culture shows up in shared space — submit your work for screens, signs, and QR experiences, or host a public interface at your venue.',
+    siteHref: '/projects/public-interfaces',
+    eraHref: '/era/public-corridor',
+    converge: 'Public surfaces are how people discover artists outside the gallery.',
+    cardEffect: 'city-scan',
+  },
+  {
+    id: 'newsletter',
+    title: 'Newsletter',
+    shortLabel: 'NEWS',
+    group: 'Anyone who wants to follow the field without being on a feed.',
+    description:
+      'A weekly digest of workshops, opportunities, tools, and what is happening across the DCC network.',
+    siteHref: '/newsletter',
+    eraHref: '/era/newsletter',
+    converge: 'A regular pulse so the network stays warm between events.',
+    cardEffect: 'particle-dispatch',
+  },
+] as const;
+
+export function getBornDigitalEraChannel(id: BornDigitalEraChannelId) {
+  return bornDigitalEraChannels.find((c) => c.id === id);
+}

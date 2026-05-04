@@ -1,0 +1,123 @@
+{
+  "channels": [
+    {
+      "channel": "network",
+      "metric": "People and organizations in the network",
+      "unit": "profiles",
+      "current": 28,
+      "tiers": [
+        { "tier": 1, "label": "Starting signal", "target": 50 },
+        { "tier": 2, "label": "Growing field", "target": 250 },
+        { "tier": 3, "label": "Living infrastructure", "target": 1000 }
+      ],
+      "lastUpdated": "2026-05-03",
+      "support": [
+        { "label": "Connections in the map", "value": "62" },
+        { "label": "New this month", "value": "11" }
+      ],
+      "joinAction": { "label": "Add yourself to the network", "href": "/contact/artist-index?source=era-network" }
+    },
+    {
+      "channel": "irl-events",
+      "metric": "Public programs hosted",
+      "unit": "attendees",
+      "current": 0,
+      "tiers": [
+        { "tier": 1, "label": "Starting signal", "target": 100 },
+        { "tier": 2, "label": "Growing field", "target": 1000 },
+        { "tier": 3, "label": "Living infrastructure", "target": 5000 }
+      ],
+      "lastUpdated": "2026-05-03",
+      "support": [
+        { "label": "Typical room", "value": "30 → 100 → 300" },
+        { "label": "Next event", "value": "Born-Digital Era: Open Studio #1 (May)" }
+      ],
+      "joinAction": { "label": "See upcoming events", "href": "/events" }
+    },
+    {
+      "channel": "workshops",
+      "metric": "Workshop participants",
+      "unit": "enrollments",
+      "current": 0,
+      "tiers": [
+        { "tier": 1, "label": "Starting signal", "target": 50 },
+        { "tier": 2, "label": "Growing field", "target": 200 },
+        { "tier": 3, "label": "Living infrastructure", "target": 1000 }
+      ],
+      "lastUpdated": "2026-05-03",
+      "support": [
+        { "label": "Active titles", "value": "6" },
+        { "label": "Finish the cohort", "value": "≥ 70%" }
+      ],
+      "joinAction": { "label": "Browse workshops", "href": "/workshops" }
+    },
+    {
+      "channel": "clinics",
+      "metric": "1:1 sessions held",
+      "unit": "sessions",
+      "current": 0,
+      "tiers": [
+        { "tier": 1, "label": "Starting signal", "target": 12 },
+        { "tier": 2, "label": "Growing field", "target": 50 },
+        { "tier": 3, "label": "Living infrastructure", "target": 150 }
+      ],
+      "lastUpdated": "2026-05-03",
+      "support": [
+        { "label": "Things shipped after a clinic", "value": "8 → 35 → 120" },
+        { "label": "Folks who come back", "value": "≥ 30%" }
+      ],
+      "joinAction": { "label": "Book a clinic", "href": "https://calendly.com/dccmiami?utm_source=dcc-clinics" }
+    },
+    {
+      "channel": "open-lab",
+      "metric": "Open lab visits",
+      "unit": "visitors",
+      "current": 0,
+      "tiers": [
+        { "tier": 1, "label": "Starting signal", "target": 10 },
+        { "tier": 2, "label": "Growing field", "target": 40 },
+        { "tier": 3, "label": "Living infrastructure", "target": 120 }
+      ],
+      "lastUpdated": "2026-05-03",
+      "support": [
+        { "label": "When", "value": "Mon + Fri, 3–7pm" },
+        { "label": "Where", "value": "Bakehouse studio" }
+      ],
+      "joinAction": { "label": "Drop in (Mon/Fri 3–7)", "href": "/programs/public-programs/open-lab" }
+    },
+    {
+      "channel": "public-corridor",
+      "metric": "Public surfaces activated",
+      "unit": "sites",
+      "current": 0,
+      "tiers": [
+        { "tier": 1, "label": "Starting signal", "target": 1 },
+        { "tier": 2, "label": "Growing field", "target": 3 },
+        { "tier": 3, "label": "Living infrastructure", "target": 8 }
+      ],
+      "lastUpdated": "2026-05-03",
+      "support": [
+        { "label": "What we run", "value": "Smart signs · maps · kiosks" },
+        { "label": "Always current", "value": "≤ 24h" }
+      ],
+      "joinAction": { "label": "Submit or host", "href": "/projects/public-interfaces" }
+    },
+    {
+      "channel": "newsletter",
+      "metric": "Subscribers reached",
+      "unit": "subscribers",
+      "current": 0,
+      "tiers": [
+        { "tier": 1, "label": "Starting signal", "target": 250 },
+        { "tier": 2, "label": "Growing field", "target": 1000 },
+        { "tier": 3, "label": "Living infrastructure", "target": 5000 }
+      ],
+      "lastUpdated": "2026-05-03",
+      "support": [
+        { "label": "People actually opening it", "value": "≥ 35%" },
+        { "label": "Cadence", "value": "Weekly" }
+      ],
+      "joinAction": { "label": "Subscribe to the newsletter", "href": "/newsletter?source=era-newsletter" }
+    }
+  ]
+}

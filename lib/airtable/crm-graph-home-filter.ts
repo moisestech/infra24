@@ -44,40 +44,86 @@ function scoreInstitutionNode(n: DccGraphNodeData): number {
   return s
 }
 
+export type FilterGraphForHomeOptions = {
+  /** Max people considered before trimming to `maxTotalNodes` (higher = more to choose from). */
+  maxPeople?: number
+  /** Hard cap on total nodes (people + adjacent institutions) for homepage embeds. */
+  maxTotalNodes?: number
+}
+
+/** Homepage “living network” embed: max nodes (people + adjacent institutions) after scoring. */
+export const HOME_GRAPH_MAX_TOTAL_NODES = 50 as const
+
+function resolveHomeFilterOptions(
+  input: number | FilterGraphForHomeOptions | undefined
+): { maxPeople: number; maxTotalNodes: number } {
+  if (input === undefined) return { maxPeople: 80, maxTotalNodes: HOME_GRAPH_MAX_TOTAL_NODES }
+  if (typeof input === 'number') return { maxPeople: input, maxTotalNodes: HOME_GRAPH_MAX_TOTAL_NODES }
+  return {
+    maxPeople: input.maxPeople ?? 80,
+    maxTotalNodes: input.maxTotalNodes ?? HOME_GRAPH_MAX_TOTAL_NODES,
+  }
+}
+
 /**
- * Keep top `maxPeople` people by score, institutions adjacent to them on any edge,
- * then only edges whose endpoints are both kept.
+ * Keep top-scoring people (up to `maxPeople`), adjacent institutions on any edge,
+ * then only edges whose endpoints are both kept. If people + institutions exceed
+ * `maxTotalNodes`, drops lowest-scoring people until the cap fits.
  */
-export function filterGraphForHome(payload: DccNetworkGraphPayload, maxPeople = 60): DccNetworkGraphPayload {
+export function filterGraphForHome(
+  payload: DccNetworkGraphPayload,
+  maxPeopleOrOpts?: number | FilterGraphForHomeOptions
+): DccNetworkGraphPayload {
+  const { maxPeople, maxTotalNodes } = resolveHomeFilterOptions(maxPeopleOrOpts)
   const nodeEls = payload.elements.filter(isNode)
   const edgeEls = payload.elements.filter(isEdge)
 
   const nodeData = nodeEls.map((n) => n.data)
   const edgeData = edgeEls.map((e) => e.data)
 
-  const people = nodeData
+  const allPeopleSorted = nodeData
     .filter((d) => d.kind === 'person')
     .sort((a, b) => scorePersonNode(b) - scorePersonNode(a))
-    .slice(0, maxPeople)
 
-  const keepPeople = new Set(people.map((p) => p.id))
-  const instIds = new Set<string>()
+  let k = Math.min(maxPeople, allPeopleSorted.length)
+  let chosenPeople: DccGraphNodeData[] = []
+  let chosenInstitutions: DccGraphNodeData[] = []
+  let outEdges: DccGraphEdgeData[] = []
 
-  for (const e of edgeData) {
-    const touchesPerson = keepPeople.has(e.source) || keepPeople.has(e.target)
-    if (!touchesPerson) continue
-    if (e.source.startsWith('institution:')) instIds.add(e.source)
-    if (e.target.startsWith('institution:')) instIds.add(e.target)
+  while (k > 0) {
+    const people = allPeopleSorted.slice(0, k)
+    const keepPeople = new Set(people.map((p) => p.id))
+    const instIds = new Set<string>()
+
+    for (const e of edgeData) {
+      const touchesPerson = keepPeople.has(e.source) || keepPeople.has(e.target)
+      if (!touchesPerson) continue
+      if (e.source.startsWith('institution:')) instIds.add(e.source)
+      if (e.target.startsWith('institution:')) instIds.add(e.target)
+    }
+
+    const keep = new Set<string>(people.map((p) => p.id))
+    instIds.forEach((id) => keep.add(id))
+    const institutions = nodeData
+      .filter((d) => d.kind === 'institution' && keep.has(d.id))
+      .sort((a, b) => scoreInstitutionNode(b) - scoreInstitutionNode(a))
+
+    const trialNodes = [...people, ...institutions]
+    if (trialNodes.length <= maxTotalNodes) {
+      chosenPeople = people
+      chosenInstitutions = institutions
+      const outNodeIds = new Set(trialNodes.map((n) => n.id))
+      outEdges = edgeData.filter((e) => outNodeIds.has(e.source) && outNodeIds.has(e.target))
+      break
+    }
+    k -= 1
   }
 
-  const keep = new Set<string>([...keepPeople, ...instIds])
-  const institutions = nodeData
-    .filter((d) => d.kind === 'institution' && keep.has(d.id))
-    .sort((a, b) => scoreInstitutionNode(b) - scoreInstitutionNode(a))
-
-  const outNodeData = [...people, ...institutions]
+  const outNodeData = [...chosenPeople, ...chosenInstitutions]
   const outNodeIds = new Set(outNodeData.map((n) => n.id))
-  const outEdges = edgeData.filter((e) => outNodeIds.has(e.source) && outNodeIds.has(e.target))
+  if (!outEdges.length && outNodeData.length) {
+    outEdges = edgeData.filter((e) => outNodeIds.has(e.source) && outNodeIds.has(e.target))
+  }
 
   const elements: DccGraphElement[] = [
     ...outNodeData.map((data) => ({ data: { ...data } })),

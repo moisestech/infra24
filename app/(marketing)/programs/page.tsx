@@ -1,10 +1,19 @@
 import type { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { MarketingSection } from '@/components/marketing/MarketingSection';
 import { PageHero, Section, CardGrid, CtaBlock } from '@/components/marketing/cdc';
+import { EraPill } from '@/components/era/EraPill';
 import { getCdcBreadcrumbs, getProgramCategories } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
 const path = '/programs';
+
+const ServiceEvidenceSection = dynamic(
+  () =>
+    import('@/components/marketing/dcc/ServiceEvidenceSection').then((m) => m.ServiceEvidenceSection),
+  { ssr: true }
+);
 
 export const metadata: Metadata = cdcPageMetadata(path);
 
@@ -18,6 +27,11 @@ export default function ProgramsIndexPage() {
 
   return (
     <>
+      <div className="bg-white pt-6 dark:bg-neutral-950">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <EraPill />
+        </div>
+      </div>
       <PageHero
         eyebrow="Programs"
         title="Public programs for digital culture"
@@ -27,6 +41,12 @@ export default function ProgramsIndexPage() {
       <Section className="bg-[#fafafa]">
         <CardGrid items={items} />
       </Section>
+      <MarketingSection
+        id="what-dcc-does"
+        className="scroll-mt-24 border-y border-[var(--cdc-border)] bg-[#fafafa] py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16 lg:py-24"
+      >
+        <ServiceEvidenceSection />
+      </MarketingSection>
       <Section className="bg-white pb-16">
         <CtaBlock
           headline="Host or sponsor a program"

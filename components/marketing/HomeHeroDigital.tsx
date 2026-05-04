@@ -38,7 +38,8 @@ type HomeHeroDigitalProps = {
   headlineClassName?: string;
   /** When `layout` is `digital-first`, applied to the legal org line (smaller than rotating hero). */
   staticHeadlineClassName?: string;
-  poweredByLine: string;
+  /** Omit or leave empty to hide the “Powered by…” line (e.g. homepage institutional hero). */
+  poweredByLine?: string;
   /** Plain subhead (used with `TextAnimate` when `subheadSegments` is omitted). */
   subhead?: string;
   /** Structured subhead with interactive key terms; takes precedence over `subhead` for visible body. */
@@ -90,7 +91,7 @@ export function HomeHeroDigital({
   orgLine,
   headlineClassName,
   staticHeadlineClassName,
-  poweredByLine,
+  poweredByLine = '',
   subhead,
   subheadSegments,
   pilotTagline,
@@ -263,16 +264,16 @@ export function HomeHeroDigital({
     </p>
   ) : null;
 
-  const poweredBlock = (
+  const poweredBlock = poweredByLine?.trim() ? (
     <p
       className={cn(
         'text-sm font-medium text-neutral-500 dark:text-neutral-400',
         institutional ? 'mt-0' : digitalFirst ? 'mt-5' : showPilotBand ? 'mt-3' : 'mt-2'
       )}
     >
-      {poweredByLine}
+      {poweredByLine.trim()}
     </p>
-  );
+  ) : null;
 
   const institutionalPdmBlock =
     publicDigitalMiamiLine?.trim() ? (
@@ -335,7 +336,7 @@ export function HomeHeroDigital({
       <div className="mt-1">
         <DccHeroAsciiStatus />
       </div>
-      {poweredBlock}
+      {poweredBlock ? <div className="mt-2">{poweredBlock}</div> : null}
     </>
   );
 

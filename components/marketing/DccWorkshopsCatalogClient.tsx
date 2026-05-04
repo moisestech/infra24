@@ -1,5 +1,6 @@
 'use client'
 
+import type { CSSProperties } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { Search } from 'lucide-react'
@@ -24,10 +25,11 @@ import {
 } from '@/lib/marketing/dcc-workshops-catalog-ui'
 import { DccWorkshopsCatalogFilters } from '@/components/marketing/DccWorkshopsCatalogFilters'
 import { DccWorkshopsPromotedCarousel } from '@/components/marketing/DccWorkshopsPromotedCarousel'
+import { PartnersCardPaintRegister } from '@/components/marketing/PartnersCardPaintRegister'
 
-function sortFeaturedFirst<T extends { featured?: boolean; title: string }>(a: T, b: T) {
+function sortFeaturedFirst(a: WorkshopRow, b: WorkshopRow) {
   if (Boolean(a.featured) !== Boolean(b.featured)) return a.featured ? -1 : 1
-  return a.title.localeCompare(b.title)
+  return (a.title ?? '').localeCompare(b.title ?? '')
 }
 
 export function DccWorkshopsCatalogClient() {
@@ -179,39 +181,66 @@ export function DccWorkshopsCatalogClient() {
     accordionFiltered.length === 0 &&
     (searchActive || Object.values(filters).some((v) => v.length > 0))
 
-  return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <header className="mx-auto max-w-3xl text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--cdc-teal)]">
-          {landingCopy.heroEyebrow}
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 md:text-4xl">
-          <span className="block">{landingCopy.heroTitle}</span>
-          <span className="mt-1 block text-[var(--cdc-teal)]">{landingCopy.heroTitleAccent}</span>
-        </h1>
-        <p className="mt-5 text-base leading-relaxed text-neutral-600 dark:text-neutral-400 md:text-lg">
-          {landingCopy.heroLead}
-        </p>
-        <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400">
-          This is the public DCC.miami catalog. Listings show published workshops for the configured program org.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link
-            href={landingCopy.heroPrimaryCta.href}
-            className="inline-flex rounded-full border border-neutral-900 bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900"
-          >
-            {landingCopy.heroPrimaryCta.label}
-          </Link>
-          <Link
-            href={landingCopy.heroSecondaryCta.href}
-            className="inline-flex rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 shadow-sm transition hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800/80"
-          >
-            {landingCopy.heroSecondaryCta.label}
-          </Link>
-        </div>
-      </header>
+  const heroLead = landingCopy.heroLead.trim()
+  const showAccent = landingCopy.heroTitleAccent.trim().length > 0
 
-      <section className="mt-14 scroll-mt-24" id="catalog">
+  return (
+    <>
+      <PartnersCardPaintRegister />
+      <section
+        className="dcc-workshops-hero-band relative left-1/2 w-screen -translate-x-1/2 overflow-hidden border-b border-[var(--cdc-border)] cdc-mesh-hero-bg scroll-mt-14"
+        aria-labelledby="dcc-workshops-hero-heading"
+      >
+        <span
+          className="partners-card-pixel-overlay pointer-events-none absolute inset-0 z-[1] opacity-[0.55] dark:opacity-[0.42]"
+          style={
+            {
+              '--partners-hue': 158,
+              '--partners-hue-accent': 205,
+              '--partners-density': 12,
+            } as CSSProperties
+          }
+          aria-hidden
+        />
+        <div className="relative z-[2] mx-auto flex max-w-7xl flex-col gap-10 px-4 py-14 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-14 lg:py-16">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--cdc-teal)]">
+              {landingCopy.heroEyebrow}
+            </p>
+            <h1
+              id="dcc-workshops-hero-heading"
+              className="mt-4 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-4xl lg:text-5xl"
+            >
+              <span className="block">{landingCopy.heroTitle}</span>
+              {showAccent ? (
+                <span className="mt-2 block text-[var(--cdc-teal)]">{landingCopy.heroTitleAccent}</span>
+              ) : null}
+            </h1>
+            {heroLead ? (
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-neutral-700 dark:text-neutral-300 sm:text-lg">
+                {landingCopy.heroLead}
+              </p>
+            ) : null}
+          </div>
+          <div className="flex w-full shrink-0 flex-col gap-3 sm:flex-row sm:flex-wrap lg:w-auto lg:justify-end">
+            <Link
+              href={landingCopy.heroPrimaryCta.href}
+              className="inline-flex min-h-[3rem] items-center justify-center rounded-full border border-neutral-900 bg-neutral-900 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-900/10 transition hover:opacity-95 dark:border-teal-300/30 dark:bg-teal-400 dark:text-neutral-950 dark:shadow-teal-500/20 dark:hover:bg-teal-300"
+            >
+              {landingCopy.heroPrimaryCta.label}
+            </Link>
+            <Link
+              href={landingCopy.heroSecondaryCta.href}
+              className="inline-flex min-h-[3rem] items-center justify-center rounded-full border border-neutral-300/90 bg-white/90 px-7 py-3 text-sm font-semibold text-neutral-900 shadow-md backdrop-blur-sm transition hover:bg-white dark:border-neutral-500 dark:bg-neutral-900/80 dark:text-neutral-100 dark:hover:bg-neutral-800"
+            >
+              {landingCopy.heroSecondaryCta.label}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <section className="scroll-mt-24" id="catalog">
         {searchNoHits ? (
           <p className="mt-12 text-center text-sm text-neutral-500">No workshops match your search.</p>
         ) : catalogEmpty ? (
@@ -357,32 +386,7 @@ export function DccWorkshopsCatalogClient() {
           </div>
         )}
       </section>
-
-      <section className="mx-auto mt-20 max-w-3xl border-t border-neutral-200 pt-14 text-center dark:border-neutral-800">
-        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 md:text-3xl">
-          {landingCopy.framingSection.title}
-        </h2>
-        <p className="mt-5 whitespace-pre-line text-base leading-relaxed text-neutral-600 dark:text-neutral-400 md:text-lg">
-          {landingCopy.framingSection.body}
-        </p>
-        <p className="mt-10 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-          {landingCopy.trustLine}
-        </p>
-        <ul className="mt-4 flex flex-wrap justify-center gap-3 text-sm">
-          {landingCopy.trustItems.map((t) => (
-            <li
-              key={t}
-              className="rounded-full border border-neutral-200 bg-white px-4 py-2 shadow-sm dark:border-neutral-700 dark:bg-neutral-900/60"
-            >
-              {t}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <p className="mt-12 text-center text-xs text-neutral-500 dark:text-neutral-500">
-        Public Digital Lab series · Digital Culture Center Miami · Catalog shows published workshops
-      </p>
-    </div>
+      </div>
+    </>
   )
 }

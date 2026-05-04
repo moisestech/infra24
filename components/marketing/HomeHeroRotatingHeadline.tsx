@@ -49,7 +49,7 @@ const rotatingSubheadTypeClass = cn(
 );
 
 const rotatingSubheadLargeTypeClass = cn(
-  'cdc-font-display m-0 max-w-[min(100%,48rem)] font-medium leading-relaxed tracking-tight text-neutral-700 dark:text-neutral-200',
+  'cdc-font-display m-0 max-w-[min(100%,48rem)] font-medium leading-relaxed tracking-tight text-neutral-900 dark:text-neutral-50',
   'text-xl sm:text-2xl md:text-[1.65rem] lg:text-3xl'
 );
 

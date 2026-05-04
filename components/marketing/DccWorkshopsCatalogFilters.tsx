@@ -49,7 +49,7 @@ export function DccWorkshopsCatalogFilters({ value, onChange, tagOptions }: Prop
 
   return (
     <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/80">
-      <Accordion type="multiple" className="w-full" defaultValue={['focus', 'price', 'format']}>
+      <Accordion type="multiple" className="w-full" defaultValue={[]}>
         <AccordionItem value="focus" className="border-neutral-200 dark:border-neutral-800">
           <AccordionTrigger className="py-3 text-left text-sm font-semibold hover:no-underline">
             <span className="flex items-center gap-2 text-[var(--cdc-teal)]">

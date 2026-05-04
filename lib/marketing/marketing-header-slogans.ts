@@ -1,30 +1,18 @@
 /**
- * Rotating header taglines — digital-forward, institutional, and internet-native sets.
- * Order: expressive digital → funder-safe → deep-web tone.
+ * Rotating homepage H1 lines — public-facing, digital-cultural hooks.
  */
 
 export const marketingHeaderSloganLines = [
-  // Digital-forward
-  'For the Chronically Online.',
-  'Painting With Software.',
-  'Screens Are a Canvas.',
-  'Born Online. Made Public.',
-  'A Network for Digital Minds.',
-  'Art After the Browser.',
-  // Institutional / funder-safe
-  'A Network for Digital Culture.',
-  'Built for Screen-Based Culture.',
-  'Where Digital Artists Connect.',
-  'For Born-Digital Practice.',
-  'Public Space for Internet Culture.',
-  'Where Digital Culture Meets Community.',
-  // Internet-native
-  'Touch Grass, Bring Your Laptop.',
-  'Post, Render, Repeat.',
-  'Built by Browser People.',
-  'For People Who Live Online.',
-  'From Tabs to Public Life.',
-  'For the Screen-Dependent.',
+  'For artists working with screens.',
+  'For software, networks, and culture.',
+  'For born-digital art in Miami.',
+  'For the chronically online.',
+  'For public culture after the internet.',
+  'For artists building with code.',
+  'For institutions that need digital infrastructure.',
+  'For cultural workers making systems visible.',
+  'For the people turning digital life into public life.',
+  'For Miami\u2019s digital culture field.',
 ] as const;
 
 export type MarketingHeaderSloganLine = (typeof marketingHeaderSloganLines)[number];
