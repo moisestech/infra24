@@ -1,8 +1,9 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 import { HomeHeroRotatingHeadline } from '@/components/marketing/HomeHeroRotatingHeadline';
-import { HeroSubheadKeyTerms } from '@/components/marketing/HeroSubheadKeyTerms';
+import { HeroSubheadKeyTerms, PreviewFigure } from '@/components/marketing/HeroSubheadKeyTerms';
 import { HeroAboveFoldEngagement } from '@/components/marketing/HeroAboveFoldEngagement';
 import { marketingHeroSubheadSegments } from '@/lib/marketing/content';
 import { dccHeroRotatingSubheads } from '@/lib/marketing/dcc-pilot-home-content';
@@ -15,6 +16,30 @@ const pilotBandClass = cn(
 
 export function HomeBelowFoldHero() {
   const reduceMotion = useReducedMotion();
+  const [hoverFine, setHoverFine] = useState(false);
+  const [pilotPreviewIndex, setPilotPreviewIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const sync = () => setHoverFine(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  const usePointerHover = hoverFine && !reduceMotion;
+
+  const pilotPreviewTerm = useMemo(() => {
+    if (pilotPreviewIndex === null) return null;
+    const seg = marketingHeroSubheadSegments[pilotPreviewIndex];
+    return seg?.kind === 'term' ? seg : null;
+  }, [pilotPreviewIndex]);
+
+  const showPilotBackdrop = Boolean(usePointerHover && pilotPreviewTerm);
+
+  useEffect(() => {
+    if (!usePointerHover) setPilotPreviewIndex(null);
+  }, [usePointerHover]);
 
   const pilotHeadingClass =
     'relative z-[1] cdc-font-display text-[clamp(0.95rem,1.35vw+0.55rem,1.35rem)] font-bold uppercase leading-tight tracking-[0.14em] sm:tracking-[0.18em]';
@@ -31,52 +56,78 @@ export function HomeBelowFoldHero() {
 
   return (
     <div className="space-y-14">
-      <div className={cn(pilotBandClass, 'overflow-visible')}>
-        <div className="relative">
-          {reduceMotion ? (
-            <h2 className={pilotHeadingClass}>{pilotHeadingGradient}</h2>
-          ) : (
-            <motion.h2
-              className={pilotHeadingClass}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            >
-              {pilotHeadingGradient}
-            </motion.h2>
-          )}
-          <span
-            className="pointer-events-none absolute -bottom-1 left-0 right-0 h-px max-w-xl bg-gradient-to-r from-transparent via-teal-400/70 to-transparent blur-[0.5px] dark:via-teal-400/50"
-            aria-hidden
-          />
-          <span
-            className="pointer-events-none absolute -bottom-2 left-0 h-0.5 w-24 max-w-[40%] rounded-full bg-gradient-to-r from-teal-500/90 to-cyan-400/40 shadow-[0_0_18px_rgba(45,212,191,0.45)] dark:from-teal-400 dark:to-cyan-300/50 dark:shadow-[0_0_22px_rgba(45,212,191,0.35)]"
-            aria-hidden
-          />
-        </div>
+      <div
+        className={cn(pilotBandClass, 'relative isolate overflow-visible')}
+        onMouseLeave={() => {
+          if (usePointerHover) setPilotPreviewIndex(null);
+        }}
+      >
+        {showPilotBackdrop && pilotPreviewTerm ? (
+          <>
+            <div className="pointer-events-none absolute inset-y-0 right-[-0.75rem] z-0 hidden w-[min(82%,44rem)] overflow-hidden rounded-l-2xl sm:right-[-1rem] lg:block xl:w-[min(78%,52rem)]">
+              <PreviewFigure segment={pilotPreviewTerm} layout="backdrop" />
+            </div>
+            <div
+              className="pointer-events-none absolute inset-y-0 left-0 right-0 z-[1] hidden bg-gradient-to-r from-white from-[18%] via-white/97 via-[46%] to-transparent to-[88%] dark:from-neutral-900 dark:from-[14%] dark:via-neutral-900/[0.96] dark:via-[50%] dark:to-transparent dark:to-[90%] lg:block"
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute bottom-0 right-[-0.75rem] z-[1] hidden h-[min(52%,20rem)] w-[min(82%,44rem)] bg-gradient-to-t from-neutral-50/95 via-neutral-50/35 to-transparent sm:right-[-1rem] dark:from-neutral-950/95 dark:via-neutral-950/30 lg:block xl:w-[min(78%,52rem)]"
+              aria-hidden
+            />
+          </>
+        ) : null}
 
-        <div className="mt-8 border-t border-[var(--cdc-border)] pt-8 dark:border-neutral-700 lg:hidden">
-          <HomeHeroRotatingHeadline
-            lines={[...dccHeroRotatingSubheads]}
-            variant="subhead"
-            textScale="dominant"
-          />
-        </div>
+        <div className="relative z-10">
+          <div className="relative">
+            {reduceMotion ? (
+              <h2 className={pilotHeadingClass}>{pilotHeadingGradient}</h2>
+            ) : (
+              <motion.h2
+                className={pilotHeadingClass}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {pilotHeadingGradient}
+              </motion.h2>
+            )}
+            <span
+              className="pointer-events-none absolute -bottom-1 left-0 right-0 h-px max-w-xl bg-gradient-to-r from-transparent via-teal-400/70 to-transparent blur-[0.5px] dark:via-teal-400/50"
+              aria-hidden
+            />
+            <span
+              className="pointer-events-none absolute -bottom-2 left-0 h-0.5 w-24 max-w-[40%] rounded-full bg-gradient-to-r from-teal-500/90 to-cyan-400/40 shadow-[0_0_18px_rgba(45,212,191,0.45)] dark:from-teal-400 dark:to-cyan-300/50 dark:shadow-[0_0_22px_rgba(45,212,191,0.35)]"
+              aria-hidden
+            />
+          </div>
 
-        <div className="mt-10 hidden border-t border-[var(--cdc-border)] pt-10 dark:border-neutral-700 lg:block">
-          <h3 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 xl:text-4xl">
-            Digital culture, in plain language
-          </h3>
-          <p className="mt-3 max-w-3xl text-base font-medium leading-relaxed text-neutral-800 dark:text-neutral-200 xl:text-lg">
-            Explore the terms that shape DCC&apos;s work.
-          </p>
-          <HeroSubheadKeyTerms
-            segments={marketingHeroSubheadSegments}
-            reduceMotion={Boolean(reduceMotion)}
-            desktopSplitPreview
-            className="mt-6"
-            paragraphClassName="text-xl font-medium leading-relaxed text-neutral-900 dark:text-neutral-100 sm:text-2xl md:text-[1.75rem] md:leading-relaxed lg:text-[1.85rem] lg:leading-[1.45] xl:text-[2rem] xl:leading-[1.42]"
-          />
+          <div className="mt-8 border-t border-[var(--cdc-border)] pt-8 dark:border-neutral-700 lg:hidden">
+            <HomeHeroRotatingHeadline
+              lines={[...dccHeroRotatingSubheads]}
+              variant="subhead"
+              textScale="dominant"
+            />
+          </div>
+
+          <div className="mt-10 hidden border-t border-[var(--cdc-border)] pt-10 dark:border-neutral-700 lg:block">
+            <h3 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 xl:text-4xl">
+              Digital culture, in plain language
+            </h3>
+            <p className="mt-3 max-w-3xl text-base font-medium leading-relaxed text-neutral-800 dark:text-neutral-200 xl:text-lg">
+              Explore the terms that shape DCC&apos;s work.
+            </p>
+            <HeroSubheadKeyTerms
+              segments={marketingHeroSubheadSegments}
+              reduceMotion={Boolean(reduceMotion)}
+              desktopSplitPreview
+              cardLevelBackdrop
+              previewIndex={pilotPreviewIndex}
+              onPreviewIndexChange={setPilotPreviewIndex}
+              className="mt-6"
+              paragraphClassName="text-xl font-medium leading-relaxed text-neutral-900 dark:text-neutral-100 sm:text-2xl md:text-[1.75rem] md:leading-relaxed lg:text-[1.85rem] lg:leading-[1.45] xl:text-[2rem] xl:leading-[1.42]"
+            />
+          </div>
         </div>
       </div>
 

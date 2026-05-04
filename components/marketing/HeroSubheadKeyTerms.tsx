@@ -15,10 +15,18 @@ type HeroSubheadKeyTermsProps = {
   /** Applied to the flowing paragraph (e.g. larger below-the-fold body). */
   paragraphClassName?: string;
   /**
-   * Large screens: two-column layout with preview in a dedicated column (avoids clipping).
+   * Large screens + fine pointer: layered preview image sits behind copy and fades into the card.
    * Use on below-the-fold blocks; keep default for tight hero cards.
    */
   desktopSplitPreview?: boolean;
+  /**
+   * When set with `desktopSplitPreview`, the parent owns backdrop layers (full card height).
+   * Provide `previewIndex` + `onPreviewIndexChange` from the same card wrapper.
+   */
+  cardLevelBackdrop?: boolean;
+  /** Controlled active term index (term segments only); use with `onPreviewIndexChange`. */
+  previewIndex?: number | null;
+  onPreviewIndexChange?: (index: number | null) => void;
 };
 
 /** Compact “keyword chip” colors aligned to each term’s preview gradient. */
@@ -48,20 +56,41 @@ function termHighlightClass(gradientId: MarketingGradientId): string {
   return map[gradientId];
 }
 
-function PreviewFigure({
+export function PreviewFigure({
   segment,
+  layout = 'card',
 }: {
   segment: Extract<MarketingHeroSubheadSegment, { kind: 'term' }>;
+  /** `splitColumn` — beside-copy column. `backdrop` — behind copy + scrim (below-the-fold desktop). */
+  layout?: 'card' | 'splitColumn' | 'backdrop';
 }) {
   const imageSrc = segment.preview.imageSrc?.trim();
-  const sizes =
-    '(min-width: 1280px) 208px, (min-width: 1024px) 14rem, (min-width: 640px) 240px, 220px';
+  const splitColumn = layout === 'splitColumn';
+  const backdrop = layout === 'backdrop';
+
+  const sizesCard =
+    '(min-width: 1536px) 640px, (min-width: 1280px) 560px, (min-width: 1024px) min(45vw, 520px), (min-width: 640px) min(92vw, 720px), min(95vw, 660px)';
+  /** Tall column: request enough pixels for large cover + height. */
+  const sizesSplit =
+    '(min-width: 1536px) 960px, (min-width: 1280px) 900px, (min-width: 1024px) 800px, (min-width: 640px) min(92vw, 720px), min(95vw, 660px)';
+  const sizesBackdrop =
+    '(min-width: 1536px) 1200px, (min-width: 1280px) 1000px, (min-width: 1024px) 900px, (min-width: 640px) 85vw, 90vw';
+  const sizes = backdrop ? sizesBackdrop : splitColumn ? sizesSplit : sizesCard;
 
   return (
-    <figure className="overflow-hidden rounded-xl border border-[var(--cdc-border)] bg-neutral-100 shadow-[0_12px_40px_-12px_rgba(45,212,191,0.22)] dark:border-neutral-600 dark:bg-neutral-900 dark:shadow-[0_12px_40px_-12px_rgba(45,212,191,0.18)]">
+    <figure
+      className={cn(
+        'overflow-hidden rounded-xl border border-[var(--cdc-border)] bg-neutral-100 shadow-[0_12px_40px_-12px_rgba(45,212,191,0.22)] dark:border-neutral-600 dark:bg-neutral-900 dark:shadow-[0_12px_40px_-12px_rgba(45,212,191,0.18)]',
+        splitColumn && 'flex h-full min-h-0 w-full max-w-none flex-1 flex-col',
+        backdrop &&
+          'h-full w-full rounded-none border-0 bg-transparent shadow-none dark:border-0 dark:bg-transparent dark:shadow-none'
+      )}
+    >
       <div
         className={cn(
-          'relative aspect-square w-full max-w-[220px] sm:max-w-[240px] lg:max-w-none lg:w-44 xl:w-52',
+          'relative w-full',
+          splitColumn ? 'min-h-0 flex-1' : 'aspect-square max-w-[min(95vw,660px)] sm:max-w-[min(92vw,720px)] lg:max-w-none lg:w-[33rem] xl:w-[39rem]',
+          backdrop && 'aspect-auto h-full min-h-[12rem] max-w-none',
           imageSrc ? 'bg-neutral-200 dark:bg-neutral-950' : marketingGradientSurfaceClass(segment.preview.gradientId)
         )}
       >
@@ -72,7 +101,7 @@ function PreviewFigure({
               alt={segment.preview.alt}
               fill
               sizes={sizes}
-              className="object-cover"
+              className={cn('object-cover', backdrop && 'object-[75%_center]')}
             />
             <div
               className={cn(
@@ -82,7 +111,10 @@ function PreviewFigure({
               aria-hidden
             />
             <div
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent dark:from-black/55 dark:via-black/20"
+              className={cn(
+                'pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent dark:from-black/55 dark:via-black/20',
+                backdrop && 'from-black/35 via-transparent to-black/25 dark:from-black/40 dark:to-black/30'
+              )}
               aria-hidden
             />
           </>
@@ -94,8 +126,13 @@ function PreviewFigure({
           />
         )}
       </div>
-      {segment.caption ? (
-        <figcaption className="border-t border-neutral-200 bg-neutral-50/90 px-2.5 py-2 text-[11px] font-medium leading-snug text-neutral-800 dark:border-neutral-700 dark:bg-neutral-950/80 dark:text-neutral-200">
+      {segment.caption && !backdrop ? (
+        <figcaption
+          className={cn(
+            'border-t border-neutral-200 bg-neutral-50/90 px-2.5 py-2 text-[11px] font-medium leading-snug text-neutral-800 dark:border-neutral-700 dark:bg-neutral-950/80 dark:text-neutral-200',
+            splitColumn && 'shrink-0'
+          )}
+        >
           {segment.caption}
         </figcaption>
       ) : null}
@@ -109,11 +146,21 @@ export function HeroSubheadKeyTerms({
   className,
   paragraphClassName,
   desktopSplitPreview = false,
+  cardLevelBackdrop = false,
+  previewIndex: controlledPreviewIndex,
+  onPreviewIndexChange,
 }: HeroSubheadKeyTermsProps) {
   const reactId = useId();
   const previewId = `${reactId}-hero-term-preview`;
   const [hoverFine, setHoverFine] = useState(false);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [internalIndex, setInternalIndex] = useState<number | null>(null);
+
+  const isControlled = typeof onPreviewIndexChange === 'function';
+  const activeIndex = isControlled ? (controlledPreviewIndex ?? null) : internalIndex;
+  const setActiveIndex = (index: number | null) => {
+    if (isControlled) onPreviewIndexChange(index);
+    else setInternalIndex(index);
+  };
 
   useEffect(() => {
     const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
@@ -191,34 +238,43 @@ export function HeroSubheadKeyTerms({
   );
 
   if (splitPreview) {
+    const parentBackdrop = Boolean(cardLevelBackdrop && isControlled);
+
     return (
       <div
-        className={cn('relative mt-6', className)}
+        className={cn('relative isolate mt-6 min-w-0', className)}
         onMouseLeave={() => {
-          if (usePointerHover) setActiveIndex(null);
+          if (usePointerHover && !parentBackdrop) setActiveIndex(null);
         }}
       >
-        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_min(13.5rem,16vw)] lg:items-start lg:gap-x-10 xl:grid-cols-[minmax(0,1fr)_15rem]">
-          <div className="min-w-0">{termButtons}</div>
-          <div
-            id={previewId}
-            role="region"
-            aria-label="Term preview"
-            className={cn(
-              'min-w-0 lg:sticky lg:top-28',
-              showPreview ? 'mt-6 lg:mt-0' : 'mt-0 hidden lg:mt-0 lg:flex lg:min-h-[220px] lg:flex-col lg:justify-center'
-            )}
-          >
-            {showPreview && activeTerm ? (
-              <PreviewFigure segment={activeTerm} />
-            ) : (
-              <div className="rounded-xl border border-dashed border-[var(--cdc-border)] bg-neutral-50/80 px-3 py-6 text-center dark:border-neutral-600 dark:bg-neutral-900/40">
-                <p className="text-xs font-medium leading-snug text-neutral-500 dark:text-neutral-400">
-                  Hover a highlighted keyword for a short description and color read.
-                </p>
-              </div>
-            )}
-          </div>
+        {showPreview && activeTerm && !parentBackdrop ? (
+          <>
+            <div className="pointer-events-none absolute bottom-0 right-[-0.75rem] top-0 z-0 hidden min-h-[11rem] w-[min(82%,44rem)] overflow-hidden rounded-l-2xl sm:right-[-1rem] lg:block xl:w-[min(78%,52rem)]">
+              <PreviewFigure segment={activeTerm} layout="backdrop" />
+            </div>
+            {/* Match pilot card bg so the photo dissolves into the band, not a hard edge */}
+            <div
+              className="pointer-events-none absolute inset-y-0 left-0 right-0 z-[1] hidden bg-gradient-to-r from-white from-[18%] via-white/97 via-[46%] to-transparent to-[88%] dark:from-neutral-900 dark:from-[14%] dark:via-neutral-900/[0.96] dark:via-[50%] dark:to-transparent dark:to-[90%] lg:block"
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute bottom-0 right-[-0.75rem] z-[1] hidden h-[min(52%,20rem)] w-[min(82%,44rem)] bg-gradient-to-t from-neutral-50/95 via-neutral-50/35 to-transparent sm:right-[-1rem] dark:from-neutral-950/95 dark:via-neutral-950/30 lg:block xl:w-[min(78%,52rem)]"
+              aria-hidden
+            />
+          </>
+        ) : null}
+
+        <div id={previewId} role="region" aria-label="Term preview" className="relative z-[2] min-w-0">
+          {termButtons}
+          {showPreview && activeTerm?.caption ? (
+            <p className="mt-4 max-w-2xl text-xs font-medium leading-snug text-neutral-600 dark:text-neutral-400">
+              {activeTerm.caption}
+            </p>
+          ) : !showPreview ? (
+            <p className="mt-4 max-w-xl text-xs font-medium leading-snug text-neutral-500 dark:text-neutral-400">
+              Hover a highlighted keyword for a short description and color read.
+            </p>
+          ) : null}
         </div>
       </div>
     );
@@ -233,8 +289,8 @@ export function HeroSubheadKeyTerms({
         className={cn(
           'z-20',
           usePointerHover
-            ? 'absolute left-0 top-full mt-4 w-[min(100%,240px)] lg:left-full lg:top-0 lg:mt-0 lg:ml-5 lg:w-max lg:max-w-[min(100vw-2rem,13.5rem)]'
-            : 'relative mt-5 w-full max-w-md border-t border-[var(--cdc-border)] pt-5 dark:border-neutral-700'
+            ? 'absolute left-0 top-full mt-4 w-[min(100%,720px)] lg:left-full lg:top-0 lg:mt-0 lg:ml-5 lg:w-max lg:max-w-[min(100vw-2rem,40.5rem)]'
+            : 'relative mt-5 w-full max-w-[min(100%,720px)] border-t border-[var(--cdc-border)] pt-5 dark:border-neutral-700'
         )}
       >
         <PreviewFigure segment={activeTerm} />
@@ -251,7 +307,7 @@ export function HeroSubheadKeyTerms({
       <div
         className={cn(
           'relative w-full max-w-2xl',
-          usePointerHover && 'lg:max-w-none lg:pr-[min(15rem,22vw)]'
+          usePointerHover && 'lg:max-w-none lg:pr-[min(40.5rem,min(90vw,52rem))]'
         )}
       >
         <div className="relative min-w-0">
