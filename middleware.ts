@@ -1,14 +1,4 @@
-import { authMiddleware, createRouteMatcher } from '@clerk/nextjs'
-
-/** Clerk matcher for pitch / QR surfaces that must never require sign-in. */
-const isPitchPublicRoute = createRouteMatcher([
-  '/soho-house-ai-assistant',
-  '/soho-house-ai-assistant/(.*)',
-  '/sohohouse',
-  '/sohohouse/(.*)',
-  '/member-signal-agent',
-  '/member-signal-agent/(.*)',
-])
+import { authMiddleware } from '@clerk/nextjs'
 
 // Simple function to check if route is public
 function isPublicRoute(pathname: string): boolean {
@@ -68,6 +58,8 @@ function isPublicRoute(pathname: string): boolean {
     '/era',
     /** Soho House Member Signal Agent pitch funnel (back-cover QR). */
     '/soho-house-ai-assistant',
+    /** Root alias → /soho-house-ai-assistant */
+    '/member-signal-agent',
     /** Soho about-page alias (redirects to /o/sohohouse/memory-agent/about). */
     '/sohohouse',
     '/events',
@@ -77,17 +69,13 @@ function isPublicRoute(pathname: string): boolean {
   return publicRoutes.some((route) => pathname.startsWith(route))
 }
 
-function requestIsPublic(req: { nextUrl: { pathname: string } }): boolean {
-  return isPitchPublicRoute(req) || isPublicRoute(req.nextUrl.pathname)
-}
-
 export default authMiddleware({
-  publicRoutes: (req) => requestIsPublic(req),
+  publicRoutes: (req) => isPublicRoute(req.nextUrl.pathname),
   afterAuth: (auth, req) => {
     const { pathname } = req.nextUrl
     const { userId } = auth
 
-    if (!requestIsPublic(req) && !userId) {
+    if (!isPublicRoute(pathname) && !userId) {
       const signIn = new URL('/sign-in', req.url)
       const returnPath = `${pathname}${req.nextUrl.search || ''}`
       signIn.searchParams.set('redirect_url', returnPath)
