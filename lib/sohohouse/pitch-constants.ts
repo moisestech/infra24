@@ -58,12 +58,38 @@ export const SOHO_FUNNEL_MOCKUPS: Record<
   },
 }
 
+/** Optional Cloudinary (or CDN) overrides per theme; local public/ path is fallback. */
+export const SOHO_FUNNEL_MOCKUP_URLS: Partial<
+  Record<SohoFunnelMockupKey, Partial<Record<SohoFunnelTheme, string>>>
+> = {
+  hero: {
+    dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779162050/ai-assistant/soho-house/hero-member-signal-dark_lhyejs.png',
+  },
+  smartSign: {
+    dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779162003/ai-assistant/soho-house/smart-sign-lobby-dark_phvdbh.png',
+  },
+  staffGovernance: {
+    dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779162003/ai-assistant/soho-house/staff-approval-dark_mburnt.png',
+  },
+}
+
 export function sohoMockupFilename(key: SohoFunnelMockupKey, theme: SohoFunnelTheme): string {
   return `${SOHO_FUNNEL_MOCKUPS[key].fileStem}-${theme}.webp`
 }
 
-export function sohoMockupSrc(key: SohoFunnelMockupKey, theme: SohoFunnelTheme): string {
+export function sohoMockupLocalSrc(key: SohoFunnelMockupKey, theme: SohoFunnelTheme): string {
   return `${SOHO_FUNNEL_MOCKUP_BASE}/${sohoMockupFilename(key, theme)}`
+}
+
+/** Remote URL for theme, then opposite theme, then local asset path. */
+export function sohoMockupSrc(key: SohoFunnelMockupKey, theme: SohoFunnelTheme): string {
+  const remote = SOHO_FUNNEL_MOCKUP_URLS[key]
+  const opposite: SohoFunnelTheme = theme === 'light' ? 'dark' : 'light'
+  return (
+    remote?.[theme] ??
+    remote?.[opposite] ??
+    sohoMockupLocalSrc(key, theme)
+  )
 }
 
 /** Props for {@link SohoFunnelMockupFrame} minus `mockupKey`. */
@@ -74,6 +100,14 @@ export function sohoMockupDisplayProps(key: SohoFunnelMockupKey) {
 
 /** Hint shown in placeholder UI when assets are missing. */
 export function sohoMockupDropHint(key: SohoFunnelMockupKey): string {
+  const remote = SOHO_FUNNEL_MOCKUP_URLS[key]
+  if (remote?.light || remote?.dark) {
+    const parts = [
+      remote.light ? 'light URL set' : null,
+      remote.dark ? 'dark URL set' : null,
+    ].filter(Boolean)
+    return `${SOHO_FUNNEL_MOCKUPS[key].fileStem} (${parts.join(', ')})`
+  }
   const stem = SOHO_FUNNEL_MOCKUPS[key].fileStem
   return `${stem}-light.webp, ${stem}-dark.webp`
 }
