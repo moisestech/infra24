@@ -63,12 +63,28 @@ export const SOHO_FUNNEL_MOCKUP_URLS: Partial<
   Record<SohoFunnelMockupKey, Partial<Record<SohoFunnelTheme, string>>>
 > = {
   hero: {
+    light:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779216489/ai-assistant/soho-house/hero-member-signal-light_eu0aru.png',
     dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779162050/ai-assistant/soho-house/hero-member-signal-dark_lhyejs.png',
   },
+  interaction: {
+    light:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779216341/ai-assistant/soho-house/experience-cards-light_ldowuy.png',
+    dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779216177/ai-assistant/soho-house/experience-cards-dark_e5mjvh.png',
+  },
   smartSign: {
+    light:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779216343/ai-assistant/soho-house/smart-sign-lobby-light_zbp1ka.png',
     dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779162003/ai-assistant/soho-house/smart-sign-lobby-dark_phvdbh.png',
   },
+  mobileHandoff: {
+    light:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779216343/ai-assistant/soho-house/mobile-hand-off-light_iwrccd.png',
+    dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779216171/ai-assistant/soho-house/mobile-handoff-dark_u7qrgw.png',
+  },
   staffGovernance: {
+    light:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779216343/ai-assistant/soho-house/staff-approval-light_omsbku.png',
     dark: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1779162003/ai-assistant/soho-house/staff-approval-dark_mburnt.png',
   },
 }
@@ -79,6 +95,12 @@ export function sohoMockupFilename(key: SohoFunnelMockupKey, theme: SohoFunnelTh
 
 export function sohoMockupLocalSrc(key: SohoFunnelMockupKey, theme: SohoFunnelTheme): string {
   return `${SOHO_FUNNEL_MOCKUP_BASE}/${sohoMockupFilename(key, theme)}`
+}
+
+/** True when at least one Cloudinary/CDN URL is configured for this mockup slot. */
+export function sohoMockupHasConfiguredAsset(key: SohoFunnelMockupKey): boolean {
+  const remote = SOHO_FUNNEL_MOCKUP_URLS[key]
+  return Boolean(remote?.light || remote?.dark)
 }
 
 /** Remote URL for theme, then opposite theme, then local asset path. */

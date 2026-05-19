@@ -4,9 +4,10 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { ImageIcon } from 'lucide-react'
 
+import { SohoComingSoonSticker } from '@/components/sohohouse/SohoComingSoonSticker'
 import { useTheme } from '@/contexts/ThemeContext'
 import {
-  sohoMockupDropHint,
+  sohoMockupHasConfiguredAsset,
   sohoMockupSrc,
   type SohoFunnelMockupKey,
 } from '@/lib/sohohouse/pitch-constants'
@@ -30,6 +31,20 @@ export type SohoFunnelMockupFrameProps = {
   priority?: boolean
 }
 
+function MockupPlaceholder({ caption }: { caption: string }) {
+  return (
+    <div className="soho-funnel-mockup-placeholder relative flex h-full min-h-[12rem] flex-col items-center justify-center gap-3 p-6 text-center">
+      <SohoComingSoonSticker className="absolute left-1/2 top-[18%] z-20 -translate-x-1/2" />
+      <div className="mt-8 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--soho-border-strong)] bg-[var(--soho-bg-soft)] opacity-60">
+        <ImageIcon className="h-5 w-5 text-[var(--soho-accent)]" aria-hidden />
+      </div>
+      <p className="max-w-[14rem] text-xs font-medium leading-relaxed text-[var(--soho-text-muted)]">
+        {caption}
+      </p>
+    </div>
+  )
+}
+
 export function SohoFunnelMockupFrame({
   mockupKey,
   alt,
@@ -42,7 +57,8 @@ export function SohoFunnelMockupFrame({
   const theme = resolvedTheme === 'light' ? 'light' : 'dark'
   const src = sohoMockupSrc(mockupKey, theme)
   const [failedSrc, setFailedSrc] = useState<string | null>(null)
-  const showPlaceholder = failedSrc === src
+  const awaitingAsset = !sohoMockupHasConfiguredAsset(mockupKey)
+  const showPlaceholder = awaitingAsset || failedSrc === src
 
   return (
     <figure className={cn('group/mockup', className)}>
@@ -69,23 +85,7 @@ export function SohoFunnelMockupFrame({
             onError={() => setFailedSrc(src)}
           />
         ) : (
-          <div className="soho-funnel-mockup-placeholder flex h-full min-h-[12rem] flex-col items-center justify-center gap-3 p-6 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--soho-border-strong)] bg-[var(--soho-bg-soft)]">
-              <ImageIcon className="h-5 w-5 text-[var(--soho-accent)]" aria-hidden />
-            </div>
-            <div>
-              <p className="text-xs font-medium text-[var(--soho-text)]">{caption}</p>
-              <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-[var(--soho-accent-muted)]">
-                {theme} theme
-              </p>
-              <p className="mt-1.5 text-[10px] leading-relaxed text-[var(--soho-text-muted)]">
-                Add mockups:{' '}
-                <code className="rounded bg-[var(--soho-bg-soft)] px-1 py-0.5 text-[var(--soho-accent)]">
-                  public/assets/sohohouse/mockups/{sohoMockupDropHint(mockupKey)}
-                </code>
-              </p>
-            </div>
-          </div>
+          <MockupPlaceholder caption={caption} />
         )}
         <div
           className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-[var(--soho-border)]"

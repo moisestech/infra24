@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { SohoComingSoonSticker } from '@/components/sohohouse/SohoComingSoonSticker'
 import { SohoFunnelMockupFrame } from '@/components/sohohouse/SohoFunnelMockupFrame'
 import { SohoFunnelThemeToggle } from '@/components/sohohouse/SohoFunnelThemeToggle'
 import { SohoHouseLogo } from '@/components/sohohouse/SohoHouseLogo'
@@ -441,7 +442,12 @@ export function SohoMemberSignalFunnelPage() {
             <div className="soho-funnel-card group overflow-hidden rounded-3xl border border-[var(--soho-border)] bg-[var(--soho-surface)]">
             <div className="soho-funnel-proof-panel relative flex aspect-video flex-col items-center justify-center gap-4 p-8 text-center">
               <div className="soho-funnel-gradient-mesh absolute inset-0 opacity-30 transition-opacity group-hover:opacity-50" />
-              <Mic className="soho-funnel-icon-live relative z-10 h-10 w-10 text-[var(--soho-accent-muted)]" aria-hidden />
+              <SohoComingSoonSticker
+                label="Video coming soon"
+                className="absolute right-6 top-6 z-20"
+                size="sm"
+              />
+              <Mic className="soho-funnel-icon-live relative z-10 mt-4 h-10 w-10 text-[var(--soho-accent-muted)]" aria-hidden />
               <AudioWaveBars count={20} className="relative z-10 opacity-60" />
               <p className="relative z-10 text-sm font-medium text-[var(--soho-text)]">
                 Oolite proof — Public Signal Agent
@@ -449,9 +455,6 @@ export function SohoMemberSignalFunnelPage() {
               <p className="relative z-10 max-w-md text-xs leading-relaxed text-[var(--soho-text-muted)]">
                 60–90 second walkthrough: live programming memory, event cards, staff actions,
                 signage draft, Approve Public QR, and mobile handoff.
-              </p>
-              <p className="relative z-10 text-[10px] uppercase tracking-[0.24em] text-[var(--soho-accent-muted)]">
-                Embed Oolite recording here
               </p>
             </div>
             <div className="border-t border-[var(--soho-border)] px-6 py-4 text-xs text-[var(--soho-text-muted)]">

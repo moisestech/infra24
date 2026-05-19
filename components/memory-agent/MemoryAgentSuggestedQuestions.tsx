@@ -23,7 +23,7 @@ export function MemoryAgentSuggestedQuestions({
   if (questions.length === 0) return null
 
   return (
-    <Accordion type="single" collapsible defaultValue="try-asking" className="mt-6 w-full">
+    <Accordion type="single" collapsible className="mt-6 w-full">
       <AccordionItem value="try-asking" className="border-0">
         <AccordionTrigger
           className={cn(
