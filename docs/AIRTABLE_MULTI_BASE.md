@@ -54,7 +54,17 @@ Replace `{ORG}` with that token, e.g. for Oolite Arts:
 | `FIELD_DIGITALARTIST` | Digital artist | Checkbox → “Digital artists” filter |
 | `FIELD_INCOLLECTION` | In collection | Checkbox → “In collection” filter |
 | `FIELD_VIDEOART` | Video art | Checkbox; combined with medium containing “video”, “film”, “moving image” |
-| `FIELD_PHOTO` | Photo | Attachments (first image `url`) or a URL string; alumni card avatar |
+| `FIELD_PHOTO` | Photo | Attachments (first image `url`) or a URL string; legacy avatar column |
+| `FIELD_FEATUREDIMAGEURL` | *(empty; Oolite default: Featured Image URL)* | Primary all-purpose image for Memory Agent default |
+| `FIELD_PORTRAITVERTICALURL` | *(Oolite default: Portrait Vertical URL)* | Vertical portrait for profile / mobile |
+| `FIELD_PORTRAITLANDSCAPEURL` | *(Oolite default: Portrait Landscape URL)* | Landscape portrait for kiosk / wide cards |
+| `FIELD_ADDITIONALIMAGEURLS` | *(Oolite default: Additional Image URLs)* | Long text; one extra URL per line |
+| `FIELD_IMAGEALTTEXT` | *(Oolite default: Image Alt Text)* | Accessibility alt text |
+| `FIELD_IMAGECREDIT` | *(Oolite default: Image Credit)* | Photo credit |
+| `FIELD_IMAGESOURCE` | *(Oolite default: Image Source)* | Provenance label |
+| `FIELD_IMAGEREVIEWSTATUS` | *(Oolite default: Image Review Status)* | Workflow; `Do Not Use` hides images in the app |
+| `FIELD_PREFERREEDIMAGEORIENTATION` | *(Oolite default: Preferred Image Orientation)* | UI helper (Vertical / Landscape / Both Available / Missing Image) |
+| `FIELD_CLOUDINARYSOURCEBATCH` | *(Oolite default: Cloudinary Folder / Source Batch)* | Batch label for editorial workflow |
 | `FIELD_ARTISTNAME` | *(empty default)* | Optional; if set to a column title, that value is shown on cards instead of `FIELD_NAME` when present |
 | `FIELD_THEMES` | *(empty default)* | Optional separate themes column; merged into Memory Agent retrieval with topics |
 | `FIELD_PUBLICBIO` | *(empty default)* | Optional public bio text for AI context |
@@ -122,7 +132,7 @@ Map via `AIRTABLE_{ORG}_ALUMNI_FIELD_*` env vars (see `lib/airtable/org-alumni-c
 
 ## UI
 
-- **Alumni page**: `/o/[slug]/alumni` (e.g. `/o/oolite/alumni`) loads data on the **server** via `fetchAlumniFromAirtable(slug)` (same source as the JSON route). The UI supports **search**, **sort** (name, year, cohort), **group by** (cohort, year, program), **cohort/year/topic** dropdowns, and toggles for **digital artists**, **in collection**, and **video / moving image** when the mapped columns exist. Add auth if the directory should not be public.
+- **Alumni page**: `/o/[slug]/alumni` (e.g. `/o/oolite/alumni`) loads data on the **server** via `fetchAlumniFromAirtable(slug)` (same source as the JSON route). The UI supports **search**, **sort** (name, year, cohort), **group by** (cohort, year, program), **cohort/year/topic** dropdowns, and toggles for **digital artists**, **in collection**, and **video / moving image** when the mapped columns exist. Card images prefer **Featured Image URL → Portrait Landscape URL → Portrait Vertical URL**; profile sheets prefer vertical first. Add auth if the directory should not be public.
 - **Memory Agent**: `/o/[slug]/memory-agent` — conversational demo over the same Airtable alumni rows (with governance fields when mapped). See API section above. Roadmap and entry points: `docs/MEMORY_AGENT_ROADMAP.md`.
 
 See also `docs/AIRTABLE_BUDGET_AUDIT.md` if present for budget-specific notes.

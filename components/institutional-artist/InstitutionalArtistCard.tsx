@@ -67,6 +67,7 @@ export function InstitutionalArtistCard({
         <InstitutionalArtistAvatar
           name={data.name}
           photoUrl={data.photoUrl}
+          alt={data.imageAltText}
           variant={variant}
         />
         <div className="min-w-0 flex-1 space-y-1">

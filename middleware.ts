@@ -1,4 +1,14 @@
-import { authMiddleware } from '@clerk/nextjs'
+import { authMiddleware, createRouteMatcher } from '@clerk/nextjs'
+
+/** Clerk matcher for pitch / QR surfaces that must never require sign-in. */
+const isPitchPublicRoute = createRouteMatcher([
+  '/soho-house-ai-assistant',
+  '/soho-house-ai-assistant/(.*)',
+  '/sohohouse',
+  '/sohohouse/(.*)',
+  '/member-signal-agent',
+  '/member-signal-agent/(.*)',
+])
 
 // Simple function to check if route is public
 function isPublicRoute(pathname: string): boolean {
@@ -67,35 +77,23 @@ function isPublicRoute(pathname: string): boolean {
   return publicRoutes.some((route) => pathname.startsWith(route))
 }
 
+function requestIsPublic(req: { nextUrl: { pathname: string } }): boolean {
+  return isPitchPublicRoute(req) || isPublicRoute(req.nextUrl.pathname)
+}
+
 export default authMiddleware({
-  publicRoutes: (req) => {
-    const { pathname } = req.nextUrl
-    console.log(`🔒 Middleware processing: ${req.url}`)
-    
-    if (isPublicRoute(pathname)) {
-      console.log('🌐 Route is public, skipping auth')
-      return true
-    }
-    
-    console.log('🔐 Route is protected, checking auth...')
-    return false
-  },
+  publicRoutes: (req) => requestIsPublic(req),
   afterAuth: (auth, req) => {
     const { pathname } = req.nextUrl
     const { userId } = auth
-    
-    if (!isPublicRoute(pathname) && !userId) {
-      console.log('❌ Auth protection failed: User not authenticated')
+
+    if (!requestIsPublic(req) && !userId) {
       const signIn = new URL('/sign-in', req.url)
       const returnPath = `${pathname}${req.nextUrl.search || ''}`
       signIn.searchParams.set('redirect_url', returnPath)
       return Response.redirect(signIn)
     }
-    
-    if (userId) {
-      console.log('✅ Auth protection passed')
-    }
-  }
+  },
 })
 
 export const config = {

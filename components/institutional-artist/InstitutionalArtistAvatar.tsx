@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils'
 type InstitutionalArtistAvatarProps = {
   name: string
   photoUrl?: string
+  /** Accessibility alt text; defaults to a portrait label from name */
+  alt?: string
   size?: 'sm' | 'md' | 'lg'
   /** Memory Agent themed surfaces use org primary tokens */
   variant?: 'catalogue' | 'memory-agent'
@@ -75,6 +77,7 @@ function PlaceholderAvatar({
 export function InstitutionalArtistAvatar({
   name,
   photoUrl,
+  alt,
   size = 'md',
   variant = 'catalogue',
   className,
@@ -82,12 +85,13 @@ export function InstitutionalArtistAvatar({
   const dim =
     size === 'sm' ? 'h-10 w-10 text-xs' : size === 'lg' ? 'h-20 w-20 text-lg' : 'h-14 w-14 text-sm'
   const px = size === 'sm' ? 40 : size === 'lg' ? 80 : 56
+  const imageAlt = alt?.trim() || `Portrait of ${name}`
 
   if (photoUrl) {
     return (
       <Image
         src={photoUrl}
-        alt=""
+        alt={imageAlt}
         width={px}
         height={px}
         className={cn('shrink-0 rounded-md object-cover ring-1 ring-border', dim, className)}

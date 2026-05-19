@@ -21,10 +21,9 @@ import { SohoFunnelThemeToggle } from '@/components/sohohouse/SohoFunnelThemeTog
 import { SohoHouseLogo } from '@/components/sohohouse/SohoHouseLogo'
 import { useTheme } from '@/contexts/ThemeContext'
 import {
-  SOHO_FUNNEL_MOCKUPS,
   SOHO_PITCH_EMAIL,
   SOHO_WALKTHROUGH_MAILTO,
-  sohoMockupSrc,
+  sohoMockupDisplayProps,
 } from '@/lib/sohohouse/pitch-constants'
 import { cn } from '@/lib/utils'
 
@@ -270,8 +269,8 @@ export function SohoMemberSignalFunnelPage() {
             </div>
             <div className="flex flex-col items-center gap-5 lg:items-end">
               <SohoFunnelMockupFrame
-                {...SOHO_FUNNEL_MOCKUPS.hero}
-                src={sohoMockupSrc('hero')}
+                mockupKey="hero"
+                {...sohoMockupDisplayProps('hero')}
                 priority
                 className="w-full max-w-[240px]"
               />
@@ -331,10 +330,7 @@ export function SohoMemberSignalFunnelPage() {
               </ul>
             </div>
             </div>
-            <SohoFunnelMockupFrame
-              {...SOHO_FUNNEL_MOCKUPS.interaction}
-              src={sohoMockupSrc('interaction')}
-            />
+            <SohoFunnelMockupFrame mockupKey="interaction" {...sohoMockupDisplayProps('interaction')} />
           </div>
         </section>
 
@@ -344,11 +340,7 @@ export function SohoMemberSignalFunnelPage() {
           <h2 className="mt-3 font-serif text-2xl font-light md:text-3xl">
             From draft to approved signal
           </h2>
-          <SohoFunnelMockupFrame
-            {...SOHO_FUNNEL_MOCKUPS.smartSign}
-            src={sohoMockupSrc('smartSign')}
-            className="mt-8"
-          />
+          <SohoFunnelMockupFrame mockupKey="smartSign" {...sohoMockupDisplayProps('smartSign')} className="mt-8" />
           <ol className="mt-8 grid gap-4 md:grid-cols-2">
             <StoryStep
               step="01"
@@ -423,8 +415,8 @@ export function SohoMemberSignalFunnelPage() {
               </div>
             </div>
             <SohoFunnelMockupFrame
-              {...SOHO_FUNNEL_MOCKUPS.mobileHandoff}
-              src={sohoMockupSrc('mobileHandoff')}
+              mockupKey="mobileHandoff"
+              {...sohoMockupDisplayProps('mobileHandoff')}
               className="mx-auto md:mx-0"
             />
           </div>
@@ -480,10 +472,7 @@ export function SohoMemberSignalFunnelPage() {
               </Link>
             </div>
             </div>
-            <SohoFunnelMockupFrame
-              {...SOHO_FUNNEL_MOCKUPS.staffGovernance}
-              src={sohoMockupSrc('staffGovernance')}
-            />
+            <SohoFunnelMockupFrame mockupKey="staffGovernance" {...sohoMockupDisplayProps('staffGovernance')} />
           </div>
         </section>
 

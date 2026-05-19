@@ -7,6 +7,13 @@ import {
   fetchAllRecords,
   type AirtableRecord,
 } from '@/lib/airtable/client'
+import {
+  alumniImageForContext,
+  isUsableImageUrl,
+  parseAdditionalImageUrls,
+  type AlumniImageReviewStatus,
+  type AlumniPreferredImageOrientation,
+} from '@/lib/airtable/alumni-images'
 import type { AlumniFieldMap } from '@/lib/airtable/org-alumni-config'
 import { getAlumniConnectionForOrg } from '@/lib/airtable/org-alumni-config'
 
@@ -16,8 +23,18 @@ export type AlumniAirtableRow = {
   name: string
   /** Optional professional or display name shown on cards when set */
   artistName?: string
-  /** First attachment URL or URL string from mapped photo field */
+  /** Default Memory Agent / directory image (resolved from featured + orientation fields) */
   photoUrl?: string
+  featuredImageUrl?: string
+  portraitVerticalUrl?: string
+  portraitLandscapeUrl?: string
+  additionalImageUrls?: string[]
+  imageAltText?: string
+  imageCredit?: string
+  imageSource?: string
+  imageReviewStatus?: AlumniImageReviewStatus
+  preferredImageOrientation?: AlumniPreferredImageOrientation
+  cloudinarySourceBatch?: string
   email?: string
   cohort?: string
   program?: string
@@ -119,8 +136,8 @@ function cellToPhotoUrl(
   if (typeof raw === 'string') {
     const t = raw.trim()
     if (!t) return undefined
-    if (/^https?:\/\//i.test(t)) return t
-    return undefined
+    if (!isUsableImageUrl(t)) return undefined
+    return t
   }
   if (Array.isArray(raw) && raw.length > 0) {
     const first = raw[0]
@@ -130,6 +147,14 @@ function cellToPhotoUrl(
     }
   }
   return undefined
+}
+
+function cellToImageUrl(
+  fields: Record<string, unknown>,
+  airtableFieldName: string
+): string | undefined {
+  if (!airtableFieldName.trim()) return undefined
+  return cellToPhotoUrl(fields, airtableFieldName)
 }
 
 function mapRecordToAlumni(
@@ -147,7 +172,45 @@ function mapRecordToAlumni(
   const artistName = artistField
     ? cellToString(fields[artistField])
     : undefined
-  const photoUrl = cellToPhotoUrl(fields, fieldMap.photo)
+
+  const featuredImageUrl =
+    cellToImageUrl(fields, fieldMap.featuredImageUrl) ??
+    cellToImageUrl(fields, fieldMap.photo)
+  const portraitVerticalUrl = cellToImageUrl(fields, fieldMap.portraitVerticalUrl)
+  const portraitLandscapeUrl = cellToImageUrl(fields, fieldMap.portraitLandscapeUrl)
+  const additionalRaw = fieldMap.additionalImageUrls?.trim()
+    ? cellToString(fields[fieldMap.additionalImageUrls])
+    : undefined
+  const additionalImageUrls = parseAdditionalImageUrls(additionalRaw)
+  const imageAltText = fieldMap.imageAltText?.trim()
+    ? cellToString(fields[fieldMap.imageAltText])
+    : undefined
+  const imageCredit = fieldMap.imageCredit?.trim()
+    ? cellToString(fields[fieldMap.imageCredit])
+    : undefined
+  const imageSource = fieldMap.imageSource?.trim()
+    ? cellToString(fields[fieldMap.imageSource])
+    : undefined
+  const imageReviewStatus = fieldMap.imageReviewStatus?.trim()
+    ? (cellToString(fields[fieldMap.imageReviewStatus]) as AlumniImageReviewStatus | undefined)
+    : undefined
+  const preferredImageOrientation = fieldMap.preferredImageOrientation?.trim()
+    ? (cellToString(fields[fieldMap.preferredImageOrientation]) as
+        | AlumniPreferredImageOrientation
+        | undefined)
+    : undefined
+  const cloudinarySourceBatch = fieldMap.cloudinarySourceBatch?.trim()
+    ? cellToString(fields[fieldMap.cloudinarySourceBatch])
+    : undefined
+
+  const imageFields = {
+    featuredImageUrl,
+    portraitVerticalUrl,
+    portraitLandscapeUrl,
+    photoUrl: cellToImageUrl(fields, fieldMap.photo),
+    imageReviewStatus,
+  }
+  const photoUrl = alumniImageForContext(imageFields, 'default')
 
   const themesField = fieldMap.themes?.trim()
   const themes = themesField ? cellToTopicList(fields, themesField) : []
@@ -199,6 +262,16 @@ function mapRecordToAlumni(
     name,
     ...(artistName ? { artistName } : {}),
     ...(photoUrl ? { photoUrl } : {}),
+    ...(featuredImageUrl ? { featuredImageUrl } : {}),
+    ...(portraitVerticalUrl ? { portraitVerticalUrl } : {}),
+    ...(portraitLandscapeUrl ? { portraitLandscapeUrl } : {}),
+    ...(additionalImageUrls.length ? { additionalImageUrls } : {}),
+    ...(imageAltText ? { imageAltText } : {}),
+    ...(imageCredit ? { imageCredit } : {}),
+    ...(imageSource ? { imageSource } : {}),
+    ...(imageReviewStatus ? { imageReviewStatus } : {}),
+    ...(preferredImageOrientation ? { preferredImageOrientation } : {}),
+    ...(cloudinarySourceBatch ? { cloudinarySourceBatch } : {}),
     email: cellToString(fields[fieldMap.email]),
     cohort: cellToString(fields[fieldMap.cohort]),
     program: cellToString(fields[fieldMap.program]),

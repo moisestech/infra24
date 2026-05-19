@@ -4,6 +4,12 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { ImageIcon } from 'lucide-react'
 
+import { useTheme } from '@/contexts/ThemeContext'
+import {
+  sohoMockupDropHint,
+  sohoMockupSrc,
+  type SohoFunnelMockupKey,
+} from '@/lib/sohohouse/pitch-constants'
 import { cn } from '@/lib/utils'
 
 type MockupAspect = 'phone' | 'screen' | 'wide' | 'video'
@@ -16,26 +22,27 @@ const ASPECT_CLASS: Record<MockupAspect, string> = {
 }
 
 export type SohoFunnelMockupFrameProps = {
-  src: string
+  mockupKey: SohoFunnelMockupKey
   alt: string
   caption: string
-  hint?: string
   aspect?: MockupAspect
   className?: string
   priority?: boolean
 }
 
 export function SohoFunnelMockupFrame({
-  src,
+  mockupKey,
   alt,
   caption,
-  hint,
   aspect = 'wide',
   className,
   priority,
 }: SohoFunnelMockupFrameProps) {
-  const [failed, setFailed] = useState(false)
-  const showPlaceholder = failed
+  const { resolvedTheme } = useTheme()
+  const theme = resolvedTheme === 'light' ? 'light' : 'dark'
+  const src = sohoMockupSrc(mockupKey, theme)
+  const [failedSrc, setFailedSrc] = useState<string | null>(null)
+  const showPlaceholder = failedSrc === src
 
   return (
     <figure className={cn('group/mockup', className)}>
@@ -48,6 +55,7 @@ export function SohoFunnelMockupFrame({
       >
         {!showPlaceholder ? (
           <Image
+            key={src}
             src={src}
             alt={alt}
             fill
@@ -58,7 +66,7 @@ export function SohoFunnelMockupFrame({
                 ? '(max-width: 768px) 220px, 220px'
                 : '(max-width: 768px) 100vw, 640px'
             }
-            onError={() => setFailed(true)}
+            onError={() => setFailedSrc(src)}
           />
         ) : (
           <div className="soho-funnel-mockup-placeholder flex h-full min-h-[12rem] flex-col items-center justify-center gap-3 p-6 text-center">
@@ -67,14 +75,15 @@ export function SohoFunnelMockupFrame({
             </div>
             <div>
               <p className="text-xs font-medium text-[var(--soho-text)]">{caption}</p>
-              {hint ? (
-                <p className="mt-1.5 text-[10px] leading-relaxed text-[var(--soho-text-muted)]">
-                  Add mockup:{' '}
-                  <code className="rounded bg-[var(--soho-bg-soft)] px-1 py-0.5 text-[var(--soho-accent)]">
-                    public/assets/sohohouse/mockups/{hint}
-                  </code>
-                </p>
-              ) : null}
+              <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-[var(--soho-accent-muted)]">
+                {theme} theme
+              </p>
+              <p className="mt-1.5 text-[10px] leading-relaxed text-[var(--soho-text-muted)]">
+                Add mockups:{' '}
+                <code className="rounded bg-[var(--soho-bg-soft)] px-1 py-0.5 text-[var(--soho-accent)]">
+                  public/assets/sohohouse/mockups/{sohoMockupDropHint(mockupKey)}
+                </code>
+              </p>
             </div>
           </div>
         )}

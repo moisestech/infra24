@@ -151,6 +151,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/sohohouse-ai-assistant',
+        destination: '/soho-house-ai-assistant',
+        permanent: true,
+      },
+      {
         source: '/learn/getting-started-with-vibecoding',
         destination: '/workshop/vibe-coding-and-net-art/chapters/getting-started-with-vibecoding',
         permanent: false,

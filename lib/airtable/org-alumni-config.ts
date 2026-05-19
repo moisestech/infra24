@@ -36,8 +36,19 @@ export type AlumniFieldMap = {
   inCollection: string
   /** Checkbox or tag: video art emphasis */
   videoArt: string
-  /** Attachments or image URL for directory avatar */
+  /** Attachments or image URL for directory avatar (legacy; prefer featuredImageUrl) */
   photo: string
+  /** Primary all-purpose image URL (Featured Image URL in Oolite public table) */
+  featuredImageUrl: string
+  portraitVerticalUrl: string
+  portraitLandscapeUrl: string
+  additionalImageUrls: string
+  imageAltText: string
+  imageCredit: string
+  imageSource: string
+  imageReviewStatus: string
+  preferredImageOrientation: string
+  cloudinarySourceBatch: string
   /** Optional display / professional name; card shows this when set, else Name */
   artistName: string
   /** Public-facing bio for AI context; if empty, artifacts/notes are not used as bio substitute here */
@@ -81,6 +92,16 @@ const DEFAULT_FIELDS: AlumniFieldMap = {
   inCollection: 'In collection',
   videoArt: 'Video art',
   photo: 'Photo',
+  featuredImageUrl: '',
+  portraitVerticalUrl: '',
+  portraitLandscapeUrl: '',
+  additionalImageUrls: '',
+  imageAltText: '',
+  imageCredit: '',
+  imageSource: '',
+  imageReviewStatus: '',
+  preferredImageOrientation: '',
+  cloudinarySourceBatch: '',
   /** Empty = do not read a separate column (use Name only) */
   artistName: '',
   publicBio: '',
@@ -89,6 +110,89 @@ const DEFAULT_FIELDS: AlumniFieldMap = {
   visibilityLevel: '',
   approvedForPublicAi: '',
   doNotUseInAi: '',
+}
+
+/** Oolite 🧑‍🎨 Alumni Directory (Public Fields) — image column titles when env overrides are unset. */
+const OOLITE_ALUMNI_FIELD_DEFAULTS: Partial<AlumniFieldMap> = {
+  photo: 'Featured Image URL',
+  featuredImageUrl: 'Featured Image URL',
+  portraitVerticalUrl: 'Portrait Vertical URL',
+  portraitLandscapeUrl: 'Portrait Landscape URL',
+  additionalImageUrls: 'Additional Image URLs',
+  imageAltText: 'Image Alt Text',
+  imageCredit: 'Image Credit',
+  imageSource: 'Image Source',
+  imageReviewStatus: 'Image Review Status',
+  preferredImageOrientation: 'Preferred Image Orientation',
+  cloudinarySourceBatch: 'Cloudinary Folder / Source Batch',
+}
+
+function pickAlumniField(
+  envPrefix: string,
+  suffix: keyof AlumniFieldMap,
+  orgSlug?: string
+): string {
+  const fromEnv = readEnv(`${envPrefix}FIELD_${suffix.toUpperCase()}`)
+  if (fromEnv) return fromEnv
+  if (orgSlug?.trim().toLowerCase() === 'oolite') {
+    const oolite = OOLITE_ALUMNI_FIELD_DEFAULTS[suffix]
+    if (oolite) return oolite
+  }
+  return DEFAULT_FIELDS[suffix]
+}
+
+function buildFieldMap(envPrefix: string, orgSlug?: string): AlumniFieldMap {
+  const pick = (suffix: keyof AlumniFieldMap) =>
+    pickAlumniField(envPrefix, suffix, orgSlug)
+  return {
+    name: pick('name'),
+    email: pick('email'),
+    cohort: pick('cohort'),
+    program: pick('program'),
+    year: pick('year'),
+    residencyYear: pick('residencyYear'),
+    pronoun: pick('pronoun'),
+    ethnicity: pick('ethnicity'),
+    nationality: pick('nationality'),
+    phone: pick('phone'),
+    notes: pick('notes'),
+    website: pick('website'),
+    topics: pick('topics'),
+    themes: pick('themes'),
+    medium: pick('medium'),
+    artifacts: pick('artifacts'),
+    digitalArtist: pick('digitalArtist'),
+    inCollection: pick('inCollection'),
+    videoArt: pick('videoArt'),
+    photo: pick('photo'),
+    featuredImageUrl: pick('featuredImageUrl'),
+    portraitVerticalUrl: pick('portraitVerticalUrl'),
+    portraitLandscapeUrl: pick('portraitLandscapeUrl'),
+    additionalImageUrls: pick('additionalImageUrls'),
+    imageAltText: pick('imageAltText'),
+    imageCredit: pick('imageCredit'),
+    imageSource: pick('imageSource'),
+    imageReviewStatus: pick('imageReviewStatus'),
+    preferredImageOrientation: pick('preferredImageOrientation'),
+    cloudinarySourceBatch: pick('cloudinarySourceBatch'),
+    artistName: pick('artistName'),
+    publicBio: pick('publicBio'),
+    instagram: pick('instagram'),
+    location: pick('location'),
+    visibilityLevel: pick('visibilityLevel'),
+    approvedForPublicAi: pick('approvedForPublicAi'),
+    doNotUseInAi: pick('doNotUseInAi'),
+  }
+}
+
+/** Field keys: AIRTABLE_{TOKEN}_ALUMNI_FIELD_NAME, etc. */
+function fieldMapForPrefix(fullPrefix: string, orgSlug?: string): AlumniFieldMap {
+  return buildFieldMap(fullPrefix, orgSlug)
+}
+
+/** Legacy flat AIRTABLE_ALUMNI_FIELD_* (no org token) */
+function fieldMapLegacy(): AlumniFieldMap {
+  return buildFieldMap('AIRTABLE_ALUMNI_', 'oolite')
 }
 
 /** Slug `oolite` → `OOLITE`, `mad-arts` → `MAD_ARTS` */
@@ -102,80 +206,6 @@ export function orgSlugToEnvToken(orgSlug: string): string | null {
 function readEnv(key: string): string | undefined {
   const v = process.env[key]
   return v?.trim() || undefined
-}
-
-/** Field keys: AIRTABLE_{TOKEN}_ALUMNI_FIELD_NAME, etc. */
-function fieldMapForPrefix(fullPrefix: string): AlumniFieldMap {
-  const pick = (suffix: keyof AlumniFieldMap): string => {
-    const v = readEnv(`${fullPrefix}FIELD_${suffix.toUpperCase()}`)
-    return v ?? DEFAULT_FIELDS[suffix]
-  }
-  return {
-    name: pick('name'),
-    email: pick('email'),
-    cohort: pick('cohort'),
-    program: pick('program'),
-    year: pick('year'),
-    residencyYear: pick('residencyYear'),
-    pronoun: pick('pronoun'),
-    ethnicity: pick('ethnicity'),
-    nationality: pick('nationality'),
-    phone: pick('phone'),
-    notes: pick('notes'),
-    website: pick('website'),
-    topics: pick('topics'),
-    themes: pick('themes'),
-    medium: pick('medium'),
-    artifacts: pick('artifacts'),
-    digitalArtist: pick('digitalArtist'),
-    inCollection: pick('inCollection'),
-    videoArt: pick('videoArt'),
-    photo: pick('photo'),
-    artistName: pick('artistName'),
-    publicBio: pick('publicBio'),
-    instagram: pick('instagram'),
-    location: pick('location'),
-    visibilityLevel: pick('visibilityLevel'),
-    approvedForPublicAi: pick('approvedForPublicAi'),
-    doNotUseInAi: pick('doNotUseInAi'),
-  }
-}
-
-/** Legacy flat AIRTABLE_ALUMNI_FIELD_* (no org token) */
-function fieldMapLegacy(): AlumniFieldMap {
-  const pick = (suffix: keyof AlumniFieldMap): string => {
-    const v = readEnv(`AIRTABLE_ALUMNI_FIELD_${suffix.toUpperCase()}`)
-    return v ?? DEFAULT_FIELDS[suffix]
-  }
-  return {
-    name: pick('name'),
-    email: pick('email'),
-    cohort: pick('cohort'),
-    program: pick('program'),
-    year: pick('year'),
-    residencyYear: pick('residencyYear'),
-    pronoun: pick('pronoun'),
-    ethnicity: pick('ethnicity'),
-    nationality: pick('nationality'),
-    phone: pick('phone'),
-    notes: pick('notes'),
-    website: pick('website'),
-    topics: pick('topics'),
-    themes: pick('themes'),
-    medium: pick('medium'),
-    artifacts: pick('artifacts'),
-    digitalArtist: pick('digitalArtist'),
-    inCollection: pick('inCollection'),
-    videoArt: pick('videoArt'),
-    photo: pick('photo'),
-    artistName: pick('artistName'),
-    publicBio: pick('publicBio'),
-    instagram: pick('instagram'),
-    location: pick('location'),
-    visibilityLevel: pick('visibilityLevel'),
-    approvedForPublicAi: pick('approvedForPublicAi'),
-    doNotUseInAi: pick('doNotUseInAi'),
-  }
 }
 
 function tryConnection(
@@ -209,21 +239,22 @@ function tryConnection(
  * Tries AIRTABLE_{TOKEN}_ALUMNI_* first; for `oolite` only, falls back to AIRTABLE_ALUMNI_*.
  */
 export function getAlumniConnectionForOrg(orgSlug: string): OrgAlumniConnection | null {
+  const slug = orgSlug.trim().toLowerCase()
   const token = orgSlugToEnvToken(orgSlug)
   if (!token) return null
 
   const orgPrefix = `AIRTABLE_${token}_ALUMNI_`
-  const fromOrg = tryConnection(orgPrefix, fieldMapForPrefix(orgPrefix))
+  const fromOrg = tryConnection(orgPrefix, fieldMapForPrefix(orgPrefix, slug))
   if (fromOrg) return fromOrg
 
-  if (orgSlug.trim().toLowerCase() === 'oolite') {
+  if (slug === 'oolite') {
     return tryConnection('AIRTABLE_ALUMNI_', fieldMapLegacy())
   }
 
   /** Pilot: share Oolite alumni base until Soho House Airtable is provisioned */
-  if (orgSlug.trim().toLowerCase() === 'sohohouse') {
+  if (slug === 'sohohouse') {
     const oolitePrefix = 'AIRTABLE_OOLITE_ALUMNI_'
-    const fromOolite = tryConnection(oolitePrefix, fieldMapForPrefix(oolitePrefix))
+    const fromOolite = tryConnection(oolitePrefix, fieldMapForPrefix(oolitePrefix, 'oolite'))
     if (fromOolite) return fromOolite
     return tryConnection('AIRTABLE_ALUMNI_', fieldMapLegacy())
   }

@@ -1,5 +1,9 @@
 import type { AlumniAirtableRow } from '@/lib/airtable/alumni-service'
 import { alumniDisplayName } from '@/lib/airtable/alumni-service'
+import {
+  alumniImageAltText,
+  alumniImageForContext,
+} from '@/lib/airtable/alumni-images'
 import { alumniResidencyYearLabel } from '@/lib/airtable/alumni-filters'
 import { alumniYearLabel } from '@/lib/airtable/alumni-service'
 import type { MemoryAgentArtistCard } from '@/types/memory-agent'
@@ -11,6 +15,7 @@ export type InstitutionalArtistCardData = {
   id: string
   name: string
   photoUrl?: string
+  imageAltText?: string
   medium?: string
   program?: string
   year?: string
@@ -46,10 +51,12 @@ export function institutionalArtistFromAlumni(
   row: AlumniAirtableRow
 ): InstitutionalArtistCardData {
   const bio = row.publicBio?.trim() || row.artifacts?.trim()
+  const name = alumniDisplayName(row)
   return {
     id: row.id,
-    name: alumniDisplayName(row),
-    photoUrl: row.photoUrl,
+    name,
+    photoUrl: alumniImageForContext(row, 'card'),
+    imageAltText: alumniImageAltText(row, name),
     medium: row.medium?.trim(),
     program: row.program?.trim(),
     year: alumniResidencyYearLabel(row) || undefined,

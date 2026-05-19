@@ -4,8 +4,10 @@ export const SOHO_WALKTHROUGH_MAILTO = `mailto:${SOHO_PITCH_EMAIL}?subject=${enc
   'Soho House Member Signal Agent walkthrough'
 )}`
 
-/** Drop mockup images into public/assets/sohohouse/mockups/ using these filenames. */
+/** Drop mockup images into public/assets/sohohouse/mockups/ using `{fileStem}-light.webp` and `{fileStem}-dark.webp`. */
 export const SOHO_FUNNEL_MOCKUP_BASE = '/assets/sohohouse/mockups'
+
+export type SohoFunnelTheme = 'light' | 'dark'
 
 export type SohoFunnelMockupKey =
   | 'hero'
@@ -17,50 +19,61 @@ export type SohoFunnelMockupKey =
 export const SOHO_FUNNEL_MOCKUPS: Record<
   SohoFunnelMockupKey,
   {
-    file: string
+    /** Filename stem — resolved to `{fileStem}-light.webp` / `{fileStem}-dark.webp` */
+    fileStem: string
     alt: string
     caption: string
-    hint: string
     aspect: 'phone' | 'screen' | 'wide' | 'video'
   }
 > = {
   hero: {
-    file: 'hero-member-signal.webp',
+    fileStem: 'hero-member-signal',
     alt: 'Member Signal Agent — voice and chat interface in the House',
     caption: 'Member Signal Agent',
-    hint: 'hero-member-signal.webp',
     aspect: 'phone',
   },
   interaction: {
-    file: 'experience-cards.webp',
+    fileStem: 'experience-cards',
     alt: 'Member route, bookable experiences, and smart sign outputs',
     caption: 'One question → full experience loop',
-    hint: 'experience-cards.webp',
     aspect: 'wide',
   },
   smartSign: {
-    file: 'smart-sign-lobby.webp',
+    fileStem: 'smart-sign-lobby',
     alt: 'Smart sign in a House lobby with approved programming and QR',
     caption: 'Smart sign · lobby moment',
-    hint: 'smart-sign-lobby.webp',
     aspect: 'wide',
   },
   mobileHandoff: {
-    file: 'mobile-handoff.webp',
+    fileStem: 'mobile-handoff',
     alt: 'Mobile member journey after scanning an approved QR handoff',
     caption: 'Mobile route after scan',
-    hint: 'mobile-handoff.webp',
     aspect: 'phone',
   },
   staffGovernance: {
-    file: 'staff-approval.webp',
+    fileStem: 'staff-approval',
     alt: 'Staff brief, approval controls, and governance panel',
     caption: 'Staff approves before anything goes live',
-    hint: 'staff-approval.webp',
     aspect: 'screen',
   },
 }
 
-export function sohoMockupSrc(key: SohoFunnelMockupKey): string {
-  return `${SOHO_FUNNEL_MOCKUP_BASE}/${SOHO_FUNNEL_MOCKUPS[key].file}`
+export function sohoMockupFilename(key: SohoFunnelMockupKey, theme: SohoFunnelTheme): string {
+  return `${SOHO_FUNNEL_MOCKUPS[key].fileStem}-${theme}.webp`
+}
+
+export function sohoMockupSrc(key: SohoFunnelMockupKey, theme: SohoFunnelTheme): string {
+  return `${SOHO_FUNNEL_MOCKUP_BASE}/${sohoMockupFilename(key, theme)}`
+}
+
+/** Props for {@link SohoFunnelMockupFrame} minus `mockupKey`. */
+export function sohoMockupDisplayProps(key: SohoFunnelMockupKey) {
+  const { alt, caption, aspect } = SOHO_FUNNEL_MOCKUPS[key]
+  return { alt, caption, aspect }
+}
+
+/** Hint shown in placeholder UI when assets are missing. */
+export function sohoMockupDropHint(key: SohoFunnelMockupKey): string {
+  const stem = SOHO_FUNNEL_MOCKUPS[key].fileStem
+  return `${stem}-light.webp, ${stem}-dark.webp`
 }

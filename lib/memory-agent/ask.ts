@@ -3,6 +3,7 @@ import {
   alumniYearLabel,
   fetchAlumniFromAirtableDetailed,
 } from '@/lib/airtable/alumni-service'
+import { alumniImageForContext } from '@/lib/airtable/alumni-images'
 import { badgesFromAlumniRow } from '@/lib/institutional-artist/card-model'
 import { getAlumniConnectionForOrg } from '@/lib/airtable/org-alumni-config'
 import { filterRowsForMemoryAgent, redactRowForPublicDisplay } from '@/lib/memory-agent/governance'
@@ -335,7 +336,7 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
       return {
         ...a,
         name: alumniDisplayName(base),
-        photoUrl: base.photoUrl,
+        photoUrl: alumniImageForContext(base, 'default'),
         website: a.website || base.website,
         medium: a.discipline || base.medium,
         program: base.program,

@@ -1,10 +1,16 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { InstitutionalArtistAvatar } from '@/components/institutional-artist/InstitutionalArtistAvatar'
 import type { AlumniAirtableRow } from '@/lib/airtable/alumni-service'
 import { alumniDisplayName } from '@/lib/airtable/alumni-service'
+import {
+  alumniGalleryImageUrls,
+  alumniImageAltText,
+  alumniImageForContext,
+} from '@/lib/airtable/alumni-images'
 import { alumniResidencyYearLabel } from '@/lib/airtable/alumni-filters'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -59,6 +65,9 @@ function AlumniDetailSheetInner({
   const year = alumniResidencyYearLabel(row)
   const showLegalName =
     row.artistName?.trim() && row.artistName.trim() !== row.name.trim()
+  const profilePhoto = alumniImageForContext(row, 'profile')
+  const imageAlt = alumniImageAltText(row, display)
+  const galleryUrls = alumniGalleryImageUrls(row)
 
   return (
     <SheetContent
@@ -68,9 +77,17 @@ function AlumniDetailSheetInner({
     >
         <SheetHeader className="space-y-4 text-left">
           <div className="flex gap-4">
-            <InstitutionalArtistAvatar name={display} photoUrl={row.photoUrl} size="lg" />
+            <InstitutionalArtistAvatar
+              name={display}
+              photoUrl={profilePhoto}
+              alt={imageAlt}
+              size="lg"
+            />
             <div className="min-w-0 flex-1 space-y-1">
               <SheetTitle className="text-xl leading-snug">{display}</SheetTitle>
+              {row.imageCredit?.trim() ? (
+                <p className="text-xs text-muted-foreground">Photo: {row.imageCredit.trim()}</p>
+              ) : null}
               {showLegalName ? (
                 <SheetDescription>Also listed as: {row.name}</SheetDescription>
               ) : (
@@ -79,6 +96,22 @@ function AlumniDetailSheetInner({
             </div>
           </div>
         </SheetHeader>
+
+        {galleryUrls.length > 1 ? (
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+            {galleryUrls.map((url) => (
+              <Image
+                key={url}
+                src={url}
+                alt={imageAlt}
+                width={72}
+                height={72}
+                className="h-[72px] w-[72px] shrink-0 rounded-md object-cover ring-1 ring-border"
+                unoptimized
+              />
+            ))}
+          </div>
+        ) : null}
 
         <div className="mt-6 flex flex-wrap gap-1.5">
           {row.digitalArtist === true && (
