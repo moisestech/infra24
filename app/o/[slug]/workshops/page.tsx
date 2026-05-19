@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { useUser } from '@clerk/nextjs'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig, madartsConfig } from '@/components/navigation'
@@ -16,9 +16,7 @@ import {
   BookOpen,
   Filter,
   Search,
-  Edit,
   Star,
-  Sparkles,
   Heart,
 } from 'lucide-react'
 import WorkshopCategoryVotingUnified from '@/components/workshops/WorkshopCategoryVotingUnified'
@@ -33,6 +31,9 @@ import {
 import type { WorkshopRow } from '@/components/workshops/marketing/types'
 import { normalizeWorkshopForCatalog } from '@/lib/workshops/normalize-workshop-for-catalog'
 import { isAdultStudioWorkshop } from '@/lib/workshops/workshop-filters'
+import { IpAgeOfAiWorkshopsLandingTeaser } from '@/components/workshops/marketing/IpAgeOfAiWorkshopsLandingTeaser'
+import { IP_AGE_OF_AI_WORKSHOP_SLUG } from '@/lib/workshops/ip-age-of-ai-program'
+import { canonicalWorkshopMarketingSlug } from '@/lib/workshops/workshop-metadata-slug-aliases'
 
 interface Organization {
   id: string
@@ -80,6 +81,23 @@ function sortWorkshopsFeaturedFirst(a: Workshop, b: Workshop) {
   return a.title.localeCompare(b.title)
 }
 
+function workshopCatalogCanonicalSlug(w: Workshop): string {
+  const raw =
+    w.metadata && typeof w.metadata === 'object' && w.metadata !== null && 'slug' in w.metadata
+      ? String((w.metadata as Record<string, unknown>).slug ?? '').trim()
+      : ''
+  return canonicalWorkshopMarketingSlug(raw)
+}
+
+/** Pin Skills: IP in the Age of AI first on the Oolite catalog. */
+function sortWorkshopsForOoliteCatalog(a: Workshop, b: Workshop) {
+  const sa = workshopCatalogCanonicalSlug(a)
+  const sb = workshopCatalogCanonicalSlug(b)
+  if (sa === IP_AGE_OF_AI_WORKSHOP_SLUG && sb !== IP_AGE_OF_AI_WORKSHOP_SLUG) return -1
+  if (sb === IP_AGE_OF_AI_WORKSHOP_SLUG && sa !== IP_AGE_OF_AI_WORKSHOP_SLUG) return 1
+  return sortWorkshopsFeaturedFirst(a, b)
+}
+
 // Animation variants
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -125,56 +143,47 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
     primaryAlphaDark: 'rgba(71, 171, 196, 0.15)',
   };
   
-  console.log('🔧 Workshops Page Debug:')
-  console.log('params:', params)
-  console.log('propSlug:', propSlug)
-  console.log('final slug:', slug)
-  console.log('user:', user)
-  
-  // Get navigation config based on organization slug
-  const getNavigationConfig = () => {
-    console.log('🧭 Getting navigation config for slug:', slug)
+  const navigationConfig = useMemo(() => {
     switch (slug) {
       case 'oolite':
-        console.log('🧭 Using oolite config')
         return ooliteConfig
       case 'bakehouse':
-        console.log('🧭 Using bakehouse config')
         return bakehouseConfig
       case 'madarts':
-        console.log('🧭 Using madarts config')
         return madartsConfig
       default:
-        console.log('🧭 Using default oolite config')
-        return ooliteConfig // Default fallback
+        return ooliteConfig
     }
-  }
-  
-  // Debug navigation config selection
-  const navigationConfig = getNavigationConfig()
-  console.log('🧭 Selected Navigation Config:', {
-    organizationName: navigationConfig.organization.name,
-    slug: navigationConfig.organization.slug,
-    logoUrl: navigationConfig.organization.logo_url
-  })
+  }, [slug])
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'
   const [organization, setOrganization] = useState<Organization | null>(null)
   const [workshops, setWorkshops] = useState<Workshop[]>([])
   const [loading, setLoading] = useState(true)
   
-  // Debug workshops state changes
   useEffect(() => {
-    console.log('📚 Workshops state changed:', workshops.length, 'workshops')
-    if (workshops.length > 0) {
-      console.log('📚 First workshop:', workshops[0])
+    if (loading || !slug) return
+    try {
+      const snapshot = workshops.map((w) => ({
+        id: w.id,
+        title: w.title,
+        status: w.status,
+        category: w.category,
+        featured: w.featured,
+        metadataSlug:
+          w.metadata && typeof w.metadata === 'object' && 'slug' in w.metadata
+            ? String((w.metadata as Record<string, unknown>).slug)
+            : undefined,
+      }))
+      console.log(
+        `[workshops-catalog] orgSlug="${slug}" count=${snapshot.length}`,
+        '\n',
+        JSON.stringify(snapshot, null, 2)
+      )
+    } catch {
+      /* ignore */
     }
-  }, [workshops])
-
-  // Debug organization state changes
-  useEffect(() => {
-    console.log('🏢 Organization state changed:', organization)
-  }, [organization])
+  }, [loading, slug, workshops])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedLevel, setSelectedLevel] = useState('all')
@@ -273,10 +282,6 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
     return () => mediaQuery.removeEventListener("change", handleChange)
   }, [])
 
-  // Filter workshops
-  console.log('🔍 Filtering workshops. Total workshops:', workshops.length)
-  console.log('🔍 Search term:', searchTerm, 'Category:', selectedCategory, 'Level:', selectedLevel)
-  
   const trackFilterOptions = useMemo(() => {
     const set = new Set<string>()
     for (const w of workshops) {
@@ -323,50 +328,33 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
       matchesTrack
     )
   })
-  
-  console.log('🔍 Filtered workshops count:', filteredWorkshops.length)
 
-  // Separate workshops by status and featured
-  console.log('🔍 Separating workshops by status and featured...')
-  console.log('📊 Total workshops before filtering:', workshops.length)
-  console.log('📊 Filtered workshops:', filteredWorkshops.length)
-  
-  const featuredWorkshops = filteredWorkshops.filter(w => w.featured && w.status === 'published')
-  const publishedWorkshops = filteredWorkshops.filter(w => w.status === 'published' && !w.featured)
-  const unpublishedWorkshops = filteredWorkshops.filter(w => w.status === 'draft')
-  
-  console.log('🌟 Featured workshops (featured=true, status=published):', featuredWorkshops.length)
-  featuredWorkshops.forEach((w, i) => console.log(`  ${i+1}. ${w.title} (featured: ${w.featured}, status: ${w.status})`))
-  
-  console.log('📚 Published workshops (status=published, featured=false):', publishedWorkshops.length)
-  publishedWorkshops.forEach((w, i) => console.log(`  ${i+1}. ${w.title} (featured: ${w.featured}, status: ${w.status})`))
-  
-  console.log('📝 Unpublished workshops (status=draft):', unpublishedWorkshops.length)
-  unpublishedWorkshops.forEach((w, i) => console.log(`  ${i+1}. ${w.title} (featured: ${w.featured}, status: ${w.status})`))
+  const catalogSort = slug === 'oolite' ? sortWorkshopsForOoliteCatalog : sortWorkshopsFeaturedFirst
+
+  const featuredWorkshops = filteredWorkshops
+    .filter((w) => w.featured && w.status === 'published')
+    .sort(catalogSort)
+  const publishedWorkshops = filteredWorkshops
+    .filter((w) => w.status === 'published' && !w.featured)
+    .sort(catalogSort)
 
   // Get unique categories
   const categories = Array.from(new Set(workshops.map(w => w.category))).sort()
 
   const isOoliteLab = slug === 'oolite'
-  const digitalLabList = useMemo(
-    () =>
-      filteredWorkshops
-        .filter((w) => !isAdultStudioWorkshop(w) && w.status === 'published')
-        .sort(sortWorkshopsFeaturedFirst),
-    [filteredWorkshops]
-  )
-  const adultStudioList = useMemo(
-    () =>
-      filteredWorkshops
-        .filter((w) => isAdultStudioWorkshop(w) && w.status === 'published')
-        .sort(sortWorkshopsFeaturedFirst),
-    [filteredWorkshops]
-  )
-  const draftFiltered = useMemo(
-    () => filteredWorkshops.filter((w) => w.status === 'draft'),
-    [filteredWorkshops]
-  )
+  const digitalLabList = useMemo(() => {
+    const sortFn = slug === 'oolite' ? sortWorkshopsForOoliteCatalog : sortWorkshopsFeaturedFirst
+    return filteredWorkshops
+      .filter((w) => !isAdultStudioWorkshop(w) && w.status === 'published')
+      .sort(sortFn)
+  }, [filteredWorkshops, slug])
 
+  const adultStudioList = useMemo(() => {
+    const sortFn = slug === 'oolite' ? sortWorkshopsForOoliteCatalog : sortWorkshopsFeaturedFirst
+    return filteredWorkshops
+      .filter((w) => isAdultStudioWorkshop(w) && w.status === 'published')
+      .sort(sortFn)
+  }, [filteredWorkshops, slug])
   if (loading) {
     return (
       <div className={`min-h-screen transition-colors duration-300 ${
@@ -823,6 +811,10 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                 </div>
               ) : null}
 
+              {slug === 'oolite' ? (
+                <IpAgeOfAiWorkshopsLandingTeaser orgSlug={slug} isDark={isDark} />
+              ) : null}
+
               {/* Framing + audience + Digital Lab catalog CTA (directly after published workshop cards) */}
               <div className="mt-4 border-t border-border/40 pt-14 md:pt-16">
                 <section
@@ -889,45 +881,6 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
               {organization ? (
                 <div className="mb-16">
                   <WorkshopCategoryVotingUnified organizationId={organization.id} userId={user?.id} />
-                </div>
-              ) : null}
-
-              {draftFiltered.length > 0 ? (
-                <div className="mb-16">
-                  <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    className="mb-8 text-center"
-                  >
-                    <h3
-                      className={`mb-4 text-2xl font-semibold md:text-3xl ${
-                        isDark ? 'text-white' : 'text-gray-900'
-                      }`}
-                    >
-                      <Edit className="mr-2 inline-block h-8 w-8 text-orange-500" />
-                      Draft workshops
-                    </h3>
-                    <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Workshops currently in development.
-                    </p>
-                  </motion.div>
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {draftFiltered.map((workshop) => (
-                      <motion.div
-                        key={workshop.id}
-                        variants={fadeIn}
-                        initial="initial"
-                        whileInView="animate"
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        whileHover={reducedMotion ? {} : hoverScale}
-                      >
-                        <WorkshopCard workshop={workshop as WorkshopRow} orgSlug={slug} />
-                      </motion.div>
-                    ))}
-                  </div>
                 </div>
               ) : null}
             </>
@@ -1000,45 +953,6 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
                   </motion.div>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {publishedWorkshops.map((workshop) => (
-                      <motion.div
-                        key={workshop.id}
-                        variants={fadeIn}
-                        initial="initial"
-                        whileInView="animate"
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5 }}
-                        whileHover={reducedMotion ? {} : hoverScale}
-                      >
-                        <WorkshopCard workshop={workshop as WorkshopRow} orgSlug={slug} />
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              {unpublishedWorkshops.length > 0 ? (
-                <div className="mb-16">
-                  <motion.div
-                    variants={staggerContainer}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    className="mb-8 text-center"
-                  >
-                    <h3
-                      className={`mb-4 text-2xl font-bold md:text-3xl ${
-                        isDark ? 'text-white' : 'text-gray-900'
-                      }`}
-                    >
-                      <Edit className="mr-2 inline-block h-8 w-8 text-orange-500" />
-                      Draft workshops
-                    </h3>
-                    <p className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Workshops currently in development — coming soon!
-                    </p>
-                  </motion.div>
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {unpublishedWorkshops.map((workshop) => (
                       <motion.div
                         key={workshop.id}
                         variants={fadeIn}

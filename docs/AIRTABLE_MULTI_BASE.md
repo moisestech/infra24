@@ -8,6 +8,7 @@ The app uses the same [Airtable REST API](https://airtable.com/developers/web/ap
 - `lib/airtable/org-alumni-config.ts` — per-org alumni env resolver
 - `lib/airtable/budget-service.ts` — budget line items (existing env + behavior)
 - `lib/airtable/alumni-service.ts` — alumni directory (separate base/table per org)
+- `lib/memory-agent/*` — conversational Memory Agent over alumni rows (OpenAI + optional ElevenLabs)
 
 Never expose the PAT to the browser; only server routes and scripts should call Airtable.
 
@@ -55,6 +56,13 @@ Replace `{ORG}` with that token, e.g. for Oolite Arts:
 | `FIELD_VIDEOART` | Video art | Checkbox; combined with medium containing “video”, “film”, “moving image” |
 | `FIELD_PHOTO` | Photo | Attachments (first image `url`) or a URL string; alumni card avatar |
 | `FIELD_ARTISTNAME` | *(empty default)* | Optional; if set to a column title, that value is shown on cards instead of `FIELD_NAME` when present |
+| `FIELD_THEMES` | *(empty default)* | Optional separate themes column; merged into Memory Agent retrieval with topics |
+| `FIELD_PUBLICBIO` | *(empty default)* | Optional public bio text for AI context |
+| `FIELD_INSTAGRAM` | *(empty default)* | Optional handle or URL |
+| `FIELD_LOCATION` | *(empty default)* | Optional city/region for retrieval |
+| `FIELD_VISIBILITYLEVEL` | *(empty default)* | Optional; substring match: exclude `restricted` / internal-only rows from **public** Memory Agent mode when set |
+| `FIELD_APPROVEDFORPUBLICAI` | *(empty default)* | Optional checkbox; when mapped, **public** mode only includes rows checked true |
+| `FIELD_DONOTUSEINAI` | *(empty default)* | Optional checkbox; when true, row excluded from Memory Agent retrieval in all modes |
 
 `FIELD_ARTISTNAME` defaults to empty: leave unset unless you have a separate “artist name” column. If you set it, use the exact Airtable column title.
 
@@ -85,9 +93,36 @@ Other org slugs **do not** use this legacy block; they require `AIRTABLE_{ORG}_A
 
 - **Budget**: `GET /api/organizations/by-slug/[slug]/budget` (Airtable when configured for `oolite`)
 - **Alumni**: `GET /api/organizations/by-slug/[slug]/alumni/airtable` — returns `{ organizationSlug, supported, configured, count, alumni }`. `configured` is true only when that org’s alumni env resolves. `502` if env is present but the Airtable request fails.
+- **Memory Agent**: same org slug as alumni.
+  - `GET /api/organizations/by-slug/[slug]/memory-agent/status` — `{ dataConfigured, openaiConfigured, elevenLabsConfigured, elevenLabsApiKeyConfigured, elevenLabsVoiceIdConfigured, questionLoggingConfigured, governance, branding }`.
+  - `POST .../memory-agent/ask` — body `{ question, mode?: "public" | "internal_demo" }`; returns JSON answer + artist cards + follow-ups (server uses `OPENAI_API_KEY`).
+  - `POST .../memory-agent/voice` — body `{ text }`; returns `audio/mpeg` when `ELEVENLABS_API_KEY` and `ELEVENLABS_VOICE_ID` are set. Optional per-org override: `ELEVENLABS_VOICE_ID_{ORG}` (org token uppercase, e.g. `ELEVENLABS_VOICE_ID_OOLITE`).
+
+### Memory Agent (server env)
+
+| Variable | Purpose |
+|----------|---------|
+| `OPENAI_API_KEY` | Required for `/memory-agent/ask` |
+| `ELEVENLABS_API_KEY` | Optional; enables `/memory-agent/voice` |
+| `ELEVENLABS_VOICE_ID` | Default ElevenLabs voice id |
+| `ELEVENLABS_VOICE_ID_{ORG}` | Optional voice override per org token |
+
+Usage logging (optional): table `memory_agent_question_logs` (see Supabase migration `20260513210000_memory_agent_question_logs.sql`); inserts use `SUPABASE_SERVICE_ROLE_KEY` when present.
+
+### Memory Agent governance columns (optional)
+
+Map via `AIRTABLE_{ORG}_ALUMNI_FIELD_*` env vars (see `lib/airtable/org-alumni-config.ts`):
+
+| Field key | Typical column | Effect |
+|-----------|----------------|--------|
+| `publicBio` | Public bio | Preferred LLM context (not free-form Notes) |
+| `visibilityLevel` | Visibility | Public mode skips internal/restricted |
+| `approvedForPublicAi` | Approved for public AI | Public mode requires checkbox true |
+| `doNotUseInAi` | Do not use in AI | Excluded in all modes |
 
 ## UI
 
 - **Alumni page**: `/o/[slug]/alumni` (e.g. `/o/oolite/alumni`) loads data on the **server** via `fetchAlumniFromAirtable(slug)` (same source as the JSON route). The UI supports **search**, **sort** (name, year, cohort), **group by** (cohort, year, program), **cohort/year/topic** dropdowns, and toggles for **digital artists**, **in collection**, and **video / moving image** when the mapped columns exist. Add auth if the directory should not be public.
+- **Memory Agent**: `/o/[slug]/memory-agent` — conversational demo over the same Airtable alumni rows (with governance fields when mapped). See API section above. Roadmap and entry points: `docs/MEMORY_AGENT_ROADMAP.md`.
 
 See also `docs/AIRTABLE_BUDGET_AUDIT.md` if present for budget-specific notes.

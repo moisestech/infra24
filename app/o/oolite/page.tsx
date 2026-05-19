@@ -25,6 +25,7 @@ interface Organization {
     showXRExperiences: boolean
     showWorkshops: boolean
     showDigitalLab: boolean
+    showMemoryAgent?: boolean
   }
 }
 

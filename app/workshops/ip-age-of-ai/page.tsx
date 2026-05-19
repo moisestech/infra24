@@ -3,7 +3,16 @@ import { ModuleCardGrid } from '@/components/workshops/ModuleCardGrid'
 import { WorkshopHero } from '@/components/workshops/WorkshopHero'
 import { WorkshopModuleAudit } from '@/components/workshops/WorkshopModuleAudit'
 import { WorkshopOverview } from '@/components/workshops/WorkshopOverview'
+import { IpAgeOfAiProgramInstructors } from '@/components/workshops/marketing/IpAgeOfAiProgramInstructors'
+import { IpAgeOfAiProgramOutline } from '@/components/workshops/marketing/IpAgeOfAiProgramOutline'
+import { IpAgeOfAiSkillsYoullLearn } from '@/components/workshops/marketing/IpAgeOfAiSkillsYoullLearn'
 import { ipAgeOfAiModules, ipAgeOfAiWorkshop } from '@/data/ipAgeOfAiWorkshop'
+import {
+  ipAgeOfAiCollaboratorsLine,
+  ipAgeOfAiProgramTitle,
+  ipAgeOfAiSkillsYoullLearnTags,
+  KNIGHT_FOUNDATION_LOGO_SRC,
+} from '@/lib/workshops/ip-age-of-ai-program'
 
 const BASE_PATH = '/workshops/ip-age-of-ai'
 
@@ -25,6 +34,41 @@ export default function IpAgeOfAiWorkshopPage() {
         outcomes={ipAgeOfAiWorkshop.outcomes}
         disclaimer={ipAgeOfAiWorkshop.educationalDisclaimer}
       />
+
+      <section
+        className="rounded-xl border border-border bg-card p-6 shadow-sm md:p-8"
+        aria-labelledby="ip-age-of-ai-syllabus-heading"
+      >
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          Live session · May 8
+        </p>
+        <h2
+          id="ip-age-of-ai-syllabus-heading"
+          className="mt-2 text-xl font-semibold tracking-tight text-foreground md:text-2xl"
+        >
+          {ipAgeOfAiProgramTitle}
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground md:text-base">{ipAgeOfAiCollaboratorsLine}</p>
+
+        <div className="mt-6 flex flex-wrap items-center gap-3 rounded-lg border border-border bg-muted/25 px-4 py-3 dark:bg-muted/10">
+          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Supported by
+          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={KNIGHT_FOUNDATION_LOGO_SRC}
+            alt="Knight Foundation"
+            className="h-10 w-auto max-h-12 max-w-[min(100%,220px)] object-contain object-left"
+            loading="lazy"
+          />
+        </div>
+
+        <div className="mt-10 space-y-12">
+          <IpAgeOfAiProgramOutline modules={ipAgeOfAiModules} basePath={BASE_PATH} />
+          <IpAgeOfAiProgramInstructors sectionId="workshop-section-speakers" />
+          <IpAgeOfAiSkillsYoullLearn skills={ipAgeOfAiSkillsYoullLearnTags} />
+        </div>
+      </section>
 
       <ModuleCardGrid modules={ipAgeOfAiModules} basePath={BASE_PATH} />
 

@@ -3,13 +3,14 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Tooltip from '@/components/ui/Tooltip'
-import { NavigationItem, ThemeColors } from './types'
+import { NavigationItem, NavigationChromeVariant, ThemeColors } from './types'
 
 interface NavigationMenuProps {
   items: NavigationItem[]
   colors: ThemeColors
   className?: string
   variant?: 'horizontal' | 'vertical'
+  chromeVariant?: NavigationChromeVariant
 }
 
 export function NavigationMenu({
@@ -17,11 +18,13 @@ export function NavigationMenu({
   colors,
   className = '',
   variant = 'horizontal',
+  chromeVariant = 'default',
 }: NavigationMenuProps) {
   const pathname = usePathname()
+  const isSohoChrome = chromeVariant === 'soho-dark'
 
   const isActive = (href: string) => {
-    if (href === '/o/oolite' || href === '/o/bakehouse') {
+    if (href === '/o/oolite' || href === '/o/bakehouse' || href === '/o/sohohouse') {
       return pathname === href
     }
     return pathname.startsWith(href)
@@ -30,8 +33,10 @@ export function NavigationMenu({
   const getItemStyles = (item: NavigationItem, isActiveItem: boolean) => {
     const baseStyles =
       'relative flex size-9 shrink-0 items-center justify-center rounded-md text-sm font-medium transition-colors group sm:size-10'
-    const activeStyles = 'text-white'
-    const inactiveStyles = 'text-gray-700 dark:text-gray-300 hover:bg-opacity-10'
+    const activeStyles = isSohoChrome ? 'text-[#1a1512]' : 'text-white'
+    const inactiveStyles = isSohoChrome
+      ? 'text-[rgba(245,239,230,0.68)] hover:text-[#f5efe6]'
+      : 'text-gray-700 dark:text-gray-300 hover:bg-opacity-10'
 
     if (item.disabled) {
       return `${baseStyles} text-gray-400 dark:text-gray-600 cursor-not-allowed`

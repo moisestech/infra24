@@ -34,6 +34,8 @@ export interface TenantConfig {
     showXRExperiences: boolean;
     showWorkshops: boolean;
     showDigitalLab: boolean;
+    /** Memory Agent (conversational alumni) at /o/{slug}/memory-agent */
+    showMemoryAgent: boolean;
   };
   settings: {
     timezone: string;
@@ -74,6 +76,7 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       showXRExperiences: true,
       showWorkshops: true,
       showDigitalLab: false,
+      showMemoryAgent: true,
     },
     settings: {
       timezone: 'America/New_York',
@@ -112,6 +115,7 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       showXRExperiences: false, // Hidden for Oolite
       showWorkshops: true,
       showDigitalLab: true,
+      showMemoryAgent: true,
     },
     settings: {
       timezone: 'America/New_York',
@@ -149,6 +153,7 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       showXRExperiences: false,
       showWorkshops: false,
       showDigitalLab: false,
+      showMemoryAgent: false,
     },
     settings: {
       timezone: 'America/New_York',
@@ -186,6 +191,7 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       showXRExperiences: true,
       showWorkshops: true,
       showDigitalLab: false,
+      showMemoryAgent: true,
     },
     settings: {
       timezone: 'America/New_York',
@@ -223,6 +229,45 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       showXRExperiences: false,
       showWorkshops: true,
       showDigitalLab: false,
+      showMemoryAgent: false,
+    },
+    settings: {
+      timezone: 'America/New_York',
+      dateFormat: 'MM/DD/YYYY',
+      currency: 'USD',
+      language: 'en',
+    },
+  },
+  sohohouse: {
+    id: 'sohohouse',
+    name: 'Soho House',
+    slug: 'sohohouse',
+    domain: 'sohohouse.infra24.com',
+    subdomain: 'sohohouse',
+    theme: {
+      primaryColor: '#C4A574',
+      secondaryColor: '#A89070',
+      accentColor: '#E8DCC8',
+      logo: '/logos/ai24-logo.png',
+      favicon: '/favicons/ai24-favicon.ico',
+    },
+    features: {
+      smartSign: false,
+      bookings: false,
+      submissions: false,
+      analytics: false,
+      workshops: false,
+      calendar: false,
+    },
+    dashboard: {
+      showAnnouncements: false,
+      showArtists: false,
+      showInteractiveMap: false,
+      showSurveys: false,
+      showXRExperiences: false,
+      showWorkshops: false,
+      showDigitalLab: false,
+      showMemoryAgent: true,
     },
     settings: {
       timezone: 'America/New_York',
@@ -261,6 +306,45 @@ export const TENANT_CONFIGS: Record<string, TenantConfig> = {
       showXRExperiences: true,
       showWorkshops: true,
       showDigitalLab: true,
+      showMemoryAgent: true,
+    },
+    settings: {
+      timezone: 'America/New_York',
+      dateFormat: 'MM/DD/YYYY',
+      currency: 'USD',
+      language: 'en',
+    },
+  },
+  dcc: {
+    id: 'dcc',
+    name: 'Digital Culture Center Miami',
+    slug: 'dcc',
+    domain: 'dcc.infra24.com',
+    subdomain: 'dcc',
+    theme: {
+      primaryColor: '#5b21b6',
+      secondaryColor: '#7c3aed',
+      accentColor: '#a78bfa',
+      logo: '/logos/ai24-logo.png',
+      favicon: '/favicons/ai24-favicon.ico',
+    },
+    features: {
+      smartSign: false,
+      bookings: false,
+      submissions: false,
+      analytics: true,
+      workshops: true,
+      calendar: false,
+    },
+    dashboard: {
+      showAnnouncements: true,
+      showArtists: false,
+      showInteractiveMap: false,
+      showSurveys: false,
+      showXRExperiences: false,
+      showWorkshops: true,
+      showDigitalLab: true,
+      showMemoryAgent: true,
     },
     settings: {
       timezone: 'America/New_York',

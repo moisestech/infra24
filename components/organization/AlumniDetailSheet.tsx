@@ -1,14 +1,11 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { InstitutionalArtistAvatar } from '@/components/institutional-artist/InstitutionalArtistAvatar'
 import type { AlumniAirtableRow } from '@/lib/airtable/alumni-service'
-import {
-  alumniDisplayName,
-  alumniYearLabel,
-} from '@/lib/airtable/alumni-service'
+import { alumniDisplayName } from '@/lib/airtable/alumni-service'
+import { alumniResidencyYearLabel } from '@/lib/airtable/alumni-filters'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -24,15 +21,6 @@ function isVideoRow(row: AlumniAirtableRow): boolean {
   if (row.videoArt === true) return true
   const m = row.medium?.toLowerCase() ?? ''
   return m.includes('video') || m.includes('film') || m.includes('moving image')
-}
-
-function initialsFromName(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean)
-  if (parts.length === 0) return '?'
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  const a = parts[0][0]
-  const b = parts[parts.length - 1][0]
-  return `${a}${b}`.toUpperCase()
 }
 
 export type AlumniDetailSheetProps = {
@@ -68,7 +56,7 @@ function AlumniDetailSheetInner({
   orgName: string
 }) {
   const display = alumniDisplayName(row)
-  const year = alumniYearLabel(row.year)
+  const year = alumniResidencyYearLabel(row)
   const showLegalName =
     row.artistName?.trim() && row.artistName.trim() !== row.name.trim()
 
@@ -80,23 +68,7 @@ function AlumniDetailSheetInner({
     >
         <SheetHeader className="space-y-4 text-left">
           <div className="flex gap-4">
-            <Avatar className="h-20 w-20 shrink-0 ring-1 ring-border">
-              {row.photoUrl ? (
-                <AvatarImage asChild>
-                  <Image
-                    src={row.photoUrl}
-                    alt=""
-                    width={80}
-                    height={80}
-                    className="aspect-square h-full w-full object-cover"
-                    sizes="80px"
-                  />
-                </AvatarImage>
-              ) : null}
-              <AvatarFallback className="text-lg font-semibold">
-                {initialsFromName(display)}
-              </AvatarFallback>
-            </Avatar>
+            <InstitutionalArtistAvatar name={display} photoUrl={row.photoUrl} size="lg" />
             <div className="min-w-0 flex-1 space-y-1">
               <SheetTitle className="text-xl leading-snug">{display}</SheetTitle>
               {showLegalName ? (
@@ -146,19 +118,43 @@ function AlumniDetailSheetInner({
           </div>
           <div>
             <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Year at Oolite
+              Residency year
             </dt>
             <dd className="text-foreground">{year || '—'}</dd>
           </div>
+          {row.pronoun?.trim() ? (
+            <div>
+              <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Pronoun
+              </dt>
+              <dd className="text-foreground">{row.pronoun}</dd>
+            </div>
+          ) : null}
+          {row.ethnicity?.trim() ? (
+            <div>
+              <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Ethnicity
+              </dt>
+              <dd className="text-foreground">{row.ethnicity}</dd>
+            </div>
+          ) : null}
+          {row.nationality?.trim() ? (
+            <div>
+              <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Nationality
+              </dt>
+              <dd className="text-foreground">{row.nationality}</dd>
+            </div>
+          ) : null}
         </dl>
 
-        {row.topics.length > 0 && (
+        {(row.topics.length > 0 || row.themes.length > 0) && (
           <div className="mt-6">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
-              Topics
+              Topics & themes
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {row.topics.map((t) => (
+              {[...row.topics, ...row.themes].map((t) => (
                 <span
                   key={t}
                   className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground"
@@ -169,6 +165,21 @@ function AlumniDetailSheetInner({
             </div>
           </div>
         )}
+
+        {row.publicBio?.trim() ? (
+          <div className="mt-6 border-t border-border pt-6">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+              About
+            </p>
+            <p className="whitespace-pre-wrap text-sm text-foreground">{row.publicBio}</p>
+          </div>
+        ) : null}
+
+        {row.location?.trim() ? (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Location: <span className="text-foreground">{row.location}</span>
+          </p>
+        ) : null}
 
         <div className="mt-8 flex flex-col gap-2">
           {row.website && (

@@ -21,3 +21,4 @@ export type {
 export { ooliteConfig } from './configs/oolite'
 export { bakehouseConfig } from './configs/bakehouse'
 export { madartsConfig } from './configs/madarts'
+export { sohohouseConfig } from './configs/sohohouse'

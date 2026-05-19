@@ -15,7 +15,8 @@ import {
   Mail,
   Video,
   Camera,
-  Palette
+  Palette,
+  Sparkles
 } from 'lucide-react'
 import { NavigationConfig } from '../types'
 
@@ -100,6 +101,11 @@ export const madartsConfig: NavigationConfig = {
         name: 'Announcements',
         href: '/o/madarts/announcements',
         icon: Bell
+      },
+      {
+        name: 'Memory Agent',
+        href: '/o/madarts/memory-agent',
+        icon: Sparkles
       },
       {
         name: 'Analytics',

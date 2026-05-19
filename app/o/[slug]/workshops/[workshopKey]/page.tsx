@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@clerk/nextjs'
 import Link from 'next/link'
@@ -22,6 +22,7 @@ import { isWorkshopUuid } from '@/lib/workshops/workshop-routing'
 import { getWorkshopsLandingContent } from '@/lib/orgs/oolite/workshops-landing-content'
 import { WorkshopHero } from '@/components/workshops/marketing/WorkshopHero'
 import { WorkshopSkillsYoullLearn } from '@/components/workshops/marketing/WorkshopSkillsYoullLearn'
+import { IpAgeOfAiSkillsYoullLearn } from '@/components/workshops/marketing/IpAgeOfAiSkillsYoullLearn'
 import { WorkshopOutcomeStrip } from '@/components/workshops/marketing/WorkshopOutcomeStrip'
 import { WorkshopAudienceSplit } from '@/components/workshops/marketing/WorkshopAudienceSplit'
 import { WorkshopCtaBand } from '@/components/workshops/marketing/WorkshopCtaBand'
@@ -39,6 +40,9 @@ import {
 } from '@/lib/workshops/workshop-visual-image'
 import { resolveWorkshopEnrollCta } from '@/lib/workshops/workshop-enroll-cta'
 import { getWorkshopSkillsYoullLearn } from '@/lib/workshops/workshop-skills-list'
+import { ipAgeOfAiSkillsYoullLearnTags, isIpAgeOfAiWorkshopSlug } from '@/lib/workshops/ip-age-of-ai-program'
+import { IpAgeOfAiProgramIntro } from '@/components/workshops/marketing/IpAgeOfAiProgramIntro'
+import { IpAgeOfAiWorkshopDetailSectionNav } from '@/components/workshops/marketing/IpAgeOfAiWorkshopDetailSectionNav'
 
 interface WorkshopInterest {
   interest_count: number
@@ -59,6 +63,7 @@ export default function WorkshopDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [interest, setInterest] = useState<WorkshopInterest | null>(null)
   const [interestLoading, setInterestLoading] = useState(false)
+  const [detailTab, setDetailTab] = useState<'workshop' | 'learn'>('workshop')
 
   const landing = getWorkshopsLandingContent(slug)
 
@@ -90,6 +95,10 @@ export default function WorkshopDetailPage() {
   useEffect(() => {
     fetchWorkshop()
   }, [fetchWorkshop])
+
+  useEffect(() => {
+    setDetailTab('workshop')
+  }, [workshopKey])
 
   useEffect(() => {
     if (!workshop || !slug) return
@@ -128,6 +137,31 @@ export default function WorkshopDetailPage() {
       }
     })()
   }, [workshop])
+
+  const jumpToWorkshopSection = useCallback(
+    (targetId: string, tab?: 'workshop' | 'learn') => {
+      if (!workshop) return
+      const m = mergeWorkshopMetadata(workshop.metadata ?? undefined, {
+        title: workshop.title,
+        id: workshop.id,
+      })
+      const tabsOpen =
+        Boolean(workshop.has_learn_content) ||
+        isLearnAiWorkshopSlug(workshopKey) ||
+        isLearnAiWorkshopSlug(m.slug) ||
+        workshopSlugHasPublicMarkdownChapters(m.slug) ||
+        isIpAgeOfAiWorkshopSlug(m.slug ?? '')
+      if (tabsOpen && tab) setDetailTab(tab)
+      const run = () =>
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      if (tabsOpen && tab) {
+        requestAnimationFrame(() => requestAnimationFrame(run))
+      } else {
+        run()
+      }
+    },
+    [workshop, workshopKey]
+  )
 
   const fetchInterest = useCallback(
     async (id: string) => {
@@ -227,6 +261,9 @@ export default function WorkshopDetailPage() {
     id: workshop.id,
   })
 
+  const showIpAgeOfAiIntro =
+    isIpAgeOfAiWorkshopSlug(workshopKey) || isIpAgeOfAiWorkshopSlug(marketing.slug ?? '')
+
   const levelLabel =
     workshop.level ||
     workshop.learn_difficulty ||
@@ -243,7 +280,10 @@ export default function WorkshopDetailPage() {
     isLearnAiWorkshopSlug(workshopKey) || isLearnAiWorkshopSlug(marketing.slug)
   const hasPublicMarkdownChapters = workshopSlugHasPublicMarkdownChapters(marketing.slug)
   const showLearnTabs =
-    Boolean(workshop.has_learn_content) || isLearnAi || hasPublicMarkdownChapters
+    Boolean(workshop.has_learn_content) ||
+    isLearnAi ||
+    hasPublicMarkdownChapters ||
+    isIpAgeOfAiWorkshopSlug(marketing.slug ?? '')
 
   const bannerImageUrl = resolveWorkshopHeroBannerImageUrl(workshop, marketing)
   const galleryThumbs = workshopGalleryThumbsExcludingHero(marketing, bannerImageUrl)
@@ -255,6 +295,11 @@ export default function WorkshopDetailPage() {
     workshopUrlKey: workshopKey,
   })
   const skillsList = getWorkshopSkillsYoullLearn(marketing, workshop)
+  const ipAgeOfAiSkillsMerged =
+    showIpAgeOfAiIntro && !isLearnAi
+      ? [...new Set([...ipAgeOfAiSkillsYoullLearnTags, ...skillsList])]
+      : null
+  const skillsNavVisible = Boolean(ipAgeOfAiSkillsMerged?.length) || skillsList.length > 0
 
   return (
     <TenantLayout>
@@ -270,6 +315,22 @@ export default function WorkshopDetailPage() {
             </Link>
           </div>
 
+          {showIpAgeOfAiIntro && !isLearnAi ? (
+            <div className="lg:hidden sticky top-14 z-30 -mx-4 mb-6 border-b border-border bg-background/90 px-4 py-2 backdrop-blur-md supports-[backdrop-filter]:bg-background/80">
+              <IpAgeOfAiWorkshopDetailSectionNav
+                variant="bar"
+                skillsVisible={skillsNavVisible}
+                galleryVisible={galleryThumbs.length > 0}
+                outcomesVisible={outcomes.length > 0}
+                audienceVisible={
+                  (marketing.whoFor?.length ?? 0) > 0 || (marketing.whoNotFor?.length ?? 0) > 0
+                }
+                tabsVisible={showLearnTabs}
+                onJump={jumpToWorkshopSection}
+              />
+            </div>
+          ) : null}
+
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-12">
             <div className="space-y-12 lg:col-span-2">
               {isLearnAi ? (
@@ -279,20 +340,33 @@ export default function WorkshopDetailPage() {
                 </>
               ) : (
                 <>
-                  <WorkshopHero
-                    workshop={workshop}
-                    marketing={marketing}
-                    levelLabel={levelLabel}
-                    enrollCta={enrollCta}
-                    enrollSurface="tenant"
-                  />
+                  <div id="workshop-section-overview" className="scroll-mt-28">
+                    <WorkshopHero
+                      workshop={workshop}
+                      marketing={marketing}
+                      levelLabel={levelLabel}
+                      enrollCta={enrollCta}
+                      enrollSurface="tenant"
+                    />
+                  </div>
 
-                  {skillsList.length > 0 ? (
-                    <WorkshopSkillsYoullLearn skills={skillsList} />
+                  {showIpAgeOfAiIntro ? (
+                    <IpAgeOfAiProgramIntro orgSlug={slug} showWorkshopNavLink={false} />
                   ) : null}
 
-                  {galleryThumbs.length > 0 && (
-                    <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                  {ipAgeOfAiSkillsMerged ? (
+                    <IpAgeOfAiSkillsYoullLearn skills={ipAgeOfAiSkillsMerged} />
+                  ) : skillsList.length > 0 ? (
+                    <div id="workshop-section-skills" className="scroll-mt-28">
+                      <WorkshopSkillsYoullLearn skills={skillsList} />
+                    </div>
+                  ) : null}
+
+                  {galleryThumbs.length > 0 ? (
+                    <div
+                      id="workshop-section-gallery"
+                      className="scroll-mt-28 grid grid-cols-2 gap-3 md:grid-cols-3"
+                    >
                       {galleryThumbs.map((url, i) => (
                         <div
                           key={i}
@@ -302,49 +376,67 @@ export default function WorkshopDetailPage() {
                         </div>
                       ))}
                     </div>
-                  )}
+                  ) : null}
 
-                  <WorkshopOutcomeStrip outcomes={outcomes} />
+                  {outcomes.length > 0 ? (
+                    <div id="workshop-section-outcomes" className="scroll-mt-28">
+                      <WorkshopOutcomeStrip outcomes={outcomes} />
+                    </div>
+                  ) : null}
 
-                  <WorkshopAudienceSplit
-                    whoFor={marketing.whoFor ?? []}
-                    whoNotFor={marketing.whoNotFor ?? []}
-                  />
+                  {(marketing.whoFor?.length ?? 0) > 0 || (marketing.whoNotFor?.length ?? 0) > 0 ? (
+                    <div id="workshop-section-audience" className="scroll-mt-28">
+                      <WorkshopAudienceSplit
+                        whoFor={marketing.whoFor ?? []}
+                        whoNotFor={marketing.whoNotFor ?? []}
+                      />
+                    </div>
+                  ) : null}
                 </>
               )}
 
               {showLearnTabs ? (
-                <Tabs defaultValue="workshop" className="w-full">
-                  <TabsList className="inline-flex h-11 gap-1 p-1">
-                    <TabsTrigger
-                      value="workshop"
-                      className="size-9 shrink-0 p-0 sm:size-10"
-                      title="Workshop"
-                    >
-                      <FileText className="h-4 w-4 shrink-0" aria-hidden />
-                      <span className="sr-only">Workshop</span>
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="learn"
-                      className="size-9 shrink-0 p-0 sm:size-10"
-                      title="Learn"
-                    >
-                      <GraduationCap className="h-4 w-4 shrink-0" aria-hidden />
-                      <span className="sr-only">Learn</span>
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="workshop" className="mt-8 space-y-12">
-                    <WorkshopDetailMainColumn
-                      workshop={workshop}
-                      marketing={marketing}
-                      relatedList={relatedList}
-                      orgSlug={slug}
-                    />
-                  </TabsContent>
-                  <TabsContent value="learn" className="mt-8">
-                    <WorkshopLearnTab workshop={workshop} orgSlug={slug} />
-                  </TabsContent>
-                </Tabs>
+                <div id="workshop-section-tabs" className="scroll-mt-28 w-full">
+                  <Tabs
+                    value={detailTab}
+                    onValueChange={(v) => setDetailTab(v as 'workshop' | 'learn')}
+                    className="w-full"
+                  >
+                    <TabsList className="inline-flex h-11 gap-1 p-1">
+                      <TabsTrigger
+                        value="workshop"
+                        className="size-9 shrink-0 p-0 sm:size-10"
+                        title="Workshop"
+                      >
+                        <FileText className="h-4 w-4 shrink-0" aria-hidden />
+                        <span className="sr-only">Workshop</span>
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="learn"
+                        className="size-9 shrink-0 p-0 sm:size-10"
+                        title="Learn"
+                      >
+                        <GraduationCap className="h-4 w-4 shrink-0" aria-hidden />
+                        <span className="sr-only">Learn</span>
+                      </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="workshop" className="mt-8">
+                      <div id="workshop-section-session" className="scroll-mt-28 space-y-12">
+                        <WorkshopDetailMainColumn
+                          workshop={workshop}
+                          marketing={marketing}
+                          relatedList={relatedList}
+                          orgSlug={slug}
+                        />
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="learn" className="mt-8">
+                      <div id="workshop-section-learn" className="scroll-mt-28">
+                        <WorkshopLearnTab workshop={workshop} orgSlug={slug} />
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
               ) : (
                 <WorkshopDetailMainColumn
                   workshop={workshop}
@@ -356,6 +448,21 @@ export default function WorkshopDetailPage() {
             </div>
 
             <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+              {showIpAgeOfAiIntro && !isLearnAi ? (
+                <div className="hidden lg:block">
+                  <IpAgeOfAiWorkshopDetailSectionNav
+                    variant="aside"
+                    skillsVisible={skillsNavVisible}
+                    galleryVisible={galleryThumbs.length > 0}
+                    outcomesVisible={outcomes.length > 0}
+                    audienceVisible={
+                      (marketing.whoFor?.length ?? 0) > 0 || (marketing.whoNotFor?.length ?? 0) > 0
+                    }
+                    tabsVisible={showLearnTabs}
+                    onJump={jumpToWorkshopSection}
+                  />
+                </div>
+              ) : null}
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">Join</CardTitle>

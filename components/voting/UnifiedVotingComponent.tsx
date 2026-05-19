@@ -29,6 +29,7 @@ import {
 import { useUser } from '@clerk/nextjs';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 // Animation variants
 const staggerContainer = {
@@ -94,10 +95,10 @@ const getCategoryColor = (category: string, type: 'workshop' | 'equipment') => {
     'Networking': 'text-indigo-500',
     'VR/AR': 'text-pink-500',
     'Video': 'text-orange-500',
-    'General': 'text-gray-500'
+    'General': 'text-muted-foreground',
   };
-  
-  return colorMap[category] || (type === 'workshop' ? 'text-blue-500' : 'text-gray-500');
+
+  return colorMap[category] || (type === 'workshop' ? 'text-blue-500 dark:text-blue-400' : 'text-muted-foreground');
 };
 
 interface VotingOption {
@@ -156,15 +157,7 @@ export default function UnifiedVotingComponent({
   const [voting, setVoting] = useState<{ [key: string]: boolean }>({});
   const [hasVoted, setHasVoted] = useState(false);
 
-  // Use tenant theme colors with fallback
-  const themeColors = {
-    primary: tenantConfig?.theme?.primaryColor || '#47abc4',
-    primaryLight: tenantConfig?.theme?.secondaryColor || '#6bb8d1',
-    primaryDark: tenantConfig?.theme?.accentColor || '#3a8ba3',
-    primaryAlpha: 'rgba(71, 171, 196, 0.1)',
-    primaryAlphaLight: 'rgba(71, 171, 196, 0.05)',
-    primaryAlphaDark: 'rgba(71, 171, 196, 0.15)',
-  };
+  const tenantPrimary = tenantConfig?.theme?.primaryColor || '#47abc4';
 
   useEffect(() => {
     if (onFetchData) {
@@ -202,18 +195,29 @@ export default function UnifiedVotingComponent({
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'critical': return 'text-red-500';
-      case 'high': return 'text-orange-500';
-      case 'medium': return 'text-yellow-500';
-      case 'low': return 'text-green-500';
-      default: return 'text-gray-500';
+      case 'critical':
+        return 'text-destructive';
+      case 'high':
+        return 'text-orange-500 dark:text-orange-400';
+      case 'medium':
+        return 'text-amber-600 dark:text-amber-400';
+      case 'low':
+        return 'text-emerald-600 dark:text-emerald-400';
+      default:
+        return 'text-muted-foreground';
     }
   };
+
+  const voteButtonClass =
+    'text-xs px-2 py-1 h-8 border-primary/25 bg-background text-primary hover:bg-primary/15 hover:border-primary/50 dark:border-primary/35 dark:hover:bg-primary/20 dark:hover:border-primary/55';
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: themeColors.primary }}></div>
+        <div
+          className="h-8 w-8 animate-spin rounded-full border-2 border-muted border-b-primary"
+          aria-hidden
+        />
       </div>
     );
   }
@@ -227,20 +231,18 @@ export default function UnifiedVotingComponent({
       className="space-y-8"
     >
       <motion.div variants={itemVariants} className="text-center">
-        <h3 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">
-          <TitleIcon className="inline-block h-8 w-8 mr-2" style={{ color: themeColors.primary }} />
+        <h3 className="mb-4 text-2xl font-bold text-foreground md:text-3xl">
+          <TitleIcon className="mr-2 inline-block h-8 w-8 text-primary" style={{ color: tenantPrimary }} aria-hidden />
           {title}
         </h3>
-        <p className="text-lg max-w-3xl mx-auto text-gray-600">
-          {description}
-        </p>
+        <p className="mx-auto max-w-3xl text-lg text-muted-foreground">{description}</p>
       </motion.div>
 
       {hasVoted ? (
-        <motion.div variants={itemVariants} className="text-center py-8">
-          <div className="inline-flex items-center px-6 py-3 rounded-full" style={{ backgroundColor: themeColors.primaryAlpha }}>
-            <CheckCircle className="w-5 h-5 mr-2" style={{ color: themeColors.primary }} />
-            <span className="font-medium" style={{ color: themeColors.primary }}>
+        <motion.div variants={itemVariants} className="py-8 text-center">
+          <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-6 py-3 dark:bg-primary/15 dark:border-primary/25">
+            <CheckCircle className="mr-2 h-5 w-5 text-primary" style={{ color: tenantPrimary }} aria-hidden />
+            <span className="font-medium text-primary" style={{ color: tenantPrimary }}>
               Thank you for your input! Your vote has been recorded.
             </span>
           </div>
@@ -260,43 +262,24 @@ export default function UnifiedVotingComponent({
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
-                <Card className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-opacity-50 cursor-pointer h-full"
-                      style={{ 
-                        borderColor: themeColors.primaryAlpha,
-                        backgroundColor: 'white'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = themeColors.primary;
-                        e.currentTarget.style.backgroundColor = themeColors.primaryAlphaLight;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = themeColors.primaryAlpha;
-                        e.currentTarget.style.backgroundColor = 'white';
-                      }}>
+                <Card
+                  className={cn(
+                    'group h-full cursor-pointer border-2 border-primary/15 bg-card text-card-foreground transition-all duration-300',
+                    'hover:border-primary/45 hover:bg-accent/35 hover:shadow-lg dark:border-primary/25 dark:hover:border-primary/50 dark:hover:bg-accent/25'
+                  )}
+                >
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="p-2 rounded-lg" style={{ backgroundColor: themeColors.primaryAlpha }}>
-                            <CategoryIcon className={`w-5 h-5 ${categoryColor}`} />
+                        <div className="mb-2 flex items-center gap-2">
+                          <div className="rounded-lg bg-primary/10 p-2 dark:bg-primary/15">
+                            <CategoryIcon className={cn('h-5 w-5', categoryColor)} aria-hidden />
                           </div>
-                          <CardTitle 
-                            className="text-base leading-tight transition-colors"
-                            style={{ color: 'inherit' }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.color = themeColors.primary;
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.color = 'inherit';
-                            }}
-                          >
+                          <CardTitle className="text-base font-semibold leading-tight text-card-foreground transition-colors group-hover:text-primary">
                             {option.name}
                           </CardTitle>
                         </div>
-                        <Badge 
-                          variant="default" 
-                          className="text-xs transition-colors"
-                        >
+                        <Badge variant="secondary" className="text-xs font-normal text-muted-foreground">
                           {option.category}
                         </Badge>
                         {option.priority_level && (
@@ -314,17 +297,15 @@ export default function UnifiedVotingComponent({
                   <CardContent className="space-y-3">
                     {/* Description */}
                     {option.description && (
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <CardDescription className="text-sm line-clamp-2">
-                          {option.description}
-                        </CardDescription>
+                      <div className="opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <CardDescription className="line-clamp-2 text-sm">{option.description}</CardDescription>
                       </div>
                     )}
 
                     {/* Cost for equipment */}
                     {type === 'equipment' && option.estimated_cost && (
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <DollarSign className="w-3 h-3" />
                           <span>Est. ${option.estimated_cost.toLocaleString()}</span>
                         </div>
@@ -333,8 +314,8 @@ export default function UnifiedVotingComponent({
 
                     {/* Vote counts - shown on hover */}
                     {voteCounts.total > 0 && (
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 space-y-1">
-                        <div className="flex items-center justify-between text-xs">
+                      <div className="space-y-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Users className="w-3 h-3" />
                             {voteCounts.total} votes
@@ -345,7 +326,7 @@ export default function UnifiedVotingComponent({
                           </span>
                         </div>
                         
-                        <div className="flex gap-1 text-xs">
+                        <div className="flex gap-1 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Heart className="w-2 h-2 text-red-500" />
                             {voteCounts.want}
@@ -369,19 +350,7 @@ export default function UnifiedVotingComponent({
                         variant="outline"
                         onClick={() => handleVote(option.id, 'want')}
                         disabled={isVoting || !user}
-                        className="text-xs px-2 py-1 h-8 transition-colors"
-                        style={{ 
-                          borderColor: themeColors.primaryAlpha,
-                          color: themeColors.primary
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = themeColors.primaryAlpha;
-                          e.currentTarget.style.borderColor = themeColors.primary;
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.borderColor = themeColors.primaryAlpha;
-                        }}
+                        className={cn('transition-colors', voteButtonClass)}
                       >
                         <Heart className="w-3 h-3 mr-1" />
                         Want
@@ -391,19 +360,7 @@ export default function UnifiedVotingComponent({
                         variant="outline"
                         onClick={() => handleVote(option.id, 'need')}
                         disabled={isVoting || !user}
-                        className="text-xs px-2 py-1 h-8 transition-colors"
-                        style={{ 
-                          borderColor: themeColors.primaryAlpha,
-                          color: themeColors.primary
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = themeColors.primaryAlpha;
-                          e.currentTarget.style.borderColor = themeColors.primary;
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.borderColor = themeColors.primaryAlpha;
-                        }}
+                        className={cn('transition-colors', voteButtonClass)}
                       >
                         <MessageSquare className="w-3 h-3 mr-1" />
                         Need
@@ -413,19 +370,7 @@ export default function UnifiedVotingComponent({
                         variant="outline"
                         onClick={() => handleVote(option.id, 'priority')}
                         disabled={isVoting || !user}
-                        className="text-xs px-2 py-1 h-8 transition-colors"
-                        style={{ 
-                          borderColor: themeColors.primaryAlpha,
-                          color: themeColors.primary
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = themeColors.primaryAlpha;
-                          e.currentTarget.style.borderColor = themeColors.primary;
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.borderColor = themeColors.primaryAlpha;
-                        }}
+                        className={cn('transition-colors', voteButtonClass)}
                       >
                         <TrendingUp className="w-3 h-3 mr-1" />
                         Priority

@@ -21,18 +21,33 @@ export type AlumniAirtableRow = {
   email?: string
   cohort?: string
   program?: string
+  /** @deprecated Prefer `residencyYear`; kept in sync for filters/sort */
   year?: string
+  /** Year in residency (primary); from dedicated column or `year` fallback */
+  residencyYear?: string
+  pronoun?: string
+  ethnicity?: string
+  nationality?: string
   phone?: string
   notes?: string
   website?: string
   /** Normalized topic tags for filters and display */
   topics: string[]
+  /** Extra theme tags when a separate Airtable column is mapped */
+  themes: string[]
   medium?: string
   artifacts?: string
   /** From checkbox / yes-no when mapped column exists */
   digitalArtist?: boolean
   inCollection?: boolean
   videoArt?: boolean
+  /** Public bio for AI when mapped */
+  publicBio?: string
+  instagram?: string
+  location?: string
+  visibilityLevel?: string
+  approvedForPublicAi?: boolean
+  doNotUseInAi?: boolean
 }
 
 /** Label for cards: artist name when mapped, else legal/display name */
@@ -134,6 +149,51 @@ function mapRecordToAlumni(
     : undefined
   const photoUrl = cellToPhotoUrl(fields, fieldMap.photo)
 
+  const themesField = fieldMap.themes?.trim()
+  const themes = themesField ? cellToTopicList(fields, themesField) : []
+
+  const publicBioField = fieldMap.publicBio?.trim()
+  const publicBio = publicBioField
+    ? cellToString(fields[publicBioField])
+    : undefined
+
+  const instagramField = fieldMap.instagram?.trim()
+  const instagram = instagramField
+    ? cellToString(fields[instagramField])
+    : undefined
+
+  const locationField = fieldMap.location?.trim()
+  const location = locationField
+    ? cellToString(fields[locationField])
+    : undefined
+
+  const visField = fieldMap.visibilityLevel?.trim()
+  const visibilityLevel = visField
+    ? cellToString(fields[visField])
+    : undefined
+
+  const approvedField = fieldMap.approvedForPublicAi?.trim()
+  const approvedForPublicAi = approvedField
+    ? cellToBool(fields[approvedField])
+    : undefined
+
+  const doNotField = fieldMap.doNotUseInAi?.trim()
+  const doNotUseInAi = doNotField ? cellToBool(fields[doNotField]) : undefined
+
+  const residencyCol = fieldMap.residencyYear?.trim()
+  const residencyFromCol = residencyCol
+    ? cellToString(fields[residencyCol])
+    : undefined
+  const yearLegacy = cellToString(fields[fieldMap.year])
+  const residencyYear = residencyFromCol || yearLegacy
+
+  const pronounCol = fieldMap.pronoun?.trim()
+  const pronoun = pronounCol ? cellToString(fields[pronounCol]) : undefined
+  const ethnicityCol = fieldMap.ethnicity?.trim()
+  const ethnicity = ethnicityCol ? cellToString(fields[ethnicityCol]) : undefined
+  const nationalityCol = fieldMap.nationality?.trim()
+  const nationality = nationalityCol ? cellToString(fields[nationalityCol]) : undefined
+
   return {
     id: record.id,
     name,
@@ -142,16 +202,27 @@ function mapRecordToAlumni(
     email: cellToString(fields[fieldMap.email]),
     cohort: cellToString(fields[fieldMap.cohort]),
     program: cellToString(fields[fieldMap.program]),
-    year: cellToString(fields[fieldMap.year]),
+    year: residencyYear,
+    ...(residencyYear ? { residencyYear } : {}),
+    ...(pronoun ? { pronoun } : {}),
+    ...(ethnicity ? { ethnicity } : {}),
+    ...(nationality ? { nationality } : {}),
     phone: cellToString(fields[fieldMap.phone]),
     notes: cellToString(fields[fieldMap.notes]),
     website,
     topics: cellToTopicList(fields, fieldMap.topics),
+    themes,
     medium: cellToString(fields[fieldMap.medium]),
     artifacts: cellToString(fields[fieldMap.artifacts]),
     digitalArtist: cellToBool(fields[fieldMap.digitalArtist]),
     inCollection: cellToBool(fields[fieldMap.inCollection]),
     videoArt: cellToBool(fields[fieldMap.videoArt]),
+    ...(publicBio ? { publicBio } : {}),
+    ...(instagram ? { instagram } : {}),
+    ...(location ? { location } : {}),
+    ...(visibilityLevel ? { visibilityLevel } : {}),
+    ...(approvedForPublicAi !== undefined ? { approvedForPublicAi } : {}),
+    ...(doNotUseInAi !== undefined ? { doNotUseInAi } : {}),
   }
 }
 

@@ -125,7 +125,7 @@ export function HomeBelowFoldHero() {
               previewIndex={pilotPreviewIndex}
               onPreviewIndexChange={setPilotPreviewIndex}
               className="mt-6"
-              paragraphClassName="text-xl font-medium leading-relaxed text-neutral-900 dark:text-neutral-100 sm:text-2xl md:text-[1.75rem] md:leading-relaxed lg:text-[1.85rem] lg:leading-[1.45] xl:text-[2rem] xl:leading-[1.42]"
+              paragraphClassName="text-xl font-medium leading-relaxed text-neutral-950 dark:text-neutral-50 sm:text-2xl md:text-[1.75rem] md:leading-relaxed lg:text-[1.85rem] lg:leading-[1.45] xl:text-[2rem] xl:leading-[1.42]"
             />
           </div>
         </div>

@@ -18,8 +18,8 @@ export function ModuleHeader({
   totalModules,
 }: ModuleHeaderProps) {
   return (
-    <header className="rounded-2xl border border-primary-200 bg-primary-50/60 p-6 md:p-8">
-      <p className="text-xs font-semibold uppercase tracking-wide text-primary-900">
+    <header className="rounded-2xl border border-primary/30 bg-primary/5 p-6 md:p-8 dark:bg-primary/10">
+      <p className="text-xs font-semibold uppercase tracking-wide text-primary">
         Module {moduleNumber} of {totalModules}
       </p>
       <h1 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-foreground">{title}</h1>

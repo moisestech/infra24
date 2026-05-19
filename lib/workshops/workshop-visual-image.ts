@@ -1,10 +1,15 @@
 import type { WorkshopMarketingMetadata } from '@/lib/workshops/marketing-metadata'
+import { IP_AGE_OF_AI_LANDSCAPE_BANNER_URL } from '@/lib/workshops/ip-age-of-ai-video'
 
 const VIBE_BANNER_WEBP =
   'https://res.cloudinary.com/dkod1at3i/image/upload/v1776612065/vibe-code-and-net-art_mx7emv.webp'
 
 function isVibeCodingWorkshopSlug(slug: string | undefined): boolean {
   return slug === 'vibe-coding-and-net-art' || slug === 'vibe-coding-net-art'
+}
+
+function isIpAgeOfAiWorkshopSlug(slug: string | undefined): boolean {
+  return slug === 'ip-age-of-ai'
 }
 
 /**
@@ -18,6 +23,7 @@ export function resolveWorkshopHeroBannerImageUrl(
   const header =
     typeof marketing.headerImageUrl === 'string' ? marketing.headerImageUrl.trim() : ''
   if (header) return header
+  if (isIpAgeOfAiWorkshopSlug(marketing.slug)) return IP_AGE_OF_AI_LANDSCAPE_BANNER_URL
   if (isVibeCodingWorkshopSlug(marketing.slug)) return VIBE_BANNER_WEBP
   const row = typeof workshop.image_url === 'string' ? workshop.image_url.trim() : ''
   if (row) return row
@@ -37,6 +43,7 @@ export function resolveWorkshopHeroImageUrl(
   const header =
     typeof marketing.headerImageUrl === 'string' ? marketing.headerImageUrl.trim() : ''
   if (header) return header
+  if (isIpAgeOfAiWorkshopSlug(marketing.slug)) return IP_AGE_OF_AI_LANDSCAPE_BANNER_URL
   if (isVibeCodingWorkshopSlug(marketing.slug)) return VIBE_BANNER_WEBP
   const first = marketing.galleryImageUrls?.find((u) => typeof u === 'string' && u.trim())
   return first?.trim()

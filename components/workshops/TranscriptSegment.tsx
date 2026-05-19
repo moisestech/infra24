@@ -6,6 +6,12 @@ import { cn } from '@/lib/utils'
 import type { VideoChapterMarker } from '@/data/ipAgeOfAiWorkshop'
 
 type TranscriptSegmentProps = {
+  /**
+   * In-page anchor for TOC / scroll targets.
+   * Defaults to `workshop-transcript` for legacy “View transcript” buttons.
+   * Pass `null` when a parent section already provides the anchor id.
+   */
+  anchorId?: string | null
   moduleId: string
   cleanedTranscript: string
   rawTranscript?: string
@@ -20,6 +26,7 @@ type TranscriptSegmentProps = {
 }
 
 export function TranscriptSegment({
+  anchorId,
   moduleId,
   cleanedTranscript,
   rawTranscript,
@@ -33,9 +40,14 @@ export function TranscriptSegment({
   speakers,
 }: TranscriptSegmentProps) {
   const [showRaw, setShowRaw] = useState(false)
+  const resolvedAnchor =
+    anchorId === undefined ? 'workshop-transcript' : anchorId === null ? undefined : anchorId
 
   return (
-    <section id="workshop-transcript" className="scroll-mt-24 rounded-xl border border-border bg-card p-5 md:p-6">
+    <div
+      id={resolvedAnchor}
+      className="scroll-mt-24 rounded-xl border border-border bg-card p-5 md:p-6"
+    >
       <h2 className="text-xl font-semibold tracking-tight text-foreground">Lesson text & transcript</h2>
       <p className="mt-2 text-xs text-muted-foreground">
         Segment: {moduleId} ({startTime} - {endTime})
@@ -128,6 +140,6 @@ export function TranscriptSegment({
           </div>
         </div>
       ) : null}
-    </section>
+    </div>
   )
 }

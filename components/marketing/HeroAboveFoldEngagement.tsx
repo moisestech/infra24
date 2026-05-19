@@ -146,9 +146,9 @@ export function HeroAboveFoldEngagement({ className }: { className?: string }) {
               onChange={(ev) => setEmail(ev.target.value)}
               className={cn(
                 'cdc-font-mono-accent h-full min-h-[2.85rem] w-full rounded-xl border py-2 pl-10 pr-3 text-sm outline-none transition-[border-color,box-shadow,background-color]',
-                'border-neutral-200/90 bg-white/85 text-neutral-900 caret-teal-600 placeholder:text-neutral-400',
+                'border-neutral-200 bg-white text-neutral-950 caret-teal-600 placeholder:text-neutral-500',
                 'shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] focus:border-teal-500/45 focus:ring-2 focus:ring-teal-500/25',
-                'dark:border-neutral-600 dark:bg-neutral-950/75 dark:text-neutral-100 dark:caret-teal-400 dark:placeholder:text-neutral-500',
+                'dark:border-neutral-600 dark:bg-neutral-950 dark:text-white dark:caret-teal-400 dark:placeholder:text-neutral-400',
                 'dark:shadow-[inset_0_1px_2px_rgba(0,0,0,0.35)] dark:focus:border-teal-400/40 dark:focus:ring-teal-400/20'
               )}
             />

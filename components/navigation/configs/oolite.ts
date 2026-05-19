@@ -15,7 +15,8 @@ import {
   Bell,
   Mail,
   Monitor,
-  MessageSquare
+  MessageSquare,
+  Sparkles
 } from 'lucide-react'
 import { NavigationConfig } from '../types'
 
@@ -99,6 +100,13 @@ export const ooliteConfig: NavigationConfig = {
         href: '/o/oolite/alumni',
         icon: School,
         description: 'Alumni directory (Airtable)',
+        category: 'user'
+      },
+      {
+        name: 'Talk to an AI Agent',
+        href: '/o/oolite/memory-agent',
+        icon: Sparkles,
+        description: 'Friendly chat over alumni—same Airtable as the directory',
         category: 'user'
       },
       {

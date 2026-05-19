@@ -1,39 +1,43 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import Link from 'next/link'
-import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
+import {
+  UnifiedNavigation,
+  ooliteConfig,
+  bakehouseConfig,
+  madartsConfig,
+  sohohouseConfig,
+} from '@/components/navigation'
 import { TenantProvider } from '@/components/tenant/TenantProvider'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import type { AlumniAirtableRow } from '@/lib/airtable/alumni-service'
 import {
   alumniDisplayName,
   parseAlumniYearValue,
 } from '@/lib/airtable/alumni-service'
 import { orgSlugToEnvToken } from '@/lib/airtable/org-alumni-config'
-import { SparklesText } from '@/components/magicui/sparkles-text'
 import { AlumniArtistCard } from '@/components/organization/AlumniArtistCard'
+import { AlumniCatalogueModeToggle } from '@/components/organization/AlumniCatalogueModeToggle'
 import { AlumniDetailSheet } from '@/components/organization/AlumniDetailSheet'
+import { AlumniCatalogueFilters } from '@/components/organization/AlumniCatalogueFilters'
+import { AlumniDirectoryDevPanel } from '@/components/organization/AlumniDirectoryDevPanel'
+import { useMemoryAgentDevMode } from '@/hooks/memory-agent/useMemoryAgentDevMode'
+import { isVideoAlumniRow } from '@/lib/institutional-artist/card-model'
+import {
+  alumniResidencyYear,
+  collectResidencyYearOptions,
+  rowMatchesMiamiFilter,
+  rowMatchesResidencyYear,
+  rowMatchesWebsiteFilter,
+  type MiamiFilter,
+  type WebsiteFilter,
+} from '@/lib/airtable/alumni-filters'
 import {
   School,
-  Search,
   AlertCircle,
   Database,
   Layers,
-  Sparkles,
-  Library,
-  Clapperboard,
 } from 'lucide-react'
 
 function getNavigationConfig(slug: string) {
@@ -42,6 +46,10 @@ function getNavigationConfig(slug: string) {
       return ooliteConfig
     case 'bakehouse':
       return bakehouseConfig
+    case 'madarts':
+      return madartsConfig
+    case 'sohohouse':
+      return sohohouseConfig
     default:
       return ooliteConfig
   }
@@ -58,15 +66,10 @@ export type AlumniDirectoryPageProps = {
 type SortMode = 'name-asc' | 'name-desc' | 'year-desc' | 'year-asc' | 'cohort-asc'
 type GroupByMode = 'none' | 'cohort' | 'year' | 'program'
 
-function isVideoRow(row: AlumniAirtableRow): boolean {
-  if (row.videoArt === true) return true
-  const m = row.medium?.toLowerCase() ?? ''
-  return m.includes('video') || m.includes('film') || m.includes('moving image')
-}
-
 function rowMatchesTopic(row: AlumniAirtableRow, topic: string): boolean {
   if (!topic || topic === '__all__') return true
-  return row.topics.some((t) => t.toLowerCase() === topic.toLowerCase())
+  const t = topic.toLowerCase()
+  return [...row.topics, ...row.themes].some((x) => x.toLowerCase() === t)
 }
 
 export function AlumniDirectoryPage({
@@ -82,32 +85,61 @@ export function AlumniDirectoryPage({
   const [cohortFilter, setCohortFilter] = useState<string>('__all__')
   const [yearFilter, setYearFilter] = useState<string>('__all__')
   const [topicFilter, setTopicFilter] = useState<string>('__all__')
+  const [programFilter, setProgramFilter] = useState<string>('__all__')
+  const [mediumFilter, setMediumFilter] = useState<string>('__all__')
   const [onlyDigital, setOnlyDigital] = useState(false)
   const [onlyCollection, setOnlyCollection] = useState(false)
   const [onlyVideo, setOnlyVideo] = useState(false)
+  const [websiteFilter, setWebsiteFilter] = useState<WebsiteFilter>('__all__')
+  const [miamiFilter, setMiamiFilter] = useState<MiamiFilter>('__all__')
+  const [pronounFilter, setPronounFilter] = useState<string>('__all__')
+  const [ethnicityFilter, setEthnicityFilter] = useState<string>('__all__')
+  const [nationalityFilter, setNationalityFilter] = useState<string>('__all__')
   const [selectedRow, setSelectedRow] = useState<AlumniAirtableRow | null>(null)
 
   const navConfig = getNavigationConfig(slug)
+  const { isDevMode } = useMemoryAgentDevMode()
 
-  const { cohortOptions, yearOptions, topicOptions } = useMemo(() => {
+  const {
+    cohortOptions,
+    yearOptions,
+    topicOptions,
+    programOptions,
+    mediumOptions,
+    pronounOptions,
+    ethnicityOptions,
+    nationalityOptions,
+  } = useMemo(() => {
     const cohorts = new Set<string>()
-    const years = new Set<string>()
     const topics = new Set<string>()
+    const programs = new Set<string>()
+    const mediums = new Set<string>()
+    const pronouns = new Set<string>()
+    const ethnicities = new Set<string>()
+    const nationalities = new Set<string>()
     for (const row of alumni) {
       if (row.cohort?.trim()) cohorts.add(row.cohort.trim())
-      if (row.year?.trim()) years.add(row.year.trim())
+      if (row.program?.trim()) programs.add(row.program.trim())
+      if (row.medium?.trim()) mediums.add(row.medium.trim())
+      if (row.pronoun?.trim()) pronouns.add(row.pronoun.trim())
+      if (row.ethnicity?.trim()) ethnicities.add(row.ethnicity.trim())
+      if (row.nationality?.trim()) nationalities.add(row.nationality.trim())
       for (const t of row.topics) {
+        if (t.trim()) topics.add(t.trim())
+      }
+      for (const t of row.themes) {
         if (t.trim()) topics.add(t.trim())
       }
     }
     return {
       cohortOptions: Array.from(cohorts).sort((a, b) => a.localeCompare(b)),
-      yearOptions: Array.from(years).sort((a, b) => {
-        const na = parseAlumniYearValue(a) ?? 0
-        const nb = parseAlumniYearValue(b) ?? 0
-        return nb - na
-      }),
+      yearOptions: collectResidencyYearOptions(alumni),
       topicOptions: Array.from(topics).sort((a, b) => a.localeCompare(b)),
+      programOptions: Array.from(programs).sort((a, b) => a.localeCompare(b)),
+      mediumOptions: Array.from(mediums).sort((a, b) => a.localeCompare(b)),
+      pronounOptions: Array.from(pronouns).sort((a, b) => a.localeCompare(b)),
+      ethnicityOptions: Array.from(ethnicities).sort((a, b) => a.localeCompare(b)),
+      nationalityOptions: Array.from(nationalities).sort((a, b) => a.localeCompare(b)),
     }
   }, [alumni])
 
@@ -117,13 +149,31 @@ export function AlumniDirectoryPage({
       if (cohortFilter !== '__all__' && (row.cohort?.trim() ?? '') !== cohortFilter) {
         return false
       }
-      if (yearFilter !== '__all__' && (row.year?.trim() ?? '') !== yearFilter) {
+      if (!rowMatchesResidencyYear(row, yearFilter)) return false
+      if (!rowMatchesWebsiteFilter(row, websiteFilter)) return false
+      if (!rowMatchesMiamiFilter(row, miamiFilter)) return false
+      if (programFilter !== '__all__' && (row.program?.trim() ?? '') !== programFilter) {
+        return false
+      }
+      if (mediumFilter !== '__all__' && (row.medium?.trim() ?? '') !== mediumFilter) {
+        return false
+      }
+      if (pronounFilter !== '__all__' && (row.pronoun?.trim() ?? '') !== pronounFilter) {
+        return false
+      }
+      if (ethnicityFilter !== '__all__' && (row.ethnicity?.trim() ?? '') !== ethnicityFilter) {
+        return false
+      }
+      if (
+        nationalityFilter !== '__all__' &&
+        (row.nationality?.trim() ?? '') !== nationalityFilter
+      ) {
         return false
       }
       if (!rowMatchesTopic(row, topicFilter)) return false
       if (onlyDigital && row.digitalArtist !== true) return false
       if (onlyCollection && row.inCollection !== true) return false
-      if (onlyVideo && !isVideoRow(row)) return false
+      if (onlyVideo && !isVideoAlumniRow(row)) return false
       if (!q) return true
       const hay = [
         row.name,
@@ -133,10 +183,18 @@ export function AlumniDirectoryPage({
         row.cohort,
         row.program,
         row.year,
+        row.residencyYear,
+        row.pronoun,
+        row.ethnicity,
+        row.nationality,
         row.notes,
         row.medium,
         row.artifacts,
+        row.publicBio,
+        row.location,
+        row.instagram,
         ...row.topics,
+        ...row.themes,
       ]
         .filter(Boolean)
         .join(' ')
@@ -151,13 +209,13 @@ export function AlumniDirectoryPage({
         case 'name-desc':
           return nameB.localeCompare(nameA)
         case 'year-desc': {
-          const ya = parseAlumniYearValue(a.year) ?? -Infinity
-          const yb = parseAlumniYearValue(b.year) ?? -Infinity
+          const ya = parseAlumniYearValue(alumniResidencyYear(a)) ?? -Infinity
+          const yb = parseAlumniYearValue(alumniResidencyYear(b)) ?? -Infinity
           return yb - ya
         }
         case 'year-asc': {
-          const ya = parseAlumniYearValue(a.year) ?? Infinity
-          const yb = parseAlumniYearValue(b.year) ?? Infinity
+          const ya = parseAlumniYearValue(alumniResidencyYear(a)) ?? Infinity
+          const yb = parseAlumniYearValue(alumniResidencyYear(b)) ?? Infinity
           return ya - yb
         }
         case 'cohort-asc': {
@@ -179,7 +237,8 @@ export function AlumniDirectoryPage({
 
     const keyFn = (row: AlumniAirtableRow) => {
       if (groupBy === 'cohort') return row.cohort?.trim() || '— No cohort —'
-      if (groupBy === 'year') return row.year?.trim() || '— No year —'
+      if (groupBy === 'year')
+        return alumniResidencyYear(row) || '— No residency year —'
       return row.program?.trim() || '— No program —'
     }
 
@@ -201,60 +260,32 @@ export function AlumniDirectoryPage({
     groupBy,
     cohortFilter,
     yearFilter,
+    websiteFilter,
+    miamiFilter,
+    programFilter,
+    mediumFilter,
+    pronounFilter,
+    ethnicityFilter,
+    nationalityFilter,
     topicFilter,
     onlyDigital,
     onlyCollection,
     onlyVideo,
   ])
 
-  const toggleBtn = (active: boolean) =>
-    active
-      ? 'bg-primary text-primary-foreground border-primary'
-      : 'border-border text-muted-foreground hover:bg-muted/60'
-
-  const sortChips: { mode: SortMode; label: string }[] = [
-    { mode: 'name-asc', label: 'Name A–Z' },
-    { mode: 'name-desc', label: 'Name Z–A' },
-    { mode: 'year-desc', label: 'Newest year' },
-    { mode: 'year-asc', label: 'Oldest year' },
-  ]
-
   return (
     <TenantProvider>
       <div className="min-h-screen bg-background">
         <UnifiedNavigation config={navConfig} userRole="user" />
         <main className="container mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <div className="mb-2 flex flex-wrap items-center gap-3 text-primary">
-              <School className="h-8 w-8 shrink-0" aria-hidden />
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex flex-wrap items-center gap-3">
+              <School className="h-8 w-8 shrink-0 text-primary" aria-hidden />
               <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">
-                <SparklesText
-                  text="Alumni directory"
-                  className="text-2xl font-semibold sm:text-3xl"
-                  sparklesCount={12}
-                />
+                {orgName} Alumni
               </h1>
             </div>
-            <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
-              {orgName} alumni data comes from Airtable on each request (
-              <code className="rounded bg-muted px-1 text-xs">
-                fetchAlumniFromAirtable
-              </code>
-              ). Rich filters (digital practice, collection, video, topics) only light up when those
-              columns exist—map them with{' '}
-              <code className="rounded bg-muted px-1 text-xs">
-                AIRTABLE_*_ALUMNI_FIELD_*
-              </code>{' '}
-              if your field names differ. Cards show name, photo, medium, and Oolite year; open a
-              profile for full details. JSON:{' '}
-              <Link
-                href={`/api/organizations/by-slug/${slug}/alumni/airtable`}
-                className="text-primary underline-offset-2 hover:underline"
-              >
-                alumni/airtable API
-              </Link>
-              .
-            </p>
+            <AlumniCatalogueModeToggle slug={slug} mode="browse" />
           </div>
 
           {!configured && (
@@ -306,157 +337,48 @@ export function AlumniDirectoryPage({
 
           {configured && !fetchError && alumni.length > 0 && (
             <>
-              <div className="space-y-4 mb-6">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search name, notes, medium, artifacts, topics…"
-                    className="pl-10"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    aria-label="Search alumni"
-                  />
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className={toggleBtn(onlyDigital)}
-                    onClick={() => setOnlyDigital((v) => !v)}
-                  >
-                    <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                    Digital artists
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className={toggleBtn(onlyCollection)}
-                    onClick={() => setOnlyCollection((v) => !v)}
-                  >
-                    <Library className="h-3.5 w-3.5 mr-1.5" />
-                    In collection
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className={toggleBtn(onlyVideo)}
-                    onClick={() => setOnlyVideo((v) => !v)}
-                  >
-                    <Clapperboard className="h-3.5 w-3.5 mr-1.5" />
-                    Video / moving image
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground -mt-1">
-                  Toggles use checkboxes{' '}
-                  <code className="bg-muted px-0.5 rounded">Digital artist</code>,{' '}
-                  <code className="bg-muted px-0.5 rounded">In collection</code>,{' '}
-                  <code className="bg-muted px-0.5 rounded">Video art</code> when present; video also
-                  matches <strong>Medium</strong> containing &quot;video&quot;, &quot;film&quot;, or
-                  &quot;moving image&quot;.
-                </p>
-
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="alumni-sort">Sort</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {sortChips.map(({ mode, label }) => (
-                        <Button
-                          key={mode}
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          className={toggleBtn(sortMode === mode)}
-                          onClick={() => setSortMode(mode)}
-                        >
-                          {label}
-                        </Button>
-                      ))}
-                    </div>
-                    <Select value={sortMode} onValueChange={(v) => setSortMode(v as SortMode)}>
-                      <SelectTrigger id="alumni-sort" className="max-w-xs">
-                        <SelectValue placeholder="Sort order" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="name-asc">Name (A–Z)</SelectItem>
-                        <SelectItem value="name-desc">Name (Z–A)</SelectItem>
-                        <SelectItem value="year-desc">Year (newest)</SelectItem>
-                        <SelectItem value="year-asc">Year (oldest)</SelectItem>
-                        <SelectItem value="cohort-asc">Cohort, then name</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="alumni-group">Group by</Label>
-                    <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByMode)}>
-                      <SelectTrigger id="alumni-group">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No grouping</SelectItem>
-                        <SelectItem value="cohort">Cohort</SelectItem>
-                        <SelectItem value="year">Year</SelectItem>
-                        <SelectItem value="program">Program</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="alumni-cohort">Cohort</Label>
-                    <Select value={cohortFilter} onValueChange={setCohortFilter}>
-                      <SelectTrigger id="alumni-cohort">
-                        <SelectValue placeholder="All cohorts" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__all__">All cohorts</SelectItem>
-                        {cohortOptions.map((c) => (
-                          <SelectItem key={c} value={c}>
-                            {c}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="alumni-year">Year</Label>
-                    <Select value={yearFilter} onValueChange={setYearFilter}>
-                      <SelectTrigger id="alumni-year">
-                        <SelectValue placeholder="All years" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__all__">All years</SelectItem>
-                        {yearOptions.map((y) => (
-                          <SelectItem key={y} value={y}>
-                            {y}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {topicOptions.length > 0 && (
-                  <div className="space-y-2 max-w-md">
-                    <Label htmlFor="alumni-topic">Topic / theme</Label>
-                    <Select value={topicFilter} onValueChange={setTopicFilter}>
-                      <SelectTrigger id="alumni-topic">
-                        <SelectValue placeholder="All topics" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__all__">All topics</SelectItem>
-                        {topicOptions.map((t) => (
-                          <SelectItem key={t} value={t}>
-                            {t}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              </div>
+              <AlumniCatalogueFilters
+                query={query}
+                onQueryChange={setQuery}
+                sortMode={sortMode}
+                onSortModeChange={setSortMode}
+                groupBy={groupBy}
+                onGroupByChange={setGroupBy}
+                yearFilter={yearFilter}
+                onYearFilterChange={setYearFilter}
+                topicFilter={topicFilter}
+                onTopicFilterChange={setTopicFilter}
+                programFilter={programFilter}
+                onProgramFilterChange={setProgramFilter}
+                mediumFilter={mediumFilter}
+                onMediumFilterChange={setMediumFilter}
+                cohortFilter={cohortFilter}
+                onCohortFilterChange={setCohortFilter}
+                pronounFilter={pronounFilter}
+                onPronounFilterChange={setPronounFilter}
+                ethnicityFilter={ethnicityFilter}
+                onEthnicityFilterChange={setEthnicityFilter}
+                nationalityFilter={nationalityFilter}
+                onNationalityFilterChange={setNationalityFilter}
+                onlyDigital={onlyDigital}
+                onOnlyDigitalChange={setOnlyDigital}
+                onlyCollection={onlyCollection}
+                onOnlyCollectionChange={setOnlyCollection}
+                onlyVideo={onlyVideo}
+                onOnlyVideoChange={setOnlyVideo}
+                websiteFilter={websiteFilter}
+                onWebsiteFilterChange={setWebsiteFilter}
+                miamiFilter={miamiFilter}
+                onMiamiFilterChange={setMiamiFilter}
+                yearOptions={yearOptions}
+                topicOptions={topicOptions}
+                programOptions={programOptions}
+                mediumOptions={mediumOptions}
+                cohortOptions={cohortOptions}
+                pronounOptions={pronounOptions}
+                ethnicityOptions={ethnicityOptions}
+                nationalityOptions={nationalityOptions}
+              />
 
               <p className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
                 <Layers className="h-4 w-4 shrink-0" aria-hidden />
@@ -478,7 +400,7 @@ export function AlumniDirectoryPage({
                         </span>
                       </h2>
                     ) : null}
-                    <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {section.rows.map((row) => (
                         <li key={row.id}>
                           <AlumniArtistCard
@@ -491,6 +413,16 @@ export function AlumniDirectoryPage({
                   </section>
                 ))}
               </div>
+
+              {isDevMode ? (
+                <div className="mt-10">
+                  <AlumniDirectoryDevPanel
+                    slug={slug}
+                    configured={configured}
+                    totalRows={alumni.length}
+                  />
+                </div>
+              ) : null}
             </>
           )}
         </main>

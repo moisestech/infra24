@@ -9,6 +9,13 @@ export interface ThemeColors {
   primaryAlphaDark: string
 }
 
+export type NavigationChromeVariant = 'default' | 'soho-dark'
+
+export interface OrganizationBrandDisplay {
+  title: string
+  subtitle?: string
+}
+
 export interface NavigationItem {
   name: string
   href: string
@@ -30,6 +37,8 @@ export interface Organization {
   logo_url_dark?: string
   artist_icon?: string
   banner_image?: string
+  /** Text wordmark when org logos should not be used (e.g. concept demos). */
+  brandDisplay?: OrganizationBrandDisplay
 }
 
 export interface NavigationConfig {
@@ -64,6 +73,9 @@ export interface NavigationConfig {
       description?: string
       highlighted?: boolean
     }>
+  }
+  chrome?: {
+    variant?: NavigationChromeVariant
   }
 }
 

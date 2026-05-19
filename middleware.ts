@@ -56,6 +56,10 @@ function isPublicRoute(pathname: string): boolean {
     '/knight',
     /** Born-Digital Era public marketing surfaces. */
     '/era',
+    /** Soho House Member Signal Agent pitch funnel (back-cover QR). */
+    '/soho-house-ai-assistant',
+    /** Soho about-page alias (redirects to /o/sohohouse/memory-agent/about). */
+    '/sohohouse',
     '/events',
     '/newsletter',
   ]

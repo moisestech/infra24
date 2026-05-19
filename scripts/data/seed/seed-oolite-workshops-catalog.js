@@ -53,15 +53,7 @@ function loadCatalog() {
   return { organizationSlug, workshops }
 }
 
-async function upsertWorkshop(orgId, row, metadataForDb) {
-  const slug = metadataForDb.slug
-  const { data: existing } = await supabase
-    .from('workshops')
-    .select('id')
-    .eq('organization_id', orgId)
-    .eq('metadata->>slug', slug)
-    .maybeSingle()
-
+function resolveWorkshopImage(row, metadataForDb) {
   const imageFromRow =
     row.image_url && String(row.image_url).trim()
       ? String(row.image_url).trim()
@@ -81,9 +73,11 @@ async function upsertWorkshop(orgId, row, metadataForDb) {
       ? galleryUrls[0].trim()
       : null
 
-  const resolvedImage = imageFromRow || imageFromHeader || imageFromGallery || PLACEHOLDER
+  return imageFromRow || imageFromHeader || imageFromGallery || PLACEHOLDER
+}
 
-  const payload = {
+function buildWorkshopPayload(orgId, row, metadataForDb, resolvedImage) {
+  return {
     organization_id: orgId,
     title: row.title,
     description: row.description,
@@ -93,7 +87,6 @@ async function upsertWorkshop(orgId, row, metadataForDb) {
     level: row.level,
     duration_minutes: row.duration_minutes,
     max_participants: row.max_participants,
-    has_learn_content: Boolean(row.has_learn_content),
     price: row.price,
     instructor: row.instructor,
     prerequisites: row.prerequisites,
@@ -108,6 +101,72 @@ async function upsertWorkshop(orgId, row, metadataForDb) {
     metadata: metadataForDb,
     created_by: 'seed_oolite_workshops_catalog',
   }
+}
+
+/** When catalog slug changes, PostgREST upsert key won't match old rows — migrate first. */
+const LEGACY_METADATA_SLUG_TO_CANONICAL = {
+  'ai-copyright-creative-risk': 'ip-age-of-ai',
+}
+
+async function migrateLegacyMetadataSlugs(orgId, workshops) {
+  for (const [fromSlug, toSlug] of Object.entries(LEGACY_METADATA_SLUG_TO_CANONICAL)) {
+    const entry = workshops.find((w) => (w.metadata?.slug || w.slug) === toSlug)
+    if (!entry) continue
+
+    const { data: legacyRow } = await supabase
+      .from('workshops')
+      .select('id')
+      .eq('organization_id', orgId)
+      .eq('metadata->>slug', fromSlug)
+      .maybeSingle()
+
+    const { data: canonicalRow } = await supabase
+      .from('workshops')
+      .select('id')
+      .eq('organization_id', orgId)
+      .eq('metadata->>slug', toSlug)
+      .maybeSingle()
+
+    if (!legacyRow?.id || canonicalRow?.id) continue
+
+    const { relatedSlugs = [], metadata: _ignore, ...row } = entry
+    const metadata = { ...(entry.metadata || {}) }
+    delete metadata.relatedWorkshopIds
+    metadata.slug = metadata.slug || entry.slug
+    metadata.announcement_title = metadata.announcement_title || entry.title
+    const displaySchedule = typeof entry.schedule === 'string' ? entry.schedule.trim() : ''
+    if (displaySchedule) metadata.displaySchedule = displaySchedule
+    if (typeof entry.start_date === 'string' && entry.start_date.trim()) {
+      metadata.sessionStartDate = entry.start_date.trim()
+    }
+    if (typeof entry.end_date === 'string' && entry.end_date.trim()) {
+      metadata.sessionEndDate = entry.end_date.trim()
+    }
+
+    const resolvedImage = resolveWorkshopImage(row, metadata)
+    const payload = buildWorkshopPayload(orgId, row, metadata, resolvedImage)
+
+    const { error } = await supabase.from('workshops').update(payload).eq('id', legacyRow.id)
+    if (error) {
+      console.error('Legacy slug migrate failed', fromSlug, error)
+      continue
+    }
+    console.log('Migrated metadata slug', fromSlug, '→', toSlug, legacyRow.id)
+  }
+}
+
+async function upsertWorkshop(orgId, row, metadataForDb) {
+  const slug = metadataForDb.slug
+  const { data: existing } = await supabase
+    .from('workshops')
+    .select('id')
+    .eq('organization_id', orgId)
+    .eq('metadata->>slug', slug)
+    .maybeSingle()
+
+  const resolvedImage = resolveWorkshopImage(row, metadataForDb)
+
+  const payload = buildWorkshopPayload(orgId, row, metadataForDb, resolvedImage)
 
   if (existing?.id) {
     const { error } = await supabase.from('workshops').update(payload).eq('id', existing.id)
@@ -141,6 +200,8 @@ async function main() {
     console.error('Organization not found:', orgSlug, orgErr)
     process.exit(1)
   }
+
+  await migrateLegacyMetadataSlugs(org.id, catalog.workshops)
 
   const slugToRelatedSlugs = {}
   const ids = {}

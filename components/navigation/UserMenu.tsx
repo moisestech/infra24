@@ -6,16 +6,22 @@ import Image from 'next/image'
 import { useUser, SignOutButton } from '@clerk/nextjs'
 import { ChevronDown, User, Settings, LogOut, Sun, Moon, LogIn } from 'lucide-react'
 import Tooltip from '@/components/ui/Tooltip'
-import { ThemeColors } from './types'
+import { ThemeColors, NavigationChromeVariant } from './types'
 import { useTheme } from '@/contexts/ThemeContext'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { cn } from '@/lib/utils'
 
 interface UserMenuProps {
   colors: ThemeColors
   className?: string
+  chromeVariant?: NavigationChromeVariant
 }
 
-export function UserMenu({ colors, className = '' }: UserMenuProps) {
+export function UserMenu({ colors, className = '', chromeVariant = 'default' }: UserMenuProps) {
+  const isSohoChrome = chromeVariant === 'soho-dark'
+  const iconClass = isSohoChrome
+    ? 'text-[rgba(245,239,230,0.68)] hover:text-[#f5efe6]'
+    : 'text-gray-700 dark:text-gray-300'
   const { user, isLoaded } = useUser()
   const { resolvedTheme, setTheme } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
@@ -37,13 +43,13 @@ export function UserMenu({ colors, className = '' }: UserMenuProps) {
   if (!isLoaded || !user) {
     return (
       <div className={`flex shrink-0 items-center gap-1 ${className}`}>
-        <span className="text-gray-700 dark:text-gray-200 [&_button]:text-current">
+        <span className={isSohoChrome ? 'text-[rgba(245,239,230,0.68)] [&_button]:text-current' : 'text-gray-700 dark:text-gray-200 [&_button]:text-current'}>
           <ThemeToggle />
         </span>
         <Tooltip content="Sign in" position="bottom">
           <Link
             href="/sign-in"
-            className="flex size-9 items-center justify-center rounded-md text-sm font-medium text-gray-700 transition-colors dark:text-gray-300 sm:size-10"
+            className={cn('flex size-9 items-center justify-center rounded-md text-sm font-medium transition-colors sm:size-10', iconClass)}
             style={{ color: 'inherit' }}
             aria-label="Sign in"
             title="Sign in"
@@ -76,7 +82,10 @@ export function UserMenu({ colors, className = '' }: UserMenuProps) {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex size-9 items-center justify-center gap-0.5 rounded-md text-sm font-medium text-gray-700 transition-colors dark:text-gray-300 sm:size-10"
+          className={cn(
+            'flex size-9 items-center justify-center gap-0.5 rounded-md text-sm font-medium transition-colors sm:size-10',
+            isOpen ? '' : iconClass
+          )}
           style={{
             backgroundColor: isOpen ? colors.primary : 'transparent',
             color: isOpen ? 'white' : undefined,

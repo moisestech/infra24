@@ -8,7 +8,8 @@ import {
   DollarSign, 
   TrendingUp,
   Users,
-  Bell
+  Bell,
+  Sparkles
 } from 'lucide-react'
 import { NavigationConfig } from '../types'
 
@@ -70,6 +71,13 @@ export const bakehouseConfig: NavigationConfig = {
         href: '/o/bakehouse/artists',
         icon: Users,
         description: 'Community artists and residents',
+        category: 'user'
+      },
+      {
+        name: 'Memory Agent',
+        href: '/o/bakehouse/memory-agent',
+        icon: Sparkles,
+        description: 'Conversational alumni (when Airtable alumni env is set)',
         category: 'user'
       },
       {

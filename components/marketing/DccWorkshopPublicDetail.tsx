@@ -34,6 +34,7 @@ import {
 } from '@/lib/workshops/workshop-visual-image'
 import { resolveWorkshopEnrollCta } from '@/lib/workshops/workshop-enroll-cta'
 import { getWorkshopSkillsYoullLearn } from '@/lib/workshops/workshop-skills-list'
+import { isIpAgeOfAiWorkshopSlug } from '@/lib/workshops/ip-age-of-ai-program'
 
 function signInRedirect(path: string) {
   return `/sign-in?redirect_url=${encodeURIComponent(path)}`
@@ -159,7 +160,10 @@ export function DccWorkshopPublicDetail({ workshopKey }: { workshopKey: string }
   const isLearnAi = isLearnAiWorkshopSlug(workshopKey) || isLearnAiWorkshopSlug(marketing.slug)
   const hasPublicMarkdownChapters = workshopSlugHasPublicMarkdownChapters(marketing.slug)
   const showLearnTabs =
-    Boolean(workshop.has_learn_content) || isLearnAi || hasPublicMarkdownChapters
+    Boolean(workshop.has_learn_content) ||
+    isLearnAi ||
+    hasPublicMarkdownChapters ||
+    isIpAgeOfAiWorkshopSlug(marketing.slug ?? '')
 
   const listPriceUsd =
     typeof marketing.publicListPriceUsd === 'number'

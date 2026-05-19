@@ -4,6 +4,7 @@
  */
 export const WORKSHOP_METADATA_SLUG_TO_CANONICAL: Record<string, string> = {
   'vibe-coding-net-art': 'vibe-coding-and-net-art',
+  'ai-copyright-creative-risk': 'ip-age-of-ai',
 }
 
 export function canonicalWorkshopMarketingSlug(slug: string): string {

@@ -193,8 +193,9 @@ export function HeroSubheadKeyTerms({
   const termButtons = (
     <p
       className={cn(
-        'leading-relaxed text-neutral-800 dark:text-neutral-200',
-        paragraphClassName ?? 'text-lg',
+        'leading-relaxed',
+        paragraphClassName ?? 'text-lg text-neutral-800 dark:text-neutral-200',
+        splitPreview && 'text-neutral-950 dark:text-neutral-50',
       )}
     >
       {segments.map((seg, i) => {
@@ -264,14 +265,22 @@ export function HeroSubheadKeyTerms({
           </>
         ) : null}
 
-        <div id={previewId} role="region" aria-label="Term preview" className="relative z-[2] min-w-0">
+        <div
+          id={previewId}
+          role="region"
+          aria-label="Term preview"
+          className={cn(
+            'relative z-[2] min-w-0 rounded-xl border border-neutral-200/90 bg-white px-4 py-5 shadow-sm',
+            'dark:border-neutral-700 dark:bg-neutral-950'
+          )}
+        >
           {termButtons}
           {showPreview && activeTerm?.caption ? (
-            <p className="mt-4 max-w-2xl text-xs font-medium leading-snug text-neutral-600 dark:text-neutral-400">
+            <p className="mt-4 max-w-2xl text-xs font-medium leading-snug text-neutral-700 dark:text-neutral-300">
               {activeTerm.caption}
             </p>
           ) : !showPreview ? (
-            <p className="mt-4 max-w-xl text-xs font-medium leading-snug text-neutral-500 dark:text-neutral-400">
+            <p className="mt-4 max-w-xl text-xs font-medium leading-snug text-neutral-600 dark:text-neutral-400">
               Hover a highlighted keyword for a short description and color read.
             </p>
           ) : null}

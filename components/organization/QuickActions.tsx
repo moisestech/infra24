@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bell, MapPin, ClipboardList, Globe, Calendar, Edit, GraduationCap } from 'lucide-react'
+import { Bell, MapPin, ClipboardList, Globe, Calendar, Edit, GraduationCap, Sparkles } from 'lucide-react'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 
 interface Organization {
@@ -22,6 +22,7 @@ interface QuickActionsProps {
     showXRExperiences: boolean
     showWorkshops: boolean
     showDigitalLab: boolean
+    showMemoryAgent?: boolean
   }
 }
 
@@ -92,6 +93,20 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
           </a>
         )}
 
+        {dashboardConfig?.showMemoryAgent !== false && (
+          <a
+            href={`/o/${organization.slug}/memory-agent`}
+            className="bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-lg shadow-sm p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center">
+              <Sparkles className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-white mr-2 shrink-0" />
+              <div className="min-w-0">
+                <p className="font-medium text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Memory Agent</p>
+                <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-cyan-100">AI · alumni discovery</p>
+              </div>
+            </div>
+          </a>
+        )}
 
         {dashboardConfig?.showArtists !== false && (
           <a

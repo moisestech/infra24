@@ -168,7 +168,7 @@
       "content": "This workshop treats AI as infrastructure you steer—not a replacement author. We work through pressure (what the room feels), prompts (how you ask), problems (what actually needs solving), and practice (repeatable loops you can reuse). Bring a real project or admin task; leave with language for grants, collaborators, and your future self.",
       "relatedSlugs": [
         "ai-for-artists-voice-workflow-authorship",
-        "ai-copyright-creative-risk"
+        "ip-age-of-ai"
       ],
       "metadata": {
         "slug": "learn-ai-without-losing-yourself",
@@ -285,7 +285,7 @@
       "relatedSlugs": [
         "own-your-digital-presence",
         "documentation-for-artists",
-        "ai-copyright-creative-risk"
+        "ip-age-of-ai"
       ],
       "metadata": {
         "slug": "seo-workshop",
@@ -691,7 +691,7 @@
       "content": "We separate experimentation from publication, build personal policies for disclosure, and map where AI saves time vs where it erases judgment. Includes hands-on prompts for research, drafting, and iteration—not a single-tool tutorial tied to one vendor.",
       "relatedSlugs": [
         "vibe-coding-and-net-art",
-        "ai-copyright-creative-risk",
+        "ip-age-of-ai",
         "writing-about-digital-practice"
       ],
       "metadata": {
@@ -1106,8 +1106,8 @@
       }
     },
     {
-      "slug": "ai-copyright-creative-risk",
-      "title": "AI, Copyright, and Creative Risk",
+      "slug": "ip-age-of-ai",
+      "title": "Skills: Intellectual Property in the Age of AI",
       "description": "A practical overview of how copyright, contracts, and platform terms intersect with AI-assisted art—what to watch for, not legal advice.",
       "category": "digital_literacy",
       "level": "intermediate",
@@ -1135,7 +1135,8 @@
         "documentation-for-artists"
       ],
       "metadata": {
-        "slug": "ai-copyright-creative-risk",
+        "slug": "ip-age-of-ai",
+        "headerImageUrl": "https://res.cloudinary.com/dkod1at3i/image/upload/v1778264792/skills-age-of-ai_landscape-banner_ffazsw.webp",
         "subtitle": "Contracts, terms, and studio risk—framed for artists and small orgs.",
         "shortDescription": "Navigate AI and IP conversations with clearer vocabulary and safer habits—not a substitute for legal counsel.",
         "galleryImageUrls": [

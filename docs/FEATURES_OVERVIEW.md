@@ -27,6 +27,7 @@ Most tenant routes under `/o/[slug]/…` resolve the org from the **`organizatio
 | Workshops catalog | Supabase `workshops` | Scoped by `organization_id`; list API returns all rows for the org |
 | Public announcements (carousel, etc.) | Supabase `announcements` | Org + visibility rules |
 | Alumni directory | **Airtable** | Per-org env: `AIRTABLE_{ORG}_ALUMNI_BASE_ID` / `TABLE_ID` (+ PAT); see `docs/AIRTABLE_MULTI_BASE.md` |
+| Memory Agent (conversational alumni) | **Airtable** + OpenAI + optional ElevenLabs | `/o/[slug]/memory-agent`; APIs under `/api/organizations/by-slug/[slug]/memory-agent/*`; requires `OPENAI_API_KEY`; optional `ELEVENLABS_*` for TTS |
 | Budget / certain fiscal views | **Airtable** | Shared PAT; budget base env vars |
 
 ### Authentication & Security

@@ -4,8 +4,14 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
 import { useParams } from 'next/navigation'
-import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap, Copy, Check, Grid3x3, ArrowRight } from 'lucide-react'
-import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
+import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap, Copy, Check, Grid3x3, ArrowRight, Sparkles, School, MessageCircle } from 'lucide-react'
+import {
+  UnifiedNavigation,
+  ooliteConfig,
+  bakehouseConfig,
+  madartsConfig,
+  sohohouseConfig,
+} from '@/components/navigation'
 import ArtistIcon from '@/components/ui/ArtistIcon'
 import { OrganizationLogo } from '@/components/ui/OrganizationLogo'
 import { MiniAnalyticsWidget } from '@/components/analytics/WorkshopAnalyticsWidget'
@@ -69,6 +75,10 @@ export default function OrganizationPage() {
         return ooliteConfig;
       case 'bakehouse':
         return bakehouseConfig;
+      case 'madarts':
+        return madartsConfig;
+      case 'sohohouse':
+        return sohohouseConfig;
       default:
         return ooliteConfig; // Default fallback
     }
@@ -389,6 +399,50 @@ export default function OrganizationPage() {
           </div>
         </div>
 
+        {/* Oolite — friendly AI agent CTA (Memory Agent) */}
+        {organization.slug === 'oolite' && (
+          <div className="mb-8 xl:mb-10">
+            <a
+              href="/o/oolite/memory-agent"
+              aria-label="Talk to an AI Agent — open the Oolite Memory Agent"
+              className="group relative flex flex-col overflow-hidden rounded-2xl border-2 border-teal-200/90 bg-gradient-to-br from-teal-50 via-cyan-50 to-sky-50 p-6 shadow-lg ring-1 ring-teal-100/80 transition-all duration-300 hover:border-teal-300 hover:shadow-xl dark:border-teal-800/60 dark:from-teal-950/50 dark:via-cyan-950/40 dark:to-slate-900/80 dark:ring-teal-900/40 md:flex-row md:items-center md:gap-8 md:p-8"
+            >
+              <div
+                className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-teal-200/30 blur-2xl transition-opacity group-hover:opacity-90 dark:bg-teal-500/10"
+                aria-hidden
+              />
+              <div className="relative mb-5 flex shrink-0 items-center justify-center md:mb-0">
+                <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#47abc4] to-[#2c5f6f] text-white shadow-md ring-4 ring-white/80 dark:ring-teal-900/30 md:h-24 md:w-24">
+                  <MessageCircle className="h-10 w-10 md:h-11 md:w-11" strokeWidth={1.75} aria-hidden />
+                </div>
+                <div className="absolute -bottom-1 -right-1 flex h-9 w-9 items-center justify-center rounded-full bg-amber-100 text-amber-700 shadow-md ring-2 ring-white dark:bg-amber-500/20 dark:text-amber-200 dark:ring-teal-950">
+                  <Sparkles className="h-5 w-5" aria-hidden />
+                </div>
+              </div>
+              <div className="relative min-w-0 flex-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-teal-700/90 dark:text-teal-300/90">
+                  New · try it out
+                </p>
+                <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white md:text-3xl">
+                  Talk to an AI Agent
+                </h2>
+                <p className="mt-2 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300">
+                  Chat in plain language about alumni, disciplines, and programs—we match you to real
+                  profiles from our directory. Warm, helpful, and built for discovery.
+                </p>
+                <div className="mt-5 flex flex-wrap items-center gap-3">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-teal-800 shadow-sm ring-1 ring-teal-200/80 transition-transform group-hover:translate-x-0.5 dark:bg-teal-950/60 dark:text-teal-100 dark:ring-teal-700/50">
+                    Say hello
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
+                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Same Airtable data as Alumni—no extra signup
+                  </span>
+                </div>
+              </div>
+            </a>
+          </div>
+        )}
 
         {/* Sign In Prompt for Guest Users */}
         {!user && (
@@ -456,6 +510,44 @@ export default function OrganizationPage() {
             {user ? 'Quick Actions' : 'Explore Our Platform'}
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 xl:gap-4 2xl:gap-5 3xl:gap-6">
+            {getTenantConfig(organization.slug)?.dashboard.showMemoryAgent && (
+              <a
+                href={`/o/${organization.slug}/memory-agent`}
+                className="bg-gradient-to-r from-cyan-600 to-teal-600 text-white rounded-lg shadow-sm p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-center">
+                  <Sparkles className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-white mr-2" />
+                  <div>
+                    <p className="font-medium text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">
+                      Memory Agent
+                    </p>
+                    <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-cyan-100">
+                      Beta · conversational alumni
+                    </p>
+                  </div>
+                </div>
+              </a>
+            )}
+
+            {organization.slug === 'oolite' && (
+              <a
+                href={`/o/${organization.slug}/alumni`}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md hover:border-teal-300 dark:hover:border-teal-600 transition-all duration-200 group"
+              >
+                <div className="flex items-center">
+                  <School className="h-5 w-5 xl:h-6 xl:w-6 2xl:h-7 2xl:w-7 3xl:h-8 3xl:w-8 text-teal-600 dark:text-teal-400 mr-2 group-hover:text-teal-700 dark:group-hover:text-teal-300 transition-colors" />
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl group-hover:text-teal-800 dark:group-hover:text-teal-200 transition-colors">
+                      Alumni directory
+                    </p>
+                    <p className="text-xs xl:text-sm text-gray-500 dark:text-gray-400">
+                      Airtable · same data as Memory Agent
+                    </p>
+                  </div>
+                </div>
+              </a>
+            )}
+
             <a
               href={`/o/${organization.slug}/announcements`}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 xl:p-4 2xl:p-5 3xl:p-6 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 group"
