@@ -427,6 +427,7 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
       events,
       alumniContextRows: contextRows,
       matchedArtists: artists,
+      needsPeople,
       needsProgramming,
       programmingContextEmpty: !programmingBlock,
       airtableConn: conn,

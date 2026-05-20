@@ -76,11 +76,27 @@ export const ma = {
     'hover:bg-[color:color-mix(in_srgb,var(--ma-primary)_10%,var(--ma-surface))]',
     'md:text-sm'
   ),
-  userBubble: cn(
-    'max-w-[90%] border-[color:color-mix(in_srgb,var(--ma-primary)_55%,var(--ma-surface))]',
-    'bg-[var(--ma-surface)]'
+  resultCard: cn(
+    'h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300',
+    'hover:-translate-y-0.5',
+    'hover:border-[color:color-mix(in_srgb,var(--ma-primary)_50%,var(--ma-border-strong))]',
+    'hover:shadow-[0_0_28px_-6px_color-mix(in_srgb,var(--ma-primary)_45%,transparent)]'
   ),
-  assistantBubble: 'border-[var(--ma-border)] bg-[var(--ma-surface)]',
+  userBubble: cn(
+    'max-w-[92%] sm:max-w-[85%]',
+    'border-[color:color-mix(in_srgb,var(--ma-primary)_55%,var(--ma-border))]',
+    'bg-[color-mix(in_srgb,var(--ma-primary)_16%,var(--ma-surface))]',
+    'shadow-[0_2px_12px_-4px_color-mix(in_srgb,var(--ma-primary)_35%,transparent)]'
+  ),
+  assistantBubble: cn(
+    'max-w-full border-[var(--ma-border-strong)]',
+    'bg-[var(--ma-surface-muted)]',
+    'shadow-sm'
+  ),
+  messageRoleYou:
+    'mb-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[color:var(--ma-primary)]',
+  messageRoleAgent:
+    'mb-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--ma-text-muted)]',
   details: cn(
     'rounded-xl border border-[var(--ma-border-strong)]',
     'bg-[var(--ma-surface-muted)] p-4 text-sm text-[var(--ma-text-muted)]'

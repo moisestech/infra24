@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatEventCardSummaryText } from '@/lib/memory-agent/event-card-urls'
 import { isStaffOperatorMode } from '@/lib/memory-agent/mode'
+import { memoryAgentEventPublicUrl } from '@/lib/memory-agent/result-links'
 import { ma } from '@/lib/memory-agent/ui-tokens'
 import type { MemoryAgentEventCard, MemoryAgentMode } from '@/types/memory-agent'
 import { cn } from '@/lib/utils'
@@ -81,6 +82,7 @@ function ActionLink({
 
 type MemoryAgentEventCardsProps = {
   events: MemoryAgentEventCard[]
+  orgSlug: string
   mode: MemoryAgentMode
   onAskFollowUp?: (question: string) => void
   onCreateSignageDraft?: (event: MemoryAgentEventCard) => void | Promise<void>
@@ -90,6 +92,7 @@ type MemoryAgentEventCardsProps = {
 
 export function MemoryAgentEventCards({
   events,
+  orgSlug,
   mode,
   onAskFollowUp,
   onCreateSignageDraft,
@@ -136,9 +139,10 @@ export function MemoryAgentEventCards({
           ev.allowPublicActions &&
           ev.bookable &&
           Boolean(ev.ctaUrl?.trim() && ev.publicSafe)
+        const siteUrl = memoryAgentEventPublicUrl(orgSlug, ev)
         const showViewDetails =
           ev.allowPublicActions &&
-          Boolean(ev.publicUrl?.trim()) &&
+          Boolean(siteUrl) &&
           (isStaff || ev.publicSafe)
         const editLabel =
           ev.source === 'workshop' ? 'Edit workshop' : 'Edit announcement'
@@ -147,7 +151,7 @@ export function MemoryAgentEventCards({
 
         return (
           <li key={ev.id}>
-            <Card className={cn(ma.card, 'h-full overflow-hidden')}>
+            <Card className={cn(ma.card, ma.resultCard, 'h-full overflow-hidden')}>
               {imageUrl ? (
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-[var(--ma-surface-muted)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -208,12 +212,12 @@ export function MemoryAgentEventCards({
                 <div className="mt-1 flex flex-wrap gap-1.5 border-t border-[var(--ma-border)] pt-2">
                   {isStaff ? (
                     <>
-                      {showViewDetails && ev.publicUrl ? (
+                      {showViewDetails && siteUrl ? (
                         <ActionLink
-                          href={ev.publicUrl}
+                          href={siteUrl}
                           className={cn('h-8 gap-1 px-2.5 text-xs', ma.btnOutline)}
                         >
-                          Open public page
+                          {isStaff ? 'Open public page' : 'View on site'}
                           <ExternalLink className="h-3 w-3" aria-hidden />
                         </ActionLink>
                       ) : null}
@@ -271,12 +275,12 @@ export function MemoryAgentEventCards({
                     </>
                   ) : (
                     <>
-                      {showViewDetails && ev.publicUrl ? (
+                      {showViewDetails && siteUrl ? (
                         <ActionLink
-                          href={ev.publicUrl}
+                          href={siteUrl}
                           className={cn('h-8 gap-1 px-2.5 text-xs', ma.btnOutline)}
                         >
-                          View details
+                          View on site
                         </ActionLink>
                       ) : null}
                       {showPublicCta ? (

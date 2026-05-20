@@ -305,9 +305,93 @@
   }
 }
 
+.memory-agent-theme .ma-try-asking-trigger[data-state='closed']:hover .ma-try-asking-hover-text {
+  animation: ma-try-asking-text-glow 1.6s ease-in-out infinite;
+  color: var(--ma-text);
+}
+
+.memory-agent-theme .ma-try-asking-trigger[data-state='closed']:hover .ma-try-asking-label {
+  color: color-mix(in srgb, var(--ma-primary, #0891b2) 75%, var(--ma-text-muted));
+}
+
+@keyframes ma-try-asking-text-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 0 transparent;
+    transform: translateX(0);
+  }
+  50% {
+    text-shadow: 0 0 14px color-mix(in srgb, var(--ma-primary, #0891b2) 45%, transparent);
+    transform: translateX(2px);
+  }
+}
+
+.memory-agent-theme .ma-memory-pulse-searching {
+  border-color: color-mix(in srgb, var(--ma-primary, #0891b2) 55%, var(--ma-border-strong));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ma-primary, #0891b2) 25%, transparent),
+    0 0 32px -8px color-mix(in srgb, var(--ma-primary, #0891b2) 45%, transparent);
+}
+
+.memory-agent-theme .ma-memory-pulse-searching-shimmer {
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    color-mix(in srgb, var(--ma-primary, #0891b2) 12%, transparent) 45%,
+    color-mix(in srgb, var(--ma-primary, #0891b2) 22%, transparent) 50%,
+    color-mix(in srgb, var(--ma-primary, #0891b2) 12%, transparent) 55%,
+    transparent 100%
+  );
+  background-size: 220% 100%;
+  animation: ma-search-shimmer 2s ease-in-out infinite;
+}
+
+@keyframes ma-search-shimmer {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -120% 0;
+  }
+}
+
+.memory-agent-theme .ma-searching-dots::after {
+  content: '';
+  animation: ma-searching-ellipsis 1.4s steps(4, end) infinite;
+}
+
+@keyframes ma-searching-ellipsis {
+  0% {
+    content: '';
+  }
+  25% {
+    content: '.';
+  }
+  50% {
+    content: '..';
+  }
+  75%,
+  100% {
+    content: '...';
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .memory-agent-theme .ma-try-asking-trigger[data-state='closed']:hover {
     animation: none;
+  }
+
+  .memory-agent-theme .ma-try-asking-trigger[data-state='closed']:hover .ma-try-asking-hover-text {
+    animation: none;
+  }
+
+  .memory-agent-theme .ma-memory-pulse-searching-shimmer {
+    animation: none;
+  }
+
+  .memory-agent-theme .ma-searching-dots::after {
+    animation: none;
+    content: '…';
   }
 
   .memory-agent-theme .ma-try-asking-trigger .animate-\[ma-sparkle-pulse_1\.8s_ease-in-out_infinite\] {

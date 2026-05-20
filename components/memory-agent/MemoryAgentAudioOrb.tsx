@@ -31,7 +31,7 @@ export function MemoryAgentAudioOrb({ state, levelRms }: MemoryAgentAudioOrbProp
         : state === 'transcribing'
           ? 'Transcribing audio'
           : state === 'searching' || state === 'thinking'
-            ? 'Searching memory'
+            ? 'Searching…'
             : 'Memory agent idle'
 
   return (

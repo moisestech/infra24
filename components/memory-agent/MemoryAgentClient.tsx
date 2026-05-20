@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input'
 import { MemoryAgentAvailabilityBanner } from '@/components/memory-agent/MemoryAgentAvailabilityBanner'
 import { InstitutionalArtistCard } from '@/components/institutional-artist/InstitutionalArtistCard'
 import { institutionalArtistFromMemoryAgent } from '@/lib/institutional-artist/card-model'
+import { memoryAgentAlumniProfileUrl } from '@/lib/memory-agent/result-links'
 import { AlumniCatalogueModeToggle } from '@/components/organization/AlumniCatalogueModeToggle'
 import { MemoryAgentAudioOrb } from '@/components/memory-agent/MemoryAgentAudioOrb'
 import { MemoryAgentDevPanel } from '@/components/memory-agent/MemoryAgentDevPanel'
@@ -144,6 +145,25 @@ export function MemoryAgentClient({
     [autoSpeakStorageKey]
   )
 
+  const dataReadinessStorageKey = `memory-agent-show-data-readiness-${slug}`
+  const [showDataReadiness, setShowDataReadiness] = useState(false)
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(dataReadinessStorageKey)
+    if (stored === '1') setShowDataReadiness(true)
+    else if (stored === '0') setShowDataReadiness(false)
+  }, [dataReadinessStorageKey])
+
+  const persistShowDataReadiness = useCallback(
+    (on: boolean) => {
+      setShowDataReadiness(on)
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(dataReadinessStorageKey, on ? '1' : '0')
+      }
+    },
+    [dataReadinessStorageKey]
+  )
+
   const voice = useVoiceRecorder(slug)
   const micStream = voice.stream
   const inputLevels = useStreamWaveform(micStream)
@@ -246,12 +266,12 @@ export function MemoryAgentClient({
 
   const handleMicToggle = useCallback(() => {
     if (voice.isRecording) {
-      if (!isDevMode) autoVoicePipelineRef.current = true
+      autoVoicePipelineRef.current = true
       voice.stopRecording()
     } else {
       void voice.startRecording()
     }
-  }, [voice, isDevMode])
+  }, [voice])
 
   const staffMode = isStaffOperatorMode(mode)
 
@@ -346,40 +366,49 @@ export function MemoryAgentClient({
     status?.openaiConfigured
 
   useEffect(() => {
-    if (isDevMode || !autoVoicePipelineRef.current) return
-    if (voice.isRecording || !voice.blob || voice.transcribing) return
+    if (!autoVoicePipelineRef.current) return
+    if (voice.isRecording || !voice.blob) return
+
+    // Consume immediately so transcribing state changes do not re-enter this effect.
+    autoVoicePipelineRef.current = false
     const blob = voice.blob
     let cancelled = false
+
     void (async () => {
       if (!ready) {
-        autoVoicePipelineRef.current = false
+        voice.clear()
         return
       }
       const text = await voice.transcribeBlob(blob)
-      autoVoicePipelineRef.current = false
-      if (cancelled || !text) return
+      if (cancelled) return
+      if (!text) {
+        voice.clear()
+        return
+      }
       setVoicePipelineText(text)
       setVoiceAutoSending(true)
       setInput(text)
-      const sent = await sendQuestion(text)
+      const sent = await sendQuestion(text, { keepInput: true })
       if (!sent) {
         setVoiceAutoSending(false)
         setVoicePipelineText(null)
         voice.clear()
       }
     })()
+
     return () => {
       cancelled = true
     }
-  }, [voice.blob, voice.isRecording, voice.transcribing, isDevMode, ready, sendQuestion, voice, setInput])
+  }, [voice.blob, voice.isRecording, ready, sendQuestion, voice, setInput])
 
   useEffect(() => {
     if (loading) return
     if (!voicePipelineText && !voiceAutoSending) return
     setVoicePipelineText(null)
     setVoiceAutoSending(false)
+    setInput('')
     voice.clear()
-  }, [loading, voicePipelineText, voiceAutoSending, voice])
+  }, [loading, voicePipelineText, voiceAutoSending, voice, setInput])
 
   const voicePipelineTranscript =
     voicePipelineText?.trim() ||
@@ -470,6 +499,8 @@ export function MemoryAgentClient({
                 orgSlug={slug}
                 autoSpeakAnswers={autoSpeakAnswers}
                 onAutoSpeakChange={persistAutoSpeak}
+                showDataReadiness={showDataReadiness}
+                onShowDataReadinessChange={persistShowDataReadiness}
                 voiceAvailable={voicePlaybackReady}
                 isDevMode={isDevMode}
                 onEnableDevMode={enableDevMode}
@@ -524,7 +555,9 @@ export function MemoryAgentClient({
           {!isDevMode && voice.error ? (
             <Alert className={cn('mb-4', ma.alertAmber)} role="status">
               <AlertDescription>
-                Voice input is not available yet. You can type your question below.
+                {ready
+                  ? voice.error
+                  : 'Voice and answers are not available yet. You can still type your question below.'}
               </AlertDescription>
             </Alert>
           ) : null}
@@ -572,7 +605,13 @@ export function MemoryAgentClient({
 
           <div className="space-y-4">
             {messages.map((msg, msgIndex) => (
-              <div key={msg.id} className={msg.role === 'user' ? 'flex justify-end' : ''}>
+              <div
+                key={msg.id}
+                className={cn(
+                  'flex w-full',
+                  msg.role === 'user' ? 'justify-end' : 'justify-start'
+                )}
+              >
                 <Card
                   className={cn(
                     msg.role === 'user' ? ma.userBubble : ma.assistantBubble
@@ -580,9 +619,12 @@ export function MemoryAgentClient({
                 >
                   <CardContent className="p-4 text-sm">
                     {msg.role === 'user' ? (
-                      <p className={cn('whitespace-pre-wrap', ma.body)}>
-                        {(msg as MemoryAgentUserMessage).content}
-                      </p>
+                      <>
+                        <p className={ma.messageRoleYou}>You</p>
+                        <p className={cn('whitespace-pre-wrap', ma.body)}>
+                          {(msg as MemoryAgentUserMessage).content}
+                        </p>
+                      </>
                     ) : (
                       (() => {
                         const a = msg as MemoryAgentAssistantMessage
@@ -610,9 +652,12 @@ export function MemoryAgentClient({
                             >
                             <div className="min-w-0 space-y-4">
                               <div className="flex flex-wrap items-start justify-between gap-3">
-                                <p className={cn('min-w-0 flex-1 whitespace-pre-wrap', ma.body)}>
-                                  {a.content}
-                                </p>
+                                <div className="min-w-0 flex-1">
+                                  <p className={ma.messageRoleAgent}>
+                                    {agentBranding.agentDisplayName ?? agentBranding.agentName}
+                                  </p>
+                                  <p className={cn('whitespace-pre-wrap', ma.body)}>{a.content}</p>
+                                </div>
                                 {isWelcomeMessage ? (
                                   <Button
                                     type="button"
@@ -638,7 +683,13 @@ export function MemoryAgentClient({
                                   {a.artists.map((artist) => (
                                     <li key={artist.id}>
                                       <InstitutionalArtistCard
-                                        data={institutionalArtistFromMemoryAgent(artist)}
+                                        data={{
+                                          ...institutionalArtistFromMemoryAgent(artist),
+                                          profileUrl: memoryAgentAlumniProfileUrl(slug, {
+                                            name: artist.name,
+                                            id: artist.id,
+                                          }),
+                                        }}
                                         variant="memory-agent"
                                       />
                                     </li>
@@ -652,6 +703,7 @@ export function MemoryAgentClient({
                                   </p>
                                   <MemoryAgentEventCards
                                     events={a.events}
+                                    orgSlug={slug}
                                     mode={mode}
                                     onAskFollowUp={(q) => void sendQuestion(q)}
                                     onCreateSignageDraft={
@@ -697,7 +749,8 @@ export function MemoryAgentClient({
                                   />
                                 </div>
                               ) : null}
-                              {a.structuredDataGaps?.length || a.dataGaps?.length ? (
+                              {showDataReadiness &&
+                              (a.structuredDataGaps?.length || a.dataGaps?.length) ? (
                                 <MemoryAgentDataGapActions
                                   gaps={a.structuredDataGaps ?? []}
                                   mode={mode}
@@ -903,7 +956,7 @@ export function MemoryAgentClient({
                   {voicePipelineSending
                     ? 'Sending automatically…'
                     : voicePipelinePhase === 'searching'
-                      ? 'Finding an answer…'
+                      ? 'Searching…'
                       : voicePipelinePhase === 'transcribing'
                         ? 'Transcribing…'
                         : voicePipelinePhase === 'listening'
@@ -991,7 +1044,7 @@ export function MemoryAgentClient({
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                  <span className="sr-only sm:not-sr-only">Searching…</span>
+                  <span className="font-semibold">Searching…</span>
                 </>
               ) : (
                 <>

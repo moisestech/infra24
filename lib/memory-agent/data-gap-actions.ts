@@ -19,9 +19,22 @@ export type BuildStructuredDataGapsParams = {
   events: MemoryAgentEventCard[]
   alumniContextRows: AlumniAirtableRow[]
   matchedArtists: MemoryAgentArtistCard[]
+  needsPeople: boolean
   needsProgramming: boolean
   programmingContextEmpty: boolean
   airtableConn: OrgAlumniConnection | null
+}
+
+/** Drop generic alumni-context gaps when a programming-only question already returned events. */
+function shouldSuppressPersonContextGap(
+  gap: MemoryAgentDataGap,
+  needsPeople: boolean,
+  needsProgramming: boolean,
+  eventCount: number
+): boolean {
+  if (needsPeople || !needsProgramming || eventCount === 0) return false
+  if (gap.gapType !== 'missing_person_data' || gap.source !== 'airtable_alumni') return false
+  return /no artist records|none in context|not available in context|no alumni/i.test(gap.message)
 }
 
 function gapId(parts: string[]): string {
@@ -319,6 +332,7 @@ export function buildStructuredDataGaps(
     events,
     alumniContextRows,
     matchedArtists,
+    needsPeople,
     needsProgramming,
     programmingContextEmpty,
     airtableConn,
@@ -376,7 +390,11 @@ export function buildStructuredDataGaps(
     if (inferred) pushGap(out, seen, inferred)
   }
 
-  return out.slice(0, 8)
+  const filtered = out.filter(
+    (gap) => !shouldSuppressPersonContextGap(gap, needsPeople, needsProgramming, events.length)
+  )
+
+  return filtered.slice(0, 8)
 }
 
 export function toClientStructuredDataGaps(

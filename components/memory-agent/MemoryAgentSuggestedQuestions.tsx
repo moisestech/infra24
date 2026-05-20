@@ -55,10 +55,10 @@ export function MemoryAgentSuggestedQuestions({
               <Sparkles className="h-4 w-4 text-[color:var(--ma-primary)]" aria-hidden />
             </span>
             <span className="flex min-w-0 flex-col gap-0.5">
-              <span className="text-xs font-semibold uppercase tracking-wide text-[var(--ma-text-muted)]">
+              <span className="ma-try-asking-label text-xs font-semibold uppercase tracking-wide text-[var(--ma-text-muted)]">
                 Try asking
               </span>
-              <span className="truncate text-sm font-medium text-[var(--ma-text)] group-data-[state=open]/trigger:hidden">
+              <span className="ma-try-asking-hover-text truncate text-sm font-medium text-[var(--ma-text)] group-data-[state=open]/trigger:hidden">
                 Tap to see example questions
               </span>
             </span>
@@ -72,7 +72,9 @@ export function MemoryAgentSuggestedQuestions({
                 type="button"
                 className={cn(
                   ma.chip,
-                  'w-full text-left transition-transform hover:scale-[1.01] sm:w-auto sm:max-w-full'
+                  'ma-try-asking-chip w-full text-left transition-[transform,box-shadow,border-color] sm:w-auto sm:max-w-full',
+                  'hover:scale-[1.02] hover:border-[color:color-mix(in_srgb,var(--ma-primary)_45%,var(--ma-border))]',
+                  'hover:shadow-[0_0_20px_-4px_color-mix(in_srgb,var(--ma-primary)_40%,transparent)]'
                 )}
                 onClick={() => onSelect(q)}
               >

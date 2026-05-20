@@ -219,7 +219,7 @@ export function mapWorkshopSessionToKnowledgeRecord(
     imageUrl: resolveProgrammingImageUrl(workshop.image_url, workshop.metadata?.media),
     publicPath: marketingSlug
       ? `/o/${orgSlug}/workshops/${encodeURIComponent(marketingSlug)}`
-      : undefined,
+      : `/o/${orgSlug}/workshops`,
     sourceTable: 'workshop_sessions',
     sourceRecordId: session.id,
   }

@@ -51,9 +51,13 @@ export function InstitutionalArtistCard({
   const interactive = Boolean(onActivate)
 
   const shell = cn(
-    'flex h-full flex-col gap-3 rounded-xl border p-4 text-left shadow-sm transition-[border-color,box-shadow]',
+    'flex h-full flex-col gap-3 rounded-xl border p-4 text-left shadow-sm transition-[border-color,box-shadow,transform] duration-300',
     isAgent
-      ? cn(ma.cardInset, 'border-[var(--ma-border)] bg-[var(--ma-surface-muted)]')
+      ? cn(
+          ma.cardInset,
+          'border-[var(--ma-border)] bg-[var(--ma-surface-muted)]',
+          ma.resultCard
+        )
       : 'border-border bg-card hover:border-primary/40 hover:shadow-md',
     interactive && 'cursor-pointer',
     interactive &&
@@ -192,21 +196,35 @@ export function InstitutionalArtistCard({
         ) : (
           <span />
         )}
-        {data.website ? (
-          <Link
-            href={data.website}
-            target="_blank"
-            rel="noreferrer"
-            className={cn(
-              'inline-flex items-center gap-1 text-xs font-medium hover:underline',
-              isAgent ? 'text-[color:var(--ma-primary)]' : 'text-primary'
-            )}
-            onClick={(e) => e.stopPropagation()}
-          >
-            Website
-            <ExternalLink className="h-3 w-3" aria-hidden />
-          </Link>
-        ) : null}
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          {data.profileUrl ? (
+            <Link
+              href={data.profileUrl}
+              className={cn(
+                'inline-flex items-center gap-1 text-xs font-medium hover:underline',
+                isAgent ? 'text-[color:var(--ma-primary)]' : 'text-primary'
+              )}
+              onClick={(e) => e.stopPropagation()}
+            >
+              View profile
+            </Link>
+          ) : null}
+          {data.website ? (
+            <Link
+              href={data.website}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(
+                'inline-flex items-center gap-1 text-xs font-medium hover:underline',
+                isAgent ? 'text-[color:var(--ma-primary)]' : 'text-primary'
+              )}
+              onClick={(e) => e.stopPropagation()}
+            >
+              Website
+              <ExternalLink className="h-3 w-3" aria-hidden />
+            </Link>
+          ) : null}
+        </div>
       </div>
     </>
   )

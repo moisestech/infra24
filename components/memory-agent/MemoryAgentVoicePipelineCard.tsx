@@ -32,8 +32,8 @@ const PHASE_COPY: Record<
     icon: 'sparkles',
   },
   searching: {
-    label: 'Finding an answer',
-    hint: 'Searching alumni records and building a response…',
+    label: 'Searching…',
+    hint: 'Looking through programs, events, and records…',
     icon: 'search',
   },
 }
@@ -79,7 +79,8 @@ export function MemoryAgentVoicePipelineCard({
         'relative overflow-hidden rounded-2xl border-2 px-4 py-4 shadow-md',
         'border-[color:color-mix(in_srgb,var(--ma-primary)_55%,var(--ma-border-strong))]',
         'bg-[color-mix(in_srgb,var(--ma-primary)_8%,var(--ma-surface))]',
-        busy && 'ring-2 ring-[color:color-mix(in_srgb,var(--ma-primary)_35%,transparent)]'
+        busy && 'ring-2 ring-[color:color-mix(in_srgb,var(--ma-primary)_35%,transparent)]',
+        phase === 'searching' && 'ma-memory-pulse-searching'
       )}
       aria-live="polite"
       aria-busy={busy}
@@ -109,7 +110,12 @@ export function MemoryAgentVoicePipelineCard({
         </div>
         <div className="min-w-0 flex-1 space-y-2">
           <div>
-            <p className="text-sm font-semibold text-[var(--ma-text)]">{copy.label}</p>
+            <p className="text-base font-bold tracking-tight text-[var(--ma-text)]">
+              {copy.label}
+              {phase === 'searching' ? (
+                <span className="ma-searching-dots" aria-hidden="true" />
+              ) : null}
+            </p>
             <p className={cn('text-xs', ma.bodyMuted)}>{copy.hint}</p>
           </div>
 

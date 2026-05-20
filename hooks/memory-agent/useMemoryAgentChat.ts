@@ -39,12 +39,14 @@ export function useMemoryAgentChat(
   const ASK_TIMEOUT_MS = 65_000
 
   const sendQuestion = useCallback(
-    async (question: string): Promise<boolean> => {
+    async (question: string, options?: { keepInput?: boolean }): Promise<boolean> => {
       const q = question.trim()
       if (!q || loading) return false
 
       setMessages((m) => [...m, createUserMessage(q)])
-      setInput('')
+      if (options?.keepInput !== true) {
+        setInput('')
+      }
       setLoading(true)
       const controller = new AbortController()
       const timeoutId = window.setTimeout(() => controller.abort(), ASK_TIMEOUT_MS)

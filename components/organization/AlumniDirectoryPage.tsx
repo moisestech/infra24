@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import {
   UnifiedNavigation,
   ooliteConfig,
@@ -96,6 +96,18 @@ export function AlumniDirectoryPage({
   const [ethnicityFilter, setEthnicityFilter] = useState<string>('__all__')
   const [nationalityFilter, setNationalityFilter] = useState<string>('__all__')
   const [selectedRow, setSelectedRow] = useState<AlumniAirtableRow | null>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const q = params.get('q')?.trim()
+    const id = params.get('id')?.trim()
+    if (q) setQuery(q)
+    if (id && alumni.length > 0) {
+      const match = alumni.find((row) => row.id === id)
+      if (match) setSelectedRow(match)
+    }
+  }, [alumni])
 
   const navConfig = getNavigationConfig(slug)
   const { isDevMode } = useMemoryAgentDevMode()

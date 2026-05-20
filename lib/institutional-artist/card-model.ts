@@ -28,6 +28,8 @@ export type InstitutionalArtistCardData = {
   badges: InstitutionalArtistBadge[]
   bioSnippet?: string
   website?: string
+  /** On-site alumni directory deep link */
+  profileUrl?: string
   /** Memory Agent: why this person matched */
   matchReason?: string
   confidence?: 'high' | 'medium' | 'low'

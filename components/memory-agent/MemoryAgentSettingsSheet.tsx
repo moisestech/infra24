@@ -19,6 +19,8 @@ type MemoryAgentSettingsSheetProps = {
   orgSlug: string
   autoSpeakAnswers: boolean
   onAutoSpeakChange: (on: boolean) => void
+  showDataReadiness: boolean
+  onShowDataReadinessChange: (on: boolean) => void
   voiceAvailable: boolean
   isDevMode: boolean
   onEnableDevMode: () => void
@@ -29,6 +31,8 @@ export function MemoryAgentSettingsSheet({
   orgSlug,
   autoSpeakAnswers,
   onAutoSpeakChange,
+  showDataReadiness,
+  onShowDataReadinessChange,
   voiceAvailable,
   isDevMode,
   onEnableDevMode,
@@ -64,6 +68,20 @@ export function MemoryAgentSettingsSheet({
                 {voiceAvailable
                   ? 'Play the latest answer aloud when it arrives.'
                   : 'Spoken answers are not available yet on this device.'}
+              </span>
+            </span>
+          </label>
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              className="mt-1 h-4 w-4 rounded border-[var(--ma-input-border)]"
+              checked={showDataReadiness}
+              onChange={(e) => onShowDataReadinessChange(e.target.checked)}
+            />
+            <span>
+              <span className={cn('block text-sm font-medium', ma.body)}>Show data readiness</span>
+              <span className={cn('mt-1 block text-xs', ma.caption)}>
+                Staff-facing notes on source records and gaps. Off by default for public demos.
               </span>
             </span>
           </label>

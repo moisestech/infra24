@@ -48,6 +48,16 @@ const BY_SLUG: Record<string, Partial<MemoryAgentBranding>> = {
       'Who is connected to this exhibition?',
       'What should go on the smart sign today?',
     ],
+    pulseCopy: {
+      searching: {
+        title: 'Searching…',
+        subtitle: 'Looking through programs, exhibitions, and alumni records.',
+      },
+      thinking: {
+        title: 'Preparing your answer…',
+        subtitle: 'Grounding in Oolite announcements and approved directory data.',
+      },
+    },
   },
   bakehouse: {
     orgName: 'Bakehouse Art Complex',
