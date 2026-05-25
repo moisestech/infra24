@@ -6,9 +6,13 @@ import type { DisplayProgram, DisplaySegment, ArtistGridFilter } from '@/lib/dis
 import {
   filterAnnouncementsByRecentWindow,
   filterCinematicAnnouncements,
+  SMART_SIGN_ANNOUNCEMENTS_ON_OR_AFTER,
 } from '@/lib/display/display-program';
 import {
   filterAnnouncementsByDisplayCalendarMonth,
+  filterAnnouncementsOnOrAfterDate,
+  filterAnnouncementsRelevantForDisplay,
+  getTodayDisplayDateKey,
   isValidDisplayCalendarMonthKey,
 } from '@/lib/display/announcement-month';
 import { AnnouncementCarousel } from '@/components/carousel/AnnouncementCarousel';
@@ -80,6 +84,15 @@ export function DisplayProgramOrchestrator({
   const [index, setIndex] = useState(0);
   const [docHidden, setDocHidden] = useState(false);
 
+  const displayAnnouncements = useMemo(() => {
+    const mode = program.displayFilterMode ?? 'on_view_or_upcoming';
+    if (mode === 'on_or_after') {
+      const floor = program.displayOnOrAfter?.trim() || SMART_SIGN_ANNOUNCEMENTS_ON_OR_AFTER;
+      return filterAnnouncementsOnOrAfterDate(allAnnouncements, floor);
+    }
+    return filterAnnouncementsRelevantForDisplay(allAnnouncements, getTodayDisplayDateKey());
+  }, [allAnnouncements, program.displayFilterMode, program.displayOnOrAfter]);
+
   useEffect(() => {
     const onVis = () => setDocHidden(document.hidden);
     onVis();
@@ -104,17 +117,20 @@ export function DisplayProgramOrchestrator({
     (seg: DisplaySegment) => {
       const month = seg.params?.displayCalendarMonth?.trim() ?? '';
       if (month && isValidDisplayCalendarMonthKey(month)) {
-        return filterAnnouncementsByDisplayCalendarMonth(allAnnouncements, month);
+        return filterAnnouncementsByDisplayCalendarMonth(displayAnnouncements, month);
       }
-      const days = seg.params?.useRecentWindowDays ?? 30;
-      return filterAnnouncementsByRecentWindow(allAnnouncements, days);
+      const days = seg.params?.useRecentWindowDays;
+      if (days != null && days > 0) {
+        return filterAnnouncementsByRecentWindow(displayAnnouncements, days);
+      }
+      return displayAnnouncements;
     },
-    [allAnnouncements]
+    [displayAnnouncements]
   );
 
   const cinematicList = useCallback(
     (seg: DisplaySegment) => {
-      let list = filterCinematicAnnouncements(allAnnouncements);
+      let list = filterCinematicAnnouncements(displayAnnouncements);
       const month = seg.params?.displayCalendarMonth?.trim() ?? '';
       if (month && isValidDisplayCalendarMonthKey(month)) {
         list = filterAnnouncementsByDisplayCalendarMonth(list, month);
@@ -122,12 +138,12 @@ export function DisplayProgramOrchestrator({
       const max = seg.params?.maxItems ?? 12;
       return list.slice(0, max);
     },
-    [allAnnouncements]
+    [displayAnnouncements]
   );
 
   const mergedWorkshops = useMemo(
-    () => mergeWorkshopGridItems(allAnnouncements, workshops),
-    [allAnnouncements, workshops]
+    () => mergeWorkshopGridItems(displayAnnouncements, workshops),
+    [displayAnnouncements, workshops]
   );
 
   const workshopItems = useCallback(
@@ -179,8 +195,8 @@ export function DisplayProgramOrchestrator({
         const month = segment.params?.displayCalendarMonth?.trim() ?? '';
         const pool =
           month && isValidDisplayCalendarMonthKey(month)
-            ? filterAnnouncementsByDisplayCalendarMonth(allAnnouncements, month)
-            : allAnnouncements;
+            ? filterAnnouncementsByDisplayCalendarMonth(displayAnnouncements, month)
+            : displayAnnouncements;
         const ann = resolveFullscreenAnnouncement(pool, segment);
         if (!ann) {
           return (
@@ -263,7 +279,7 @@ export function DisplayProgramOrchestrator({
     segment,
     orgSlug,
     cleanViewMode,
-    allAnnouncements,
+    displayAnnouncements,
     carouselList,
     cinematicList,
     workshopItems,

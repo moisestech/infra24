@@ -2,6 +2,10 @@
 
 import { cn } from '@/lib/utils';
 import { Calendar, Clock } from 'lucide-react';
+import {
+  announcementEventDateRaw,
+  announcementEventEndDateRaw,
+} from '@/lib/display/announcement-month';
 
 interface AnnouncementDateDisplayProps {
   announcement: any;
@@ -196,8 +200,11 @@ export function AnnouncementDateDisplay({
     return `${startMonth} ${startDay} - ${endMonth} ${endDay}`;
   };
 
-  // Use starts_at if available, otherwise use created_at
-  const eventDate = announcement.starts_at || announcement.created_at;
+  // Prefer scheduled event anchors; never show created_at as the event date.
+  const eventDate = announcementEventDateRaw(announcement);
+  const eventEndDate = announcementEventEndDateRaw(announcement);
+  if (!eventDate) return null;
+
   const dateStatus = getDateStatus(eventDate);
   
   // Check if this is a fun_fact that shouldn't show dates
@@ -274,28 +281,28 @@ export function AnnouncementDateDisplay({
       )}
 
       {/* End Date/Time if available - only show for non-historical fun facts */}
-      {shouldShowDate && announcement.ends_at && (
+      {shouldShowDate && eventEndDate && (
         <div 
           className={cn(
             "text-white/50 font-medium tracking-tight mt-1",
             isCardLayout ? "text-base md:text-lg xl:text-xl" : "text-2xl xl:text-4xl 2xl:text-5xl 3xl:text-7xl"
           )}
         >
-          {formatEndDate(eventDate, announcement.ends_at) && (
-            <span>Until {formatEndDate(eventDate, announcement.ends_at)}</span>
+          {formatEndDate(eventDate, eventEndDate) && (
+            <span>Until {formatEndDate(eventDate, eventEndDate)}</span>
           )}
         </div>
       )}
 
       {/* Date Range if multi-day event */}
-      {shouldShowDate && getDateRange(eventDate, announcement.ends_at) && (
+      {shouldShowDate && getDateRange(eventDate, eventEndDate) && (
         <div 
           className={cn(
             "text-white/40 font-medium tracking-tight mt-1",
             isCardLayout ? "text-sm md:text-base xl:text-lg" : "text-xl xl:text-3xl 2xl:text-4xl 3xl:text-6xl"
           )}
         >
-          {getDateRange(eventDate, announcement.ends_at)}
+          {getDateRange(eventDate, eventEndDate)}
         </div>
       )}
 
@@ -369,7 +376,7 @@ export function AnnouncementDateDisplay({
           className="mt-6 space-y-4 text-right"
         >
           {/* Start Date/Time */}
-          {announcement.starts_at && (
+          {eventDate && (
             <div 
               className="flex items-center justify-end gap-3 p-4 bg-white/5 rounded-lg"
             >
@@ -378,11 +385,11 @@ export function AnnouncementDateDisplay({
                   Start
                 </div>
                 <div className={cn("text-white/90 font-medium", textSizes.startDate)}>
-                  {formatDetailedDate(announcement.starts_at)}
+                  {formatDetailedDate(eventDate)}
                 </div>
-                {formatDetailedTime(announcement.starts_at) && (
+                {formatDetailedTime(eventDate) && (
                   <div className={cn("text-white/70", textSizes.startDate)}>
-                    {formatDetailedTime(announcement.starts_at)}
+                    {formatDetailedTime(eventDate)}
                   </div>
                 )}
               </div>
@@ -391,7 +398,7 @@ export function AnnouncementDateDisplay({
           )}
 
           {/* End Date/Time */}
-          {announcement.ends_at && (
+          {eventEndDate && (
             <div 
               className="flex items-center justify-end gap-3 p-4 bg-white/5 rounded-lg"
             >
@@ -400,11 +407,11 @@ export function AnnouncementDateDisplay({
                   End
                 </div>
                 <div className={cn("text-white/90 font-medium", textSizes.endDate)}>
-                  {formatDetailedDate(announcement.ends_at)}
+                  {formatDetailedDate(eventEndDate)}
                 </div>
-                {formatDetailedTime(announcement.ends_at) && (
+                {formatDetailedTime(eventEndDate) && (
                   <div className={cn("text-white/70", textSizes.endDate)}>
-                    {formatDetailedTime(announcement.ends_at)}
+                    {formatDetailedTime(eventEndDate)}
                   </div>
                 )}
               </div>
@@ -413,8 +420,8 @@ export function AnnouncementDateDisplay({
           )}
 
           {/* Date Range (if multi-day) */}
-          {announcement.starts_at && announcement.ends_at && 
-           formatDetailedDateRange(announcement.starts_at, announcement.ends_at) && (
+          {eventDate && eventEndDate &&
+           formatDetailedDateRange(eventDate, eventEndDate) && (
             <div 
               className="flex items-center justify-end gap-3 p-4 bg-white/5 rounded-lg"
             >
@@ -423,7 +430,7 @@ export function AnnouncementDateDisplay({
                   Duration
                 </div>
                 <div className={cn("text-white/90 font-medium", textSizes.duration)}>
-                  {formatDetailedDateRange(announcement.starts_at, announcement.ends_at)}
+                  {formatDetailedDateRange(eventDate, eventEndDate)}
                 </div>
               </div>
               <Calendar size={dateIconSize} className="text-white/70" />

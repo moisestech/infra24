@@ -11,6 +11,7 @@ import {
   announcementHasScannableDestination,
   buildAnnouncementScanPath,
 } from '@/lib/announcements/scan-target';
+import { announcementEventDateRaw } from '@/lib/display/announcement-month';
 
 interface AnnouncementContentProps {
   announcement: any;
@@ -256,15 +257,14 @@ export function AnnouncementContent({
 
         {/* Date - in-flow for card layout (no overlay). Only show event time from starts_at, not posted time from created_at */}
         {!hideAnnouncementDates && layoutType === 'card' && (announcement.type as string) !== 'fun_fact' && (() => {
-          const eventDate = announcement.starts_at || announcement.created_at;
+          const eventDate = announcementEventDateRaw(announcement);
           if (!eventDate) return null;
           const d = new Date(eventDate);
           const dayOfWeek = d.toLocaleString('en-US', { weekday: 'long' });
           const dateStr = `${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate()}`;
-          // Only show time when it's from starts_at (event time), not created_at (posted time)
-          const hasEventTime = !!announcement.starts_at;
-          const timeStr = hasEventTime ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : null;
-          const showTime = hasEventTime && timeStr && timeStr !== '12:00 AM';
+          const hasTimedStart = Boolean(announcement.starts_at);
+          const timeStr = hasTimedStart ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : null;
+          const showTime = hasTimedStart && timeStr && timeStr !== '12:00 AM';
           const today = new Date();
           today.setHours(0, 0, 0, 0);
           d.setHours(0, 0, 0, 0);

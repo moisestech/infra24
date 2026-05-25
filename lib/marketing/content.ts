@@ -183,7 +183,7 @@ export const marketingHero = {
 export const marketingHeroEngagement = {
   artistIndex: {
     label: 'Add your practice to the artist index',
-    href: '/contact/artist-index',
+    href: '/network/signup?pathway=index',
   },
   newsletter: {
     placeholder: 'Your email',
@@ -559,7 +559,7 @@ export const marketingHeaderNavRight = [
 
 /** Apply CTA in the marketing menu sheet (top bar stays logo + menu only). */
 export const marketingHeaderApplyCta = {
-  href: '/contact/artist-index',
+  href: '/network/signup?pathway=index',
   label: 'Apply',
 } as const;
 

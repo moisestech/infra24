@@ -15,9 +15,9 @@ describe('buildCrmGraphElements', () => {
     expect(nodes.some((n) => n.kind === 'institution' && n.label === 'Bakehouse Art Complex')).toBe(true)
   })
 
-  it('includes opportunities on explorer surface', () => {
+  it('includes opportunities on explorer surface in combined mode', () => {
     const tables = getSampleCrmTables()
-    const els = buildCrmGraphElements(tables, 'explorer')
+    const els = buildCrmGraphElements(tables, { surface: 'explorer', mode: 'combined', visibility: 'public' })
     const nodes = els.filter((e) => 'kind' in e.data && !('source' in e.data)).map((e) => e.data as DccGraphNodeData)
     expect(nodes.some((n) => n.kind === 'opportunity')).toBe(true)
   })
@@ -40,6 +40,7 @@ describe('buildCrmGraphElements', () => {
           },
         },
       ],
+      seedCandidates: [],
       institutions: [],
       opportunities: [],
       interactions: [],
@@ -52,6 +53,47 @@ describe('buildCrmGraphElements', () => {
     expect(stub?.label).toBe('Organization')
     const edges = els.filter((e) => 'source' in e.data)
     expect(edges.some((e) => e.data.kind === 'affiliated_with')).toBe(true)
+  })
+
+  it('excludes people without public listing consent on public surfaces', () => {
+    const tables = {
+      people: [
+        {
+          id: 'recHidden',
+          fields: {
+            [PF.name]: 'Hidden Person',
+            [PF.publicProfileConsent]: 'Ask Before Publishing',
+            [PF.graphLayer]: 'Network Node',
+          },
+        },
+        {
+          id: 'recPublic',
+          fields: {
+            [PF.name]: 'Public Person',
+            [PF.publicProfileConsent]: 'Public Listing OK',
+            [PF.graphLayer]: 'Network Node',
+          },
+        },
+        {
+          id: 'recLegacy',
+          fields: {
+            [PF.name]: 'Legacy Person',
+          },
+        },
+      ],
+      seedCandidates: [],
+      institutions: [],
+      opportunities: [],
+      interactions: [],
+      campaigns: [],
+    }
+    const els = buildCrmGraphElements(tables, 'home')
+    const labels = els
+      .filter((e) => 'kind' in e.data && !('source' in e.data))
+      .map((e) => (e.data as DccGraphNodeData).label)
+    expect(labels).toContain('Public Person')
+    expect(labels).toContain('Legacy Person')
+    expect(labels).not.toContain('Hidden Person')
   })
 })
 
@@ -77,7 +119,9 @@ describe('scorePersonNode', () => {
     const hi: DccGraphNodeData = {
       id: 'person:x',
       kind: 'person',
+      provenance: 'people',
       label: 'X',
+      displayLabel: 'X',
       miami: true,
       warmth: 'Very Warm',
       contactCategory: 'Artist',
@@ -85,7 +129,9 @@ describe('scorePersonNode', () => {
     const lo: DccGraphNodeData = {
       id: 'person:y',
       kind: 'person',
+      provenance: 'people',
       label: 'Y',
+      displayLabel: 'Y',
       miami: false,
       warmth: 'Cold',
       contactCategory: 'Other',

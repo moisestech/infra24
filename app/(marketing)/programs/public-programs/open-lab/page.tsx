@@ -183,7 +183,7 @@ export default function OpenLabPage() {
             </p>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
-                href="/contact/artist-index?source=era-open-lab"
+                href="/network/signup?pathway=index&source=era-open-lab"
                 className="inline-flex items-center justify-center gap-1 rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 dark:bg-neutral-100 dark:text-neutral-900"
               >
                 Tell us you&rsquo;re coming

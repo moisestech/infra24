@@ -159,7 +159,7 @@ export default function EventsPage() {
                 <span aria-hidden>→</span>
               </Link>
               <Link
-                href="/contact/artist-index?source=era-irl-events"
+                href="/network/signup?pathway=index&source=era-irl-events"
                 className="inline-flex items-center gap-1 rounded-full border border-[var(--cdc-border)] px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-600 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-neutral-100"
               >
                 Add yourself to the artist index

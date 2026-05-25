@@ -5,8 +5,13 @@
 
 export const DISPLAY_PROGRAM_STORAGE_PREFIX = 'display-program:v1:';
 
-/** Default calendar month for announcement carousel, fullscreen pool, and cinematic grid (YYYY-MM). Edit segment JSON or change this constant between programming cycles. */
+/** Legacy month lock used before on-or-after floors; stripped from saved programs on load. */
 export const SMART_SIGN_DEFAULT_DISPLAY_MONTH = '2026-04';
+
+/** @deprecated Legacy fixed floor; prefer `displayFilterMode: 'on_view_or_upcoming'`. */
+export const SMART_SIGN_ANNOUNCEMENTS_ON_OR_AFTER = '2026-05-20';
+
+export type DisplayAnnouncementFilterMode = 'on_view_or_upcoming' | 'on_or_after';
 
 export type DisplaySegmentKind =
   | 'announcement_carousel'
@@ -46,6 +51,13 @@ export interface DisplaySegment {
 
 export interface DisplayProgram {
   version: 1;
+  /**
+   * How announcement-backed segments filter the pool.
+   * Default: on_view_or_upcoming (end >= today OR start >= today).
+   */
+  displayFilterMode?: DisplayAnnouncementFilterMode;
+  /** Used only when displayFilterMode is `on_or_after` (YYYY-MM-DD). */
+  displayOnOrAfter?: string;
   segments: DisplaySegment[];
 }
 
@@ -78,15 +90,13 @@ export function parseDisplayViewParam(search: string): DisplaySegmentKind | null
 
 export const DEFAULT_DISPLAY_PROGRAM: DisplayProgram = {
   version: 1,
+  displayFilterMode: 'on_view_or_upcoming',
   segments: [
     {
       id: 'announcements',
       kind: 'announcement_carousel',
       durationMs: 90_000,
-      params: {
-        displayCalendarMonth: SMART_SIGN_DEFAULT_DISPLAY_MONTH,
-        useRecentWindowDays: 30,
-      },
+      params: {},
     },
     {
       id: 'workshops',
@@ -113,25 +123,39 @@ export const DEFAULT_DISPLAY_PROGRAM: DisplayProgram = {
       params: {
         maxItems: 12,
         columns: 3,
-        displayCalendarMonth: SMART_SIGN_DEFAULT_DISPLAY_MONTH,
       },
     },
   ],
 };
 
+/** Drop legacy April month locks and ensure the current on-or-after floor is set. */
+export function migrateDisplayProgram(program: DisplayProgram): DisplayProgram {
+  const legacyMonth = SMART_SIGN_DEFAULT_DISPLAY_MONTH;
+  const segments = program.segments.map((segment) => {
+    const params = segment.params;
+    if (!params?.displayCalendarMonth || params.displayCalendarMonth !== legacyMonth) {
+      return segment;
+    }
+    const { displayCalendarMonth: _removed, ...rest } = params;
+    return {
+      ...segment,
+      params: Object.keys(rest).length > 0 ? rest : undefined,
+    };
+  });
+  const { displayOnOrAfter: _legacyFloor, ...rest } = program;
+  return {
+    ...rest,
+    displayFilterMode: program.displayFilterMode ?? 'on_view_or_upcoming',
+    segments,
+  };
+}
+
 function cloneSegmentParams(p?: DisplaySegmentParams): DisplaySegmentParams | undefined {
   return p ? { ...p } : undefined;
 }
 
-function defaultPreviewParamsForKind(kind: DisplaySegmentKind): DisplaySegmentParams {
-  switch (kind) {
-    case 'announcement_carousel':
-    case 'grid_cinematic':
-    case 'announcement_fullscreen':
-      return { displayCalendarMonth: SMART_SIGN_DEFAULT_DISPLAY_MONTH };
-    default:
-      return {};
-  }
+function defaultPreviewParamsForKind(_kind: DisplaySegmentKind): DisplaySegmentParams {
+  return {};
 }
 
 /** One-segment program for preview URLs; orchestrator does not advance when length is 1. */
@@ -151,6 +175,7 @@ export function buildSingleSegmentPreviewProgram(
   }
   return {
     version: 1,
+    displayFilterMode: 'on_view_or_upcoming',
     segments: [{ id, kind, durationMs, params }],
   };
 }
@@ -203,7 +228,7 @@ export function parseProgramFromUrl(search: string): DisplayProgram | null {
     if (!raw?.trim()) return null;
     const json = typeof atob !== 'undefined' ? atob(raw.replace(/-/g, '+').replace(/_/g, '/')) : '';
     const parsed = JSON.parse(json);
-    return isDisplayProgram(parsed) ? parsed : null;
+    return isDisplayProgram(parsed) ? migrateDisplayProgram(parsed) : null;
   } catch {
     return null;
   }
@@ -218,7 +243,7 @@ export function loadDisplayProgram(orgSlug: string): DisplayProgram {
     const raw = localStorage.getItem(`${DISPLAY_PROGRAM_STORAGE_PREFIX}${orgSlug}`);
     if (!raw) return DEFAULT_DISPLAY_PROGRAM;
     const parsed = JSON.parse(raw);
-    return isDisplayProgram(parsed) ? parsed : DEFAULT_DISPLAY_PROGRAM;
+    return isDisplayProgram(parsed) ? migrateDisplayProgram(parsed) : DEFAULT_DISPLAY_PROGRAM;
   } catch {
     return DEFAULT_DISPLAY_PROGRAM;
   }

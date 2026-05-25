@@ -89,7 +89,7 @@ export default function PublicInterfacesPage() {
               and upcoming public interfaces around Miami.
             </p>
             <Link
-              href="/contact/artist-index?source=era-public-interfaces"
+              href="/network/signup?pathway=index&source=era-public-interfaces"
               className="mt-5 inline-flex items-center gap-1 rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 dark:bg-neutral-100 dark:text-neutral-900"
             >
               Submit your work

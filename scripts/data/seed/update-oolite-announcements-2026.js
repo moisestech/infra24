@@ -127,6 +127,15 @@ async function updateOoliteAnnouncements() {
 
     const now = new Date();
 
+    const DISPLAY_TZ = 'America/New_York';
+    function dateFieldFromIso(iso) {
+      if (!iso) return undefined;
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return undefined;
+      const ymd = new Intl.DateTimeFormat('en-CA', { timeZone: DISPLAY_TZ }).format(d);
+      return `${ymd}T00:00:00.000Z`;
+    }
+
     // Schedule anchors for /o/{slug}/announcements month filter + sort: the app prefers
     // end_date || start_date || starts_at || scheduled_at || created_at. Rows without
     // starts_at (or legacy start_date) fall back to created_at (the day the seed ran).
@@ -1438,6 +1447,8 @@ async function updateOoliteAnnouncements() {
     // Add required fields to all announcements
     const announcementsWithRequiredFields = announcements.map(announcement => ({
       ...announcement,
+      start_date: announcement.start_date ?? dateFieldFromIso(announcement.starts_at),
+      end_date: announcement.end_date ?? dateFieldFromIso(announcement.ends_at),
       organization_id: announcement.organization_id || organization.id,
       org_id: announcement.org_id || organization.id,
       created_by: announcement.created_by || 'system_oolite',

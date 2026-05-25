@@ -42,21 +42,42 @@ export default function DccNetworkPage() {
           >
             Living network
           </Link>{' '}
-          for the full-width view.
+          for the full-width view, or the{' '}
+          <Link
+            href="/network/immersive"
+            className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline dark:text-teal-300"
+          >
+            Immersive view
+          </Link>{' '}
+          for a 3D field map.
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Link
-            href="/contact/artist-index?source=era-network"
+            href="/network/signup?pathway=index&source=era-network"
             className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 dark:bg-neutral-100 dark:text-neutral-900"
           >
             <UserPlus className="h-4 w-4" aria-hidden />
-            Add yourself to the artist index
+            Join Miami&apos;s Digital Culture Map
+          </Link>
+          <Link
+            href="/network/research"
+            className="inline-flex items-center gap-1 rounded-full border border-[var(--cdc-border)] px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-600 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-neutral-100"
+          >
+            Research View
+            <span aria-hidden>→</span>
           </Link>
           <Link
             href="/network/living"
             className="inline-flex items-center gap-1 rounded-full border border-[var(--cdc-border)] px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-600 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-neutral-100"
           >
             Open living network
+            <span aria-hidden>→</span>
+          </Link>
+          <Link
+            href="/network/immersive"
+            className="inline-flex items-center gap-1 rounded-full border border-[var(--cdc-border)] px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:text-neutral-900 dark:border-neutral-600 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:text-neutral-100"
+          >
+            Immersive 3D view
             <span aria-hidden>→</span>
           </Link>
         </div>

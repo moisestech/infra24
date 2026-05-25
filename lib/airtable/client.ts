@@ -104,3 +104,47 @@ export async function patchAirtableRecord(
 
   return res.json() as Promise<AirtableRecord>;
 }
+
+interface AirtableCreateResponse {
+  records: AirtableRecord[];
+}
+
+/**
+ * POST up to 10 records per request (Airtable batch limit). Larger batches are chunked.
+ */
+export async function createAirtableRecords(
+  baseId: string,
+  tableId: string,
+  apiKey: string,
+  records: Array<{ fields: Record<string, unknown> }>
+): Promise<AirtableRecord[]> {
+  if (records.length === 0) return [];
+
+  const created: AirtableRecord[] = [];
+  const chunkSize = 10;
+
+  for (let i = 0; i < records.length; i += chunkSize) {
+    const chunk = records.slice(i, i + chunkSize);
+    const res = await fetch(
+      `https://api.airtable.com/v0/${encodeURIComponent(baseId)}/${encodeURIComponent(tableId)}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ records: chunk }),
+      }
+    );
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Airtable POST error ${res.status}: ${text}`);
+    }
+
+    const data: AirtableCreateResponse = await res.json();
+    created.push(...data.records);
+  }
+
+  return created;
+}

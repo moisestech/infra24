@@ -2,13 +2,49 @@ import type { AirtableRecord } from '@/lib/airtable/client'
 import { buildCrmGraphElements } from '@/lib/airtable/crm-graph-transform'
 import { filterGraphForHome, HOME_GRAPH_MAX_TOTAL_NODES } from '@/lib/airtable/crm-graph-home-filter'
 import { CRM_GRAPH_FIELD_MAP } from '@/lib/airtable/crm-graph-field-map'
-import type { DccNetworkGraphPayload, DccNetworkGraphSurface } from '@/lib/marketing/dcc-crm-graph-types'
+import type { DccGraphMode, DccGraphVisibility, DccNetworkGraphPayload, DccNetworkGraphSurface } from '@/lib/marketing/dcc-crm-graph-types'
+
+export type SampleGraphPayloadOptions = {
+  surface?: DccNetworkGraphSurface
+  mode?: DccGraphMode
+  visibility?: DccGraphVisibility
+}
+
+export function getSampleGraphPayload(
+  surfaceOrOptions: DccNetworkGraphSurface | SampleGraphPayloadOptions = 'home'
+): DccNetworkGraphPayload {
+  const options: SampleGraphPayloadOptions =
+    typeof surfaceOrOptions === 'string' ? { surface: surfaceOrOptions } : surfaceOrOptions
+  const surface = options.surface ?? 'home'
+  const mode = options.mode ?? 'active'
+  const visibility = options.visibility ?? 'public'
+
+  const tables = getSampleCrmTables()
+  const elements = buildCrmGraphElements(tables, { surface, mode, visibility })
+  const base: DccNetworkGraphPayload = {
+    elements,
+    meta: {
+      source: 'fixture',
+      surface,
+      mode,
+      visibility,
+      generatedAt: new Date().toISOString(),
+      nodeCount: elements.filter((e) => 'kind' in e.data && !('source' in e.data)).length,
+      edgeCount: elements.filter((e) => 'source' in e.data).length,
+    },
+  }
+  if (surface === 'home') {
+    return filterGraphForHome(base, { maxPeople: 80, maxTotalNodes: HOME_GRAPH_MAX_TOTAL_NODES })
+  }
+  return base
+}
 
 const F = CRM_GRAPH_FIELD_MAP
 
 /** Tiny CRM-shaped fixture for local dev and tests when Airtable is unset. */
 export function getSampleCrmTables(): {
   people: AirtableRecord[]
+  seedCandidates: AirtableRecord[]
   institutions: AirtableRecord[]
   opportunities: AirtableRecord[]
   interactions: AirtableRecord[]
@@ -147,8 +183,43 @@ export function getSampleCrmTables(): {
     },
   }))
 
+  const seedCandidates: AirtableRecord[] = [
+    {
+      id: 'recS1',
+      fields: {
+        [F.seedCandidates.candidateName]: 'Lauren Shapiro',
+        [F.seedCandidates.constituentLabel]: 'Media Artist',
+        [F.seedCandidates.roleType]: 'Artist',
+        [F.seedCandidates.institutionSource]: 'Locust Projects',
+        [F.seedCandidates.graphLayer]: 'Both',
+        [F.seedCandidates.demoReadiness]: 'Needs Image / Link',
+        [F.seedCandidates.publicNodeSummary]:
+          'Miami-based media artist working across video, installation, and digital identity.',
+        [F.seedCandidates.miamiConnectionType]: 'Miami-based',
+        [F.seedCandidates.nodePriority]: 'Large Node',
+        [F.seedCandidates.suggestedPracticeTags]: ['Video', 'Installation'],
+        [F.seedCandidates.reviewStatus]: 'Approved for First 30',
+      },
+    },
+    {
+      id: 'recS2',
+      fields: {
+        [F.seedCandidates.candidateName]: 'Research Node Example',
+        [F.seedCandidates.constituentLabel]: 'Creative Technologist',
+        [F.seedCandidates.institutionSource]: 'Bakehouse Art Complex',
+        [F.seedCandidates.graphLayer]: 'Research Node',
+        [F.seedCandidates.demoReadiness]: 'Needs Review',
+        [F.seedCandidates.publicNodeSummary]: 'Creative technologist connected to Miami digital lab culture.',
+        [F.seedCandidates.miamiConnectionType]: 'Miami institution connection',
+        [F.seedCandidates.nodePriority]: 'Research Node',
+        [F.seedCandidates.suggestedPracticeTags]: ['Creative Technology', 'Web'],
+      },
+    },
+  ]
+
   return {
     people: [...people, ...extraPeople],
+    seedCandidates,
     institutions: [...institutions, ...extraInstitutions],
     opportunities,
     interactions: [...interactions, ...extraInteractions],
@@ -156,21 +227,6 @@ export function getSampleCrmTables(): {
   }
 }
 
-export function getSampleGraphPayload(surface: DccNetworkGraphSurface): DccNetworkGraphPayload {
-  const tables = getSampleCrmTables()
-  const elements = buildCrmGraphElements(tables, surface)
-  const base: DccNetworkGraphPayload = {
-    elements,
-    meta: {
-      source: 'fixture',
-      surface,
-      generatedAt: new Date().toISOString(),
-      nodeCount: elements.filter((e) => 'kind' in e.data && !('source' in e.data)).length,
-      edgeCount: elements.filter((e) => 'source' in e.data).length,
-    },
-  }
-  if (surface === 'home') {
-    return filterGraphForHome(base, { maxPeople: 80, maxTotalNodes: HOME_GRAPH_MAX_TOTAL_NODES })
-  }
-  return base
+export function getSampleGraphPayloadLegacy(surface: DccNetworkGraphSurface): DccNetworkGraphPayload {
+  return getSampleGraphPayload({ surface })
 }

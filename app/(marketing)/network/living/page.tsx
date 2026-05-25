@@ -45,6 +45,10 @@ export default function NetworkLivingPage() {
             <Link href="/network" className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline">
               Open network explorer
             </Link>
+            . Want the 3D field map?{' '}
+            <Link href="/network/immersive" className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline">
+              Open immersive view
+            </Link>
             .
           </p>
         </header>
@@ -52,7 +56,7 @@ export default function NetworkLivingPage() {
 
       <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
         <div className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-4 sm:p-6">
-          <GraphExplorer surface="explorer" className="text-neutral-100" />
+          <GraphExplorer surface="explorer" mode="combined" visibility="public" className="text-neutral-100" />
         </div>
       </div>
     </div>

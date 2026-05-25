@@ -172,6 +172,13 @@ const pages: CdcPageDef[] = [
     layout: 'default',
   }),
   p({
+    path: '/edgezones',
+    title: 'DCC Miami × Edge Zones',
+    description:
+      'Partnership portal for DCC Miami and Edge Zones — artists, programs, support model, archive, and pathways to join Miami’s digital culture map.',
+    layout: 'default',
+  }),
+  p({
     path: '/network',
     title: 'Network explorer',
     description:
@@ -184,6 +191,37 @@ const pages: CdcPageDef[] = [
     description:
       'Full-width map of people, institutions, programs, and opportunities shaping Miami’s digital culture field — connection strength reflects real collaboration.',
     parent: '/network',
+    layout: 'default',
+  }),
+  p({
+    path: '/network/immersive',
+    title: 'Immersive network',
+    description:
+      'Three-dimensional view of Miami’s cultural network — people and institutions connected through real CRM relationships.',
+    parent: '/network',
+    layout: 'default',
+  }),
+  p({
+    path: '/network/research',
+    title: 'Research View',
+    description:
+      'Miami Digital Culture Research Map — anonymized ecosystem view of artists, institutions, and cultural references DCC is mapping.',
+    parent: '/network',
+    layout: 'default',
+  }),
+  p({
+    path: '/network/signup',
+    title: 'Join Miami’s Digital Culture Map',
+    description:
+      'Become part of the DCC Index — a living network of artists, creators, creative technologists, educators, researchers, and cultural workers shaping digital culture in Miami and beyond.',
+    parent: '/network',
+    layout: 'default',
+  }),
+  p({
+    path: '/dcc/signup',
+    title: 'Join Miami’s Digital Culture Map',
+    description:
+      'Become part of the DCC Index — a living network of artists, creators, creative technologists, educators, researchers, and cultural workers shaping digital culture in Miami and beyond.',
     layout: 'default',
   }),
   p({
@@ -798,7 +836,15 @@ const CONTACT_AUDIENCES: ReadonlyArray<{
   { slug: 'artist-support', title: 'Artist support' },
   {
     slug: 'artist-index',
-    title: 'Artist index listing',
+    title: 'Join the DCC Index',
+    description:
+      'A living directory of artists, creators, researchers, technologists, educators, and cultural workers shaping digital culture in Miami and beyond.',
+  },
+  {
+    slug: 'dcc-index',
+    title: 'Join the DCC Index',
+    description:
+      'A living directory of artists, creators, researchers, technologists, educators, and cultural workers shaping digital culture in Miami and beyond.',
   },
   {
     slug: 'host-a-screen',

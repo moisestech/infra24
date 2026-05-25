@@ -15,7 +15,7 @@
         { "label": "Connections in the map", "value": "62" },
         { "label": "New this month", "value": "11" }
       ],
-      "joinAction": { "label": "Add yourself to the network", "href": "/contact/artist-index?source=era-network" }
+      "joinAction": { "label": "Join Miami's Digital Culture Map", "href": "/network/signup?pathway=index&source=era-network" }
     },
     {
       "channel": "irl-events",
