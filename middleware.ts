@@ -56,6 +56,11 @@ function isPublicRoute(pathname: string): boolean {
     '/knight',
     /** Born-Digital Era public marketing surfaces. */
     '/era',
+    /** DCC Index signup + Edge Zones partnership portal (QR / print). */
+    '/dcc',
+    '/edgezones',
+    /** Landscape TV intake funnel (kiosk). */
+    '/display/dcc',
     /** Soho House Member Signal Agent pitch funnel (back-cover QR). */
     '/soho-house-ai-assistant',
     /** Root alias → /soho-house-ai-assistant */
