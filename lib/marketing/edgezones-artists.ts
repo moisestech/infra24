@@ -85,7 +85,7 @@ function mapSeedToProfile(record: AirtableRecord): EdgeZonesArtistProfile | null
       asString(fields[F.digitalOrientationSignal]),
     imageUrl: asString(fields[F.imagePortraitUrl]),
     roleType: asString(fields[F.roleType]),
-    practiceTags: [...new Set(practiceTags)].slice(0, 6),
+    practiceTags: Array.from(new Set(practiceTags)).slice(0, 6),
     program: asString(fields[F.relevantExhibitionProgram]),
     sourceUrl: asString(fields[F.sourceUrl]),
   }
