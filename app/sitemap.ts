@@ -4,13 +4,16 @@ import { getSiteUrl } from '@/lib/marketing/site-url';
 
 const EXTRA_PATHS = ['/platform', '/soho-house-ai-assistant'] as const;
 
+/** Draft / proposal pages — accessible by URL but excluded until public launch. */
+const SITEMAP_EXCLUDED = new Set(['/edgezones']);
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = getSiteUrl();
   const now = new Date();
 
   const registryPaths = getAllCdcPaths();
   const unique = new Set<string>(['/', ...registryPaths, ...EXTRA_PATHS]);
-  const paths = [...unique].sort((a, b) => a.localeCompare(b));
+  const paths = [...unique].filter((path) => !SITEMAP_EXCLUDED.has(path)).sort((a, b) => a.localeCompare(b));
 
   return paths.map((path) => ({
     url: `${base}${path}`,

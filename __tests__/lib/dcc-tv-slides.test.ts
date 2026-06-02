@@ -10,7 +10,8 @@ describe('dcc-tv-slides', () => {
   it('uses signup as persistent QR target', () => {
     expect(DCC_TV_QR_PATH).toBe('/network/signup')
     expect(DCC_TV_QR_SOURCE).toBe('dcc-tv')
-    expect(dccTvSignupUrl('https://dcc.miami')).toBe('https://dcc.miami/network/signup?source=dcc-tv')
+    expect(dccTvSignupUrl('https://dcc.miami')).toContain('utm_campaign=dcc_tv_launch')
+    expect(dccTvSignupUrl('https://dcc.miami')).toContain('qr=dcc_tv_main')
   })
 
   it('gives join slide extra duration', () => {

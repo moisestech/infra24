@@ -7,7 +7,14 @@ import { ArrowLeft, Save, X, Monitor } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { UserPicker } from '@/components/ui/UserPicker'
 import { AnnouncementPerson } from '@/types/people'
-import { ImageLayoutType } from '@/types/announcement'
+import { ImageLayoutType, type AnnouncementDisplayMetadata } from '@/types/announcement'
+import { AnnouncementDisplayMetadataFields } from '@/components/admin/AnnouncementDisplayMetadataFields'
+import {
+  DEFAULT_DISPLAY_METADATA_FORM,
+  buildDisplayMetadataPayload,
+  displayMetadataFormFromAnnouncement,
+  type DisplayMetadataFormState,
+} from '@/lib/display/announcement-display-metadata-form'
 import QRCode from '@/components/ui/QRCode'
 import {
   announcementHasScannableDestination,
@@ -28,6 +35,11 @@ interface Announcement {
   org_id: string
   scheduled_at?: string
   key_people?: AnnouncementPerson[]
+  metadata?: AnnouncementDisplayMetadata
+  image_url?: string
+  image_layout?: ImageLayoutType
+  primary_link?: string
+  qr_destination_url?: string
 }
 
 interface Organization {
@@ -78,6 +90,10 @@ export default function AnnouncementEditPage() {
   })
   
   const [selectedPeople, setSelectedPeople] = useState<AnnouncementPerson[]>([])
+  const [displayMetadata, setDisplayMetadata] = useState<DisplayMetadataFormState>(
+    DEFAULT_DISPLAY_METADATA_FORM
+  )
+  const [existingMetadata, setExistingMetadata] = useState<AnnouncementDisplayMetadata>({})
   const [previewOrigin, setPreviewOrigin] = useState('')
 
   useEffect(() => {
@@ -140,6 +156,9 @@ export default function AnnouncementEditPage() {
             primary_link: ann.primary_link || '',
             qr_destination_url: ann.qr_destination_url || '',
           })
+
+          setExistingMetadata((ann.metadata as AnnouncementDisplayMetadata) || {})
+          setDisplayMetadata(displayMetadataFormFromAnnouncement(ann.metadata))
           
           // Set selected people
           setSelectedPeople(ann.key_people || [])
@@ -190,6 +209,7 @@ export default function AnnouncementEditPage() {
         image_layout: formData.image_layout || (formData.image_url.trim() ? 'hero' : null), // Default to 'hero' if image exists but no layout selected
         primary_link: formData.primary_link.trim() || null,
         qr_destination_url: formData.qr_destination_url.trim() || null,
+        metadata: buildDisplayMetadataPayload(displayMetadata, existingMetadata),
       }
       
       const response = await fetch(`/api/announcements/${id}`, {
@@ -461,6 +481,12 @@ export default function AnnouncementEditPage() {
                 </p>
               </div>
             )}
+
+            <AnnouncementDisplayMetadataFields
+              value={displayMetadata}
+              onChange={setDisplayMetadata}
+              hasImageUrl={Boolean(formData.image_url.trim())}
+            />
 
             {/* Smart sign QR (stable URL redirects to destination below) */}
             <div className="rounded-lg border border-gray-200 dark:border-gray-600 p-4 space-y-4 bg-gray-50/80 dark:bg-gray-900/40">

@@ -3,9 +3,15 @@
 import { createContext, useContext } from 'react';
 import { cn } from '@/lib/utils';
 import { formatDisplayLabel } from '@/lib/display/format-display-label';
+import { resolveConstituentLabel } from '@/lib/network-builder/constituent-types';
 import type { Announcement } from '@/types/announcement';
 import type { ColorPalette } from '@/lib/themes';
 import { useOrganizationTheme } from '@/components/carousel/OrganizationThemeContext';
+import { SMART_SIGN_COMPACT_TOP_INSET_CLASS, SMART_SIGN_COMPACT_SECTION_TITLE_CLASS } from '@/lib/display/announcement-image-frame';
+import { artistGridPortraitUrl } from '@/lib/display/artist-spotlight';
+import { StackedDateOverlay } from '@/components/display/StackedDateOverlay';
+import { stackedDateFromWorkshopItem } from '@/lib/display/stacked-date-display';
+import { parseWorkshopScheduleBlocks } from '@/lib/display/workshop-schedule-blocks';
 
 export interface WorkshopGridItem {
   id: string;
@@ -15,6 +21,14 @@ export interface WorkshopGridItem {
   category?: string | null;
   /** When set (e.g. from announcement `additional_info`), shown as schedule / hours block */
   schedule_detail?: string | null;
+  /** Primary date line — overlaid on image and included in schedule text */
+  schedule_date_label?: string | null;
+  /** Epoch ms of the workshop start (for upcoming sort); null when undated. */
+  event_sort_ms?: number | null;
+  /** Epoch ms of the workshop end (for still-relevant filtering); null when undated. */
+  event_end_ms?: number | null;
+  /** Undated digital-lab / online class — render a "Coming Soon" badge. */
+  is_online_class?: boolean;
 }
 
 export interface ArtistGridItem {
@@ -28,6 +42,10 @@ export interface ArtistGridItem {
   studio_number?: string | null;
   /** Public API may include this for studio-resident filtering */
   metadata?: Record<string, unknown> | null;
+  /** Resolved member type label (e.g. Studio Resident) */
+  constituent_label?: string | null;
+  /** Stable slug (e.g. studio_resident) — mirrors org_member_types.type_key */
+  constituent_type?: string | null;
 }
 
 const LIGHT_PRIMARY_FALLBACK = '#47abc4';
@@ -50,6 +68,8 @@ interface DisplayGridProps {
   /** Smart-sign grids: fixed white page background (carousel can stay on org / dark). */
   surfaceMode?: 'light' | 'theme';
   columns?: 1 | 2 | 3;
+  /** Halve top inset below smart-sign chrome (workshops segment). */
+  compactTopInset?: boolean;
   className?: string;
   children: React.ReactNode;
 }
@@ -60,6 +80,7 @@ export function DisplayGrid({
   hideHeading = false,
   surfaceMode = 'theme',
   columns = 3,
+  compactTopInset = false,
   className,
   children,
 }: DisplayGridProps) {
@@ -81,7 +102,10 @@ export function DisplayGrid({
     <GridChromeContext.Provider value={{ colors, surfaceMode }}>
       <div
         className={cn(
-          'min-h-screen w-full p-6 pt-[calc(1.5rem+150px)] md:p-10 md:pt-[calc(2.5rem+150px)]',
+          'min-h-screen w-full p-6 md:p-10',
+          compactTopInset
+            ? SMART_SIGN_COMPACT_TOP_INSET_CLASS
+            : 'pt-[calc(1.5rem+150px)] md:pt-[calc(2.5rem+150px)]',
           lightShell &&
             'bg-white text-gray-900 dark:bg-white dark:text-gray-900',
           !lightShell && !colors && 'bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white',
@@ -93,8 +117,9 @@ export function DisplayGrid({
           <>
             <h2
               className={cn(
-                'text-3xl md:text-5xl font-black tracking-tight text-center',
-                subtitle ? 'mb-2 md:mb-3' : 'mb-8 md:mb-10',
+                'font-black tracking-tight text-center',
+                compactTopInset ? SMART_SIGN_COMPACT_SECTION_TITLE_CLASS : 'text-3xl md:text-5xl',
+                subtitle ? 'mb-2 md:mb-3' : compactTopInset ? 'mb-4 md:mb-5' : 'mb-8 md:mb-10',
                 lightShell && 'text-gray-900 dark:text-gray-900',
                 !lightShell && !colors && 'text-white drop-shadow-lg'
               )}
@@ -139,6 +164,8 @@ function imageSrc(url: string | null | undefined): string | null {
 export function WorkshopGridCard({ item }: { item: WorkshopGridItem }) {
   const img = imageSrc(item.image_url);
   const schedule = (item.schedule_detail || '').trim();
+  const stackedDate = stackedDateFromWorkshopItem(item);
+  const scheduleBlocks = schedule ? parseWorkshopScheduleBlocks(schedule) : [];
   const { colors, surfaceMode } = useGridChrome();
   const light = surfaceMode === 'light';
   const themed = Boolean(colors) && !light;
@@ -189,10 +216,15 @@ export function WorkshopGridCard({ item }: { item: WorkshopGridItem }) {
             Workshop
           </div>
         )}
+        {stackedDate ? (
+          <StackedDateOverlay parts={stackedDate} size="md" />
+        ) : item.is_online_class ? (
+          <StackedDateOverlay comingSoon size="md" />
+        ) : null}
       </div>
       <div
         className={cn(
-          'flex min-h-[14rem] flex-1 flex-col gap-3 p-5 md:min-h-[16rem] md:gap-3.5 md:p-6',
+          'flex min-h-[12rem] flex-1 flex-col gap-2.5 p-5 md:min-h-[13rem] md:gap-3 md:p-5',
           light && 'bg-white'
         )}
       >
@@ -215,24 +247,39 @@ export function WorkshopGridCard({ item }: { item: WorkshopGridItem }) {
         )}
         <h3
           className={cn(
-            'text-xl font-bold leading-snug line-clamp-3 md:text-2xl md:leading-snug',
+            'text-2xl font-bold leading-snug line-clamp-3 md:text-3xl xl:text-4xl md:leading-snug',
             light && 'text-gray-900 dark:text-gray-900'
           )}
         >
           {item.title}
         </h3>
-        {schedule ? (
-          <p
+        {scheduleBlocks.length > 0 ? (
+          <div
             className={cn(
-              'whitespace-pre-line text-base font-semibold leading-relaxed md:text-lg',
+              'flex flex-col gap-1.5 md:gap-2',
               light && 'text-gray-800 dark:text-gray-800',
               themed && 'opacity-90',
               !light && !themed && 'text-white/90'
             )}
             style={themed && colors ? { color: colors.text } : undefined}
           >
-            {schedule}
-          </p>
+            {scheduleBlocks.map((block, idx) => (
+              <p
+                key={`${block.type}-${idx}`}
+                className={cn(
+                  'leading-snug',
+                  block.type === 'date' && 'text-lg font-bold md:text-xl',
+                  block.type === 'weekday' && 'text-base font-semibold uppercase tracking-wide md:text-lg',
+                  block.type === 'time' && 'text-base font-semibold md:text-lg',
+                  block.type === 'course_type' && 'text-sm font-semibold uppercase tracking-wide opacity-80 md:text-base',
+                  block.type === 'note' && 'text-sm font-medium italic opacity-75 md:text-base',
+                  block.type === 'other' && 'text-base font-medium md:text-lg'
+                )}
+              >
+                {block.text}
+              </p>
+            ))}
+          </div>
         ) : null}
         {!schedule && item.description ? (
           <p
@@ -253,7 +300,7 @@ export function WorkshopGridCard({ item }: { item: WorkshopGridItem }) {
 }
 
 export function ArtistGridCard({ item }: { item: ArtistGridItem }) {
-  const img = imageSrc(item.avatar_url || item.profile_image);
+  const img = imageSrc(artistGridPortraitUrl(item) || item.avatar_url || item.profile_image);
   const { colors, surfaceMode } = useGridChrome();
   const light = surfaceMode === 'light';
   const themed = Boolean(colors) && !light;
@@ -308,6 +355,14 @@ export function ArtistGridCard({ item }: { item: ArtistGridItem }) {
       </div>
       <div className="p-4 text-center">
         <h3 className={cn('text-lg md:text-xl font-bold', light && 'text-gray-900')}>{item.name}</h3>
+        {(() => {
+          const label = resolveConstituentLabel(item.metadata, item.constituent_label ?? null);
+          return label ? (
+            <p className={cn('mt-1 text-xs font-semibold uppercase tracking-wide text-gray-500 md:text-sm')}>
+              {label}
+            </p>
+          ) : null;
+        })()}
         {studio && (
           <p
             className={cn('text-sm mt-1 font-medium', !light && !themed && 'text-cyan-200/85')}

@@ -1,8 +1,18 @@
 import { NextResponse } from 'next/server'
 import { isAirtableConnectionConfigured } from '@/lib/airtable/client'
 import { getPathwayById } from '@/lib/dcc/signup/pathways'
+import {
+  applyAttributionFields,
+  mapQuickSignupToAirtableFields,
+  mapSignupToAirtableFields,
+  mergeCampaignLink,
+} from '@/lib/dcc/signup/map-to-airtable'
+import { mergeSignupIntoExistingPerson } from '@/lib/dcc/signup/merge-person-fields'
+import { dccSignupQuickSchema } from '@/lib/dcc/signup/schema-quick'
 import { dccSignupFormSchema } from '@/lib/dcc/signup/schema'
-import { mapSignupToAirtableFields, mergeCampaignLink } from '@/lib/dcc/signup/map-to-airtable'
+import { resolveCampaignRecordId } from '@/lib/dcc/signup/resolve-campaign'
+import { resolveSignupSourceLabel } from '@/lib/dcc/signup/signup-source-labels'
+import { sendDccSignupWelcomeEmail } from '@/lib/dcc/signup/send-welcome-email'
 import {
   existingCampaignIds,
   findPersonByEmail,
@@ -13,15 +23,17 @@ function env(name: string): string | undefined {
   return process.env[name]?.trim() || undefined
 }
 
-function resolveCampaignId(source?: string, campaignKey?: string): string | undefined {
-  if (campaignKey?.startsWith('rec')) return campaignKey
-  const explicit = env('AIRTABLE_DCC_CRM_CAMPAIGN_INDEX_SEED_ID')
-  if (explicit && source?.trim()) return explicit
-  return undefined
+function parseSignupBody(body: unknown) {
+  const raw = body && typeof body === 'object' ? (body as Record<string, unknown>) : {}
+  const mode = raw.formMode === 'full' ? 'full' : 'quick'
+  if (mode === 'full') {
+    return { mode: 'full' as const, parsed: dccSignupFormSchema.safeParse(body) }
+  }
+  return { mode: 'quick' as const, parsed: dccSignupQuickSchema.safeParse({ ...raw, formMode: 'quick' }) }
 }
 
 export async function handleDccSignupPost(body: unknown) {
-  const parsed = dccSignupFormSchema.safeParse(body)
+  const { mode, parsed } = parseSignupBody(body)
   if (!parsed.success) {
     return NextResponse.json(
       { error: 'Invalid form data', details: parsed.error.flatten().fieldErrors },
@@ -51,20 +63,39 @@ export async function handleDccSignupPost(body: unknown) {
 
   const submittedAt = new Date()
   const existingRecord = await findPersonByEmail(baseId!, tablePeople!, apiKey!, input.email)
-  let fields = mapSignupToAirtableFields(input, pathway, submittedAt)
 
-  const campaignId = resolveCampaignId(input.source, input.campaignKey)
+  let fields =
+    mode === 'full'
+      ? mapSignupToAirtableFields(input, pathway, submittedAt)
+      : mapQuickSignupToAirtableFields(input, pathway, submittedAt)
+
+  if (existingRecord) {
+    fields = mergeSignupIntoExistingPerson(existingRecord, fields, {
+      signupSource: input.source,
+      signupSourceLabel: resolveSignupSourceLabel(input.source),
+      utmCampaign: input.utmCampaign,
+    })
+  }
+
+  const campaignId = resolveCampaignRecordId(input.source, input.campaignKey)
   if (campaignId) {
     fields = mergeCampaignLink(fields, existingCampaignIds(existingRecord), campaignId)
   }
 
   const result = await upsertPersonRecord(baseId!, tablePeople!, apiKey!, input.email, fields)
 
+  const email = input.email.trim()
+  const fullName = input.fullName.trim()
+  void sendDccSignupWelcomeEmail({ to: email, fullName }).catch((err) => {
+    console.error('dcc signup welcome email:', err)
+  })
+
   return NextResponse.json({
     ok: true,
     recordId: result.recordId,
     updated: result.updated,
-    message: 'Thank you for joining the DCC Index.',
+    formMode: mode,
+    message: "You're in. Thanks for joining the DCC network.",
   })
 }
 

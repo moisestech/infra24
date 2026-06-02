@@ -1,27 +1,35 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { PageHero, Section } from '@/components/marketing/cdc'
+import { EdgeZonesAttributionSeed } from '@/components/marketing/edgezones/EdgeZonesAttributionSeed'
+import { EdgeZonesJoinSection } from '@/components/marketing/edgezones/EdgeZonesJoinSection'
 import { EdgeZonesAnchorNav, EdgeZonesArtistGrid } from '@/components/marketing/edgezones/EdgeZonesSections'
+import { DccSignupAttributionCapture } from '@/components/dcc/signup/DccSignupAttributionCapture'
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes'
 import { cdcPageMetadata } from '@/lib/cdc/metadata'
 import { fetchEdgeZonesArtists } from '@/lib/marketing/edgezones-artists'
 import { edgeZonesNavAnchors, edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import { EDGE_ZONES_PARTNERSHIP_PDF_PATH } from '@/lib/marketing/edgezones-network-index'
+import { cn } from '@/lib/utils'
 
 const path = edgeZonesPortal.path
 
-export const metadata: Metadata = cdcPageMetadata(path)
+export const metadata: Metadata = {
+  ...cdcPageMetadata(path),
+  robots: { index: false, follow: false },
+}
 
 export default async function EdgeZonesPortalPage() {
-  const { artists, source, filterNote } = await fetchEdgeZonesArtists()
+  const { artists, filterNote } = await fetchEdgeZonesArtists()
   const { sections } = edgeZonesPortal
-
-  const artistsEmptyMessage =
-    source === 'none'
-      ? 'Artist profiles will appear here once Airtable Seed Candidates are connected and tagged for Edge Zones.'
-      : 'No Edge Zones artists matched yet. Tag Seed Candidates with Related Campaign or “Edge Zones” in Relevant Exhibition / Program.'
 
   return (
     <>
+      <Suspense fallback={null}>
+        <DccSignupAttributionCapture />
+        <EdgeZonesAttributionSeed />
+      </Suspense>
       <PageHero
         eyebrow={edgeZonesPortal.eyebrow}
         title={edgeZonesPortal.title}
@@ -62,6 +70,13 @@ export default async function EdgeZonesPortalPage() {
             >
               {sections.join.signupLabel}
             </Link>
+            <a
+              href={EDGE_ZONES_PARTNERSHIP_PDF_PATH}
+              download
+              className="inline-flex items-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-semibold text-neutral-800 transition hover:border-[var(--cdc-teal)] hover:text-[var(--cdc-teal)] dark:border-neutral-600 dark:text-neutral-100"
+            >
+              Download Partnership PDF
+            </a>
           </div>
         </div>
 
@@ -72,11 +87,11 @@ export default async function EdgeZonesPortalPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-              Artists & network index
+              Network index
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
-              Profiles pulled from the DCC Seed Candidates layer{filterNote ? ` (${filterNote})` : ''}. Full
-              network exploration lives on the research map.
+              Edge Zones Gallery and participating artists{filterNote ? ` (${filterNote})` : ''}. Profiles are
+              configured in the network index data file and enriched from Airtable when available.
             </p>
           </div>
           <Link
@@ -87,7 +102,7 @@ export default async function EdgeZonesPortalPage() {
           </Link>
         </div>
         <div className="mt-8">
-          <EdgeZonesArtistGrid artists={artists} emptyMessage={artistsEmptyMessage} />
+          <EdgeZonesArtistGrid artists={artists} emptyMessage="Network index profiles are being configured." />
         </div>
       </Section>
 
@@ -98,13 +113,32 @@ export default async function EdgeZonesPortalPage() {
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
           {sections.support.intro}
         </p>
-        <ul className="mt-8 grid gap-3 sm:grid-cols-2">
-          {sections.support.items.map((item) => (
-            <li
-              key={item}
-              className="rounded-xl border border-[var(--cdc-border)] bg-white px-4 py-3 text-sm text-neutral-800 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-200"
-            >
-              {item}
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {sections.support.modules.map((module) => (
+            <li key={module.id}>
+              <a
+                href={module.href}
+                className="group flex h-full flex-col rounded-xl border border-[var(--cdc-border)] bg-white p-4 transition hover:border-[var(--cdc-teal)] dark:border-neutral-800 dark:bg-neutral-900"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="text-sm font-semibold text-neutral-900 group-hover:text-[var(--cdc-teal)] dark:text-neutral-100">
+                    {module.title}
+                  </h3>
+                  <span
+                    className={cn(
+                      'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+                      module.status === 'live'
+                        ? 'bg-teal-50 text-teal-800 dark:bg-teal-950/50 dark:text-teal-200'
+                        : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400'
+                    )}
+                  >
+                    {module.status === 'live' ? 'Live' : 'Coming soon'}
+                  </span>
+                </div>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
+                  {module.description}
+                </p>
+              </a>
             </li>
           ))}
         </ul>
@@ -117,20 +151,34 @@ export default async function EdgeZonesPortalPage() {
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
           {sections.vision.intro}
         </p>
-        <ul className="mt-8 space-y-3">
-          {sections.vision.bullets.map((item) => (
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {sections.vision.pillars.map((pillar) => (
             <li
-              key={item}
-              className="flex gap-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300"
+              key={pillar.title}
+              className="rounded-xl border border-[var(--cdc-border)] bg-[#fafafa] p-4 dark:border-neutral-800 dark:bg-neutral-900"
             >
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--cdc-teal)]" aria-hidden />
-              {item}
+              <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{pillar.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
+                {pillar.description}
+              </p>
             </li>
           ))}
         </ul>
       </Section>
 
-      <Section id="programs" className="scroll-mt-36 bg-[#fafafa] dark:bg-neutral-950">
+      <Section id="studio-visits" className="scroll-mt-36 bg-[#fafafa] dark:bg-neutral-950">
+        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+          {sections.studioVisits.title}
+        </h2>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+          {sections.studioVisits.intro}
+        </p>
+        <p className="mt-6 inline-flex rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-600 dark:border-neutral-700 dark:text-neutral-400">
+          {sections.studioVisits.status}
+        </p>
+      </Section>
+
+      <Section id="programs" className="scroll-mt-36 bg-white dark:bg-neutral-950">
         <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           {sections.programs.title}
         </h2>
@@ -151,7 +199,7 @@ export default async function EdgeZonesPortalPage() {
         <p className="mt-6 text-sm text-neutral-600 dark:text-neutral-400">{sections.programs.status}</p>
       </Section>
 
-      <Section id="archive" className="scroll-mt-36 bg-white dark:bg-neutral-950">
+      <Section id="archive" className="scroll-mt-36 bg-[#fafafa] dark:bg-neutral-950">
         <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           {sections.archive.title}
         </h2>
@@ -163,29 +211,39 @@ export default async function EdgeZonesPortalPage() {
         </p>
       </Section>
 
+      <Section id="publishing" className="scroll-mt-36 bg-white dark:bg-neutral-950">
+        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+          {sections.publishing.title}
+        </h2>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+          {sections.publishing.intro}
+        </p>
+        <p className="mt-6 inline-flex rounded-full border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-600 dark:border-neutral-700 dark:text-neutral-400">
+          {sections.publishing.status}
+        </p>
+      </Section>
+
       <Section id="join" className="scroll-mt-36 border-t border-[var(--cdc-border)] bg-[#fafafa] dark:border-neutral-800 dark:bg-neutral-950">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+        <div className="mx-auto max-w-2xl">
+          <h2 className="text-center text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
             {sections.join.title}
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+          <p className="mt-3 text-center text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
             {sections.join.intro}
           </p>
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <Link
-              href={sections.join.signupHref}
-              className="inline-flex rounded-full bg-[var(--cdc-teal)] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-            >
-              {sections.join.signupLabel}
-            </Link>
+          <div className="mt-8">
+            <Suspense fallback={<div className="h-48 animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-800" />}>
+              <EdgeZonesJoinSection />
+            </Suspense>
+          </div>
+          <p className="mt-6 text-center">
             <Link
               href={sections.join.suggestHref}
-              className="inline-flex rounded-full border border-neutral-300 px-6 py-3 text-sm font-semibold text-neutral-800 transition hover:border-[var(--cdc-teal)] dark:border-neutral-600 dark:text-neutral-100"
+              className="text-sm font-medium text-[var(--cdc-teal)] hover:underline"
             >
               {sections.join.suggestLabel}
             </Link>
-          </div>
-          <p className="mt-6 font-mono text-xs text-neutral-500">dcc.miami/network/signup?source=edgezones</p>
+          </p>
         </div>
       </Section>
     </>

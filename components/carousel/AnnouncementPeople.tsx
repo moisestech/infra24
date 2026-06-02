@@ -3,67 +3,38 @@
 import { motion } from 'framer-motion';
 import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useEffect, useState } from 'react';
-import { enrichPeopleData } from '@/lib/enrich-people-data';
 import { AnnouncementPerson } from '@/types/people';
 
 interface AnnouncementPeopleProps {
-  people: any[];
+  people: AnnouncementPerson[];
   orientation: 'portrait' | 'landscape';
   avatarSizeMultiplier?: number;
-  organizationSlug?: string;
+  /** Card/smart-sign: dark text on white. Default overlay: light text on hero. */
+  variant?: 'overlay' | 'inline';
   className?: string;
 }
 
-export function AnnouncementPeople({ 
-  people, 
-  orientation, 
+export function AnnouncementPeople({
+  people,
+  orientation,
   avatarSizeMultiplier = 1,
-  organizationSlug = 'bakehouse',
-  className 
+  variant = 'overlay',
+  className,
 }: AnnouncementPeopleProps) {
-  
-  const [enrichedPeople, setEnrichedPeople] = useState<AnnouncementPerson[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const enrichData = async () => {
-      if (!people || people.length === 0) {
-        setEnrichedPeople([]);
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const enriched = await enrichPeopleData(people, organizationSlug);
-        setEnrichedPeople(enriched);
-      } catch (error) {
-        console.error('Error enriching people data:', error);
-        setEnrichedPeople(people.map(person => ({
-          ...person,
-          is_member: false,
-          relationship_type: person.relationship_type || 'participant'
-        })));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    enrichData();
-  }, [people, organizationSlug]);
-
-  if (!people || people.length === 0 || isLoading) {
+  if (!people || people.length === 0) {
     return null;
   }
 
+  const inline = variant === 'inline';
+
   const getAvatarSize = (baseSize: number) => {
-    // Much larger base sizes for carousel display
-    const largeBaseSize = orientation === 'portrait' ? 24 : 20; // Increased from 12/10
+    if (inline) return Math.round(36 * baseSize);
+    const largeBaseSize = orientation === 'portrait' ? 24 : 20;
     return Math.round(largeBaseSize * avatarSizeMultiplier);
   };
 
   const getTextSize = () => {
-    // Much larger text sizes for carousel display
+    if (inline) return 'text-sm md:text-base';
     if (avatarSizeMultiplier >= 6) return 'text-4xl';
     if (avatarSizeMultiplier >= 5) return 'text-3xl';
     if (avatarSizeMultiplier >= 4) return 'text-2xl';
@@ -72,39 +43,58 @@ export function AnnouncementPeople({
     return orientation === 'portrait' ? 'text-lg' : 'text-base';
   };
 
+  const avatarPx = getAvatarSize(1);
+
   return (
-    <motion.div 
-      className={cn("space-y-3", className)}
+    <motion.div
+      className={cn('space-y-3', className)}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6 }}
     >
-      <div className="flex items-center gap-2 mb-3">
-        <User className="w-4 h-4 text-white/70" />
-        <span className="text-white/90 text-sm font-medium">
-          People ({enrichedPeople.length})
+      <div className="mb-3 flex items-center gap-2">
+        <User className={cn('h-4 w-4', inline ? 'text-gray-500' : 'text-white/70')} />
+        <span
+          className={cn(
+            'text-sm font-medium',
+            inline ? 'text-gray-700' : 'text-white/90'
+          )}
+        >
+          Residents ({people.length})
         </span>
       </div>
-      
-      <div className="grid grid-cols-1 gap-3">
-        {enrichedPeople.map((person, index) => (
-          <motion.div 
+
+      <div
+        className={cn(
+          'grid gap-2 md:gap-3',
+          inline ? 'grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 gap-3'
+        )}
+      >
+        {people.map((person, index) => (
+          <motion.div
             key={person.id || index}
-            className="flex items-center gap-3 p-3 bg-white/5 rounded-lg"
+            className={cn(
+              'flex items-center gap-3 rounded-lg p-2 md:p-3',
+              inline
+                ? 'border border-gray-200 bg-gray-50'
+                : 'bg-white/5 p-3'
+            )}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.7 + (index * 0.1) }}
+            transition={{ delay: 0.7 + index * 0.05 }}
           >
-            {/* Avatar */}
-            <div className="relative">
+            <div className="relative shrink-0">
               {person.avatar_url ? (
                 <img
                   src={person.avatar_url}
                   alt={person.name || 'Person'}
-                  className="rounded-full object-cover border-2 border-white/20"
+                  className={cn(
+                    'rounded-full object-cover',
+                    inline ? 'border border-gray-200' : 'border-2 border-white/20'
+                  )}
                   style={{
-                    width: `${getAvatarSize(1)}px`,
-                    height: `${getAvatarSize(1)}px`
+                    width: `${avatarPx}px`,
+                    height: `${avatarPx}px`,
                   }}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -114,58 +104,82 @@ export function AnnouncementPeople({
                   }}
                 />
               ) : null}
-              
-              {/* Fallback Avatar */}
-              <div 
+
+              <div
                 className={cn(
-                  "rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold border-2 border-white/20",
+                  'flex items-center justify-center rounded-full font-semibold',
+                  inline
+                    ? 'bg-[#47abc4]/15 text-[#2d8fa6] border border-[#47abc4]/30'
+                    : 'border-2 border-white/20 bg-gradient-to-br from-blue-500 to-blue-600 text-white',
                   person.avatar_url ? 'hidden' : 'flex'
                 )}
                 style={{
-                  width: `${getAvatarSize(1)}px`,
-                  height: `${getAvatarSize(1)}px`,
-                  fontSize: `${Math.max(12, getAvatarSize(1) * 0.4)}px`,
-                  display: person.avatar_url ? 'none' : 'flex'
+                  width: `${avatarPx}px`,
+                  height: `${avatarPx}px`,
+                  fontSize: `${Math.max(12, avatarPx * 0.4)}px`,
+                  display: person.avatar_url ? 'none' : 'flex',
                 }}
               >
                 {person.name ? person.name.charAt(0).toUpperCase() : '?'}
               </div>
             </div>
 
-            {/* Person Info */}
-            <div className="flex-1 min-w-0">
-              <div className={cn("text-white/90 font-medium truncate", getTextSize())}>
-                {person.name || 'Unknown Person'}
-              </div>
-              {person.role && (
-                <div className={cn("text-white/60 truncate", getTextSize())}>
+            <div className="min-w-0 flex-1">
+              {person.role && /^studio\s/i.test(person.role) ? (
+                <div
+                  className={cn(
+                    'truncate font-black tracking-tight',
+                    inline ? 'text-base text-[#47abc4] md:text-lg' : getTextSize(),
+                    !inline && 'text-[#7dd3ea]'
+                  )}
+                >
                   {person.role}
                 </div>
-              )}
-              {person.organization && (
-                <div className={cn("text-white/50 truncate", getTextSize())}>
+              ) : null}
+              <div
+                className={cn(
+                  'truncate font-medium',
+                  inline ? 'text-gray-900' : 'text-white/90',
+                  person.role && /^studio\s/i.test(person.role) ? 'text-sm text-gray-600' : getTextSize()
+                )}
+              >
+                {person.name || 'Unknown Person'}
+              </div>
+              {person.role && !/^studio\s/i.test(person.role) ? (
+                <div
+                  className={cn(
+                    'truncate',
+                    inline ? 'text-sm text-gray-500' : cn('text-white/60', getTextSize())
+                  )}
+                >
+                  {person.role}
+                </div>
+              ) : null}
+              {!inline && person.organization ? (
+                <div className={cn('truncate text-white/50', getTextSize())}>
                   {person.organization}
                 </div>
-              )}
+              ) : null}
             </div>
 
-            {/* Membership Status */}
-            <div className="flex-shrink-0 flex flex-col gap-1">
-              {person.is_member ? (
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
-                  ✓ Member
-                </span>
-              ) : (
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-400 border border-orange-500/30">
-                  External
-                </span>
-              )}
-              {person.relationship_type && person.relationship_type !== 'participant' && (
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                  {person.relationship_type.replace('_', ' ')}
-                </span>
-              )}
-            </div>
+            {!inline ? (
+              <div className="flex shrink-0 flex-col gap-1">
+                {person.is_member ? (
+                  <span className="inline-flex items-center rounded-full border border-green-500/30 bg-green-500/20 px-2 py-1 text-xs font-medium text-green-400">
+                    ✓ Member
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center rounded-full border border-orange-500/30 bg-orange-500/20 px-2 py-1 text-xs font-medium text-orange-400">
+                    External
+                  </span>
+                )}
+                {person.relationship_type && person.relationship_type !== 'participant' ? (
+                  <span className="inline-flex items-center rounded-full border border-blue-500/30 bg-blue-500/20 px-2 py-1 text-xs font-medium text-blue-400">
+                    {person.relationship_type.replace('_', ' ')}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
           </motion.div>
         ))}
       </div>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { createClient } from '@supabase/supabase-js';
 import { getValidatedAnnouncementRedirectTarget } from '@/lib/announcements/scan-target';
+import { enrichAnnouncementsPeople } from '@/lib/enrich-people-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,7 +78,8 @@ export async function GET(
         updated_by,
         author_clerk_id,
         image_url,
-        image_layout
+        image_layout,
+        media
       `)
       .or(`organization_id.eq.${organization.id},org_id.eq.${organization.id}`)
       .order('created_at', { ascending: false });
@@ -120,13 +122,15 @@ export async function GET(
 
     console.log('📢 Successfully fetched announcements:', announcements?.length || 0, 'announcements');
 
+    const enrichedAnnouncements = await enrichAnnouncementsPeople(announcements || [], organization);
+
     return NextResponse.json({
-      announcements: announcements || [],
+      announcements: enrichedAnnouncements,
       organization: {
         id: organization.id,
         name: organization.name,
-        slug: organization.slug
-      }
+        slug: organization.slug,
+      },
     });
 
   } catch (error) {

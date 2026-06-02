@@ -170,6 +170,11 @@ const nextConfig = {
         destination: '/workshop/vibe-coding-and-net-art/chapters/the-browser-is-a-medium',
         permanent: false,
       },
+      /** Edge Zones partnership PDF pathways → single-page anchors */
+      { source: '/edgezones/support', destination: '/edgezones#support', permanent: false },
+      { source: '/edgezones/artists', destination: '/edgezones#artists', permanent: false },
+      { source: '/edgezones/programs', destination: '/edgezones#programs', permanent: false },
+      { source: '/edgezones/archive', destination: '/edgezones#archive', permanent: false },
     ];
   },
 

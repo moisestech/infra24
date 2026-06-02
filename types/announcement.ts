@@ -109,8 +109,58 @@ export interface Announcement {
   rsvp_url?: string;
   event_state?: 'scheduled' | 'postponed' | 'canceled';
   image_layout?: ImageLayoutType;
-  /** JSON from DB; e.g. smart-sign film posters use `{ image_only: true }` */
-  metadata?: { image_only?: boolean; [key: string]: unknown };
+  /** JSON from DB; smart-sign display overrides (see `AnnouncementDisplayMetadata`). */
+  metadata?: AnnouncementDisplayMetadata;
+}
+
+/** Smart-sign kiosk display overrides stored in `announcements.metadata`. */
+export interface AnnouncementDisplayMetadata {
+  /** Legacy alias for image takeover — full-bleed poster, minimal chrome. */
+  image_only?: boolean;
+  /** Always show on smart sign, ignoring event dates. */
+  evergreen?: boolean;
+  /** Full-bleed custom layout (image or video) instead of the standard template. */
+  display_takeover?: boolean;
+  /** Preferred takeover medium when both image and video exist. */
+  media_type?: 'image' | 'video';
+  /** Video URL for takeover (falls back to a video entry in `media[]`). */
+  video_url?: string;
+  /** When false, show title/body on takeover slides. Default: minimal chrome. @deprecated Prefer takeover_mode */
+  takeover_minimal?: boolean;
+  /** Pre-designed asset (text baked in) vs app-rendered text over media background. */
+  takeover_mode?: 'asset' | 'overlay';
+  /** Optional copy overrides — fall back to announcement title/body/location. */
+  display_title?: string;
+  display_body?: string;
+  display_location?: string;
+  /** Per-block visibility in overlay mode (all default true when mode=overlay). */
+  takeover_overlay?: TakeoverOverlayConfig;
+  /**
+   * QR behavior for asset-mode takeover slides.
+   * - app: render smart-sign QR (requires scannable link)
+   * - embedded: QR is part of the image/video — suppress app QR
+   * - none: no app QR
+   */
+  takeover_qr?: 'app' | 'embedded' | 'none';
+  /** Asset mode: show "View details" pill. Defaults off when takeover_qr is embedded/none. */
+  show_view_details?: boolean;
+  /** Lower numbers appear first among takeover slides on the smart-sign carousel. */
+  pin_order?: number;
+  /** Full-bleed takeover reserved for the display program cinematic segment (excluded from carousel). */
+  cinematic_segment?: boolean;
+  [key: string]: unknown;
+}
+
+export interface TakeoverOverlayConfig {
+  show_date?: boolean;
+  show_title?: boolean;
+  show_body?: boolean;
+  show_location?: boolean;
+  show_people?: boolean;
+  show_type_badge?: boolean;
+  show_qr?: boolean;
+  /** Readability layer over busy media. Default: gradient */
+  scrim?: 'gradient' | 'dark' | 'light' | 'none';
 }
 
 export interface AnnouncementAudienceMemberType {

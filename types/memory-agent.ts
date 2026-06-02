@@ -110,6 +110,8 @@ export type MemoryAgentArtistCard = {
   confidence: 'high' | 'medium' | 'low'
   website?: string
   photoUrl?: string
+  /** Portrait + artwork URLs for card gallery (portrait first when available) */
+  galleryImageUrls?: string[]
   /** Enriched from Airtable row for unified catalogue cards */
   medium?: string
   program?: string

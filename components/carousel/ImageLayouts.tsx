@@ -5,6 +5,14 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { ImageLayoutType } from '@/types/announcement';
 import { LucideIcon } from 'lucide-react';
+import { cardImageUsesFullWidth, CARD_IMAGE_MAX_HEIGHT, resolveLandscapeCardImageMaxHeight, SMART_SIGN_CARD_SHELL_PADDING_CLASS, SMART_SIGN_CARD_CONTENT_CLASS, isSmartSignViewport } from '@/lib/display/announcement-image-frame';
+import { AnnouncementCardImage } from './AnnouncementCardImage';
+import { StackedDateOverlay } from '@/components/display/StackedDateOverlay';
+import {
+  stackedDateFromAnnouncement,
+  stackedDateOptionsForAnnouncement,
+} from '@/lib/display/stacked-date-display';
+import type { Announcement } from '@/types/announcement';
 
 interface ImageSettings {
   layout?: string;
@@ -38,6 +46,7 @@ interface ImageLayoutProps {
   animationsPaused?: boolean;
   /** Fullscreen smart-sign: flat image frame; for card layout, also no page gradient/pattern backdrop */
   minimalImageFrame?: boolean;
+  hideAnnouncementDates?: boolean;
 }
 
 // Hero Layout: Large image as background with content overlay
@@ -109,7 +118,9 @@ export function SplitLeftImageLayout({ announcement, imageUrl, orientation, chil
             src={imageUrl}
             alt={announcement.title || 'Announcement image'}
             fill
-            className="object-cover"
+            className={cn(
+              orientation === 'landscape' ? 'object-contain object-center' : 'object-cover'
+            )}
             sizes={`${splitPercentage}vw`}
             priority={false}
           />
@@ -171,7 +182,9 @@ export function SplitRightImageLayout({ announcement, imageUrl, orientation, chi
             src={imageUrl}
             alt={announcement.title || 'Announcement image'}
             fill
-            className="object-cover"
+            className={cn(
+              orientation === 'landscape' ? 'object-contain object-center' : 'object-cover'
+            )}
             sizes={`${splitPercentage}vw`}
             priority={false}
           />
@@ -198,22 +211,58 @@ function cardLayoutUsesPortraitPosterFrame(announcement: { type?: string; metada
 }
 
 // Card Layout: Image on top, all text stacked underneath
-export function CardImageLayout({ announcement, imageUrl, orientation, children, textSizes, styles, imageSettings, screenMetrics, responsiveSizes, animationsPaused, minimalImageFrame }: ImageLayoutProps) {
+export function CardImageLayout({ announcement, imageUrl, orientation, children, textSizes, styles, imageSettings, screenMetrics, responsiveSizes, animationsPaused, minimalImageFrame, hideAnnouncementDates }: ImageLayoutProps) {
   const imageScale = imageSettings?.scale !== undefined ? imageSettings.scale : 1;
   const imageOpacity = imageSettings?.opacity !== undefined ? imageSettings.opacity / 100 : 1;
   const posterPortrait = cardLayoutUsesPortraitPosterFrame(announcement);
   const minimal = Boolean(minimalImageFrame);
+  const smartSign = isSmartSignViewport(screenMetrics) || minimal;
+  const fullWidthImage = cardImageUsesFullWidth(
+    orientation,
+    posterPortrait,
+    screenMetrics,
+    minimal
+  );
+  const landscapeMaxHeight = resolveLandscapeCardImageMaxHeight(screenMetrics);
 
   const debugBg = (color: string) => DEBUG_LAYOUT ? { backgroundColor: color } : {};
 
   const imageFrameClass = cn(
     'relative overflow-hidden rounded-2xl bg-transparent',
     posterPortrait
-      ? 'aspect-[2/3] max-h-[min(82vh,1024px)] w-full mx-auto'
+      ? 'aspect-[2/3] w-full mx-auto'
       : orientation === 'portrait'
-        ? 'aspect-[4/3] max-h-[min(44vh,540px)] w-full max-w-lg mx-auto'
+        ? 'aspect-[4/3] w-full max-w-lg mx-auto'
         : 'aspect-[16/9] w-full mx-auto'
   );
+
+  const imageFrameStyle = posterPortrait
+    ? { maxHeight: CARD_IMAGE_MAX_HEIGHT.poster }
+    : orientation === 'portrait'
+      ? { maxHeight: CARD_IMAGE_MAX_HEIGHT.portrait }
+      : undefined;
+
+  const shellPadding = smartSign
+    ? SMART_SIGN_CARD_SHELL_PADDING_CLASS
+    : responsiveSizes?.padding || 'p-8 md:p-12 xl:p-16';
+
+  const imageWrapperClass = cn(
+    'relative w-full',
+    smartSign && SMART_SIGN_CARD_CONTENT_CLASS,
+    posterPortrait && !smartSign && 'max-w-lg md:max-w-xl',
+    fullWidthImage && !smartSign && 'max-w-none',
+    !posterPortrait && orientation === 'portrait' && !smartSign && 'max-w-lg mx-auto',
+    !posterPortrait && orientation === 'landscape' && !fullWidthImage && 'max-w-4xl mx-auto'
+  );
+
+  const showStackedDate =
+    !hideAnnouncementDates && (announcement.type as string) !== 'fun_fact';
+  const stackedDate = showStackedDate
+    ? stackedDateFromAnnouncement(
+        announcement as Announcement,
+        stackedDateOptionsForAnnouncement(announcement as Announcement)
+      )
+    : null;
   
   return (
     <div
@@ -233,66 +282,46 @@ export function CardImageLayout({ announcement, imageUrl, orientation, children,
       <div
         className={cn(
           'relative z-20 flex h-full max-h-full w-full max-w-full flex-col overflow-hidden',
-          responsiveSizes?.padding || 'p-8 md:p-12 xl:p-16'
+          shellPadding
         )}
         style={debugBg('rgba(0,0,255,0.25)')}
       >
         <div 
-          className="flex-1 flex flex-col relative min-w-0 overflow-hidden"
+          className="flex min-h-0 flex-1 flex-col relative min-w-0 overflow-hidden"
           style={debugBg('rgba(0,255,0,0.2)')}
         >
           {/* Image — editorial frame, cover crop, micro-motion */}
           <motion.div
-            className="flex-shrink-0 relative z-10 mb-4 md:mb-8 w-full flex justify-center"
+            className="relative z-10 mb-3 w-full shrink-0 md:mb-4"
             initial={animationsPaused ? false : { opacity: 0, y: 14, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             style={debugBg('rgba(255,165,0,0.4)')}
           >
-            <div
-              className={cn('w-full', posterPortrait ? 'max-w-lg md:max-w-xl' : 'max-w-4xl')}
-              style={{
-                transform: `scale(${imageScale})`,
-                transformOrigin: 'center top',
-                opacity: imageOpacity,
-              }}
-            >
-              {minimal ? (
-                <div className={imageFrameClass}>
-                  <Image
-                    src={imageUrl}
-                    alt={announcement.title || 'Announcement image'}
-                    fill
-                    className={cn(
-                      'object-cover',
-                      posterPortrait ? 'object-top' : 'object-center'
-                    )}
-                    sizes="(max-width: 768px) 100vw, min(85vw, 960px)"
-                    priority={false}
-                  />
-                </div>
-              ) : (
-                <div className="rounded-2xl p-[1px] bg-gradient-to-br from-white/50 via-white/15 to-emerald-400/25 ring-1 ring-white/15">
-                  <div className={imageFrameClass}>
-                    <Image
-                      src={imageUrl}
-                      alt={announcement.title || 'Announcement image'}
-                      fill
-                      className={cn(
-                        'object-cover',
-                        posterPortrait ? 'object-top' : 'object-center'
-                      )}
-                      sizes="(max-width: 768px) 100vw, min(85vw, 960px)"
-                      priority={false}
-                    />
-                  </div>
-                </div>
-              )}
+            <div className={imageWrapperClass}>
+              <AnnouncementCardImage
+                imageUrl={imageUrl}
+                alt={announcement.title || 'Announcement image'}
+                naturalLandscape={fullWidthImage}
+                landscapeMaxHeight={landscapeMaxHeight}
+                fillFrameClass={fullWidthImage ? undefined : imageFrameClass}
+                fillFrameStyle={fullWidthImage ? undefined : imageFrameStyle}
+                objectPosition={posterPortrait ? 'top' : 'center'}
+                minimal={minimal}
+                imageScale={imageScale}
+                imageOpacity={imageOpacity}
+              />
+              {stackedDate ? (
+                <StackedDateOverlay parts={stackedDate} size="lg" />
+              ) : null}
             </div>
           </motion.div>
           
           <div 
-            className="flex-1 min-w-0 relative z-30 overflow-y-auto overflow-x-hidden flex flex-col" 
+            className={cn(
+              'relative z-30 w-full min-w-0 shrink-0 overflow-visible',
+              smartSign && SMART_SIGN_CARD_CONTENT_CLASS
+            )}
             style={{ maxWidth: '100%', ...debugBg('rgba(255,255,0,0.35)') }}
           >
             {children}
@@ -328,7 +357,9 @@ export function MasonryImageLayout({ announcement, imageUrl, orientation, childr
               src={imageUrl}
               alt={announcement.title || 'Announcement image'}
               fill
-              className="object-cover"
+              className={cn(
+              orientation === 'landscape' ? 'object-contain object-center' : 'object-cover'
+            )}
               sizes="58vw"
               priority={false}
             />

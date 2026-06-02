@@ -3,6 +3,7 @@ import { alumniDisplayName } from '@/lib/airtable/alumni-service'
 import {
   alumniImageAltText,
   alumniImageForContext,
+  alumniGalleryImageUrls,
 } from '@/lib/airtable/alumni-images'
 import { alumniResidencyYearLabel } from '@/lib/airtable/alumni-filters'
 import { alumniYearLabel } from '@/lib/airtable/alumni-service'
@@ -30,6 +31,8 @@ export type InstitutionalArtistCardData = {
   website?: string
   /** On-site alumni directory deep link */
   profileUrl?: string
+  /** Additional artwork / portrait URLs for gallery strip */
+  galleryImageUrls?: string[]
   /** Memory Agent: why this person matched */
   matchReason?: string
   confidence?: 'high' | 'medium' | 'low'
@@ -71,6 +74,7 @@ export function institutionalArtistFromAlumni(
     badges: badgesFromAlumniRow(row),
     bioSnippet: bio ? bio.slice(0, 220) : undefined,
     website: row.website,
+    galleryImageUrls: alumniGalleryImageUrls(row).slice(0, 4),
   }
 }
 
@@ -101,5 +105,6 @@ export function institutionalArtistFromMemoryAgent(
     website: card.website,
     matchReason: card.reason?.trim(),
     confidence: card.confidence,
+    galleryImageUrls: card.galleryImageUrls?.filter(Boolean).slice(0, 4),
   }
 }

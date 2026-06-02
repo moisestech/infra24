@@ -2,20 +2,26 @@
 
 import { useEffect, useState } from 'react'
 import QRCode from '@/components/ui/QRCode'
+import { DCC_CAMPAIGN_URLS } from '@/lib/dcc/signup/attribution'
 
 type Props = {
+  /** Bare portal URL for print PDFs; tracked URL available via useTrackedUrl */
   portalPath?: string
-  source?: string
+  useTrackedUrl?: boolean
 }
 
-export function EdgeZonesQrDisplay({ portalPath = '/edgezones', source = 'edgezones-print' }: Props) {
+export function EdgeZonesQrDisplay({
+  portalPath = '/edgezones',
+  useTrackedUrl = false,
+}: Props) {
   const [origin, setOrigin] = useState('')
 
   useEffect(() => {
     setOrigin(window.location.origin)
   }, [])
 
-  const fullUrl = `${origin}${portalPath}?source=${encodeURIComponent(source)}`
+  const path = useTrackedUrl ? DCC_CAMPAIGN_URLS.edgezonesPortal : portalPath
+  const fullUrl = `${origin}${path}`
 
   return (
     <div className="mx-auto max-w-md space-y-6 rounded-2xl border border-neutral-200 bg-white p-8 text-center shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
@@ -24,8 +30,9 @@ export function EdgeZonesQrDisplay({ portalPath = '/edgezones', source = 'edgezo
           DCC Miami × Edge Zones
         </h1>
         <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-          Scan to open the partnership portal. Source tag:{' '}
-          <span className="font-mono">{source}</span>
+          {useTrackedUrl
+            ? 'Scan for full proposal attribution (UTM + QR).'
+            : 'Scan to open the partnership portal (matches printed PDF QR).'}
         </p>
       </div>
       {origin ? (

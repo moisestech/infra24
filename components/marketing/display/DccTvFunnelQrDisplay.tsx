@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import QRCode from '@/components/ui/QRCode'
-import { DCC_TV_QR_PATH, DCC_TV_QR_SOURCE } from '@/lib/marketing/dcc-tv-slides'
+import { dccTvSignupUrl } from '@/lib/marketing/dcc-tv-slides'
 
 export function DccTvFunnelQrDisplay() {
   const [origin, setOrigin] = useState('')
@@ -11,7 +11,7 @@ export function DccTvFunnelQrDisplay() {
     setOrigin(window.location.origin)
   }, [])
 
-  const signupUrl = `${origin}${DCC_TV_QR_PATH}?source=${encodeURIComponent(DCC_TV_QR_SOURCE)}`
+  const signupUrl = origin ? dccTvSignupUrl(origin) : ''
   const tvUrl = `${origin}/display/dcc/funnel`
 
   return (
@@ -20,7 +20,7 @@ export function DccTvFunnelQrDisplay() {
         <h1 className="text-lg font-semibold">DCC TV — Intake QR</h1>
         <p className="mt-2 text-sm text-neutral-400">
           Persistent QR for the landscape TV loop. Source:{' '}
-          <span className="font-mono text-teal-400">{DCC_TV_QR_SOURCE}</span>
+          <span className="font-mono text-teal-400">dcc-tv</span>
         </p>
       </div>
       {origin ? (

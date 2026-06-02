@@ -61,6 +61,10 @@ export type AlumniFieldMap = {
   approvedForPublicAi: string
   /** Checkbox: exclude row from any Memory Agent retrieval */
   doNotUseInAi: string
+  /** Studio number for active residents (Oolite public directory) */
+  studioNumber: string
+  /** Current status e.g. Active, Alumni */
+  currentAlumniStatus: string
 }
 
 export type OrgAlumniConnection = {
@@ -110,6 +114,8 @@ const DEFAULT_FIELDS: AlumniFieldMap = {
   visibilityLevel: '',
   approvedForPublicAi: '',
   doNotUseInAi: '',
+  studioNumber: '',
+  currentAlumniStatus: '',
 }
 
 /** Oolite 🧑‍🎨 Alumni Directory (Public Fields) — image column titles when env overrides are unset. */
@@ -125,6 +131,8 @@ const OOLITE_ALUMNI_FIELD_DEFAULTS: Partial<AlumniFieldMap> = {
   imageReviewStatus: 'Image Review Status',
   preferredImageOrientation: 'Preferred Image Orientation',
   cloudinarySourceBatch: 'Cloudinary Folder / Source Batch',
+  studioNumber: 'Studio Number',
+  currentAlumniStatus: 'Current Alumni Status',
 }
 
 function pickAlumniField(
@@ -182,6 +190,8 @@ function buildFieldMap(envPrefix: string, orgSlug?: string): AlumniFieldMap {
     visibilityLevel: pick('visibilityLevel'),
     approvedForPublicAi: pick('approvedForPublicAi'),
     doNotUseInAi: pick('doNotUseInAi'),
+    studioNumber: pick('studioNumber'),
+    currentAlumniStatus: pick('currentAlumniStatus'),
   }
 }
 

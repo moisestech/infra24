@@ -22,9 +22,11 @@ export type DccTvSlide = {
   emphasize?: boolean
 }
 
-/** Persistent QR target for every slide in the loop. */
+/** Persistent QR target for every slide in the loop (with campaign UTMs). */
 export const DCC_TV_QR_PATH = '/network/signup' as const
 export const DCC_TV_QR_SOURCE = 'dcc-tv' as const
+export const DCC_TV_QR_QUERY =
+  'source=dcc-tv&utm_source=tv&utm_medium=qr&utm_campaign=dcc_tv_launch&utm_content=tv_loop&qr=dcc_tv_main' as const
 
 export const DCC_TV_SLIDES: DccTvSlide[] = [
   {
@@ -96,5 +98,5 @@ export const DCC_TV_SLIDES: DccTvSlide[] = [
 export const DCC_TV_LOOP_MS = DCC_TV_SLIDES.reduce((sum, s) => sum + s.durationMs, 0)
 
 export function dccTvSignupUrl(origin: string): string {
-  return `${origin}${DCC_TV_QR_PATH}?source=${encodeURIComponent(DCC_TV_QR_SOURCE)}`
+  return `${origin}${DCC_TV_QR_PATH}?${DCC_TV_QR_QUERY}`
 }

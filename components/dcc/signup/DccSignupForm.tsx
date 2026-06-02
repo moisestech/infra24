@@ -1,16 +1,20 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
+import { readStoredAttribution } from '@/lib/dcc/signup/attribution'
 import { DCC_SIGNUP_COPY } from '@/lib/dcc/signup/copy'
+import type { DccSignupFormMode } from '@/lib/dcc/signup/form-mode'
 import { SIGNUP_PATHWAYS, type SignupPathwayId } from '@/lib/dcc/signup/pathways'
+import { QUICK_INTEREST_OPTIONS } from '@/lib/dcc/signup/schema-quick'
 import {
   CONTACT_CATEGORY_OPTIONS,
   INTEREST_TAG_OPTIONS,
   PRACTICE_TAG_OPTIONS,
 } from '@/lib/dcc/signup/schema'
 import { MIAMI_CONNECTION_TYPE_OPTIONS, PRACTICE_TAG_OPTIONS as SUGGEST_PRACTICE_TAGS } from '@/lib/dcc/signup/suggest/schema'
+import { DccSignupSuccess } from '@/components/dcc/signup/DccSignupSuccess'
 import { cn } from '@/lib/utils'
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error'
@@ -28,6 +32,8 @@ export type DccSignupFormProps = {
   source?: string
   showPathwayShell?: boolean
   compactHeader?: boolean
+  /** Default quick for QR/campaign traffic; use `full` for complete index intake. */
+  formMode?: DccSignupFormMode
 }
 
 export function DccSignupForm({
@@ -35,9 +41,12 @@ export function DccSignupForm({
   source,
   showPathwayShell = true,
   compactHeader = false,
+  formMode = 'quick',
 }: DccSignupFormProps) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const isResearch = pathway === 'help_build_research_view'
+  const isQuick = !isResearch && formMode === 'quick'
   const [status, setStatus] = useState<FormStatus>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [contactCategory, setContactCategory] = useState<string>(CONTACT_CATEGORY_OPTIONS[0])
@@ -51,9 +60,84 @@ export function DccSignupForm({
   const [socialWarning, setSocialWarning] = useState(false)
 
   function pathwayHref(hrefParam: string) {
-    const params = new URLSearchParams({ pathway: hrefParam })
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('pathway', hrefParam)
     if (source) params.set('source', source)
     return `${pathname}?${params.toString()}`
+  }
+
+  function fullFormHref() {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('form', 'full')
+    if (source) params.set('source', source)
+    return `${pathname}?${params.toString()}`
+  }
+
+  function attributionPayload() {
+    const stored = readStoredAttribution()
+    return {
+      utmSource: stored.utmSource,
+      utmMedium: stored.utmMedium,
+      utmCampaign: stored.utmCampaign,
+      utmContent: stored.utmContent,
+      utmTerm: stored.utmTerm,
+      qrCodeId: stored.qrCodeId,
+      landingPage: stored.landingPage,
+      referrer: stored.referrer,
+      source: source ?? stored.signupSource,
+    }
+  }
+
+  async function handleQuickSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setStatus('loading')
+    setErrorMessage(null)
+
+    const form = e.currentTarget
+    const fd = new FormData(form)
+    const payload = {
+      formMode: 'quick' as const,
+      pathway,
+      fullName: String(fd.get('fullName') || ''),
+      email: String(fd.get('email') || ''),
+      contactCategory,
+      interestTags,
+      consentAnswer,
+      newsletterOptIn,
+      instagram: String(fd.get('instagram') || '') || undefined,
+      website: String(fd.get('website') || '') || undefined,
+      organization: String(fd.get('organization') || '') || undefined,
+      message: String(fd.get('message') || '') || undefined,
+      ...attributionPayload(),
+    }
+
+    try {
+      const res = await fetch('/api/dcc/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const data = (await res.json()) as { error?: string; fallback?: boolean }
+
+      if (!res.ok) {
+        if (data.fallback) {
+          window.location.href = `mailto:m@moises.tech?subject=${encodeURIComponent('DCC signup')}&body=${encodeURIComponent(JSON.stringify(payload, null, 2))}`
+          setStatus('success')
+          form.reset()
+          return
+        }
+        throw new Error(data.error || 'Submission failed')
+      }
+
+      setStatus('success')
+      form.reset()
+      setInterestTags([])
+      setConsentAnswer('yes')
+      setNewsletterOptIn(false)
+    } catch (err) {
+      setStatus('error')
+      setErrorMessage(err instanceof Error ? err.message : 'Something went wrong')
+    }
   }
 
   async function handleJoinSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -71,6 +155,7 @@ export function DccSignupForm({
     if (!website && !instagram && !linkedin) setSocialWarning(true)
 
     const payload = {
+      formMode: 'full' as const,
       pathway,
       fullName: String(fd.get('fullName') || ''),
       email: String(fd.get('email') || ''),
@@ -86,7 +171,7 @@ export function DccSignupForm({
       publicListingConsent,
       newsletterOptIn,
       researchContributor,
-      source,
+      ...attributionPayload(),
     }
 
     try {
@@ -172,18 +257,16 @@ export function DccSignupForm({
 
   if (status === 'success') {
     return (
-      <div className="rounded-xl border border-teal-200 bg-teal-50 p-6 text-sm leading-relaxed text-teal-950 dark:border-teal-800 dark:bg-teal-950/40 dark:text-teal-100">
-        <p className="whitespace-pre-line">
-          {isResearch ? DCC_SIGNUP_COPY.suggestConfirmation : DCC_SIGNUP_COPY.confirmation}
-        </p>
-        <button
-          type="button"
-          className="mt-4 text-sm font-medium text-teal-800 underline-offset-4 hover:underline dark:text-teal-200"
-          onClick={() => setStatus('idle')}
-        >
-          Submit another response
-        </button>
-      </div>
+      <DccSignupSuccess
+        message={
+          isResearch
+            ? DCC_SIGNUP_COPY.suggestConfirmation
+            : isQuick
+              ? DCC_SIGNUP_COPY.quickConfirmation
+              : DCC_SIGNUP_COPY.confirmation
+        }
+        onSubmitAnother={() => setStatus('idle')}
+      />
     )
   }
 
@@ -310,6 +393,112 @@ export function DccSignupForm({
           >
             {status === 'loading' ? 'Submitting…' : DCC_SIGNUP_COPY.suggestCta}
           </button>
+        </form>
+      ) : isQuick ? (
+        <form onSubmit={handleQuickSubmit} className="space-y-6">
+          {!compactHeader ? (
+            <header className="space-y-3">
+              <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-3xl">
+                {DCC_SIGNUP_COPY.title}
+              </h1>
+              <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                {DCC_SIGNUP_COPY.quickSubtitle}
+              </p>
+            </header>
+          ) : null}
+
+          <div>
+            <label htmlFor="fullName" className={labelClass}>
+              Name <span className="text-red-500">*</span>
+            </label>
+            <input id="fullName" name="fullName" required className={inputClass} autoComplete="name" />
+          </div>
+          <div>
+            <label htmlFor="email" className={labelClass}>
+              Email <span className="text-red-500">*</span>
+            </label>
+            <input id="email" name="email" type="email" required className={inputClass} autoComplete="email" />
+          </div>
+          <div>
+            <label htmlFor="contactCategory" className={labelClass}>
+              Role <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="contactCategory"
+              value={contactCategory}
+              onChange={(e) => setContactCategory(e.target.value)}
+              className={inputClass}
+              required
+            >
+              {CONTACT_CATEGORY_OPTIONS.map((o) => (
+                <option key={o} value={o}>
+                  {o}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <p className={labelClass}>
+              Interests <span className="text-red-500">*</span>
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {QUICK_INTEREST_OPTIONS.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setInterestTags((t) => toggleInList(t, tag))}
+                  className={cn(
+                    'rounded-full border px-3 py-1.5 text-xs transition',
+                    interestTags.includes(tag)
+                      ? 'border-[var(--cdc-teal)] bg-[var(--cdc-teal)]/15'
+                      : 'border-neutral-300 text-neutral-600 dark:border-neutral-600'
+                  )}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+          <fieldset className="space-y-3">
+            <legend className={labelClass}>Optional</legend>
+            <input id="instagram" name="instagram" className={inputClass} placeholder="Instagram" />
+            <input id="website" name="website" type="url" className={inputClass} placeholder="Website" />
+            <input id="organization" name="organization" className={inputClass} placeholder="Organization" />
+            <textarea id="message" name="message" rows={2} className={inputClass} placeholder="Short message" />
+          </fieldset>
+          <fieldset className="space-y-2">
+            <legend className={labelClass}>Consent <span className="text-red-500">*</span></legend>
+            {(
+              [
+                ['yes', 'Yes, DCC can contact me with updates'],
+                ['specific', 'Only about specific opportunities'],
+                ['no', 'No, not right now'],
+              ] as const
+            ).map(([value, label]) => (
+              <label key={value} className="flex items-center gap-2 text-sm">
+                <input type="radio" checked={consentAnswer === value} onChange={() => setConsentAnswer(value)} required />
+                {label}
+              </label>
+            ))}
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={newsletterOptIn} onChange={(e) => setNewsletterOptIn(e.target.checked)} />
+              Send occasional DCC updates
+            </label>
+          </fieldset>
+
+          {errorMessage ? <p className="text-sm text-red-600 dark:text-red-400">{errorMessage}</p> : null}
+          <button
+            type="submit"
+            disabled={status === 'loading' || interestTags.length === 0}
+            className="w-full rounded-full bg-neutral-900 px-6 py-3.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900"
+          >
+            {status === 'loading' ? 'Submitting…' : DCC_SIGNUP_COPY.cta}
+          </button>
+          <p className="text-center text-sm text-neutral-500">
+            <Link href={fullFormHref()} className="font-medium text-[var(--cdc-teal)] hover:underline">
+              {DCC_SIGNUP_COPY.fullFormLinkLabel}
+            </Link>
+          </p>
         </form>
       ) : (
         <form onSubmit={handleJoinSubmit} className="space-y-8">
@@ -486,6 +675,20 @@ export function DccSignupForm({
           >
             {status === 'loading' ? 'Submitting…' : DCC_SIGNUP_COPY.cta}
           </button>
+          <p className="text-center text-sm text-neutral-500">
+            <Link
+              href={(() => {
+                const params = new URLSearchParams(searchParams.toString())
+                params.delete('form')
+                if (source) params.set('source', source)
+                const qs = params.toString()
+                return qs ? `${pathname}?${qs}` : pathname
+              })()}
+              className="font-medium text-[var(--cdc-teal)] hover:underline"
+            >
+              Use short signup form
+            </Link>
+          </p>
         </form>
       )}
     </div>

@@ -1,4 +1,9 @@
 import { fetchAllRecords, isAirtableConnectionConfigured, type AirtableRecord } from '@/lib/airtable/client'
+import {
+  edgeZonesNetworkIndex,
+  mergeEdgeZonesNetworkIndex,
+  staticProfilesToArtistProfiles,
+} from '@/lib/marketing/edgezones-network-index'
 import { DEFAULT_SEED_CANDIDATES_FIELD_MAP } from '@/lib/network-builder/seed-candidates-field-map'
 import {
   isDemoReadinessExcluded,
@@ -134,7 +139,7 @@ function sortProfiles(a: EdgeZonesArtistProfile, b: EdgeZonesArtistProfile, reco
 
 export type EdgeZonesArtistsResult = {
   artists: EdgeZonesArtistProfile[]
-  source: 'airtable' | 'none'
+  source: 'airtable' | 'static' | 'merged'
   filterNote?: string
 }
 
@@ -148,8 +153,14 @@ export async function fetchEdgeZonesArtists(): Promise<EdgeZonesArtistsResult> {
   const campaignId = env('AIRTABLE_DCC_CRM_CAMPAIGN_EDGE_ZONES_ID')
   const viewId = env('AIRTABLE_DCC_CRM_VIEW_SEED_EDGE_ZONES')
 
+  const staticArtists = staticProfilesToArtistProfiles(edgeZonesNetworkIndex)
+
   if (!isAirtableConnectionConfigured({ apiKey, baseId, tableId })) {
-    return { artists: [], source: 'none', filterNote: 'Airtable not configured' }
+    return {
+      artists: staticArtists,
+      source: 'static',
+      filterNote: 'Static network index (Airtable not configured)',
+    }
   }
 
   const records = await fetchAllRecords(baseId!, tableId!, apiKey!, viewId ? { viewId } : undefined)
@@ -161,18 +172,26 @@ export async function fetchEdgeZonesArtists(): Promise<EdgeZonesArtistsResult> {
   })
 
   const recordMap = new Map(filtered.map((r) => [r.id, r]))
-  const artists = filtered
+  const airtableArtists = filtered
     .map(mapSeedToProfile)
     .filter((p): p is EdgeZonesArtistProfile => p !== null)
     .sort((a, b) => sortProfiles(a, b, recordMap))
 
+  if (airtableArtists.length === 0) {
+    return {
+      artists: staticArtists,
+      source: 'static',
+      filterNote: 'Static network index (no Airtable matches yet)',
+    }
+  }
+
   return {
-    artists,
-    source: 'airtable',
+    artists: mergeEdgeZonesNetworkIndex(edgeZonesNetworkIndex, airtableArtists),
+    source: 'merged',
     filterNote: viewId
-      ? `Airtable view ${viewId}`
+      ? `Merged with Airtable view ${viewId}`
       : campaignId
-        ? `Related Campaign ${campaignId}`
-        : 'Program / institution match: Edge Zones',
+        ? `Merged with Related Campaign ${campaignId}`
+        : 'Merged with Airtable program / institution match',
   }
 }

@@ -19,24 +19,27 @@ import { AnnouncementCarousel } from '@/components/carousel/AnnouncementCarousel
 import { FullScreenAnnouncement } from '@/components/display/FullScreenAnnouncement';
 import {
   DisplayGrid,
-  WorkshopGridCard,
   ArtistGridCard,
   CinematicGridCard,
   type WorkshopGridItem,
   type ArtistGridItem,
 } from '@/components/display/DisplayGrid';
 import { mergeWorkshopGridItems } from '@/lib/display/workshop-announcements-merge';
+import { computeWorkshopSegmentDurationMs } from '@/lib/display/workshop-grid-segment';
+import { WorkshopSegmentPlayer } from '@/components/display/WorkshopSegmentPlayer';
+import { sortStudioResidents } from '@/lib/display/artist-spotlight';
+import { artistMatchesConstituentFilter } from '@/lib/network-builder/constituent-types';
+import {
+  excludeFromSmartSignCarousel,
+  resolveCinematicSegmentTakeover,
+} from '@/lib/display/announcement-display-mode';
+import { CinematicSegmentTakeover } from '@/components/display/CinematicSegmentTakeover';
+import { ArtistSpotlightCarousel } from '@/components/display/ArtistSpotlightCarousel';
 
 function isStudioResidentArtist(a: ArtistGridItem): boolean {
-  const st = String(a.studio_type || '').toLowerCase();
-  if (st === 'studio' || st.includes('studio')) return true;
-  const meta = a.metadata;
-  if (meta && typeof meta === 'object') {
-    const r = meta.residency;
-    if (r === 'studio_resident' || r === 'resident') return true;
-    if (meta.studio_resident === true) return true;
-  }
-  return false;
+  const memberTypeKey =
+    typeof a.metadata?.member_type_key === 'string' ? a.metadata.member_type_key : null;
+  return artistMatchesConstituentFilter(a.metadata, memberTypeKey, 'studio_residents');
 }
 
 function filterArtistsByProgram(artists: ArtistGridItem[], filter: ArtistGridFilter | undefined): ArtistGridItem[] {
@@ -103,27 +106,18 @@ export function DisplayProgramOrchestrator({
   const safeIndex = segments.length ? index % segments.length : 0;
   const segment = segments[safeIndex];
 
-  useEffect(() => {
-    if (segments.length <= 1) return;
-    if (docHidden) return;
-    const ms = Math.max(3000, segment?.durationMs ?? 10_000);
-    const t = window.setTimeout(() => {
-      setIndex((i) => (i + 1) % segments.length);
-    }, ms);
-    return () => window.clearTimeout(t);
-  }, [segments.length, safeIndex, segment?.durationMs, segment?.id, docHidden]);
-
   const carouselList = useCallback(
     (seg: DisplaySegment) => {
+      let list = displayAnnouncements.filter((a) => !excludeFromSmartSignCarousel(a));
       const month = seg.params?.displayCalendarMonth?.trim() ?? '';
       if (month && isValidDisplayCalendarMonthKey(month)) {
-        return filterAnnouncementsByDisplayCalendarMonth(displayAnnouncements, month);
+        return filterAnnouncementsByDisplayCalendarMonth(list, month);
       }
       const days = seg.params?.useRecentWindowDays;
       if (days != null && days > 0) {
-        return filterAnnouncementsByRecentWindow(displayAnnouncements, days);
+        return filterAnnouncementsByRecentWindow(list, days);
       }
-      return displayAnnouncements;
+      return list;
     },
     [displayAnnouncements]
   );
@@ -154,11 +148,37 @@ export function DisplayProgramOrchestrator({
     [mergedWorkshops]
   );
 
+  // The workshops segment paginates internally (featured + grid slides), so its
+  // on-screen time must equal the sum of all its slide durations, not the static
+  // program durationMs. Other segments keep their configured durationMs.
+  const effectiveDurationMs = useMemo(() => {
+    if (!segment) return 10_000;
+    if (segment.kind === 'grid_workshops') {
+      return computeWorkshopSegmentDurationMs(workshopItems(segment), segment.params);
+    }
+    return segment.durationMs;
+  }, [segment, workshopItems]);
+
+  useEffect(() => {
+    if (segments.length <= 1) return;
+    if (docHidden) return;
+    const ms = Math.max(3000, effectiveDurationMs ?? 10_000);
+    const t = window.setTimeout(() => {
+      setIndex((i) => (i + 1) % segments.length);
+    }, ms);
+    return () => window.clearTimeout(t);
+  }, [segments.length, safeIndex, effectiveDurationMs, segment?.id, docHidden]);
+
   const artistItems = useCallback(
     (seg: DisplaySegment) => {
       const filtered = filterArtistsByProgram(artists, seg.params?.filter);
-      const max = seg.params?.maxItems ?? 12;
-      return filtered.slice(0, max);
+      const sorted =
+        seg.params?.filter === 'studio_residents'
+          ? sortStudioResidents(filtered)
+          : filtered;
+      const defaultMax = seg.params?.filter === 'studio_residents' ? 13 : 12;
+      const max = seg.params?.maxItems ?? defaultMax;
+      return sorted.slice(0, max);
     },
     [artists]
   );
@@ -225,16 +245,21 @@ export function DisplayProgramOrchestrator({
           );
         }
         return (
-          <DisplayGrid title="Workshops" surfaceMode="light" columns={cols}>
-            {items.map((w) => (
-              <WorkshopGridCard key={w.id} item={w} />
-            ))}
-          </DisplayGrid>
+          <WorkshopSegmentPlayer
+            items={items}
+            params={segment.params}
+            columns={cols}
+            cleanViewMode={cleanViewMode}
+            orgSlug={orgSlug}
+          />
         );
       }
       case 'grid_artists': {
         const items = artistItems(segment);
-        const cols = segment.params?.columns ?? 3;
+        const mode = segment.params?.artistDisplayMode ?? 'grid';
+        const showArtwork = segment.params?.showArtwork !== false;
+        const rotationMs = segment.params?.artistRotationMs ?? 7000;
+
         if (items.length === 0) {
           return (
             <div className="flex h-screen w-full items-center justify-center bg-gray-950 text-white">
@@ -242,6 +267,20 @@ export function DisplayProgramOrchestrator({
             </div>
           );
         }
+
+        if (mode === 'spotlight') {
+          return (
+            <ArtistSpotlightCarousel
+              artists={items}
+              showArtwork={showArtwork}
+              rotationMs={rotationMs}
+              title="Studio Residents"
+              subtitle="2026"
+            />
+          );
+        }
+
+        const cols = segment.params?.columns ?? 3;
         return (
           <DisplayGrid title="Artists" subtitle="Studio residents" surfaceMode="light" columns={cols}>
             {items.map((a) => (
@@ -252,6 +291,16 @@ export function DisplayProgramOrchestrator({
       }
       case 'grid_cinematic': {
         const list = cinematicList(segment);
+        const featured = resolveCinematicSegmentTakeover(displayAnnouncements);
+        if (featured) {
+          return (
+            <CinematicSegmentTakeover
+              announcement={featured}
+              organizationSlug={orgSlug}
+              cleanViewMode={cleanViewMode}
+            />
+          );
+        }
         const cols = segment.params?.columns ?? 3;
         if (list.length === 0) {
           return (

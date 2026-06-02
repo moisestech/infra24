@@ -98,6 +98,29 @@ function isoDateKeyFromRaw(raw: string | null | undefined): string | null {
   return new Intl.DateTimeFormat('en-CA', { timeZone: SMART_SIGN_DISPLAY_TIMEZONE }).format(d);
 }
 
+/** Local calendar ms from a display anchor (YYYY-MM prefix); avoids UTC date-only shift. */
+export function parseDisplayDateLocalMs(raw: string | null | undefined): number {
+  const key = isoDateKeyFromRaw(raw);
+  if (key) {
+    const [y, m, d] = key.split('-').map(Number);
+    return new Date(y, m - 1, d).getTime();
+  }
+  if (raw == null || String(raw).trim() === '') return Number.NaN;
+  const t = new Date(String(raw).trim()).getTime();
+  return Number.isNaN(t) ? Number.NaN : t;
+}
+
+/** True when the event's calendar day matches today in the display timezone. */
+export function isDisplayDateToday(
+  raw: string | null | undefined,
+  now: Date = new Date(),
+  timeZone: string = SMART_SIGN_DISPLAY_TIMEZONE
+): boolean {
+  const eventKey = isoDateKeyFromRaw(raw);
+  if (!eventKey) return false;
+  return eventKey === getTodayDisplayDateKey(timeZone, now);
+}
+
 /** Event start date (YYYY-MM-DD); never falls back to created_at. */
 export function announcementStartDateKey(a: Announcement): string | null {
   return isoDateKeyFromRaw(a.start_date || a.starts_at || a.scheduled_at);
@@ -109,13 +132,28 @@ export function announcementEndDateKey(a: Announcement): string | null {
 }
 
 /**
+ * Always-on smart-sign rows: explicit `metadata.evergreen`, or undated takeover/promo slides.
+ */
+export function isAnnouncementEvergreenForDisplay(a: Announcement): boolean {
+  const meta = a.metadata;
+  if (meta && typeof meta === 'object' && meta.evergreen === true) return true;
+  const takeover =
+    meta &&
+    typeof meta === 'object' &&
+    (meta.display_takeover === true || meta.image_only === true);
+  if (takeover && !announcementStartDateKey(a) && !announcementEndDateKey(a)) return true;
+  return false;
+}
+
+/**
  * True when an announcement is still on view (end >= today) or upcoming (start >= today).
- * Rows with no event start/end are excluded (e.g. undated resident directory cards).
+ * Evergreen and undated takeover promos bypass the date window.
  */
 export function isAnnouncementRelevantForDisplay(
   a: Announcement,
   todayKey: string = getTodayDisplayDateKey()
 ): boolean {
+  if (isAnnouncementEvergreenForDisplay(a)) return true;
   if (!isValidDisplayOnOrAfterDate(todayKey.trim())) return false;
   const today = todayKey.trim();
   const start = announcementStartDateKey(a);

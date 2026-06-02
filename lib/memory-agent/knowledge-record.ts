@@ -72,6 +72,7 @@ export type KnowledgeRecord = {
 export type MemoryIntent =
   | 'people'
   | 'programming'
+  | 'recognition'
   | 'mixed'
   | 'time_bound'
   | 'recommendation'

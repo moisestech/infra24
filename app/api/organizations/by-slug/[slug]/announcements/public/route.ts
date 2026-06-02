@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { enrichAnnouncementsPeople } from '@/lib/enrich-people-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,9 +90,11 @@ export async function GET(
 
     console.log('🌐 Successfully fetched public announcements:', announcements?.length || 0, 'announcements');
 
+    const enrichedAnnouncements = await enrichAnnouncementsPeople(announcements || [], organization);
+
     return NextResponse.json({
-      announcements: announcements || [],
-      organization
+      announcements: enrichedAnnouncements,
+      organization,
     });
 
   } catch (error) {

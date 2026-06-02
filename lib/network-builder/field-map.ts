@@ -47,6 +47,16 @@ export type NetworkPeopleFieldMap = {
   imagePortraitUrl: string
   researchParticipationStatus: string
   researchAccessLevel: string
+  utmSource: string
+  utmMedium: string
+  utmCampaign: string
+  utmContent: string
+  utmTerm: string
+  qrCodeId: string
+  landingPage: string
+  referrer: string
+  signupSource: string
+  consentToUpdates: string
 }
 
 export const DEFAULT_DCC_PEOPLE_FIELD_MAP: NetworkPeopleFieldMap = {
@@ -94,6 +104,16 @@ export const DEFAULT_DCC_PEOPLE_FIELD_MAP: NetworkPeopleFieldMap = {
   imagePortraitUrl: 'Image / Portrait URL',
   researchParticipationStatus: 'Research Participation Status',
   researchAccessLevel: 'Research Access Level',
+  utmSource: 'UTM Source',
+  utmMedium: 'UTM Medium',
+  utmCampaign: 'UTM Campaign',
+  utmContent: 'UTM Content',
+  utmTerm: 'UTM Term',
+  qrCodeId: 'QR Code ID',
+  landingPage: 'Landing Page',
+  referrer: 'Referrer',
+  signupSource: 'Signup Source',
+  consentToUpdates: 'Consent to Updates',
 }
 
 /** All People fields the Network Builder reads or writes (for schema gap reports). */

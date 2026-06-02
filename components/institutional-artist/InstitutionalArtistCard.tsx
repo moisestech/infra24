@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ExternalLink, MapPin } from 'lucide-react'
 
@@ -160,6 +161,26 @@ export function InstitutionalArtistCard({
             >
               {t}
             </span>
+          ))}
+        </div>
+      ) : null}
+
+      {data.galleryImageUrls && data.galleryImageUrls.length > 1 ? (
+        <div className="flex gap-1.5 overflow-x-auto pb-0.5">
+          {data.galleryImageUrls.slice(0, 4).map((url, i) => (
+            <Image
+              key={`${url}-${i}`}
+              src={url}
+              alt=""
+              width={56}
+              height={56}
+              unoptimized
+              className={cn(
+                'h-14 w-14 shrink-0 rounded-md object-cover ring-1',
+                isAgent ? 'ring-[var(--ma-border)]' : 'ring-border',
+                i > 0 && 'opacity-90'
+              )}
+            />
           ))}
         </div>
       ) : null}

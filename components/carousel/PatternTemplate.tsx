@@ -16,11 +16,23 @@ import { ImageLayout } from './ImageLayouts';
 import { ImageLayoutType } from '@/types/announcement';
 import { LayoutDebugOverlay } from './LayoutDebugOverlay';
 import { type ScreenMetrics, type ResponsiveSizes } from './ResponsiveSizing';
+import { SMART_SIGN_CARD_CONTENT_CLASS } from '@/lib/display/announcement-image-frame';
 import QRCode from '@/components/ui/QRCode';
 import {
   announcementHasScannableDestination,
   buildAnnouncementScanPath,
 } from '@/lib/announcements/scan-target';
+import { AnnouncementTakeover } from './AnnouncementTakeover';
+import { StackedDateOverlay } from '@/components/display/StackedDateOverlay';
+import {
+  stackedDateFromAnnouncement,
+  stackedDateOptionsForAnnouncement,
+} from '@/lib/display/stacked-date-display';
+import type { Announcement } from '@/types/announcement';
+import {
+  hasDisplayTakeover,
+  resolveTakeoverMedia,
+} from '@/lib/display/announcement-display-mode';
 
 interface ImageSettings {
   layout?: ImageLayoutType;
@@ -132,6 +144,35 @@ export function PatternTemplate({
   // Check if announcement has an image and determine layout
   const hasImage = announcement.image_url && announcement.image_url.trim() !== '';
   const isImageOnly = announcement?.metadata?.image_only === true;
+  const takeoverMedia = resolveTakeoverMedia(announcement);
+
+  if (takeoverMedia && hasDisplayTakeover(announcement.metadata)) {
+    return (
+      <div className="relative flex h-full min-h-0 w-full flex-1">
+        <AnnouncementTakeover
+          announcement={announcement}
+          media={takeoverMedia}
+          organizationSlug={organizationSlug}
+          organizationTheme={organizationTheme}
+          showQRCode={showQRCode}
+          setShowQRCode={setShowQRCode}
+          showQRCodeButton={showQRCodeButton}
+          styles={styles}
+          IconComponent={IconComponent}
+          orientation={orientation}
+          textSizes={textSizes}
+          iconSizeMultiplier={iconSizeMultiplier}
+          avatarSizeMultiplier={avatarSizeMultiplier}
+          screenMetrics={screenMetrics}
+          responsiveSizes={responsiveSizes}
+          animationsPaused={animationsPaused}
+          hideAnnouncementDates={hideAnnouncementDates}
+          isActive={isActive}
+        />
+      </div>
+    );
+  }
+
   // When DB/localStorage don't specify a layout, rotate for visual variety (still overridable per slide in dev tools)
   const ROTATING_DEFAULT_LAYOUTS: ImageLayoutType[] = [
     'card',
@@ -146,6 +187,20 @@ export function PatternTemplate({
     ? ((explicitLayout || rotatedFallback) as ImageLayoutType)
     : null;
 
+  const cardDateOnImage =
+    !hideAnnouncementDates &&
+    (announcement.type as string) !== 'fun_fact' &&
+    (imageLayout === 'card' ||
+      explicitLayout === 'card' ||
+      announcement.image_layout === 'card');
+
+  const stackedCardDate = cardDateOnImage
+    ? stackedDateFromAnnouncement(
+        announcement as Announcement,
+        stackedDateOptionsForAnnouncement(announcement as Announcement)
+      )
+    : null;
+
   // Image information logging removed to reduce console noise
 
   // Content wrapper component
@@ -153,7 +208,7 @@ export function PatternTemplate({
     <>
       {isImageOnly ? null : (
         <>
-      {/* Date Display - only use absolute positioning for non-card layouts (card has date in-flow) */}
+      {/* Date Display - non-card layouts only (card dates sit on the image via StackedDateOverlay) */}
       {imageLayout !== 'card' && (
         <AnnouncementDateDisplay
           announcement={announcement}
@@ -175,11 +230,11 @@ export function PatternTemplate({
           people={announcement.people}
           orientation={orientation}
           avatarSizeMultiplier={avatarSizeMultiplier}
-          organizationSlug={organizationSlug}
+          variant={minimalImageFrame && imageLayout === 'card' ? 'inline' : 'overlay'}
           className={cn(
             'z-30',
             imageLayout === 'card' || imageLayout === 'split-left' || imageLayout === 'split-right'
-              ? 'relative mt-4 w-full max-w-2xl'
+              ? cn('relative mt-4 w-full', SMART_SIGN_CARD_CONTENT_CLASS)
               : 'absolute bottom-28 left-6 right-6 md:left-12 md:right-auto md:max-w-lg max-h-[28vh] overflow-y-auto pr-1'
           )}
         />
@@ -292,6 +347,7 @@ export function PatternTemplate({
           responsiveSizes={responsiveSizes}
           animationsPaused={animationsPaused}
           minimalImageFrame={minimalImageFrame}
+          hideAnnouncementDates={hideAnnouncementDates}
         >
           {/* Pattern overlay - only show if not using image background and not solid pattern */}
           {isMounted &&
@@ -347,6 +403,10 @@ export function PatternTemplate({
             />
           </div>
         )}
+
+        {!hasImage && stackedCardDate ? (
+          <StackedDateOverlay parts={stackedCardDate} size="lg" />
+        ) : null}
 
         <ContentWrapper />
       </div>

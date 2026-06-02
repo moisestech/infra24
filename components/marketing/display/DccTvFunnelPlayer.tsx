@@ -3,9 +3,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import QRCode from '@/components/ui/QRCode'
 import {
-  DCC_TV_QR_PATH,
-  DCC_TV_QR_SOURCE,
   DCC_TV_SLIDES,
+  dccTvSignupUrl,
   type DccTvSlide,
   type DccTvSlideMotion,
 } from '@/lib/marketing/dcc-tv-slides'
@@ -153,10 +152,7 @@ export function DccTvFunnelPlayer({ showControls = false }: Props) {
     return () => window.clearTimeout(t)
   }, [index, slide.durationMs, slides.length, docHidden, paused])
 
-  const qrUrl = useMemo(() => {
-    if (!origin) return ''
-    return `${origin}${DCC_TV_QR_PATH}?source=${encodeURIComponent(DCC_TV_QR_SOURCE)}`
-  }, [origin])
+  const qrUrl = useMemo(() => (origin ? dccTvSignupUrl(origin) : ''), [origin])
 
   return (
     <div className="relative min-h-[100dvh] w-full overflow-hidden bg-neutral-950 text-white">

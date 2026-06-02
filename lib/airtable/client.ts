@@ -28,6 +28,8 @@ export type ListRecordsOptions = {
   filterFormula?: string;
   /** Airtable view id or name; scopes list to that view */
   viewId?: string;
+  /** When true, record `fields` keys are field ids (fld…) instead of names */
+  returnFieldsByFieldId?: boolean;
 };
 
 /**
@@ -43,6 +45,8 @@ export async function fetchAllRecords(
   const filterFormula =
     typeof options === 'string' ? options : options?.filterFormula;
   const viewId = typeof options === 'string' ? undefined : options?.viewId;
+  const returnFieldsByFieldId =
+    typeof options === 'string' ? undefined : options?.returnFieldsByFieldId;
 
   const allRecords: AirtableRecord[] = [];
   let offset: string | undefined;
@@ -53,6 +57,9 @@ export async function fetchAllRecords(
     );
     if (filterFormula) url.searchParams.set('filterByFormula', filterFormula);
     if (viewId) url.searchParams.set('view', viewId);
+    if (returnFieldsByFieldId) {
+      url.searchParams.set('returnFieldsByFieldId', 'true');
+    }
     if (offset) url.searchParams.set('offset', offset);
 
     const res = await fetch(url.toString(), {

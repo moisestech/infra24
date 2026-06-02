@@ -65,6 +65,8 @@ export type AlumniAirtableRow = {
   visibilityLevel?: string
   approvedForPublicAi?: boolean
   doNotUseInAi?: boolean
+  studioNumber?: string
+  currentAlumniStatus?: string
 }
 
 /** Label for cards: artist name when mapped, else legal/display name */
@@ -243,6 +245,12 @@ function mapRecordToAlumni(
   const doNotField = fieldMap.doNotUseInAi?.trim()
   const doNotUseInAi = doNotField ? cellToBool(fields[doNotField]) : undefined
 
+  const studioField = fieldMap.studioNumber?.trim()
+  const studioNumber = studioField ? cellToString(fields[studioField]) : undefined
+
+  const statusField = fieldMap.currentAlumniStatus?.trim()
+  const currentAlumniStatus = statusField ? cellToString(fields[statusField]) : undefined
+
   const residencyCol = fieldMap.residencyYear?.trim()
   const residencyFromCol = residencyCol
     ? cellToString(fields[residencyCol])
@@ -296,6 +304,8 @@ function mapRecordToAlumni(
     ...(visibilityLevel ? { visibilityLevel } : {}),
     ...(approvedForPublicAi !== undefined ? { approvedForPublicAi } : {}),
     ...(doNotUseInAi !== undefined ? { doNotUseInAi } : {}),
+    ...(studioNumber ? { studioNumber } : {}),
+    ...(currentAlumniStatus ? { currentAlumniStatus } : {}),
   }
 }
 

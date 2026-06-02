@@ -6,6 +6,7 @@ import { Announcement, ImageLayoutType } from '@/types/announcement';
 import { PatternTemplate } from './PatternTemplate';
 import { CarouselControls } from './CarouselControls';
 import { getIconForAnnouncement, getStylesForAnnouncement } from './announcement-styles';
+import { sortAnnouncementsForSmartSignCarousel } from '@/lib/display/announcement-display-mode';
 import { useOrganizationTheme } from './OrganizationThemeContext';
 import { TextSizeControls } from './DevTextSizeControls';
 import { calculateScreenMetrics, getResponsiveTextSizes, type ResponsiveSizes } from './ResponsiveSizing';
@@ -179,18 +180,17 @@ export function AnnouncementCarousel({
     }
   }, [textSizes, iconSizeMultiplier, avatarSizeMultiplier]);
 
-  // Filter active announcements (show all active announcements, not just future ones)
-  // Also deduplicate by ID to prevent duplicates from showing
-  // IMPORTANT: Preserves the exact order from the API - no sorting or randomization
+  // Filter published, sort takeover slides first, dedupe by ID
   const futureAnnouncements = useMemo(() => {
-    const published = announcements.filter(announcement => {
-      // Show all published announcements
+    const published = announcements.filter((announcement) => {
       return announcement.status === 'published';
     });
+
+    const ordered = sortAnnouncementsForSmartSignCarousel(published);
     
     // Deduplicate by ID (keep first occurrence) - preserves order
     const seen = new Set<string>();
-    const filtered = published.filter(announcement => {
+    const filtered = ordered.filter((announcement) => {
       if (seen.has(announcement.id)) {
         console.warn('⚠️ Duplicate announcement detected:', announcement.title, announcement.id);
         return false;
@@ -526,6 +526,7 @@ export function AnnouncementCarousel({
         currentShowVisibilityBadge={showVisibilityBadge}
         currentShowQRCodeButton={showQRCodeButton}
         currentShowLearnMore={showLearnMore}
+        cleanViewMode={cleanViewMode}
       />
 
       {/* Carousel Controls */}
@@ -575,6 +576,7 @@ export function AnnouncementCarousel({
                 animationsPaused={cleanViewMode}
                 slideIndex={index}
                 hideAnnouncementDates={hideAnnouncementDates}
+                minimalImageFrame={cleanViewMode}
               />
             </div>
           ))}

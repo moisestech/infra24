@@ -59,6 +59,7 @@ function isPublicRoute(pathname: string): boolean {
     /** DCC Index signup + Edge Zones partnership portal (QR / print). */
     '/dcc',
     '/edgezones',
+    '/join',
     /** Landscape TV intake funnel (kiosk). */
     '/display/dcc',
     /** Soho House Member Signal Agent pitch funnel (back-cover QR). */

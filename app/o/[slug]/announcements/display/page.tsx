@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { ArrowLeft, Eye, List, EyeOff, Settings2, Copy, RotateCcw } from 'lucide-react';
+import { ArrowLeft, List, EyeOff, Settings2, Copy, RotateCcw, Maximize2, Minimize2 } from 'lucide-react';
 import Link from 'next/link';
 import { DisplayProgramOrchestrator } from '@/components/display/DisplayProgramOrchestrator';
 import { Announcement } from '@/types/announcement';
@@ -21,6 +21,9 @@ import {
   type DisplayProgram,
 } from '@/lib/display/display-program';
 import { studioNumberFromArtistPayload } from '@/lib/display/artist-studio-number';
+import { hasDisplayTakeover } from '@/lib/display/announcement-display-mode';
+import { resolveWorkshopScheduleDisplay } from '@/lib/display/workshop-schedule-display';
+import { parseWorkshopEventMs } from '@/lib/display/workshop-grid-segment';
 
 interface Organization {
   id: string;
@@ -44,6 +47,7 @@ function AnnouncementDisplayPageInner() {
   const [error, setError] = useState<string | null>(null);
   const [showNavigation, setShowNavigation] = useState(true);
   const [cleanViewMode, setCleanViewMode] = useState(false);
+  const [isBrowserFullscreen, setIsBrowserFullscreen] = useState(false);
 
   const [program, setProgram] = useState<DisplayProgram>(DEFAULT_DISPLAY_PROGRAM);
   const [programJson, setProgramJson] = useState(() => JSON.stringify(DEFAULT_DISPLAY_PROGRAM, null, 2));
@@ -154,7 +158,11 @@ function AnnouncementDisplayPageInner() {
               image_layout: (announcement.image_layout as string) || (announcement.imageLayout as string) || null,
               people: (announcement.people as unknown[]) || (announcement.key_people as unknown[]) || [],
             } as Announcement;
-            if (!mapped.image_url) {
+            if (
+              !mapped.image_url &&
+              !hasDisplayTakeover(mapped.metadata as Announcement['metadata']) &&
+              !(mapped.metadata as { video_url?: string } | undefined)?.video_url
+            ) {
               console.warn('⚠️ Announcement missing image_url:', { title: mapped.title });
             }
             return mapped;
@@ -170,17 +178,48 @@ function AnnouncementDisplayPageInner() {
           setWorkshops(
             wsList.map((w) => {
               const meta = (w.metadata as Record<string, unknown>) || null;
-              const scheduleDetail =
+              const metadataSchedule =
                 (typeof meta?.displaySchedule === 'string' && meta.displaySchedule.trim()) ||
                 (typeof meta?.schedule === 'string' && meta.schedule.trim()) ||
                 null;
+              const resolved = resolveWorkshopScheduleDisplay({
+                metadataSchedule,
+                body: (w.content as string) || (w.description as string) || null,
+                startsAt: (w.starts_at as string) || null,
+                endsAt: (w.ends_at as string) || null,
+                startDate: (w.start_date as string) || null,
+                endDate: (w.end_date as string) || null,
+              });
+              const schedule = resolved.scheduleText;
+              const eventSortMs = parseWorkshopEventMs(
+                (w.starts_at as string) || (w.start_date as string) || null
+              );
+              const eventEndMs = parseWorkshopEventMs(
+                (w.ends_at as string) || (w.end_date as string) || null
+              );
+              const tags = Array.isArray(w.tags)
+                ? (w.tags as unknown[]).map((t) => String(t).toLowerCase())
+                : [];
+              const category = (w.category as string) || null;
+              const isOnlineClass =
+                eventSortMs == null &&
+                (tags.includes('digital-lab') ||
+                  tags.includes('digital_lab') ||
+                  tags.includes('online') ||
+                  tags.includes('class') ||
+                  tags.includes('classes') ||
+                  /digital lab|online|class/i.test(category || ''));
               return {
                 id: String(w.id),
                 title: String(w.title || ''),
-                description: scheduleDetail ? null : (w.description as string) || null,
+                description: schedule ? null : (w.description as string) || null,
                 image_url: (w.image_url as string) || null,
-                category: (w.category as string) || null,
-                schedule_detail: scheduleDetail,
+                category,
+                schedule_detail: schedule,
+                schedule_date_label: resolved.dateLabel,
+                event_sort_ms: eventSortMs,
+                event_end_ms: eventEndMs,
+                is_online_class: isOnlineClass,
               };
             })
           );
@@ -202,10 +241,13 @@ function AnnouncementDisplayPageInner() {
                 id: String(a.id),
                 name: String(a.name || ''),
                 bio: (a.bio as string) || null,
-                profile_image: (a.profile_image as string) || null,
+                avatar_url: (a.avatar_url as string) || (a.profile_image as string) || null,
+                profile_image: (a.profile_image as string) || (a.avatar_url as string) || null,
                 studio_type: (a.studio_type as string) || null,
                 studio_number: studioNum || null,
                 metadata: meta,
+                constituent_type: (a.constituent_type as string) || null,
+                constituent_label: (a.constituent_label as string) || null,
               };
             })
           );
@@ -224,6 +266,34 @@ function AnnouncementDisplayPageInner() {
       loadData();
     }
   }, [isLoaded, params.slug]);
+
+  const enterCleanView = useCallback(() => {
+    setCleanViewMode(true);
+    setShowNavigation(false);
+    setProgramEditorOpen(false);
+  }, []);
+
+  useEffect(() => {
+    const syncFullscreen = () => {
+      setIsBrowserFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener('fullscreenchange', syncFullscreen);
+    syncFullscreen();
+    return () => document.removeEventListener('fullscreenchange', syncFullscreen);
+  }, []);
+
+  const toggleBrowserFullscreen = useCallback(async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+      return;
+    }
+    enterCleanView();
+    try {
+      await document.documentElement.requestFullscreen();
+    } catch (err) {
+      console.warn('Fullscreen request failed:', err);
+    }
+  }, [enterCleanView]);
 
   const applyProgramJson = useCallback(() => {
     if (!slug) return;
@@ -345,33 +415,67 @@ function AnnouncementDisplayPageInner() {
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => {
-          setCleanViewMode(!cleanViewMode);
-          if (!cleanViewMode) {
-            setShowNavigation(false);
-            setProgramEditorOpen(false);
-          }
-        }}
-        className={`fixed top-4 right-4 z-50 inline-flex items-center justify-center w-12 h-12 bg-black/60 backdrop-blur-md text-white hover:bg-black/80 transition-all duration-300 rounded-lg border border-white/20 ${
-          cleanViewMode ? 'opacity-100' : 'opacity-70 hover:opacity-100'
-        }`}
-        title={cleanViewMode ? 'Exit clean view' : 'Enter clean view'}
-      >
-        {cleanViewMode ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-      </button>
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        {!cleanViewMode ? (
+          <button
+            type="button"
+            onClick={() => setProgramEditorOpen((o) => !o)}
+            className="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-white/20 bg-black/60 text-white opacity-70 backdrop-blur-md transition-all duration-300 hover:bg-black/80 hover:opacity-100"
+            title="Display program (JSON)"
+          >
+            <Settings2 className="h-5 w-5" />
+          </button>
+        ) : null}
 
-      <button
-        type="button"
-        onClick={() => setProgramEditorOpen((o) => !o)}
-        className="fixed top-4 right-[4.5rem] z-50 inline-flex items-center justify-center w-12 h-12 bg-black/60 backdrop-blur-md text-white hover:bg-black/80 transition-all duration-300 rounded-lg border border-white/20 opacity-70 hover:opacity-100"
-        title="Display program (JSON)"
-      >
-        <Settings2 className="w-5 h-5" />
-      </button>
+        <button
+          type="button"
+          onClick={() => void toggleBrowserFullscreen()}
+          className="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-white/20 bg-black/60 text-white opacity-70 backdrop-blur-md transition-all duration-300 hover:bg-black/80 hover:opacity-100"
+          title={isBrowserFullscreen ? 'Exit fullscreen' : 'Enter fullscreen (hides controls)'}
+        >
+          {isBrowserFullscreen ? (
+            <Minimize2 className="h-5 w-5" />
+          ) : (
+            <Maximize2 className="h-5 w-5" />
+          )}
+        </button>
 
-      {programEditorOpen && (
+        <button
+          type="button"
+          onClick={() => {
+            const entering = !cleanViewMode;
+            if (entering) {
+              enterCleanView();
+            } else {
+              setCleanViewMode(false);
+              setShowNavigation(true);
+              if (document.fullscreenElement) {
+                void document.exitFullscreen();
+              }
+            }
+          }}
+          className={`inline-flex items-center justify-center rounded-lg border border-white/20 transition-all duration-300 ${
+            cleanViewMode
+              ? 'h-10 bg-black/40 px-3 opacity-90 backdrop-blur-sm hover:bg-black/55 hover:opacity-100'
+              : 'h-12 w-12 bg-black/60 text-white opacity-70 backdrop-blur-md hover:bg-black/80 hover:opacity-100'
+          }`}
+          title={cleanViewMode ? 'Show controls' : 'Hide controls'}
+        >
+          {cleanViewMode ? (
+            <OrganizationLogo
+              organizationSlug={slug}
+              size="sm"
+              theme="dark"
+              className="h-7 w-auto max-w-[7rem]"
+              priority
+            />
+          ) : (
+            <EyeOff className="h-5 w-5 text-white" />
+          )}
+        </button>
+      </div>
+
+      {programEditorOpen && !cleanViewMode && (
         <div className="fixed bottom-0 left-0 right-0 z-50 max-h-[45vh] flex flex-col bg-zinc-950/95 text-white border-t border-white/10 shadow-2xl">
           <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-white/10">
             <span className="text-sm font-medium">Display program (localStorage + optional ?program=)</span>

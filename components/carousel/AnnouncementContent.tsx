@@ -11,7 +11,9 @@ import {
   announcementHasScannableDestination,
   buildAnnouncementScanPath,
 } from '@/lib/announcements/scan-target';
-import { announcementEventDateRaw } from '@/lib/display/announcement-month';
+import { formatCardEventDateDisplay } from '@/lib/display/format-announcement-event-date';
+import { getTakeoverMode } from '@/lib/display/announcement-display-mode';
+import { isClassOrWorkshopAnnouncement } from '@/lib/display/workshop-announcements-merge';
 
 interface AnnouncementContentProps {
   announcement: any;
@@ -45,6 +47,13 @@ interface AnnouncementContentProps {
   hideAnnouncementDates?: boolean;
   /** Fullscreen smart-sign card: solid light surface (readable dark text) */
   minimalImageFrame?: boolean;
+  /** Gate individual content blocks (defaults all true) */
+  contentBlocks?: {
+    show_type_badge?: boolean;
+    show_title?: boolean;
+    show_body?: boolean;
+    show_location?: boolean;
+  };
 }
 
 export function AnnouncementContent({ 
@@ -78,14 +87,21 @@ export function AnnouncementContent({
   animationsPaused = false,
   hideAnnouncementDates = false,
   minimalImageFrame = false,
+  contentBlocks,
 }: AnnouncementContentProps) {
   const isImageOnly = announcement?.metadata?.image_only === true;
   const lightCardSurface = Boolean(minimalImageFrame && layoutType === 'card');
+  const isCardLayout = layoutType === 'card';
   const fg = lightCardSurface ? 'text-gray-900' : styles.text || 'text-white';
   const fgSoft = lightCardSurface ? 'text-gray-600' : styles.text || 'text-white';
-  if (isImageOnly) {
+  if (isImageOnly && getTakeoverMode(announcement?.metadata) !== 'overlay') {
     return null;
   }
+
+  const showTypeBadge = contentBlocks?.show_type_badge !== false;
+  const showTitle = contentBlocks?.show_title !== false;
+  const showBody = contentBlocks?.show_body !== false;
+  const showLocation = contentBlocks?.show_location !== false;
   
   // Helper function to get responsive base icon size
   const getResponsiveBaseIconSize = (sizeType: 'small' | 'medium' | 'large') => {
@@ -205,34 +221,143 @@ export function AnnouncementContent({
       ? `${scanOrigin}${buildAnnouncementScanPath(organizationSlug, announcement.id)}`
       : '';
 
+  const cardDateDisplay =
+    isCardLayout &&
+    !hideAnnouncementDates &&
+    (announcement.type as string) !== 'fun_fact'
+      ? formatCardEventDateDisplay(announcement, {
+          hideYear: isClassOrWorkshopAnnouncement(announcement),
+        })
+      : null;
+
+  const cardBodySnippet = announcement.body
+    ? (() => {
+        const firstSentenceMatch = announcement.body.match(/^[^.!?]+[.!?]/);
+        return firstSentenceMatch
+          ? firstSentenceMatch[0].trim()
+          : `${announcement.body.split('.')[0]}.`;
+      })()
+    : null;
+
   return (
     <div 
       className={cn(
         "relative z-30 h-full flex flex-col w-full min-w-0",
-        layoutType === 'card' ? "justify-between p-0 space-y-4 md:space-y-6 xl:space-y-8" : "justify-center",
-        layoutType === 'card' ? "flex-1" : getPaddingClass(),
-        layoutType !== 'card' && "space-y-16 xl:space-y-20 2xl:space-y-24 3xl:space-y-28 max-w-4xl xl:max-w-6xl 2xl:max-w-7xl 3xl:max-w-8xl",
+        isCardLayout ? 'shrink-0 gap-3 md:gap-4' : "justify-center",
+        !isCardLayout && getPaddingClass(),
+        !isCardLayout && "space-y-16 xl:space-y-20 2xl:space-y-24 3xl:space-y-28 max-w-4xl xl:max-w-6xl 2xl:max-w-7xl 3xl:max-w-8xl",
         DEBUG_LAYOUT && "bg-blue-500/40"
       )}
       style={{ maxWidth: '100%', width: '100%', boxSizing: 'border-box' }}
     >
+        {isCardLayout ? (
+          <>
+            {showTypeBadge ? (
+              <div
+                className={cn(
+                  'inline-flex w-fit items-center gap-2 flex-nowrap rounded-full',
+                  lightCardSurface
+                    ? 'border border-gray-200 bg-gray-100'
+                    : 'bg-white/10 backdrop-blur-sm',
+                  'gap-2 px-4 py-2 md:px-5 md:py-2.5',
+                  DEBUG_LAYOUT && 'border-2 border-red-500'
+                )}
+              >
+                <span className={cn('flex-shrink-0 flex items-center justify-center', DEBUG_LAYOUT && 'bg-green-500/60 p-1 rounded')}>
+                  <IconComponent className={cn(fg)} size={getIconSize('small')} />
+                </span>
+                <div className={cn('flex items-center gap-2 flex-nowrap min-w-0', DEBUG_LAYOUT && 'bg-purple-500/60 px-2 py-1 rounded')}>
+                  <span className={cn('font-bold break-words whitespace-normal', fg, textSizes.type)}>
+                    {announcement.type?.replace('_', ' ').toUpperCase() || 'EVENT'}
+                  </span>
+                  {announcement.sub_type ? (
+                    <span className={cn('font-medium opacity-70 break-words whitespace-normal', fgSoft, textSizes.type)}>
+                      • {announcement.sub_type.replace('_', ' ').toUpperCase()}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+
+            {cardDateDisplay?.isToday ? (
+              <span className="inline-flex w-fit rounded-full bg-green-500/90 px-4 py-2 text-xl font-semibold text-white md:text-2xl">
+                On view now
+              </span>
+            ) : null}
+
+            {showTitle ? (
+              <h1
+                className={cn(
+                  'text-6xl font-black leading-[1.02] tracking-tight break-words whitespace-normal md:text-7xl xl:text-8xl',
+                  fg
+                )}
+                style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
+              >
+                {announcement.title}
+              </h1>
+            ) : null}
+
+            {(showBody && cardBodySnippet) || (showLocation && announcement.location) ? (
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:gap-6 xl:gap-8">
+                {showBody && cardBodySnippet ? (
+                  <p
+                    className={cn(
+                      'min-w-0 flex-1 font-medium leading-relaxed opacity-90 break-words whitespace-normal',
+                      lightCardSurface ? 'text-gray-700' : 'text-black',
+                      textSizes.description
+                    )}
+                    style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
+                  >
+                    {cardBodySnippet}
+                  </p>
+                ) : null}
+
+                {showLocation && announcement.location ? (
+                  <div
+                    className={cn(
+                      'flex min-w-0 items-start gap-2 md:max-w-[42%] md:shrink-0',
+                      textSizes.location
+                    )}
+                  >
+                    <MapPin
+                      className={cn(
+                        'mt-1 opacity-80 flex-shrink-0',
+                        lightCardSurface ? 'text-gray-700' : 'text-black'
+                      )}
+                      size={getIconSize('small')}
+                    />
+                    <span
+                      className={cn(
+                        'opacity-80 font-medium break-words whitespace-normal',
+                        lightCardSurface ? 'text-gray-700' : 'text-black'
+                      )}
+                      style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
+                    >
+                      {announcement.location}
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <>
         {/* Type Badge - icon and category side by side */}
+        {showTypeBadge && (
         <div 
           className={cn(
             'inline-flex items-center gap-2 flex-nowrap rounded-full',
             lightCardSurface
               ? 'border border-gray-200 bg-gray-100'
               : 'bg-white/10 backdrop-blur-sm',
-            layoutType === 'card' 
-              ? "gap-2 px-4 py-2 md:px-5 md:py-2.5 xl:px-6 xl:py-3" 
-              : "gap-4 xl:gap-6 px-8 xl:px-12 py-4 xl:py-6",
+            "gap-4 xl:gap-6 px-8 xl:px-12 py-4 xl:py-6",
             DEBUG_LAYOUT && "border-2 border-red-500"
           )}
         >
           <span className={cn("flex-shrink-0 flex items-center justify-center", DEBUG_LAYOUT && "bg-green-500/60 p-1 rounded")}>
             <IconComponent 
               className={cn(fg)} 
-              size={layoutType === 'card' ? getIconSize('small') : getIconSize('medium')} 
+              size={getIconSize('medium')} 
             />
           </span>
           <div className={cn("flex items-center gap-2 flex-nowrap min-w-0", DEBUG_LAYOUT && "bg-purple-500/60 px-2 py-1 rounded")}>
@@ -254,37 +379,10 @@ export function AnnouncementContent({
             )}
           </div>
         </div>
-
-        {/* Date - in-flow for card layout (no overlay). Only show event time from starts_at, not posted time from created_at */}
-        {!hideAnnouncementDates && layoutType === 'card' && (announcement.type as string) !== 'fun_fact' && (() => {
-          const eventDate = announcementEventDateRaw(announcement);
-          if (!eventDate) return null;
-          const d = new Date(eventDate);
-          const dayOfWeek = d.toLocaleString('en-US', { weekday: 'long' });
-          const dateStr = `${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate()}`;
-          const hasTimedStart = Boolean(announcement.starts_at);
-          const timeStr = hasTimedStart ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : null;
-          const showTime = hasTimedStart && timeStr && timeStr !== '12:00 AM';
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          d.setHours(0, 0, 0, 0);
-          const isToday = d.getTime() === today.getTime();
-          return (
-            <div className="flex flex-col gap-1">
-              <div className={cn('font-semibold', lightCardSurface ? 'text-gray-800' : 'text-white/90', textSizes.date)}>
-                {dayOfWeek} · {dateStr}
-                {showTime && ` · ${timeStr}`}
-              </div>
-              {isToday && (
-                <span className="inline-flex w-fit rounded-full bg-green-500/90 px-3 py-1 text-sm font-medium text-white">
-                  Today
-                </span>
-              )}
-            </div>
-          );
-        })()}
+        )}
 
         {/* Title */}
+        {showTitle && (
         <h1 
           className={cn(
             "font-black leading-tight break-words whitespace-normal",
@@ -295,26 +393,33 @@ export function AnnouncementContent({
         >
           {announcement.title}
         </h1>
+        )}
 
-        {/* Description - First sentence only */}
-        {announcement.body && (
+        {/* Description — full body on overlay takeover; first sentence elsewhere */}
+        {showBody && announcement.body && (
           <p 
             className={cn(
-              "font-medium leading-relaxed opacity-90 break-words whitespace-normal text-black",
+              "font-medium leading-relaxed opacity-90 break-words whitespace-normal",
+              layoutType === 'overlay' || layoutType === 'hero' || layoutType === 'background'
+                ? fgSoft
+                : 'text-black',
               textSizes.description
             )}
             style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
           >
-            {(() => {
-              // Extract first sentence (ending with . ! or ?)
-              const firstSentenceMatch = announcement.body.match(/^[^.!?]+[.!?]/);
-              return firstSentenceMatch ? firstSentenceMatch[0].trim() : announcement.body.split('.')[0] + '.';
-            })()}
+            {layoutType === 'overlay'
+              ? announcement.body.trim()
+              : (() => {
+                  const firstSentenceMatch = announcement.body.match(/^[^.!?]+[.!?]/);
+                  return firstSentenceMatch
+                    ? firstSentenceMatch[0].trim()
+                    : announcement.body.split('.')[0] + '.';
+                })()}
           </p>
         )}
 
         {/* Location */}
-        {announcement.location && (
+        {showLocation && announcement.location && (
           <div 
             className={cn(
               "flex items-center gap-2 md:gap-4 flex-wrap",
@@ -323,12 +428,14 @@ export function AnnouncementContent({
           >
             <MapPin 
               className="opacity-80 flex-shrink-0 text-black"
-              size={layoutType === 'card' ? getIconSize('small') : getIconSize('medium')} 
+              size={getIconSize('medium')} 
             />
             <span className="opacity-80 font-medium break-words whitespace-normal text-black" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
               {announcement.location}
             </span>
           </div>
+        )}
+          </>
         )}
 
         {/* QR encodes stable /scan URL → redirects to qr_destination_url or primary_link */}
@@ -338,7 +445,7 @@ export function AnnouncementContent({
           <div
             className={cn(
               "flex flex-col items-start gap-4 xl:gap-6",
-              layoutType === 'card' ? "mt-auto" : ""
+              isCardLayout ? "mt-2" : ""
             )}
           >
             <div className={cn(

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { createClient } from '@supabase/supabase-js';
+import { enrichAnnouncementsPeople } from '@/lib/enrich-people-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -81,6 +82,8 @@ export async function GET(
         additional_info,
         image_url,
         image_layout,
+        metadata,
+        media,
         people,
         external_orgs,
         style,
@@ -108,13 +111,15 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to fetch announcements' }, { status: 500 });
     }
 
+    const enrichedAnnouncements = await enrichAnnouncementsPeople(announcements || [], organization);
+
     return NextResponse.json({
-      announcements: announcements || [],
+      announcements: enrichedAnnouncements,
       organization: {
         id: organization.id,
         name: organization.name,
-        slug: organization.slug
-      }
+        slug: organization.slug,
+      },
     });
 
   } catch (error) {

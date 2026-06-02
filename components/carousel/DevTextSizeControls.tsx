@@ -39,6 +39,8 @@ interface TextSizeControlsProps {
   currentShowQRCodeButton?: boolean;
   currentShowLearnMore?: boolean;
   className?: string;
+  /** Kiosk clean view: hide all debug/settings chrome */
+  cleanViewMode?: boolean;
 }
 
 export function TextSizeControls({ 
@@ -65,7 +67,8 @@ export function TextSizeControls({
   currentShowVisibilityBadge,
   currentShowQRCodeButton,
   currentShowLearnMore,
-  className 
+  className,
+  cleanViewMode = false,
 }: TextSizeControlsProps) {
   const [screenDimensions, setScreenDimensions] = useState({ width: 0, height: 0, ratio: 0 });
   const [iconSizeMultiplier, setIconSizeMultiplier] = useState(2.5);
@@ -325,6 +328,11 @@ export function TextSizeControls({
       onShowLearnMoreChange(newValue);
     }
   };
+
+  // Kiosk clean view: no design debug gear or panel
+  if (cleanViewMode) {
+    return null;
+  }
 
   // Don't render if not visible
   if (!isVisible) {

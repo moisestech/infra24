@@ -45,6 +45,8 @@ function haystackForRow(row: AlumniAirtableRow): string {
     row.cohort,
     row.year,
     row.location,
+    row.studioNumber,
+    row.currentAlumniStatus,
     tags,
     row.publicBio,
     row.artifacts,

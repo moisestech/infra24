@@ -5,10 +5,12 @@ import {
   PRACTICE_TAG_OPTIONS,
 } from '@/lib/network-builder/people-select-options'
 import { parsePathwayParam, type SignupPathwayId } from '@/lib/dcc/signup/pathways'
+import { dccAttributionPayloadSchema } from '@/lib/dcc/signup/schema-attribution'
 
 const categoryTuple = CONTACT_CATEGORY_OPTIONS as unknown as [string, ...string[]]
 
 export const dccSignupFormSchema = z.object({
+  formMode: z.literal('full').optional().default('full'),
   pathway: z
     .string()
     .optional()
@@ -32,7 +34,7 @@ export const dccSignupFormSchema = z.object({
   researchContributor: z.boolean().optional(),
   source: z.string().trim().optional(),
   campaignKey: z.string().trim().optional(),
-})
+}).merge(dccAttributionPayloadSchema)
 
 export type DccSignupFormInput = z.infer<typeof dccSignupFormSchema> & { pathway: SignupPathwayId }
 

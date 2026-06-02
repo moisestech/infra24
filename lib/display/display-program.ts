@@ -40,6 +40,20 @@ export interface DisplaySegmentParams {
   hideDates?: boolean;
   /** Artists grid */
   filter?: ArtistGridFilter;
+  /** Artists: grid (default) or one-at-a-time spotlight rotation */
+  artistDisplayMode?: 'grid' | 'spotlight';
+  /** Spotlight: pair portrait with artwork when metadata.artwork_url is set */
+  showArtwork?: boolean;
+  /** Spotlight: milliseconds per resident (default 7000) */
+  artistRotationMs?: number;
+  /** Workshops grid: items per paginated grid slide (default 9) */
+  workshopPageSize?: number;
+  /** Workshops grid: number of featured upcoming spotlight slides (default 5) */
+  workshopFeaturedCount?: number;
+  /** Workshops grid: milliseconds per featured spotlight slide (default 10000) */
+  workshopFeaturedRotationMs?: number;
+  /** Workshops grid: milliseconds per paginated grid slide (default 10000) */
+  workshopGridPageRotationMs?: number;
 }
 
 export interface DisplaySegment {
@@ -99,6 +113,8 @@ export const DEFAULT_DISPLAY_PROGRAM: DisplayProgram = {
       params: {},
     },
     {
+      // durationMs is a fallback; the orchestrator overrides it at runtime with
+      // computeWorkshopSegmentDurationMs() so every featured + grid slide gets full time.
       id: 'workshops',
       kind: 'grid_workshops',
       durationMs: 35_000,
@@ -107,13 +123,15 @@ export const DEFAULT_DISPLAY_PROGRAM: DisplayProgram = {
     {
       id: 'artists',
       kind: 'grid_artists',
-      durationMs: 35_000,
+      durationMs: 91_000,
       params: {
-        maxItems: 12,
+        maxItems: 13,
         columns: 3,
         hideDates: true,
-        /** All public artists on the smart sign; use `studio_residents` in custom JSON if needed */
-        filter: 'all',
+        filter: 'studio_residents',
+        artistDisplayMode: 'spotlight',
+        showArtwork: true,
+        artistRotationMs: 7000,
       },
     },
     {

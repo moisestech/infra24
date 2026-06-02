@@ -23,102 +23,276 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 const CLOUDINARY_BASE =
   'https://res.cloudinary.com/dkod1at3i/image/upload';
 
-/** Canonical residents: display name, stable synthetic user_id key, studio label, portrait path */
+/** Keep in sync with lib/network-builder/constituent-types.ts */
+const OOLITE_MEMBER_TYPES = [
+  {
+    type_key: 'studio_resident',
+    label: 'Studio Resident',
+    description: 'Year-round studio artist at Oolite Arts (Lincoln Road studios).',
+    sort_order: 10,
+  },
+  {
+    type_key: 'youth_resident',
+    label: 'Youth Resident',
+    description: 'Youth studio and mentorship program resident.',
+    sort_order: 20,
+  },
+  {
+    type_key: 'cinematic_resident',
+    label: 'Cinematic Resident',
+    description: 'Film and cinematic arts residency.',
+    sort_order: 30,
+  },
+  {
+    type_key: 'live_in_resident',
+    label: 'Live-in Resident',
+    description: 'Live-in studio residency.',
+    sort_order: 40,
+  },
+  {
+    type_key: 'alumni',
+    label: 'Alumni',
+    description: 'Former Oolite studio or program participant.',
+    sort_order: 50,
+  },
+  {
+    type_key: 'staff',
+    label: 'Staff',
+    description: 'Oolite Arts staff.',
+    sort_order: 90,
+    is_staff: true,
+  },
+];
+
+const STUDIO_RESIDENT_COHORT = '2026';
+const RESIDENT_DISPLAY_DATE = '2026-01-01';
+const RESIDENT_STARTS_AT = '2026-01-01T12:00:00.000Z';
+
+/**
+ * Canonical residents: square headshot + studio portraits by frame
+ * (full_width_landscape | full_width_vertical | full_height_vertical).
+ */
 const RESIDENTS = [
   {
     key: 'gonzalo_hernandez',
     name: 'Gonzalo Hernandez',
     studio: '204A',
-    portraitPath:
-      'v1775590903/gonzalo_hernandez_portrait-full-width-landscape-1_sj3wzu',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993349/Gonzalo-Hernandez_qlql5o.jpg',
+    portraits: {
+      full_width_landscape: [
+        'v1780016689/gonzalo_hernandez_portrait-full-width-landscape-1_bsi706',
+        'v1780016696/gonzalo_hernandez_portrait-full-width-landscape-2_mjpzxv',
+        'v1780016712/gonzalo_hernandez_portrait-full-width-landscape-3_cj8lyy',
+      ],
+      full_height_vertical: [
+        'v1780016707/gonzalo_hernandez_portrait-full-height-vertical_cxuyve',
+      ],
+    },
   },
   {
     key: 'ana_mosquera',
     name: 'Ana Mosquera',
     studio: '202',
-    portraitPath:
-      'v1775590869/ana_mosquera_portrait-full-width-landscape-2_rdcpks',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993353/Ana-Mosquera-Headshot-e1713279418772-705x705_smqec5.jpg',
+    artworkPath: 'v1775590869/ana_mosquera_portrait-full-width-landscape-2_rdcpks',
   },
   {
     key: 'diego_gabaldon',
     name: 'Diego Gabaldon',
     studio: '102',
-    portraitPath:
-      'v1775590891/diego_gabaldon_portrait-full-width-landscape-2_ersvwj',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993350/Diego-Gabaldon-705x705_nfpjhw.jpg',
+    portraits: {
+      full_height_vertical: [
+        'v1780016675/diego_gabaldon_portrait-full-height-vertical_u8f2un',
+        'v1780016684/diego_gabaldon_portrait-full-height-vertical-2_zf9voc',
+      ],
+    },
   },
   {
     key: 'sheherazade_thenard',
-    name: 'Sheherazade Thenard',
+    name: 'Sheherazade Thénard',
     studio: '208',
-    portraitPath:
-      'v1775590908/sheherezade_thenard_portrait-full-width-landscape-2_w4lngt',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993352/Sheherazade-Thenard-705x705_v7shfr.jpg',
+    portraits: {
+      full_width_landscape: [
+        'v1780016718/sheherezade_thenard_portrait-full-width-landscape-2_c8j9uq',
+      ],
+      full_width_vertical: [
+        'v1780016702/sheherezade_thenard_portrait-full-width-vertical-1_ohfy7c',
+      ],
+      full_height_vertical: [
+        'v1780016679/sheherezade_thenard_portrait-full-height-vertical_zkaqwn',
+      ],
+    },
   },
   {
     key: 'jose_delgado_zuniga',
     name: 'José Delgado Zúñiga',
     studio: '207',
-    portraitPath: 'v1775590856/jose_zuniga_portrait-full-width-landscape-1_vhchzn',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993348/Jose-Zuniga_Headshot-1_athbrd.jpg',
+    portraits: {
+      full_width_landscape: [
+        'v1780016690/jose_zuniga_portrait-full-width-landscape-2_ngapnl',
+      ],
+      full_height_vertical: [
+        'v1780016676/jose_zuniga_portrait-full-height-vertical_mp0lej',
+      ],
+    },
   },
   {
     key: 'bex_mccharen',
     name: 'Bex McCharen',
     studio: '108',
-    portraitPath:
-      'v1775590860/bex_mccharen_portrait-full-height-vertical_d70fnk',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993573/Bex_McCharen-705x705_qosppg.jpg',
+    artworkPath: 'v1775590860/bex_mccharen_portrait-full-height-vertical_d70fnk',
   },
   {
     key: 'shayla_marshall',
     name: 'Shayla Marshall',
     studio: '209',
-    portraitPath:
-      'v1775590854/shayla-marshall_portrait-full-width-landscape-1_ajdicl',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993348/Shayla-Marshall-705x705_iwe04n.jpg',
+    portraits: {
+      full_width_landscape: [
+        'v1780016668/shayla-marshall_portrait-full-width-landscape_zoccz7',
+        'v1780016668/shayla-marshall_portrait-full-width-landscape-1_goitgz',
+      ],
+      full_height_vertical: [
+        'v1780016671/shayla-marshall_portrait-full-height-vertical_zwefw6',
+      ],
+    },
   },
   {
     key: 'pangea_kali_virga',
     name: 'Pangea Kali Virga',
     studio: '203',
-    portraitPath:
-      'v1775590910/pangea_kali_virga_portrait-full-width-landscape-1_wa0lwh',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993351/Pangea-Kali-Virga-705x705_yswfrz.jpg',
+    portraits: {
+      full_width_landscape: [
+        'v1780016687/pangea_kali_virga_portrait-full-width-landscape-1_w17fsj',
+      ],
+    },
   },
   {
     key: 'ricardo_e_zulueta',
     name: 'Ricardo E. Zulueta',
     studio: '109',
-    portraitPath:
-      'v1775590908/ricardo_zulueta_portrait-full-width-landscape-1_tcv2xf',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993351/Ricardo-E.-Zulueta-headshot_2-705x705_x1q8wx.webp',
+    portraits: {
+      full_height_vertical: [
+        'v1780016703/ricardo_zulueta_portrait-full-height-vertical_uztqaf',
+      ],
+    },
   },
   {
     key: 'sepideh_kalani',
     name: 'Sepideh Kalani',
     studio: '204',
-    portraitPath:
-      'v1775590886/sepideh_kalani_portrait-full-height-vertical_zjhbm3',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993352/Sepideh-Kalani-705x705_qnuhew.jpg',
+    portraits: {
+      full_height_vertical: [
+        'v1780016684/sepideh_kalani_portrait-full-height-vertical_duxcfx',
+      ],
+    },
   },
   {
     key: 'nadia_wolf',
-    name: 'Nadia Wolf',
+    name: 'Nadia Wolff',
     studio: '110',
-    portraitPath:
-      'v1775590901/nadia_wolff_portrait-full-width-landscape-2_itf0og',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993348/Nadia-Wolff-705x705_gcpwsa.jpg',
+    portraits: {
+      full_height_vertical: [
+        'v1780016675/nadia_wolff_portrait-full-height-vertical_hy5uts',
+      ],
+    },
   },
   {
     key: 'genesis_moreno',
     name: 'Genesis Moreno',
     studio: '210',
-    portraitPath:
-      'v1775590881/genesis_moreno_portrait-full-width-landscape-2_iwa3fi',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993573/Genesis-Moreno-705x705_xiecyg.jpg',
+    portraits: {
+      full_height_vertical: [
+        'v1780016678/genesis_moreno_portrait-full-height-vertical_wsiavr',
+      ],
+    },
   },
   {
     key: 'lucia_morales',
-    name: 'Lucia Morales',
+    name: 'Lucía Morales',
     studio: '101',
-    portraitPath:
-      'v1775590893/lucia_morales_portrait-full-width-landscape-1_t0jf8z',
+    headshotUrl:
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993349/Lucia-Morales-Headshot-photo-credit_-Diana-Larrea-705x705_eox31z.jpg',
+    artworkPath: 'v1775590893/lucia_morales_portrait-full-width-landscape-1_t0jf8z',
   },
 ];
 
-function portraitUrl(path) {
+function cloudinaryJpg(path) {
   return `${CLOUDINARY_BASE}/${path}.jpg`;
+}
+
+const PORTRAIT_FRAMES = [
+  'full_width_landscape',
+  'full_width_vertical',
+  'full_height_vertical',
+];
+
+function inferPortraitFrameFromPath(path) {
+  const lower = String(path).toLowerCase();
+  if (lower.includes('portrait-full-height-vertical')) return 'full_height_vertical';
+  if (lower.includes('portrait-full-width-vertical')) return 'full_width_vertical';
+  if (lower.includes('portrait-full-width-landscape')) return 'full_width_landscape';
+  return 'full_width_landscape';
+}
+
+function resolvePortraitPaths(row) {
+  if (row.portraits && typeof row.portraits === 'object') {
+    const out = {};
+    for (const frame of PORTRAIT_FRAMES) {
+      const paths = row.portraits[frame];
+      if (Array.isArray(paths) && paths.length > 0) {
+        out[frame] = paths.map((p) =>
+          String(p).startsWith('http') ? p : cloudinaryJpg(p)
+        );
+      }
+    }
+    return out;
+  }
+  if (!row.artworkPath) return {};
+  const url = String(row.artworkPath).startsWith('http')
+    ? row.artworkPath
+    : cloudinaryJpg(row.artworkPath);
+  const frame = inferPortraitFrameFromPath(row.artworkPath);
+  return { [frame]: [url] };
+}
+
+function primaryPortraitUrl(portraitUrls) {
+  return (
+    portraitUrls.full_width_landscape?.[0] ??
+    portraitUrls.full_height_vertical?.[0] ??
+    portraitUrls.full_width_vertical?.[0] ??
+    null
+  );
+}
+
+function resolveArtworkUrl(row) {
+  const portraits = resolvePortraitPaths(row);
+  const primary = primaryPortraitUrl(portraits);
+  if (primary) return primary;
+  if (!row.artworkPath) return row.headshotUrl;
+  if (String(row.artworkPath).startsWith('http')) return row.artworkPath;
+  return cloudinaryJpg(row.artworkPath);
 }
 
 function normalizePersonKey(name) {
@@ -136,7 +310,7 @@ function normalizePersonKey(name) {
 function buildAvatarLookup(residents) {
   const map = new Map();
   for (const r of residents) {
-    const url = portraitUrl(r.portraitPath);
+    const url = r.headshotUrl;
     map.set(normalizePersonKey(r.name), url);
     if (r.key === 'nadia_wolf') {
       map.set(normalizePersonKey('Nadia Wolff'), url);
@@ -148,24 +322,78 @@ function buildAvatarLookup(residents) {
   return map;
 }
 
-async function upsertResidentArtist(orgId, row) {
+async function ensureOoliteMemberTypes(orgId) {
+  const byKey = new Map();
+  for (const row of OOLITE_MEMBER_TYPES) {
+    const { data: existing } = await supabase
+      .from('org_member_types')
+      .select('id, type_key')
+      .eq('org_id', orgId)
+      .eq('type_key', row.type_key)
+      .maybeSingle();
+
+    if (existing?.id) {
+      await supabase
+        .from('org_member_types')
+        .update({
+          label: row.label,
+          description: row.description,
+          sort_order: row.sort_order,
+          is_staff: row.is_staff === true,
+        })
+        .eq('id', existing.id);
+      byKey.set(row.type_key, existing.id);
+      continue;
+    }
+
+    const { data, error } = await supabase
+      .from('org_member_types')
+      .insert({
+        org_id: orgId,
+        type_key: row.type_key,
+        label: row.label,
+        description: row.description,
+        sort_order: row.sort_order,
+        is_staff: row.is_staff === true,
+      })
+      .select('id, type_key')
+      .single();
+
+    if (error) throw new Error(`insert member type ${row.type_key}: ${error.message}`);
+    byKey.set(row.type_key, data.id);
+  }
+  return byKey;
+}
+
+async function upsertResidentArtist(orgId, row, memberTypeId) {
   const user_id = `oolite_resident_${row.key}`;
-  const image = portraitUrl(row.portraitPath);
+  const headshot = row.headshotUrl;
+  const portraitUrls = resolvePortraitPaths(row);
+  const artwork = resolveArtworkUrl(row);
   const payload = {
     organization_id: orgId,
     user_id,
     name: row.name,
     bio: `Studio ${row.studio} · Oolite Arts studio resident.`,
-    avatar_url: image,
-    profile_image: image,
+    avatar_url: headshot,
+    profile_image: headshot,
     studio_type: 'Studio',
     studio_location: row.studio,
+    member_type_id: memberTypeId,
     is_public: true,
     is_active: true,
     profile_type: 'artist',
     metadata: {
+      constituent_type: 'studio_resident',
+      constituent_label: 'Studio Resident',
+      member_type_key: 'studio_resident',
       residency_type: 'Studio Resident',
+      residency_cohort: STUDIO_RESIDENT_COHORT,
       studio: row.studio,
+      studio_resident: true,
+      headshot_url: headshot,
+      artwork_url: artwork,
+      portraits: portraitUrls,
       source: 'seed_oolite_studio_residents_2026',
     },
   };
@@ -209,7 +437,18 @@ const ANNOUNCEMENT_TITLE_PREFIX = 'Studio Resident — ';
 
 async function upsertResidentAnnouncement(orgId, row, artistProfileId) {
   const title = `${ANNOUNCEMENT_TITLE_PREFIX}${row.name}`;
-  const image = portraitUrl(row.portraitPath);
+  const legacyTitles = [];
+  if (row.key === 'sheherazade_thenard') {
+    legacyTitles.push(`${ANNOUNCEMENT_TITLE_PREFIX}Sheherazade Thenard`);
+  }
+  if (row.key === 'nadia_wolf') {
+    legacyTitles.push(`${ANNOUNCEMENT_TITLE_PREFIX}Nadia Wolf`);
+  }
+  if (row.key === 'lucia_morales') {
+    legacyTitles.push(`${ANNOUNCEMENT_TITLE_PREFIX}Lucia Morales`);
+  }
+
+  const headshot = row.headshotUrl;
   const now = new Date().toISOString();
 
   const announcementRow = {
@@ -226,23 +465,33 @@ async function upsertResidentAnnouncement(orgId, row, artistProfileId) {
     visibility: 'public',
     type: 'news',
     sub_type: 'general',
-    image_url: image,
+    image_url: headshot,
     image_layout: 'card',
     is_active: true,
     published_at: now,
+    start_date: RESIDENT_DISPLAY_DATE,
+    starts_at: RESIDENT_STARTS_AT,
     metadata: {
       program: 'artist_spotlight',
+      constituent_type: 'studio_resident',
+      constituent_label: 'Studio Resident',
       artist_profile_id: artistProfileId,
       studio: row.studio,
+      residency_cohort: STUDIO_RESIDENT_COHORT,
+      headshot_url: headshot,
+      artwork_url: resolveArtworkUrl(row),
+      portraits: resolvePortraitPaths(row),
     },
   };
 
-  const { data: existing } = await supabase
+  const { data: existingRows } = await supabase
     .from('announcements')
-    .select('id')
+    .select('id, title')
     .eq('org_id', orgId)
-    .eq('title', title)
-    .maybeSingle();
+    .in('title', [title, ...legacyTitles])
+    .limit(1);
+
+  const existing = existingRows?.[0];
 
   if (existing?.id) {
     const { error } = await supabase
@@ -263,17 +512,32 @@ async function upsertResidentAnnouncement(orgId, row, artistProfileId) {
   return data.id;
 }
 
-function applyAvatarsToPeople(people, avatarByName) {
+function buildStudioLookup(residents) {
+  const map = new Map();
+  for (const r of residents) {
+    map.set(normalizePersonKey(r.name), r.studio);
+    if (r.key === 'nadia_wolf') {
+      map.set(normalizePersonKey('Nadia Wolff'), r.studio);
+    }
+  }
+  return map;
+}
+
+function applyResidentsToPeople(people, avatarByName, studioByName) {
   if (!Array.isArray(people)) return people;
   return people.map((p) => {
     if (!p || typeof p !== 'object' || !p.name) return p;
-    const url = avatarByName.get(normalizePersonKey(p.name));
-    if (!url) return p;
-    return { ...p, avatar_url: url };
+    const key = normalizePersonKey(p.name);
+    const url = avatarByName.get(key);
+    const studio = studioByName.get(key);
+    const next = { ...p };
+    if (url) next.avatar_url = url;
+    if (studio) next.role = `Studio ${studio}`;
+    return next;
   });
 }
 
-async function patchAnnouncementPeopleAvatars(orgId, title, avatarByName) {
+async function patchAnnouncementPeopleAvatars(orgId, title, avatarByName, studioByName) {
   const { data: rows, error } = await supabase
     .from('announcements')
     .select('id, people, title')
@@ -294,7 +558,7 @@ async function patchAnnouncementPeopleAvatars(orgId, title, avatarByName) {
     return;
   }
 
-  const next = applyAvatarsToPeople(row.people, avatarByName);
+  const next = applyResidentsToPeople(row.people, avatarByName, studioByName);
   const { error: upErr } = await supabase
     .from('announcements')
     .update({ people: next, updated_by: 'system_oolite' })
@@ -303,7 +567,7 @@ async function patchAnnouncementPeopleAvatars(orgId, title, avatarByName) {
   if (upErr) {
     console.warn(`⚠️  Could not update people on "${title}":`, upErr.message);
   } else {
-    console.log(`✅ Refreshed people avatars on "${title}"`);
+    console.log(`✅ Refreshed people (avatars + studio numbers) on "${title}"`);
   }
 }
 
@@ -322,9 +586,15 @@ async function main() {
   }
 
   const avatarByName = buildAvatarLookup(RESIDENTS);
+  const studioByName = buildStudioLookup(RESIDENTS);
+  const memberTypes = await ensureOoliteMemberTypes(organization.id);
+  const studioResidentTypeId = memberTypes.get('studio_resident');
+  if (!studioResidentTypeId) {
+    throw new Error('studio_resident org_member_type missing after seed');
+  }
 
   for (const row of RESIDENTS) {
-    const artist = await upsertResidentArtist(organization.id, row);
+    const artist = await upsertResidentArtist(organization.id, row, studioResidentTypeId);
     await upsertResidentAnnouncement(organization.id, row, artist.id);
     console.log(`✅ Resident: ${row.name} (studio ${row.studio})`);
   }
@@ -332,15 +602,17 @@ async function main() {
   await patchAnnouncementPeopleAvatars(
     organization.id,
     '2026 Studio Residents',
-    avatarByName
+    avatarByName,
+    studioByName
   );
   await patchAnnouncementPeopleAvatars(
     organization.id,
     'Youth Residents',
-    avatarByName
+    avatarByName,
+    studioByName
   );
 
-  console.log('\n🎉 Done. Artists grid: /o/oolite/artists');
+  console.log(`\n🎉 Done. ${RESIDENTS.length} studio residents seeded.`);
   console.log('📺 Resident slides use titles: "Studio Resident — …"');
 }
 

@@ -17,15 +17,16 @@ export function memoryAgentSystemPrompt(args: {
 ${modeLine}
 
 Rules:
-1. Only answer using retrieved records in the user message context (artist/alumni blocks and/or programming blocks).
+1. Only answer using retrieved records in the user message context (artist/alumni blocks, programming blocks, and/or recognitions blocks).
 2. For programming questions, use only programming records (announcements, workshops, exhibitions). Never invent dates, venues, or booking links. If no programming records are in context, say so clearly in dataGaps (e.g. "No published announcements for this week in the system").
-3. If context is insufficient, say what is missing and suggest data improvements in dataGaps (short strings).
-4. For each artist in the "artists" array, use only record ids that appear in the artist context block.
-5. Each artist needs: id (exact from context), name, discipline (medium or best short label), programYear (program and/or year if known), reason (why they match), confidence (high|medium|low), website when present in context.
-6. For programming questions, optionally return "events": an array of programming items selected from the PROGRAMMING CONTEXT block only. Each event needs id (exact "Record id" from programming context), title, optional summary, startsAt, endsAt, location. Do not invent ctaUrl or ctaLabel unless they appear in context. Do not treat editorial_story or house_story as bookable unless recordKind is bookable_event with a grounded CTA in context. Omit events[] for pure people questions.
-7. followUps: 2–4 short suggested next questions as strings.
-8. answer: warm, clear, professional; name how many artist and programming records you considered from context when both are present.
-9. Optionally return "outputs" with three audience views of the SAME grounded facts (omit outputs entirely if you cannot produce all three consistently):
+3. For recognition / exhibition-involvement questions, use only RECOGNITIONS & EXHIBITIONS context. Report practice counts and individual counts separately when both appear. For collectives, explain practices vs named individuals. Never invent participation.
+4. If context is insufficient, say what is missing and suggest data improvements in dataGaps (short strings).
+5. For each artist in the "artists" array, use only record ids that appear in the artist context block.
+6. Each artist needs: id (exact from context), name, discipline (medium or best short label), programYear (program and/or year if known), reason (why they match), confidence (high|medium|low), website when present in context.
+7. For programming questions, optionally return "events": an array of programming items selected from the PROGRAMMING CONTEXT block only. Each event needs id (exact "Record id" from programming context), title, optional summary, startsAt, endsAt, location. Do not invent ctaUrl or ctaLabel unless they appear in context. Do not treat editorial_story or house_story as bookable unless recordKind is bookable_event with a grounded CTA in context. Omit events[] for pure people or recognition questions.
+8. followUps: 2–4 short suggested next questions as strings.
+9. answer: warm, clear, professional; name how many artist, programming, and recognition records you considered from context when present.
+10. Optionally return "outputs" with three audience views of the SAME grounded facts (omit outputs entirely if you cannot produce all three consistently):
    - outputs.public: visitor/guest-safe. No email, phone, internal notes, or staff-only fields. Short title, summary paragraph, 2–4 bullets, optional suggestedAction (e.g. "Use as public blurb").
    - outputs.staff: operational brief for concierge/staff. May note missing fields, verification steps, and tasks. Never paste raw Airtable Notes or PII. optional tasks[], suggestedAction.
    - outputs.leadership: strategic framing for directors/funders. opportunities[] and risks[] optional; no PII; suggestedAction optional.

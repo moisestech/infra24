@@ -7,6 +7,12 @@ import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/n
 import { UserPicker } from '@/components/ui/UserPicker'
 import { AnnouncementPerson } from '@/types/people'
 import { ImageLayoutType } from '@/types/announcement'
+import { AnnouncementDisplayMetadataFields } from '@/components/admin/AnnouncementDisplayMetadataFields'
+import {
+  DEFAULT_DISPLAY_METADATA_FORM,
+  buildDisplayMetadataPayload,
+  type DisplayMetadataFormState,
+} from '@/lib/display/announcement-display-metadata-form'
 
 interface Organization {
   id: string
@@ -51,6 +57,10 @@ export default function CreateAnnouncementPage() {
     primary_link: '',
     qr_destination_url: '',
   })
+
+  const [displayMetadata, setDisplayMetadata] = useState<DisplayMetadataFormState>(
+    DEFAULT_DISPLAY_METADATA_FORM
+  )
   
   const [selectedPeople, setSelectedPeople] = useState<AnnouncementPerson[]>([])
 
@@ -89,6 +99,7 @@ export default function CreateAnnouncementPage() {
         image_layout: formData.image_layout || (formData.image_url.trim() ? 'hero' : null), // Default to 'hero' if image exists but no layout selected
         primary_link: formData.primary_link.trim() || null,
         qr_destination_url: formData.qr_destination_url.trim() || null,
+        metadata: buildDisplayMetadataPayload(displayMetadata),
       }
 
       const response = await fetch(`/api/organizations/by-slug/${slug}/announcements`, {
@@ -340,6 +351,12 @@ export default function CreateAnnouncementPage() {
                 </p>
               </div>
             )}
+
+            <AnnouncementDisplayMetadataFields
+              value={displayMetadata}
+              onChange={setDisplayMetadata}
+              hasImageUrl={Boolean(formData.image_url.trim())}
+            />
 
             <div className="rounded-lg border border-gray-200 dark:border-gray-600 p-4 space-y-4 bg-gray-50/80 dark:bg-gray-900/40">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Smart sign QR</h3>

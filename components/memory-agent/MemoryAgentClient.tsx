@@ -42,6 +42,7 @@ import { MemoryAgentEventCards } from '@/components/memory-agent/MemoryAgentEven
 import { MemoryAgentReadyPanel } from '@/components/memory-agent/MemoryAgentReadyPanel'
 import { MemoryPulse } from '@/components/memory-agent/MemoryPulse'
 import { MemoryAgentSuggestedQuestions } from '@/components/memory-agent/MemoryAgentSuggestedQuestions'
+import { MemoryAgentDemoQuestionCatalog } from '@/components/memory-agent/MemoryAgentDemoQuestionCatalog'
 import {
   MemoryAgentVoicePipelineCard,
   type VoicePipelinePhase,
@@ -930,11 +931,18 @@ export function MemoryAgentClient({
 
 
           {!hasUserMessage ? (
-            <div className="scroll-mt-24 pb-4">
+            <div className="scroll-mt-24 space-y-4 pb-4">
               <MemoryAgentSuggestedQuestions
                 questions={chips}
                 onSelect={(q) => void sendQuestion(q)}
               />
+              {slug === 'oolite' && staffMode ? (
+                <MemoryAgentDemoQuestionCatalog
+                  orgSlug={slug}
+                  staffMode={staffMode}
+                  onAskQuestion={(q) => void sendQuestion(q)}
+                />
+              ) : null}
             </div>
           ) : null}
 

@@ -47,6 +47,8 @@ export function rowToMemoryContextText(row: AlumniAirtableRow): string {
   if (row.ethnicity?.trim()) parts.push(`Ethnicity: ${row.ethnicity}`)
   if (row.nationality?.trim()) parts.push(`Nationality: ${row.nationality}`)
   if (row.location?.trim()) parts.push(`Location: ${row.location}`)
+  if (row.studioNumber?.trim()) parts.push(`Studio number: ${row.studioNumber}`)
+  if (row.currentAlumniStatus?.trim()) parts.push(`Status: ${row.currentAlumniStatus}`)
   const tags = [...row.topics, ...row.themes]
   if (tags.length) parts.push(`Themes/tags: ${tags.join(', ')}`)
   if (row.publicBio?.trim()) parts.push(`Public bio: ${row.publicBio}`)

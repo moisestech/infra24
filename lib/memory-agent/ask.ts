@@ -3,7 +3,17 @@ import {
   alumniYearLabel,
   fetchAlumniFromAirtableDetailed,
 } from '@/lib/airtable/alumni-service'
-import { alumniImageForContext } from '@/lib/airtable/alumni-images'
+import { isStaffOperatorMode } from '@/lib/memory-agent/mode'
+import {
+  type ArtistParticipation,
+  buildRecognitionContextBlock,
+  fetchOoliteRecognitionBundle,
+  isOoliteRecognitionConfigured,
+  rankRecognitionsForQuestion,
+  summarizeRecognitionCounts,
+  type RecognitionEvent,
+} from '@/lib/oolite/airtable-recognitions'
+import { alumniGalleryImageUrls, alumniImageForContext } from '@/lib/airtable/alumni-images'
 import { badgesFromAlumniRow } from '@/lib/institutional-artist/card-model'
 import { getAlumniConnectionForOrg } from '@/lib/airtable/org-alumni-config'
 import { filterRowsForMemoryAgent, redactRowForPublicDisplay } from '@/lib/memory-agent/governance'
@@ -11,6 +21,8 @@ import {
   detectMemoryIntent,
   intentNeedsPeople,
   intentNeedsProgramming,
+  intentNeedsRecognition,
+  isActiveResidentsQuestion,
 } from '@/lib/memory-agent/intent'
 import { buildEmbeddingInputForKnowledgeRecord } from '@/lib/memory-agent/knowledge-retrieve'
 import { chatJsonCompletion, embedTexts, getOpenAIClient } from '@/lib/memory-agent/openai-client'
@@ -130,6 +142,7 @@ export async function runMemoryAgentAsk(params: {
   const intent = detectMemoryIntent(q)
   const needsPeople = intentNeedsPeople(intent)
   const needsProgramming = intentNeedsProgramming(intent)
+  const needsRecognition = intentNeedsRecognition(intent)
   const sohoDemo = isSohoDemoOrg(orgSlug)
 
   const conn = getAlumniConnectionForOrg(orgSlug)
@@ -145,6 +158,7 @@ export async function runMemoryAgentAsk(params: {
   const branding = getMemoryAgentBranding(orgSlug)
 
   let eligible: Awaited<ReturnType<typeof filterRowsForMemoryAgent>> = []
+  let allAlumniRows: Awaited<ReturnType<typeof filterRowsForMemoryAgent>> = []
   let baseTotalCount = 0
   let contextRows: Awaited<ReturnType<typeof selectContextRows>> = []
   let ranked: ReturnType<typeof rankAlumniForQuestion> = []
@@ -162,7 +176,27 @@ export async function runMemoryAgentAsk(params: {
       }
     }
     baseTotalCount = fetched.alumni.length
+    allAlumniRows = fetched.alumni
     eligible = filterRowsForMemoryAgent(fetched.alumni, mode, conn.fieldMap)
+    if (isActiveResidentsQuestion(q)) {
+      eligible = eligible.filter((row) => {
+        const program = (row.program || '').toLowerCase()
+        const cohort = (row.cohort || '').toLowerCase()
+        const year = (row.residencyYear || row.year || '').trim()
+        const status = (row.currentAlumniStatus || '').toLowerCase()
+        const is2026 =
+          year === '2026' ||
+          cohort.includes('2026') ||
+          program.includes('2026') ||
+          program.includes('studio resident')
+        const active =
+          !status ||
+          status.includes('current') ||
+          status.includes('active') ||
+          status.includes('resident')
+        return is2026 && active
+      })
+    }
   }
 
   let programmingPool: Awaited<ReturnType<typeof fetchProgrammingForMemoryAgent>> | null = null
@@ -191,6 +225,40 @@ export async function runMemoryAgentAsk(params: {
       let records = timeFiltered.records
       records = applyBookableQuestionFilter(records, q)
       programmingPool = { ...programmingPool, records }
+    }
+  }
+
+  let recognitionContextEvents: RecognitionEvent[] = []
+  let recognitionParticipations: ArtistParticipation[] = []
+
+  if (needsRecognition && isOoliteRecognitionConfigured(orgSlug)) {
+    const recognitionFetched = await fetchOoliteRecognitionBundle(mode)
+    if (recognitionFetched.ok) {
+      recognitionContextEvents = rankRecognitionsForQuestion(
+        q,
+        recognitionFetched.bundle.events
+      )
+      recognitionParticipations = recognitionFetched.bundle.participations
+
+      if (needsPeople && isStaffOperatorMode(mode) && recognitionContextEvents.length) {
+        const linkedArtistIds = new Set<string>()
+        for (const event of recognitionContextEvents.slice(0, 4)) {
+          for (const p of recognitionParticipations) {
+            if (p.recognitionId === event.id && p.artistId) {
+              linkedArtistIds.add(p.artistId)
+            }
+          }
+        }
+        if (linkedArtistIds.size) {
+          const byId = new Map(allAlumniRows.map((r) => [r.id, r]))
+          for (const id of Array.from(linkedArtistIds)) {
+            const row = byId.get(id)
+            if (row && !eligible.some((e) => e.id === id)) {
+              eligible = [...eligible, row]
+            }
+          }
+        }
+      }
     }
   }
 
@@ -261,6 +329,42 @@ export async function runMemoryAgentAsk(params: {
     contextSections.push(
       `Programming records (${programmingContextRows.length} of ${totalProg} after filters; intent: ${intent}):\n${programmingBlock}`
     )
+  }
+
+  const recognitionBlock =
+    needsRecognition && recognitionContextEvents.length
+      ? buildRecognitionContextBlock({
+          events: recognitionContextEvents,
+          participations: recognitionParticipations,
+          mode,
+        })
+      : ''
+  if (recognitionBlock) {
+    contextSections.push(
+      `Recognitions & exhibitions (${recognitionContextEvents.length} matched; intent: ${intent}):\n${recognitionBlock}`
+    )
+  }
+
+  if (needsRecognition && !recognitionBlock) {
+    contextSections.push(
+      'Recognitions & exhibitions: (none in context — do not invent awards, exhibition participation, or artist-invitation counts. Explain what is missing in dataGaps.)'
+    )
+  }
+
+  if (needsRecognition && recognitionContextEvents.length && isStaffOperatorMode(mode)) {
+    const pending = recognitionContextEvents.some((e) => e.approvalStatus === 'pending')
+    if (pending) {
+      contextSections.push(
+        'Recognition governance note: One or more recognition records are pending public approval. Mention this clearly in the answer (internal demo).'
+      )
+    }
+    const top = recognitionContextEvents[0]
+    const counts = summarizeRecognitionCounts(recognitionParticipations, top.id, top)
+    if (/florida prize/i.test(q) && counts.practiceCount > 0) {
+      contextSections.push(
+        `Florida Prize count guidance: Report ${counts.practiceCount} participating alumni practices and ${counts.individualArtistCount} named individuals when Nice'n Easy or other collectives are included. Distinguish practices vs individuals clearly.`
+      )
+    }
   }
 
   if (needsProgramming && !programmingBlock) {
@@ -337,6 +441,7 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
         ...a,
         name: alumniDisplayName(base),
         photoUrl: alumniImageForContext(base, 'default'),
+        galleryImageUrls: alumniGalleryImageUrls(base).slice(0, 4),
         website: a.website || base.website,
         medium: a.discipline || base.medium,
         program: base.program,
@@ -353,7 +458,7 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
     })
 
   let events =
-    intent === 'people'
+    intent === 'people' || intent === 'recognition'
       ? []
       : mergeEventCardsFromContext(parsed.events, programmingContextRows, mode, orgSlug)
   // Demo reliability: if model omits events[] but programming context exists, surface top ranked rows.

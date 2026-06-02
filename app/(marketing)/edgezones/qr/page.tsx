@@ -7,14 +7,14 @@ export const metadata: Metadata = {
 }
 
 type Props = {
-  searchParams?: { source?: string }
+  searchParams?: { tracked?: string }
 }
 
 export default function EdgeZonesQrPage({ searchParams }: Props) {
-  const source = searchParams?.source?.trim() || 'edgezones-print'
+  const useTrackedUrl = searchParams?.tracked === '1' || searchParams?.tracked === 'true'
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-neutral-100 px-4 py-12 dark:bg-neutral-950">
-      <EdgeZonesQrDisplay source={source} />
+      <EdgeZonesQrDisplay useTrackedUrl={useTrackedUrl} />
     </div>
   )
 }

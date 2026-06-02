@@ -17,6 +17,10 @@ We'll review your submission and use it to connect you with relevant DCC program
   suggestConfirmation: `Thank you for contributing to the Research View.
 
 DCC will review your suggestion and use it to expand the cultural memory map.`,
+  quickSubtitle:
+    'Join the DCC network in under a minute. We’ll follow up with programs, workshops, and opportunities in Miami.',
+  quickConfirmation: `Thanks for joining the DCC network. We'll send updates about artists, public programs, workshops, and public opportunities.`,
+  fullFormLinkLabel: 'Complete the full index profile instead',
 } as const
 
 /** @deprecated use DCC_SIGNUP_COPY */
