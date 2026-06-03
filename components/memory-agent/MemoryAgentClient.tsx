@@ -28,7 +28,6 @@ import { MemoryAgentAvailabilityBanner } from '@/components/memory-agent/MemoryA
 import { InstitutionalArtistCard } from '@/components/institutional-artist/InstitutionalArtistCard'
 import { institutionalArtistFromMemoryAgent } from '@/lib/institutional-artist/card-model'
 import { memoryAgentAlumniProfileUrl } from '@/lib/memory-agent/result-links'
-import { AlumniCatalogueModeToggle } from '@/components/organization/AlumniCatalogueModeToggle'
 import { MemoryAgentAudioOrb } from '@/components/memory-agent/MemoryAgentAudioOrb'
 import { MemoryAgentDevPanel } from '@/components/memory-agent/MemoryAgentDevPanel'
 import { MemoryAgentFrequencyCanvas } from '@/components/memory-agent/MemoryAgentFrequencyCanvas'
@@ -93,12 +92,14 @@ function deriveAgentAudioState(args: {
   voiceError: string | null
   transcribing: boolean
   loading: boolean
+  handoffInProgress: boolean
   voiceLoading: boolean
   isPlayingVoice: boolean
   isRecording: boolean
 }): AgentState {
   if (args.statusError || args.voiceError) return 'error'
   if (args.transcribing) return 'transcribing'
+  if (args.handoffInProgress) return 'thinking'
   if (args.loading) return 'searching'
   if (args.voiceLoading) return 'thinking'
   if (args.isPlayingVoice) return 'speaking'
@@ -236,10 +237,27 @@ export function MemoryAgentClient({
     }
   }, [])
 
-  const { isDevMode, enableDevMode, disableDevMode } = useMemoryAgentDevMode()
+  const handleHandoffLine = useCallback((line: string) => {
+    if (elevenLabsRef.current && autoSpeakRef.current) {
+      void playVoiceRef.current(line)
+    }
+  }, [])
 
-  const { mode, setMode, input, setInput, messages, loading, sendQuestion } = useMemoryAgentChat(slug, {
+  const { isDevMode, disableDevMode } = useMemoryAgentDevMode()
+
+  const {
+    mode,
+    setMode,
+    input,
+    setInput,
+    messages,
+    loading,
+    handoffInProgress,
+    sendQuestion,
+    beginSuggestedQuestionFlow,
+  } = useMemoryAgentChat(slug, {
     onAnswerComplete: handleAnswerComplete,
+    onHandoffLine: handleHandoffLine,
   })
 
   const modeStorageKey = `memory-agent-mode-${slug}`
@@ -258,8 +276,11 @@ export function MemoryAgentClient({
     window.localStorage.setItem(modeStorageKey, mode)
   }, [isDevMode, mode, modeStorageKey])
 
+  const handoffConsumedRef = useRef(false)
   const autoVoicePipelineRef = useRef(false)
   const askInputRef = useRef<HTMLInputElement>(null)
+  const footerRef = useRef<HTMLDivElement>(null)
+  const [footerInsetPx, setFooterInsetPx] = useState(380)
   /** Keeps transcribed question visible through search until the answer returns */
   const [voicePipelineText, setVoicePipelineText] = useState<string | null>(null)
   /** Covers transcribe → ask handoff so UI never shows a manual “review” step */
@@ -276,18 +297,6 @@ export function MemoryAgentClient({
 
   const staffMode = isStaffOperatorMode(mode)
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const raw = new URLSearchParams(window.location.search).get('q')
-    const q = raw?.trim()
-    if (!q) return
-    try {
-      setInput(decodeURIComponent(q))
-    } catch {
-      setInput(q)
-    }
-  }, [slug, setInput])
-
   const { assets, addAsset, setAssetStatus, makePublicHandoff, hydrated, assetsSource } =
     useMemoryAgentGeneratedAssets(slug)
 
@@ -302,6 +311,7 @@ export function MemoryAgentClient({
         voiceError: voice.error || playbackVoiceError,
         transcribing: voice.transcribing,
         loading,
+        handoffInProgress,
         voiceLoading,
         isPlayingVoice,
         isRecording: voice.isRecording,
@@ -312,6 +322,7 @@ export function MemoryAgentClient({
       playbackVoiceError,
       voice.transcribing,
       loading,
+      handoffInProgress,
       voiceLoading,
       isPlayingVoice,
       voice.isRecording,
@@ -361,10 +372,36 @@ export function MemoryAgentClient({
   const voicePlaybackReady = Boolean(status?.elevenLabsConfigured)
   const chips = status?.branding?.suggestedQuestions ?? agentBranding.suggestedQuestions
   const hasUserMessage = messages.some((m) => m.role === 'user')
+  const inConversation = hasUserMessage
+  /** Hero already has live viz; footer waveforms are dev-only once chat starts */
+  const showFooterWaveforms = isDevMode || !inConversation
 
   const ready =
     status?.dataConfigured &&
     status?.openaiConfigured
+
+  useEffect(() => {
+    if (handoffConsumedRef.current) return
+    if (typeof window === 'undefined') return
+    const raw = new URLSearchParams(window.location.search).get('q')
+    const q = raw?.trim()
+    if (!q) return
+
+    handoffConsumedRef.current = true
+    let decoded = q
+    try {
+      decoded = decodeURIComponent(q)
+    } catch {
+      decoded = q
+    }
+
+    void beginSuggestedQuestionFlow(decoded)
+
+    const url = new URL(window.location.href)
+    url.searchParams.delete('q')
+    const next = url.pathname + (url.search ? url.search : '')
+    window.history.replaceState({}, '', next)
+  }, [beginSuggestedQuestionFlow])
 
   useEffect(() => {
     if (!autoVoicePipelineRef.current) return
@@ -437,6 +474,18 @@ export function MemoryAgentClient({
 
   const voicePipelineSending = voiceAutoSending && !loading
 
+  useEffect(() => {
+    const footer = footerRef.current
+    if (!footer) return
+    const measure = () => {
+      setFooterInsetPx(footer.offsetHeight + 32)
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(footer)
+    return () => ro.disconnect()
+  }, [showFooterWaveforms, voicePipelinePhase, isDevMode, inConversation])
+
   const hasAssistantAnswer = messages.some((m) => m.role === 'assistant')
 
   const replayLastAnswer = useCallback(() => {
@@ -468,45 +517,46 @@ export function MemoryAgentClient({
     >
         <UnifiedNavigation config={getNavigationConfig(slug)} />
         <main
-          className={cn(
-            'mx-auto max-w-3xl px-4 pt-8 md:pt-10',
-            hasUserMessage ? 'pb-28' : 'pb-[min(22rem,42vh)] sm:pb-72'
-          )}
+          className="mx-auto max-w-3xl px-4 pt-8 md:pt-10"
+          style={{
+            paddingBottom: `calc(${footerInsetPx}px + env(safe-area-inset-bottom, 0px))`,
+            scrollPaddingBottom: `calc(${footerInsetPx}px + env(safe-area-inset-bottom, 0px))`,
+          }}
         >
-          <div className="mb-6 flex flex-col gap-4">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mb-6">
+            <div
+              className={cn(
+                isDevMode &&
+                  'flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'
+              )}
+            >
               <div>
                 <h1 className={cn(ma.heading, 'text-2xl md:text-3xl')}>
                   {agentBranding.productTitle}
                 </h1>
-                <p className="mt-1 text-sm font-medium text-[var(--ma-text)]">
-                  Guided by{' '}
-                  <span className="text-[color:var(--ma-primary)]">{agentBranding.agentName}</span>
-                </p>
                 <p className={cn(ma.subheading, 'mt-1 max-w-xl')}>{tagline}</p>
-                <p className="mt-2 text-sm">
-                  <Link
-                    href={`/o/${slug}/memory-agent/about`}
-                    className="font-medium text-[color:var(--ma-primary)] hover:underline"
-                  >
-                    How it works
-                  </Link>
-                </p>
+                {isDevMode ? (
+                  <p className="mt-2 text-sm">
+                    <Link
+                      href={`/o/${slug}/memory-agent/about`}
+                      className="font-medium text-[color:var(--ma-primary)] hover:underline"
+                    >
+                      How it works
+                    </Link>
+                  </p>
+                ) : null}
               </div>
-              <AlumniCatalogueModeToggle slug={slug} mode="voice" />
-            </div>
-            <div className="flex justify-end">
-              <MemoryAgentSettingsSheet
-                orgSlug={slug}
-                autoSpeakAnswers={autoSpeakAnswers}
-                onAutoSpeakChange={persistAutoSpeak}
-                showDataReadiness={showDataReadiness}
-                onShowDataReadinessChange={persistShowDataReadiness}
-                voiceAvailable={voicePlaybackReady}
-                isDevMode={isDevMode}
-                onEnableDevMode={enableDevMode}
-                onDisableDevMode={disableDevMode}
-              />
+              {isDevMode ? (
+                <MemoryAgentSettingsSheet
+                  orgSlug={slug}
+                  autoSpeakAnswers={autoSpeakAnswers}
+                  onAutoSpeakChange={persistAutoSpeak}
+                  showDataReadiness={showDataReadiness}
+                  onShowDataReadinessChange={persistShowDataReadiness}
+                  voiceAvailable={voicePlaybackReady}
+                  onDisableDevMode={disableDevMode}
+                />
+              ) : null}
             </div>
           </div>
 
@@ -570,7 +620,12 @@ export function MemoryAgentClient({
             </Alert>
           ) : null}
 
-          <div className={ma.vizDock}>
+          <div
+            className={cn(
+              ma.vizDock,
+              inConversation && 'space-y-2 pb-2'
+            )}
+          >
             <MemoryAgentFrequencyCanvas
               className="mb-0"
               levels={heroFrequency.levels}
@@ -578,9 +633,11 @@ export function MemoryAgentClient({
               variant={heroFrequency.variant}
               synthesizing={heroFrequency.synthesizing}
               palette={audioVizPalette}
-              height={148}
+              height={inConversation ? 72 : 148}
             />
-            <MemoryAgentAudioOrb state={agentAudioState} levelRms={orbLevel} />
+            {!inConversation ? (
+              <MemoryAgentAudioOrb state={agentAudioState} levelRms={orbLevel} />
+            ) : null}
             {voicePipelinePhase ? (
               <MemoryAgentVoicePipelineCard
                 phase={voicePipelinePhase}
@@ -590,7 +647,7 @@ export function MemoryAgentClient({
                   voicePipelinePhase === 'listening' ? handleMicToggle : undefined
                 }
               />
-            ) : agentAudioState === 'idle' ? (
+            ) : !inConversation && agentAudioState === 'idle' ? (
               <MemoryAgentReadyPanel
                 agentName={agentBranding.agentName}
                 ready={Boolean(ready)}
@@ -599,9 +656,9 @@ export function MemoryAgentClient({
                 onAskByVoice={handleMicToggle}
                 onTypeQuestion={focusAskInput}
               />
-            ) : (
+            ) : inConversation && agentAudioState !== 'idle' ? (
               <MemoryPulse state={agentAudioState} copyOverrides={agentBranding.pulseCopy} />
-            )}
+            ) : null}
           </div>
 
           <div className="space-y-4">
@@ -927,20 +984,20 @@ export function MemoryAgentClient({
                 </Card>
               </div>
             ))}
+            <div aria-hidden className="h-4 shrink-0" />
           </div>
-
 
           {!hasUserMessage ? (
             <div className="scroll-mt-24 space-y-4 pb-4">
               <MemoryAgentSuggestedQuestions
                 questions={chips}
-                onSelect={(q) => void sendQuestion(q)}
+                onSelect={(q) => void beginSuggestedQuestionFlow(q)}
               />
               {slug === 'oolite' && staffMode ? (
                 <MemoryAgentDemoQuestionCatalog
                   orgSlug={slug}
                   staffMode={staffMode}
-                  onAskQuestion={(q) => void sendQuestion(q)}
+                  onAskQuestion={(q) => void beginSuggestedQuestionFlow(q)}
                 />
               ) : null}
             </div>
@@ -948,7 +1005,7 @@ export function MemoryAgentClient({
 
         </main>
 
-        <div className={ma.footer}>
+        <div ref={footerRef} className={ma.footer}>
           {voicePipelinePhase ? (
             <div
               className={cn(
@@ -979,31 +1036,33 @@ export function MemoryAgentClient({
               ) : null}
             </div>
           ) : null}
-          <div className="mx-auto mb-3 max-w-3xl space-y-2">
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <MemoryWaveCanvas
-                    levels={inputLevels}
-                    active={!!micStream}
-                    variant="input"
-                    palette={audioVizPalette}
-                  />
-                  <MemoryWaveCanvas
-                    levels={outputLevels}
-                    active={isPlayingVoice}
-                    variant="output"
-                    palette={audioVizPalette}
-                  />
-                </div>
-                <MemoryAgentWaveformStrip
-                  inputLevels={inputLevels}
-                  outputLevels={outputLevels}
-                  inputActive={!!micStream}
-                  outputStatus={
-                    isPlayingVoice ? 'live' : voiceLoading ? 'loading' : 'idle'
-                  }
+          {showFooterWaveforms ? (
+            <div className="mx-auto mb-3 max-w-3xl space-y-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <MemoryWaveCanvas
+                  levels={inputLevels}
+                  active={!!micStream}
+                  variant="input"
                   palette={audioVizPalette}
                 />
-          </div>
+                <MemoryWaveCanvas
+                  levels={outputLevels}
+                  active={isPlayingVoice}
+                  variant="output"
+                  palette={audioVizPalette}
+                />
+              </div>
+              <MemoryAgentWaveformStrip
+                inputLevels={inputLevels}
+                outputLevels={outputLevels}
+                inputActive={!!micStream}
+                outputStatus={
+                  isPlayingVoice ? 'live' : voiceLoading ? 'loading' : 'idle'
+                }
+                palette={audioVizPalette}
+              />
+            </div>
+          ) : null}
           <div className="mx-auto flex max-w-3xl gap-2">
             <Button
               type="button"

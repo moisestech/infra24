@@ -44,6 +44,7 @@ const BY_SLUG: Record<string, Partial<MemoryAgentBranding>> = {
     suggestedQuestions: [
       "What's happening this week?",
       'What exhibitions are coming up?',
+      'Tell me about Mark Delmont.',
       'Which alumni are photographers?',
       'Who is connected to this exhibition?',
       'What should go on the smart sign today?',

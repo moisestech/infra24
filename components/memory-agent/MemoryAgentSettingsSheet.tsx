@@ -22,8 +22,6 @@ type MemoryAgentSettingsSheetProps = {
   showDataReadiness: boolean
   onShowDataReadinessChange: (on: boolean) => void
   voiceAvailable: boolean
-  isDevMode: boolean
-  onEnableDevMode: () => void
   onDisableDevMode: () => void
 }
 
@@ -34,8 +32,6 @@ export function MemoryAgentSettingsSheet({
   showDataReadiness,
   onShowDataReadinessChange,
   voiceAvailable,
-  isDevMode,
-  onEnableDevMode,
   onDisableDevMode,
 }: MemoryAgentSettingsSheetProps) {
   return (
@@ -93,29 +89,17 @@ export function MemoryAgentSettingsSheet({
           <div className="border-t border-[var(--ma-border)] pt-6">
             <p className={cn('text-sm font-medium', ma.body)}>Developer</p>
             <p className={cn('mt-1 text-xs', ma.caption)}>
-              Connection status, staff mode, asset queue, and step-by-step voice tools.
+              Preview the public page without Settings or staff tools.
             </p>
-            {isDevMode ? (
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="mt-3 w-full"
-                onClick={onDisableDevMode}
-              >
-                Exit developer mode
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className={cn('mt-3 w-full', ma.btnOutline)}
-                onClick={onEnableDevMode}
-              >
-                Enable developer mode
-              </Button>
-            )}
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="mt-3 w-full"
+              onClick={onDisableDevMode}
+            >
+              Exit developer mode
+            </Button>
           </div>
         </div>
       </SheetContent>

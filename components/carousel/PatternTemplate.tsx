@@ -33,6 +33,7 @@ import {
   hasDisplayTakeover,
   resolveTakeoverMedia,
 } from '@/lib/display/announcement-display-mode';
+import { announcementImageForContext } from '@/lib/display/announcement-images';
 
 interface ImageSettings {
   layout?: ImageLayoutType;
@@ -142,7 +143,8 @@ export function PatternTemplate({
   }, []);
 
   // Check if announcement has an image and determine layout
-  const hasImage = announcement.image_url && announcement.image_url.trim() !== '';
+  const displayImage = announcementImageForContext(announcement, 'display');
+  const hasImage = Boolean(displayImage.url?.trim());
   const isImageOnly = announcement?.metadata?.image_only === true;
   const takeoverMedia = resolveTakeoverMedia(announcement);
 
@@ -337,7 +339,7 @@ export function PatternTemplate({
         <ImageLayout
           layout={imageLayout}
           announcement={announcement}
-          imageUrl={announcement.image_url}
+          imageUrl={displayImage.url || announcement.image_url}
           orientation={orientation}
           textSizes={textSizes}
           styles={styles}

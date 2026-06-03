@@ -10,6 +10,13 @@ import { useUser } from '@clerk/nextjs';
 import { useTenant } from '@/components/tenant/TenantProvider';
 import { useOrganizationTheme } from '@/components/carousel/OrganizationThemeContext';
 import { resolveOrgPrimary, orgChromeFromPrimary } from '@/lib/org/org-chrome';
+import { OrgDirectoryPageHeader } from '@/components/organization/OrgDirectoryPageHeader';
+import {
+  dedupeDirectoryArtists,
+  residencyCohortForDirectoryArtist,
+  residencyLabelForDirectoryArtist,
+  type DirectoryArtistProfile,
+} from '@/lib/organization/artist-alumni-bridge';
 import { 
   Users, 
   Filter, 
@@ -71,11 +78,11 @@ const studioTypeColors = {
 };
 
 function residencyLabel(artist: Artist): string {
-  const fromMeta =
-    artist.metadata &&
-    typeof artist.metadata.residency_type === 'string' &&
-    artist.metadata.residency_type.trim();
-  return (artist.studio_type || fromMeta || '').trim();
+  return residencyLabelForDirectoryArtist(artist as DirectoryArtistProfile);
+}
+
+function residencyCohort(artist: Artist): string {
+  return residencyCohortForDirectoryArtist(artist as DirectoryArtistProfile);
 }
 
 function studioNumberLabel(artist: Artist): string {
@@ -101,7 +108,10 @@ export default function ArtistsPage() {
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [studioTypeFilter, setStudioTypeFilter] = useState('');
+  const [studioTypeFilter, setStudioTypeFilter] = useState(
+    slug === 'oolite' ? 'Studio Resident' : ''
+  );
+  const [cohortFilter, setCohortFilter] = useState(slug === 'oolite' ? '2026' : '');
   const [studioNumberFilter, setStudioNumberFilter] = useState('');
   const [userRole, setUserRole] = useState<string>('');
 
@@ -144,7 +154,8 @@ export default function ArtistsPage() {
           if (artistsResponse.ok) {
             const artistsData = await artistsResponse.json();
             console.log('🔍 ArtistsPage: Artists data:', artistsData);
-            setArtists(artistsData.artists || []);
+            const raw = (artistsData.artists || []) as Artist[];
+            setArtists(dedupeDirectoryArtists(raw as DirectoryArtistProfile[]) as Artist[]);
           } else {
             console.error('❌ ArtistsPage: Failed to fetch artists:', artistsResponse.status, artistsResponse.statusText);
           }
@@ -168,8 +179,10 @@ export default function ArtistsPage() {
     const studioNum = studioNumberLabel(artist);
     const matchesStudioType = !studioTypeFilter || typeLabel === studioTypeFilter;
     const matchesStudioNumber = !studioNumberFilter || studioNum === studioNumberFilter;
-    
-    return matchesSearch && matchesStudioType && matchesStudioNumber;
+    const matchesCohort =
+      !cohortFilter || residencyCohort(artist) === cohortFilter;
+
+    return matchesSearch && matchesStudioType && matchesStudioNumber && matchesCohort;
   });
 
   const uniqueStudioTypes = Array.from(
@@ -178,6 +191,9 @@ export default function ArtistsPage() {
   const uniqueStudioNumbers = Array.from(
     new Set(artists.map((a) => studioNumberLabel(a)).filter(Boolean))
   );
+  const uniqueCohorts = Array.from(
+    new Set(artists.map((a) => residencyCohort(a)).filter(Boolean))
+  ).sort((a, b) => b.localeCompare(a));
 
   const getStudioTypeIcon = (studioType: string) => {
     const IconComponent = studioTypeIcons[studioType as keyof typeof studioTypeIcons] || User;
@@ -197,7 +213,7 @@ export default function ArtistsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[calc(2rem+150px)] pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -215,7 +231,7 @@ export default function ArtistsPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <UnifiedNavigation config={ooliteConfig} userRole="admin" />
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-[calc(2rem+150px)] pb-16 text-center">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <Users className="h-14 w-14 text-gray-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             Organization not found
@@ -245,61 +261,58 @@ export default function ArtistsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <UnifiedNavigation config={ooliteConfig} userRole="admin" />
-      <div className="max-w-7xl 4xl:max-w-none mx-auto px-4 sm:px-6 lg:px-8 4xl:px-12 pt-[calc(2rem+150px)] pb-8 4xl:pt-[calc(4rem+150px)] 4xl:pb-16">
-        {/* Header */}
-        <div className="mb-8 4xl:mb-16">
-          <div className="flex items-center space-x-4 mb-4">
-            <div className="p-3 rounded-lg" style={{ backgroundColor: chrome.iconTileBg }}>
-              <Users className="w-8 h-8" style={{ color: chrome.text }} />
-            </div>
-            <div>
-              <h1 className="text-3xl 4xl:text-6xl font-bold text-gray-900 dark:text-white mb-2 4xl:mb-4">
-                Artists & Members
-              </h1>
-              <p className="text-lg 4xl:text-3xl text-gray-600 dark:text-gray-400">
-                {organization.name} — {artists.length} members
-              </p>
-              <p className="text-sm 4xl:text-lg text-gray-500 dark:text-gray-500 mt-2 max-w-3xl">
-                This list is the in-app member directory (database). The{' '}
-                <Link
-                  href={`/o/${slug}/alumni`}
-                  className="text-primary underline-offset-2 hover:underline font-medium"
-                >
-                  alumni directory
-                </Link>{' '}
-                is separate and comes from Airtable when configured.
-              </p>
-            </div>
-          </div>
-          
-          {/* Add Artist Button - Admin Only */}
-          {user && (
-            <div className="flex justify-end">
-              <button 
-                type="button"
-                className="inline-flex items-center px-4 py-2 4xl:px-8 4xl:py-4 rounded-lg transition-colors text-sm 4xl:text-2xl"
-                style={{ 
-                  backgroundColor: chrome.solid,
-                  borderColor: chrome.solid,
-                  color: chrome.onSolid,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = chrome.solidHover
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = chrome.solid
-                }}
+      <div className="max-w-7xl 4xl:max-w-none mx-auto px-4 sm:px-6 lg:px-8 4xl:px-12 py-8 4xl:py-16">
+        <OrgDirectoryPageHeader
+          orgSlug={slug}
+          title="Artists & Members"
+          titleIcon={<Users aria-hidden />}
+          meta={
+            <>
+              {organization.name} — {artists.length} member{artists.length !== 1 ? 's' : ''}
+            </>
+          }
+          description={
+            <>
+              Studio Residents 2026 shown by default; duplicates by name are collapsed.{' '}
+              <Link
+                href={`/o/${slug}/alumni`}
+                className="font-medium underline-offset-2 hover:underline"
+                style={{ color: chrome.solid }}
               >
-                <Plus className="h-4 w-4 4xl:h-8 4xl:w-8 mr-2" />
-                Add Artist
-              </button>
-            </div>
-          )}
-        </div>
+                Alumni directory
+              </Link>{' '}
+              (Airtable) merges headshots from this list when names match.
+            </>
+          }
+          actions={
+            user ? (
+              <div className="flex w-full justify-end sm:ml-auto sm:w-auto">
+                <button
+                  type="button"
+                  className="inline-flex items-center rounded-lg px-4 py-2 text-sm transition-colors"
+                  style={{
+                    backgroundColor: chrome.solid,
+                    borderColor: chrome.solid,
+                    color: chrome.onSolid,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = chrome.solidHover
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = chrome.solid
+                  }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Artist
+                </button>
+              </div>
+            ) : null
+          }
+        />
 
         {/* Filters */}
         <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -329,6 +342,23 @@ export default function ArtistsPage() {
               </select>
             </div>
 
+            {/* Cohort / year */}
+            <div className="relative">
+              <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <select
+                value={cohortFilter}
+                onChange={(e) => setCohortFilter(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">All cohorts</option>
+                {uniqueCohorts.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Studio Number Filter */}
             <div className="relative">
               <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -350,7 +380,8 @@ export default function ArtistsPage() {
             <button
               onClick={() => {
                 setSearchTerm('');
-                setStudioTypeFilter('');
+                setStudioTypeFilter(slug === 'oolite' ? 'Studio Resident' : '');
+                setCohortFilter(slug === 'oolite' ? '2026' : '');
                 setStudioNumberFilter('');
               }}
               className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"

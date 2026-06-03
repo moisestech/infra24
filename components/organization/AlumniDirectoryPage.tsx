@@ -1,6 +1,8 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import {
   UnifiedNavigation,
   ooliteConfig,
@@ -12,13 +14,14 @@ import { TenantProvider } from '@/components/tenant/TenantProvider'
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import type { AlumniAirtableRow } from '@/lib/airtable/alumni-service'
+import type { EnrichedAlumniRow } from '@/lib/organization/artist-alumni-bridge'
+import { OrgDirectoryPageHeader } from '@/components/organization/OrgDirectoryPageHeader'
 import {
   alumniDisplayName,
   parseAlumniYearValue,
 } from '@/lib/airtable/alumni-service'
 import { orgSlugToEnvToken } from '@/lib/airtable/org-alumni-config'
 import { AlumniArtistCard } from '@/components/organization/AlumniArtistCard'
-import { AlumniCatalogueModeToggle } from '@/components/organization/AlumniCatalogueModeToggle'
 import { AlumniDetailSheet } from '@/components/organization/AlumniDetailSheet'
 import { AlumniCatalogueFilters } from '@/components/organization/AlumniCatalogueFilters'
 import { AlumniDirectoryDevPanel } from '@/components/organization/AlumniDirectoryDevPanel'
@@ -34,10 +37,10 @@ import {
   type WebsiteFilter,
 } from '@/lib/airtable/alumni-filters'
 import {
-  School,
   AlertCircle,
   Database,
   Layers,
+  School,
 } from 'lucide-react'
 
 function getNavigationConfig(slug: string) {
@@ -60,7 +63,9 @@ export type AlumniDirectoryPageProps = {
   orgName: string
   configured: boolean
   fetchError: boolean
-  alumni: AlumniAirtableRow[]
+  alumni: EnrichedAlumniRow[]
+  /** In-app artist_profiles count used for photo / medium sync */
+  directoryArtistCount?: number
 }
 
 type SortMode = 'name-asc' | 'name-desc' | 'year-desc' | 'year-asc' | 'cohort-asc'
@@ -78,7 +83,11 @@ export function AlumniDirectoryPage({
   configured,
   fetchError,
   alumni,
+  directoryArtistCount = 0,
 }: AlumniDirectoryPageProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [query, setQuery] = useState('')
   const [sortMode, setSortMode] = useState<SortMode>('name-asc')
   const [groupBy, setGroupBy] = useState<GroupByMode>('none')
@@ -95,19 +104,38 @@ export function AlumniDirectoryPage({
   const [pronounFilter, setPronounFilter] = useState<string>('__all__')
   const [ethnicityFilter, setEthnicityFilter] = useState<string>('__all__')
   const [nationalityFilter, setNationalityFilter] = useState<string>('__all__')
-  const [selectedRow, setSelectedRow] = useState<AlumniAirtableRow | null>(null)
+  const [selectedRow, setSelectedRow] = useState<EnrichedAlumniRow | null>(null)
+
+  const openAlumni = useCallback(
+    (row: EnrichedAlumniRow) => {
+      setSelectedRow(row)
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('id', row.id)
+      const qs = params.toString()
+      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+    },
+    [pathname, router, searchParams]
+  )
+
+  const closeAlumni = useCallback(() => {
+    setSelectedRow(null)
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('id')
+    const qs = params.toString()
+    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+  }, [pathname, router, searchParams])
 
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    const params = new URLSearchParams(window.location.search)
-    const q = params.get('q')?.trim()
-    const id = params.get('id')?.trim()
+    const q = searchParams.get('q')?.trim()
+    const id = searchParams.get('id')?.trim()
     if (q) setQuery(q)
     if (id && alumni.length > 0) {
       const match = alumni.find((row) => row.id === id)
-      if (match) setSelectedRow(match)
+      setSelectedRow(match ?? null)
+    } else if (!id) {
+      setSelectedRow(null)
     }
-  }, [alumni])
+  }, [alumni, searchParams])
 
   const navConfig = getNavigationConfig(slug)
   const { isDevMode } = useMemoryAgentDevMode()
@@ -287,18 +315,31 @@ export function AlumniDirectoryPage({
 
   return (
     <TenantProvider>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <UnifiedNavigation config={navConfig} userRole="user" />
-        <main className="container mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex flex-wrap items-center gap-3">
-              <School className="h-8 w-8 shrink-0 text-primary" aria-hidden />
-              <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">
-                {orgName} Alumni
-              </h1>
-            </div>
-            <AlumniCatalogueModeToggle slug={slug} mode="browse" />
-          </div>
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <OrgDirectoryPageHeader
+            orgSlug={slug}
+            title="Alumni"
+            titleIcon={<School aria-hidden />}
+            meta={`${orgName} institutional memory`}
+            description={
+              configured && directoryArtistCount > 0 ? (
+                <>
+                  Airtable directory enriched from{' '}
+                  <Link
+                    href={`/o/${slug}/artists`}
+                    className="font-medium text-primary underline-offset-2 hover:underline"
+                  >
+                    Artists & Members
+                  </Link>{' '}
+                  ({directoryArtistCount} records) when names match.
+                </>
+              ) : (
+                'Airtable alumni directory.'
+              )
+            }
+          />
 
           {!configured && (
             <Alert>
@@ -417,7 +458,7 @@ export function AlumniDirectoryPage({
                         <li key={row.id}>
                           <AlumniArtistCard
                             row={row}
-                            onOpen={() => setSelectedRow(row)}
+                            onOpen={() => openAlumni(row)}
                           />
                         </li>
                       ))}
@@ -441,8 +482,9 @@ export function AlumniDirectoryPage({
 
         <AlumniDetailSheet
           row={selectedRow}
-          onClose={() => setSelectedRow(null)}
+          onClose={closeAlumni}
           orgName={orgName}
+          orgSlug={slug}
         />
       </div>
     </TenantProvider>

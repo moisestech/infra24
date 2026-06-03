@@ -3,6 +3,8 @@ import {
   alumniYearLabel,
   fetchAlumniFromAirtableDetailed,
 } from '@/lib/airtable/alumni-service'
+import { enrichAlumniWithDirectoryArtists } from '@/lib/organization/artist-alumni-bridge'
+import { fetchDirectoryArtistsForOrgSlug } from '@/lib/organization/fetch-directory-artists'
 import { isStaffOperatorMode } from '@/lib/memory-agent/mode'
 import {
   type ArtistParticipation,
@@ -176,8 +178,14 @@ export async function runMemoryAgentAsk(params: {
       }
     }
     baseTotalCount = fetched.alumni.length
-    allAlumniRows = fetched.alumni
-    eligible = filterRowsForMemoryAgent(fetched.alumni, mode, conn.fieldMap)
+    const directoryArtists = await fetchDirectoryArtistsForOrgSlug(orgSlug)
+    const enrichedAlumni = enrichAlumniWithDirectoryArtists(
+      fetched.alumni,
+      directoryArtists,
+      orgSlug
+    )
+    allAlumniRows = enrichedAlumni
+    eligible = filterRowsForMemoryAgent(enrichedAlumni, mode, conn.fieldMap)
     if (isActiveResidentsQuestion(q)) {
       eligible = eligible.filter((row) => {
         const program = (row.program || '').toLowerCase()

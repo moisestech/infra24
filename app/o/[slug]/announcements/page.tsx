@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useLayoutEffect, useRef, type CSSProperties } from 'react'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Bell, Plus, Calendar, User, Eye, EyeOff, Shield, MapPin, Clock, FileCheck, Copy, LayoutGrid, List, ChevronDown } from 'lucide-react'
+import { Bell, Plus, Calendar, User, Eye, EyeOff, Shield, MapPin, Clock, FileCheck, Copy, LayoutGrid, List, ChevronDown, SlidersHorizontal } from 'lucide-react'
 import { UnifiedNavigation, ooliteConfig, bakehouseConfig } from '@/components/navigation'
 import { AnnouncementIdDisplay } from '@/components/admin/AnnouncementIdDisplay'
 import { AnnouncementListDateBadge, ANNOUNCEMENT_LIST_THUMB_SIZE_CLASS } from '@/components/announcements/AnnouncementListDateBadge'
@@ -14,12 +14,20 @@ import {
   type AnnouncementStatusFilter,
 } from '@/components/announcements/AnnouncementListFilterBar'
 import { AnnouncementMemberPreviewToggle } from '@/components/announcements/AnnouncementMemberPreviewToggle'
+import { OrgDirectoryPageHeader } from '@/components/organization/OrgDirectoryPageHeader'
 import { type Announcement as AnnouncementSchema } from '@/types/announcement'
 import { PageFooter } from '@/components/common/PageFooter'
 import { useTenant } from '@/components/tenant/TenantProvider'
 import { useOrganizationTheme } from '@/components/carousel/OrganizationThemeContext'
 import { resolveOrgPrimary, orgChromeFromPrimary } from '@/lib/org/org-chrome'
+import { cn } from '@/lib/utils'
 import { announcementDisplayMonthKey, isDisplayDateToday, parseDisplayDateLocalMs } from '@/lib/display/announcement-month'
+import {
+  announcementHasDisplayImage,
+  announcementImageForContext,
+  cardImageAspectClass,
+  listThumbObjectClass,
+} from '@/lib/display/announcement-images'
 
 interface Announcement {
   id: string
@@ -217,6 +225,7 @@ export default function OrganizationAnnouncementsPage() {
   const [includePosterPromotions, setIncludePosterPromotions] = useState(false)
   const [viewAsMember, setViewAsMember] = useState(false)
   const [dateSort, setDateSort] = useState<AnnouncementDateSort>('latest_first')
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [userRole, setUserRole] = useState<string>('')
   const [editingEndDate, setEditingEndDate] = useState<string | null>(null)
   const [tempEndDate, setTempEndDate] = useState<string>('')
@@ -366,7 +375,19 @@ export default function OrganizationAnnouncementsPage() {
     imagesOnly ||
     Boolean(categoryPreset) ||
     Boolean(monthFilter) ||
-    includePosterPromotions
+    includePosterPromotions ||
+    dateSort !== 'latest_first'
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0
+    if (monthFilter) count++
+    if (filter !== 'all') count++
+    if (categoryPreset) count++
+    if (imagesOnly) count++
+    if (includePosterPromotions) count++
+    if (dateSort !== 'latest_first') count++
+    return count
+  }, [monthFilter, filter, categoryPreset, imagesOnly, includePosterPromotions, dateSort])
 
   const handlePresetChange = (
     preset: 'none' | 'april_2026' | AnnouncementCategoryPreset
@@ -396,11 +417,12 @@ export default function OrganizationAnnouncementsPage() {
     setImagesOnly(false)
     setCategoryPreset(null)
     setIncludePosterPromotions(false)
+    persistDateSort('latest_first')
   }
 
   const filteredAnnouncements = useMemo(() => {
     return announcements.filter((announcement) => {
-    if (imagesOnly && (!announcement.image_url || announcement.image_url.trim() === '')) {
+    if (imagesOnly && !announcementHasDisplayImage(announcement)) {
       return false
     }
     if (monthFilter) {
@@ -662,14 +684,13 @@ export default function OrganizationAnnouncementsPage() {
       <UnifiedNavigation config={getNavigationConfig()} userRole={navUserRole as any} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                Announcements
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">
+        <OrgDirectoryPageHeader
+          orgSlug={slug}
+          title="Announcements"
+          titleIcon={<Bell className="h-7 w-7 sm:h-8 sm:w-8" aria-hidden />}
+          description={
+            <>
+              <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                 {viewAsMember
                   ? 'Public programming and news for members'
                   : showAdminChrome
@@ -677,17 +698,19 @@ export default function OrganizationAnnouncementsPage() {
                     : 'Programming and news for this organization'}
               </p>
               {viewAsMember ? (
-                <p className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-900 dark:bg-amber-950/50 dark:text-amber-100">
+                <p className="inline-flex items-center gap-1.5 rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-900 dark:bg-amber-950/50 dark:text-amber-100">
                   <Eye className="h-3.5 w-3.5 shrink-0" aria-hidden />
                   Previewing member view — admin controls hidden
                 </p>
               ) : null}
-            </div>
-            {showAdminChrome ? (
-              <div className="flex flex-wrap items-center gap-2">
+            </>
+          }
+          aside={
+            showAdminChrome ? (
+              <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                 <Link
                   href={`/o/${slug}/announcements/display`}
-                  className="px-3 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors"
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
                   style={{
                     background: chrome.gradient135,
                     color: chrome.onSolid,
@@ -702,8 +725,8 @@ export default function OrganizationAnnouncementsPage() {
                   <Eye className="h-4 w-4 shrink-0" />
                   <span>Display</span>
                 </Link>
-                <details className="relative group">
-                  <summary className="list-none cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 [&::-webkit-details-marker]:hidden">
+                <details className="group relative">
+                  <summary className="flex list-none cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 [&::-webkit-details-marker]:hidden">
                     <LayoutGrid className="h-4 w-4 shrink-0" />
                     <span>More</span>
                     <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
@@ -752,9 +775,9 @@ export default function OrganizationAnnouncementsPage() {
                   </div>
                 </details>
               </div>
-            ) : null}
-          </div>
-        </div>
+            ) : null
+          }
+        />
 
         {/* Admin Summary — collapsed by default to keep the top area minimal */}
         {showAdminChrome && announcements.length > 0 && (
@@ -800,8 +823,57 @@ export default function OrganizationAnnouncementsPage() {
           </details>
         )}
 
-        {/* Filters — single toolbar row */}
-        <div className="mb-6">
+        {/* Filters — collapsed by default */}
+        <div className="mb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              aria-expanded={filtersOpen}
+              onClick={() => setFiltersOpen((open) => !open)}
+              className={cn(
+                'inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                filtersOpen || activeFilterCount > 0
+                  ? 'border-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white'
+                  : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+              )}
+              style={
+                filtersOpen || activeFilterCount > 0
+                  ? { borderColor: chrome.solid }
+                  : undefined
+              }
+            >
+              <SlidersHorizontal className="h-4 w-4 shrink-0" aria-hidden />
+              <span>{filtersOpen ? 'Hide filters' : 'Filters & layout'}</span>
+              {activeFilterCount > 0 ? (
+                <span
+                  className="inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white"
+                  style={{ backgroundColor: chrome.solid }}
+                >
+                  {activeFilterCount}
+                </span>
+              ) : null}
+            </button>
+            {!filtersOpen && activeFilterCount > 0 ? (
+              <button
+                type="button"
+                onClick={clearAllFilters}
+                className="text-sm font-medium hover:underline"
+                style={{ color: chrome.solid }}
+              >
+                Clear filters
+              </button>
+            ) : null}
+            {!filtersOpen ? (
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {viewMode === 'list' ? 'List view' : 'Card view'}
+                {monthFilter
+                  ? ` · ${new Date(`${monthFilter}-01T12:00:00`).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`
+                  : ''}
+              </span>
+            ) : null}
+          </div>
+          {filtersOpen ? (
+          <div className="mt-3">
           <AnnouncementListFilterBar
             leading={
               <>
@@ -891,6 +963,8 @@ export default function OrganizationAnnouncementsPage() {
             dateSort={dateSort}
             onDateSortChange={persistDateSort}
           />
+          </div>
+          ) : null}
         </div>
 
         {/* Announcements List */}
@@ -935,6 +1009,7 @@ export default function OrganizationAnnouncementsPage() {
                 const detailHref = `/o/${slug}/announcements/${announcement.id}`
                 const isStillActive = announcementEventIsCurrent(announcement)
                 const isEventToday = isToday(sortRaw)
+                const listImage = announcementImageForContext(announcement, 'list')
                 return (
                   <div
                     key={announcement.id}
@@ -951,15 +1026,15 @@ export default function OrganizationAnnouncementsPage() {
                         dateString={sortRaw}
                         muted={!isStillActive}
                       />
-                      {announcement.image_url ? (
+                      {listImage.url ? (
                         <Link
                           href={detailHref}
                           className={`hidden sm:block shrink-0 overflow-hidden rounded-md border border-gray-200 dark:border-gray-600 ${ANNOUNCEMENT_LIST_THUMB_SIZE_CLASS}`}
                         >
                           <img
-                            src={announcement.image_url}
+                            src={listImage.url}
                             alt=""
-                            className={`h-full w-full object-cover ${!isStillActive ? 'grayscale-[35%]' : ''}`}
+                            className={`h-full w-full ${listThumbObjectClass(listImage.shape)} ${!isStillActive ? 'grayscale-[35%]' : ''}`}
                             onError={(e) => {
                               e.currentTarget.style.display = 'none'
                             }}
@@ -1045,6 +1120,7 @@ export default function OrganizationAnnouncementsPage() {
               const detailHref = `/o/${slug}/announcements/${announcement.id}`
               const isEventToday = isToday(eventDate)
               const isStillActive = announcementEventIsCurrent(announcement)
+              const cardImage = announcementImageForContext(announcement, 'card')
 
               return (
                 <article
@@ -1069,12 +1145,15 @@ export default function OrganizationAnnouncementsPage() {
                     />
                   )}
 
-                  {announcement.image_url ? (
-                    <Link href={detailHref} className="block aspect-[16/10] shrink-0 overflow-hidden border-b border-gray-200 dark:border-gray-700">
+                  {cardImage.url ? (
+                    <Link
+                      href={detailHref}
+                      className={`block shrink-0 overflow-hidden border-b border-gray-200 dark:border-gray-700 ${cardImageAspectClass(cardImage.shape)}`}
+                    >
                       <img
-                        src={announcement.image_url}
+                        src={cardImage.url}
                         alt={announcement.title}
-                        className={`h-full w-full object-cover ${!isStillActive ? 'grayscale-[35%]' : ''}`}
+                        className={`h-full w-full ${listThumbObjectClass(cardImage.shape)} ${!isStillActive ? 'grayscale-[35%]' : ''}`}
                         onError={(e) => {
                           e.currentTarget.style.display = 'none'
                         }}

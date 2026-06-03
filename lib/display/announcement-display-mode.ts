@@ -1,4 +1,5 @@
 import type { Announcement, AnnouncementDisplayMetadata, TakeoverOverlayConfig } from '@/types/announcement';
+import { announcementImageForContext } from '@/lib/display/announcement-images';
 
 export type TakeoverMediaKind = 'image' | 'video';
 export type TakeoverMode = 'asset' | 'overlay';
@@ -171,7 +172,8 @@ export function resolveTakeoverMedia(announcement: Announcement): ResolvedTakeov
 
   const meta = parseAnnouncementDisplayMetadata(announcement.metadata);
   const videoUrl = (meta.video_url?.trim() || findVideoInMedia(announcement.media) || '').trim();
-  const imageUrl = (announcement.image_url || '').trim();
+  const displayImage = announcementImageForContext(announcement, 'display').url;
+  const imageUrl = (displayImage || announcement.image_url || '').trim();
 
   if (meta.media_type === 'video') {
     if (videoUrl) return { kind: 'video', url: videoUrl };

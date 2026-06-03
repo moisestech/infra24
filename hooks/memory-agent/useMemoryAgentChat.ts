@@ -2,9 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { logMemoryAgentAnswerDelivery } from '@/lib/memory-agent/log-answer-delivery'
 import { parseClientOutputsFromApi, parseClientSignageFromApi } from '@/lib/memory-agent/outputs'
 import { parseContextInspectorFromApi } from '@/lib/memory-agent/context-inspector'
 import { getMemoryAgentBranding } from '@/lib/memory-agent/org-branding'
+import {
+  delayMs,
+  resolveSuggestedQuestionHandoff,
+  SUGGESTED_QUESTION_HANDOFF_PREFACE_DELAY_MS,
+  SUGGESTED_QUESTION_HANDOFF_WELCOME_DELAY_MS,
+} from '@/lib/memory-agent/suggested-question-handoff'
 import { pickMemoryAgentWelcomeMessage } from '@/lib/memory-agent/welcome-messages'
 import { parseStructuredDataGapsFromApi } from '@/lib/memory-agent/parse-structured-data-gaps'
 import type { MemoryAgentArtistCard, MemoryAgentMessage, MemoryAgentMode } from '@/types/memory-agent'
@@ -13,6 +20,13 @@ import { createAssistantMessage, createUserMessage } from '@/types/memory-agent'
 export type UseMemoryAgentChatOptions = {
   /** Called after a successful assistant reply (e.g. to trigger TTS). */
   onAnswerComplete?: (answerText: string) => void
+  /** Called for each staged intro line during a suggested-question handoff (e.g. TTS). */
+  onHandoffLine?: (line: string) => void
+}
+
+function hasPrefilledQuestionParam(): boolean {
+  if (typeof window === 'undefined') return false
+  return Boolean(new URLSearchParams(window.location.search).get('q')?.trim())
 }
 
 export function useMemoryAgentChat(
@@ -20,9 +34,11 @@ export function useMemoryAgentChat(
   options: UseMemoryAgentChatOptions = {}
 ) {
   const onAnswerCompleteRef = useRef(options.onAnswerComplete)
+  const onHandoffLineRef = useRef(options.onHandoffLine)
   useEffect(() => {
     onAnswerCompleteRef.current = options.onAnswerComplete
-  }, [options.onAnswerComplete])
+    onHandoffLineRef.current = options.onHandoffLine
+  }, [options.onAnswerComplete, options.onHandoffLine])
 
   const base = `/api/organizations/by-slug/${encodeURIComponent(orgSlug)}/memory-agent`
 
@@ -30,9 +46,20 @@ export function useMemoryAgentChat(
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<MemoryAgentMessage[]>([])
   const [loading, setLoading] = useState(false)
+  const [handoffInProgress, setHandoffInProgress] = useState(false)
+
+  const loadingRef = useRef(false)
+  const handoffRunningRef = useRef(false)
+  useEffect(() => {
+    loadingRef.current = loading
+  }, [loading])
 
   useEffect(() => {
     const branding = getMemoryAgentBranding(orgSlug)
+    if (hasPrefilledQuestionParam()) {
+      setMessages([])
+      return
+    }
     setMessages([createAssistantMessage({ content: pickMemoryAgentWelcomeMessage(branding) })])
   }, [orgSlug])
 
@@ -41,7 +68,7 @@ export function useMemoryAgentChat(
   const sendQuestion = useCallback(
     async (question: string, options?: { keepInput?: boolean }): Promise<boolean> => {
       const q = question.trim()
-      if (!q || loading) return false
+      if (!q || loadingRef.current) return false
 
       setMessages((m) => [...m, createUserMessage(q)])
       if (options?.keepInput !== true) {
@@ -104,6 +131,13 @@ export function useMemoryAgentChat(
             contextInspector,
           }),
         ])
+        logMemoryAgentAnswerDelivery({
+          question: q,
+          answer,
+          artists,
+          dataGaps,
+          followUps,
+        })
         if (answer) {
           onAnswerCompleteRef.current?.(answer)
         }
@@ -120,7 +154,35 @@ export function useMemoryAgentChat(
         setLoading(false)
       }
     },
-    [base, loading, mode]
+    [base, mode]
+  )
+
+  const beginSuggestedQuestionFlow = useCallback(
+    async (question: string): Promise<boolean> => {
+      const q = question.trim()
+      if (!q || loadingRef.current || handoffRunningRef.current) return false
+
+      handoffRunningRef.current = true
+      setHandoffInProgress(true)
+
+      const { welcomeLine, prefaceLine } = resolveSuggestedQuestionHandoff(orgSlug, q)
+
+      setMessages([createAssistantMessage({ content: welcomeLine })])
+      onHandoffLineRef.current?.(welcomeLine)
+      await delayMs(SUGGESTED_QUESTION_HANDOFF_WELCOME_DELAY_MS)
+
+      if (!handoffRunningRef.current) return false
+
+      setMessages((m) => [...m, createAssistantMessage({ content: prefaceLine })])
+      onHandoffLineRef.current?.(prefaceLine)
+      await delayMs(SUGGESTED_QUESTION_HANDOFF_PREFACE_DELAY_MS)
+
+      handoffRunningRef.current = false
+      setHandoffInProgress(false)
+
+      return sendQuestion(q)
+    },
+    [orgSlug, sendQuestion]
   )
 
   return {
@@ -131,6 +193,8 @@ export function useMemoryAgentChat(
     messages,
     setMessages,
     loading,
+    handoffInProgress,
     sendQuestion,
+    beginSuggestedQuestionFlow,
   }
 }

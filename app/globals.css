@@ -399,6 +399,75 @@
   }
 }
 
+/* Announcements index — compact Memory Agent nudge */
+@keyframes ma-nudge-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--ma-nudge-primary, #0891b2) 18%, transparent),
+      0 0 16px -6px color-mix(in srgb, var(--ma-nudge-primary, #0891b2) 28%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--ma-nudge-primary, #0891b2) 42%, transparent),
+      0 0 28px -2px color-mix(in srgb, var(--ma-nudge-primary, #0891b2) 48%, transparent);
+  }
+}
+
+@keyframes ma-nudge-sparkle {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ma-nudge-primary, #0891b2) 0%, transparent);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 14px 1px color-mix(in srgb, var(--ma-nudge-primary, #0891b2) 40%, transparent);
+  }
+}
+
+.ma-announcement-nudge {
+  transition:
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    transform 0.35s ease;
+}
+
+.ma-announcement-nudge:not(.is-open):hover {
+  animation: ma-nudge-glow 2.4s ease-in-out infinite;
+  border-color: color-mix(in srgb, var(--ma-nudge-primary, #0891b2) 35%, #e5e7eb);
+  transform: translateY(-1px);
+}
+
+.ma-announcement-nudge:not(.is-open):hover .ma-nudge-sparkle {
+  animation: ma-nudge-sparkle 1.8s ease-in-out infinite;
+}
+
+.ma-announcement-nudge:not(.is-open):hover .ma-nudge-label {
+  text-shadow: 0 0 16px color-mix(in srgb, var(--ma-nudge-primary, #0891b2) 35%, transparent);
+}
+
+.ma-nudge-question:hover {
+  background-color: color-mix(in srgb, var(--ma-nudge-primary, #0891b2) 10%, transparent);
+  box-shadow: 0 0 12px -4px color-mix(in srgb, var(--ma-nudge-primary, #0891b2) 35%, transparent);
+  color: var(--ma-nudge-primary, #0891b2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ma-announcement-nudge:not(.is-open):hover {
+    animation: none;
+    transform: none;
+  }
+
+  .ma-announcement-nudge:not(.is-open):hover .ma-nudge-sparkle {
+    animation: none;
+  }
+
+  .ma-announcement-nudge:not(.is-open):hover .ma-nudge-label {
+    text-shadow: none;
+  }
+}
+
 
 :is(.dark *) .memory-agent-theme,
 .memory-agent-theme[data-ma-theme='dark'] {

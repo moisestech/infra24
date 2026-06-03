@@ -148,6 +148,12 @@ export interface AnnouncementDisplayMetadata {
   pin_order?: number;
   /** Full-bleed takeover reserved for the display program cinematic segment (excluded from carousel). */
   cinematic_segment?: boolean;
+  /** Context-specific image URLs — list/card prefer landscape; display prefers portrait. */
+  images?: {
+    landscape?: string;
+    portrait?: string;
+    square?: string;
+  };
   [key: string]: unknown;
 }
 

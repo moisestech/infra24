@@ -18,7 +18,11 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 });
 
 const IMAGE_URL =
-  'https://res.cloudinary.com/dkod1at3i/image/upload/v1779991700/HERO_IMAGES_DUVAL_RTQ-1500x630_yhshus.png';
+  'https://res.cloudinary.com/dkod1at3i/image/upload/v1780427837/HERO_IMAGES_DUVAL_RTQ-1500x630_1_mqctsq.webp';
+
+/** Optional vertical/smart-sign poster when available; display mode prefers this over landscape. */
+const PORTRAIT_IMAGE_URL =
+  'https://res.cloudinary.com/dkod1at3i/image/upload/v1775570009/april-Oolite-Arts-Conversations_fo6v2s.jpg';
 
 const TITLE = 'Edouard Duval-Carrié in Conversation with Guillermina De Ferrari';
 
@@ -54,6 +58,10 @@ const ROW = {
   metadata: {
     program: 'oolite_conversations',
     display_takeover: true,
+    images: {
+      landscape: IMAGE_URL,
+      portrait: PORTRAIT_IMAGE_URL,
+    },
     takeover_mode: 'overlay',
     media_type: 'image',
     takeover_qr: 'app',
