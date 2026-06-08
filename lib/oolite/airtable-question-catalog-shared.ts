@@ -19,6 +19,8 @@ export type MemoryAgentDemoQuestion = {
   demoAnswerNotes?: string
   supportStatus?: string
   publicSafe: boolean
+  showInApp: boolean
+  appDisplayOrder?: number
   relatedRecognitionIds: string[]
   sourceTables?: string
   testStatus?: string

@@ -94,6 +94,10 @@ export function useMemoryAgentChat(
           return true
         }
         const answer = typeof data.answer === 'string' ? data.answer : ''
+        const spokenAnswer =
+          typeof data.spokenAnswer === 'string' && data.spokenAnswer.trim()
+            ? data.spokenAnswer.trim()
+            : undefined
         const artists = (Array.isArray(data.artists) ? data.artists : []) as MemoryAgentArtistCard[]
         const followUps = Array.isArray(data.followUps)
           ? data.followUps.filter((x: unknown): x is string => typeof x === 'string')
@@ -138,8 +142,8 @@ export function useMemoryAgentChat(
           dataGaps,
           followUps,
         })
-        if (answer) {
-          onAnswerCompleteRef.current?.(answer)
+        if (spokenAnswer || answer) {
+          onAnswerCompleteRef.current?.(spokenAnswer ?? answer)
         }
         return true
       } catch (err) {

@@ -45,7 +45,9 @@ const supabase = createClient(
 const IMAGES = {
   ceoMessage: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1768968667/january-message-from-the-ceo_kntq1z.jpg',
   studioResidents: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1768968671/january-2026-studio-residents_hyxwic.png',
-  youthResidents: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1771620757/feb-first-ever-youth-artist-residents-at-oolite-arts_jyydm1.jpg',
+  youthResidents: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1780503845/teen-residency-Youth-Artist-Residency-Headshots-1_rwxgqc.jpg',
+  youthResidencyWelcome: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1780503845/teen-residency-DSC_1476-1030x687_bh4kem.jpg',
+  youthResidencyStudio: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1780503843/teen-residency-DSC_1550-1030x687_hu3f4s.jpg',
   ellies: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1768968673/january-ellies-2026_xtllmg.gif',
   artistTalk: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1768968658/january-artist-talk-when-one-becomes-two_geubnt.jpg',
   transitMemory: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1768968641/january-transit-memory_mjukod.png',
@@ -147,6 +149,9 @@ async function updateOoliteAnnouncements() {
     const jan6_2026_anchor = new Date('2026-01-06T12:00:00');
     const jan7_2026_anchor = new Date('2026-01-07T12:00:00');
     const jan8_2026_anchor = new Date('2026-01-08T18:00:00');
+    const jan13_2026_residency = new Date('2026-01-13T12:00:00');
+    const may14_2026_residency = new Date('2026-05-14T23:59:59');
+    const july1_2026_exhibition = new Date('2026-07-01T18:00:00');
     const jan12_2026_anchor = new Date('2026-01-12T12:00:00');
     const jan14_2026_anchor = new Date('2026-01-14T12:00:00');
     const feb10_2026_anchor = new Date('2026-02-10T12:00:00');
@@ -279,24 +284,66 @@ async function updateOoliteAnnouncements() {
         author_clerk_id: 'system_oolite',
         created_by: 'system_oolite',
         updated_by: 'system_oolite',
-        title: 'Youth Residents',
-        body: 'We are excited to welcome five emerging young artists to the Oolite Arts community as they begin the inaugural Youth Residency this January.\n\nUnder the mentorship of Oolite Arts Resident Gonzalo Hernandez, these artists will develop their studio practice, gain hands-on experience, and build the creative foundation that will shape their future careers. This groundbreaking new program is designed to elevate their work, strengthen their voices, and position them as the next generation of Miami\'s artistic talent.',
+        title: 'Youth Artist Residency',
+        body: 'First-Ever Youth Artist Residents at Oolite Arts\n\nOolite Arts is proud to welcome five rising young artists into its community as the inaugural cohort of Youth Artist Residents, beginning in January 2026. Through an ongoing partnership with The Little Haiti Cultural Complex, participating students gain access to professional arts spaces and expanded opportunities to engage with contemporary artistic practice.\n\nUnder the mentorship of Gonzalo Hernandez, the Youth Artist Residents will develop their studio practice, gain hands-on experience, and build the creative foundation that will shape their future artistic careers. The cohort includes students from Miami Arts Charter School, Miami Senior High School, Design and Architecture Senior High, and Ransom Everglades School.\n\nDesigned to bridge the gap between youth and working artists, the Youth Artist Residency supports the next generation of Miami artists through mentorship, access to resources, and sustained creative engagement.\n\n(L-to-R) Ana Blanco, Noa Garcia, Melina Walsh, TJ Wright, and Emely Yanji.\n\nThe Youth Artist Residency is a 22-week program that includes a 16-week studio residency from Jan. 13 to May 14, 2026, followed by a six-week paid internship. Participants receive hands-on studio experience, mentorship, and professional guidance not typically available in high school settings.\n\nThe program culminates in a public exhibition that coincides with a main gallery opening at Oolite Arts, allowing residents to experience the full exhibition process before, during, and after opening night.\n\nYouth Artist Residency Exhibition — July 1, 2026\n\nSkill-building in technical, critical, and professional practices to prepare for higher education and future artist careers. Applications for the Youth Artist Residency open in May 2026.\n\nContact: Catalina Aguayo · caguayo@oolitearts.org\n\nIn partnership with The Little Haiti Cultural Complex and the City of Miami Parks & Recreation.',
         status: 'published',
         priority: 'high',
-        tags: ['youth-residency', 'education', 'mentorship', '2026'],
+        tags: ['youth-residency', 'youth-artist-residency', 'education', 'mentorship', '2026', 'little-haiti'],
         visibility: 'public',
         type: 'event',
         sub_type: 'general',
-        starts_at: jan7_2026_anchor.toISOString(),
+        starts_at: jan13_2026_residency.toISOString(),
+        ends_at: may14_2026_residency.toISOString(),
+        location: 'Oolite Arts, Miami Beach',
         image_url: IMAGES.youthResidents,
         image_layout: 'card',
+        primary_link: 'mailto:caguayo@oolitearts.org',
+        metadata: {
+          program: 'youth_artist_residency',
+          exhibition_date: july1_2026_exhibition.toISOString(),
+          contact_name: 'Catalina Aguayo',
+          contact_email: 'caguayo@oolitearts.org',
+          partners: ['Little Haiti Cultural Complex', 'City of Miami Parks & Recreation'],
+          mentor: 'Gonzalo Hernandez',
+          residency_weeks: 22,
+          studio_weeks: 16,
+          internship_weeks: 6,
+        },
         people: [
-          { name: 'Ana Blanco', role: 'youth-resident', avatar_url: placeholderImage(150, 150, 'AB') },
-          { name: 'Noa Garcia', role: 'youth-resident', avatar_url: placeholderImage(150, 150, 'NG') },
-          { name: 'Melina Walsh', role: 'youth-resident', avatar_url: placeholderImage(150, 150, 'MW') },
-          { name: 'TJ Wright', role: 'youth-resident', avatar_url: placeholderImage(150, 150, 'TJ') },
-          { name: 'Emely Yanji', role: 'youth-resident', avatar_url: placeholderImage(150, 150, 'EY') },
-          { name: 'Gonzalo Hernandez', role: 'mentor', avatar_url: placeholderImage(150, 150, 'GH') }
+          { name: 'Ana Blanco', role: 'Youth Artist Resident', avatar_url: IMAGES.youthResidents },
+          { name: 'Noa Garcia', role: 'Youth Artist Resident', avatar_url: IMAGES.youthResidents },
+          { name: 'Melina Walsh', role: 'Youth Artist Resident', avatar_url: IMAGES.youthResidents },
+          { name: 'TJ Wright', role: 'Youth Artist Resident', avatar_url: IMAGES.youthResidents },
+          { name: 'Emely Yanji', role: 'Youth Artist Resident', avatar_url: IMAGES.youthResidents },
+          { name: 'Gonzalo Hernandez', role: 'Mentor', avatar_url: placeholderImage(150, 150, 'GH') }
+        ],
+        published_at: now.toISOString()
+      },
+      {
+        organization_id: organization.id,
+        org_id: organization.id,
+        author_clerk_id: 'system_oolite',
+        created_by: 'system_oolite',
+        updated_by: 'system_oolite',
+        title: 'Youth Artist Residency Exhibition',
+        body: 'The inaugural Youth Artist Residency cohort presents work from their 22-week program—including a 16-week studio residency and six-week paid internship—alongside a main gallery opening at Oolite Arts.\n\nFeaturing Ana Blanco, Noa Garcia, Melina Walsh, TJ Wright, and Emely Yanji. Mentored by Gonzalo Hernandez.\n\nJuly 1, 2026\n\nContact: Catalina Aguayo · caguayo@oolitearts.org',
+        status: 'published',
+        priority: 'high',
+        tags: ['youth-residency', 'youth-artist-residency', 'exhibition', '2026'],
+        visibility: 'public',
+        type: 'event',
+        sub_type: 'exhibition',
+        starts_at: july1_2026_exhibition.toISOString(),
+        location: 'Oolite Arts, Miami Beach',
+        image_url: IMAGES.youthResidencyStudio,
+        image_layout: 'card',
+        primary_link: 'mailto:caguayo@oolitearts.org',
+        people: [
+          { name: 'Ana Blanco', role: 'Youth Artist Resident', avatar_url: IMAGES.youthResidents },
+          { name: 'Noa Garcia', role: 'Youth Artist Resident', avatar_url: IMAGES.youthResidents },
+          { name: 'Melina Walsh', role: 'Youth Artist Resident', avatar_url: IMAGES.youthResidents },
+          { name: 'TJ Wright', role: 'Youth Artist Resident', avatar_url: IMAGES.youthResidents },
+          { name: 'Emely Yanji', role: 'Youth Artist Resident', avatar_url: IMAGES.youthResidents },
         ],
         published_at: now.toISOString()
       },
@@ -1545,6 +1592,7 @@ async function updateOoliteAnnouncements() {
       'Winter Art Classes: Abstract Painting: Sonic Gesture',
       'Alumni Grant Winner: Honoring Dan Weitendorf',
       'Oolite Arts Student Showcase',
+      'Youth Residents',
     ];
     const { error: archiveError } = await supabase
       .from('announcements')

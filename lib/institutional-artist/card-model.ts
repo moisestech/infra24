@@ -7,7 +7,7 @@ import {
 } from '@/lib/airtable/alumni-images'
 import { alumniResidencyYearLabel } from '@/lib/airtable/alumni-filters'
 import { alumniYearLabel } from '@/lib/airtable/alumni-service'
-import type { MemoryAgentArtistCard } from '@/types/memory-agent'
+import type { MemoryAgentArtistCard, MemoryAgentGalleryImage } from '@/types/memory-agent'
 
 export type InstitutionalArtistBadge = 'digital' | 'collection' | 'video'
 
@@ -33,6 +33,9 @@ export type InstitutionalArtistCardData = {
   profileUrl?: string
   /** Additional artwork / portrait URLs for gallery strip */
   galleryImageUrls?: string[]
+  /** Captioned gallery items (showcase artists) */
+  galleryImages?: MemoryAgentGalleryImage[]
+  studioNumber?: string
   /** Memory Agent: why this person matched */
   matchReason?: string
   confidence?: 'high' | 'medium' | 'low'
@@ -105,6 +108,8 @@ export function institutionalArtistFromMemoryAgent(
     website: card.website,
     matchReason: card.reason?.trim(),
     confidence: card.confidence,
-    galleryImageUrls: card.galleryImageUrls?.filter(Boolean).slice(0, 4),
+    galleryImageUrls: card.galleryImageUrls?.filter(Boolean).slice(0, 8),
+    galleryImages: card.galleryImages?.slice(0, 8),
+    studioNumber: card.studioNumber?.trim(),
   }
 }

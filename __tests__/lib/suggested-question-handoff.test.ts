@@ -33,4 +33,17 @@ describe('resolveSuggestedQuestionHandoff', () => {
     expect(lines.welcomeLine).toContain('Bakehouse')
     expect(lines.prefaceLine).toContain('digital media')
   })
+
+  it('returns oolite preface for Shayla Marshall', () => {
+    const lines = resolveSuggestedQuestionHandoff('oolite', 'Tell me about Shayla Marshall.')
+    expect(lines.prefaceLine).toMatch(/Shayla Marshall/i)
+  })
+
+  it('returns oolite preface for Youth Artist Residency', () => {
+    const lines = resolveSuggestedQuestionHandoff(
+      'oolite',
+      'Tell me about the Youth Artist Residency.'
+    )
+    expect(lines.prefaceLine).toMatch(/Youth Artist Residency/i)
+  })
 })

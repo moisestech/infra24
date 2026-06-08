@@ -3,6 +3,16 @@ import {
   alumniYearLabel,
   fetchAlumniFromAirtableDetailed,
 } from '@/lib/airtable/alumni-service'
+import { enrichAlumniWithPublicDirectory, mergePublicDirectoryOnlyProfiles } from '@/lib/oolite/enrich-alumni-public-directory'
+import { fetchOolitePublicDirectoryProfiles } from '@/lib/oolite/public-directory-profiles'
+import type { OolitePublicDirectoryProfile } from '@/lib/oolite/public-directory-profiles'
+import {
+  fetchCrmPeopleForMemoryAgent,
+  mergeCrmPeopleWithAlumni,
+} from '@/lib/memory-agent/airtable-crm-people'
+import { parseFeaturedArtistNames } from '@/lib/oolite/knowledge-cluster-ids'
+import { applyShowcaseArtistResponse } from '@/lib/memory-agent/apply-showcase-artist-response'
+import { applyShowcaseProgramResponse } from '@/lib/memory-agent/apply-showcase-program-response'
 import { enrichAlumniWithDirectoryArtists } from '@/lib/organization/artist-alumni-bridge'
 import { fetchDirectoryArtistsForOrgSlug } from '@/lib/organization/fetch-directory-artists'
 import { isStaffOperatorMode } from '@/lib/memory-agent/mode'
@@ -25,6 +35,7 @@ import {
   intentNeedsProgramming,
   intentNeedsRecognition,
   isActiveResidentsQuestion,
+  isYouthResidentsQuestion,
 } from '@/lib/memory-agent/intent'
 import { buildEmbeddingInputForKnowledgeRecord } from '@/lib/memory-agent/knowledge-retrieve'
 import { chatJsonCompletion, embedTexts, getOpenAIClient } from '@/lib/memory-agent/openai-client'
@@ -38,6 +49,8 @@ import {
 import {
   applyIntentTimeFilter,
   applyBookableQuestionFilter,
+  applyWorkshopQuestionFilter,
+  applyProgrammingQuestionFilters,
   buildProgrammingContextBlock,
   fetchProgrammingForMemoryAgent,
   rankProgrammingForQuestion,
@@ -165,6 +178,8 @@ export async function runMemoryAgentAsk(params: {
   let contextRows: Awaited<ReturnType<typeof selectContextRows>> = []
   let ranked: ReturnType<typeof rankAlumniForQuestion> = []
 
+  let publicDirectoryProfiles: OolitePublicDirectoryProfile[] = []
+
   if (needsPeople && conn && !sohoDemo) {
     const fetched = await fetchAlumniFromAirtableDetailed(orgSlug)
     if (!fetched.ok) {
@@ -179,13 +194,32 @@ export async function runMemoryAgentAsk(params: {
     }
     baseTotalCount = fetched.alumni.length
     const directoryArtists = await fetchDirectoryArtistsForOrgSlug(orgSlug)
-    const enrichedAlumni = enrichAlumniWithDirectoryArtists(
+    const withArtists = enrichAlumniWithDirectoryArtists(
       fetched.alumni,
       directoryArtists,
       orgSlug
     )
-    allAlumniRows = enrichedAlumni
-    eligible = filterRowsForMemoryAgent(enrichedAlumni, mode, conn.fieldMap)
+    const publicDirectory = await fetchOolitePublicDirectoryProfiles()
+    if (publicDirectory.ok) {
+      publicDirectoryProfiles = publicDirectory.profiles
+    }
+    const enrichedAlumni =
+      publicDirectory.ok && orgSlug.trim().toLowerCase() === 'oolite'
+        ? mergePublicDirectoryOnlyProfiles(
+            enrichAlumniWithPublicDirectory(withArtists, publicDirectory.profiles, mode),
+            publicDirectory.profiles,
+            mode
+          )
+        : withArtists
+    let withCrmPeople = enrichedAlumni
+    if (orgSlug.trim().toLowerCase() === 'oolite') {
+      const crmPeople = await fetchCrmPeopleForMemoryAgent(orgSlug, mode)
+      if (crmPeople.ok && crmPeople.rows.length) {
+        withCrmPeople = mergeCrmPeopleWithAlumni(enrichedAlumni, crmPeople.rows)
+      }
+    }
+    allAlumniRows = withCrmPeople
+    eligible = filterRowsForMemoryAgent(withCrmPeople, mode, conn.fieldMap)
     if (isActiveResidentsQuestion(q)) {
       eligible = eligible.filter((row) => {
         const program = (row.program || '').toLowerCase()
@@ -203,6 +237,25 @@ export async function runMemoryAgentAsk(params: {
           status.includes('active') ||
           status.includes('resident')
         return is2026 && active
+      })
+    } else if (isYouthResidentsQuestion(q)) {
+      eligible = eligible.filter((row) => {
+        const program = (row.program || '').toLowerCase()
+        const cohort = (row.cohort || '').toLowerCase()
+        const year = (row.residencyYear || row.year || '').trim()
+        const status = (row.currentAlumniStatus || '').toLowerCase()
+        const isYouth =
+          program.includes('youth') ||
+          cohort.includes('youth') ||
+          program.includes('youth artist') ||
+          program.includes('youth resident')
+        const is2026 = year === '2026' || cohort.includes('2026') || program.includes('2026')
+        const active =
+          !status ||
+          status.includes('current') ||
+          status.includes('active') ||
+          status.includes('resident')
+        return isYouth && (is2026 || !year)
       })
     }
   }
@@ -232,6 +285,8 @@ export async function runMemoryAgentAsk(params: {
       programmingTimeMeta = timeFiltered.meta
       let records = timeFiltered.records
       records = applyBookableQuestionFilter(records, q)
+      records = applyWorkshopQuestionFilter(records, q)
+      records = applyProgrammingQuestionFilters(records, q)
       programmingPool = { ...programmingPool, records }
     }
   }
@@ -306,7 +361,17 @@ export async function runMemoryAgentAsk(params: {
   }
 
   if (needsPeople && eligible.length) {
-    ranked = rankAlumniForQuestion(eligible, q, questionEmbedding, rowEmbeddings)
+    const programmingRecords = programmingPool?.ok ? programmingPool.records : []
+    const featuredArtistNames = programmingRecords.flatMap((r) =>
+      parseFeaturedArtistNames(r.featuredArtists)
+    )
+    const relatedPeopleIds = programmingRecords.flatMap((r) =>
+      r.artistRecordIds?.length ? r.artistRecordIds : (r.relatedPeopleIds ?? [])
+    )
+    ranked = rankAlumniForQuestion(eligible, q, questionEmbedding, rowEmbeddings, {
+      featuredArtistNames,
+      relatedPeopleIds,
+    })
     contextRows = selectContextRows(ranked, needsProgramming ? 18 : 28)
   }
 
@@ -444,18 +509,20 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
       const base = mode === 'public' ? redactRowForPublicDisplay(row) : row
       const bio =
         base.publicBio?.trim() ||
+        base.shortAiSummary?.trim() ||
         base.artifacts?.trim()
       return {
         ...a,
         name: alumniDisplayName(base),
         photoUrl: alumniImageForContext(base, 'default'),
-        galleryImageUrls: alumniGalleryImageUrls(base).slice(0, 4),
+        galleryImageUrls: alumniGalleryImageUrls(base).slice(0, 8),
         website: a.website || base.website,
         medium: a.discipline || base.medium,
         program: base.program,
         cohort: base.cohort,
+        studioNumber: base.studioNumber,
         location: base.location,
-        topics: [...base.topics, ...base.themes].slice(0, 6),
+        topics: [...base.topics, ...base.themes].slice(0, 8),
         badges: badgesFromAlumniRow(base),
         bioSnippet: bio ? bio.slice(0, 220) : undefined,
         pronoun: base.pronoun,
@@ -548,18 +615,30 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
     mode
   )
 
+  const showcaseApplied = applyShowcaseProgramResponse({
+    orgSlug,
+    question: q,
+    result: applyShowcaseArtistResponse({
+      orgSlug,
+      question: q,
+      result: {
+        answer,
+        artists,
+        ...(events.length > 0 ? { events } : {}),
+        followUps: parsed.followUps.slice(0, 6),
+        dataGaps: dataGaps.slice(0, 8),
+        ...(structuredDataGaps.length > 0 ? { structuredDataGaps } : {}),
+        outputs: toClientOutputs(parsed.outputs, mode),
+        ...(signageDraft ? { signageDraft } : {}),
+        ...(contextInspector ? { contextInspector } : {}),
+      },
+      contextRows,
+      publicProfiles: publicDirectoryProfiles,
+    }),
+  })
+
   return {
     ok: true,
-    data: {
-      answer,
-      artists,
-      ...(events.length > 0 ? { events } : {}),
-      followUps: parsed.followUps.slice(0, 6),
-      dataGaps: dataGaps.slice(0, 8),
-      ...(structuredDataGaps.length > 0 ? { structuredDataGaps } : {}),
-      outputs: toClientOutputs(parsed.outputs, mode),
-      ...(signageDraft ? { signageDraft } : {}),
-      ...(contextInspector ? { contextInspector } : {}),
-    },
+    data: showcaseApplied,
   }
 }

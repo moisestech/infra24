@@ -39,4 +39,25 @@ describe('edgeZonesNetworkIndex', () => {
     expect(merged[0].id).toBe('recAirtable')
     expect(merged[0].instagram).toBe('https://instagram.com/testartist')
   })
+
+  it('keeps static portrait when Airtable has no imageUrl', () => {
+    const withImage: EdgeZonesNetworkIndexEntry[] = [
+      {
+        slug: 'test-artist',
+        name: 'Test Artist',
+        bio: 'Static bio',
+        imageUrl: 'https://example.com/portrait.jpg',
+      },
+    ]
+    const airtable: EdgeZonesArtistProfile[] = [
+      {
+        id: 'recAirtable',
+        name: 'Test Artist',
+        bio: 'Airtable bio',
+        practiceTags: [],
+      },
+    ]
+    const merged = mergeEdgeZonesNetworkIndex(withImage, airtable)
+    expect(merged[0].imageUrl).toBe('https://example.com/portrait.jpg')
+  })
 })

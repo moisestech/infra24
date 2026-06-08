@@ -13,10 +13,13 @@ import { ma } from '@/lib/memory-agent/ui-tokens'
 import type { MemoryAgentEventCard, MemoryAgentMode } from '@/types/memory-agent'
 import { cn } from '@/lib/utils'
 
-const KIND_LABEL: Record<MemoryAgentEventCard['recordKind'], string> = {
+const KIND_LABEL: Partial<Record<MemoryAgentEventCard['recordKind'], string>> = {
   event: 'Event',
   exhibition: 'Exhibition',
   workshop: 'Workshop',
+  announcement: 'Announcement',
+  residency: 'Residency',
+  tour: 'Tour',
   screening: 'Screening',
   opportunity: 'Opportunity',
   bookable_event: 'Bookable',
@@ -34,6 +37,7 @@ const SOURCE_LABEL: Record<MemoryAgentEventCard['source'], string> = {
 }
 
 function formatWhen(card: MemoryAgentEventCard): string | null {
+  if (card.dateLabel?.trim()) return card.dateLabel.trim()
   const start = card.startsAt?.trim()
   const end = card.endsAt?.trim()
   if (!start && !end) return null
@@ -173,8 +177,20 @@ export function MemoryAgentEventCards({
                       'text-[color:var(--ma-primary)]'
                     )}
                   >
-                    {KIND_LABEL[ev.recordKind]}
+                    {KIND_LABEL[ev.recordKind] ?? 'Program'}
                   </span>
+                  {ev.statusLabel ? (
+                    <span
+                      className={cn(
+                        'rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+                        ev.status === 'coming_soon'
+                          ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/50 dark:text-amber-200'
+                          : 'bg-[var(--ma-surface-muted)] text-[var(--ma-text-muted)]'
+                      )}
+                    >
+                      {ev.statusLabel}
+                    </span>
+                  ) : null}
                   <span className={cn('text-[10px] uppercase tracking-wide', ma.caption)}>
                     {SOURCE_LABEL[ev.source]}
                   </span>
@@ -193,6 +209,16 @@ export function MemoryAgentEventCards({
                     <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
                     <span>{ev.location}</span>
                   </p>
+                ) : null}
+                {ev.recordKind === 'workshop' ? (
+                  <div className="space-y-1 text-xs text-[var(--ma-text-muted)]">
+                    {ev.instructor ? <p>Instructor: {ev.instructor}</p> : null}
+                    {ev.timeText ? <p>{ev.timeText}</p> : null}
+                    {ev.durationText ? <p>{ev.durationText}</p> : null}
+                    {ev.costText ? <p>{ev.costText}</p> : null}
+                    {ev.capacity != null ? <p>Capacity: {ev.capacity}</p> : null}
+                    {ev.ageRequirement ? <p>Ages: {ev.ageRequirement}</p> : null}
+                  </div>
                 ) : null}
                 {ev.summary ? (
                   <p className={cn('line-clamp-3 flex-1 text-xs leading-relaxed', ma.bodyMuted)}>

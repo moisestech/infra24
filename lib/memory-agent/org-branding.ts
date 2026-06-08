@@ -42,11 +42,13 @@ const BY_SLUG: Record<string, Partial<MemoryAgentBranding>> = {
       'Warm, curious, and rooted in Miami’s contemporary art community—concise, never stiff, and always grounded in real records.',
     tagline: 'A conversational guide to our network and programs.',
     suggestedQuestions: [
-      "What's happening this week?",
-      'What exhibitions are coming up?',
+      'What should visitors see at Oolite this week?',
       'Tell me about Mark Delmont.',
-      'Which alumni are photographers?',
-      'Who is connected to this exhibition?',
+      'Tell me about Shayla Marshall.',
+      'Tell me about Ricardo E. Zulueta.',
+      'Tell me about the Youth Artist Residency.',
+      'Who are the 2026 Studio Residents?',
+      'Who are Oolite artists working with digital media, software, film, or interactive installation?',
       'What should go on the smart sign today?',
     ],
     pulseCopy: {

@@ -20,6 +20,9 @@ const CARD_RECORD_KINDS = new Set<MemoryAgentEventCard['recordKind']>([
   'event',
   'exhibition',
   'workshop',
+  'announcement',
+  'residency',
+  'tour',
   'screening',
   'opportunity',
   'bookable_event',
@@ -48,6 +51,7 @@ function toEventCardSource(
   if (source === 'workshop') return 'workshop'
   if (source === 'cms_story') return 'cms_story'
   if (source === 'soho_record') return 'soho_record'
+  if (source === 'airtable_programming') return 'announcement'
   return 'announcement'
 }
 

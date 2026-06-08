@@ -2,11 +2,16 @@ import type { Announcement } from '@/types/announcement'
 import type { MemoryAgentMode } from '@/types/memory-agent'
 
 import { createClient } from '@/lib/supabase/server'
-import type { MemoryIntent } from '@/lib/memory-agent/intent'
+import {
+  fetchAirtableProgrammingForMemoryAgent,
+} from '@/lib/memory-agent/airtable-programming'
+import { programmingStatusLabel } from '@/lib/memory-agent/programming-display'
+import { isAirtableProgrammingConfigured } from '@/lib/airtable/programming-config'
 import type {
   KnowledgeRecord,
   KnowledgeRecordKind,
   KnowledgeRecordVisibility,
+  MemoryIntent,
 } from '@/lib/memory-agent/knowledge-record'
 import {
   cosineSimilarity,
@@ -225,6 +230,140 @@ export function mapWorkshopSessionToKnowledgeRecord(
   }
 }
 
+export function dedupeProgrammingRecords(records: KnowledgeRecord[]): KnowledgeRecord[] {
+  const SOURCE_RANK: Partial<Record<KnowledgeRecord['source'], number>> = {
+    airtable_programming: 100,
+    announcement: 50,
+    workshop: 50,
+    cms_story: 40,
+    soho_record: 30,
+  }
+
+  const byCanonical = new Map<string, KnowledgeRecord>()
+
+  for (const record of records) {
+    const canonical = `${record.title.trim().toLowerCase()}::${(record.startsAt || '').slice(0, 10)}`
+    const existing = byCanonical.get(canonical)
+    if (!existing) {
+      byCanonical.set(canonical, record)
+      continue
+    }
+    const rankNew = SOURCE_RANK[record.source] ?? 0
+    const rankOld = SOURCE_RANK[existing.source] ?? 0
+    const priNew = record.priority ?? 0
+    const priOld = existing.priority ?? 0
+    if (rankNew > rankOld || (rankNew === rankOld && priNew > priOld)) {
+      byCanonical.set(canonical, record)
+    }
+  }
+
+  const byId = new Map<string, KnowledgeRecord>()
+  for (const record of byCanonical.values()) {
+    byId.set(record.id, record)
+  }
+  return [...byId.values()]
+}
+
+function overlapsSummerRange(
+  r: KnowledgeRecord,
+  year: number,
+  now: Date = new Date()
+): boolean {
+  const start = recordAnchorStartMs(r)
+  const end = recordAnchorEndMs(r) ?? start
+  if (start == null) return false
+  const anchorYear = new Date(start).getFullYear()
+  const targetYear = anchorYear >= year - 1 ? anchorYear : now.getFullYear()
+  const sStart = new Date(`${targetYear}-06-01T00:00:00`).getTime()
+  const sEnd = new Date(`${targetYear}-09-01T00:00:00`).getTime()
+  const s = start
+  const e = end ?? start
+  return s <= sEnd && e >= sStart
+}
+
+/** Question-aware boosts for smart-sign and seasonal programming queries. */
+export function applyProgrammingQuestionFilters(
+  records: KnowledgeRecord[],
+  question: string,
+  now: Date = new Date()
+): KnowledgeRecord[] {
+  let out = records
+  const q = question.trim()
+
+  if (/\bsummer\b/i.test(q)) {
+    const year = now.getFullYear()
+    const summer = out.filter((r) => overlapsSummerRange(r, year, now))
+    if (summer.length) out = summer
+  }
+
+  if (/\b(smart\s*sign|signage|sign\s+today)\b/i.test(q)) {
+    const eligible = out.filter((r) => r.smartSignEligible !== false)
+    if (eligible.length) {
+      out = [...eligible].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
+    }
+  }
+
+  if (/\b(exhibition|exhibitions|on\s+view)\b/i.test(q) && !/\bworkshop|workshops|class|classes\b/i.test(q)) {
+    out = [...out].sort((a, b) => {
+      const kindBoost = (r: KnowledgeRecord) => (r.recordKind === 'exhibition' ? 1 : 0)
+      const kb = kindBoost(b) - kindBoost(a)
+      if (kb !== 0) return kb
+      return (b.priority ?? 0) - (a.priority ?? 0)
+    })
+  }
+
+  if (/\b(workshop|workshops|class|classes)\b/i.test(q)) {
+    out = [...out].sort((a, b) => {
+      const kindBoost = (r: KnowledgeRecord) => (r.recordKind === 'workshop' ? 1 : 0)
+      const kb = kindBoost(b) - kindBoost(a)
+      if (kb !== 0) return kb
+      return (b.priority ?? 0) - (a.priority ?? 0)
+    })
+  }
+
+  if (/\b(register|registration|sign up|bookable|rsvp|what can i register)\b/i.test(q)) {
+    const bookable = out.filter((r) => r.bookingCta?.grounded || r.rsvpUrl || r.bookable)
+    if (bookable.length) {
+      out = [...bookable].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
+    }
+  }
+
+  if (/\b(beginner|beginners|all levels|all skill|no experience|first[- ]time)\b/i.test(q)) {
+    out = [...out].sort((a, b) => {
+      const hay = (r: KnowledgeRecord) =>
+        [r.summary, r.description, r.ageRequirement, ...(r.tags ?? [])].filter(Boolean).join(' ')
+      const boost = (r: KnowledgeRecord) =>
+        /\ball skill|all levels|beginner|welcome|no prior|no experience/i.test(hay(r)) ? 1 : 0
+      return boost(b) - boost(a)
+    })
+  }
+
+  if (/\b(curat(ed|or|ors|orship)|who curated)\b/i.test(q)) {
+    out = [...out].sort((a, b) => {
+      const boost = (r: KnowledgeRecord) => (r.curatorNames?.length || r.curator ? 1 : 0)
+      return boost(b) - boost(a)
+    })
+  }
+
+  if (/\b(manage[sd]?|program staff|exhibition director|director of programs)\b/i.test(q)) {
+    out = [...out].sort((a, b) => {
+      const boost = (r: KnowledgeRecord) => (r.programStaffNames?.length ? 1 : 0)
+      return boost(b) - boost(a)
+    })
+  }
+
+  if (/\b(exhibit|exhibiting|who is in|which artists)\b/i.test(q)) {
+    out = [...out].sort((a, b) => {
+      const boost = (r: KnowledgeRecord) =>
+        (r.artistNames?.length ?? r.artistRecordIds?.length ?? 0) +
+        (r.featuredArtists ? 0.5 : 0)
+      return boost(b) - boost(a)
+    })
+  }
+
+  return out
+}
+
 export function filterProgrammingForMemoryAgent(
   records: KnowledgeRecord[],
   mode: MemoryAgentMode,
@@ -237,6 +376,7 @@ export function filterProgrammingForMemoryAgent(
   return records.filter((r) => {
     if (r.doNotUseInAi === true) return false
     if (r.eventState === 'canceled') return false
+    if (r.status === 'canceled' || r.status === 'archived') return false
 
     const expires = parseMs(r.expiresAt)
     if (expires != null && expires < nowMs) return false
@@ -247,6 +387,8 @@ export function filterProgrammingForMemoryAgent(
     if (mode === 'staff_operator') return true
 
     if (r.approvedForPublicAi === false) return false
+    if (r.programmingVisibility === 'internal') return false
+    if (r.status === 'draft') return false
 
     const vis = r.visibility
     if (vis === 'internal') return false
@@ -340,7 +482,46 @@ export function rankProgrammingForQuestion(
       sem = cosineSimilarity(questionEmbedding, rowEmbeddings.get(record.id)!)
       sem = (sem + 1) / 2
     }
-    const score = questionEmbedding ? kw * 0.35 + sem * 0.65 : kw
+    const priorityBoost = Math.min((record.priority ?? 0) / 100, 0.12)
+    const smartSignBoost = record.smartSignEligible ? 0.06 : 0
+    const exhibitionBoost = record.recordKind === 'exhibition' ? 0.04 : 0
+    const workshopBoost = record.recordKind === 'workshop' ? 0.05 : 0
+    const airtableBoost = record.source === 'airtable_programming' ? 0.08 : 0
+    const instructorBoost =
+      record.instructor &&
+      question.toLowerCase().includes(record.instructor.toLowerCase().split(/\s+/)[0] ?? '')
+        ? 0.1
+        : 0
+    const curatorQuestion = /\b(curat(ed|or|ors|orship)|who curated)\b/i.test(question)
+    const manageQuestion =
+      /\b(manage[sd]?|program staff|exhibition director|director of programs)\b/i.test(question)
+    const exhibitQuestion = /\b(exhibit|exhibiting|who is in|which artists)\b/i.test(question)
+    const textileQuestion = /\b(textile|fabric|quilt|cyanotype|workshop|teaches|teaching)\b/i.test(
+      question
+    )
+    const workshopQuestion = /\b(workshop|workshops|class|classes)\b/i.test(question)
+    const registerQuestion =
+      /\b(register|registration|sign up|bookable|rsvp|what can i register)\b/i.test(question)
+    let relationBoost = 0
+    if (curatorQuestion && (record.curatorNames?.length || record.curator)) relationBoost += 0.22
+    if (manageQuestion && record.programStaffNames?.length) relationBoost += 0.22
+    if (exhibitQuestion && (record.artistNames?.length || record.featuredArtists)) {
+      relationBoost += 0.18
+    }
+    if (textileQuestion && record.recordKind === 'workshop' && record.instructor) {
+      relationBoost += 0.2
+    }
+    if (workshopQuestion && record.recordKind === 'workshop') relationBoost += 0.16
+    if (registerQuestion && (record.bookingCta?.grounded || record.bookable)) relationBoost += 0.18
+    const score =
+      (questionEmbedding ? kw * 0.35 + sem * 0.65 : kw) +
+      priorityBoost +
+      smartSignBoost +
+      exhibitionBoost +
+      workshopBoost +
+      airtableBoost +
+      instructorBoost +
+      relationBoost
     scored.push({ record, score })
   }
   scored.sort((a, b) => b.score - a.score)
@@ -359,12 +540,46 @@ export function knowledgeRecordToContextText(r: KnowledgeRecord): string {
   parts.push(`Kind: ${r.recordKind}`)
   parts.push(`Title: ${r.title}`)
   if (r.summary?.trim()) parts.push(`Summary: ${r.summary.trim().slice(0, 500)}`)
+  if (r.description?.trim() && r.description !== r.summary) {
+    parts.push(`Description: ${r.description.trim().slice(0, 800)}`)
+  }
   if (r.startsAt) parts.push(`Starts: ${r.startsAt}`)
   if (r.endsAt) parts.push(`Ends: ${r.endsAt}`)
+  if (r.status) {
+    parts.push(`Status: ${programmingStatusLabel(r.status) ?? r.status}`)
+  }
   if (r.location) parts.push(`Location: ${r.location}`)
+  if (r.address && r.address !== r.location) parts.push(`Address: ${r.address}`)
+  if (r.curator) parts.push(`Curator: ${r.curator}`)
+  if (r.featuredArtists) parts.push(`Featured artists: ${r.featuredArtists}`)
+  if (r.artistNames?.length) {
+    parts.push(`Exhibiting artists: ${r.artistNames.join('; ')}`)
+  } else if (r.artistRecordIds?.length || r.relatedPeopleIds?.length) {
+    const count = r.artistRecordIds?.length ?? r.relatedPeopleIds?.length ?? 0
+    parts.push(`Linked artist records: ${count}`)
+  }
+  if (r.curatorNames?.length) parts.push(`Curators: ${r.curatorNames.join('; ')}`)
+  if (r.programStaffNames?.length) {
+    parts.push(`Program staff: ${r.programStaffNames.join('; ')}`)
+  }
+  if (r.instructor) parts.push(`Instructor: ${r.instructor}`)
+  if (r.timeText) parts.push(`Time: ${r.timeText}`)
+  if (r.durationText) parts.push(`Duration: ${r.durationText}`)
+  if (r.costText) parts.push(`Cost: ${r.costText}`)
+  if (r.capacity != null) parts.push(`Capacity: ${r.capacity}`)
+  if (r.ageRequirement) parts.push(`Age requirement: ${r.ageRequirement}`)
+  if (r.language) parts.push(`Language: ${r.language}`)
+  if (r.contactName || r.contactEmail) {
+    parts.push(
+      `Contact: ${[r.contactName, r.contactEmail].filter(Boolean).join(' · ')}`
+    )
+  }
+  if (r.imageUrl) parts.push(`Image URL: ${r.imageUrl}`)
   if (r.eventState) parts.push(`Event state: ${r.eventState}`)
   if (r.tags?.length) parts.push(`Tags: ${r.tags.join(', ')}`)
   if (r.source === 'soho_record') parts.push('Demo record: yes (Soho pitch seed — not live CMS)')
+  if (r.source === 'airtable_programming') parts.push('Editorial source: Airtable Programming')
+  if (r.smartSignEligible) parts.push('Smart sign eligible: yes')
   if (r.bookingCta?.grounded) {
     parts.push(`CTA: ${r.bookingCta.label} (${r.bookingCta.url})`)
   }
@@ -383,7 +598,11 @@ export function applyBookableQuestionFilter(
   records: KnowledgeRecord[],
   question: string
 ): KnowledgeRecord[] {
-  if (!/\b(bookable|book\s+now|what\s+can\s+i\s+book|what\s+is\s+bookable)\b/i.test(question)) {
+  if (
+    !/\b(bookable|book\s+now|what\s+can\s+i\s+book|what\s+is\s+bookable|register\s+for|what\s+can\s+i\s+register)\b/i.test(
+      question
+    )
+  ) {
     return records
   }
   return records.filter(
@@ -391,23 +610,27 @@ export function applyBookableQuestionFilter(
   )
 }
 
-export async function fetchProgrammingForMemoryAgent(
-  orgSlug: string,
-  options: FetchProgrammingOptions
-): Promise<FetchProgrammingResult> {
-  const slug = orgSlug.trim().toLowerCase()
+export function applyWorkshopQuestionFilter(
+  records: KnowledgeRecord[],
+  question: string
+): KnowledgeRecord[] {
+  if (!/\b(workshop|workshops|class|classes|textile|quilting|cyanotype|instructor|teaches)\b/i.test(question)) {
+    return records
+  }
+  const workshops = records.filter((r) => r.recordKind === 'workshop')
+  return workshops.length ? workshops : records
+}
+
+async function fetchSupabaseProgrammingRecords(
+  slug: string,
+  options: FetchProgrammingOptions,
+  now: Date
+): Promise<
+  | { ok: true; records: KnowledgeRecord[]; orgId: string }
+  | { ok: false; reason: 'not_configured' | 'org_not_found' | 'supabase_error'; message?: string }
+> {
   const upcomingDays = options.upcomingDays ?? DEFAULT_UPCOMING_DAYS
   const recentDays = options.recentDays ?? DEFAULT_RECENT_DAYS
-  const now = new Date()
-
-  if (isSohoDemoOrg(slug)) {
-    const records = getSohoDemoKnowledgeRecords(slug, options.mode, now)
-    const filtered = filterProgrammingForMemoryAgent(records, options.mode, {
-      recentDays,
-      now,
-    })
-    return { ok: true, records: filtered, orgId: 'soho-demo' }
-  }
 
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
@@ -516,4 +739,58 @@ export async function fetchProgrammingForMemoryAgent(
   })
 
   return { ok: true, records: filtered, orgId }
+}
+
+export async function fetchProgrammingForMemoryAgent(
+  orgSlug: string,
+  options: FetchProgrammingOptions
+): Promise<FetchProgrammingResult> {
+  const slug = orgSlug.trim().toLowerCase()
+  const recentDays = options.recentDays ?? DEFAULT_RECENT_DAYS
+  const now = new Date()
+
+  if (isSohoDemoOrg(slug)) {
+    const records = getSohoDemoKnowledgeRecords(slug, options.mode, now)
+    const filtered = filterProgrammingForMemoryAgent(records, options.mode, {
+      recentDays,
+      now,
+    })
+    return { ok: true, records: filtered, orgId: 'soho-demo' }
+  }
+
+  const airtablePromise = isAirtableProgrammingConfigured(slug)
+    ? fetchAirtableProgrammingForMemoryAgent(slug, { mode: options.mode, recentDays, now })
+    : Promise.resolve({ ok: false as const, reason: 'not_configured' as const })
+
+  const supabasePromise = fetchSupabaseProgrammingRecords(slug, options, now)
+
+  const [airtableResult, supabaseResult] = await Promise.all([airtablePromise, supabasePromise])
+
+  const merged: KnowledgeRecord[] = []
+  if (airtableResult.ok) merged.push(...airtableResult.records)
+  if (supabaseResult.ok) merged.push(...supabaseResult.records)
+
+  if (merged.length === 0) {
+    if (supabaseResult.ok === false && supabaseResult.reason === 'org_not_found') {
+      return supabaseResult
+    }
+    if (airtableResult.ok === false && airtableResult.reason === 'airtable_error') {
+      return {
+        ok: false,
+        reason: 'supabase_error',
+        message: airtableResult.message || 'Programming sources unavailable.',
+      }
+    }
+    return {
+      ok: false,
+      reason: 'not_configured',
+      message:
+        'Programming is not configured. Set Airtable Programming and/or Supabase announcements.',
+    }
+  }
+
+  const deduped = dedupeProgrammingRecords(merged)
+  const orgId = supabaseResult.ok ? supabaseResult.orgId : slug
+
+  return { ok: true, records: deduped, orgId }
 }

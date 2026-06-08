@@ -1,3 +1,4 @@
+import { isAirtableProgrammingConfigured } from '@/lib/airtable/programming-config'
 import { isAlumniAirtableConfigured } from '@/lib/airtable/alumni-service'
 import { getAlumniConnectionForOrg } from '@/lib/airtable/org-alumni-config'
 import { describeMemoryAgentGovernance } from '@/lib/memory-agent/governance-status'
@@ -15,9 +16,11 @@ export function isMemoryAgentDataConfigured(orgSlug: string): boolean {
 
 export function isProgrammingMemoryConfigured(orgSlug?: string): boolean {
   if (orgSlug && isSohoDemoOrg(orgSlug)) return true
-  return Boolean(
+  const supabaseReady = Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() && process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
   )
+  const airtableReady = orgSlug ? isAirtableProgrammingConfigured(orgSlug) : false
+  return supabaseReady || airtableReady
 }
 
 export function isOpenAIConfigured(): boolean {

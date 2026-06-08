@@ -60,6 +60,10 @@ export type AlumniAirtableRow = {
   videoArt?: boolean
   /** Public bio for AI when mapped */
   publicBio?: string
+  /** Concise summary for cards / voice (public directory) */
+  shortAiSummary?: string
+  /** Linked Airtable public-directory record when enriched */
+  publicDirectoryRecordId?: string
   instagram?: string
   location?: string
   visibilityLevel?: string

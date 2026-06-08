@@ -3,6 +3,10 @@
  * Server modules may import from here to stay consistent with the client.
  */
 
+import type { ProgrammingRecordStatus } from '@/lib/memory-agent/knowledge-record'
+
+export type { ProgrammingRecordStatus } from '@/lib/memory-agent/knowledge-record'
+
 export type MemoryAgentMode = 'public' | 'staff_operator'
 
 /** For experiential voice UI (waveform, orb, pulse). */
@@ -23,6 +27,9 @@ export type MemoryAgentEventCardRecordKind =
   | 'event'
   | 'exhibition'
   | 'workshop'
+  | 'announcement'
+  | 'residency'
+  | 'tour'
   | 'screening'
   | 'opportunity'
   | 'bookable_event'
@@ -99,6 +106,28 @@ export type MemoryAgentEventCard = {
   /** Public action buttons allowed (governance + not canceled). */
   allowPublicActions: boolean
   publicSafe: boolean
+  /** Exhibition / program curator when grounded in source row */
+  curator?: string
+  /** Featured artists when grounded in source row */
+  featuredArtists?: string
+  /** Editorial status from Airtable Programming (e.g. coming_soon) */
+  status?: ProgrammingRecordStatus
+  /** Display label for status (e.g. Coming soon) */
+  statusLabel?: string
+  /** Preformatted date range for cards (e.g. Jul 8 – Oct 4, 2026) */
+  dateLabel?: string
+  instructor?: string
+  timeText?: string
+  durationText?: string
+  costText?: string
+  capacity?: number
+  ageRequirement?: string
+}
+
+export type MemoryAgentGalleryImage = {
+  url: string
+  title?: string
+  subtitle?: string
 }
 
 export type MemoryAgentArtistCard = {
@@ -112,11 +141,14 @@ export type MemoryAgentArtistCard = {
   photoUrl?: string
   /** Portrait + artwork URLs for card gallery (portrait first when available) */
   galleryImageUrls?: string[]
+  /** Artwork gallery with captions (showcase artists) */
+  galleryImages?: MemoryAgentGalleryImage[]
   /** Enriched from Airtable row for unified catalogue cards */
   medium?: string
   program?: string
   year?: string
   cohort?: string
+  studioNumber?: string
   location?: string
   topics?: string[]
   badges?: Array<'digital' | 'collection' | 'video'>
@@ -286,6 +318,8 @@ export type MemoryAgentContextInspector = {
 
 export type MemoryAgentAnswer = {
   answer: string
+  /** When set, TTS reads this instead of `answer` (richer on-screen copy). */
+  spokenAnswer?: string
   artists: MemoryAgentArtistCard[]
   events?: MemoryAgentEventCard[]
   followUps: string[]
@@ -326,6 +360,10 @@ export type MemoryAgentStatusPayload = {
   elevenLabsVoiceIdConfigured: boolean
   questionLoggingConfigured: boolean
   governance: MemoryAgentGovernanceStatus
+  /** Airtable Programming table env is set for this org */
+  airtableProgrammingConfigured?: boolean
+  /** Rows linked to this org in Airtable Programming (live count) */
+  airtableProgrammingRecords?: number
   branding: {
     productTitle: string
     agentName: string

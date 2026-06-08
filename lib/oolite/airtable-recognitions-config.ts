@@ -103,7 +103,16 @@ export const OOLITE_MEMORY_AGENT_QUESTION_CATALOG_TABLE = {
     sourceTables: 'fldI6ebRXyDUyOTcV',
     testStatus: 'fldymNR6K1FZY0l3E',
     lastTested: 'fldVoqWTBBbwtHaCl',
+    showInApp: 'fld959rYfGt7PSO5u',
+    appDisplayOrder: 'flduE2e3u3xy5qEe6',
   },
+} as const
+
+/** Showcase public-directory records wired for leadership demos. */
+export const OOLITE_SHOWCASE_PUBLIC_DIRECTORY_RECORD_IDS = {
+  markDelmont: 'recQjJVKj3QzhEAvx',
+  shaylaMarshall: 'reccaY67D6OUMHxQ6',
+  ricardoEZulueta: 'recF9rzblLM0MprGk',
 } as const
 
 export const OOLITE_ARTIST_PARTICIPATION_TABLE = {

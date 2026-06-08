@@ -1,0 +1,37 @@
+{
+  "organizationRecordId": "recRiKB2W96uzTfY0",
+  "instructors": [],
+  "workshops": [
+    {
+      "title": "The Fabric of Remembering: Cyanotype & Quilting",
+      "recordType": "workshop",
+      "status": "coming_soon",
+      "visibility": "public",
+      "startDate": "2026-07-14",
+      "endDate": "2026-07-28",
+      "locationName": "Oolite Arts Printshop",
+      "address": "924 Lincoln Rd., First Floor, Miami Beach, FL 33139",
+      "summary": "A three-week hands-on workshop with Bex McCharen exploring cyanotype printing on fabric, quilting, storytelling, and memory.",
+      "description": "Join artist Bex McCharen for this three-week workshop exploring fabric as a vessel for memory, storytelling, and legacy. Participants will cyanotype print family photographs onto fabric, then piece, sew, and embellish the printed images into small quilted works. All skill levels welcome.",
+      "instructor": "Bex McCharen",
+      "instructorName": "Bex McCharen",
+      "instructorPeopleId": "recuxPqeyh8PBiRky",
+      "timeText": "Tuesdays, 6–9 p.m.",
+      "durationText": "3-week workshop",
+      "costText": "$165, materials included",
+      "capacity": 8,
+      "ageRequirement": "15+",
+      "language": "English",
+      "contactName": "Melissa Gabriel",
+      "contactEmail": "mgabriel@oolitearts.org",
+      "imageUrl": "https://res.cloudinary.com/dkod1at3i/image/upload/v1780517784/bex-mccharen-1_Queer_Atlantics_2024_110x_100_quilted_cyanotype_prints_on_cotton-705x469_us0pyq.jpg",
+      "publicUrl": "https://oolitearts.org/event/the-fabric-of-remembering-cyanotype-and-digital-photo-quilting/",
+      "rsvpUrl": "https://oolitearts.org/event/the-fabric-of-remembering-cyanotype-and-digital-photo-quilting/",
+      "bookable": true,
+      "smartSignEligible": true,
+      "publicAiApproved": true,
+      "priority": 9,
+      "tags": ["creative practice", "identity"]
+    }
+  ]
+}

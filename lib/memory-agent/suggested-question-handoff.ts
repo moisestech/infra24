@@ -28,8 +28,20 @@ const PREFACE_BY_ORG: Record<string, Record<string, string>> = {
   oolite: {
     "what's happening this week":
       "I'll pull together what's happening this week — give me a moment while I look through our programming.",
+    'what should visitors see at oolite this week':
+      "I'll pull together what visitors should see at Oolite this week — give me a moment while I look through our programming.",
     'what exhibitions are coming up':
       "Let me scan upcoming exhibitions and what's on the calendar.",
+    'tell me about mark delmont':
+      "I'll pull up Mark Delmont's profile — studio context, artworks, and alumni history.",
+    'tell me about shayla marshall':
+      "I'll pull up Shayla Marshall's profile — her studio, themes, and artwork gallery.",
+    'tell me about ricardo e zulueta':
+      "I'll pull up Ricardo E. Zulueta's profile — his studio, digital practice, and artwork gallery.",
+    'tell me about ricardo zulueta':
+      "I'll pull up Ricardo E. Zulueta's profile — his studio, digital practice, and artwork gallery.",
+    'tell me about the youth artist residency':
+      "I'll pull up the Youth Artist Residency — the inaugural cohort, mentor, and exhibition details.",
     'which alumni are photographers':
       "I'll look through our alumni network for photographers and lens-based practices.",
     'who is connected to this exhibition':

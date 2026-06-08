@@ -33,10 +33,17 @@
     "workshops:compile": "tsx scripts/build/compile-workshop-catalog.ts",
     "workshops:seed": "npm run workshops:compile && node scripts/data/seed/seed-oolite-workshops-catalog.js",
     "seed:oolite-residents": "node scripts/data/seed/upsert-oolite-studio-residents-2026.js",
+    "seed:oolite-youth-residents": "node scripts/data/seed/upsert-oolite-youth-residents-2026.js",
     "seed:oolite-adult-classes": "node scripts/data/seed/seed-oolite-workshops-catalog.js && node scripts/data/seed/upsert-oolite-adult-art-classes-spring-2026.js",
     "seed:oolite-adult-classes-announcements": "node scripts/data/seed/upsert-oolite-adult-art-classes-spring-2026.js",
     "seed:oolite-artists": "node scripts/populate-oolite-artists.js",
     "seed:oolite-announcements-2026": "node scripts/data/seed/update-oolite-announcements-2026.js",
+    "import:oolite-programming": "npx tsx scripts/import-oolite-programming.ts",
+    "import:oolite-people": "npx tsx scripts/import-oolite-people.ts",
+    "import:oolite-sites-artists": "npx tsx scripts/import-oolite-sites-artists.ts",
+    "import:oolite-2026-cohort": "npx tsx scripts/import-oolite-2026-cohort.ts",
+    "import:oolite-workshops": "npx tsx scripts/import-oolite-workshops.ts",
+    "setup:oolite-programming-options": "npx tsx scripts/setup-oolite-programming-options.ts",
     "audit:announcements-display-month": "npx tsx scripts/tools/audit-announcements-display-month.ts"
   },
   "dependencies": {

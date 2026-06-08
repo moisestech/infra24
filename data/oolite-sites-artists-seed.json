@@ -1,0 +1,101 @@
+{
+  "organizationRecordId": "recRiKB2W96uzTfY0",
+  "links": {
+    "sitesOfTheSelfProgrammingId": "recM68bSWBD40Ikcu",
+    "fabricOfRememberingProgrammingId": "recP7sPOfFZ63a5Ld",
+    "bexMcCharenPeopleId": "recuxPqeyh8PBiRky"
+  },
+  "records": [
+    {
+      "fullName": "Diego Gabaldon",
+      "titleRole": "Studio Artist",
+      "department": "Artist / Resident Artist",
+      "city": "Miami",
+      "instagram": "@threatappraisal",
+      "publicAiApproved": true,
+      "primaryImageUrl": "https://res.cloudinary.com/dkod1at3i/image/upload/v1779993350/Diego-Gabaldon-705x705_nfpjhw.jpg",
+      "practiceTags": ["Installation", "Photography", "Social Practice"],
+      "bio": "Diego Gabaldon is a 2026 Oolite Arts Studio Resident in Studio 102. His work explores identity, memory, and material presence through installation and lens-based practice. He is included in Sites of the Self at Oolite Arts.",
+      "programmingRecordIds": ["recM68bSWBD40Ikcu"]
+    },
+    {
+      "fullName": "Shayla Marshall",
+      "titleRole": "Mixed-Media Artist",
+      "department": "Artist / Resident Artist",
+      "city": "Miami",
+      "publicAiApproved": true,
+      "primaryImageUrl": "https://res.cloudinary.com/dkod1at3i/image/upload/v1780452178/Shayla-Marshall-potrait_tb87ju.jpg",
+      "portfolioImageUrls": [
+        "https://res.cloudinary.com/dkod1at3i/image/upload/v1780452174/shayla-marshall-Da_Crib_Installation_Shayla_Marshall-1-1030x687_rno1ak.jpg",
+        "https://res.cloudinary.com/dkod1at3i/image/upload/v1780452177/shayla-marshall-The_First_Lady_Hair_Scuplture_Shayla_Marshall-773x1030_kgsoeb.webp"
+      ],
+      "practiceTags": ["Installation", "Photography", "Social Practice"],
+      "bio": "Shayla Marshall (b. 1999, Miami) is a mixed-media artist based between Miami and London. Her work uses world-building and storytelling to imagine Black histories and futures. She is a 2026 Oolite Arts Studio Resident in Studio 209 and is included in Sites of the Self.",
+      "programmingRecordIds": ["recM68bSWBD40Ikcu"]
+    },
+    {
+      "fullName": "Pangea Kali Virga",
+      "titleRole": "Textile & Installation Artist",
+      "department": "Artist / Resident Artist",
+      "city": "Miami",
+      "website": "https://www.pangeakalivirga.com/",
+      "instagram": "@pangeakalivirga",
+      "publicAiApproved": true,
+      "primaryImageUrl": "https://res.cloudinary.com/dkod1at3i/image/upload/v1779993351/Pangea-Kali-Virga-705x705_yswfrz.jpg",
+      "practiceTags": ["Installation", "Social Practice", "Design"],
+      "bio": "Pangea Kali Virga is a 2026 Oolite Arts Studio Resident in Studio 203. Working across textile, installation, and social practice, Virga explores identity, community, and material storytelling. Included in Sites of the Self at Oolite Arts.",
+      "programmingRecordIds": ["recM68bSWBD40Ikcu"]
+    },
+    {
+      "fullName": "Genesis Moreno",
+      "titleRole": "Studio Artist",
+      "department": "Artist / Resident Artist",
+      "city": "Miami",
+      "publicAiApproved": true,
+      "primaryImageUrl": "https://res.cloudinary.com/dkod1at3i/image/upload/v1779993573/Genesis-Moreno-705x705_xiecyg.jpg",
+      "practiceTags": ["Installation", "Photography"],
+      "bio": "Genesis Moreno is a 2026 Oolite Arts Studio Resident in Studio 210. Their practice examines selfhood, embodiment, and cultural memory through installation and image-making. Included in Sites of the Self at Oolite Arts.",
+      "programmingRecordIds": ["recM68bSWBD40Ikcu"]
+    },
+    {
+      "fullName": "Nadia Wolff",
+      "titleRole": "Studio Artist",
+      "department": "Artist / Resident Artist",
+      "city": "Miami",
+      "publicAiApproved": true,
+      "primaryImageUrl": "https://res.cloudinary.com/dkod1at3i/image/upload/v1779993348/Nadia-Wolff-705x705_gcpwsa.jpg",
+      "practiceTags": ["Installation", "Research", "Writing"],
+      "bio": "Nadia Wolff is a 2026 Oolite Arts Studio Resident in Studio 110. Their work engages identity, narrative, and research-driven studio practice. Included in Sites of the Self at Oolite Arts.",
+      "programmingRecordIds": ["recM68bSWBD40Ikcu"]
+    },
+    {
+      "fullName": "Ricardo E. Zulueta",
+      "titleRole": "Studio Artist",
+      "department": "Artist / Resident Artist",
+      "city": "Miami",
+      "website": "https://www.ricardo-zulueta.com/",
+      "instagram": "@re_zulueta",
+      "publicAiApproved": true,
+      "primaryImageUrl": "https://res.cloudinary.com/dkod1at3i/image/upload/v1779993351/Ricardo-E.-Zulueta-headshot_2-705x705_x1q8wx.webp",
+      "practiceTags": ["Photography", "Installation"],
+      "bio": "Ricardo E. Zulueta is a 2026 Oolite Arts Studio Resident in Studio 109. His practice spans photography and installation, exploring identity and cultural history. Included in Sites of the Self at Oolite Arts.",
+      "programmingRecordIds": ["recM68bSWBD40Ikcu"]
+    },
+    {
+      "fullName": "José Delgado Zúñiga",
+      "titleRole": "Painter / Instructor",
+      "department": "Artist / Resident Artist",
+      "city": "Miami",
+      "publicAiApproved": true,
+      "primaryImageUrl": "https://res.cloudinary.com/dkod1at3i/image/upload/v1779993348/Jose-Zuniga_Headshot-1_athbrd.jpg",
+      "practiceTags": ["Photography", "Education"],
+      "bio": "José Delgado Zúñiga is a 2026 Oolite Arts Studio Resident in Studio 207. A painter and educator, he explores color, observation, and identity through studio practice and teaching. Included in Sites of the Self at Oolite Arts.",
+      "programmingRecordIds": ["recM68bSWBD40Ikcu"]
+    },
+    {
+      "recordId": "recuxPqeyh8PBiRky",
+      "fullName": "Bex McCharen",
+      "programmingRecordIds": ["recM68bSWBD40Ikcu", "recP7sPOfFZ63a5Ld"]
+    }
+  ]
+}

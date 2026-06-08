@@ -30,6 +30,7 @@ function metaLine(data: InstitutionalArtistCardData): string {
   const parts = [
     data.medium,
     data.program,
+    data.studioNumber ? `Studio ${data.studioNumber}` : undefined,
     data.cohort,
     data.year ? `Residency ${data.year}` : undefined,
   ].filter(Boolean)
@@ -165,7 +166,45 @@ export function InstitutionalArtistCard({
         </div>
       ) : null}
 
-      {data.galleryImageUrls && data.galleryImageUrls.length > 1 ? (
+      {data.galleryImages && data.galleryImages.length > 0 ? (
+        <div className="flex gap-2 overflow-x-auto pb-0.5">
+          {data.galleryImages.map((item, i) => (
+            <div key={`${item.url}-${i}`} className="w-[4.5rem] shrink-0">
+              <Image
+                src={item.url}
+                alt={item.title ?? ''}
+                width={72}
+                height={72}
+                unoptimized
+                className={cn(
+                  'h-[4.5rem] w-[4.5rem] rounded-md object-cover ring-1',
+                  isAgent ? 'ring-[var(--ma-border)]' : 'ring-border'
+                )}
+              />
+              {item.title ? (
+                <p
+                  className={cn(
+                    'mt-1 line-clamp-2 text-[10px] font-medium leading-tight',
+                    isAgent ? 'text-[var(--ma-text)]' : 'text-foreground'
+                  )}
+                >
+                  {item.title}
+                </p>
+              ) : null}
+              {item.subtitle ? (
+                <p
+                  className={cn(
+                    'line-clamp-2 text-[9px] leading-tight',
+                    isAgent ? ma.caption : 'text-muted-foreground'
+                  )}
+                >
+                  {item.subtitle}
+                </p>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      ) : data.galleryImageUrls && data.galleryImageUrls.length > 1 ? (
         <div className="flex gap-1.5 overflow-x-auto pb-0.5">
           {data.galleryImageUrls.slice(0, 4).map((url, i) => (
             <Image

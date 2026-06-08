@@ -5,6 +5,7 @@
 
 export type KnowledgeRecordSource =
   | 'airtable_alumni'
+  | 'airtable_programming'
   | 'announcement'
   | 'workshop'
   | 'cms_story'
@@ -15,6 +16,9 @@ export type KnowledgeRecordKind =
   | 'exhibition'
   | 'event'
   | 'workshop'
+  | 'announcement'
+  | 'residency'
+  | 'tour'
   | 'opportunity'
   | 'screening'
   | 'house_story'
@@ -23,6 +27,16 @@ export type KnowledgeRecordKind =
   | 'space'
   | 'member_route'
   | 'partner'
+
+export type ProgrammingRecordStatus =
+  | 'draft'
+  | 'coming_soon'
+  | 'on_view'
+  | 'published'
+  | 'canceled'
+  | 'archived'
+
+export type ProgrammingRecordVisibility = 'public' | 'internal' | 'members_only'
 
 export type KnowledgeRecordVisibility = 'public' | 'internal' | 'both'
 
@@ -60,9 +74,40 @@ export type KnowledgeRecord = {
   bookingCta?: KnowledgeRecordBookingCta
   /** Hero / card image from source record when available */
   imageUrl?: string
+  /** Airtable Programming editorial status */
+  status?: ProgrammingRecordStatus
+  /** Airtable Programming visibility (distinct from legacy visibility) */
+  programmingVisibility?: ProgrammingRecordVisibility
+  /** Exhibition / program curator when present on source row */
+  curator?: string
+  /** Semicolon- or newline-separated artist names from source row */
+  featuredArtists?: string
+  /** Workshop instructor when present on source row */
+  instructor?: string
+  timeText?: string
+  durationText?: string
+  costText?: string
+  capacity?: number
+  ageRequirement?: string
+  language?: string
+  contactName?: string
+  contactEmail?: string
+  /** Street address when separate from location name */
+  address?: string
+  /** Retrieval boost from Airtable Priority field */
+  priority?: number
+  /** May appear on smart-sign drafts when true */
+  smartSignEligible?: boolean
   /** Org-relative public detail page when known */
   publicPath?: string
   relatedPeopleIds?: string[]
+  /** Linked People record ids — exhibiting artists */
+  artistRecordIds?: string[]
+  artistNames?: string[]
+  curatorRecordIds?: string[]
+  curatorNames?: string[]
+  programStaffRecordIds?: string[]
+  programStaffNames?: string[]
   relatedEventIds?: string[]
   sourceUrl?: string
   sourceTable?: string

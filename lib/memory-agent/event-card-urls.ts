@@ -1,5 +1,9 @@
 import type { KnowledgeRecord } from '@/lib/memory-agent/knowledge-record'
 import {
+  formatProgrammingDateRange,
+  programmingStatusLabel,
+} from '@/lib/memory-agent/programming-display'
+import {
   announcementEditHref,
   workshopAdminHref,
 } from '@/lib/memory-agent/data-gap-actions'
@@ -21,7 +25,7 @@ function recordAllowsPublicActions(record: KnowledgeRecord, mode: MemoryAgentMod
 }
 
 function resolveEditUrl(orgSlug: string, record: KnowledgeRecord): string | undefined {
-  if (record.source === 'soho_record') return undefined
+  if (record.source === 'soho_record' || record.source === 'airtable_programming') return undefined
   if (record.source === 'announcement') {
     return announcementEditHref(orgSlug, record.sourceRecordId)
   }
@@ -33,6 +37,9 @@ function resolveEditUrl(orgSlug: string, record: KnowledgeRecord): string | unde
 }
 
 function resolvePublicUrl(record: KnowledgeRecord): string | undefined {
+  if (record.primaryLink?.trim() && record.primaryLink.startsWith('http')) {
+    return record.primaryLink.trim()
+  }
   return record.publicPath?.trim() || undefined
 }
 
@@ -79,7 +86,10 @@ function resolveEventCtaForMode(
 
 export function formatEventCardSummaryText(event: MemoryAgentEventCard): string {
   const lines = [event.title]
-  if (event.startsAt) {
+  if (event.statusLabel) lines.push(event.statusLabel)
+  if (event.dateLabel) {
+    lines.push(event.dateLabel)
+  } else if (event.startsAt) {
     const d = new Date(event.startsAt)
     if (!Number.isNaN(d.getTime())) {
       lines.push(
@@ -94,6 +104,7 @@ export function formatEventCardSummaryText(event: MemoryAgentEventCard): string 
     }
   }
   if (event.location) lines.push(event.location)
+  if (event.curator) lines.push(`Curated by ${event.curator}`)
   if (event.summary) lines.push(event.summary)
   if (event.publicUrl) lines.push(event.publicUrl)
   return lines.join('\n')
@@ -126,6 +137,17 @@ export function buildEventCardFields(
     bookable,
     allowPublicActions,
     publicSafe,
+    curator: record.curator,
+    featuredArtists: record.featuredArtists,
+    status: record.status,
+    statusLabel: programmingStatusLabel(record.status),
+    dateLabel: formatProgrammingDateRange(record.startsAt, record.endsAt) ?? undefined,
+    instructor: record.instructor,
+    timeText: record.timeText,
+    durationText: record.durationText,
+    costText: record.costText,
+    capacity: record.capacity,
+    ageRequirement: record.ageRequirement,
   }
 }
 

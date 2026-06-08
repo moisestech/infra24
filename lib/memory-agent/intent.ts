@@ -26,7 +26,7 @@ const RECOMMEND_RE =
   /\b(recommend|suggest|should\s+(i|we|visitors)|what\s+should|best\s+for|good\s+for|experience\s+this\s+week)\b/i
 
 const MIXED_RE =
-  /\b(connected\s+to|related\s+to|who\s+(is|are)\s+(in|at|for)|artists?\s+(in|at|for)\s+(the|this)|exhibition\s+and|for\s+this\s+exhibition|from\s+oolite\s+(is|are|in))\b/i
+  /\b(connected\s+to|related\s+to|who\s+(is|are|curated|manages)\s+(in|at|for|exhibiting|the)|artists?\s+(in|at|for)\s+(the|this)|exhibition\s+and|for\s+this\s+exhibition|from\s+oolite\s+(is|are|in)|exhibiting|sites\s+of\s+the\s+self|from\s+within|part\s+of\s+sites|who curated|who manages|program staff|exhibition director|director of programs|which exhibition includes)\b/i
 
 /**
  * Lightweight intent routing (keyword-first). Sprint 2 may add LLM fallback.
@@ -80,7 +80,15 @@ export function isStudioLookupQuestion(question: string): boolean {
 }
 
 export function isActiveResidentsQuestion(question: string): boolean {
+  const q = question.trim()
+  if (/\b(youth\s+artist|youth\s+residen|teen\s+residen)\b/i.test(q)) return false
   return /\b(2026\s+studio\s+residents?|current\s+residents?|active\s+residents?|studio\s+residents?)\b/i.test(
+    q
+  )
+}
+
+export function isYouthResidentsQuestion(question: string): boolean {
+  return /\b(youth\s+artist\s+residen(?:cy|ts?)|youth\s+residen(?:cy|ts?)|teen\s+residen(?:cy|ts?)|inaugural\s+youth)\b/i.test(
     question.trim()
   )
 }

@@ -52,6 +52,16 @@ function cellBool(fields: Record<string, unknown>, fieldId: string): boolean {
   return false
 }
 
+function cellNum(fields: Record<string, unknown>, fieldId: string): number {
+  const raw = fields[fieldId]
+  if (typeof raw === 'number' && !Number.isNaN(raw)) return raw
+  if (typeof raw === 'string') {
+    const n = Number(raw.trim())
+    return Number.isNaN(n) ? 0 : n
+  }
+  return 0
+}
+
 function cellLinks(fields: Record<string, unknown>, fieldId: string): string[] {
   const raw = fields[fieldId]
   if (!Array.isArray(raw)) return []
@@ -103,6 +113,8 @@ function mapCatalogRecord(record: AirtableRecord): MemoryAgentDemoQuestion | nul
     demoAnswerNotes: cellStr(fields, f.demoAnswerNotes),
     supportStatus: cellStr(fields, f.supportStatus),
     publicSafe: cellBool(fields, f.publicSafe),
+    showInApp: cellBool(fields, f.showInApp),
+    appDisplayOrder: cellNum(fields, f.appDisplayOrder) || undefined,
     relatedRecognitionIds: cellLinks(fields, f.relatedRecognitionExhibition),
     sourceTables: cellStr(fields, f.sourceTables),
     testStatus: cellStr(fields, f.testStatus),
@@ -145,6 +157,30 @@ export function groupDemoQuestions(
     out[q.group].push(q)
   }
   return out
+}
+
+function sortAppSuggestedQuestions(
+  questions: MemoryAgentDemoQuestion[]
+): MemoryAgentDemoQuestion[] {
+  return [...questions].sort((a, b) => {
+    const oa = a.appDisplayOrder ?? 999
+    const ob = b.appDisplayOrder ?? 999
+    if (oa !== ob) return oa - ob
+    return a.question.localeCompare(b.question)
+  })
+}
+
+/** Visible kiosk chips: Show in App + Public Safe, sorted by App Display Order. */
+export async function fetchOoliteAppSuggestedQuestions(): Promise<
+  | { ok: true; questions: string[] }
+  | { ok: false; message: string }
+> {
+  const result = await fetchOoliteDemoQuestions()
+  if (!result.ok) return result
+
+  const visible = result.questions.filter((q) => q.showInApp && q.publicSafe)
+  const sorted = sortAppSuggestedQuestions(visible)
+  return { ok: true, questions: sorted.map((q) => q.question) }
 }
 
 export async function fetchOoliteDemoQuestions(

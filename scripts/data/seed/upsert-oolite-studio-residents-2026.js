@@ -1,7 +1,7 @@
 /**
  * Upserts 2026 Oolite studio residents into artist_profiles, creates one
  * announcement per resident for SmartSign/carousel, and refreshes avatars on
- * the aggregate "2026 Studio Residents" + "Youth Residents" announcements.
+ * the aggregate "2026 Studio Residents" + "Youth Artist Residency" announcements.
  *
  * Run: node scripts/data/seed/upsert-oolite-studio-residents-2026.js
  * Requires .env.local with Supabase URL + service role (or local defaults).
@@ -157,14 +157,27 @@ const RESIDENTS = [
     name: 'Shayla Marshall',
     studio: '209',
     headshotUrl:
-      'https://res.cloudinary.com/dkod1at3i/image/upload/v1779993348/Shayla-Marshall-705x705_iwe04n.jpg',
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452178/Shayla-Marshall-potrait_tb87ju.jpg',
+    artworkUrls: [
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452177/shayla-marshall-The_First_Lady_Hair_Scuplture_Shayla_Marshall-773x1030_kgsoeb.webp',
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452176/shayla-marshall-Chess_Not_Checkers_120x60_PaintibgResin_Shayla_Marshall-773x1030_byhhpn.jpg',
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452175/shayla-marshall-The_Queen_Moves_Freely_60x60_Painting_Resin_Shayla_Marshall-773x1030_p05twm.jpg',
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452175/shayla-marshall-Portrait_of_a_Noblewoman_4x5_Tintype_Shayla_Marshall-782x1030_citef1.jpg',
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452174/shayla-marshall-Da_Crib_Installation_Shayla_Marshall-1-1030x687_rno1ak.jpg',
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452173/shayla-marshall-Trina_Hair_Sculpture_Shayla_Marshall-878x1030_hq7xwa.jpg',
+      'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452173/shayla-marshall-Soulaani_Hair_Scuplture_Shayla_Marshall-1030x687_senmyt.jpg',
+    ],
     portraits: {
-      full_width_landscape: [
-        'v1780016668/shayla-marshall_portrait-full-width-landscape_zoccz7',
-        'v1780016668/shayla-marshall_portrait-full-width-landscape-1_goitgz',
-      ],
       full_height_vertical: [
-        'v1780016671/shayla-marshall_portrait-full-height-vertical_zwefw6',
+        'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452177/shayla-marshall-The_First_Lady_Hair_Scuplture_Shayla_Marshall-773x1030_kgsoeb.webp',
+        'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452176/shayla-marshall-Chess_Not_Checkers_120x60_PaintibgResin_Shayla_Marshall-773x1030_byhhpn.jpg',
+        'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452175/shayla-marshall-The_Queen_Moves_Freely_60x60_Painting_Resin_Shayla_Marshall-773x1030_p05twm.jpg',
+        'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452175/shayla-marshall-Portrait_of_a_Noblewoman_4x5_Tintype_Shayla_Marshall-782x1030_citef1.jpg',
+        'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452173/shayla-marshall-Trina_Hair_Sculpture_Shayla_Marshall-878x1030_hq7xwa.jpg',
+      ],
+      full_width_landscape: [
+        'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452174/shayla-marshall-Da_Crib_Installation_Shayla_Marshall-1-1030x687_rno1ak.jpg',
+        'https://res.cloudinary.com/dkod1at3i/image/upload/v1780452173/shayla-marshall-Soulaani_Hair_Scuplture_Shayla_Marshall-1030x687_senmyt.jpg',
       ],
     },
   },
@@ -393,6 +406,9 @@ async function upsertResidentArtist(orgId, row, memberTypeId) {
       studio_resident: true,
       headshot_url: headshot,
       artwork_url: artwork,
+      ...(Array.isArray(row.artworkUrls) && row.artworkUrls.length
+        ? { artwork_urls: row.artworkUrls }
+        : {}),
       portraits: portraitUrls,
       source: 'seed_oolite_studio_residents_2026',
     },
@@ -607,7 +623,7 @@ async function main() {
   );
   await patchAnnouncementPeopleAvatars(
     organization.id,
-    'Youth Residents',
+    'Youth Artist Residency',
     avatarByName,
     studioByName
   );

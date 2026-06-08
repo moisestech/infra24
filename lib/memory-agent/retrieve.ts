@@ -1,5 +1,6 @@
 import type { AlumniAirtableRow } from '@/lib/airtable/alumni-service'
 import { alumniDisplayName } from '@/lib/airtable/alumni-service'
+import { personNameMatchesFeatured } from '@/lib/oolite/knowledge-cluster-ids'
 import { rowToMemoryContextText } from '@/lib/memory-agent/governance'
 const STOP = new Set([
   'the',
@@ -105,8 +106,19 @@ export function rankAlumniForQuestion(
   rows: AlumniAirtableRow[],
   question: string,
   questionEmbedding: number[] | null,
-  rowEmbeddings: Map<string, number[]>
+  rowEmbeddings: Map<string, number[]>,
+  options?: {
+    featuredArtistNames?: string[]
+    relatedPeopleIds?: string[]
+  }
 ): ScoredAlumni[] {
+  const featured = options?.featuredArtistNames ?? []
+  const linkedIds = new Set(options?.relatedPeopleIds ?? [])
+  const exhibitionQuestion =
+    /\b(exhibit|exhibiting|exhibition|sites of the self|from within|who is in|which artists)\b/i.test(
+      question
+    )
+
   const scored: ScoredAlumni[] = []
   for (const row of rows) {
     const kw = keywordRetrieveScore(question, row)
@@ -115,7 +127,14 @@ export function rankAlumniForQuestion(
       sem = cosineSimilarity(questionEmbedding, rowEmbeddings.get(row.id)!)
       sem = (sem + 1) / 2
     }
-    const score = questionEmbedding ? kw * 0.35 + sem * 0.65 : kw
+    let boost = 0
+    const display = alumniDisplayName(row)
+    if (featured.some((name) => personNameMatchesFeatured(display, name))) {
+      boost += exhibitionQuestion ? 0.35 : 0.15
+    }
+    const crmId = row.id.startsWith('crm_people:') ? row.id.slice('crm_people:'.length) : row.id
+    if (linkedIds.has(crmId)) boost += 0.2
+    const score = (questionEmbedding ? kw * 0.35 + sem * 0.65 : kw) + boost
     scored.push({ row, score })
   }
   scored.sort((a, b) => b.score - a.score)

@@ -30,6 +30,8 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     roleType: 'Artist',
     bio: 'Miami-based artist working across installation, material culture, and expanded digital practice.',
     instagram: 'adrienne_rose_gionta',
+    imageUrl:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488961/dccmiami/portraits/AdrienneRose-Gionta-headshot-by-Lynton-Gardiner-2025-564x705_bhjm3t.jpg',
   },
   {
     slug: 'fabiola-larios',
@@ -48,6 +50,8 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     bio: 'Artist working at the intersection of sculpture, technology, and embodied digital experience.',
     instagram: 'angelocaruso.art',
     website: 'angelocaruso.art',
+    imageUrl:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488560/dccmiami/portraits/angelo-caruso-portrait-from-exhibition_avht0i.png',
   },
   {
     slug: 'moises-sanabria',
@@ -65,6 +69,8 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     roleType: 'Artist',
     bio: 'Artist exploring memory, identity, and material presence through hybrid analog and digital forms.',
     instagram: 'cynthia.cruz.art',
+    imageUrl:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488805/dccmiami/portraits/CynthiaCruz-TheElliesWinners1478_RET_sRGBLESLIEGABALDON-705x705_xpilbo.jpg',
   },
   {
     slug: 'violet-forest',
@@ -73,6 +79,8 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     bio: 'Artist working with feminist net art, software, and collaborative digital publishing.',
     instagram: 'violetforest',
     website: 'violetforest.info',
+    imageUrl:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488760/dccmiami/portraits/violet-forest-portrait_amk7o0.jpg',
   },
 ]
 
@@ -115,6 +123,10 @@ export function mergeEdgeZonesNetworkIndex(
       ...base,
       ...fromAirtable,
       name: entry.name,
+      imageUrl: fromAirtable.imageUrl ?? base.imageUrl,
+      bio: fromAirtable.bio ?? base.bio,
+      instagram: fromAirtable.instagram ?? base.instagram,
+      website: fromAirtable.website ?? base.website,
       roleType: fromAirtable.roleType ?? base.roleType,
       practiceTags: fromAirtable.practiceTags.length > 0 ? fromAirtable.practiceTags : base.practiceTags,
     }

@@ -66,7 +66,9 @@ export function MemoryAgentDevPanel({
       <div className="mt-4 space-y-6 border-t border-[var(--ma-border)] pt-4">
         <MemoryAgentModeSelect value={mode} onChange={onModeChange} disabled={voice.isRecording} />
 
-        {status?.dataConfigured && status.openaiConfigured ? (
+        {status &&
+        ((status.dataConfigured && status.openaiConfigured) ||
+          status.airtableProgrammingConfigured) ? (
           <MemoryAgentConnectionStatus status={status} />
         ) : null}
 
