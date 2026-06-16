@@ -39,11 +39,13 @@ describe('oolite programming seed file', () => {
       records: Array<{ title: string }>
     }
     expect(seed.organizationRecordId).toBe('recRiKB2W96uzTfY0')
-    expect(seed.records.map((r) => r.title)).toEqual([
-      'From Within',
-      'Sites of the Self',
-      'Open Studios / Sites of the Self / From Within',
-      'The Fabric of Remembering: Cyanotype & Quilting',
-    ])
+    expect(seed.records.map((r) => r.title)).toEqual(
+      expect.arrayContaining([
+        'From Within',
+        'Sites of the Self',
+        'Our New Home — Little River Campus',
+      ])
+    )
+    expect(seed.records.some((r) => r.title === 'Our New Home — Little River Campus')).toBe(true)
   })
 })

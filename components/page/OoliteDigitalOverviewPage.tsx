@@ -11,8 +11,10 @@ import {
   BookOpen,
   Monitor,
   Palette,
-  Zap
+  Zap,
+  ExternalLink,
 } from 'lucide-react';
+import { DIGITAL_LAB_QGIV_HUB_URL } from '@/lib/orgs/oolite/digital-lab-qgiv-offerings';
 
 export default function OoliteDigitalOverviewPage() {
   return (
@@ -230,9 +232,12 @@ export default function OoliteDigitalOverviewPage() {
             Whether you're a beginner or an experienced artist, we have something for everyone.
           </p>
           <div className="flex justify-center gap-4">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              <Calendar className="w-5 h-5 mr-2" />
-              Book a Workshop
+            <Button size="lg" className="bg-blue-600 hover:bg-blue-700" asChild>
+              <a href={DIGITAL_LAB_QGIV_HUB_URL} target="_blank" rel="noopener noreferrer">
+                <Calendar className="w-5 h-5 mr-2" />
+                Book a Workshop
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </a>
             </Button>
             <Button size="lg" variant="outline">
               <Users className="w-5 h-5 mr-2" />

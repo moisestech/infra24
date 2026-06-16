@@ -3,6 +3,8 @@
  * Other orgs can add parallel files or a registry later.
  */
 
+import { DIGITAL_LAB_QGIV_HUB_URL } from '@/lib/orgs/oolite/digital-lab-qgiv-offerings'
+
 export type WorkshopHeroCta = {
   label: string
   href: string
@@ -61,7 +63,7 @@ const OOLITE: WorkshopsLandingContent = {
   },
   heroSecondaryCta: {
     label: 'Book a Workshop',
-    href: 'mailto:info@oolitearts.org?subject=Workshop%20inquiry%20%E2%80%94%20Oolite%20Arts%20Digital%20Lab',
+    href: DIGITAL_LAB_QGIV_HUB_URL,
   },
   trustLine: 'Designed for artists, educators, and cultural organizations.',
   trustItems: [

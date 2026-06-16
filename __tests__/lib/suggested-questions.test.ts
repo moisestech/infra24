@@ -18,6 +18,7 @@ describe('mergeAppSuggestedQuestions', () => {
       'Tell me about Mark Delmont.',
       'Tell me about Shayla Marshall.',
       'Tell me about Ricardo E. Zulueta.',
+      'Tell me about Leo Castaneda.',
       'Who are the 2026 Studio Residents?',
     ])
   })

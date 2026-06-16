@@ -35,7 +35,7 @@ const ROW = {
   sub_type: 'general',
   image_url: IMAGE_URL,
   image_layout: 'hero',
-  primary_link: 'https://oolitearts.org',
+  primary_link: 'https://oolitearts.org/our-new-home/',
   is_active: true,
   metadata: {
     program: 'new_campus',

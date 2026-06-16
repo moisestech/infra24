@@ -997,7 +997,7 @@ async function updateOoliteAnnouncements() {
         location: 'Oolite Arts, 924 Lincoln Rd., Studio 100, Miami, FL 33139',
         image_url: IMAGES.vibeCodingNetArt,
         image_layout: 'card',
-        primary_link: 'https://oolitearts.org/event/vibe-coding-net-art-code-art-into-html-workshop/',
+        primary_link: 'https://secure.qgiv.com/for/digitallab/event/may26/',
         rsvp_label: 'Register Now',
         people: [
           { name: 'Fabiola Larios', role: 'instructor', avatar_url: placeholderImage(150, 150, 'FL') },

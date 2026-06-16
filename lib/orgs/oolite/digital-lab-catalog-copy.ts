@@ -1,5 +1,7 @@
 /** Static copy for `/o/oolite/workshops/digital-lab` (Digital Lab workshop catalog). */
 
+import { DIGITAL_LAB_QGIV_HUB_URL } from '@/lib/orgs/oolite/digital-lab-qgiv-offerings'
+
 export const digitalLabCatalogCopy = {
   heroEyebrow: 'Oolite Arts Digital Lab',
   heroHeadline: 'Digital Lab Workshops',
@@ -34,5 +36,8 @@ export const digitalLabCatalogCopy = {
   ctaComingSoon: 'Coming Soon',
 } as const
 
-export const digitalLabBookWorkshopMailto =
-  'mailto:info@oolitearts.org?subject=Workshop%20inquiry%20%E2%80%94%20Oolite%20Arts%20Digital%20Lab'
+/** Primary public booking URL for Digital Lab workshops (QGiv / Bloomerang). */
+export const digitalLabBookWorkshopUrl = DIGITAL_LAB_QGIV_HUB_URL
+
+/** @deprecated Use digitalLabBookWorkshopUrl — kept for existing imports. */
+export const digitalLabBookWorkshopMailto = DIGITAL_LAB_QGIV_HUB_URL

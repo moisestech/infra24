@@ -86,6 +86,59 @@ export const MARK_DELMONT_SHOWCASE: ShowcaseArtistConfig = {
   galleryCaptions: [],
 }
 
+export const LEO_CASTANEDA_SHOWCASE: ShowcaseArtistConfig = {
+  key: 'leo_castaneda',
+  displayName: 'Leo Castaneda',
+  matchAliases: ['leo castaneda'],
+  publicDirectoryRecordId: OOLITE_SHOWCASE_PUBLIC_DIRECTORY_RECORD_IDS.leoCastaneda,
+  spokenAnswer:
+    'Leo Castaneda is an artist working at the intersection of virtual reality, gaming, performance, and interactive sculpture. His work deconstructs the mythologies and power structures embedded in video games. He was an Oolite Arts studio resident in 2018 and 2019.',
+  followUps: [
+    'Show me Leo Castaneda’s artwork',
+    'What exhibitions featured Leo Castaneda at Oolite?',
+    'Who are Oolite artists working with digital media, software, film, or interactive installation?',
+    'Tell me about Ricardo E. Zulueta.',
+    'Show me similar Oolite artists',
+  ],
+  galleryCaptions: [
+    {
+      url: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1781560943/leo-castaneda-Painting_in_First_room_3-1030x686_c999fb.jpg',
+      title: 'Painting in First Room',
+      subtitle: 'Installation view',
+    },
+    {
+      url: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1781560943/leo-castaneda-High_Resolution_Screenshot_number_143_ac-1030x736_nkq5ty.jpg',
+      title: 'High Resolution Screenshot 143',
+      subtitle: 'Game environment',
+    },
+    {
+      url: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1781560943/leo-castaneda-High_Resolution_Screenshot_number_167_ac-1030x736_uwqoos.jpg',
+      title: 'High Resolution Screenshot 167',
+      subtitle: 'Game environment',
+    },
+    {
+      url: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1781560943/Leo_Castaneda-Game-Preview_06-1030x580_bqndej.jpg',
+      title: 'Game Preview',
+      subtitle: 'Levels & Bosses',
+    },
+    {
+      url: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1781560943/leo-castaneda-LC_Video_in_Perfomance_at_Faena_image_02_JPG-1030x687_gnm5fc.jpg',
+      title: 'Performance at Faena',
+      subtitle: 'Live performance',
+    },
+    {
+      url: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1781560942/leo-castaneda-first_room-1030x588_i9izcv.jpg',
+      title: 'First Room',
+      subtitle: 'Installation view',
+    },
+    {
+      url: 'https://res.cloudinary.com/dkod1at3i/image/upload/v1781560942/Leo_Castaneda_Level_One-Preview_Explosion_02-1030x579_kux3xv.jpg',
+      title: 'Level One Preview',
+      subtitle: 'Explosion sequence',
+    },
+  ],
+}
+
 export const RICARDO_E_ZULUETA_SHOWCASE: ShowcaseArtistConfig = {
   key: 'ricardo_e_zulueta',
   displayName: 'Ricardo E. Zulueta',
@@ -148,6 +201,7 @@ export const OOLITE_SHOWCASE_ARTISTS: ShowcaseArtistConfig[] = [
   MARK_DELMONT_SHOWCASE,
   SHAYLA_MARSHALL_SHOWCASE,
   RICARDO_E_ZULUETA_SHOWCASE,
+  LEO_CASTANEDA_SHOWCASE,
 ]
 
 export function showcaseArtistSuggestedQuestions(): string[] {

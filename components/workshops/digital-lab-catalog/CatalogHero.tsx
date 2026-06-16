@@ -1,8 +1,10 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { digitalLabCatalogCopy } from '@/lib/orgs/oolite/digital-lab-catalog-copy'
-import { digitalLabBookWorkshopMailto } from '@/lib/orgs/oolite/digital-lab-catalog-copy'
+import {
+  digitalLabBookWorkshopUrl,
+  digitalLabCatalogCopy,
+} from '@/lib/orgs/oolite/digital-lab-catalog-copy'
 import { cn } from '@/lib/utils'
 
 type CatalogHeroProps = {
@@ -32,7 +34,7 @@ export function CatalogHero({ className }: CatalogHeroProps) {
             <a href="#digital-lab-catalog">{digitalLabCatalogCopy.heroPrimaryCta}</a>
           </Button>
           <Button asChild size="lg" variant="outline">
-            <a href={digitalLabBookWorkshopMailto}>
+            <a href={digitalLabBookWorkshopUrl} target="_blank" rel="noopener noreferrer">
               {digitalLabCatalogCopy.heroSecondaryCta}
             </a>
           </Button>

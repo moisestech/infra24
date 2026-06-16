@@ -21,6 +21,8 @@ import {
   Zap
 } from 'lucide-react';
 import EquipmentVotingUnified from '@/components/equipment/EquipmentVotingUnified';
+import { DigitalLabOfferingsGrid } from '@/components/oolite/DigitalLabOfferingsGrid';
+import { DIGITAL_LAB_QGIV_HUB_URL } from '@/lib/orgs/oolite/digital-lab-qgiv-offerings';
 import { useTenant } from '@/components/tenant/TenantProvider';
 
 interface Equipment {
@@ -145,6 +147,10 @@ export default function OoliteDigitalLabPage() {
             designers, and creative technologists. Book equipment, join workshops, and bring your ideas to life.
           </p>
         </div>
+
+        <DigitalLabOfferingsGrid
+          primaryColor={tenantConfig?.theme?.primaryColor || '#47abc4'}
+        />
 
         {/* Lab Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
@@ -438,53 +444,44 @@ export default function OoliteDigitalLabPage() {
           <div className="flex justify-center gap-4">
             <Button 
               size="lg" 
+              asChild
               style={{
                 backgroundColor: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6',
                 borderColor: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = tenantConfig ? tenantConfig.theme.secondaryColor : '#2563eb'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
-              }}
             >
-              <Calendar className="w-5 h-5 mr-2" />
-              Book Equipment
+              <a href={DIGITAL_LAB_QGIV_HUB_URL} target="_blank" rel="noopener noreferrer">
+                <Calendar className="w-5 h-5 mr-2" />
+                Book a Session
+              </a>
             </Button>
             <Button 
               size="lg" 
               variant="outline"
+              asChild
               style={{
                 borderColor: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6',
                 color: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = tenantConfig ? `${tenantConfig.theme.primaryColor}1a` : 'rgba(59, 130, 246, 0.1)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent'
-              }}
             >
-              <BookOpen className="w-5 h-5 mr-2" />
-              View Workshops
+              <a href="/o/oolite/workshops/digital-lab">
+                <BookOpen className="w-5 h-5 mr-2" />
+                View Workshops
+              </a>
             </Button>
             <Button 
               size="lg" 
               variant="outline"
+              asChild
               style={{
                 borderColor: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6',
                 color: tenantConfig ? tenantConfig.theme.primaryColor : '#3b82f6'
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = tenantConfig ? `${tenantConfig.theme.primaryColor}1a` : 'rgba(59, 130, 246, 0.1)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent'
-              }}
             >
-              <ExternalLink className="w-5 h-5 mr-2" />
-              Lab Tour
+              <a href="#digital-lab-book">
+                <ExternalLink className="w-5 h-5 mr-2" />
+                All Offerings
+              </a>
             </Button>
           </div>
         </div>

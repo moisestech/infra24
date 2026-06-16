@@ -16,7 +16,8 @@ import {
   Mail,
   Monitor,
   MessageSquare,
-  Sparkles
+  Sparkles,
+  HandHeart,
 } from 'lucide-react'
 import { NavigationConfig } from '../types'
 
@@ -65,6 +66,13 @@ export const ooliteConfig: NavigationConfig = {
         href: '/o/oolite',
         icon: Home,
         description: 'Digital transformation overview',
+        category: 'user'
+      },
+      {
+        name: 'Get Involved',
+        href: '/o/oolite/get-involved',
+        icon: HandHeart,
+        description: 'Apply, book, support, and see what\'s on view',
         category: 'user'
       },
       {

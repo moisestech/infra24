@@ -11,6 +11,9 @@ import {
   mergeCrmPeopleWithAlumni,
 } from '@/lib/memory-agent/airtable-crm-people'
 import { parseFeaturedArtistNames } from '@/lib/oolite/knowledge-cluster-ids'
+import { applyCapitalCampaignResponse } from '@/lib/memory-agent/apply-capital-campaign-response'
+import { applyDigitalLabBookingResponse } from '@/lib/memory-agent/apply-digital-lab-booking-response'
+import { applyOpenCallsResponse } from '@/lib/memory-agent/apply-open-calls-response'
 import { applyShowcaseArtistResponse } from '@/lib/memory-agent/apply-showcase-artist-response'
 import { applyShowcaseProgramResponse } from '@/lib/memory-agent/apply-showcase-program-response'
 import { enrichAlumniWithDirectoryArtists } from '@/lib/organization/artist-alumni-bridge'
@@ -615,25 +618,37 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
     mode
   )
 
-  const showcaseApplied = applyShowcaseProgramResponse({
+  const showcaseApplied = applyOpenCallsResponse({
     orgSlug,
     question: q,
-    result: applyShowcaseArtistResponse({
+    result: applyCapitalCampaignResponse({
       orgSlug,
       question: q,
-      result: {
-        answer,
-        artists,
-        ...(events.length > 0 ? { events } : {}),
-        followUps: parsed.followUps.slice(0, 6),
-        dataGaps: dataGaps.slice(0, 8),
-        ...(structuredDataGaps.length > 0 ? { structuredDataGaps } : {}),
-        outputs: toClientOutputs(parsed.outputs, mode),
-        ...(signageDraft ? { signageDraft } : {}),
-        ...(contextInspector ? { contextInspector } : {}),
-      },
-      contextRows,
-      publicProfiles: publicDirectoryProfiles,
+      result: applyDigitalLabBookingResponse({
+        orgSlug,
+        question: q,
+        result: applyShowcaseProgramResponse({
+        orgSlug,
+        question: q,
+        result: applyShowcaseArtistResponse({
+          orgSlug,
+          question: q,
+          result: {
+            answer,
+            artists,
+            ...(events.length > 0 ? { events } : {}),
+            followUps: parsed.followUps.slice(0, 6),
+            dataGaps: dataGaps.slice(0, 8),
+            ...(structuredDataGaps.length > 0 ? { structuredDataGaps } : {}),
+            outputs: toClientOutputs(parsed.outputs, mode),
+            ...(signageDraft ? { signageDraft } : {}),
+            ...(contextInspector ? { contextInspector } : {}),
+          },
+          contextRows,
+          publicProfiles: publicDirectoryProfiles,
+        }),
+      }),
+      }),
     }),
   })
 

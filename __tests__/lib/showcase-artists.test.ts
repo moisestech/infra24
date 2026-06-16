@@ -1,6 +1,7 @@
 import { mergePublicDirectoryOnlyProfiles } from '@/lib/oolite/enrich-alumni-public-directory'
 import {
   buildShowcaseDisplayAnswer,
+  LEO_CASTANEDA_SHOWCASE,
   matchShowcaseArtistQuestion,
   RICARDO_E_ZULUETA_SHOWCASE,
   SHAYLA_MARSHALL_SHOWCASE,
@@ -48,6 +49,12 @@ describe('matchShowcaseArtistQuestion', () => {
     )
     expect(matchShowcaseArtistQuestion('Tell me about Ricardo Zulueta.')).toEqual(
       RICARDO_E_ZULUETA_SHOWCASE
+    )
+  })
+
+  it('matches Leo Castaneda lookup questions', () => {
+    expect(matchShowcaseArtistQuestion('Tell me about Leo Castaneda.')).toEqual(
+      LEO_CASTANEDA_SHOWCASE
     )
   })
 })

@@ -113,6 +113,7 @@ export const OOLITE_SHOWCASE_PUBLIC_DIRECTORY_RECORD_IDS = {
   markDelmont: 'recQjJVKj3QzhEAvx',
   shaylaMarshall: 'reccaY67D6OUMHxQ6',
   ricardoEZulueta: 'recF9rzblLM0MprGk',
+  leoCastaneda: 'recktCg5W9FxR8Swi',
 } as const
 
 export const OOLITE_ARTIST_PARTICIPATION_TABLE = {
