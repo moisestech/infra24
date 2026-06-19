@@ -50,6 +50,21 @@ const pages: CdcPageDef[] = [
     layout: 'default',
   }),
   p({
+    path: '/opportunities',
+    title: 'Opportunities',
+    description:
+      'Workshops, exhibitions, public programs, network pathways, and selected career opportunities across Digital Culture Center Miami.',
+    layout: 'default',
+  }),
+  p({
+    path: '/opportunities/playwire',
+    title: 'Playwire — publisher journey (concept)',
+    description:
+      'Concept demo for publisher journey conversations — personas, PARMM-lite assessment, and mock RAMP dashboard.',
+    parent: '/opportunities',
+    layout: 'default',
+  }),
+  p({
     path: '/programs',
     title: 'Programs',
     description:

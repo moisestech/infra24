@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getAllCdcPaths } from '@/lib/cdc/routes';
+import { getIndexableOpportunityPaths } from '@/lib/marketing/opportunities-index';
 import { getSiteUrl } from '@/lib/marketing/site-url';
 
 const EXTRA_PATHS = ['/platform', '/soho-house-ai-assistant'] as const;
@@ -12,7 +13,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
   const registryPaths = getAllCdcPaths();
-  const unique = new Set<string>(['/', ...registryPaths, ...EXTRA_PATHS]);
+  const opportunityPaths = getIndexableOpportunityPaths();
+  const unique = new Set<string>(['/', ...registryPaths, ...EXTRA_PATHS, ...opportunityPaths]);
   const paths = [...unique].filter((path) => !SITEMAP_EXCLUDED.has(path)).sort((a, b) => a.localeCompare(b));
 
   return paths.map((path) => ({
@@ -22,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority:
       path === '/'
         ? 1
-        : path === '/grants' || path === '/contact' || path === '/programs'
+        : path === '/grants' || path === '/contact' || path === '/programs' || path === '/opportunities'
           ? 0.9
           : 0.75,
   }));

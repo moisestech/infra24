@@ -70,6 +70,7 @@ function isPublicRoute(pathname: string): boolean {
     '/sohohouse',
     '/events',
     '/newsletter',
+    '/opportunities',
   ]
 
   return publicRoutes.some((route) => pathname.startsWith(route))
