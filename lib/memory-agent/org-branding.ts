@@ -1,4 +1,8 @@
 import { getTenantConfig } from '@/lib/tenant'
+import { mergeAppSuggestedQuestions } from '@/lib/memory-agent/suggested-questions'
+import { dccInstitutionalMemorySuggestedQuestions } from '@/lib/dcc/dcc-institutional-memory-chips'
+import { ooliteInstitutionalMemorySuggestedQuestions } from '@/lib/oolite/oolite-institutional-memory-chips'
+import { showcaseArtistSuggestedQuestions } from '@/lib/oolite/showcase-artists'
 import { SOHO_HOUSE_SUGGESTED_QUESTIONS } from '@/lib/sohohouse/suggested-questions'
 import type { AgentState } from '@/types/memory-agent'
 
@@ -41,21 +45,6 @@ const BY_SLUG: Record<string, Partial<MemoryAgentBranding>> = {
     personality:
       'Warm, curious, and rooted in Miami’s contemporary art community—concise, never stiff, and always grounded in real records.',
     tagline: 'A conversational guide to our network and programs.',
-    suggestedQuestions: [
-      'What should visitors see at Oolite this week?',
-      'What are the 2027 open calls?',
-      'How do I book Digital Lab workshops or consulting?',
-      "Tell me about Oolite's new campus in Little River.",
-      'Who designed the new Oolite Arts campus?',
-      'Tell me about Mark Delmont.',
-      'Tell me about Shayla Marshall.',
-      'Tell me about Ricardo E. Zulueta.',
-      'Tell me about Leo Castaneda.',
-      'Tell me about the Youth Artist Residency.',
-      'Who are the 2026 Studio Residents?',
-      'Who are Oolite artists working with digital media, software, film, or interactive installation?',
-      'What should go on the smart sign today?',
-    ],
     pulseCopy: {
       searching: {
         title: 'Searching…',
@@ -102,11 +91,7 @@ const BY_SLUG: Record<string, Partial<MemoryAgentBranding>> = {
     agentDisplayName: 'DCC',
     personality: 'Forward-looking and network-savvy—comfortable with digital practice and pilot programs.',
     tagline: 'Conversational access to DCC network and artist data (when connected to Airtable).',
-    suggestedQuestions: [
-      'Which artists in the pilot work with born-digital or networked practice?',
-      'Who has experience with public screens or documentation?',
-      'Recommend participants for a clinic on websites and visibility.',
-    ],
+    suggestedQuestions: dccInstitutionalMemorySuggestedQuestions(),
   },
   sohohouse: {
     orgName: 'Soho House',
@@ -140,6 +125,15 @@ export function getMemoryAgentBranding(orgSlug: string): MemoryAgentBranding {
   const orgName = partial.orgName ?? tenant?.name ?? slug
   const agentName =
     partial.agentName ?? orgName.split(' ')[0] ?? orgName
+  const suggestedQuestions =
+    slug === 'oolite'
+      ? mergeAppSuggestedQuestions(
+          ooliteInstitutionalMemorySuggestedQuestions(),
+          showcaseArtistSuggestedQuestions()
+        )
+      : slug === 'dcc'
+        ? dccInstitutionalMemorySuggestedQuestions()
+        : (partial.suggestedQuestions ?? DEFAULT_SUGGESTED)
   return {
     orgName,
     productTitle: partial.productTitle ?? 'Institutional Memory',
@@ -149,7 +143,7 @@ export function getMemoryAgentBranding(orgSlug: string): MemoryAgentBranding {
     tagline:
       partial.tagline ??
       'A conversational guide to our network and programs.',
-    suggestedQuestions: partial.suggestedQuestions ?? DEFAULT_SUGGESTED,
+    suggestedQuestions,
     inputPlaceholder: partial.inputPlaceholder ?? DEFAULT_INPUT_PLACEHOLDER,
     pulseCopy: partial.pulseCopy,
   }

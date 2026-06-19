@@ -85,6 +85,8 @@ dist
 public
 !public/docs/
 !public/docs/**
+!public/marketing/edgezones/
+!public/marketing/edgezones/**
 
 # Storybook build outputs
 .out

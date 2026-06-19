@@ -1,4 +1,4 @@
-import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/suggested-question-handoff'
+import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/normalize-suggested-question-key'
 import type { MemoryAgentGalleryImage } from '@/types/memory-agent'
 import { OOLITE_SHOWCASE_PUBLIC_DIRECTORY_RECORD_IDS } from '@/lib/oolite/airtable-recognitions-config'
 import type { OolitePublicDirectoryProfile } from '@/lib/oolite/public-directory-profiles'

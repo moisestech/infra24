@@ -15,6 +15,7 @@ import { applyCapitalCampaignResponse } from '@/lib/memory-agent/apply-capital-c
 import { applyDigitalLabBookingResponse } from '@/lib/memory-agent/apply-digital-lab-booking-response'
 import { applyOpenCallsResponse } from '@/lib/memory-agent/apply-open-calls-response'
 import { applyShowcaseArtistResponse } from '@/lib/memory-agent/apply-showcase-artist-response'
+import { applyShowcaseExhibitionResponse } from '@/lib/memory-agent/apply-showcase-exhibition-response'
 import { applyShowcaseProgramResponse } from '@/lib/memory-agent/apply-showcase-program-response'
 import { enrichAlumniWithDirectoryArtists } from '@/lib/organization/artist-alumni-bridge'
 import { fetchDirectoryArtistsForOrgSlug } from '@/lib/organization/fetch-directory-artists'
@@ -627,27 +628,31 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
       result: applyDigitalLabBookingResponse({
         orgSlug,
         question: q,
-        result: applyShowcaseProgramResponse({
-        orgSlug,
-        question: q,
-        result: applyShowcaseArtistResponse({
+        result: applyShowcaseExhibitionResponse({
           orgSlug,
           question: q,
-          result: {
-            answer,
-            artists,
-            ...(events.length > 0 ? { events } : {}),
-            followUps: parsed.followUps.slice(0, 6),
-            dataGaps: dataGaps.slice(0, 8),
-            ...(structuredDataGaps.length > 0 ? { structuredDataGaps } : {}),
-            outputs: toClientOutputs(parsed.outputs, mode),
-            ...(signageDraft ? { signageDraft } : {}),
-            ...(contextInspector ? { contextInspector } : {}),
-          },
-          contextRows,
-          publicProfiles: publicDirectoryProfiles,
+          result: applyShowcaseProgramResponse({
+            orgSlug,
+            question: q,
+            result: applyShowcaseArtistResponse({
+              orgSlug,
+              question: q,
+              result: {
+                answer,
+                artists,
+                ...(events.length > 0 ? { events } : {}),
+                followUps: parsed.followUps.slice(0, 6),
+                dataGaps: dataGaps.slice(0, 8),
+                ...(structuredDataGaps.length > 0 ? { structuredDataGaps } : {}),
+                outputs: toClientOutputs(parsed.outputs, mode),
+                ...(signageDraft ? { signageDraft } : {}),
+                ...(contextInspector ? { contextInspector } : {}),
+              },
+              contextRows,
+              publicProfiles: publicDirectoryProfiles,
+            }),
+          }),
         }),
-      }),
       }),
     }),
   })

@@ -18,6 +18,7 @@ describe('open-calls-showcase', () => {
     'What are the 2027 open calls?',
     'How do I apply for The Ellies?',
     'How do I apply for the Studio Residency?',
+    'How do I apply for the Cinematic Residency?',
     'When is the application deadline for 2027 open calls?',
     'Where do I submit my grant report?',
   ])('matches open calls question: %s', (question) => {

@@ -1,4 +1,4 @@
-import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/suggested-question-handoff'
+import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/normalize-suggested-question-key'
 
 /** Ensure showcase / branding chips appear even when Airtable catalog is partial. */
 export function mergeAppSuggestedQuestions(

@@ -3,7 +3,7 @@
  * Use for workshops, consulting, and studio visits — Infra24 promotes; QGiv converts.
  */
 
-import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/suggested-question-handoff'
+import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/normalize-suggested-question-key'
 
 export const DIGITAL_LAB_QGIV_HUB_URL = 'https://secure.qgiv.com/for/digitallab/' as const
 

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 
 import { fetchOoliteAppSuggestedQuestions } from '@/lib/oolite/airtable-question-catalog'
-import { showcaseArtistSuggestedQuestions } from '@/lib/oolite/showcase-artists'
+import { mergeDccMemoryAgentSuggestedQuestions } from '@/lib/dcc/dcc-institutional-memory-chips'
+import { mergeOoliteMemoryAgentSuggestedQuestions } from '@/lib/oolite/oolite-institutional-memory-chips'
 import { getAirtableProgrammingStatusSummary } from '@/lib/memory-agent/airtable-programming'
 import { isAirtableProgrammingConfigured } from '@/lib/airtable/programming-config'
 import {
@@ -12,8 +13,6 @@ import {
   isProgrammingMemoryConfigured,
 } from '@/lib/memory-agent/config'
 import { getMemoryAgentBranding } from '@/lib/memory-agent/org-branding'
-import { mergeAppSuggestedQuestions } from '@/lib/memory-agent/suggested-questions'
-
 export const dynamic = 'force-dynamic'
 
 export async function GET(
@@ -30,10 +29,11 @@ export async function GET(
     if (catalog.ok && catalog.questions.length > 0) {
       suggestedQuestions = catalog.questions
     }
-    suggestedQuestions = mergeAppSuggestedQuestions(
-      suggestedQuestions,
-      showcaseArtistSuggestedQuestions()
-    )
+    suggestedQuestions = mergeOoliteMemoryAgentSuggestedQuestions(suggestedQuestions)
+  }
+
+  if (slug.trim().toLowerCase() === 'dcc') {
+    suggestedQuestions = mergeDccMemoryAgentSuggestedQuestions(suggestedQuestions)
   }
 
   const airtableProgrammingConfigured = isAirtableProgrammingConfigured(slug)

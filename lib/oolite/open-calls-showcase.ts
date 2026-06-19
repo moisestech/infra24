@@ -1,4 +1,4 @@
-import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/suggested-question-handoff'
+import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/normalize-suggested-question-key'
 import type { MemoryAgentEventCard } from '@/types/memory-agent'
 
 /** Public overview of 2027 Ellies & residency open calls */
@@ -227,6 +227,7 @@ export function matchOpenCallsQuestion(
     'how do i apply for the ellies',
     'how do i apply for the studio residency',
     'how do i apply for the home + away residency',
+    'how do i apply for the cinematic residency',
     'when is the application deadline for 2027 open calls',
     'where do i submit my grant report',
   ]

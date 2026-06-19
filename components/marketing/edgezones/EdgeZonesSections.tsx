@@ -1,30 +1,129 @@
+'use client'
+
 import Link from 'next/link'
 import type { EdgeZonesArtistProfile } from '@/lib/marketing/edgezones-artists'
 import { cn } from '@/lib/utils'
 
-function ArtistAvatar({ artist }: { artist: EdgeZonesArtistProfile }) {
-  const initials = artist.name
+export type EdgeZonesPortraitProps = {
+  name: string
+  imageUrl?: string
+  imageAlt?: string
+  imageFit?: 'cover' | 'contain'
+  size?: 'md' | 'lg'
+  className?: string
+}
+
+export function EdgeZonesPortrait({
+  name,
+  imageUrl,
+  imageAlt,
+  imageFit = 'cover',
+  size = 'md',
+  className,
+}: EdgeZonesPortraitProps) {
+  const initials = name
     .split(/\s+/)
     .slice(0, 2)
     .map((w) => w[0])
     .join('')
     .toUpperCase()
 
-  if (artist.imageUrl) {
+  const sizeClass = size === 'lg' ? 'h-24 w-24 text-base' : 'h-20 w-20 text-sm'
+
+  if (!imageUrl) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={artist.imageUrl}
-        alt=""
-        className="h-20 w-20 shrink-0 rounded-xl object-cover"
-      />
+      <div
+        className={cn(
+          'flex shrink-0 items-center justify-center rounded-xl bg-teal-100 font-semibold text-teal-900 dark:bg-teal-900/40 dark:text-teal-100',
+          sizeClass,
+          className
+        )}
+      >
+        {initials || '?'}
+      </div>
     )
   }
 
   return (
-    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-teal-100 text-sm font-semibold text-teal-900 dark:bg-teal-900/40 dark:text-teal-100">
-      {initials || '?'}
+    <div className={cn('relative shrink-0', sizeClass, className)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={imageUrl}
+        alt={imageAlt ?? name}
+        className={cn(
+          'h-full w-full rounded-xl bg-white object-center dark:bg-neutral-900',
+          imageFit === 'contain' ? 'object-contain p-2' : 'object-cover'
+        )}
+        onError={(event) => {
+          event.currentTarget.style.display = 'none'
+          const fallback = event.currentTarget.nextElementSibling
+          if (fallback instanceof HTMLElement) fallback.style.display = 'flex'
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 hidden items-center justify-center rounded-xl bg-teal-100 font-semibold text-teal-900 dark:bg-teal-900/40 dark:text-teal-100"
+      >
+        {initials || '?'}
+      </div>
     </div>
+  )
+}
+
+function ArtistAvatar({ artist }: { artist: EdgeZonesArtistProfile }) {
+  return (
+    <EdgeZonesPortrait
+      name={artist.name}
+      imageUrl={artist.imageUrl}
+      imageAlt={artist.name}
+      imageFit="cover"
+    />
+  )
+}
+
+export type EdgeZonesRoleCardProps = {
+  name: string
+  role: string
+  description: string
+  imageUrl: string
+  imageAlt: string
+  imageFit: 'cover' | 'contain'
+  className?: string
+}
+
+export function EdgeZonesRoleCard({
+  name,
+  role,
+  description,
+  imageUrl,
+  imageAlt,
+  imageFit,
+  className,
+}: EdgeZonesRoleCardProps) {
+  return (
+    <li
+      className={cn(
+        'rounded-xl border border-[var(--cdc-border)] bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900',
+        className
+      )}
+    >
+      <div className="flex gap-4">
+        <EdgeZonesPortrait
+          name={name}
+          imageUrl={imageUrl}
+          imageAlt={imageAlt}
+          imageFit={imageFit}
+          size="lg"
+        />
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{name}</p>
+          <p className="mt-1 text-xs font-medium uppercase tracking-wide text-[var(--cdc-teal)]">
+            {role}
+          </p>
+          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">{description}</p>
+        </div>
+      </div>
+    </li>
   )
 }
 

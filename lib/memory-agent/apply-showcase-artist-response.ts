@@ -86,7 +86,27 @@ export function applyShowcaseArtistResponse(args: {
   if (!showcase) return args.result
 
   const profile = findPublicProfileForShowcase(args.publicProfiles, showcase)
-  if (!profile) return args.result
+  if (!profile) {
+    const galleryImages = showcase.galleryCaptions
+    return {
+      ...args.result,
+      answer: showcase.spokenAnswer,
+      spokenAnswer: showcase.spokenAnswer,
+      artists: [
+        {
+          id: `showcase_${showcase.key}`,
+          name: showcase.displayName,
+          reason: 'Showcase artist profile from Oolite institutional memory.',
+          confidence: 'high',
+          galleryImages,
+          galleryImageUrls: galleryImages.map((g) => g.url),
+          bioSnippet: showcase.spokenAnswer,
+        },
+      ],
+      followUps: showcase.followUps,
+      dataGaps: [],
+    }
+  }
 
   const row =
     findAlumniRowForShowcase(args.contextRows, showcase) ??
@@ -107,5 +127,6 @@ export function applyShowcaseArtistResponse(args: {
     spokenAnswer: showcase.spokenAnswer,
     artists: artists.slice(0, 4),
     followUps: showcase.followUps,
+    dataGaps: [],
   }
 }

@@ -1,4 +1,4 @@
-import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/suggested-question-handoff'
+import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/normalize-suggested-question-key'
 import type { MemoryAgentGalleryImage } from '@/types/memory-agent'
 
 const CLOUDINARY = 'https://res.cloudinary.com/dkod1at3i/image/upload'

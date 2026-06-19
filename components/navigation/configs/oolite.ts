@@ -17,7 +17,6 @@ import {
   Monitor,
   MessageSquare,
   Sparkles,
-  HandHeart,
 } from 'lucide-react'
 import { NavigationConfig } from '../types'
 
@@ -71,7 +70,7 @@ export const ooliteConfig: NavigationConfig = {
       {
         name: 'Get Involved',
         href: '/o/oolite/get-involved',
-        icon: HandHeart,
+        icon: Users,
         description: 'Apply, book, support, and see what\'s on view',
         category: 'user'
       },

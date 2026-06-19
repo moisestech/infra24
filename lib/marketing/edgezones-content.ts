@@ -1,6 +1,18 @@
 /** Copy + structure for DCC Miami × Edge Zones partnership portal (/edgezones). */
 
+import { TOUCHING_GRASS_EXHIBITION } from '@/lib/marketing/edgezones-exhibition'
+import { partnershipPortraitFor } from '@/lib/marketing/edgezones-network-index'
+
 export type EdgeZonesModuleStatus = 'live' | 'coming-soon'
+
+export type EdgeZonesPortalRole = {
+  name: string
+  role: string
+  description: string
+  imageUrl: string
+  imageAlt: string
+  imageFit: 'cover' | 'contain'
+}
 
 export type EdgeZonesSupportModule = {
   id: string
@@ -22,24 +34,42 @@ export const edgeZonesPortal = {
       name: 'Edge Zones',
       role: 'Physical host space',
       description: 'Gallery, programming, and on-site experience.',
+      ...partnershipPortraitFor('Edge Zones')!,
     },
     {
       name: 'Jordan Horton',
       role: 'Curatorial vision',
       description: 'Artistic direction and exhibition framing.',
+      ...partnershipPortraitFor('Jordan Horton')!,
     },
     {
       name: 'DCC Miami',
       role: 'Digital platform & support layer',
       description:
         'Digital publishing, artist visibility, public programs, documentation, and infrastructure around the show.',
+      ...partnershipPortraitFor('DCC Miami')!,
     },
-  ],
+  ] satisfies EdgeZonesPortalRole[],
   primaryCtas: [
+    { label: 'About the exhibition', href: '#exhibition' },
     { label: 'Explore artists', href: '#artists' },
     { label: 'View programs', href: '#programs' },
     { label: 'Join the map', href: '#join' },
   ],
+  exhibition: {
+    id: 'exhibition',
+    workingTitle: TOUCHING_GRASS_EXHIBITION.workingTitle,
+    titleStatus: TOUCHING_GRASS_EXHIBITION.titleStatus,
+    curator: TOUCHING_GRASS_EXHIBITION.curator,
+    curatorStatementQuote: TOUCHING_GRASS_EXHIBITION.curatorStatementQuote,
+    curatorImageUrl: TOUCHING_GRASS_EXHIBITION.curatorImageUrl,
+    blurb: TOUCHING_GRASS_EXHIBITION.curatorialBlurb,
+    dates: TOUCHING_GRASS_EXHIBITION.dates,
+    location: TOUCHING_GRASS_EXHIBITION.location,
+    artistNames: TOUCHING_GRASS_EXHIBITION.artistNames,
+    partnership: TOUCHING_GRASS_EXHIBITION.partnership,
+    partnershipImages: TOUCHING_GRASS_EXHIBITION.partnershipImages,
+  },
   sections: {
     support: {
       id: 'support',
@@ -169,6 +199,7 @@ export const edgeZonesPortal = {
 } as const
 
 export const edgeZonesNavAnchors = [
+  { id: 'exhibition', label: 'Exhibition' },
   { id: 'artists', label: 'Artists' },
   { id: 'support', label: 'Support' },
   { id: 'vision', label: 'Vision' },

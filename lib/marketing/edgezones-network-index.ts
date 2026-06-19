@@ -4,7 +4,51 @@
  * Airtable Seed Candidates override matching entries by name when configured.
  */
 
+import { DCC_MIAMI_LOGO_URL_LIGHT } from '@/lib/marketing/cdc-brand'
 import type { EdgeZonesArtistProfile } from '@/lib/marketing/edgezones-artists'
+
+/** Edge Zones Gallery mark — replace with official logo in Cloudinary when available. */
+export const EDGE_ZONES_GALLERY_MARK_URL = '/marketing/edgezones/edge-zones-gallery-mark.png' as const
+
+/**
+ * Jordan Horton portrait — upload to this Cloudinary path when available.
+ * Falls back to initials in UI when the asset 404s.
+ */
+export const JORDAN_HORTON_PORTRAIT_URL =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488666/dccmiami/portraits/jordan-horton_o8igs7.jpg' as const
+
+export type EdgeZonesPartnershipPortrait = {
+  name: string
+  imageUrl: string
+  imageAlt: string
+  /** Logos use contain; portraits use cover. */
+  imageFit?: 'cover' | 'contain'
+}
+
+export const edgeZonesPartnershipPortraits: EdgeZonesPartnershipPortrait[] = [
+  {
+    name: 'Edge Zones',
+    imageUrl: EDGE_ZONES_GALLERY_MARK_URL,
+    imageAlt: 'Edge Zones Gallery',
+    imageFit: 'contain',
+  },
+  {
+    name: 'Jordan Horton',
+    imageUrl: JORDAN_HORTON_PORTRAIT_URL,
+    imageAlt: 'Jordan Horton, curator',
+    imageFit: 'cover',
+  },
+  {
+    name: 'DCC Miami',
+    imageUrl: DCC_MIAMI_LOGO_URL_LIGHT,
+    imageAlt: 'DCC.miami — Digital Culture Center Miami',
+    imageFit: 'contain',
+  },
+]
+
+export function partnershipPortraitFor(name: string): EdgeZonesPartnershipPortrait | undefined {
+  return edgeZonesPartnershipPortraits.find((entry) => entry.name === name)
+}
 
 export type EdgeZonesNetworkIndexEntry = Omit<EdgeZonesArtistProfile, 'id' | 'practiceTags'> & {
   /** Stable key for merge with Airtable */
@@ -23,6 +67,15 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     bio: 'Miami gallery and programming space hosting the partnership exhibition and on-site public programs.',
     instagram: 'edgezonesgallery',
     website: 'edgezones.gallery',
+    imageUrl: EDGE_ZONES_GALLERY_MARK_URL,
+  },
+  {
+    slug: 'jordan-horton',
+    name: 'Jordan Horton',
+    roleType: 'Curator',
+    bio: 'Curator and art historian whose work focuses on internet subcultures, sonic and visual aesthetics, and institutional critique.',
+    instagram: 'horton.exe',
+    imageUrl: JORDAN_HORTON_PORTRAIT_URL,
   },
   {
     slug: 'adrienne-gionta',

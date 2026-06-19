@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import { PageHero, Section } from '@/components/marketing/cdc'
 import { EdgeZonesAttributionSeed } from '@/components/marketing/edgezones/EdgeZonesAttributionSeed'
 import { EdgeZonesJoinSection } from '@/components/marketing/edgezones/EdgeZonesJoinSection'
-import { EdgeZonesAnchorNav, EdgeZonesArtistGrid } from '@/components/marketing/edgezones/EdgeZonesSections'
+import { EdgeZonesAnchorNav, EdgeZonesArtistGrid, EdgeZonesPortrait, EdgeZonesRoleCard } from '@/components/marketing/edgezones/EdgeZonesSections'
 import { DccSignupAttributionCapture } from '@/components/dcc/signup/DccSignupAttributionCapture'
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes'
 import { cdcPageMetadata } from '@/lib/cdc/metadata'
@@ -22,6 +22,7 @@ export const metadata: Metadata = {
 
 export default async function EdgeZonesPortalPage() {
   const { artists, filterNote } = await fetchEdgeZonesArtists()
+  const exhibitionArtists = artists.filter((artist) => artist.roleType !== 'Curator')
   const { sections } = edgeZonesPortal
 
   return (
@@ -31,7 +32,7 @@ export default async function EdgeZonesPortalPage() {
         <EdgeZonesAttributionSeed />
       </Suspense>
       <PageHero
-        eyebrow={edgeZonesPortal.eyebrow}
+        eyebrow={`${edgeZonesPortal.eyebrow} · ${edgeZonesPortal.exhibition.workingTitle} (${edgeZonesPortal.exhibition.titleStatus})`}
         title={edgeZonesPortal.title}
         description={`${edgeZonesPortal.subtitle}. ${edgeZonesPortal.mission}`}
         breadcrumbs={getCdcBreadcrumbs(path)}
@@ -43,13 +44,7 @@ export default async function EdgeZonesPortalPage() {
           <div className="flex flex-col gap-6 py-8 sm:flex-row sm:items-end sm:justify-between">
             <ul className="grid gap-4 sm:grid-cols-3 sm:gap-6">
               {edgeZonesPortal.roles.map((role) => (
-                <li key={role.name} className="rounded-xl border border-[var(--cdc-border)] bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-                  <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{role.name}</p>
-                  <p className="mt-1 text-xs font-medium uppercase tracking-wide text-[var(--cdc-teal)]">
-                    {role.role}
-                  </p>
-                  <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">{role.description}</p>
-                </li>
+                <EdgeZonesRoleCard key={role.name} {...role} />
               ))}
             </ul>
           </div>
@@ -83,15 +78,75 @@ export default async function EdgeZonesPortalPage() {
         <EdgeZonesAnchorNav items={edgeZonesNavAnchors} />
       </div>
 
-      <Section id="artists" className="scroll-mt-36 bg-white dark:bg-neutral-950">
+      <Section id="exhibition" className="scroll-mt-36 bg-white dark:bg-neutral-950">
+        <div className="max-w-3xl">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+              {edgeZonesPortal.exhibition.workingTitle}
+            </h2>
+            <span className="rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-600 dark:border-neutral-600 dark:text-neutral-400">
+              {edgeZonesPortal.exhibition.titleStatus}
+            </span>
+          </div>
+          <p className="mt-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            Curated by {edgeZonesPortal.exhibition.curator} · {edgeZonesPortal.exhibition.location}
+          </p>
+          <p className="mt-2 inline-flex rounded-full border border-neutral-300 px-3 py-1 text-xs font-medium text-neutral-600 dark:border-neutral-700 dark:text-neutral-400">
+            {edgeZonesPortal.exhibition.dates}
+          </p>
+        </div>
+
+        <figure className="mt-8 max-w-3xl">
+          <div className="flex gap-4">
+            <EdgeZonesPortrait
+              name={edgeZonesPortal.exhibition.curator}
+              imageUrl={edgeZonesPortal.exhibition.curatorImageUrl}
+              imageAlt={`${edgeZonesPortal.exhibition.curator}, curator`}
+              imageFit="cover"
+              size="lg"
+            />
+            <figcaption className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--cdc-teal)]">
+                Curator&apos;s statement
+              </p>
+              <p className="mt-1 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                {edgeZonesPortal.exhibition.curator}
+              </p>
+            </figcaption>
+          </div>
+          <blockquote className="mt-6 border-l-4 border-[var(--cdc-teal)] pl-5 text-base leading-relaxed text-neutral-700 dark:text-neutral-300">
+            <p>&ldquo;{edgeZonesPortal.exhibition.curatorStatementQuote}&rdquo;</p>
+          </blockquote>
+        </figure>
+
+        <ul className="mt-10 grid gap-4 sm:grid-cols-3">
+          {edgeZonesPortal.roles.map((role) => (
+            <EdgeZonesRoleCard key={`exhibition-${role.name}`} {...role} className="bg-[#fafafa] dark:bg-neutral-900" />
+          ))}
+        </ul>
+
+        <p className="mt-8 max-w-3xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+          Featuring {edgeZonesPortal.exhibition.artistNames.join(', ')}.
+        </p>
+
+        <a
+          href="#artists"
+          className="mt-8 inline-flex items-center rounded-full bg-[var(--cdc-teal)] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+        >
+          Meet the artists
+        </a>
+      </Section>
+
+      <Section id="artists" className="scroll-mt-36 bg-[#fafafa] dark:bg-neutral-950">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
               Network index
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
-              Edge Zones Gallery and participating artists{filterNote ? ` (${filterNote})` : ''}. Profiles are
-              configured in the network index data file and enriched from Airtable when available.
+              Artists in {edgeZonesPortal.exhibition.workingTitle}
+              {filterNote ? ` (${filterNote})` : ''}. Profiles are configured in the network index data
+              file and enriched from Airtable when available.
             </p>
           </div>
           <Link
@@ -102,11 +157,11 @@ export default async function EdgeZonesPortalPage() {
           </Link>
         </div>
         <div className="mt-8">
-          <EdgeZonesArtistGrid artists={artists} emptyMessage="Network index profiles are being configured." />
+          <EdgeZonesArtistGrid artists={exhibitionArtists} emptyMessage="Network index profiles are being configured." />
         </div>
       </Section>
 
-      <Section id="support" className="scroll-mt-36 bg-[#fafafa] dark:bg-neutral-950">
+      <Section id="support" className="scroll-mt-36 bg-white dark:bg-neutral-950">
         <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           {sections.support.title}
         </h2>
@@ -144,7 +199,7 @@ export default async function EdgeZonesPortalPage() {
         </ul>
       </Section>
 
-      <Section id="vision" className="scroll-mt-36 bg-white dark:bg-neutral-950">
+      <Section id="vision" className="scroll-mt-36 bg-[#fafafa] dark:bg-neutral-950">
         <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
           {sections.vision.title}
         </h2>

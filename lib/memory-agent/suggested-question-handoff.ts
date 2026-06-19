@@ -1,5 +1,8 @@
+import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/normalize-suggested-question-key'
 import type { MemoryAgentBranding } from '@/lib/memory-agent/org-branding'
 import { getMemoryAgentBranding } from '@/lib/memory-agent/org-branding'
+
+export { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/normalize-suggested-question-key'
 
 export type SuggestedQuestionHandoffLines = {
   welcomeLine: string
@@ -9,15 +12,6 @@ export type SuggestedQuestionHandoffLines = {
 /** Pause between staged intro lines (ms). */
 export const SUGGESTED_QUESTION_HANDOFF_WELCOME_DELAY_MS = 900
 export const SUGGESTED_QUESTION_HANDOFF_PREFACE_DELAY_MS = 750
-
-/** Normalize question text for handoff lookup. */
-export function normalizeSuggestedQuestionKey(question: string): string {
-  return question
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .replace(/[?!.…]+$/u, '')
-}
 
 function welcomeForHandoff(branding: MemoryAgentBranding): string {
   return `Hello! Welcome to ${branding.orgName}. I'm ${branding.agentName}.`
@@ -42,6 +36,8 @@ const PREFACE_BY_ORG: Record<string, Record<string, string>> = {
       "I'll pull up Ricardo E. Zulueta's profile — his studio, digital practice, and artwork gallery.",
     'tell me about leo castaneda':
       "I'll pull up Leo Castaneda's profile — his game-based work, 2018/2019 residency, and artwork gallery.",
+    'tell me about the from within exhibition':
+      "I'll pull up From Within — the Youth Artist Residents exhibition at the Oolite Arts Vitrine.",
     'tell me about the youth artist residency':
       "I'll pull up the Youth Artist Residency — the inaugural cohort, mentor, and exhibition details.",
     'which alumni are photographers':
@@ -70,6 +66,10 @@ const PREFACE_BY_ORG: Record<string, Record<string, string>> = {
       "I'll walk through the campus program — studios, exhibitions, fabrication, classrooms, and public spaces.",
     'what is the timeline for the capital project':
       "I'll pull up the latest on permitting, contractor bids, and groundbreaking timing.",
+  },
+  dcc: {
+    'tell me about the touching grass exhibition':
+      "I'll pull up Touching Grass — Jordan Horton's exhibition at Edge Zones, supported by DCC Miami.",
   },
   sohohouse: {
     'what should members experience this week':

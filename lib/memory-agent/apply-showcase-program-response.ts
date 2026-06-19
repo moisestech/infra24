@@ -22,5 +22,6 @@ export function applyShowcaseProgramResponse(args: {
     spokenAnswer: program.spokenAnswer,
     artists: artists.slice(0, 6),
     followUps: program.followUps,
+    dataGaps: [],
   }
 }
