@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { SaturdayLabQrBlock } from '@/components/workshop/SaturdayLabQrBlock'
 import { SaturdayLabMarkdown, SaturdayLabShell } from '@/components/workshop/SaturdayLabShell'
-import { getSaturdayLabHandoutAvailability } from '@/lib/workshops/saturday-lab-public-assets'
+import { getSaturdayLabHandoutAvailability, SATURDAY_LAB_HANDOUT_ASSETS } from '@/lib/workshops/saturday-lab-public-assets'
 import { loadSaturdayLabDoc, SATURDAY_LAB_STARTER_ZIP } from '@/lib/workshops/saturday-lab-content'
 
 export const metadata: Metadata = {

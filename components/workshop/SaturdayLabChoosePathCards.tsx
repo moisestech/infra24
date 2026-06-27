@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Globe, Monitor, FolderCode } from 'lucide-react'
+import { Globe, Monitor, FolderOpen } from 'lucide-react'
 import { SATURDAY_LAB_STARTER_ZIP } from '@/lib/workshops/saturday-lab-public-assets'
 import { SATURDAY_LAB_CHEAT_SHEET_IMAGES } from '@/lib/workshops/saturday-lab-media'
 
@@ -28,7 +28,7 @@ const PATHS = [
   {
     title: 'Vibe Level 2–3',
     subtitle: 'Replit · Cursor',
-    icon: FolderCode,
+    icon: FolderOpen,
     href: '/workshop/saturday-lab/vibe-coding',
     printHref: '/workshop/saturday-lab/print/vibe-coding',
     cheatSheetImage: SATURDAY_LAB_CHEAT_SHEET_IMAGES.vibeCoding,
