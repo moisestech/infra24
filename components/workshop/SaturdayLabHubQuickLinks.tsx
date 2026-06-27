@@ -1,61 +1,65 @@
 import Link from 'next/link'
-import {
-  BookOpen,
-  Download,
-  LayoutTemplate,
-  Link2,
-  Map,
-  Sparkles,
-  ClipboardList,
-} from 'lucide-react'
+import { SaturdayLabIcon } from '@/components/workshop/SaturdayLabIcon'
 import { SATURDAY_LAB_FACILITATOR_HREF, SATURDAY_LAB_STARTER_ZIP } from '@/lib/workshops/saturday-lab-public-assets'
+import type { SaturdayLabIconKey } from '@/lib/workshops/saturday-lab-media'
 
-const LINKS = [
-  { href: '/workshop/saturday-lab', label: 'Start Here', icon: Map, description: 'Choose your output by 1 PM' },
+const LINKS: {
+  href: string
+  label: string
+  description: string
+  icon: SaturdayLabIconKey
+  download?: boolean
+}[] = [
+  {
+    href: '/workshop/saturday-lab',
+    label: 'Start Here',
+    icon: 'path',
+    description: 'Choose your output by 1 PM',
+  },
   {
     href: '/workshop/saturday-lab/beginner',
     label: 'Beginner Website',
-    icon: LayoutTemplate,
+    icon: 'homepage',
     description: 'Squarespace, Wix, Cargo, prompts',
   },
   {
     href: '/workshop/saturday-lab/vibe-coding',
     label: 'Vibe Coding',
-    icon: Sparkles,
+    icon: 'code',
     description: 'CodePen, Replit, Cursor levels',
   },
   {
     href: '/workshop/saturday-lab/beginner',
     label: 'Full Beginner Packet',
-    icon: BookOpen,
+    icon: 'sitemap',
     description: 'Longer guide with exercises',
   },
   {
     href: '/workshop/saturday-lab/vibe-coding',
     label: 'Full Vibe Packet',
-    icon: BookOpen,
+    icon: 'prompt',
     description: 'Glossary, prompts, tool ladder',
   },
   {
     href: SATURDAY_LAB_STARTER_ZIP,
     label: 'Starter Template',
-    icon: Download,
+    icon: 'files',
     description: 'Download zip for Cursor / Replit',
     download: true,
   },
   {
     href: '/workshop/saturday-lab/resources',
     label: 'Links & Tutorials',
-    icon: Link2,
+    icon: 'ai',
     description: 'YouTube, chapters, prompts library',
   },
   {
     href: '/workshop/saturday-lab/exit-ticket',
     label: 'Exit Ticket',
-    icon: ClipboardList,
+    icon: 'goal',
     description: 'What you made + what you need next',
   },
-] as const
+]
 
 export function SaturdayLabHubQuickLinks() {
   return (
@@ -65,13 +69,12 @@ export function SaturdayLabHubQuickLinks() {
       </h2>
       <div className="grid gap-3 sm:grid-cols-2">
         {LINKS.map((item) => {
-          const Icon = item.icon
           const className =
             'flex gap-3 rounded-lg border border-neutral-200 bg-white p-4 transition hover:border-neutral-400 hover:shadow-sm'
           const inner = (
             <>
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-neutral-100">
-                <Icon className="h-5 w-5 text-neutral-700" aria-hidden />
+                <SaturdayLabIcon icon={item.icon} label={item.label} size={22} />
               </span>
               <span>
                 <span className="font-semibold text-neutral-950">{item.label}</span>
@@ -79,7 +82,7 @@ export function SaturdayLabHubQuickLinks() {
               </span>
             </>
           )
-          if ('download' in item && item.download) {
+          if (item.download) {
             return (
               <a key={item.label} href={item.href} download className={className}>
                 {inner}

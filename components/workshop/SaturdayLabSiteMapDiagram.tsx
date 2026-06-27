@@ -1,7 +1,16 @@
+import { SaturdayLabIcon } from '@/components/workshop/SaturdayLabIcon'
+import type { SaturdayLabIconKey } from '@/lib/workshops/saturday-lab-media'
+
+const SITE_PAGES: { label: string; icon: SaturdayLabIconKey }[] = [
+  { label: 'Home', icon: 'homepage' },
+  { label: 'Work', icon: 'projects' },
+  { label: 'About', icon: 'about' },
+  { label: 'CV / Press', icon: 'cv' },
+  { label: 'Contact', icon: 'contact' },
+]
+
 /** Simple site map + same-artist-two-ways diagram for Saturday Lab demo. */
 export function SaturdayLabSiteMapDiagram() {
-  const pages = ['Home', 'Work', 'About', 'CV / Press', 'Contact']
-
   return (
     <section className="space-y-6">
       <div>
@@ -9,12 +18,13 @@ export function SaturdayLabSiteMapDiagram() {
           Site map (everyone)
         </h2>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          {pages.map((page, i) => (
-            <span key={page} className="flex items-center gap-2">
-              <span className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-900">
-                {page}
+          {SITE_PAGES.map((page, i) => (
+            <span key={page.label} className="flex items-center gap-2">
+              <span className="flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-900">
+                <SaturdayLabIcon icon={page.icon} label={page.label} size={18} />
+                {page.label}
               </span>
-              {i < pages.length - 1 ? (
+              {i < SITE_PAGES.length - 1 ? (
                 <span className="text-neutral-400" aria-hidden>
                   →
                 </span>
@@ -42,16 +52,30 @@ export function SaturdayLabSiteMapDiagram() {
             </thead>
             <tbody className="text-neutral-700">
               {[
-                ['Sitemap', 'HTML sections'],
-                ['Homepage intro', 'Hero section'],
-                ['Project list', 'Project grid'],
-                ['About / bio', 'About section'],
-                ['Contact info', 'Contact link'],
-                ['Platform choice', 'Publish path (CodePen → Replit → Pages)'],
-              ].map(([beginner, vibe]) => (
+                ['Sitemap', 'sitemap', 'HTML sections', 'code'],
+                ['Homepage intro', 'homepage', 'Hero section', 'homepage'],
+                ['Project list', 'projects', 'Project grid', 'projects'],
+                ['About / bio', 'about', 'About section', 'about'],
+                ['Contact info', 'contact', 'Contact link', 'contact'],
+                ['Platform choice', 'path', 'Publish path (CodePen → Replit → Pages)', 'publish'],
+              ].map(([beginner, beginnerIcon, vibe, vibeIcon]) => (
                 <tr key={beginner} className="border-b border-neutral-50 last:border-0">
-                  <td className="px-4 py-2">{beginner}</td>
-                  <td className="px-4 py-2">{vibe}</td>
+                  <td className="px-4 py-2">
+                    <span className="inline-flex items-center gap-2">
+                      <SaturdayLabIcon
+                        icon={beginnerIcon as SaturdayLabIconKey}
+                        label={beginner}
+                        size={16}
+                      />
+                      {beginner}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    <span className="inline-flex items-center gap-2">
+                      <SaturdayLabIcon icon={vibeIcon as SaturdayLabIconKey} label={vibe} size={16} />
+                      {vibe}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { SaturdayLabIcon } from '@/components/workshop/SaturdayLabIcon'
 import { SATURDAY_LAB_HUB_PATH, SATURDAY_LAB_QR_IMAGE } from '@/lib/workshops/saturday-lab-public-assets'
 
 type SaturdayLabQrBlockProps = {
@@ -20,7 +21,10 @@ export function SaturdayLabQrBlock({ className = '', compact = false }: Saturday
         unoptimized
       />
       <div className="text-sm text-neutral-700">
-        <p className="font-medium text-neutral-950">Scan for the full hub</p>
+        <p className="flex items-center justify-center gap-2 font-medium text-neutral-950 sm:justify-start">
+          <SaturdayLabIcon icon="qr" label="Scan QR" size={18} />
+          Scan for the full hub
+        </p>
         <p className="mt-1">
           Packets, prompts, starter template download, and continue-after links.
         </p>

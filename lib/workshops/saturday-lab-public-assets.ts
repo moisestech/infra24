@@ -19,12 +19,16 @@ export const SATURDAY_LAB_HUB_PATH = '/workshop/saturday-lab' as const
 export const SATURDAY_LAB_FACILITATOR_HREF = '/workshop/saturday-lab/facilitator' as const
 
 export {
+  SATURDAY_LAB_BANNERS,
   SATURDAY_LAB_CHEAT_SHEET_IMAGES,
   SATURDAY_LAB_CHEAT_SHEET_PDFS,
+  SATURDAY_LAB_ICONS,
   SATURDAY_LAB_TOOL_LOGOS,
   SATURDAY_LAB_TOOL_SCREENSHOTS,
   SATURDAY_LAB_VIBE_TOOLS,
 } from '@/lib/workshops/saturday-lab-media'
+
+export type { SaturdayLabBannerKey, SaturdayLabIconKey } from '@/lib/workshops/saturday-lab-media'
 
 export type SaturdayLabHandoutAssetKey = keyof typeof SATURDAY_LAB_HANDOUT_ASSETS
 

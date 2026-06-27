@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { SATURDAY_LAB_CHEAT_SHEET_IMAGES, SATURDAY_LAB_CHEAT_SHEET_PDFS } from '@/lib/workshops/saturday-lab-media'
+import { SATURDAY_LAB_CHEAT_SHEET_IMAGES, SATURDAY_LAB_CHEAT_SHEET_PDFS, SATURDAY_LAB_BANNERS, SATURDAY_LAB_ICONS } from '@/lib/workshops/saturday-lab-media'
 
 const CONTENT_DIR = path.join(process.cwd(), 'content/workshops/saturday-lab')
 
@@ -28,6 +28,18 @@ describe('saturday-lab content files', () => {
     expect(SATURDAY_LAB_CHEAT_SHEET_IMAGES.vibeCoding).toContain('vibe_coding_cheat_sheet_for_artists')
     expect(SATURDAY_LAB_CHEAT_SHEET_PDFS.beginner).toContain('Beginner_Website_Cheat_Sheet')
     expect(SATURDAY_LAB_CHEAT_SHEET_PDFS.vibeCoding).toContain('Vibe_Coding_Cheat_Sheet')
+  })
+
+  it('cloudinary icon URLs are configured', () => {
+    expect(Object.keys(SATURDAY_LAB_ICONS)).toHaveLength(16)
+    expect(SATURDAY_LAB_ICONS.sitemap).toContain('icon-1-sitemap')
+    expect(SATURDAY_LAB_ICONS.goal).toContain('icon-16-goal')
+  })
+
+  it('cloudinary banner URLs are configured', () => {
+    expect(Object.keys(SATURDAY_LAB_BANNERS)).toHaveLength(7)
+    expect(SATURDAY_LAB_BANNERS.startHere).toContain('01_start-here-two-paths')
+    expect(SATURDAY_LAB_BANNERS.exitTicket).toContain('07_exit-ticket-next-steps')
   })
 
   it('uses canonical vibe chapter URLs without /chapters/', () => {

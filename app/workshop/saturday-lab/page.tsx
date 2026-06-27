@@ -1,11 +1,14 @@
 import type { Metadata } from 'next'
+import { SaturdayLabBanner } from '@/components/workshop/SaturdayLabBanner'
 import { SaturdayLabCheatSheetDownloads } from '@/components/workshop/SaturdayLabCheatSheetDownloads'
 import { SaturdayLabChoosePathCards } from '@/components/workshop/SaturdayLabChoosePathCards'
 import { SaturdayLabHubQuickLinks } from '@/components/workshop/SaturdayLabHubQuickLinks'
+import { SaturdayLabOutputGoals } from '@/components/workshop/SaturdayLabOutputGoals'
 import { SaturdayLabQrBlock } from '@/components/workshop/SaturdayLabQrBlock'
 import { SaturdayLabShell } from '@/components/workshop/SaturdayLabShell'
 import { SaturdayLabSiteMapDiagram } from '@/components/workshop/SaturdayLabSiteMapDiagram'
-import { dccSiteMeta } from '@/lib/marketing/content'
+import { SaturdayLabStarterDownload } from '@/components/workshop/SaturdayLabStarterDownload'
+import { SATURDAY_LAB_BANNERS } from '@/lib/workshops/saturday-lab-media'
 import { getSaturdayLabHandoutAvailability } from '@/lib/workshops/saturday-lab-public-assets'
 
 export const metadata: Metadata = {
@@ -13,6 +16,13 @@ export const metadata: Metadata = {
   description:
     'Scan the QR code. Choose beginner website or vibe coding. Leave with one clear next step and one working artifact.',
   alternates: { canonical: '/workshop/saturday-lab' },
+  openGraph: {
+    title: 'Saturday Lab — Digital Presence Lab',
+    description:
+      'Scan the QR code. Choose beginner website or vibe coding. Leave with one clear next step and one working artifact.',
+    url: '/workshop/saturday-lab',
+    images: [{ url: SATURDAY_LAB_BANNERS.startHere, alt: 'Saturday Lab — start here' }],
+  },
 }
 
 export default function SaturdayLabLandingPage() {
@@ -21,18 +31,11 @@ export default function SaturdayLabLandingPage() {
   return (
     <SaturdayLabShell currentPath="/workshop/saturday-lab" showPrint={false}>
       <div className="space-y-10">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-            Digital Lab · Scan QR or bookmark this page
-          </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-neutral-950 md:text-4xl">
-            Saturday Lab
-          </h1>
-          <p className="mt-2 text-neutral-600">
-            A lab for artists building digital presence at different levels ·{' '}
-            {dccSiteMeta.organizationName}
-          </p>
-        </div>
+        <SaturdayLabBanner
+          banner="startHere"
+          alt="Saturday Lab — choose artist website or vibe coding"
+          priority
+        />
 
         <SaturdayLabQrBlock />
 
@@ -51,33 +54,9 @@ export default function SaturdayLabLandingPage() {
 
         <SaturdayLabChoosePathCards />
 
-        <section className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
-            By 1 PM — choose one output
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border border-neutral-200 bg-white p-4 text-sm">
-              <h3 className="font-semibold text-neutral-950">Beginner</h3>
-              <ul className="mt-2 list-inside list-disc text-neutral-700">
-                <li>Sitemap</li>
-                <li>Homepage draft</li>
-                <li>Artist bio</li>
-                <li>Project page</li>
-                <li>Platform decision</li>
-              </ul>
-            </div>
-            <div className="rounded-lg border border-neutral-200 bg-white p-4 text-sm">
-              <h3 className="font-semibold text-neutral-950">Vibe Coding</h3>
-              <ul className="mt-2 list-inside list-disc text-neutral-700">
-                <li>CodePen sketch</li>
-                <li>Replit prototype</li>
-                <li>Cursor starter edit</li>
-                <li>Debugged code</li>
-                <li>Shareable link</li>
-              </ul>
-            </div>
-          </div>
-        </section>
+        <SaturdayLabOutputGoals />
+
+        <SaturdayLabStarterDownload />
 
         <SaturdayLabSiteMapDiagram />
 
