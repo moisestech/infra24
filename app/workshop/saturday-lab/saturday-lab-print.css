@@ -1,0 +1,64 @@
+/* Saturday Lab — print-friendly packet layout */
+
+@media print {
+  .saturday-lab {
+    background: white !important;
+    color: black !important;
+  }
+
+  .saturday-lab-prose {
+    font-size: 11pt;
+    line-height: 1.45;
+  }
+
+  .saturday-lab-prose h1 {
+    font-size: 18pt;
+    page-break-after: avoid;
+  }
+
+  .saturday-lab-prose h2 {
+    font-size: 13pt;
+    page-break-after: avoid;
+    margin-top: 1.25em;
+  }
+
+  .saturday-lab-prose h3 {
+    font-size: 11pt;
+    page-break-after: avoid;
+  }
+
+  .saturday-lab-prose pre,
+  .saturday-lab-prose blockquote,
+  .saturday-lab-prose table {
+    page-break-inside: avoid;
+  }
+
+  .saturday-lab-prose pre {
+    font-size: 9pt;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    border: 1px solid #ccc;
+    padding: 0.5em;
+  }
+
+  .saturday-lab-prose a {
+    color: black;
+    text-decoration: underline;
+  }
+
+  .saturday-lab-prose a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 8pt;
+    word-break: break-all;
+  }
+
+  .saturday-lab-prose a[href^='/']::after {
+    content: none;
+  }
+
+  .saturday-lab-prose img {
+    max-width: 128px;
+    height: auto;
+    margin: 0.5em auto;
+  }
+}

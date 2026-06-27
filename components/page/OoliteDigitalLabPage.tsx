@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import EquipmentVotingUnified from '@/components/equipment/EquipmentVotingUnified';
 import { DigitalLabOfferingsGrid } from '@/components/oolite/DigitalLabOfferingsGrid';
+import { SaturdayLabPublicBanner } from '@/components/workshop/SaturdayLabPublicBanner';
 import { DIGITAL_LAB_QGIV_HUB_URL } from '@/lib/orgs/oolite/digital-lab-qgiv-offerings';
 import { useTenant } from '@/components/tenant/TenantProvider';
 
@@ -147,6 +148,8 @@ export default function OoliteDigitalLabPage() {
             designers, and creative technologists. Book equipment, join workshops, and bring your ideas to life.
           </p>
         </div>
+
+        <SaturdayLabPublicBanner />
 
         <DigitalLabOfferingsGrid
           primaryColor={tenantConfig?.theme?.primaryColor || '#47abc4'}

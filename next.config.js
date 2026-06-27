@@ -157,17 +157,43 @@ const nextConfig = {
       },
       {
         source: '/learn/getting-started-with-vibecoding',
-        destination: '/workshop/vibe-coding-and-net-art/chapters/getting-started-with-vibecoding',
+        destination: '/workshop/vibe-coding-and-net-art/getting-started-with-vibecoding',
         permanent: false,
       },
       {
         source: '/learn/what-is-net-art',
-        destination: '/workshop/vibe-coding-and-net-art/chapters/what-is-net-art',
+        destination: '/workshop/vibe-coding-and-net-art/what-is-net-art',
         permanent: false,
       },
       {
         source: '/learn/the-browser-as-medium',
-        destination: '/workshop/vibe-coding-and-net-art/chapters/the-browser-is-a-medium',
+        destination: '/workshop/vibe-coding-and-net-art/the-browser-is-a-medium',
+        permanent: false,
+      },
+      {
+        source: '/workshop/vibe-coding-and-net-art/chapters/:slug',
+        destination: '/workshop/vibe-coding-and-net-art/:slug',
+        permanent: true,
+      },
+      /** Saturday Lab — public hub (not under /o/oolite; no sign-in). */
+      {
+        source: '/workshops/saturday-lab',
+        destination: '/workshop/saturday-lab',
+        permanent: false,
+      },
+      {
+        source: '/workshops/saturday-lab/:path*',
+        destination: '/workshop/saturday-lab/:path*',
+        permanent: false,
+      },
+      {
+        source: '/o/oolite/saturday-lab',
+        destination: '/workshop/saturday-lab',
+        permanent: false,
+      },
+      {
+        source: '/o/oolite/saturday-lab/:path*',
+        destination: '/workshop/saturday-lab/:path*',
         permanent: false,
       },
       /** Edge Zones partnership PDF pathways → single-page anchors */

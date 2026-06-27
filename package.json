@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run saturday-lab:assets && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
@@ -31,6 +31,7 @@
     "supabase:push": "bash scripts/supabase-push-remote.sh",
     "smoke:display-control": "node scripts/smoke-display-control.mjs",
     "workshops:compile": "tsx scripts/build/compile-workshop-catalog.ts",
+    "saturday-lab:assets": "node scripts/saturday-lab-assets.mjs",
     "workshops:seed": "npm run workshops:compile && node scripts/data/seed/seed-oolite-workshops-catalog.js",
     "seed:oolite-residents": "node scripts/data/seed/upsert-oolite-studio-residents-2026.js",
     "seed:oolite-youth-residents": "node scripts/data/seed/upsert-oolite-youth-residents-2026.js",

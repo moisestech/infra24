@@ -71,6 +71,13 @@ export type DccPromotedProgramSlide = {
 /** Curated carousel slides; swap hrefs for real workshop slugs when ready. */
 export const dccWorkshopsPromotedProgramSlides: DccPromotedProgramSlide[] = [
   {
+    title: 'Saturday Lab — open hub',
+    description:
+      'In-room lab for artist websites and vibe coding. Cheat sheets, packets, and starter template — no account required.',
+    learnMoreHref: '/workshop/saturday-lab',
+    viewProgramHref: '/workshop/saturday-lab/resources',
+  },
+  {
     title: 'Build a public-ready web presence',
     description:
       'Templates and language for artist sites, bios, and discoverability — designed for digital art careers in Miami.',

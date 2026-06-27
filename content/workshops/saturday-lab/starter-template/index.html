@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- EDIT: Page title — usually your name or studio name -->
+    <title>Your Name — Artist</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ========== HERO ========== -->
+    <!-- EDIT: Your name, one strong image, and a short intro sentence -->
+    <header class="hero" id="top">
+      <p class="hero-label">Artist</p>
+      <!-- EDIT: Replace with your name -->
+      <h1>Your Name</h1>
+      <!-- EDIT: One sentence about your work -->
+      <p class="hero-intro">
+        I make work about [your themes] using [your materials or media], based in [your city].
+      </p>
+      <!-- EDIT: Replace src with your image URL or local file path -->
+      <figure class="hero-image">
+        <img
+          src="https://placehold.co/800x500/e8e4df/333333?text=Your+strongest+image"
+          alt="Describe this artwork for accessibility"
+        />
+      </figure>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#work">Work</a>
+        <a href="#about">About</a>
+        <a href="#cv">CV</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ========== WORK / PROJECTS ========== -->
+      <!-- EDIT: Replace each project title, year, and description -->
+      <section class="section" id="work">
+        <h2>Work</h2>
+        <div class="project-grid">
+          <article class="project-card">
+            <!-- EDIT: Project 1 image -->
+            <img
+              src="https://placehold.co/400x300/d4cfc8/333333?text=Project+1"
+              alt="Project 1 — short description"
+            />
+            <h3>Project Title One</h3>
+            <p class="project-meta">2025 · Materials, dimensions</p>
+            <p>One or two sentences about what the viewer sees and why it matters.</p>
+          </article>
+
+          <article class="project-card">
+            <img
+              src="https://placehold.co/400x300/d4cfc8/333333?text=Project+2"
+              alt="Project 2 — short description"
+            />
+            <h3>Project Title Two</h3>
+            <p class="project-meta">2024 · Materials, dimensions</p>
+            <p>One or two sentences about what the viewer sees and why it matters.</p>
+          </article>
+
+          <article class="project-card">
+            <img
+              src="https://placehold.co/400x300/d4cfc8/333333?text=Project+3"
+              alt="Project 3 — short description"
+            />
+            <h3>Project Title Three</h3>
+            <p class="project-meta">2023 · Materials, dimensions</p>
+            <p>One or two sentences about what the viewer sees and why it matters.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ========== ABOUT ========== -->
+      <!-- EDIT: Bio and optional artist statement (keep it readable — not too long) -->
+      <section class="section" id="about">
+        <h2>About</h2>
+        <p>
+          Write a short bio here: where you are based, what you make, and what questions
+          your work explores. Aim for 100–150 words for a first draft.
+        </p>
+        <p>
+          Optional second paragraph: process, collaboration, or context funders and curators
+          should know.
+        </p>
+      </section>
+
+      <!-- ========== CV HIGHLIGHTS ========== -->
+      <!-- EDIT: List exhibitions, residencies, awards, press — most recent first -->
+      <section class="section" id="cv">
+        <h2>CV Highlights</h2>
+        <ul class="cv-list">
+          <li><strong>2025</strong> — Exhibition or residency title, venue, city</li>
+          <li><strong>2024</strong> — Award, grant, or group show</li>
+          <li><strong>2023</strong> — Press mention or solo presentation</li>
+        </ul>
+      </section>
+
+      <!-- ========== CONTACT ========== -->
+      <!-- EDIT: Email, Instagram, studio visit link, etc. -->
+      <section class="section" id="contact">
+        <h2>Contact</h2>
+        <p>
+          <a href="mailto:you@example.com">you@example.com</a>
+        </p>
+        <p>
+          <a href="https://instagram.com/yourhandle" target="_blank" rel="noopener noreferrer"
+            >Instagram @yourhandle</a
+          >
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <!-- EDIT: Copyright line -->
+      <p>&copy; <span id="year"></span> Your Name</p>
+    </footer>
+
+    <script>
+      // Small interaction: updates copyright year automatically
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
