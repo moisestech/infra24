@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { SaturdayLabIcon } from '@/components/workshop/SaturdayLabIcon'
-import { SATURDAY_LAB_FACILITATOR_HREF, SATURDAY_LAB_STARTER_ZIP } from '@/lib/workshops/saturday-lab-public-assets'
+import { SATURDAY_LAB_STARTER_ZIP } from '@/lib/workshops/saturday-lab-public-assets'
 import type { SaturdayLabIconKey } from '@/lib/workshops/saturday-lab-media'
 
 const LINKS: {
@@ -63,22 +63,22 @@ const LINKS: {
 
 export function SaturdayLabHubQuickLinks() {
   return (
-    <section className="space-y-3">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
+    <section className="space-y-4 2xl:space-y-6">
+      <h2 className="sl-section-title text-sm font-semibold uppercase tracking-wide text-neutral-500">
         Open from QR — start here
       </h2>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:gap-6">
         {LINKS.map((item) => {
           const className =
-            'flex gap-3 rounded-lg border border-neutral-200 bg-white p-4 transition hover:border-neutral-400 hover:shadow-sm'
+            'flex flex-col items-center gap-3 rounded-lg border border-neutral-200 bg-white p-4 text-center transition hover:border-neutral-400 hover:shadow-sm 2xl:gap-5 2xl:p-8'
           const inner = (
             <>
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-neutral-100">
-                <SaturdayLabIcon icon={item.icon} label={item.label} size={22} />
+              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-neutral-100 2xl:h-auto 2xl:w-auto 2xl:rounded-2xl 2xl:p-2">
+                <SaturdayLabIcon icon={item.icon} label={item.label} size={22} tripleOnWide />
               </span>
               <span>
-                <span className="font-semibold text-neutral-950">{item.label}</span>
-                <span className="mt-0.5 block text-sm text-neutral-600">{item.description}</span>
+                <span className="sl-quick-link-label block font-semibold text-neutral-950">{item.label}</span>
+                <span className="sl-quick-link-desc mt-1 block text-sm text-neutral-600">{item.description}</span>
               </span>
             </>
           )
@@ -96,12 +96,6 @@ export function SaturdayLabHubQuickLinks() {
           )
         })}
       </div>
-      <p className="text-xs text-neutral-500">
-        Facilitators:{' '}
-        <Link href={SATURDAY_LAB_FACILITATOR_HREF} className="underline">
-          Run of show
-        </Link>
-      </p>
     </section>
   )
 }

@@ -1,5 +1,40 @@
 /* Saturday Lab — print-friendly packet layout */
 
+@media (min-width: 1536px) {
+  .saturday-lab .sl-nav-link {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .saturday-lab .sl-nav-brand-title {
+    font-size: 1.125rem;
+  }
+
+  .saturday-lab .sl-nav-brand-sub {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .saturday-lab .sl-icon-triple img {
+    width: calc(var(--sl-icon-base, 22px) * 3) !important;
+    height: calc(var(--sl-icon-base, 22px) * 3) !important;
+  }
+
+  .saturday-lab .sl-section-title {
+    font-size: 1.25rem;
+  }
+
+  .saturday-lab .sl-quick-link-label {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .saturday-lab .sl-quick-link-desc {
+    font-size: 1.125rem;
+  }
+}
+
 @media print {
   .saturday-lab {
     background: white !important;

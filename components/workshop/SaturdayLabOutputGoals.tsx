@@ -22,12 +22,12 @@ const VIBE_OUTPUTS: OutputItem[] = [
 
 function OutputList({ items, title }: { items: OutputItem[]; title: string }) {
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-4 text-sm">
-      <h3 className="font-semibold text-neutral-950">{title}</h3>
-      <ul className="mt-3 space-y-2">
+    <div className="rounded-lg border border-neutral-200 bg-white p-4 text-sm 2xl:p-8 2xl:text-lg">
+      <h3 className="font-semibold text-neutral-950 2xl:text-2xl 2xl:font-bold">{title}</h3>
+      <ul className="mt-3 space-y-3 2xl:mt-5 2xl:space-y-4">
         {items.map((item) => (
-          <li key={item.label} className="flex items-center gap-2 text-neutral-700">
-            <SaturdayLabIcon icon={item.icon} label={item.label} size={18} />
+          <li key={item.label} className="flex items-center gap-3 text-neutral-700">
+            <SaturdayLabIcon icon={item.icon} label={item.label} size={18} tripleOnWide />
             {item.label}
           </li>
         ))}
@@ -38,9 +38,9 @@ function OutputList({ items, title }: { items: OutputItem[]; title: string }) {
 
 export function SaturdayLabOutputGoals() {
   return (
-    <section className="space-y-3">
+    <section className="space-y-4 2xl:space-y-6">
       <SaturdayLabBanner banner="outcomes" alt="Done by 1 PM — choose one workshop outcome" />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 2xl:gap-8">
         <OutputList items={BEGINNER_OUTPUTS} title="Beginner" />
         <OutputList items={VIBE_OUTPUTS} title="Vibe Coding" />
       </div>
