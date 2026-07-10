@@ -3,13 +3,12 @@
 import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { EdgeZonesIcon } from '@/components/marketing/edgezones/EdgeZonesIcon'
-import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
+import { EdgeZonesThemeCard } from '@/components/marketing/edgezones/EdgeZonesThemeCard'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
 import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import {
   EDGE_ZONES_CONCEPT_DIAGRAM_ICONS,
   EDGE_ZONES_SECTION_ICONS,
-  edgeZonesConceptThemeIcon,
 } from '@/lib/marketing/edgezones-icons'
 import { EDGE_ZONES_BANNERS } from '@/lib/marketing/edgezones-media'
 
@@ -60,20 +59,14 @@ export function TouchingGrassConcept() {
 
         <h3 className="ez-heading ez-subsection-title mt-10">{ui.keyThemes}</h3>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {concept.themes.map((theme) => {
-            const themeIcon = edgeZonesConceptThemeIcon(theme.label)
-            return (
-              <li key={theme.label} className="ez-card p-5">
-                <div className="flex items-start gap-3">
-                  <EdgeZonesIconBadge icon={themeIcon} accent="indigo" size="compact" />
-                  <div>
-                    <p className="ez-heading ez-caption text-[var(--ez-blue)]">{theme.label}</p>
-                    <p className="ez-body mt-2 text-[var(--ez-muted)]">{theme.description}</p>
-                  </div>
-                </div>
-              </li>
-            )
-          })}
+          {concept.themes.map((theme) => (
+            <EdgeZonesThemeCard
+              key={theme.label}
+              label={theme.label}
+              description={theme.description}
+              keywords={theme.keywords}
+            />
+          ))}
         </ul>
       </div>
     </section>

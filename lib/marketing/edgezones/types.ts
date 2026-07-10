@@ -87,7 +87,7 @@ export type EdgeZonesPortalContent = {
     title: string
     subtitle: string
     paragraphs: string[]
-    themes: { label: string; description: string }[]
+    themes: { label: string; description: string; keywords: string[] }[]
     diagram: string[]
   }
   artists: { title: string; intro: string }

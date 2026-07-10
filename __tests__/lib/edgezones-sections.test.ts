@@ -76,6 +76,9 @@ describe('edgeZones locale', () => {
     expect(es.sections.support.modules.map((m) => m.id)).toEqual(en.sections.support.modules.map((m) => m.id))
     expect(es.sections.publicProgram.formats).toHaveLength(en.sections.publicProgram.formats.length)
     expect(es.sections.archive.deliverables).toHaveLength(en.sections.archive.deliverables.length)
+    expect(es.concept.themes.map((t) => t.keywords.length)).toEqual(
+      en.concept.themes.map((t) => t.keywords.length)
+    )
     expect(Object.keys(es.ui)).toEqual(Object.keys(en.ui))
   })
 })

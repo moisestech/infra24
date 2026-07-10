@@ -87,12 +87,36 @@ The exhibition brings together artists whose practices examine how digital techn
       'The exhibition asks how digital systems shape perception and behavior, and how art can reconnect those systems to the body, the land, and the shared conditions of social life.',
     ],
     themes: [
-      { label: 'Attention', description: 'How we focus, scroll, fragment, and disperse our time.' },
-      { label: 'Extraction', description: 'The data, resources, and hidden labor behind digital systems.' },
-      { label: 'Ecology', description: 'The environmental footprints of networks, devices, and platforms.' },
-      { label: 'Care', description: 'Bodies, relationships, and systems of support.' },
-      { label: 'Reconnection', description: 'Returning to place, presence, and shared reality.' },
-      { label: 'Embodied Reality', description: 'The physical world as the ground where digital culture becomes lived experience.' },
+      {
+        label: 'Attention',
+        description: 'How we focus, scroll, fragment, and disperse our time.',
+        keywords: ['scroll', 'focus', 'fragment', 'feed', 'time'],
+      },
+      {
+        label: 'Extraction',
+        description: 'The data, resources, and hidden labor behind digital systems.',
+        keywords: ['data', 'labor', 'mining', 'platforms', 'surplus'],
+      },
+      {
+        label: 'Ecology',
+        description: 'The environmental footprints of networks, devices, and platforms.',
+        keywords: ['carbon', 'devices', 'networks', 'soil', 'energy'],
+      },
+      {
+        label: 'Care',
+        description: 'Bodies, relationships, and systems of support.',
+        keywords: ['bodies', 'support', 'kinship', 'repair', 'tending'],
+      },
+      {
+        label: 'Reconnection',
+        description: 'Returning to place, presence, and shared reality.',
+        keywords: ['place', 'presence', 'shared', 'ground', 'return'],
+      },
+      {
+        label: 'Embodied Reality',
+        description: 'The physical world as the ground where digital culture becomes lived experience.',
+        keywords: ['texture', 'touch', 'physical', 'lived', 'material'],
+      },
     ],
     diagram: ['Digital Culture', 'Physical Space', 'Embodied Reality'],
   },

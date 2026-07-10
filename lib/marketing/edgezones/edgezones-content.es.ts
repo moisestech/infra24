@@ -87,12 +87,36 @@ La exposición reúne a artistas cuyas prácticas examinan cómo las tecnología
       'La exposición pregunta cómo los sistemas digitales moldean la percepción y el comportamiento, y cómo el arte puede reconectar esos sistemas con el cuerpo, la tierra y las condiciones compartidas de la vida social.',
     ],
     themes: [
-      { label: 'Atención', description: 'Cómo enfocamos, desplazamos, fragmentamos y dispersamos nuestro tiempo.' },
-      { label: 'Extracción', description: 'Los datos, recursos y trabajo oculto detrás de los sistemas digitales.' },
-      { label: 'Ecología', description: 'Las huellas ambientales de redes, dispositivos y plataformas.' },
-      { label: 'Cuidado', description: 'Cuerpos, relaciones y sistemas de apoyo.' },
-      { label: 'Reconexión', description: 'Volver al lugar, la presencia y la realidad compartida.' },
-      { label: 'Realidad encarnada', description: 'El mundo físico como terreno donde la cultura digital se convierte en experiencia vivida.' },
+      {
+        label: 'Atención',
+        description: 'Cómo enfocamos, desplazamos, fragmentamos y dispersamos nuestro tiempo.',
+        keywords: ['desplazamiento', 'enfoque', 'fragmento', 'feed', 'tiempo'],
+      },
+      {
+        label: 'Extracción',
+        description: 'Los datos, recursos y trabajo oculto detrás de los sistemas digitales.',
+        keywords: ['datos', 'trabajo', 'extracción', 'plataformas', 'excedente'],
+      },
+      {
+        label: 'Ecología',
+        description: 'Las huellas ambientales de redes, dispositivos y plataformas.',
+        keywords: ['carbono', 'dispositivos', 'redes', 'suelo', 'energía'],
+      },
+      {
+        label: 'Cuidado',
+        description: 'Cuerpos, relaciones y sistemas de apoyo.',
+        keywords: ['cuerpos', 'apoyo', 'vínculos', 'reparación', 'cuidar'],
+      },
+      {
+        label: 'Reconexión',
+        description: 'Volver al lugar, la presencia y la realidad compartida.',
+        keywords: ['lugar', 'presencia', 'compartida', 'tierra', 'volver'],
+      },
+      {
+        label: 'Realidad encarnada',
+        description: 'El mundo físico como terreno donde la cultura digital se convierte en experiencia vivida.',
+        keywords: ['textura', 'contacto', 'físico', 'vivido', 'material'],
+      },
     ],
     diagram: ['Cultura digital', 'Espacio físico', 'Realidad encarnada'],
   },

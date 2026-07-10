@@ -98,6 +98,40 @@ export function edgeZonesConceptThemeIcon(label: string): EdgeZonesIconName {
   return CONCEPT_THEME_ICON_BY_LABEL[label] ?? 'sparkles'
 }
 
+export type EdgeZonesThemeAccent = 'blue' | 'orange' | 'green' | 'magenta' | 'teal' | 'indigo'
+
+const THEME_ACCENT_BY_ICON: Record<EdgeZonesIconName, EdgeZonesThemeAccent> = {
+  archive: 'indigo',
+  bookOpen: 'indigo',
+  building2: 'indigo',
+  calendar: 'blue',
+  camera: 'indigo',
+  database: 'blue',
+  eye: 'blue',
+  fileText: 'indigo',
+  footprints: 'indigo',
+  globe: 'teal',
+  hammer: 'orange',
+  heart: 'magenta',
+  layers: 'indigo',
+  leaf: 'green',
+  link2: 'teal',
+  mail: 'blue',
+  mic: 'magenta',
+  monitor: 'blue',
+  network: 'teal',
+  palette: 'magenta',
+  sparkles: 'indigo',
+  sprout: 'green',
+  users: 'teal',
+  video: 'magenta',
+  wrench: 'orange',
+}
+
+export function edgeZonesConceptThemeAccent(icon: EdgeZonesIconName): EdgeZonesThemeAccent {
+  return THEME_ACCENT_BY_ICON[icon]
+}
+
 const PROGRAM_FORMAT_ICONS: Record<string, EdgeZonesIconName> = {
   'Artist talk': 'mic',
   'Charla de artista': 'mic',

@@ -537,6 +537,233 @@
   );
 }
 
+/* Key theme cards — hover presence: 3D tilt, glow icon, floating keywords, glitch */
+.ez-proposal .ez-theme-card {
+  position: relative;
+  overflow: hidden;
+  padding: 1.25rem;
+  transform-style: preserve-3d;
+  perspective: 900px;
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s ease,
+    border-color 0.35s ease;
+}
+
+.ez-proposal .ez-theme-accent-blue {
+  --ez-theme-glow: rgb(0 102 255 / 0.55);
+  --ez-theme-glow-soft: rgb(0 102 255 / 0.14);
+}
+
+.ez-proposal .ez-theme-accent-orange {
+  --ez-theme-glow: rgb(255 107 0 / 0.55);
+  --ez-theme-glow-soft: rgb(255 107 0 / 0.14);
+}
+
+.ez-proposal .ez-theme-accent-green {
+  --ez-theme-glow: rgb(57 255 20 / 0.5);
+  --ez-theme-glow-soft: rgb(57 255 20 / 0.12);
+}
+
+.ez-proposal .ez-theme-accent-magenta {
+  --ez-theme-glow: rgb(217 70 239 / 0.5);
+  --ez-theme-glow-soft: rgb(217 70 239 / 0.12);
+}
+
+.ez-proposal .ez-theme-accent-teal {
+  --ez-theme-glow: rgb(13 148 136 / 0.55);
+  --ez-theme-glow-soft: rgb(13 148 136 / 0.14);
+}
+
+.ez-proposal .ez-theme-accent-indigo {
+  --ez-theme-glow: rgb(99 102 241 / 0.55);
+  --ez-theme-glow-soft: rgb(99 102 241 / 0.14);
+}
+
+.ez-proposal .ez-theme-card:hover {
+  transform: perspective(900px) rotateX(4deg) rotateY(-5deg) translateY(-6px) scale(1.02);
+  border-color: transparent;
+  box-shadow:
+    0 0 0 1px var(--ez-theme-glow-soft),
+    0 0 32px var(--ez-theme-glow-soft),
+    0 0 64px rgb(0 0 0 / 0.08),
+    0 18px 40px rgb(0 0 0 / 0.12);
+}
+
+.dark .ez-proposal .ez-theme-card:hover {
+  box-shadow:
+    0 0 0 1px var(--ez-theme-glow-soft),
+    0 0 40px var(--ez-theme-glow-soft),
+    0 0 72px rgb(0 0 0 / 0.35),
+    0 18px 40px rgb(0 0 0 / 0.4);
+}
+
+.ez-proposal .ez-theme-bg-icon {
+  right: -12%;
+  bottom: -18%;
+  width: 72%;
+  height: 72%;
+  color: var(--ez-theme-glow);
+  opacity: 0;
+  filter: drop-shadow(0 0 28px var(--ez-theme-glow));
+  transform: scale(0.75) rotate(-14deg) translateZ(0);
+  transition:
+    opacity 0.5s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ez-proposal .ez-theme-card:hover .ez-theme-bg-icon {
+  opacity: 0.22;
+  transform: scale(1.08) rotate(-8deg) translateZ(36px) translateX(-4%);
+}
+
+.ez-proposal .ez-theme-scanlines {
+  opacity: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgb(0 0 0 / 0.06) 2px,
+    rgb(0 0 0 / 0.06) 4px
+  );
+  mix-blend-mode: multiply;
+  transition: opacity 0.35s ease;
+}
+
+.ez-proposal .ez-theme-pixel-grid {
+  opacity: 0;
+  background-image:
+    linear-gradient(rgb(0 0 0 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 0 0 / 0.04) 1px, transparent 1px);
+  background-size: 6px 6px;
+  transition: opacity 0.35s ease;
+}
+
+.ez-proposal .ez-theme-card:hover .ez-theme-scanlines,
+.ez-proposal .ez-theme-card:hover .ez-theme-pixel-grid {
+  opacity: 0.35;
+}
+
+.ez-proposal .ez-theme-keyword {
+  position: absolute;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ez-theme-glow);
+  opacity: 0;
+  transform: translateY(8px) scale(0.92);
+  animation: ez-theme-keyword-float 6s ease-in-out infinite;
+  text-shadow: 0 0 12px var(--ez-theme-glow-soft);
+}
+
+.ez-proposal .ez-theme-card:hover .ez-theme-keyword {
+  opacity: 0.75;
+}
+
+.ez-proposal .ez-theme-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 1px;
+  background: var(--ez-theme-glow);
+  box-shadow: 0 0 10px var(--ez-theme-glow);
+  opacity: 0;
+  animation: ez-theme-particle-drift 4.5s ease-in-out infinite;
+}
+
+.ez-proposal .ez-theme-card:hover .ez-theme-particle {
+  opacity: 0.85;
+}
+
+.ez-proposal .ez-theme-label {
+  position: relative;
+  display: inline-block;
+}
+
+.ez-proposal .ez-theme-label-glitch {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  color: var(--ez-orange);
+  clip-path: inset(0 0 0 0);
+}
+
+.ez-proposal .ez-theme-card:hover .ez-theme-label-base {
+  animation: ez-theme-glitch-shift 0.55s steps(2, end) infinite;
+}
+
+.ez-proposal .ez-theme-card:hover .ez-theme-label-glitch {
+  opacity: 0.85;
+  animation: ez-theme-glitch-clip 0.45s steps(2, end) infinite;
+}
+
+@keyframes ez-theme-keyword-float {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0) scale(1);
+  }
+  33% {
+    transform: translateY(-10px) translateX(4px) scale(1.04);
+  }
+  66% {
+    transform: translateY(6px) translateX(-3px) scale(0.98);
+  }
+}
+
+@keyframes ez-theme-particle-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate(-6px, -14px) scale(1.35);
+    opacity: 1;
+  }
+}
+
+@keyframes ez-theme-glitch-shift {
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  25% {
+    transform: translate(-1px, 1px);
+  }
+  50% {
+    transform: translate(1px, -1px);
+  }
+  75% {
+    transform: translate(-1px, 0);
+  }
+}
+
+@keyframes ez-theme-glitch-clip {
+  0%,
+  100% {
+    clip-path: inset(0 0 0 0);
+    transform: translate(0);
+  }
+  20% {
+    clip-path: inset(12% 0 58% 0);
+    transform: translate(2px, 0);
+  }
+  40% {
+    clip-path: inset(48% 0 18% 0);
+    transform: translate(-2px, 0);
+  }
+  60% {
+    clip-path: inset(8% 0 72% 0);
+    transform: translate(1px, -1px);
+  }
+  80% {
+    clip-path: inset(62% 0 8% 0);
+    transform: translate(-1px, 1px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ez-proposal * {
     animation-duration: 0.01ms !important;
@@ -549,6 +776,26 @@
 
   .ez-proposal .ez-card::after {
     animation: none;
+  }
+
+  .ez-proposal .ez-theme-card:hover {
+    transform: none;
+  }
+
+  .ez-proposal .ez-theme-card:hover .ez-theme-label-base,
+  .ez-proposal .ez-theme-card:hover .ez-theme-label-glitch {
+    animation: none;
+  }
+
+  .ez-proposal .ez-theme-card:hover .ez-theme-keyword,
+  .ez-proposal .ez-theme-card:hover .ez-theme-particle {
+    opacity: 0.5;
+    animation: none;
+  }
+
+  .ez-proposal .ez-theme-card:hover .ez-theme-bg-icon {
+    opacity: 0.14;
+    transform: scale(1) rotate(-8deg);
   }
 }
 
