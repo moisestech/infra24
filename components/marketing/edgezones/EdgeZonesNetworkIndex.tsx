@@ -43,6 +43,10 @@ function imageFitFor(name: string): 'cover' | 'contain' {
   return entry?.imageFit ?? 'cover'
 }
 
+function imageUrlDarkFor(name: string): string | undefined {
+  return edgeZonesNetworkIndex.find((e) => e.name === name)?.imageUrlDark
+}
+
 function NetworkCard({
   profile,
   showWorkPlaceholder = true,
@@ -72,6 +76,7 @@ function NetworkCard({
         <EdgeZonesPortrait
           name={profile.name}
           imageUrl={profile.imageUrl}
+          imageUrlDark={imageUrlDarkFor(profile.name)}
           imageAlt={profile.name}
           imageFit={fit}
           size={isLogo ? 'logo' : 'lg'}

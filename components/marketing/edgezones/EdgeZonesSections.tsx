@@ -1,5 +1,6 @@
 'use client'
 
+import type { SyntheticEvent } from 'react'
 import Link from 'next/link'
 import type { EdgeZonesArtistProfile } from '@/lib/marketing/edgezones-artists'
 import { cn } from '@/lib/utils'
@@ -7,15 +8,50 @@ import { cn } from '@/lib/utils'
 export type EdgeZonesPortraitProps = {
   name: string
   imageUrl?: string
+  imageUrlDark?: string
   imageAlt?: string
   imageFit?: 'cover' | 'contain'
   size?: 'md' | 'lg' | 'logo'
   className?: string
 }
 
+function PortraitImage({
+  src,
+  alt,
+  imageFit,
+  className,
+  hiddenClassName,
+  onError,
+}: {
+  src: string
+  alt: string
+  imageFit: 'cover' | 'contain'
+  className?: string
+  hiddenClassName?: string
+  onError: (event: SyntheticEvent<HTMLImageElement>) => void
+}) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      className={cn(
+        'h-full w-full rounded-xl object-center',
+        imageFit === 'contain'
+          ? 'ez-portrait-logo border border-[var(--ez-border)] bg-[var(--ez-surface)] object-contain p-4'
+          : 'bg-[var(--ez-surface)] object-cover',
+        hiddenClassName,
+        className
+      )}
+      onError={onError}
+    />
+  )
+}
+
 export function EdgeZonesPortrait({
   name,
   imageUrl,
+  imageUrlDark,
   imageAlt,
   imageFit = 'cover',
   size = 'md',
@@ -49,6 +85,12 @@ export function EdgeZonesPortrait({
     )
   }
 
+  const handleImageError = (event: SyntheticEvent<HTMLImageElement>) => {
+    event.currentTarget.style.display = 'none'
+    const fallback = event.currentTarget.parentElement?.querySelector('[data-portrait-fallback]')
+    if (fallback instanceof HTMLElement) fallback.style.display = 'flex'
+  }
+
   return (
     <div
       className={cn(
@@ -58,23 +100,33 @@ export function EdgeZonesPortrait({
         className
       )}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={imageUrl}
-        alt={imageAlt ?? name}
-        className={cn(
-          'h-full w-full rounded-xl object-center',
-          imageFit === 'contain'
-            ? 'ez-portrait-logo border border-[var(--ez-border)] bg-[var(--ez-surface)] object-contain p-4'
-            : 'bg-[var(--ez-surface)] object-cover'
-        )}
-        onError={(event) => {
-          event.currentTarget.style.display = 'none'
-          const fallback = event.currentTarget.nextElementSibling
-          if (fallback instanceof HTMLElement) fallback.style.display = 'flex'
-        }}
-      />
+      {imageUrlDark ? (
+        <>
+          <PortraitImage
+            src={imageUrl}
+            alt={imageAlt ?? name}
+            imageFit={imageFit}
+            hiddenClassName="dark:hidden"
+            onError={handleImageError}
+          />
+          <PortraitImage
+            src={imageUrlDark}
+            alt={imageAlt ?? name}
+            imageFit={imageFit}
+            hiddenClassName="hidden dark:block"
+            onError={handleImageError}
+          />
+        </>
+      ) : (
+        <PortraitImage
+          src={imageUrl}
+          alt={imageAlt ?? name}
+          imageFit={imageFit}
+          onError={handleImageError}
+        />
+      )}
       <div
+        data-portrait-fallback
         aria-hidden
         className="absolute inset-0 hidden items-center justify-center rounded-xl border border-[var(--ez-border)] bg-[var(--ez-paper-alt)] font-semibold text-[var(--ez-ink)]"
       >

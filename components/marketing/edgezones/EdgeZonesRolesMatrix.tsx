@@ -60,6 +60,7 @@ export function EdgeZonesRolesMatrix() {
                         <EdgeZonesPortrait
                           name={portrait.name}
                           imageUrl={portrait.imageUrl}
+                          imageUrlDark={portrait.imageUrlDark}
                           imageAlt={portrait.imageAlt}
                           imageFit={imageFit}
                           size={imageFit === 'contain' ? 'logo' : 'lg'}
@@ -69,6 +70,7 @@ export function EdgeZonesRolesMatrix() {
                       <EdgeZonesPortrait
                         name={portrait.name}
                         imageUrl={portrait.imageUrl}
+                        imageUrlDark={portrait.imageUrlDark}
                         imageAlt={portrait.imageAlt}
                         imageFit={imageFit}
                         size={imageFit === 'contain' ? 'logo' : 'lg'}

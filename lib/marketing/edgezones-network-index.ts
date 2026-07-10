@@ -19,9 +19,17 @@ export const TOUCHING_GRASS_ARTWORK_URLS = {
   violetForest: `${CLOUDINARY_BASE}/v1783708102/dccmiami/exhibition/touching-grass/artists/violet-forest-art_q2p9k1.jpg`,
 } as const
 
-/** Edge Zones Gallery logo — transparent square mark on Cloudinary. */
+/** Edge Zones Gallery logo — transparent square mark (dark text, for light backgrounds). */
 export const EDGE_ZONES_GALLERY_MARK_URL =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1783701153/dccmiami/logo/edge-zones-logo-transparent-square_wl5cru.webp' as const
+
+/** Edge Zones Gallery logo — white text on transparent (for dark backgrounds). */
+export const EDGE_ZONES_GALLERY_MARK_URL_DARK =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1783711647/dccmiami/logo/edge-zones-logo-transparent-square-white-text_p51wvh.png' as const
+
+export function edgeZonesGalleryMarkUrl(theme: 'light' | 'dark'): string {
+  return theme === 'dark' ? EDGE_ZONES_GALLERY_MARK_URL_DARK : EDGE_ZONES_GALLERY_MARK_URL
+}
 
 export const EDGE_ZONES_GALLERY_WEBSITE = 'https://edgezones.org' as const
 
@@ -39,6 +47,7 @@ export const JORDAN_HORTON_PORTRAIT_URL =
 export type EdgeZonesPartnershipPortrait = {
   name: string
   imageUrl: string
+  imageUrlDark?: string
   imageAlt: string
   /** Logos use contain; portraits use cover. */
   imageFit?: 'cover' | 'contain'
@@ -48,6 +57,7 @@ export const edgeZonesPartnershipPortraits: EdgeZonesPartnershipPortrait[] = [
   {
     name: 'Edge Zones',
     imageUrl: EDGE_ZONES_GALLERY_MARK_URL,
+    imageUrlDark: EDGE_ZONES_GALLERY_MARK_URL_DARK,
     imageAlt: 'Edge Zones Gallery',
     imageFit: 'contain',
   },
@@ -76,6 +86,7 @@ export type EdgeZonesNetworkIndexEntry = Omit<EdgeZonesArtistProfile, 'id' | 'pr
   materialsStatus?: 'complete' | 'pending'
   workImageUrl?: string
   imageFit?: 'cover' | 'contain'
+  imageUrlDark?: string
 }
 
 /** Public PDF asset — place file at public/docs/dcc-edgezones-partnership.pdf */
@@ -90,6 +101,7 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     instagram: 'edgezonesgallery',
     website: EDGE_ZONES_GALLERY_WEBSITE,
     imageUrl: EDGE_ZONES_GALLERY_MARK_URL,
+    imageUrlDark: EDGE_ZONES_GALLERY_MARK_URL_DARK,
     imageFit: 'contain',
   },
   {

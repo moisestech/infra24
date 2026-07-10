@@ -9,11 +9,11 @@ import {
 import { cn } from '@/lib/utils'
 
 const KEYWORD_LAYOUT = [
-  { left: '6%', bottom: '38%', delay: '0s', duration: '5.2s' },
-  { left: '14%', bottom: '14%', delay: '0.8s', duration: '6.1s' },
-  { left: '52%', bottom: '32%', delay: '1.4s', duration: '5.6s' },
-  { left: '68%', bottom: '10%', delay: '0.3s', duration: '6.4s' },
-  { left: '36%', bottom: '6%', delay: '1.9s', duration: '5.9s' },
+  { left: '6%', bottom: '58%', delay: '0s', duration: '5.2s' },
+  { left: '16%', bottom: '18%', delay: '0.8s', duration: '6.1s' },
+  { left: '54%', bottom: '52%', delay: '1.4s', duration: '5.6s' },
+  { left: '72%', bottom: '14%', delay: '0.3s', duration: '6.4s' },
+  { left: '38%', bottom: '8%', delay: '1.9s', duration: '5.9s' },
 ] as const
 
 type Props = {
@@ -29,7 +29,10 @@ export function EdgeZonesThemeCard({ label, description, keywords }: Props) {
 
   return (
     <li
-      className={cn('ez-theme-card ez-card ez-logo-watermark group', `ez-theme-accent-${accent}`)}
+      className={cn(
+        'ez-theme-card ez-card ez-logo-watermark group flex min-h-[15.5rem] flex-col',
+        `ez-theme-accent-${accent}`
+      )}
       data-theme-icon={icon}
       onMouseEnter={() => setHover({ icon, accent })}
       onFocus={() => setHover({ icon, accent })}
@@ -40,7 +43,22 @@ export function EdgeZonesThemeCard({ label, description, keywords }: Props) {
       <div className="ez-theme-scanlines pointer-events-none absolute inset-0 z-[1]" aria-hidden />
       <div className="ez-theme-pixel-grid pointer-events-none absolute inset-0 z-[1]" aria-hidden />
 
-      <div className="ez-theme-keywords pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-[42%]" aria-hidden>
+      <div className="ez-theme-body relative z-[3] flex flex-1 flex-col">
+        <div className="flex items-start gap-3">
+          <EdgeZonesIconBadge icon={icon} accent="indigo" size="compact" />
+          <div className="ez-theme-content min-w-0 flex-1">
+            <p className="ez-theme-label ez-heading ez-caption text-[var(--ez-blue)]" data-text={label}>
+              <span className="ez-theme-label-base">{label}</span>
+              <span className="ez-theme-label-glitch" aria-hidden>
+                {label}
+              </span>
+            </p>
+            <p className="ez-body ez-theme-description mt-2 text-[var(--ez-body-fg)]">{description}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="ez-theme-keywords relative z-[2] mt-4 min-h-[5.25rem] shrink-0" aria-hidden>
         {keywords.slice(0, KEYWORD_LAYOUT.length).map((keyword, index) => {
           const layout = KEYWORD_LAYOUT[index]
           return (
@@ -58,19 +76,6 @@ export function EdgeZonesThemeCard({ label, description, keywords }: Props) {
             </span>
           )
         })}
-      </div>
-
-      <div className="relative z-[3] flex items-start gap-3">
-        <EdgeZonesIconBadge icon={icon} accent="indigo" size="compact" />
-        <div className="ez-theme-content min-w-0 flex-1">
-          <p className="ez-theme-label ez-heading ez-caption text-[var(--ez-blue)]" data-text={label}>
-            <span className="ez-theme-label-base">{label}</span>
-            <span className="ez-theme-label-glitch" aria-hidden>
-              {label}
-            </span>
-          </p>
-          <p className="ez-body ez-theme-description mt-2 text-[var(--ez-body-fg)]">{description}</p>
-        </div>
       </div>
     </li>
   )

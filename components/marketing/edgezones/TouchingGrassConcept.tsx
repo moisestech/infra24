@@ -69,7 +69,7 @@ export function TouchingGrassConcept() {
           </div>
 
           <h3 className="ez-heading ez-subsection-title mt-10">{ui.keyThemes}</h3>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-4 grid items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {concept.themes.map((theme) => (
               <EdgeZonesThemeCard
                 key={theme.label}

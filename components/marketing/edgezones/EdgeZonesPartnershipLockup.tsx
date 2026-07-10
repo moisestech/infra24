@@ -1,6 +1,9 @@
 import Image from 'next/image'
 import { DCC_MIAMI_LOGO_URL_LIGHT } from '@/lib/marketing/cdc-brand'
-import { EDGE_ZONES_GALLERY_MARK_URL } from '@/lib/marketing/edgezones-network-index'
+import {
+  EDGE_ZONES_GALLERY_MARK_URL,
+  EDGE_ZONES_GALLERY_MARK_URL_DARK,
+} from '@/lib/marketing/edgezones-network-index'
 
 /** Hero lockup — DCC × Edge Zones logos, legible on light and dark backgrounds. */
 export function EdgeZonesPartnershipLockup() {
@@ -15,7 +18,14 @@ export function EdgeZonesPartnershipLockup() {
           alt=""
           width={120}
           height={120}
-          className="h-16 w-auto max-w-full object-contain sm:h-20"
+          className="h-16 w-auto max-w-full object-contain sm:h-20 dark:hidden"
+        />
+        <Image
+          src={EDGE_ZONES_GALLERY_MARK_URL_DARK}
+          alt=""
+          width={120}
+          height={120}
+          className="hidden h-16 w-auto max-w-full object-contain sm:h-20 dark:block"
         />
       </div>
       <span className="shrink-0 text-lg font-light text-neutral-400 dark:text-neutral-500">×</span>

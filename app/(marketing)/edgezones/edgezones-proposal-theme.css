@@ -7,6 +7,8 @@
   --ez-ink: #0a0a0a;
   --ez-muted: #4a4a4a;
   --ez-body-fg: #2a2a2a;
+  --ez-edgezones-mark-watermark: url('https://res.cloudinary.com/dck5rzi4h/image/upload/e_brightness:100/o_8/v1783701153/dccmiami/logo/edge-zones-logo-transparent-square_wl5cru.webp');
+  --ez-edgezones-card-watermark: url('https://res.cloudinary.com/dck5rzi4h/image/upload/e_brightness:100/o_10/v1783701153/dccmiami/logo/edge-zones-logo-transparent-square_wl5cru.webp');
   --ez-border: #1a1a1a;
   --ez-blue: #0066ff;
   --ez-green: #39ff14;
@@ -31,6 +33,8 @@
   --ez-ink: #f4f1ea;
   --ez-muted: #b0aaa0;
   --ez-body-fg: #d8d2c8;
+  --ez-edgezones-mark-watermark: url('https://res.cloudinary.com/dck5rzi4h/image/upload/e_brightness:100/o_12/v1783711647/dccmiami/logo/edge-zones-logo-transparent-square-white-text_p51wvh.png');
+  --ez-edgezones-card-watermark: url('https://res.cloudinary.com/dck5rzi4h/image/upload/e_brightness:100/o_14/v1783711647/dccmiami/logo/edge-zones-logo-transparent-square-white-text_p51wvh.png');
   --ez-border: #3d3a34;
   --ez-blue: #4d9bff;
   --ez-green: #5fff45;
@@ -276,7 +280,14 @@
 }
 
 :not(.dark) .ez-proposal .ez-portrait-logo {
-  background-image: url('https://res.cloudinary.com/dck5rzi4h/image/upload/e_brightness:100/o_8/v1783701153/dccmiami/logo/edge-zones-logo-transparent-square_wl5cru.webp');
+  background-image: var(--ez-edgezones-mark-watermark);
+  background-repeat: no-repeat;
+  background-position: right 0.35rem bottom 0.35rem;
+  background-size: 28px;
+}
+
+.dark .ez-proposal .ez-portrait-logo {
+  background-image: var(--ez-edgezones-mark-watermark);
   background-repeat: no-repeat;
   background-position: right 0.35rem bottom 0.35rem;
   background-size: 28px;
@@ -287,15 +298,11 @@
 }
 
 .ez-proposal .ez-card-watermark {
-  background-image: url('https://res.cloudinary.com/dck5rzi4h/image/upload/e_brightness:100/o_10/v1783701153/dccmiami/logo/edge-zones-logo-transparent-square_wl5cru.webp');
+  background-image: var(--ez-edgezones-card-watermark);
   background-repeat: no-repeat;
   background-position: calc(100% - 0.85rem) calc(100% - 0.85rem);
   background-size: 44px;
   opacity: 1;
-}
-
-.dark .ez-proposal .ez-card-watermark {
-  opacity: 0;
 }
 
 .ez-proposal .ez-module-number {
@@ -687,7 +694,7 @@
 .ez-proposal .ez-hero-collage {
   will-change: transform;
 }
-/* Key theme cards — hover keywords + shared icon stage; description stays visible */
+/* Key theme cards — text block stays above a dedicated keyword zone */
 .ez-proposal .ez-theme-card {
   position: relative;
   overflow: hidden;
@@ -699,6 +706,12 @@
     transform 0.35s ease;
 }
 
+.ez-proposal .ez-theme-body {
+  position: relative;
+  z-index: 3;
+  flex: 1 1 auto;
+}
+
 .ez-proposal .ez-theme-content {
   position: relative;
   z-index: 3;
@@ -708,7 +721,18 @@
   position: relative;
   z-index: 2;
   padding-right: 0.25rem;
+  line-height: 1.65;
   transition: color 0.25s ease;
+}
+
+.ez-proposal .ez-theme-keywords {
+  pointer-events: none;
+  border-top: 1px solid rgb(0 0 0 / 0.06);
+  padding-top: 0.85rem;
+}
+
+.dark .ez-proposal .ez-theme-keywords {
+  border-top-color: rgb(255 255 255 / 0.08);
 }
 
 .ez-proposal .ez-theme-card:hover .ez-theme-description,
