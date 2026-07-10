@@ -39,7 +39,7 @@ export function EdgeZonesRolesMatrix({ locale }: { locale: EdgeZonesLocale }) {
             const portrait = partnershipPortraitFor(col.title)
             const imageFit = portrait?.imageFit ?? 'cover'
             const accent = col.accent as EdgeZonesRoleAccent
-            const RoleIcon = EDGE_ZONES_ROLE_ACCENT_ICONS[accent]
+            const roleIcon = EDGE_ZONES_ROLE_ACCENT_ICONS[accent]
 
             return (
               <li
@@ -62,7 +62,7 @@ export function EdgeZonesRolesMatrix({ locale }: { locale: EdgeZonesLocale }) {
                 ) : null}
                 <div className="flex items-center gap-2">
                   <EdgeZonesIconBadge
-                    icon={RoleIcon}
+                    icon={roleIcon}
                     accent={col.accent as EdgeZonesIconAccent}
                     size="compact"
                   />

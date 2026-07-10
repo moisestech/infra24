@@ -1,10 +1,9 @@
-import type { LucideIcon } from 'lucide-react'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
-import type { EdgeZonesIconAccent } from '@/lib/marketing/edgezones-icons'
+import type { EdgeZonesIconAccent, EdgeZonesIconName } from '@/lib/marketing/edgezones-icons'
 import { cn } from '@/lib/utils'
 
 type Props = {
-  icon: LucideIcon
+  icon: EdgeZonesIconName
   title: string
   intro?: string
   accent?: EdgeZonesIconAccent

@@ -65,10 +65,10 @@ export function EdgeZonesArchiveSection({ locale }: { locale: EdgeZonesLocale })
         />
         <ul className="mt-8 grid gap-3 sm:grid-cols-2">
           {archive.deliverables.map((item) => {
-            const ItemIcon = edgeZonesArchiveDeliverableIcon(item)
+            const itemIcon = edgeZonesArchiveDeliverableIcon(item)
             return (
               <li key={item} className="ez-card flex items-start gap-3 p-4">
-                <EdgeZonesIconBadge icon={ItemIcon} accent="teal" size="compact" />
+                <EdgeZonesIconBadge icon={itemIcon} accent="teal" size="compact" />
                 <span className="ez-body">{item}</span>
               </li>
             )

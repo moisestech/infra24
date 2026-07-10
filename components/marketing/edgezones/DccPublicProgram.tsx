@@ -35,10 +35,10 @@ export function DccPublicProgram({ locale }: { locale: EdgeZonesLocale }) {
         <h3 className="ez-heading ez-subsection-title mt-8">{ui.possibleFormats}</h3>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {program.formats.map((format) => {
-            const FormatIcon = edgeZonesProgramFormatIcon(format)
+            const formatIcon = edgeZonesProgramFormatIcon(format)
             return (
               <li key={format} className="ez-card flex items-start gap-3 p-4">
-                <EdgeZonesIconBadge icon={FormatIcon} accent="indigo" size="compact" />
+                <EdgeZonesIconBadge icon={formatIcon} accent="indigo" size="compact" />
                 <span className="ez-body">{format}</span>
               </li>
             )

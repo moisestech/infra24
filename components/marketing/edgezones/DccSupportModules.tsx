@@ -23,7 +23,7 @@ export function DccSupportModules({ locale }: { locale: EdgeZonesLocale }) {
 
         <ul className="mt-10 grid gap-4 sm:grid-cols-2">
           {support.modules.map((module) => {
-            const Icon = EDGE_ZONES_SUPPORT_ICONS[module.icon]
+            const iconName = EDGE_ZONES_SUPPORT_ICONS[module.icon]
             const statusClass = edgeZonesModuleStatusClass(module.status)
             const statusLabel = edgeZonesModuleStatusLabel(module.status, locale)
             const inner = (
@@ -31,7 +31,7 @@ export function DccSupportModules({ locale }: { locale: EdgeZonesLocale }) {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
                     <span className="ez-module-number mt-1.5">{module.number}</span>
-                    <EdgeZonesIconBadge icon={Icon} accent={module.accent} />
+                    <EdgeZonesIconBadge icon={iconName} accent={module.accent} />
                   </div>
                   <span className={cn('rounded px-2.5 py-1', statusClass)}>{statusLabel}</span>
                 </div>

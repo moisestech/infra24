@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
+import { EdgeZonesIcon } from '@/components/marketing/edgezones/EdgeZonesIcon'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
 import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
@@ -40,11 +41,11 @@ export function TouchingGrassConcept({ locale }: { locale: EdgeZonesLocale }) {
 
         <div className="mt-8 flex flex-wrap items-center gap-2">
           {concept.diagram.map((step, i) => {
-            const StepIcon = EDGE_ZONES_CONCEPT_DIAGRAM_ICONS[i]
+            const stepIcon = EDGE_ZONES_CONCEPT_DIAGRAM_ICONS[i]
             return (
               <span key={step} className="flex items-center gap-2">
                 <span className="ez-chip inline-flex items-center gap-2 rounded px-3 py-1.5">
-                  {StepIcon ? <StepIcon className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+                  {stepIcon ? <EdgeZonesIcon name={stepIcon} className="h-3.5 w-3.5 shrink-0" strokeWidth={2} /> : null}
                   {step}
                 </span>
                 {i < concept.diagram.length - 1 ? (
@@ -58,11 +59,11 @@ export function TouchingGrassConcept({ locale }: { locale: EdgeZonesLocale }) {
         <h3 className="ez-heading ez-subsection-title mt-10">{ui.keyThemes}</h3>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {concept.themes.map((theme) => {
-            const ThemeIcon = edgeZonesConceptThemeIcon(theme.label)
+            const themeIcon = edgeZonesConceptThemeIcon(theme.label)
             return (
               <li key={theme.label} className="ez-card p-5">
                 <div className="flex items-start gap-3">
-                  <EdgeZonesIconBadge icon={ThemeIcon} accent="indigo" size="compact" />
+                  <EdgeZonesIconBadge icon={themeIcon} accent="indigo" size="compact" />
                   <div>
                     <p className="ez-heading ez-caption text-[var(--ez-blue)]">{theme.label}</p>
                     <p className="ez-body mt-2 text-[var(--ez-muted)]">{theme.description}</p>

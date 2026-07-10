@@ -1,19 +1,22 @@
-import type { LucideIcon } from 'lucide-react'
+'use client'
+
+import { EdgeZonesIcon } from '@/components/marketing/edgezones/EdgeZonesIcon'
 import {
   EDGE_ZONES_ICON_RING,
   type EdgeZonesIconAccent,
+  type EdgeZonesIconName,
 } from '@/lib/marketing/edgezones-icons'
 import { cn } from '@/lib/utils'
 
 type Props = {
-  icon: LucideIcon
+  icon: EdgeZonesIconName
   accent?: EdgeZonesIconAccent
   size?: 'default' | 'compact'
   className?: string
 }
 
 export function EdgeZonesIconBadge({
-  icon: Icon,
+  icon,
   accent = 'teal',
   size = 'default',
   className,
@@ -30,7 +33,7 @@ export function EdgeZonesIconBadge({
         className
       )}
     >
-      <Icon className={glyph} strokeWidth={2.25} aria-hidden />
+      <EdgeZonesIcon name={icon} className={glyph} />
     </span>
   )
 }

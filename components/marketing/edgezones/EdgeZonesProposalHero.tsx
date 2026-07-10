@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Sparkles } from 'lucide-react'
+import { EdgeZonesIcon } from '@/components/marketing/edgezones/EdgeZonesIcon'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
 import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
 import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
@@ -19,7 +19,7 @@ export function EdgeZonesProposalHero({ locale }: Props) {
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(340px,520px)] lg:items-start">
           <div>
             <p className="ez-heading ez-caption flex items-center gap-2 text-[var(--ez-muted)]">
-              <EdgeZonesIconBadge icon={Sparkles} accent="teal" size="compact" />
+              <EdgeZonesIconBadge icon="sparkles" accent="teal" size="compact" />
               {hero.eyebrow}
             </p>
             <h1 className="ez-display mt-4 text-5xl sm:text-6xl lg:text-[4rem]">{hero.title}</h1>
@@ -34,7 +34,7 @@ export function EdgeZonesProposalHero({ locale }: Props) {
             </p>
             <ul className="mt-5 flex flex-wrap gap-2">
               {hero.statusChips.map((chip, i) => {
-                const ChipIcon = EDGE_ZONES_HERO_CHIP_ICONS[i] ?? Sparkles
+                const chipIcon = EDGE_ZONES_HERO_CHIP_ICONS[i] ?? 'sparkles'
                 return (
                   <li
                     key={chip}
@@ -45,7 +45,7 @@ export function EdgeZonesProposalHero({ locale }: Props) {
                       i === 2 && 'ez-chip-green'
                     )}
                   >
-                    <ChipIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                    <EdgeZonesIcon name={chipIcon} className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
                     {chip}
                   </li>
                 )
@@ -53,14 +53,14 @@ export function EdgeZonesProposalHero({ locale }: Props) {
             </ul>
             <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
               {primaryCtas.map((cta) => {
-                const CtaIcon = EDGE_ZONES_CTA_ICONS_BY_HREF[cta.href]
+                const ctaIcon = EDGE_ZONES_CTA_ICONS_BY_HREF[cta.href]
                 return (
                   <a
                     key={cta.href}
                     href={cta.href}
                     className="ez-btn-primary inline-flex min-h-12 items-center justify-center gap-2 px-5 py-2.5 transition"
                   >
-                    {CtaIcon ? <CtaIcon className="h-4 w-4 shrink-0" aria-hidden /> : null}
+                    {ctaIcon ? <EdgeZonesIcon name={ctaIcon} className="h-4 w-4 shrink-0" strokeWidth={2} /> : null}
                     {cta.label}
                   </a>
                 )
