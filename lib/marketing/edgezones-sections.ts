@@ -1,16 +1,6 @@
 /** Printed PDF pathways → on-page anchor ids on /edgezones */
 
-export const EDGE_ZONES_SECTION_PATHS = [
-  'exhibition',
-  'artists',
-  'support',
-  'vision',
-  'programs',
-  'studio-visits',
-  'archive',
-  'publishing',
-  'join',
-] as const
+export const EDGE_ZONES_SECTION_PATHS = ['artists', 'support', 'programs', 'archive', 'pdf'] as const
 
 export type EdgeZonesSectionPath = (typeof EDGE_ZONES_SECTION_PATHS)[number]
 

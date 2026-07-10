@@ -76,7 +76,7 @@ export const TOUCHING_GRASS_EXHIBITION: EdgeZonesExhibitionConfig = {
   },
   location: 'Edge Zones Gallery, Miami',
   dates: 'Dates TBD',
-  ctaUrl: '/edgezones#exhibition',
+  ctaUrl: '/edgezones#concept',
   artistNames: EXHIBITION_ARTIST_NAMES,
   curatorialBlurb: JORDAN_HORTON_CURATOR_STATEMENT,
   spokenAnswer: `Touching Grass is a group exhibition curated by Jordan Horton at Edge Zones Gallery, supported by DCC Miami. Dates are still being confirmed. Jordan Horton writes: "${JORDAN_HORTON_CURATOR_STATEMENT.slice(0, 120)}…" Featuring ${EXHIBITION_ARTIST_NAMES.join(', ')}.`,

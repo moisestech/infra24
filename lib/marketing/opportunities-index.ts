@@ -105,7 +105,7 @@ export const OPPORTUNITY_ENTRIES: OpportunityEntry[] = [
     title: 'Touching Grass (working title)',
     description:
       'Jordan Horton curates a group exhibition at Edge Zones Gallery with DCC Miami — technology, AFK presence, and disconnecting. Dates TBD.',
-    href: '/edgezones#exhibition',
+    href: '/edgezones#concept',
     status: 'coming_soon',
     indexable: false,
     tags: ['exhibition', 'edge-zones'],

@@ -73,7 +73,7 @@ describe('applyShowcaseExhibitionResponse for dcc', () => {
     expect(result.artists?.[0]?.name).toBe('Jordan Horton')
     expect(result.artists?.some((a) => a.name === 'Fabiola Larios')).toBe(true)
     expect(result.events?.[0]?.title).toBe('Touching Grass')
-    expect(result.events?.[0]?.ctaUrl).toBe('/edgezones#exhibition')
+    expect(result.events?.[0]?.ctaUrl).toBe('/edgezones#concept')
     expect(result.events?.[0]?.curator).toBe('Jordan Horton')
     expect(TOUCHING_GRASS_EXHIBITION.galleryImages.length).toBeGreaterThan(0)
   })

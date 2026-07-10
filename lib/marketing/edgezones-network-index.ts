@@ -11,7 +11,7 @@ import type { EdgeZonesArtistProfile } from '@/lib/marketing/edgezones-artists'
 export const EDGE_ZONES_GALLERY_MARK_URL =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1783701153/dccmiami/logo/edge-zones-logo-transparent-square_wl5cru.webp' as const
 
-export const EDGE_ZONES_GALLERY_WEBSITE = 'https://edgezones.gallery' as const
+export const EDGE_ZONES_GALLERY_WEBSITE = 'https://edgezones.org' as const
 
 /**
  * Jordan Horton portrait — upload to this Cloudinary path when available.
@@ -57,6 +57,8 @@ export type EdgeZonesNetworkIndexEntry = Omit<EdgeZonesArtistProfile, 'id' | 'pr
   /** Stable key for merge with Airtable */
   slug: string
   practiceTags?: string[]
+  materialsStatus?: 'complete' | 'pending'
+  workImageUrl?: string
 }
 
 /** Public PDF asset — place file at public/docs/dcc-edgezones-partnership.pdf */
@@ -67,7 +69,7 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     slug: 'edge-zones-gallery',
     name: 'Edge Zones Gallery',
     roleType: 'Physical host space',
-    bio: 'Miami gallery and programming space hosting the partnership exhibition and on-site public programs.',
+    bio: 'Experimental art space and gallery in Miami supporting exhibitions, performances, and cultural programming.',
     instagram: 'edgezonesgallery',
     website: EDGE_ZONES_GALLERY_WEBSITE,
     imageUrl: EDGE_ZONES_GALLERY_MARK_URL,
@@ -76,7 +78,7 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     slug: 'jordan-horton',
     name: 'Jordan Horton',
     roleType: 'Curator',
-    bio: 'Curator and art historian whose work focuses on internet subcultures, sonic and visual aesthetics, and institutional critique.',
+    bio: 'Invited curator for Touching Grass, shaping artist conversations, research, and exhibition direction.',
     instagram: 'horton.exe',
     imageUrl: JORDAN_HORTON_PORTRAIT_URL,
   },
@@ -84,8 +86,9 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     slug: 'adrienne-gionta',
     name: 'AdrienneRose Gionta',
     roleType: 'Artist',
-    bio: 'Miami-based artist working across installation, material culture, and expanded digital practice.',
+    bio: 'Oolite Residency alum, Wolfsonian Creative Fellow, and South Florida Cultural Consortium Grant awardee.',
     instagram: 'adrienne_rose_gionta',
+    materialsStatus: 'pending',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488961/dccmiami/portraits/AdrienneRose-Gionta-headshot-by-Lynton-Gardiner-2025-564x705_bhjm3t.jpg',
   },
@@ -93,9 +96,10 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     slug: 'fabiola-larios',
     name: 'Fabiola Larios',
     roleType: 'Artist',
-    bio: 'Net artist and educator exploring surveillance, obsolescence, and internet-native aesthetics.',
+    bio: 'Bakehouse artist-in-residence, Director of Digital at Oolite Arts, and online presence workshop educator.',
     instagram: 'fabiolalariosm',
     website: 'fabiola.io',
+    materialsStatus: 'pending',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777518148/dccmiami/portraits/fabiola-lariosm-profile_vuypf4.jpg',
   },
@@ -103,9 +107,10 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     slug: 'angelo-caruso',
     name: 'Angelo Caruso',
     roleType: 'Artist',
-    bio: 'Artist working at the intersection of sculpture, technology, and embodied digital experience.',
+    bio: 'Artist with recent exhibitions at Ritter Art Gallery and the Cultural Council of Palm Beach.',
     instagram: 'angelocaruso.art',
     website: 'angelocaruso.art',
+    materialsStatus: 'pending',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488560/dccmiami/portraits/angelo-caruso-portrait-from-exhibition_avht0i.png',
   },
@@ -113,9 +118,10 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     slug: 'moises-sanabria',
     name: 'Moises Sanabria',
     roleType: 'Artist · DCC Miami',
-    bio: 'Artist and platform lead building public digital culture infrastructure for Miami artists and audiences.',
+    bio: 'Bakehouse artist, Oolite Digital Lab Technical Director, and educator working across vibe coding, AI, digital systems, and contemporary art.',
     instagram: 'moisesdsanabria',
     website: 'moisesdsanabria.com',
+    materialsStatus: 'pending',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777511801/dccmiami/portraits/moises-pfp_dnn3d3.jpg',
   },
@@ -123,8 +129,9 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     slug: 'cynthia-cruz',
     name: 'Cynthia Cruz',
     roleType: 'Artist',
-    bio: 'Artist exploring memory, identity, and material presence through hybrid analog and digital forms.',
+    bio: 'Former digital art professor at New World School of the Arts, Knight Foundation Grant awardee, and Oolite Creator Award recipient.',
     instagram: 'cynthia.cruz.art',
+    materialsStatus: 'pending',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488805/dccmiami/portraits/CynthiaCruz-TheElliesWinners1478_RET_sRGBLESLIEGABALDON-705x705_xpilbo.jpg',
   },
@@ -132,9 +139,10 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     slug: 'violet-forest',
     name: 'Violet Forest',
     roleType: 'Artist',
-    bio: 'Artist working with feminist net art, software, and collaborative digital publishing.',
+    bio: 'New media artist and creative technologist with recent showings at Untitled Art Miami and Neort Gallery Tokyo.',
     instagram: 'violetforest',
     website: 'violetforest.info',
+    materialsStatus: 'pending',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488760/dccmiami/portraits/violet-forest-portrait_amk7o0.jpg',
   },

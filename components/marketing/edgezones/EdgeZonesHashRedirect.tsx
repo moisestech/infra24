@@ -12,12 +12,13 @@ type Props = {
 export function EdgeZonesHashRedirect({ section }: Props) {
   useEffect(() => {
     const target = edgeZonesSectionHref(section)
-    window.location.replace(target)
+    const query = window.location.search
+    window.location.replace(`${target}${query}`)
   }, [section])
 
   return (
-    <div className="flex min-h-[40vh] items-center justify-center px-4">
-      <p className="text-sm text-neutral-600 dark:text-neutral-400">Opening Edge Zones…</p>
+    <div className="flex min-h-[40vh] items-center justify-center bg-[var(--ez-paper,#f4f1ea)] px-4">
+      <p className="font-mono text-sm text-[var(--ez-muted,#4a4a4a)]">Opening Edge Zones…</p>
     </div>
   )
 }

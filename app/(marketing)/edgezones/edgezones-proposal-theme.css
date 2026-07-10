@@ -1,0 +1,227 @@
+/* Edge Zones proposal microsite — scoped light paper aesthetic */
+
+.ez-proposal {
+  --ez-paper: #f4f1ea;
+  --ez-paper-alt: #ebe6dc;
+  --ez-ink: #0a0a0a;
+  --ez-muted: #4a4a4a;
+  --ez-border: #1a1a1a;
+  --ez-blue: #0066ff;
+  --ez-green: #39ff14;
+  --ez-orange: #ff6b00;
+  --ez-scroll-mt: 7rem;
+
+  color: var(--ez-ink);
+  background-color: var(--ez-paper);
+}
+
+.ez-proposal .ez-section {
+  scroll-margin-top: var(--ez-scroll-mt);
+}
+
+.ez-proposal .ez-paper-grain {
+  background-color: var(--ez-paper);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+.ez-proposal .ez-scanlines::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgb(0 0 0 / 0.03) 2px,
+    rgb(0 0 0 / 0.03) 4px
+  );
+}
+
+.ez-proposal .ez-pixel-divider {
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ez-ink) 0,
+    var(--ez-ink) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.ez-proposal .ez-heading {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.ez-proposal .ez-display {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.ez-proposal .ez-card {
+  border: 1px solid var(--ez-border);
+  background: #fff;
+}
+
+.ez-proposal .ez-module-number {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ez-muted);
+}
+
+.ez-proposal .ez-status-live {
+  border: 1px solid var(--ez-green);
+  background: rgb(57 255 20 / 0.12);
+  color: #0a3d00;
+  font-family: ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.ez-proposal .ez-status-dev {
+  border: 1px solid var(--ez-blue);
+  background: rgb(0 102 255 / 0.1);
+  color: #003080;
+  font-family: ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.ez-proposal .ez-status-materials {
+  border: 1px solid var(--ez-orange);
+  background: rgb(255 107 0 / 0.1);
+  color: #803800;
+  font-family: ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.ez-proposal .ez-status-soon {
+  border: 1px solid var(--ez-muted);
+  background: rgb(0 0 0 / 0.04);
+  color: var(--ez-muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.ez-proposal .ez-chip {
+  border: 1px solid var(--ez-border);
+  background: #fff;
+  font-family: ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.ez-proposal .ez-chip-blue {
+  border-color: var(--ez-blue);
+  color: var(--ez-blue);
+}
+
+.ez-proposal .ez-chip-green {
+  border-color: #0a6b0a;
+  color: #0a6b0a;
+}
+
+.ez-proposal .ez-chip-orange {
+  border-color: var(--ez-orange);
+  color: var(--ez-orange);
+}
+
+.ez-proposal .ez-btn-primary {
+  border: 1px solid var(--ez-ink);
+  background: var(--ez-ink);
+  color: #fff;
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ez-proposal .ez-btn-primary:hover {
+  background: var(--ez-blue);
+  border-color: var(--ez-blue);
+}
+
+.ez-proposal .ez-btn-outline {
+  border: 1px solid var(--ez-border);
+  background: #fff;
+  color: var(--ez-ink);
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ez-proposal .ez-btn-outline:hover {
+  border-color: var(--ez-blue);
+  color: var(--ez-blue);
+}
+
+.ez-proposal .ez-accent-block-blue {
+  background: rgb(0 102 255 / 0.15);
+  border-left: 3px solid var(--ez-blue);
+}
+
+.ez-proposal .ez-accent-block-green {
+  background: rgb(57 255 20 / 0.12);
+  border-left: 3px solid var(--ez-green);
+}
+
+.ez-proposal .ez-accent-block-orange {
+  background: rgb(255 107 0 / 0.12);
+  border-left: 3px solid var(--ez-orange);
+}
+
+.ez-proposal .ez-work-placeholder {
+  border: 1px dashed var(--ez-border);
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    rgb(0 0 0 / 0.03) 4px,
+    rgb(0 0 0 / 0.03) 8px
+  );
+  font-family: ui-monospace, monospace;
+  font-size: 0.65rem;
+  color: var(--ez-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ez-proposal .ez-grid-bg {
+  background-image:
+    linear-gradient(to right, rgb(0 0 0 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(0 0 0 / 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ez-proposal * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.ez-banner-scrim {
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 0.55) 0%,
+    rgb(0 0 0 / 0.12) 45%,
+    transparent 72%
+  );
+}

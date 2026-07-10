@@ -61,7 +61,7 @@ export function EdgeZonesContactStrip({ className }: Props) {
             rel="noopener noreferrer"
             className="text-center text-xs font-medium text-teal-800 hover:underline dark:text-teal-300 sm:text-right"
           >
-            edgezones.gallery →
+            edgezones.org →
           </Link>
         </div>
       </div>
