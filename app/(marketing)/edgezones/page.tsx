@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { PageHero, Section } from '@/components/marketing/cdc'
 import { EdgeZonesAttributionSeed } from '@/components/marketing/edgezones/EdgeZonesAttributionSeed'
 import { EdgeZonesJoinSection } from '@/components/marketing/edgezones/EdgeZonesJoinSection'
+import { EdgeZonesPartnershipLockup } from '@/components/marketing/edgezones/EdgeZonesPartnershipLockup'
 import { EdgeZonesAnchorNav, EdgeZonesArtistGrid, EdgeZonesPortrait, EdgeZonesRoleCard } from '@/components/marketing/edgezones/EdgeZonesSections'
 import { DccSignupAttributionCapture } from '@/components/dcc/signup/DccSignupAttributionCapture'
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes'
@@ -22,7 +23,9 @@ export const metadata: Metadata = {
 
 export default async function EdgeZonesPortalPage() {
   const { artists, filterNote } = await fetchEdgeZonesArtists()
-  const exhibitionArtists = artists.filter((artist) => artist.roleType !== 'Curator')
+  const exhibitionArtists = artists.filter(
+    (artist) => artist.roleType !== 'Curator' && artist.roleType !== 'Physical host space'
+  )
   const { sections } = edgeZonesPortal
 
   return (
@@ -37,38 +40,39 @@ export default async function EdgeZonesPortalPage() {
         description={`${edgeZonesPortal.subtitle}. ${edgeZonesPortal.mission}`}
         breadcrumbs={getCdcBreadcrumbs(path)}
         anchorId="top"
+        trailing={<EdgeZonesPartnershipLockup />}
       />
 
       <div className="border-b border-[var(--cdc-border)] bg-[#fafafa] dark:border-neutral-800 dark:bg-neutral-950">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-6 py-8 sm:flex-row sm:items-end sm:justify-between">
-            <ul className="grid gap-4 sm:grid-cols-3 sm:gap-6">
+          <div className="py-8">
+            <ul className="grid gap-4 md:grid-cols-3 md:gap-6">
               {edgeZonesPortal.roles.map((role) => (
                 <EdgeZonesRoleCard key={role.name} {...role} />
               ))}
             </ul>
           </div>
 
-          <div className="flex flex-wrap gap-3 pb-8">
+          <div className="flex flex-col gap-2 pb-8 sm:flex-row sm:flex-wrap sm:gap-3">
             {edgeZonesPortal.primaryCtas.map((cta) => (
               <a
                 key={cta.href}
                 href={cta.href}
-                className="inline-flex items-center rounded-full bg-[var(--cdc-teal)] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--cdc-teal)] px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 sm:justify-start"
               >
                 {cta.label}
               </a>
             ))}
             <Link
               href={sections.join.signupHref}
-              className="inline-flex items-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-semibold text-neutral-800 transition hover:border-[var(--cdc-teal)] hover:text-[var(--cdc-teal)] dark:border-neutral-600 dark:text-neutral-100"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-semibold text-neutral-800 transition hover:border-[var(--cdc-teal)] hover:text-[var(--cdc-teal)] dark:border-neutral-600 dark:text-neutral-100 sm:justify-start"
             >
               {sections.join.signupLabel}
             </Link>
             <a
               href={EDGE_ZONES_PARTNERSHIP_PDF_PATH}
               download
-              className="inline-flex items-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-semibold text-neutral-800 transition hover:border-[var(--cdc-teal)] hover:text-[var(--cdc-teal)] dark:border-neutral-600 dark:text-neutral-100"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-semibold text-neutral-800 transition hover:border-[var(--cdc-teal)] hover:text-[var(--cdc-teal)] dark:border-neutral-600 dark:text-neutral-100 sm:justify-start"
             >
               Download Partnership PDF
             </a>
@@ -97,7 +101,7 @@ export default async function EdgeZonesPortalPage() {
         </div>
 
         <figure className="mt-8 max-w-3xl">
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
             <EdgeZonesPortrait
               name={edgeZonesPortal.exhibition.curator}
               imageUrl={edgeZonesPortal.exhibition.curatorImageUrl}
@@ -114,10 +118,29 @@ export default async function EdgeZonesPortalPage() {
               </p>
             </figcaption>
           </div>
-          <blockquote className="mt-6 border-l-4 border-[var(--cdc-teal)] pl-5 text-base leading-relaxed text-neutral-700 dark:text-neutral-300">
+          <blockquote className="mt-6 border-l-4 border-[var(--cdc-teal)] pl-4 text-base leading-relaxed text-neutral-700 sm:pl-5 dark:text-neutral-300">
             <p>&ldquo;{edgeZonesPortal.exhibition.curatorStatementQuote}&rdquo;</p>
           </blockquote>
         </figure>
+
+        <div className="mt-10 grid max-w-3xl gap-4 sm:grid-cols-3">
+          {Object.entries(edgeZonesPortal.exhibition.partnershipImages).map(([key, image]) => (
+            <div
+              key={key}
+              className="flex flex-col items-center rounded-xl border border-[var(--cdc-border)] bg-[#fafafa] p-4 text-center dark:border-neutral-800 dark:bg-neutral-900"
+            >
+              <EdgeZonesPortrait
+                name={image.alt}
+                imageUrl={image.url}
+                imageAlt={image.alt}
+                imageFit={image.fit}
+                size="logo"
+                className="mx-auto"
+              />
+              <p className="mt-3 text-xs font-medium uppercase tracking-wide text-neutral-500">{image.alt}</p>
+            </div>
+          ))}
+        </div>
 
         <ul className="mt-10 grid gap-4 sm:grid-cols-3">
           {edgeZonesPortal.roles.map((role) => (

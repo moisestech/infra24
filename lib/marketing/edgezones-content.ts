@@ -1,7 +1,7 @@
 /** Copy + structure for DCC Miami × Edge Zones partnership portal (/edgezones). */
 
 import { TOUCHING_GRASS_EXHIBITION } from '@/lib/marketing/edgezones-exhibition'
-import { partnershipPortraitFor } from '@/lib/marketing/edgezones-network-index'
+import { EDGE_ZONES_GALLERY_WEBSITE, partnershipPortraitFor } from '@/lib/marketing/edgezones-network-index'
 
 export type EdgeZonesModuleStatus = 'live' | 'coming-soon'
 
@@ -12,6 +12,8 @@ export type EdgeZonesPortalRole = {
   imageUrl: string
   imageAlt: string
   imageFit: 'cover' | 'contain'
+  href?: string
+  hrefLabel?: string
 }
 
 export type EdgeZonesSupportModule = {
@@ -34,6 +36,8 @@ export const edgeZonesPortal = {
       name: 'Edge Zones',
       role: 'Physical host space',
       description: 'Gallery, programming, and on-site experience.',
+      href: EDGE_ZONES_GALLERY_WEBSITE,
+      hrefLabel: 'edgezones.gallery',
       ...partnershipPortraitFor('Edge Zones')!,
     },
     {

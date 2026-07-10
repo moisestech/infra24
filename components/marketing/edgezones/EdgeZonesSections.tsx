@@ -9,7 +9,7 @@ export type EdgeZonesPortraitProps = {
   imageUrl?: string
   imageAlt?: string
   imageFit?: 'cover' | 'contain'
-  size?: 'md' | 'lg'
+  size?: 'md' | 'lg' | 'logo'
   className?: string
 }
 
@@ -28,7 +28,12 @@ export function EdgeZonesPortrait({
     .join('')
     .toUpperCase()
 
-  const sizeClass = size === 'lg' ? 'h-24 w-24 text-base' : 'h-20 w-20 text-sm'
+  const sizeClass =
+    size === 'logo'
+      ? 'h-28 w-28 text-base sm:h-32 sm:w-32'
+      : size === 'lg'
+        ? 'h-24 w-24 text-base'
+        : 'h-20 w-20 text-sm'
 
   if (!imageUrl) {
     return (
@@ -51,8 +56,10 @@ export function EdgeZonesPortrait({
         src={imageUrl}
         alt={imageAlt ?? name}
         className={cn(
-          'h-full w-full rounded-xl bg-white object-center dark:bg-neutral-900',
-          imageFit === 'contain' ? 'object-contain p-2' : 'object-cover'
+          'h-full w-full rounded-xl object-center',
+          imageFit === 'contain'
+            ? 'border border-neutral-200 bg-white object-contain p-3 dark:border-neutral-700 dark:bg-neutral-950'
+            : 'bg-white object-cover dark:bg-neutral-900'
         )}
         onError={(event) => {
           event.currentTarget.style.display = 'none'
@@ -88,6 +95,8 @@ export type EdgeZonesRoleCardProps = {
   imageUrl: string
   imageAlt: string
   imageFit: 'cover' | 'contain'
+  href?: string
+  hrefLabel?: string
   className?: string
 }
 
@@ -98,6 +107,8 @@ export function EdgeZonesRoleCard({
   imageUrl,
   imageAlt,
   imageFit,
+  href,
+  hrefLabel = 'Visit site',
   className,
 }: EdgeZonesRoleCardProps) {
   return (
@@ -107,20 +118,30 @@ export function EdgeZonesRoleCard({
         className
       )}
     >
-      <div className="flex gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <EdgeZonesPortrait
           name={name}
           imageUrl={imageUrl}
           imageAlt={imageAlt}
           imageFit={imageFit}
-          size="lg"
+          size={imageFit === 'contain' ? 'logo' : 'lg'}
         />
         <div className="min-w-0">
           <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{name}</p>
           <p className="mt-1 text-xs font-medium uppercase tracking-wide text-[var(--cdc-teal)]">
             {role}
           </p>
-          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300">{description}</p>
+          <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">{description}</p>
+          {href ? (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-[var(--cdc-teal)] hover:underline"
+            >
+              {hrefLabel} →
+            </a>
+          ) : null}
         </div>
       </div>
     </li>
@@ -238,12 +259,12 @@ export function EdgeZonesAnchorNav({ items, className }: AnchorNavProps) {
         className
       )}
     >
-      <ul className="flex gap-2 overflow-x-auto pb-1 text-sm">
+      <ul className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 text-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((item) => (
           <li key={item.id} className="shrink-0">
             <a
               href={`#${item.id}`}
-              className="inline-flex rounded-full border border-neutral-200 px-3 py-1.5 font-medium text-neutral-700 transition hover:border-[var(--cdc-teal)] hover:text-[var(--cdc-teal)] dark:border-neutral-700 dark:text-neutral-300"
+              className="inline-flex min-h-11 items-center rounded-full border border-neutral-200 px-4 py-2 font-medium text-neutral-700 transition hover:border-[var(--cdc-teal)] hover:text-[var(--cdc-teal)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cdc-teal)] dark:border-neutral-700 dark:text-neutral-300"
             >
               {item.label}
             </a>

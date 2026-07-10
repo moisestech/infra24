@@ -7,8 +7,11 @@
 import { DCC_MIAMI_LOGO_URL_LIGHT } from '@/lib/marketing/cdc-brand'
 import type { EdgeZonesArtistProfile } from '@/lib/marketing/edgezones-artists'
 
-/** Edge Zones Gallery mark — replace with official logo in Cloudinary when available. */
-export const EDGE_ZONES_GALLERY_MARK_URL = '/marketing/edgezones/edge-zones-gallery-mark.png' as const
+/** Edge Zones Gallery logo — transparent square mark on Cloudinary. */
+export const EDGE_ZONES_GALLERY_MARK_URL =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/v1783701153/dccmiami/logo/edge-zones-logo-transparent-square_wl5cru.webp' as const
+
+export const EDGE_ZONES_GALLERY_WEBSITE = 'https://edgezones.gallery' as const
 
 /**
  * Jordan Horton portrait — upload to this Cloudinary path when available.
@@ -66,7 +69,7 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     roleType: 'Physical host space',
     bio: 'Miami gallery and programming space hosting the partnership exhibition and on-site public programs.',
     instagram: 'edgezonesgallery',
-    website: 'edgezones.gallery',
+    website: EDGE_ZONES_GALLERY_WEBSITE,
     imageUrl: EDGE_ZONES_GALLERY_MARK_URL,
   },
   {
