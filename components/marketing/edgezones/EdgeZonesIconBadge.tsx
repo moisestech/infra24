@@ -1,12 +1,15 @@
 'use client'
 
 import { EdgeZonesIcon } from '@/components/marketing/edgezones/EdgeZonesIcon'
-import {
-  EDGE_ZONES_ICON_RING,
-  type EdgeZonesIconAccent,
-  type EdgeZonesIconName,
-} from '@/lib/marketing/edgezones-icons'
+import type { EdgeZonesIconAccent, EdgeZonesIconName } from '@/lib/marketing/edgezones-icons'
 import { cn } from '@/lib/utils'
+
+const RING_CLASS: Record<EdgeZonesIconAccent, string> = {
+  teal: 'ez-icon-ring-teal',
+  coral: 'ez-icon-ring-coral',
+  magenta: 'ez-icon-ring-magenta',
+  indigo: 'ez-icon-ring-indigo',
+}
 
 type Props = {
   icon: EdgeZonesIconName
@@ -29,7 +32,7 @@ export function EdgeZonesIconBadge({
       className={cn(
         'inline-flex shrink-0 items-center justify-center ring-1 ring-inset',
         box,
-        EDGE_ZONES_ICON_RING[accent],
+        RING_CLASS[accent],
         className
       )}
     >

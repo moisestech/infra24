@@ -1,13 +1,15 @@
-import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
+'use client'
+
 import { edgeZonesModuleStatusClass, edgeZonesModuleStatusLabel } from '@/lib/marketing/edgezones-content'
-import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
 import { EDGE_ZONES_SECTION_ICONS, EDGE_ZONES_SUPPORT_ICONS } from '@/lib/marketing/edgezones-icons'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
+import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import { cn } from '@/lib/utils'
 
-export function DccSupportModules({ locale }: { locale: EdgeZonesLocale }) {
-  const { sections, ui } = getEdgeZonesPortal(locale)
+export function DccSupportModules() {
+  const { locale, portal } = useEdgeZonesLocale()
+  const { sections, ui } = portal
   const { support } = sections
 
   return (

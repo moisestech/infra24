@@ -1,10 +1,11 @@
+'use client'
+
 import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { EdgeZonesIcon } from '@/components/marketing/edgezones/EdgeZonesIcon'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
-import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
-import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
+import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import {
   EDGE_ZONES_CONCEPT_DIAGRAM_ICONS,
   EDGE_ZONES_SECTION_ICONS,
@@ -12,8 +13,9 @@ import {
 } from '@/lib/marketing/edgezones-icons'
 import { EDGE_ZONES_BANNERS } from '@/lib/marketing/edgezones-media'
 
-export function TouchingGrassConcept({ locale }: { locale: EdgeZonesLocale }) {
-  const { concept, ui } = getEdgeZonesPortal(locale)
+export function TouchingGrassConcept() {
+  const { portal } = useEdgeZonesLocale()
+  const { concept, ui } = portal
   const banner = EDGE_ZONES_BANNERS.concept
 
   return (

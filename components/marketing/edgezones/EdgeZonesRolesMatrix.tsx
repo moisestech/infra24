@@ -1,10 +1,11 @@
+'use client'
+
 import Link from 'next/link'
 import { CheckCircle2, ExternalLink } from 'lucide-react'
 import { EdgeZonesPortrait } from '@/components/marketing/edgezones/EdgeZonesSections'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
-import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
-import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
+import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import {
   EDGE_ZONES_ROLE_ACCENT_ICONS,
   EDGE_ZONES_SECTION_ICONS,
@@ -20,8 +21,9 @@ const ACCENT_BORDER = {
   teal: 'border-t-[var(--ez-green)]',
 } as const
 
-export function EdgeZonesRolesMatrix({ locale }: { locale: EdgeZonesLocale }) {
-  const { rolesMatrix, ui } = getEdgeZonesPortal(locale)
+export function EdgeZonesRolesMatrix() {
+  const { portal } = useEdgeZonesLocale()
+  const { rolesMatrix, ui } = portal
   const columns = [rolesMatrix.edgeZones, rolesMatrix.jordanHorton, rolesMatrix.dccMiami]
 
   return (

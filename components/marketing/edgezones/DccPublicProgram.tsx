@@ -1,13 +1,15 @@
+'use client'
+
 import { CalendarClock, Mail } from 'lucide-react'
 import { EdgeZonesSectionBanner } from '@/components/marketing/edgezones/EdgeZonesSectionBanner'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
-import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
-import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
+import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import { EDGE_ZONES_SECTION_ICONS, edgeZonesProgramFormatIcon } from '@/lib/marketing/edgezones-icons'
 
-export function DccPublicProgram({ locale }: { locale: EdgeZonesLocale }) {
-  const { sections, ui } = getEdgeZonesPortal(locale)
+export function DccPublicProgram() {
+  const { portal } = useEdgeZonesLocale()
+  const { sections, ui } = portal
   const program = sections.publicProgram
 
   return (

@@ -11,6 +11,10 @@
   --ez-green: #39ff14;
   --ez-orange: #ff6b00;
   --ez-scroll-mt: 7rem;
+  --ez-btn-primary-bg: #0a0a0a;
+  --ez-btn-primary-fg: #ffffff;
+  --ez-btn-primary-border: #0a0a0a;
+  --ez-chip-green-fg: #0a6b0a;
 
   color: var(--ez-ink);
   background-color: var(--ez-paper);
@@ -29,6 +33,10 @@
   --ez-blue: #4d9bff;
   --ez-green: #5fff45;
   --ez-orange: #ff8c3a;
+  --ez-btn-primary-bg: #f4f1ea;
+  --ez-btn-primary-fg: #0a0a0a;
+  --ez-btn-primary-border: #f4f1ea;
+  --ez-chip-green-fg: #7dff70;
 }
 
 .dark .ez-proposal .ez-paper-grain {
@@ -298,8 +306,8 @@
 }
 
 .ez-proposal .ez-chip-green {
-  border-color: #0a6b0a;
-  color: #0a6b0a;
+  border-color: var(--ez-chip-green-fg);
+  color: var(--ez-chip-green-fg);
 }
 
 .ez-proposal .ez-chip-orange {
@@ -308,9 +316,9 @@
 }
 
 .ez-proposal .ez-btn-primary {
-  border: 1px solid var(--ez-ink);
-  background: var(--ez-ink);
-  color: #fff;
+  border: 1px solid var(--ez-btn-primary-border);
+  background: var(--ez-btn-primary-bg);
+  color: var(--ez-btn-primary-fg);
   font-family: ui-monospace, monospace;
   font-size: 0.9375rem;
   font-weight: 700;
@@ -321,6 +329,11 @@
 .ez-proposal .ez-btn-primary:hover {
   background: var(--ez-blue);
   border-color: var(--ez-blue);
+  color: #ffffff;
+}
+
+.dark .ez-proposal .ez-btn-primary:hover {
+  color: #ffffff;
 }
 
 .ez-proposal .ez-btn-outline {
@@ -444,8 +457,8 @@
 }
 
 .ez-proposal .ez-lang-btn-active {
-  background: var(--ez-ink);
-  color: var(--ez-paper);
+  background: var(--ez-btn-primary-bg);
+  color: var(--ez-btn-primary-fg);
 }
 
 .ez-proposal .ez-signup-form input,
@@ -461,9 +474,67 @@
 }
 
 .ez-proposal .ez-signup-form button[type='submit'] {
-  border-color: var(--ez-ink) !important;
-  background: var(--ez-ink) !important;
-  color: var(--ez-paper) !important;
+  border-color: var(--ez-btn-primary-border) !important;
+  background: var(--ez-btn-primary-bg) !important;
+  color: var(--ez-btn-primary-fg) !important;
+}
+
+.ez-proposal .ez-icon-ring-teal {
+  background: rgb(240 253 250);
+  color: rgb(17 94 89);
+  --tw-ring-color: rgb(153 246 228 / 0.8);
+}
+
+.ez-proposal .ez-icon-ring-coral {
+  background: rgb(255 247 237);
+  color: rgb(124 45 18);
+  --tw-ring-color: rgb(254 215 170 / 0.8);
+}
+
+.ez-proposal .ez-icon-ring-magenta {
+  background: rgb(253 244 255);
+  color: rgb(112 26 117);
+  --tw-ring-color: rgb(245 208 254 / 0.7);
+}
+
+.ez-proposal .ez-icon-ring-indigo {
+  background: rgb(238 242 255);
+  color: rgb(49 46 129);
+  --tw-ring-color: rgb(199 210 254 / 0.8);
+}
+
+.dark .ez-proposal .ez-icon-ring-teal {
+  background: rgb(4 47 46 / 0.7);
+  color: rgb(153 246 228);
+  --tw-ring-color: rgb(20 184 166 / 0.3);
+}
+
+.dark .ez-proposal .ez-icon-ring-coral {
+  background: rgb(67 20 7 / 0.6);
+  color: rgb(254 215 170);
+  --tw-ring-color: rgb(249 115 22 / 0.25);
+}
+
+.dark .ez-proposal .ez-icon-ring-magenta {
+  background: rgb(74 4 78 / 0.55);
+  color: rgb(245 208 254);
+  --tw-ring-color: rgb(217 70 239 / 0.25);
+}
+
+.dark .ez-proposal .ez-icon-ring-indigo {
+  background: rgb(30 27 75 / 0.6);
+  color: rgb(199 210 254);
+  --tw-ring-color: rgb(99 102 241 / 0.25);
+}
+
+.dark .ez-proposal .ez-book-pages {
+  background: repeating-linear-gradient(
+    180deg,
+    var(--ez-surface) 0,
+    var(--ez-surface) 2px,
+    var(--ez-paper-alt) 2px,
+    var(--ez-paper-alt) 4px
+  );
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,19 +1,20 @@
+'use client'
+
 import Image from 'next/image'
-import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
-import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
+import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import {
   EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_VIEW_URL,
   edgeZonesPartnershipPdfCover,
 } from '@/lib/marketing/edgezones-media'
 
 type Props = {
-  locale: EdgeZonesLocale
   className?: string
 }
 
 /** 3D booklet preview — cover art with spine and page edge. */
-export function PartnershipPdfBook({ locale, className }: Props) {
-  const { ui } = getEdgeZonesPortal(locale)
+export function PartnershipPdfBook({ className }: Props) {
+  const { portal } = useEdgeZonesLocale()
+  const { ui } = portal
   const cover = edgeZonesPartnershipPdfCover()
 
   return (

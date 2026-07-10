@@ -15,7 +15,6 @@ type Props = {
   host: EdgeZonesArtistProfile | null
   curator: EdgeZonesArtistProfile | null
   artists: EdgeZonesArtistProfile[]
-  filterNote?: string
 }
 
 function roleBadge(role: string, ui: EdgeZonesUiCopy) {
@@ -120,7 +119,7 @@ function NetworkCard({
   )
 }
 
-export function EdgeZonesNetworkIndex({ host, curator, artists, filterNote }: Props) {
+export function EdgeZonesNetworkIndex({ host, curator, artists }: Props) {
   const { portal } = useEdgeZonesLocale()
   const { artists: artistsCopy, ui } = portal
 
@@ -130,7 +129,7 @@ export function EdgeZonesNetworkIndex({ host, curator, artists, filterNote }: Pr
         <EdgeZonesSectionHeader
           icon={EDGE_ZONES_SECTION_ICONS.artists}
           title={artistsCopy.title}
-          intro={`${artistsCopy.intro}${filterNote ? ` (${filterNote})` : ''}`}
+          intro={artistsCopy.intro}
           accent="indigo"
           introClassName="max-w-2xl"
         />

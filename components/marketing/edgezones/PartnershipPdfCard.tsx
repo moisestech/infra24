@@ -1,35 +1,19 @@
+'use client'
+
 import { Download, ExternalLink } from 'lucide-react'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
 import { PartnershipPdfBook } from '@/components/marketing/edgezones/PartnershipPdfBook'
-import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
-import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
+import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import { EDGE_ZONES_SECTION_ICONS } from '@/lib/marketing/edgezones-icons'
 import {
   EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_DOWNLOAD_URL,
   EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_VIEW_URL,
 } from '@/lib/marketing/edgezones-media'
-import { existsSync, readFileSync } from 'fs'
-import path from 'path'
 
-function localPdfAvailable(): boolean {
-  try {
-    const filePath = path.join(process.cwd(), 'public', 'docs', 'dcc-edgezones-partnership.pdf')
-    if (!existsSync(filePath)) return false
-    const header = readFileSync(filePath).subarray(0, 5).toString('utf8')
-    return header.startsWith('%PDF')
-  } catch {
-    return false
-  }
-}
-
-export function PartnershipPdfCard({ locale }: { locale: EdgeZonesLocale }) {
-  const { sections, ui } = getEdgeZonesPortal(locale)
+export function PartnershipPdfCard() {
+  const { portal } = useEdgeZonesLocale()
+  const { sections, ui } = portal
   const { pdf } = sections
-  const hasLocalPdf = localPdfAvailable()
-  const viewUrl = hasLocalPdf ? '/docs/dcc-edgezones-partnership.pdf' : EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_VIEW_URL
-  const downloadUrl = hasLocalPdf
-    ? '/docs/dcc-edgezones-partnership.pdf'
-    : EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_DOWNLOAD_URL
 
   return (
     <section id="pdf" className="ez-section border-b border-[var(--ez-border)] bg-[var(--ez-paper-alt)]">
@@ -43,14 +27,14 @@ export function PartnershipPdfCard({ locale }: { locale: EdgeZonesLocale }) {
         />
 
         <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
-          <PartnershipPdfBook locale={locale} className="mx-auto shrink-0 lg:mx-0" />
+          <PartnershipPdfBook className="mx-auto shrink-0 lg:mx-0" />
 
           <div className="flex min-w-0 flex-1 flex-col gap-4">
             <p className="ez-body text-[var(--ez-muted)]">{ui.bookletDescription}</p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <a
-                href={downloadUrl}
+                href={EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_DOWNLOAD_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ez-btn-primary inline-flex min-h-12 items-center justify-center gap-2 px-5 py-2.5"
@@ -59,7 +43,7 @@ export function PartnershipPdfCard({ locale }: { locale: EdgeZonesLocale }) {
                 {ui.downloadPartnershipPdf}
               </a>
               <a
-                href={viewUrl}
+                href={EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_VIEW_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ez-btn-outline inline-flex min-h-12 items-center justify-center gap-2 px-5 py-2.5"

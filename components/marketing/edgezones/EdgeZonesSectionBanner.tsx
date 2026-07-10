@@ -1,6 +1,6 @@
+'use client'
+
 import Image from 'next/image'
-import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
-import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
 import { EDGE_ZONES_BANNERS, type EdgeZonesBannerKey } from '@/lib/marketing/edgezones-media'
 import {
   EDGE_ZONES_SECTION_ICONS,
@@ -8,6 +8,7 @@ import {
 } from '@/lib/marketing/edgezones-icons'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
+import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import { cn } from '@/lib/utils'
 
 type Props = {
@@ -24,7 +25,7 @@ export function EdgeZonesSectionBanner({ banner, caption, priority = false, clas
   return (
     <div
       className={cn(
-        'relative overflow-hidden border border-[var(--ez-border)] bg-white',
+        'relative overflow-hidden border border-[var(--ez-border)] bg-[var(--ez-surface)]',
         className
       )}
     >
@@ -48,8 +49,9 @@ export function EdgeZonesSectionBanner({ banner, caption, priority = false, clas
   )
 }
 
-export function EdgeZonesArchiveSection({ locale }: { locale: EdgeZonesLocale }) {
-  const { sections, ui } = getEdgeZonesPortal(locale)
+export function EdgeZonesArchiveSection() {
+  const { portal } = useEdgeZonesLocale()
+  const { sections, ui } = portal
   const { archive } = sections
 
   return (

@@ -1,16 +1,16 @@
+'use client'
+
 import Image from 'next/image'
 import { EdgeZonesIcon } from '@/components/marketing/edgezones/EdgeZonesIcon'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
-import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
-import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
+import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import { EDGE_ZONES_CTA_ICONS_BY_HREF, EDGE_ZONES_HERO_CHIP_ICONS } from '@/lib/marketing/edgezones-icons'
 import { edgeZonesHeroCollagePhotos } from '@/lib/marketing/edgezones-media'
 import { cn } from '@/lib/utils'
 
-type Props = { locale: EdgeZonesLocale }
-
-export function EdgeZonesProposalHero({ locale }: Props) {
-  const { hero, primaryCtas, creditLine } = getEdgeZonesPortal(locale)
+export function EdgeZonesProposalHero() {
+  const { portal } = useEdgeZonesLocale()
+  const { hero, primaryCtas, creditLine } = portal
   const collage = edgeZonesHeroCollagePhotos()
 
   return (

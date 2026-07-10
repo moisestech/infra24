@@ -54,7 +54,7 @@ export function EdgeZonesPortrait({
       className={cn(
         'relative shrink-0 overflow-hidden rounded-xl',
         sizeClass,
-        imageFit === 'contain' && 'ez-portrait-logo bg-white',
+        imageFit === 'contain' && 'ez-portrait-logo bg-[var(--ez-surface)]',
         className
       )}
     >
@@ -65,8 +65,8 @@ export function EdgeZonesPortrait({
         className={cn(
           'h-full w-full rounded-xl object-center',
           imageFit === 'contain'
-            ? 'ez-portrait-logo border border-neutral-200 bg-white object-contain p-4'
-            : 'bg-white object-cover'
+            ? 'ez-portrait-logo border border-[var(--ez-border)] bg-[var(--ez-surface)] object-contain p-4'
+            : 'bg-[var(--ez-surface)] object-cover'
         )}
         onError={(event) => {
           event.currentTarget.style.display = 'none'
