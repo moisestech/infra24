@@ -1,5 +1,8 @@
 import Image from 'next/image'
+import { Sparkles } from 'lucide-react'
+import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
 import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import { EDGE_ZONES_CTA_ICONS, EDGE_ZONES_HERO_CHIP_ICONS } from '@/lib/marketing/edgezones-icons'
 import { edgeZonesHeroCollagePhotos } from '@/lib/marketing/edgezones-media'
 import { cn } from '@/lib/utils'
 
@@ -12,42 +15,53 @@ export function EdgeZonesProposalHero() {
       <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(340px,520px)] lg:items-start">
           <div>
-            <p className="ez-heading text-xs text-[var(--ez-muted)]">{hero.eyebrow}</p>
-            <h1 className="ez-display mt-4 text-4xl sm:text-5xl lg:text-6xl">{hero.title}</h1>
-            <p className="ez-heading mt-3 text-lg text-[var(--ez-blue)] sm:text-xl">{hero.subtitle}</p>
-            <div className="mt-6 space-y-4 text-sm leading-relaxed text-[var(--ez-muted)]">
+            <p className="ez-heading ez-caption flex items-center gap-2 text-[var(--ez-muted)]">
+              <EdgeZonesIconBadge icon={Sparkles} accent="teal" size="compact" />
+              {hero.eyebrow}
+            </p>
+            <h1 className="ez-display mt-4 text-4xl sm:text-5xl lg:text-[3.75rem]">{hero.title}</h1>
+            <p className="ez-heading mt-3 text-xl text-[var(--ez-blue)] sm:text-2xl">{hero.subtitle}</p>
+            <div className="ez-body mt-6 space-y-4 text-[var(--ez-muted)]">
               {hero.intro.split('\n\n').map((p) => (
                 <p key={p.slice(0, 24)}>{p}</p>
               ))}
             </div>
-            <p className="mt-6 border-l-2 border-[var(--ez-ink)] pl-4 text-sm font-medium leading-relaxed">
+            <p className="ez-body mt-6 border-l-2 border-[var(--ez-ink)] pl-4 font-medium">
               {creditLine}
             </p>
             <ul className="mt-5 flex flex-wrap gap-2">
-              {hero.statusChips.map((chip, i) => (
-                <li
-                  key={chip}
-                  className={cn(
-                    'ez-chip rounded px-2.5 py-1',
-                    i === 0 && 'ez-chip-orange',
-                    i === 1 && 'ez-chip-blue',
-                    i === 2 && 'ez-chip-green'
-                  )}
-                >
-                  {chip}
-                </li>
-              ))}
+              {hero.statusChips.map((chip, i) => {
+                const ChipIcon = EDGE_ZONES_HERO_CHIP_ICONS[i] ?? Sparkles
+                return (
+                  <li
+                    key={chip}
+                    className={cn(
+                      'ez-chip inline-flex items-center gap-2 rounded px-3 py-1.5',
+                      i === 0 && 'ez-chip-orange',
+                      i === 1 && 'ez-chip-blue',
+                      i === 2 && 'ez-chip-green'
+                    )}
+                  >
+                    <ChipIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                    {chip}
+                  </li>
+                )
+              })}
             </ul>
             <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-              {primaryCtas.map((cta) => (
-                <a
-                  key={cta.href}
-                  href={cta.href}
-                  className="ez-btn-primary inline-flex min-h-11 items-center justify-center px-5 py-2.5 transition"
-                >
-                  {cta.label}
-                </a>
-              ))}
+              {primaryCtas.map((cta) => {
+                const CtaIcon = EDGE_ZONES_CTA_ICONS[cta.label]
+                return (
+                  <a
+                    key={cta.href}
+                    href={cta.href}
+                    className="ez-btn-primary inline-flex min-h-12 items-center justify-center gap-2 px-5 py-2.5 transition"
+                  >
+                    {CtaIcon ? <CtaIcon className="h-4 w-4 shrink-0" aria-hidden /> : null}
+                    {cta.label}
+                  </a>
+                )
+              })}
             </div>
           </div>
 

@@ -1,6 +1,15 @@
 import Link from 'next/link'
+import { CheckCircle2, ExternalLink } from 'lucide-react'
 import { EdgeZonesPortrait } from '@/components/marketing/edgezones/EdgeZonesSections'
+import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
+import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
 import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import {
+  EDGE_ZONES_ROLE_ACCENT_ICONS,
+  EDGE_ZONES_SECTION_ICONS,
+  type EdgeZonesIconAccent,
+  type EdgeZonesRoleAccent,
+} from '@/lib/marketing/edgezones-icons'
 import { partnershipPortraitFor } from '@/lib/marketing/edgezones-network-index'
 import { cn } from '@/lib/utils'
 
@@ -17,13 +26,19 @@ export function EdgeZonesRolesMatrix() {
   return (
     <section id="roles" className="ez-section border-b border-[var(--ez-border)] bg-[var(--ez-paper-alt)]">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-        <h2 className="ez-heading text-xl sm:text-2xl">{rolesMatrix.title}</h2>
-        <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--ez-muted)]">{rolesMatrix.intro}</p>
+        <EdgeZonesSectionHeader
+          icon={EDGE_ZONES_SECTION_ICONS.roles}
+          title={rolesMatrix.title}
+          intro={rolesMatrix.intro}
+          accent="indigo"
+        />
 
         <ul className="mt-10 grid gap-6 lg:grid-cols-3">
           {columns.map((col) => {
             const portrait = partnershipPortraitFor(col.title)
             const imageFit = portrait?.imageFit ?? 'cover'
+            const accent = col.accent as EdgeZonesRoleAccent
+            const RoleIcon = EDGE_ZONES_ROLE_ACCENT_ICONS[accent]
 
             return (
               <li
@@ -44,16 +59,23 @@ export function EdgeZonesRolesMatrix() {
                     />
                   </div>
                 ) : null}
-                <p className="ez-module-number">ROLE</p>
-                <h3 className="ez-heading mt-2 text-base">{col.title}</h3>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-[var(--ez-muted)]">
+                <div className="flex items-center gap-2">
+                  <EdgeZonesIconBadge
+                    icon={RoleIcon}
+                    accent={col.accent as EdgeZonesIconAccent}
+                    size="compact"
+                  />
+                  <p className="ez-module-number">ROLE</p>
+                </div>
+                <h3 className="ez-heading ez-subsection-title mt-2">{col.title}</h3>
+                <p className="ez-caption mt-1 font-semibold uppercase tracking-wide text-[var(--ez-muted)]">
                   {col.subtitle}
                 </p>
-                <p className="mt-3 text-sm leading-relaxed text-[var(--ez-muted)]">{col.intro}</p>
-                <ul className="mt-4 space-y-2">
+                <p className="ez-body mt-3 text-[var(--ez-muted)]">{col.intro}</p>
+                <ul className="mt-4 space-y-2.5">
                   {col.items.map((item) => (
-                    <li key={item} className="flex gap-2 text-sm leading-snug">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-[var(--ez-ink)]" aria-hidden />
+                    <li key={item} className="flex gap-2.5 ez-body leading-snug">
+                      <CheckCircle2 className="ez-inline-icon mt-0.5 h-4 w-4 shrink-0 text-[var(--ez-green)]" aria-hidden />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -63,9 +85,10 @@ export function EdgeZonesRolesMatrix() {
                     href={col.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 inline-flex text-xs font-semibold uppercase tracking-wide text-[var(--ez-blue)] hover:underline"
+                    className="ez-caption mt-4 inline-flex items-center gap-1.5 font-semibold uppercase tracking-wide text-[var(--ez-blue)] hover:underline"
                   >
-                    {col.hrefLabel} →
+                    <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                    {col.hrefLabel}
                   </Link>
                 ) : null}
               </li>

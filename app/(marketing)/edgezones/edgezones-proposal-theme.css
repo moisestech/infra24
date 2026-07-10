@@ -13,6 +13,65 @@
 
   color: var(--ez-ink);
   background-color: var(--ez-paper);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.ez-proposal .ez-section-title {
+  font-size: 1.625rem;
+  line-height: 1.15;
+}
+
+@media (min-width: 640px) {
+  .ez-proposal .ez-section-title {
+    font-size: 2rem;
+  }
+}
+
+.ez-proposal .ez-subsection-title {
+  font-size: 1.125rem;
+  line-height: 1.25;
+}
+
+@media (min-width: 640px) {
+  .ez-proposal .ez-subsection-title {
+    font-size: 1.3125rem;
+  }
+}
+
+.ez-proposal .ez-lead {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+@media (min-width: 640px) {
+  .ez-proposal .ez-lead {
+    font-size: 1.125rem;
+  }
+}
+
+.ez-proposal .ez-body {
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+@media (min-width: 640px) {
+  .ez-proposal .ez-body {
+    font-size: 1.0625rem;
+  }
+}
+
+.ez-proposal .ez-caption {
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.ez-proposal .ez-inline-icon {
+  display: inline-flex;
+  shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--ez-blue);
 }
 
 .ez-proposal .ez-section {
@@ -154,7 +213,7 @@
 
 .ez-proposal .ez-module-number {
   font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--ez-muted);
@@ -165,7 +224,7 @@
   background: rgb(57 255 20 / 0.12);
   color: #0a3d00;
   font-family: ui-monospace, monospace;
-  font-size: 0.625rem;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
@@ -175,7 +234,7 @@
   background: rgb(0 102 255 / 0.1);
   color: #003080;
   font-family: ui-monospace, monospace;
-  font-size: 0.625rem;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
@@ -185,7 +244,7 @@
   background: rgb(255 107 0 / 0.1);
   color: #803800;
   font-family: ui-monospace, monospace;
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
@@ -195,7 +254,7 @@
   background: rgb(0 0 0 / 0.04);
   color: var(--ez-muted);
   font-family: ui-monospace, monospace;
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
 }
@@ -204,7 +263,7 @@
   border: 1px solid var(--ez-border);
   background: #fff;
   font-family: ui-monospace, monospace;
-  font-size: 0.7rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.04em;
 }
@@ -229,7 +288,7 @@
   background: var(--ez-ink);
   color: #fff;
   font-family: ui-monospace, monospace;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -245,7 +304,7 @@
   background: #fff;
   color: var(--ez-ink);
   font-family: ui-monospace, monospace;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -281,7 +340,7 @@
     rgb(0 0 0 / 0.03) 8px
   );
   font-family: ui-monospace, monospace;
-  font-size: 0.65rem;
+  font-size: 0.8125rem;
   color: var(--ez-muted);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -316,4 +375,121 @@
     rgb(0 0 0 / 0.12) 45%,
     transparent 72%
   );
+}
+
+/* Partnership PDF booklet */
+.ez-proposal .ez-book {
+  width: min(100%, 17.5rem);
+}
+
+.ez-proposal .ez-book-stage {
+  position: relative;
+  padding: 0.5rem 0.75rem 1.25rem;
+  perspective: 1400px;
+}
+
+.ez-proposal .ez-book-shadow {
+  position: absolute;
+  bottom: 0.35rem;
+  left: 12%;
+  right: 8%;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.22);
+  filter: blur(10px);
+  transition: transform 0.45s ease, opacity 0.45s ease;
+}
+
+.ez-proposal .ez-book-body {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  transform: rotateY(-14deg) rotateX(2deg);
+  transform-style: preserve-3d;
+  transition: transform 0.45s ease;
+}
+
+.ez-proposal .ez-book:hover .ez-book-body {
+  transform: rotateY(-6deg) rotateX(0deg) translateY(-6px);
+}
+
+.ez-proposal .ez-book:hover .ez-book-shadow {
+  transform: scale(1.05);
+  opacity: 0.85;
+}
+
+.ez-proposal .ez-book-spine {
+  position: absolute;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  left: -0.55rem;
+  width: 0.85rem;
+  border: 1px solid rgb(0 0 0 / 0.35);
+  background: linear-gradient(
+    90deg,
+    rgb(20 20 20) 0%,
+    rgb(60 60 60) 35%,
+    rgb(30 30 30) 100%
+  );
+  transform: rotateY(78deg);
+  transform-origin: right center;
+  box-shadow: inset -2px 0 4px rgb(255 255 255 / 0.08);
+}
+
+.ez-proposal .ez-book-pages {
+  position: absolute;
+  top: 0.45rem;
+  bottom: 0.45rem;
+  right: -0.35rem;
+  width: 0.55rem;
+  border: 1px solid var(--ez-border);
+  background: repeating-linear-gradient(
+    180deg,
+    #fff 0,
+    #fff 2px,
+    #e8e4dc 2px,
+    #e8e4dc 4px
+  );
+}
+
+.ez-proposal .ez-book-cover {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  border: 1px solid var(--ez-border);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.06),
+    0 14px 36px rgb(0 0 0 / 0.18),
+    0 0 28px rgb(0 102 255 / 0.08);
+  transition: box-shadow 0.45s ease;
+}
+
+.ez-proposal .ez-book:hover .ez-book-cover {
+  box-shadow:
+    0 0 0 1px rgb(0 102 255 / 0.2),
+    0 18px 44px rgb(0 0 0 / 0.2),
+    0 0 40px rgb(0 102 255 / 0.16),
+    0 0 56px rgb(57 255 20 / 0.08);
+}
+
+.ez-proposal .ez-book-cover-sheen {
+  background: linear-gradient(
+    125deg,
+    rgb(255 255 255 / 0.28) 0%,
+    transparent 38%,
+    transparent 62%,
+    rgb(0 0 0 / 0.08) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ez-proposal .ez-book-body,
+  .ez-proposal .ez-book-shadow,
+  .ez-proposal .ez-book-cover {
+    transition: none;
+  }
+
+  .ez-proposal .ez-book:hover .ez-book-body {
+    transform: rotateY(-14deg) rotateX(2deg);
+  }
 }

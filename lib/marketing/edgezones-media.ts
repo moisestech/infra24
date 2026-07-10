@@ -14,8 +14,20 @@ export const EDGE_ZONES_GALLERY_SLOTS = {
   emptyGallery: null as string | null,
   hallwayInstall: null as string | null,
   mapTexture: null as string | null,
-  pdfPreview: null as string | null,
+  pdfPreview:
+    'https://res.cloudinary.com/dck5rzi4h/image/upload/v1783704743/dccmiami/booklet/desktop-cover-edgezones-proposal-dccmiami_p0mrvu.png' as string | null,
 } as const
+
+/** Google Drive — partnership PDF (view / download). */
+export const EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_ID = '1rh6-_AaGYYiItMz9qpOlfhfbPTtLZVuo' as const
+
+export const EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_VIEW_URL =
+  `https://drive.google.com/file/d/${EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_ID}/view?usp=sharing` as const
+
+export const EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_DOWNLOAD_URL =
+  `https://drive.google.com/uc?export=download&id=${EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_ID}` as const
+
+export const EDGE_ZONES_PARTNERSHIP_PDF_COVER_URL = EDGE_ZONES_GALLERY_SLOTS.pdfPreview as string
 
 const SLOT_FALLBACKS = {
   exterior: dccHomePhotos.galleryCrowdOpening,
@@ -87,4 +99,13 @@ export function edgeZonesHeroCollagePhotos(): EdgeZonesPhoto[] {
     edgeZonesSlotPhoto('emptyGallery'),
     edgeZonesSlotPhoto('hallwayInstall'),
   ]
+}
+
+export function edgeZonesPartnershipPdfCover(): EdgeZonesPhoto {
+  const url = EDGE_ZONES_GALLERY_SLOTS.pdfPreview
+  return {
+    src: url ?? EDGE_ZONES_PARTNERSHIP_PDF_COVER_URL,
+    alt: 'DCC Miami × Edge Zones partnership proposal — booklet cover',
+    caption: 'Partnership proposal packet',
+  }
 }

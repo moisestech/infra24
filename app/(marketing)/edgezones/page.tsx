@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { UserPlus } from 'lucide-react'
 import { Suspense } from 'react'
 import './edgezones-proposal-theme.css'
 import { EdgeZonesAttributionSeed } from '@/components/marketing/edgezones/EdgeZonesAttributionSeed'
@@ -20,6 +21,8 @@ import { DccSignupAttributionCapture } from '@/components/dcc/signup/DccSignupAt
 import { cdcPageMetadata } from '@/lib/cdc/metadata'
 import { fetchEdgeZonesArtists } from '@/lib/marketing/edgezones-artists'
 import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import { EDGE_ZONES_SECTION_ICONS } from '@/lib/marketing/edgezones-icons'
+import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
 
 const path = edgeZonesPortal.path
 
@@ -66,9 +69,12 @@ export default async function EdgeZonesPortalPage() {
 
       <section id="join" className="ez-section border-t border-[var(--ez-border)]">
         <div className="mx-auto max-w-2xl px-4 py-14 sm:px-6 lg:px-8">
-          <h2 className="ez-heading text-center text-xl sm:text-2xl">{sections.join.title}</h2>
-          <p className="mt-4 text-center text-sm leading-relaxed text-[var(--ez-muted)]">{sections.join.intro}</p>
-          <p className="mt-3 text-center text-xs leading-relaxed text-[var(--ez-muted)]">{sections.join.formIntro}</p>
+          <div className="flex flex-col items-center text-center">
+            <EdgeZonesIconBadge icon={EDGE_ZONES_SECTION_ICONS.join} accent="teal" />
+            <h2 className="ez-heading ez-section-title mt-4">{sections.join.title}</h2>
+            <p className="ez-lead mt-4 text-[var(--ez-muted)]">{sections.join.intro}</p>
+            <p className="ez-body mt-3 text-[var(--ez-muted)]">{sections.join.formIntro}</p>
+          </div>
 
           <EdgeZonesContactStrip className="mt-8" />
 
@@ -81,8 +87,9 @@ export default async function EdgeZonesPortalPage() {
           <p className="mt-6 text-center">
             <Link
               href={sections.join.suggestHref}
-              className="font-mono text-xs uppercase tracking-wide text-[var(--ez-blue)] hover:underline"
+              className="ez-caption inline-flex items-center gap-1.5 font-mono uppercase tracking-wide text-[var(--ez-blue)] hover:underline"
             >
+              <UserPlus className="h-4 w-4 shrink-0" aria-hidden />
               {sections.join.suggestLabel}
             </Link>
           </p>
@@ -91,8 +98,8 @@ export default async function EdgeZonesPortalPage() {
 
       <footer className="border-t border-[var(--ez-border)] bg-[var(--ez-paper-alt)] px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
-          <p className="max-w-2xl text-sm leading-relaxed text-[var(--ez-muted)]">{footer.blurb}</p>
-          <p className="mt-4 text-xs font-medium leading-relaxed">{footer.credit}</p>
+          <p className="ez-body max-w-2xl text-[var(--ez-muted)]">{footer.blurb}</p>
+          <p className="ez-caption mt-4 font-medium">{footer.credit}</p>
         </div>
       </footer>
     </EdgeZonesProposalShell>

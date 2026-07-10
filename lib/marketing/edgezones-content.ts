@@ -243,7 +243,7 @@ The exhibition brings together artists whose practices examine how digital techn
       id: 'pdf',
       title: 'Partnership PDF',
       description:
-        'Download the current DCC Miami x Edge Zones proposal packet. This PDF outlines the partnership framework, exhibition concept, DCC support model, larger vision, artist cluster, and network index.',
+        'Download or open the DCC Miami × Edge Zones proposal booklet — partnership framework, exhibition concept, DCC support model, artist cluster, and network index.',
       note: 'This proposal packet may be updated as roles, deliverables, dates, and artist materials are confirmed.',
     },
     join: {

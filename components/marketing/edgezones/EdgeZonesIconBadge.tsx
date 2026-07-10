@@ -18,8 +18,8 @@ export function EdgeZonesIconBadge({
   size = 'default',
   className,
 }: Props) {
-  const box = size === 'compact' ? 'h-8 w-8 rounded-xl' : 'h-10 w-10 rounded-2xl'
-  const glyph = size === 'compact' ? 'h-4 w-4' : 'h-[1.15rem] w-[1.15rem]'
+  const box = size === 'compact' ? 'h-9 w-9 rounded-xl' : 'h-11 w-11 rounded-2xl'
+  const glyph = size === 'compact' ? 'h-[1.125rem] w-[1.125rem]' : 'h-5 w-5'
 
   return (
     <span

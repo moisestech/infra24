@@ -1,8 +1,11 @@
 'use client'
 
 import Link from 'next/link'
+import { Building2, Globe, ImageIcon, Instagram, Palette, UserRound } from 'lucide-react'
 import type { EdgeZonesArtistProfile } from '@/lib/marketing/edgezones-artists'
+import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
 import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import { EDGE_ZONES_SECTION_ICONS } from '@/lib/marketing/edgezones-icons'
 import { edgeZonesNetworkIndex } from '@/lib/marketing/edgezones-network-index'
 import { EdgeZonesPortrait } from '@/components/marketing/edgezones/EdgeZonesSections'
 import { cn } from '@/lib/utils'
@@ -16,9 +19,13 @@ type Props = {
 
 function roleBadge(role: string) {
   const normalized = role.toLowerCase()
-  if (normalized.includes('host')) return { label: 'Host Space', className: 'ez-chip-orange' }
-  if (normalized.includes('curator')) return { label: 'Invited Curator', className: 'ez-chip-blue' }
-  return { label: 'Participating Artist', className: 'ez-chip-green' }
+  if (normalized.includes('host')) {
+    return { label: 'Host Space', className: 'ez-chip-orange', icon: Building2 }
+  }
+  if (normalized.includes('curator')) {
+    return { label: 'Invited Curator', className: 'ez-chip-blue', icon: Palette }
+  }
+  return { label: 'Participating Artist', className: 'ez-chip-green', icon: UserRound }
 }
 
 function materialsPending(name: string): boolean {
@@ -41,11 +48,12 @@ function NetworkCard({
   showWorkPlaceholder?: boolean
 }) {
   const badge = badgeOverride
-    ? { label: badgeOverride, className: 'ez-chip-blue' }
+    ? { label: badgeOverride, className: 'ez-chip-blue', icon: Palette }
     : roleBadge(profile.roleType ?? '')
   const pending = materialsPending(profile.name)
   const fit = imageFitFor(profile.name)
   const isLogo = fit === 'contain'
+  const BadgeIcon = badge.icon
 
   return (
     <article className="ez-card overflow-hidden transition-transform">
@@ -58,31 +66,47 @@ function NetworkCard({
           size={isLogo ? 'logo' : 'lg'}
         />
         <div className="min-w-0 flex-1">
-          <span className={cn('ez-chip inline-block rounded px-2 py-0.5', badge.className)}>{badge.label}</span>
-          <h3 className="ez-heading mt-2 text-sm">{profile.name}</h3>
+          <span className={cn('ez-chip inline-flex items-center gap-1.5 rounded px-2.5 py-1', badge.className)}>
+            <BadgeIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            {badge.label}
+          </span>
+          <h3 className="ez-heading ez-subsection-title mt-2">{profile.name}</h3>
           {profile.roleType && !badgeOverride ? (
-            <p className="mt-0.5 text-xs text-[var(--ez-muted)]">{profile.roleType}</p>
+            <p className="ez-caption mt-0.5 text-[var(--ez-muted)]">{profile.roleType}</p>
           ) : null}
         </div>
       </div>
       {profile.bio ? (
-        <p className="border-t border-[var(--ez-border)] px-4 py-3 text-sm leading-relaxed text-[var(--ez-muted)]">
+        <p className="ez-body border-t border-[var(--ez-border)] px-5 py-4 text-[var(--ez-muted)]">
           {profile.bio}
         </p>
       ) : null}
       {showWorkPlaceholder ? (
-        <div className="ez-work-placeholder mx-5 mb-5 flex h-32 items-center justify-center rounded sm:h-36">
+        <div className="ez-work-placeholder mx-5 mb-5 flex h-32 items-center justify-center gap-2 rounded sm:h-36">
+          <ImageIcon className="h-5 w-5 shrink-0 opacity-60" aria-hidden />
           {pending ? 'Work image coming soon' : 'Artist materials pending'}
         </div>
       ) : null}
-      <div className="flex flex-wrap gap-3 border-t border-[var(--ez-border)] px-4 py-3 text-xs font-mono">
+      <div className="flex flex-wrap gap-4 border-t border-[var(--ez-border)] px-5 py-4">
         {profile.instagram ? (
-          <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="text-[var(--ez-blue)] hover:underline">
+          <a
+            href={profile.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ez-caption inline-flex items-center gap-1.5 font-mono text-[var(--ez-blue)] hover:underline"
+          >
+            <Instagram className="h-4 w-4 shrink-0" aria-hidden />
             Instagram
           </a>
         ) : null}
         {profile.website ? (
-          <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-[var(--ez-blue)] hover:underline">
+          <a
+            href={profile.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ez-caption inline-flex items-center gap-1.5 font-mono text-[var(--ez-blue)] hover:underline"
+          >
+            <Globe className="h-4 w-4 shrink-0" aria-hidden />
             Website
           </a>
         ) : null}
@@ -97,11 +121,13 @@ export function EdgeZonesNetworkIndex({ host, curator, artists, filterNote }: Pr
   return (
     <section id="artists" className="ez-section border-b border-[var(--ez-border)]">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-        <h2 className="ez-heading text-xl sm:text-2xl">{artistsCopy.title}</h2>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[var(--ez-muted)]">
-          {artistsCopy.intro}
-          {filterNote ? ` (${filterNote})` : ''}
-        </p>
+        <EdgeZonesSectionHeader
+          icon={EDGE_ZONES_SECTION_ICONS.artists}
+          title={artistsCopy.title}
+          intro={`${artistsCopy.intro}${filterNote ? ` (${filterNote})` : ''}`}
+          accent="indigo"
+          introClassName="max-w-2xl"
+        />
 
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           {host ? <NetworkCard profile={host} badgeOverride="Host Space" showWorkPlaceholder={false} /> : null}
@@ -117,7 +143,11 @@ export function EdgeZonesNetworkIndex({ host, curator, artists, filterNote }: Pr
         </ul>
 
         <p className="mt-8 text-center">
-          <Link href="/network/research" className="text-xs font-mono uppercase tracking-wide text-[var(--ez-blue)] hover:underline">
+          <Link
+            href="/network/research"
+            className="ez-caption inline-flex items-center gap-1.5 font-mono uppercase tracking-wide text-[var(--ez-blue)] hover:underline"
+          >
+            <Globe className="h-4 w-4 shrink-0" aria-hidden />
             Open research map →
           </Link>
         </p>
