@@ -26,8 +26,7 @@ describe('edgezones-sections', () => {
 })
 
 describe('edgeZonesPortal proposal copy', () => {
-  it('includes roles disclaimer and concept themes', () => {
-    expect(edgeZonesPortal.rolesMatrix.disclaimer).toContain('does not add financial')
+  it('includes concept themes and nav anchors', () => {
     expect(edgeZonesPortal.concept.themes).toHaveLength(6)
     expect(edgeZonesNavAnchors.map((a) => a.id)).toEqual([
       'overview',

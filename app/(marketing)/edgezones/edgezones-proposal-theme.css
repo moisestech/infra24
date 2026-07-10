@@ -64,8 +64,92 @@
 }
 
 .ez-proposal .ez-card {
+  position: relative;
+  overflow: hidden;
   border: 1px solid var(--ez-border);
   background: #fff;
+  transition:
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    transform 0.4s ease;
+}
+
+.ez-proposal .ez-card::before {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  background: linear-gradient(
+    135deg,
+    rgb(0 102 255 / 0.1) 0%,
+    rgb(57 255 20 / 0.07) 42%,
+    rgb(255 107 0 / 0.1) 100%
+  );
+  transition: opacity 0.4s ease;
+}
+
+.ez-proposal .ez-card::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  opacity: 0;
+  background: linear-gradient(
+    120deg,
+    var(--ez-blue),
+    var(--ez-green),
+    var(--ez-orange),
+    var(--ez-blue)
+  );
+  background-size: 300% 300%;
+  transition: opacity 0.4s ease;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+  animation: ez-card-glow-shift 4s ease infinite;
+}
+
+.ez-proposal .ez-card:hover {
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 0 1px rgb(0 102 255 / 0.2),
+    0 0 28px rgb(0 102 255 / 0.18),
+    0 0 56px rgb(57 255 20 / 0.1),
+    0 12px 36px rgb(0 0 0 / 0.08);
+}
+
+.ez-proposal .ez-card:hover::before {
+  opacity: 1;
+}
+
+.ez-proposal .ez-card:hover::after {
+  opacity: 1;
+}
+
+.ez-proposal .ez-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes ez-card-glow-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.ez-proposal .ez-portrait-logo {
+  border: 1px solid var(--ez-border);
+  background: #fff !important;
 }
 
 .ez-proposal .ez-module-number {
@@ -214,6 +298,14 @@
   .ez-proposal * {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .ez-proposal .ez-card:hover {
+    transform: none;
+  }
+
+  .ez-proposal .ez-card::after {
+    animation: none;
   }
 }
 

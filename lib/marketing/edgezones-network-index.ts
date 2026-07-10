@@ -59,6 +59,7 @@ export type EdgeZonesNetworkIndexEntry = Omit<EdgeZonesArtistProfile, 'id' | 'pr
   practiceTags?: string[]
   materialsStatus?: 'complete' | 'pending'
   workImageUrl?: string
+  imageFit?: 'cover' | 'contain'
 }
 
 /** Public PDF asset — place file at public/docs/dcc-edgezones-partnership.pdf */
@@ -73,6 +74,7 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     instagram: 'edgezonesgallery',
     website: EDGE_ZONES_GALLERY_WEBSITE,
     imageUrl: EDGE_ZONES_GALLERY_MARK_URL,
+    imageFit: 'contain',
   },
   {
     slug: 'jordan-horton',

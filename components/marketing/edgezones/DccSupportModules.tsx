@@ -43,7 +43,7 @@ export function DccSupportModules() {
             return (
               <li key={module.id}>
                 {module.href ? (
-                  <a href={module.href} className="ez-card block p-5 transition hover:border-[var(--ez-blue)]">
+                  <a href={module.href} className="ez-card block p-5">
                     {inner}
                   </a>
                 ) : (

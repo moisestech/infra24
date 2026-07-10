@@ -10,7 +10,7 @@ export function EdgeZonesProposalHero() {
   return (
     <section id="overview" className="ez-section relative border-b border-[var(--ez-border)]">
       <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(280px,400px)] lg:items-start">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(340px,520px)] lg:items-start">
           <div>
             <p className="ez-heading text-xs text-[var(--ez-muted)]">{hero.eyebrow}</p>
             <h1 className="ez-display mt-4 text-4xl sm:text-5xl lg:text-6xl">{hero.title}</h1>
@@ -53,13 +53,13 @@ export function EdgeZonesProposalHero() {
 
           <div className="relative">
             <div className="grid grid-cols-2 gap-2">
-              <div className="relative col-span-2 aspect-[16/9] overflow-hidden border border-[var(--ez-border)]">
-                <Image src={collage[0].src} alt={collage[0].alt} fill className="object-cover" sizes="400px" priority />
+              <div className="relative col-span-2 aspect-[16/9] overflow-hidden border border-[var(--ez-border)] sm:aspect-[5/3]">
+                <Image src={collage[0].src} alt={collage[0].alt} fill className="object-cover" sizes="520px" priority />
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--ez-blue)]" aria-hidden />
               </div>
               {collage.slice(1).map((photo, i) => (
-                <div key={photo.src} className="relative aspect-square overflow-hidden border border-[var(--ez-border)]">
-                  <Image src={photo.src} alt={photo.alt} fill className="object-cover" sizes="200px" />
+                <div key={photo.src} className="relative aspect-square overflow-hidden border border-[var(--ez-border)] sm:aspect-[4/5]">
+                  <Image src={photo.src} alt={photo.alt} fill className="object-cover" sizes="260px" />
                   <div
                     className={cn('absolute bottom-0 left-0 right-0 h-1', i === 0 ? 'bg-[var(--ez-green)]' : 'bg-[var(--ez-orange)]')}
                     aria-hidden

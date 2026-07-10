@@ -30,10 +30,10 @@ export function EdgeZonesPortrait({
 
   const sizeClass =
     size === 'logo'
-      ? 'h-28 w-28 text-base sm:h-32 sm:w-32'
+      ? 'h-32 w-32 text-base sm:h-36 sm:w-36'
       : size === 'lg'
-        ? 'h-24 w-24 text-base'
-        : 'h-20 w-20 text-sm'
+        ? 'h-28 w-28 text-base sm:h-32 sm:w-32'
+        : 'h-24 w-24 text-sm sm:h-28 sm:w-28'
 
   if (!imageUrl) {
     return (
@@ -50,7 +50,14 @@ export function EdgeZonesPortrait({
   }
 
   return (
-    <div className={cn('relative shrink-0', sizeClass, className)}>
+    <div
+      className={cn(
+        'relative shrink-0 overflow-hidden rounded-xl',
+        sizeClass,
+        imageFit === 'contain' && 'ez-portrait-logo bg-white',
+        className
+      )}
+    >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={imageUrl}
@@ -58,8 +65,8 @@ export function EdgeZonesPortrait({
         className={cn(
           'h-full w-full rounded-xl object-center',
           imageFit === 'contain'
-            ? 'border border-neutral-200 bg-white object-contain p-3 dark:border-neutral-700 dark:bg-neutral-950'
-            : 'bg-white object-cover dark:bg-neutral-900'
+            ? 'ez-portrait-logo border border-neutral-200 bg-white object-contain p-4'
+            : 'bg-white object-cover'
         )}
         onError={(event) => {
           event.currentTarget.style.display = 'none'

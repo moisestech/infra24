@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import { EdgeZonesPortrait } from '@/components/marketing/edgezones/EdgeZonesSections'
 import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import { partnershipPortraitFor } from '@/lib/marketing/edgezones-network-index'
 import { cn } from '@/lib/utils'
 
 const ACCENT_BORDER = {
@@ -19,45 +21,57 @@ export function EdgeZonesRolesMatrix() {
         <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--ez-muted)]">{rolesMatrix.intro}</p>
 
         <ul className="mt-10 grid gap-6 lg:grid-cols-3">
-          {columns.map((col) => (
-            <li
-              key={col.title}
-              className={cn(
-                'ez-card border-t-4 p-5',
-                ACCENT_BORDER[col.accent as keyof typeof ACCENT_BORDER]
-              )}
-            >
-              <p className="ez-module-number">ROLE</p>
-              <h3 className="ez-heading mt-2 text-base">{col.title}</h3>
-              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-[var(--ez-muted)]">
-                {col.subtitle}
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-[var(--ez-muted)]">{col.intro}</p>
-              <ul className="mt-4 space-y-2">
-                {col.items.map((item) => (
-                  <li key={item} className="flex gap-2 text-sm leading-snug">
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-[var(--ez-ink)]" aria-hidden />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              {'href' in col && col.href ? (
-                <Link
-                  href={col.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex text-xs font-semibold uppercase tracking-wide text-[var(--ez-blue)] hover:underline"
-                >
-                  {col.hrefLabel} →
-                </Link>
-              ) : null}
-            </li>
-          ))}
-        </ul>
+          {columns.map((col) => {
+            const portrait = partnershipPortraitFor(col.title)
+            const imageFit = portrait?.imageFit ?? 'cover'
 
-        <div className="ez-accent-block-blue mt-10 p-4 text-sm leading-relaxed">
-          <p className="font-medium">{rolesMatrix.disclaimer}</p>
-        </div>
+            return (
+              <li
+                key={col.title}
+                className={cn(
+                  'ez-card border-t-4 p-5',
+                  ACCENT_BORDER[col.accent as keyof typeof ACCENT_BORDER]
+                )}
+              >
+                {portrait ? (
+                  <div className="mb-5 flex justify-center">
+                    <EdgeZonesPortrait
+                      name={portrait.name}
+                      imageUrl={portrait.imageUrl}
+                      imageAlt={portrait.imageAlt}
+                      imageFit={imageFit}
+                      size={imageFit === 'contain' ? 'logo' : 'lg'}
+                    />
+                  </div>
+                ) : null}
+                <p className="ez-module-number">ROLE</p>
+                <h3 className="ez-heading mt-2 text-base">{col.title}</h3>
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-[var(--ez-muted)]">
+                  {col.subtitle}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--ez-muted)]">{col.intro}</p>
+                <ul className="mt-4 space-y-2">
+                  {col.items.map((item) => (
+                    <li key={item} className="flex gap-2 text-sm leading-snug">
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-[var(--ez-ink)]" aria-hidden />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                {'href' in col && col.href ? (
+                  <Link
+                    href={col.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex text-xs font-semibold uppercase tracking-wide text-[var(--ez-blue)] hover:underline"
+                  >
+                    {col.hrefLabel} →
+                  </Link>
+                ) : null}
+              </li>
+            )
+          })}
+        </ul>
       </div>
     </section>
   )

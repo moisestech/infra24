@@ -21,7 +21,7 @@ export function EdgeZonesSectionBanner({ banner, caption, priority = false, clas
         className
       )}
     >
-      <div className="relative aspect-[3/1] w-full min-h-[7rem] sm:min-h-[9rem]">
+      <div className="relative aspect-[5/2] w-full min-h-[9rem] sm:min-h-[12rem] lg:min-h-[14rem]">
         <Image
           src={photo.src}
           alt={photo.alt}

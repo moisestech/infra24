@@ -46,8 +46,6 @@ The exhibition brings together artists whose practices examine how digital techn
     title: 'How the partnership works',
     intro:
       'This proposal is structured around three distinct roles: Edge Zones as the physical host space, Jordan Horton as invited curator, and DCC Miami as the digital platform and public programming support layer.',
-    disclaimer:
-      'DCC Miami does not add financial, staffing, installation, storage, or production responsibilities to Edge Zones. DCC contributes in-kind digital and public-facing support around the exhibition.',
     edgeZones: {
       title: 'Edge Zones',
       subtitle: 'Physical host space',

@@ -10,7 +10,7 @@ export function TouchingGrassConcept() {
     <section id="concept" className="ez-section border-b border-[var(--ez-border)]">
       <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="relative mb-8 overflow-hidden border border-[var(--ez-border)]">
-          <div className="relative aspect-[21/9] w-full min-h-[10rem]">
+          <div className="relative aspect-[21/9] w-full min-h-[12rem] sm:min-h-[16rem]">
             <Image src={banner.src} alt={banner.alt} fill className="object-cover" sizes="1152px" />
             <div className="absolute inset-0 bg-gradient-to-r from-[var(--ez-paper)] via-[var(--ez-paper)]/70 to-transparent" />
           </div>

@@ -26,6 +26,11 @@ function materialsPending(name: string): boolean {
   return entry?.materialsStatus === 'pending'
 }
 
+function imageFitFor(name: string): 'cover' | 'contain' {
+  const entry = edgeZonesNetworkIndex.find((e) => e.name === name)
+  return entry?.imageFit ?? 'cover'
+}
+
 function NetworkCard({
   profile,
   badgeOverride,
@@ -39,15 +44,18 @@ function NetworkCard({
     ? { label: badgeOverride, className: 'ez-chip-blue' }
     : roleBadge(profile.roleType ?? '')
   const pending = materialsPending(profile.name)
+  const fit = imageFitFor(profile.name)
+  const isLogo = fit === 'contain'
 
   return (
-    <article className="ez-card overflow-hidden">
-      <div className="flex gap-4 p-4">
+    <article className="ez-card overflow-hidden transition-transform">
+      <div className="flex gap-4 p-5">
         <EdgeZonesPortrait
           name={profile.name}
           imageUrl={profile.imageUrl}
           imageAlt={profile.name}
-          imageFit="cover"
+          imageFit={fit}
+          size={isLogo ? 'logo' : 'lg'}
         />
         <div className="min-w-0 flex-1">
           <span className={cn('ez-chip inline-block rounded px-2 py-0.5', badge.className)}>{badge.label}</span>
@@ -63,7 +71,7 @@ function NetworkCard({
         </p>
       ) : null}
       {showWorkPlaceholder ? (
-        <div className="ez-work-placeholder mx-4 mb-4 flex h-24 items-center justify-center rounded">
+        <div className="ez-work-placeholder mx-5 mb-5 flex h-32 items-center justify-center rounded sm:h-36">
           {pending ? 'Work image coming soon' : 'Artist materials pending'}
         </div>
       ) : null}
