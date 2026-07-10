@@ -7,6 +7,18 @@
 import { DCC_MIAMI_LOGO_URL_LIGHT } from '@/lib/marketing/cdc-brand'
 import type { EdgeZonesArtistProfile } from '@/lib/marketing/edgezones-artists'
 
+const CLOUDINARY_BASE = 'https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto' as const
+
+/** Example artwork images for Touching Grass participating artists. */
+export const TOUCHING_GRASS_ARTWORK_URLS = {
+  adrienneGionta: `${CLOUDINARY_BASE}/v1783708096/dccmiami/exhibition/touching-grass/artists/adrienne-rose-gionta-art_pts9rt.jpg`,
+  fabiolaLarios: `${CLOUDINARY_BASE}/v1783708100/dccmiami/exhibition/touching-grass/artists/fabiola-larios-art_vfirjq.jpg`,
+  angeloCaruso: `${CLOUDINARY_BASE}/v1783708099/dccmiami/exhibition/touching-grass/artists/angelo-caruso-art_zzy9by.jpg`,
+  cynthiaCruz: `${CLOUDINARY_BASE}/v1783708097/dccmiami/exhibition/touching-grass/artists/cynthia-cruz-art_hcwsfu.jpg`,
+  moisesSanabria: `${CLOUDINARY_BASE}/v1783708094/dccmiami/exhibition/touching-grass/artists/moises-sanabria-art_kets0r.jpg`,
+  violetForest: `${CLOUDINARY_BASE}/v1783708102/dccmiami/exhibition/touching-grass/artists/violet-forest-art_q2p9k1.jpg`,
+} as const
+
 /** Edge Zones Gallery logo — transparent square mark on Cloudinary. */
 export const EDGE_ZONES_GALLERY_MARK_URL =
   'https://res.cloudinary.com/dck5rzi4h/image/upload/v1783701153/dccmiami/logo/edge-zones-logo-transparent-square_wl5cru.webp' as const
@@ -90,9 +102,10 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     roleType: 'Artist',
     bio: 'Oolite Residency alum, Wolfsonian Creative Fellow, and South Florida Cultural Consortium Grant awardee.',
     instagram: 'adrienne_rose_gionta',
-    materialsStatus: 'pending',
+    materialsStatus: 'complete',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488961/dccmiami/portraits/AdrienneRose-Gionta-headshot-by-Lynton-Gardiner-2025-564x705_bhjm3t.jpg',
+    workImageUrl: TOUCHING_GRASS_ARTWORK_URLS.adrienneGionta,
   },
   {
     slug: 'fabiola-larios',
@@ -101,9 +114,10 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     bio: 'Bakehouse artist-in-residence, Director of Digital at Oolite Arts, and online presence workshop educator.',
     instagram: 'fabiolalariosm',
     website: 'fabiola.io',
-    materialsStatus: 'pending',
+    materialsStatus: 'complete',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777518148/dccmiami/portraits/fabiola-lariosm-profile_vuypf4.jpg',
+    workImageUrl: TOUCHING_GRASS_ARTWORK_URLS.fabiolaLarios,
   },
   {
     slug: 'angelo-caruso',
@@ -112,9 +126,10 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     bio: 'Artist with recent exhibitions at Ritter Art Gallery and the Cultural Council of Palm Beach.',
     instagram: 'angelocaruso.art',
     website: 'angelocaruso.art',
-    materialsStatus: 'pending',
+    materialsStatus: 'complete',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488560/dccmiami/portraits/angelo-caruso-portrait-from-exhibition_avht0i.png',
+    workImageUrl: TOUCHING_GRASS_ARTWORK_URLS.angeloCaruso,
   },
   {
     slug: 'moises-sanabria',
@@ -123,9 +138,10 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     bio: 'Bakehouse artist, Oolite Digital Lab Technical Director, and educator working across vibe coding, AI, digital systems, and contemporary art.',
     instagram: 'moisesdsanabria',
     website: 'moisesdsanabria.com',
-    materialsStatus: 'pending',
+    materialsStatus: 'complete',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777511801/dccmiami/portraits/moises-pfp_dnn3d3.jpg',
+    workImageUrl: TOUCHING_GRASS_ARTWORK_URLS.moisesSanabria,
   },
   {
     slug: 'cynthia-cruz',
@@ -133,9 +149,10 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     roleType: 'Artist',
     bio: 'Former digital art professor at New World School of the Arts, Knight Foundation Grant awardee, and Oolite Creator Award recipient.',
     instagram: 'cynthia.cruz.art',
-    materialsStatus: 'pending',
+    materialsStatus: 'complete',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488805/dccmiami/portraits/CynthiaCruz-TheElliesWinners1478_RET_sRGBLESLIEGABALDON-705x705_xpilbo.jpg',
+    workImageUrl: TOUCHING_GRASS_ARTWORK_URLS.cynthiaCruz,
   },
   {
     slug: 'violet-forest',
@@ -144,11 +161,16 @@ export const edgeZonesNetworkIndex: EdgeZonesNetworkIndexEntry[] = [
     bio: 'New media artist and creative technologist with recent showings at Untitled Art Miami and Neort Gallery Tokyo.',
     instagram: 'violetforest',
     website: 'violetforest.info',
-    materialsStatus: 'pending',
+    materialsStatus: 'complete',
     imageUrl:
       'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488760/dccmiami/portraits/violet-forest-portrait_amk7o0.jpg',
+    workImageUrl: TOUCHING_GRASS_ARTWORK_URLS.violetForest,
   },
 ]
+
+export function edgeZonesWorkImageFor(name: string): string | undefined {
+  return edgeZonesNetworkIndex.find((e) => e.name === name)?.workImageUrl
+}
 
 export function staticProfilesToArtistProfiles(
   entries: EdgeZonesNetworkIndexEntry[]

@@ -7,7 +7,7 @@ import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZon
 import type { EdgeZonesUiCopy } from '@/lib/marketing/edgezones/types'
 import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import { EDGE_ZONES_SECTION_ICONS } from '@/lib/marketing/edgezones-icons'
-import { edgeZonesNetworkIndex } from '@/lib/marketing/edgezones-network-index'
+import { edgeZonesNetworkIndex, edgeZonesWorkImageFor } from '@/lib/marketing/edgezones-network-index'
 import { EdgeZonesPortrait } from '@/components/marketing/edgezones/EdgeZonesSections'
 import { cn } from '@/lib/utils'
 
@@ -56,6 +56,7 @@ function NetworkCard({
       : roleBadge(profile.roleType ?? '', ui)
   const pending = materialsPending(profile.name)
   const fit = imageFitFor(profile.name)
+  const workImageUrl = edgeZonesWorkImageFor(profile.name)
   const isLogo = fit === 'contain'
   const BadgeIcon = badge.icon
 
@@ -86,10 +87,21 @@ function NetworkCard({
         </p>
       ) : null}
       {showWorkPlaceholder ? (
-        <div className="ez-work-placeholder mx-5 mb-5 flex h-32 items-center justify-center gap-2 rounded sm:h-36">
-          <ImageIcon className="h-5 w-5 shrink-0 opacity-60" aria-hidden />
-          {pending ? ui.workImageComingSoon : ui.artistMaterialsPending}
-        </div>
+        workImageUrl ? (
+          <div className="mx-5 mb-5 overflow-hidden rounded border border-[var(--ez-border)] bg-[var(--ez-surface)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={workImageUrl}
+              alt={`${profile.name} — artwork`}
+              className="h-36 w-full object-cover object-center sm:h-40"
+            />
+          </div>
+        ) : (
+          <div className="ez-work-placeholder mx-5 mb-5 flex h-32 items-center justify-center gap-2 rounded sm:h-36">
+            <ImageIcon className="h-5 w-5 shrink-0 opacity-60" aria-hidden />
+            {pending ? ui.workImageComingSoon : ui.artistMaterialsPending}
+          </div>
+        )
       ) : null}
       <div className="flex flex-wrap gap-4 border-t border-[var(--ez-border)] px-5 py-4">
         {profile.instagram ? (
