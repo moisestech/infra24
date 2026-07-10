@@ -1,7 +1,8 @@
 import { Download, ExternalLink } from 'lucide-react'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
 import { PartnershipPdfBook } from '@/components/marketing/edgezones/PartnershipPdfBook'
-import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
+import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
 import { EDGE_ZONES_SECTION_ICONS } from '@/lib/marketing/edgezones-icons'
 import {
   EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_DOWNLOAD_URL,
@@ -21,8 +22,9 @@ function localPdfAvailable(): boolean {
   }
 }
 
-export function PartnershipPdfCard() {
-  const { pdf } = edgeZonesPortal.sections
+export function PartnershipPdfCard({ locale }: { locale: EdgeZonesLocale }) {
+  const { sections, ui } = getEdgeZonesPortal(locale)
+  const { pdf } = sections
   const hasLocalPdf = localPdfAvailable()
   const viewUrl = hasLocalPdf ? '/docs/dcc-edgezones-partnership.pdf' : EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_VIEW_URL
   const downloadUrl = hasLocalPdf
@@ -41,13 +43,10 @@ export function PartnershipPdfCard() {
         />
 
         <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
-          <PartnershipPdfBook className="mx-auto shrink-0 lg:mx-0" />
+          <PartnershipPdfBook locale={locale} className="mx-auto shrink-0 lg:mx-0" />
 
           <div className="flex min-w-0 flex-1 flex-col gap-4">
-            <p className="ez-body text-[var(--ez-muted)]">
-              The full proposal packet outlines the partnership framework, exhibition concept, DCC support model,
-              artist cluster, and network index — formatted as a printable booklet.
-            </p>
+            <p className="ez-body text-[var(--ez-muted)]">{ui.bookletDescription}</p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <a
@@ -57,7 +56,7 @@ export function PartnershipPdfCard() {
                 className="ez-btn-primary inline-flex min-h-12 items-center justify-center gap-2 px-5 py-2.5"
               >
                 <Download className="h-4 w-4" aria-hidden />
-                Download Partnership PDF
+                {ui.downloadPartnershipPdf}
               </a>
               <a
                 href={viewUrl}
@@ -66,7 +65,7 @@ export function PartnershipPdfCard() {
                 className="ez-btn-outline inline-flex min-h-12 items-center justify-center gap-2 px-5 py-2.5"
               >
                 <ExternalLink className="h-4 w-4" aria-hidden />
-                Open PDF in New Tab
+                {ui.openPdfNewTab}
               </a>
             </div>
 

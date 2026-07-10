@@ -5,6 +5,7 @@
  */
 'use client';
 
+import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { knightPacketNavItems } from '@/lib/marketing/knight-nav';
 import { cn } from '@/lib/utils';
@@ -24,13 +25,17 @@ type KnightPacketNavProps = {
   className?: string;
   /** Custom anchors (e.g. budget page). Defaults to `/knight` packet rail. */
   items?: readonly KnightPacketNavItem[];
+  /** Edge Zones proposal styling — uses ez-nav-pill tokens. */
+  variant?: 'default' | 'edgezones';
+  /** Optional trailing slot (e.g. language toggle). */
+  trailing?: ReactNode;
 };
 
 function sectionIdFromHref(href: string) {
   return href.replace(/^#/, '');
 }
 
-export function KnightPacketNav({ className, items: itemsProp }: KnightPacketNavProps) {
+export function KnightPacketNav({ className, items: itemsProp, variant = 'default', trailing }: KnightPacketNavProps) {
   const items = itemsProp ?? knightPacketNavItems;
   const sectionIds = useMemo(() => items.map((item) => sectionIdFromHref(item.href)), [items]);
 
@@ -102,14 +107,18 @@ export function KnightPacketNav({ className, items: itemsProp }: KnightPacketNav
       aria-label="On this page"
       style={{ top: STICKY_NAV_TOP_PX }}
       className={cn(
-        'sticky z-40 border-b border-neutral-200/90 bg-[#fafafa]/92 py-2 shadow-[0_6px_16px_-12px_rgba(15,23,42,0.35)] backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/92 dark:shadow-[0_8px_24px_-14px_rgba(0,0,0,0.65)]',
+        variant === 'edgezones'
+          ? 'sticky z-40 border-b border-[var(--ez-border)] bg-[var(--ez-paper)]/95 py-2 shadow-[0_6px_16px_-12px_rgba(15,23,42,0.2)] backdrop-blur-md'
+          : 'sticky z-40 border-b border-neutral-200/90 bg-[#fafafa]/92 py-2 shadow-[0_6px_16px_-12px_rgba(15,23,42,0.35)] backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/92 dark:shadow-[0_8px_24px_-14px_rgba(0,0,0,0.65)]',
         className
       )}
     >
       <div className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 pb-0.5 pt-0.5 sm:px-6 lg:px-8">
-        <span className="mr-1 hidden shrink-0 text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 sm:inline">
-          Jump to
-        </span>
+        {variant === 'edgezones' ? null : (
+          <span className="mr-1 hidden shrink-0 text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 sm:inline">
+            Jump to
+          </span>
+        )}
         {items.map((item) => {
           const id = sectionIdFromHref(item.href);
           const isActive = activeId === id;
@@ -118,16 +127,22 @@ export function KnightPacketNav({ className, items: itemsProp }: KnightPacketNav
               key={item.href}
               href={item.href}
               className={cn(
-                'shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                isActive
-                  ? 'border-teal-400/50 bg-teal-50 text-teal-900 shadow-sm dark:border-teal-500/35 dark:bg-teal-950/50 dark:text-teal-100'
-                  : 'border-transparent text-neutral-600 hover:border-neutral-200 hover:bg-white hover:text-neutral-900 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:bg-neutral-900 dark:hover:text-neutral-100'
+                'shrink-0 transition-colors',
+                variant === 'edgezones'
+                  ? cn('ez-nav-pill', isActive ? 'ez-nav-pill-active' : 'ez-nav-pill-idle')
+                  : cn(
+                      'rounded-full border px-3 py-1.5 text-xs font-medium',
+                      isActive
+                        ? 'border-teal-400/50 bg-teal-50 text-teal-900 shadow-sm dark:border-teal-500/35 dark:bg-teal-950/50 dark:text-teal-100'
+                        : 'border-transparent text-neutral-600 hover:border-neutral-200 hover:bg-white hover:text-neutral-900 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:bg-neutral-900 dark:hover:text-neutral-100'
+                    )
               )}
             >
               {item.label}
             </a>
           );
         })}
+        {trailing ? <div className="ml-auto shrink-0 pl-2">{trailing}</div> : null}
       </div>
     </nav>
   );

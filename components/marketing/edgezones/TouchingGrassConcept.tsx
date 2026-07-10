@@ -2,7 +2,8 @@ import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
-import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
+import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
 import {
   EDGE_ZONES_CONCEPT_DIAGRAM_ICONS,
   EDGE_ZONES_SECTION_ICONS,
@@ -10,8 +11,8 @@ import {
 } from '@/lib/marketing/edgezones-icons'
 import { EDGE_ZONES_BANNERS } from '@/lib/marketing/edgezones-media'
 
-export function TouchingGrassConcept() {
-  const { concept } = edgeZonesPortal
+export function TouchingGrassConcept({ locale }: { locale: EdgeZonesLocale }) {
+  const { concept, ui } = getEdgeZonesPortal(locale)
   const banner = EDGE_ZONES_BANNERS.concept
 
   return (
@@ -54,7 +55,7 @@ export function TouchingGrassConcept() {
           })}
         </div>
 
-        <h3 className="ez-heading ez-subsection-title mt-10">Key themes</h3>
+        <h3 className="ez-heading ez-subsection-title mt-10">{ui.keyThemes}</h3>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {concept.themes.map((theme) => {
             const ThemeIcon = edgeZonesConceptThemeIcon(theme.label)

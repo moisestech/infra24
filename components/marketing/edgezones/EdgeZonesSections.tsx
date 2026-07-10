@@ -39,7 +39,7 @@ export function EdgeZonesPortrait({
     return (
       <div
         className={cn(
-          'flex shrink-0 items-center justify-center rounded-xl bg-teal-100 font-semibold text-teal-900 dark:bg-teal-900/40 dark:text-teal-100',
+          'flex shrink-0 items-center justify-center rounded-xl border border-[var(--ez-border)] bg-[var(--ez-paper-alt)] font-semibold text-[var(--ez-ink)]',
           sizeClass,
           className
         )}
@@ -76,7 +76,7 @@ export function EdgeZonesPortrait({
       />
       <div
         aria-hidden
-        className="absolute inset-0 hidden items-center justify-center rounded-xl bg-teal-100 font-semibold text-teal-900 dark:bg-teal-900/40 dark:text-teal-100"
+        className="absolute inset-0 hidden items-center justify-center rounded-xl border border-[var(--ez-border)] bg-[var(--ez-paper-alt)] font-semibold text-[var(--ez-ink)]"
       >
         {initials || '?'}
       </div>

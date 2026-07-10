@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { Building2, Globe, ImageIcon, Instagram, Palette, UserRound } from 'lucide-react'
 import type { EdgeZonesArtistProfile } from '@/lib/marketing/edgezones-artists'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
-import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import type { EdgeZonesUiCopy } from '@/lib/marketing/edgezones/types'
+import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import { EDGE_ZONES_SECTION_ICONS } from '@/lib/marketing/edgezones-icons'
 import { edgeZonesNetworkIndex } from '@/lib/marketing/edgezones-network-index'
 import { EdgeZonesPortrait } from '@/components/marketing/edgezones/EdgeZonesSections'
@@ -17,15 +18,15 @@ type Props = {
   filterNote?: string
 }
 
-function roleBadge(role: string) {
+function roleBadge(role: string, ui: EdgeZonesUiCopy) {
   const normalized = role.toLowerCase()
   if (normalized.includes('host')) {
-    return { label: 'Host Space', className: 'ez-chip-orange', icon: Building2 }
+    return { label: ui.hostSpaceBadge, className: 'ez-chip-orange', icon: Building2 }
   }
   if (normalized.includes('curator')) {
-    return { label: 'Invited Curator', className: 'ez-chip-blue', icon: Palette }
+    return { label: ui.invitedCuratorBadge, className: 'ez-chip-blue', icon: Palette }
   }
-  return { label: 'Participating Artist', className: 'ez-chip-green', icon: UserRound }
+  return { label: ui.participatingArtistBadge, className: 'ez-chip-green', icon: UserRound }
 }
 
 function materialsPending(name: string): boolean {
@@ -40,16 +41,20 @@ function imageFitFor(name: string): 'cover' | 'contain' {
 
 function NetworkCard({
   profile,
-  badgeOverride,
   showWorkPlaceholder = true,
+  ui,
+  badgeKey,
 }: {
   profile: EdgeZonesArtistProfile
-  badgeOverride?: string
   showWorkPlaceholder?: boolean
+  ui: EdgeZonesUiCopy
+  badgeKey?: 'host' | 'curator'
 }) {
-  const badge = badgeOverride
-    ? { label: badgeOverride, className: 'ez-chip-blue', icon: Palette }
-    : roleBadge(profile.roleType ?? '')
+  const badge = badgeKey === 'host'
+    ? { label: ui.hostSpaceBadge, className: 'ez-chip-orange', icon: Building2 }
+    : badgeKey === 'curator'
+      ? { label: ui.invitedCuratorBadge, className: 'ez-chip-blue', icon: Palette }
+      : roleBadge(profile.roleType ?? '', ui)
   const pending = materialsPending(profile.name)
   const fit = imageFitFor(profile.name)
   const isLogo = fit === 'contain'
@@ -71,7 +76,7 @@ function NetworkCard({
             {badge.label}
           </span>
           <h3 className="ez-heading ez-subsection-title mt-2">{profile.name}</h3>
-          {profile.roleType && !badgeOverride ? (
+          {profile.roleType && !badgeKey ? (
             <p className="ez-caption mt-0.5 text-[var(--ez-muted)]">{profile.roleType}</p>
           ) : null}
         </div>
@@ -84,7 +89,7 @@ function NetworkCard({
       {showWorkPlaceholder ? (
         <div className="ez-work-placeholder mx-5 mb-5 flex h-32 items-center justify-center gap-2 rounded sm:h-36">
           <ImageIcon className="h-5 w-5 shrink-0 opacity-60" aria-hidden />
-          {pending ? 'Work image coming soon' : 'Artist materials pending'}
+          {pending ? ui.workImageComingSoon : ui.artistMaterialsPending}
         </div>
       ) : null}
       <div className="flex flex-wrap gap-4 border-t border-[var(--ez-border)] px-5 py-4">
@@ -96,7 +101,7 @@ function NetworkCard({
             className="ez-caption inline-flex items-center gap-1.5 font-mono text-[var(--ez-blue)] hover:underline"
           >
             <Instagram className="h-4 w-4 shrink-0" aria-hidden />
-            Instagram
+            {ui.instagram}
           </a>
         ) : null}
         {profile.website ? (
@@ -107,7 +112,7 @@ function NetworkCard({
             className="ez-caption inline-flex items-center gap-1.5 font-mono text-[var(--ez-blue)] hover:underline"
           >
             <Globe className="h-4 w-4 shrink-0" aria-hidden />
-            Website
+            {ui.website}
           </a>
         ) : null}
       </div>
@@ -116,7 +121,8 @@ function NetworkCard({
 }
 
 export function EdgeZonesNetworkIndex({ host, curator, artists, filterNote }: Props) {
-  const { artists: artistsCopy } = edgeZonesPortal
+  const { portal } = useEdgeZonesLocale()
+  const { artists: artistsCopy, ui } = portal
 
   return (
     <section id="artists" className="ez-section border-b border-[var(--ez-border)]">
@@ -130,14 +136,16 @@ export function EdgeZonesNetworkIndex({ host, curator, artists, filterNote }: Pr
         />
 
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
-          {host ? <NetworkCard profile={host} badgeOverride="Host Space" showWorkPlaceholder={false} /> : null}
-          {curator ? <NetworkCard profile={curator} badgeOverride="Invited Curator" showWorkPlaceholder={false} /> : null}
+          {host ? <NetworkCard profile={host} badgeKey="host" showWorkPlaceholder={false} ui={ui} /> : null}
+          {curator ? (
+            <NetworkCard profile={curator} badgeKey="curator" showWorkPlaceholder={false} ui={ui} />
+          ) : null}
         </div>
 
         <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {artists.map((artist) => (
             <li key={artist.id}>
-              <NetworkCard profile={artist} />
+              <NetworkCard profile={artist} ui={ui} />
             </li>
           ))}
         </ul>
@@ -148,7 +156,7 @@ export function EdgeZonesNetworkIndex({ host, curator, artists, filterNote }: Pr
             className="ez-caption inline-flex items-center gap-1.5 font-mono uppercase tracking-wide text-[var(--ez-blue)] hover:underline"
           >
             <Globe className="h-4 w-4 shrink-0" aria-hidden />
-            Open research map →
+            {ui.openResearchMap}
           </Link>
         </p>
       </div>

@@ -1,8 +1,9 @@
-/* Edge Zones proposal microsite — scoped light paper aesthetic */
+/* Edge Zones proposal microsite — scoped paper aesthetic, light + dark */
 
 .ez-proposal {
   --ez-paper: #f4f1ea;
   --ez-paper-alt: #ebe6dc;
+  --ez-surface: #ffffff;
   --ez-ink: #0a0a0a;
   --ez-muted: #4a4a4a;
   --ez-border: #1a1a1a;
@@ -13,57 +14,72 @@
 
   color: var(--ez-ink);
   background-color: var(--ez-paper);
-  font-size: 1.0625rem;
-  line-height: 1.65;
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color-scheme: light dark;
+}
+
+.dark .ez-proposal {
+  --ez-paper: #111110;
+  --ez-paper-alt: #1a1917;
+  --ez-surface: #22211f;
+  --ez-ink: #f4f1ea;
+  --ez-muted: #b0aaa0;
+  --ez-border: #3d3a34;
+  --ez-blue: #4d9bff;
+  --ez-green: #5fff45;
+  --ez-orange: #ff8c3a;
+}
+
+.dark .ez-proposal .ez-paper-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+}
+
+.dark .ez-proposal .ez-grid-bg {
+  opacity: 0.25;
 }
 
 .ez-proposal .ez-section-title {
-  font-size: 1.625rem;
+  font-size: 1.75rem;
   line-height: 1.15;
 }
 
 @media (min-width: 640px) {
   .ez-proposal .ez-section-title {
-    font-size: 2rem;
+    font-size: 2.25rem;
   }
 }
 
 .ez-proposal .ez-subsection-title {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   line-height: 1.25;
 }
 
 @media (min-width: 640px) {
   .ez-proposal .ez-subsection-title {
-    font-size: 1.3125rem;
+    font-size: 1.5rem;
   }
 }
 
 .ez-proposal .ez-lead {
-  font-size: 1.0625rem;
-  line-height: 1.65;
+  font-size: 1.125rem;
+  line-height: 1.7;
 }
 
 @media (min-width: 640px) {
   .ez-proposal .ez-lead {
-    font-size: 1.125rem;
+    font-size: 1.1875rem;
   }
 }
 
 .ez-proposal .ez-body {
-  font-size: 1rem;
-  line-height: 1.65;
-}
-
-@media (min-width: 640px) {
-  .ez-proposal .ez-body {
-    font-size: 1.0625rem;
-  }
+  font-size: 1.125rem;
+  line-height: 1.7;
 }
 
 .ez-proposal .ez-caption {
-  font-size: 0.875rem;
-  line-height: 1.55;
+  font-size: 0.9375rem;
+  line-height: 1.6;
 }
 
 .ez-proposal .ez-inline-icon {
@@ -126,7 +142,7 @@
   position: relative;
   overflow: hidden;
   border: 1px solid var(--ez-border);
-  background: #fff;
+  background: var(--ez-surface);
   transition:
     border-color 0.4s ease,
     box-shadow 0.4s ease,
@@ -183,6 +199,14 @@
     0 12px 36px rgb(0 0 0 / 0.08);
 }
 
+.dark .ez-proposal .ez-card:hover {
+  box-shadow:
+    0 0 0 1px rgb(77 155 255 / 0.25),
+    0 0 28px rgb(77 155 255 / 0.2),
+    0 0 56px rgb(95 255 69 / 0.08),
+    0 12px 36px rgb(0 0 0 / 0.35);
+}
+
 .ez-proposal .ez-card:hover::before {
   opacity: 1;
 }
@@ -208,7 +232,7 @@
 
 .ez-proposal .ez-portrait-logo {
   border: 1px solid var(--ez-border);
-  background: #fff !important;
+  background: var(--ez-surface) !important;
 }
 
 .ez-proposal .ez-module-number {
@@ -261,9 +285,9 @@
 
 .ez-proposal .ez-chip {
   border: 1px solid var(--ez-border);
-  background: #fff;
+  background: var(--ez-surface);
   font-family: ui-monospace, monospace;
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   letter-spacing: 0.04em;
 }
@@ -288,7 +312,7 @@
   background: var(--ez-ink);
   color: #fff;
   font-family: ui-monospace, monospace;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -301,10 +325,10 @@
 
 .ez-proposal .ez-btn-outline {
   border: 1px solid var(--ez-border);
-  background: #fff;
+  background: var(--ez-surface);
   color: var(--ez-ink);
   font-family: ui-monospace, monospace;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -340,7 +364,7 @@
     rgb(0 0 0 / 0.03) 8px
   );
   font-family: ui-monospace, monospace;
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   color: var(--ez-muted);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -351,6 +375,95 @@
     linear-gradient(to right, rgb(0 0 0 / 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(0 0 0 / 0.04) 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+.dark .ez-proposal .ez-status-live {
+  color: #c8ffc0;
+}
+
+.dark .ez-proposal .ez-status-dev {
+  color: #a8d4ff;
+}
+
+.dark .ez-proposal .ez-status-materials {
+  color: #ffc89a;
+}
+
+.ez-proposal .ez-nav-pill {
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.ez-proposal .ez-nav-pill-active {
+  border-color: rgb(0 102 255 / 0.35);
+  background: rgb(0 102 255 / 0.1);
+  color: var(--ez-blue);
+}
+
+.dark .ez-proposal .ez-nav-pill-active {
+  border-color: rgb(77 155 255 / 0.4);
+  background: rgb(77 155 255 / 0.12);
+}
+
+.ez-proposal .ez-nav-pill-idle {
+  color: var(--ez-muted);
+}
+
+.ez-proposal .ez-nav-pill-idle:hover {
+  border-color: var(--ez-border);
+  background: var(--ez-surface);
+  color: var(--ez-ink);
+}
+
+.ez-proposal .ez-lang-toggle {
+  display: inline-flex;
+  border: 1px solid var(--ez-border);
+  border-radius: 9999px;
+  background: var(--ez-surface);
+  padding: 0.125rem;
+  min-height: 2.75rem;
+}
+
+.ez-proposal .ez-lang-btn {
+  min-width: 2.75rem;
+  min-height: 2.5rem;
+  border-radius: 9999px;
+  padding: 0 0.75rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ez-muted);
+}
+
+.ez-proposal .ez-lang-btn-active {
+  background: var(--ez-ink);
+  color: var(--ez-paper);
+}
+
+.ez-proposal .ez-signup-form input,
+.ez-proposal .ez-signup-form select,
+.ez-proposal .ez-signup-form textarea {
+  border-color: var(--ez-border) !important;
+  background: var(--ez-surface) !important;
+  color: var(--ez-ink) !important;
+}
+
+.ez-proposal .ez-signup-form label {
+  color: var(--ez-ink) !important;
+}
+
+.ez-proposal .ez-signup-form button[type='submit'] {
+  border-color: var(--ez-ink) !important;
+  background: var(--ez-ink) !important;
+  color: var(--ez-paper) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -456,7 +569,7 @@
   z-index: 1;
   height: 100%;
   border: 1px solid var(--ez-border);
-  background: #fff;
+  background: var(--ez-surface);
   box-shadow:
     0 0 0 1px rgb(0 0 0 / 0.06),
     0 14px 36px rgb(0 0 0 / 0.18),

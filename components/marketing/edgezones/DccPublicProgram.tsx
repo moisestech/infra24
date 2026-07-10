@@ -2,16 +2,18 @@ import { CalendarClock, Mail } from 'lucide-react'
 import { EdgeZonesSectionBanner } from '@/components/marketing/edgezones/EdgeZonesSectionBanner'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
-import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
+import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
 import { EDGE_ZONES_SECTION_ICONS, edgeZonesProgramFormatIcon } from '@/lib/marketing/edgezones-icons'
 
-export function DccPublicProgram() {
-  const program = edgeZonesPortal.sections.publicProgram
+export function DccPublicProgram({ locale }: { locale: EdgeZonesLocale }) {
+  const { sections, ui } = getEdgeZonesPortal(locale)
+  const program = sections.publicProgram
 
   return (
     <section id="programs" className="ez-section border-b border-[var(--ez-border)]">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-        <EdgeZonesSectionBanner banner="programs" className="mb-8" caption="DCC-supported public program" />
+        <EdgeZonesSectionBanner banner="programs" className="mb-8" caption={ui.programsBannerCaption} />
         <EdgeZonesSectionHeader
           icon={EDGE_ZONES_SECTION_ICONS.programs}
           title={program.title}
@@ -30,7 +32,7 @@ export function DccPublicProgram() {
           </span>
         </div>
 
-        <h3 className="ez-heading ez-subsection-title mt-8">Possible formats</h3>
+        <h3 className="ez-heading ez-subsection-title mt-8">{ui.possibleFormats}</h3>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {program.formats.map((format) => {
             const FormatIcon = edgeZonesProgramFormatIcon(format)

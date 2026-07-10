@@ -1,5 +1,6 @@
 import Image from 'next/image'
-import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
+import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
 import { EDGE_ZONES_BANNERS, type EdgeZonesBannerKey } from '@/lib/marketing/edgezones-media'
 import {
   EDGE_ZONES_SECTION_ICONS,
@@ -47,13 +48,14 @@ export function EdgeZonesSectionBanner({ banner, caption, priority = false, clas
   )
 }
 
-export function EdgeZonesArchiveSection() {
-  const { archive } = edgeZonesPortal.sections
+export function EdgeZonesArchiveSection({ locale }: { locale: EdgeZonesLocale }) {
+  const { sections, ui } = getEdgeZonesPortal(locale)
+  const { archive } = sections
 
   return (
     <section id="archive" className="ez-section border-b border-[var(--ez-border)]">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-        <EdgeZonesSectionBanner banner="archive" className="mb-8" caption="Documentation archive" />
+        <EdgeZonesSectionBanner banner="archive" className="mb-8" caption={ui.archiveBannerCaption} />
         <EdgeZonesSectionHeader
           icon={EDGE_ZONES_SECTION_ICONS.archive}
           title={archive.title}

@@ -6,7 +6,7 @@ type Props = {
   className?: string
 }
 
-/** Light proposal microsite shell — forces paper aesthetic regardless of site dark mode. */
+/** Light/dark proposal microsite shell — paper aesthetic via ez-proposal tokens. */
 export function EdgeZonesProposalShell({ children, className }: Props) {
   return (
     <div

@@ -132,6 +132,13 @@ export const EDGE_ZONES_CTA_ICONS: Record<string, LucideIcon> = {
   'Join Updates': Mail,
 }
 
+export const EDGE_ZONES_CTA_ICONS_BY_HREF: Record<string, LucideIcon> = {
+  '#artists': Users,
+  '#support': Layers,
+  '#pdf': FileText,
+  '#join': Mail,
+}
+
 export const EDGE_ZONES_SUPPORT_ICONS: Record<EdgeZonesSupportIconKey, LucideIcon> = {
   globe: Globe,
   users: Users,

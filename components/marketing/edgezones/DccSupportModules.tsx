@@ -1,15 +1,14 @@
-import {
-  edgeZonesModuleStatusClass,
-  edgeZonesModuleStatusLabel,
-  edgeZonesPortal,
-} from '@/lib/marketing/edgezones-content'
+import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
+import { edgeZonesModuleStatusClass, edgeZonesModuleStatusLabel } from '@/lib/marketing/edgezones-content'
+import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
 import { EDGE_ZONES_SECTION_ICONS, EDGE_ZONES_SUPPORT_ICONS } from '@/lib/marketing/edgezones-icons'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
 import { cn } from '@/lib/utils'
 
-export function DccSupportModules() {
-  const { support } = edgeZonesPortal.sections
+export function DccSupportModules({ locale }: { locale: EdgeZonesLocale }) {
+  const { sections, ui } = getEdgeZonesPortal(locale)
+  const { support } = sections
 
   return (
     <section id="support" className="ez-section border-b border-[var(--ez-border)] bg-[var(--ez-paper-alt)]">
@@ -26,7 +25,7 @@ export function DccSupportModules() {
           {support.modules.map((module) => {
             const Icon = EDGE_ZONES_SUPPORT_ICONS[module.icon]
             const statusClass = edgeZonesModuleStatusClass(module.status)
-            const statusLabel = edgeZonesModuleStatusLabel(module.status)
+            const statusLabel = edgeZonesModuleStatusLabel(module.status, locale)
             const inner = (
               <>
                 <div className="flex items-start justify-between gap-3">
@@ -40,7 +39,7 @@ export function DccSupportModules() {
                 <p className="ez-body mt-2 text-[var(--ez-muted)]">{module.description}</p>
                 {module.materialsNote ? (
                   <p className="ez-caption mt-2 text-[var(--ez-orange)]">
-                    Materials needed: {module.materialsNote}
+                    {ui.materialsNeededPrefix} {module.materialsNote}
                   </p>
                 ) : null}
               </>

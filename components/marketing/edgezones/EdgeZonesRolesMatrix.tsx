@@ -3,7 +3,8 @@ import { CheckCircle2, ExternalLink } from 'lucide-react'
 import { EdgeZonesPortrait } from '@/components/marketing/edgezones/EdgeZonesSections'
 import { EdgeZonesSectionHeader } from '@/components/marketing/edgezones/EdgeZonesSectionHeader'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
-import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
+import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
+import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
 import {
   EDGE_ZONES_ROLE_ACCENT_ICONS,
   EDGE_ZONES_SECTION_ICONS,
@@ -19,8 +20,8 @@ const ACCENT_BORDER = {
   teal: 'border-t-[var(--ez-green)]',
 } as const
 
-export function EdgeZonesRolesMatrix() {
-  const { rolesMatrix } = edgeZonesPortal
+export function EdgeZonesRolesMatrix({ locale }: { locale: EdgeZonesLocale }) {
+  const { rolesMatrix, ui } = getEdgeZonesPortal(locale)
   const columns = [rolesMatrix.edgeZones, rolesMatrix.jordanHorton, rolesMatrix.dccMiami]
 
   return (
@@ -65,7 +66,7 @@ export function EdgeZonesRolesMatrix() {
                     accent={col.accent as EdgeZonesIconAccent}
                     size="compact"
                   />
-                  <p className="ez-module-number">ROLE</p>
+                  <p className="ez-module-number">{ui.roleLabel}</p>
                 </div>
                 <h3 className="ez-heading ez-subsection-title mt-2">{col.title}</h3>
                 <p className="ez-caption mt-1 font-semibold uppercase tracking-wide text-[var(--ez-muted)]">

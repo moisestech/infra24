@@ -1,15 +1,19 @@
 import Image from 'next/image'
+import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
+import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
 import {
   EDGE_ZONES_PARTNERSHIP_PDF_DRIVE_VIEW_URL,
   edgeZonesPartnershipPdfCover,
 } from '@/lib/marketing/edgezones-media'
 
 type Props = {
+  locale: EdgeZonesLocale
   className?: string
 }
 
 /** 3D booklet preview — cover art with spine and page edge. */
-export function PartnershipPdfBook({ className }: Props) {
+export function PartnershipPdfBook({ locale, className }: Props) {
+  const { ui } = getEdgeZonesPortal(locale)
   const cover = edgeZonesPartnershipPdfCover()
 
   return (
@@ -18,7 +22,7 @@ export function PartnershipPdfBook({ className }: Props) {
       target="_blank"
       rel="noopener noreferrer"
       className={`ez-book group block ${className ?? ''}`}
-      aria-label="Open DCC Miami × Edge Zones partnership PDF"
+      aria-label={ui.bookletAriaLabel}
     >
       <div className="ez-book-stage">
         <div className="ez-book-shadow" aria-hidden />
@@ -39,7 +43,7 @@ export function PartnershipPdfBook({ className }: Props) {
         </div>
       </div>
       <p className="ez-caption mt-4 text-center font-mono uppercase tracking-wider text-[var(--ez-muted)]">
-        Partnership proposal packet
+        {ui.bookletLabel}
       </p>
     </a>
   )

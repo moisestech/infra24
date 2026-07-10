@@ -1,13 +1,16 @@
 import Image from 'next/image'
 import { Sparkles } from 'lucide-react'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
-import { edgeZonesPortal } from '@/lib/marketing/edgezones-content'
-import { EDGE_ZONES_CTA_ICONS, EDGE_ZONES_HERO_CHIP_ICONS } from '@/lib/marketing/edgezones-icons'
+import { getEdgeZonesPortal } from '@/lib/marketing/edgezones/content'
+import type { EdgeZonesLocale } from '@/lib/marketing/edgezones/edgezones-locale'
+import { EDGE_ZONES_CTA_ICONS_BY_HREF, EDGE_ZONES_HERO_CHIP_ICONS } from '@/lib/marketing/edgezones-icons'
 import { edgeZonesHeroCollagePhotos } from '@/lib/marketing/edgezones-media'
 import { cn } from '@/lib/utils'
 
-export function EdgeZonesProposalHero() {
-  const { hero, primaryCtas, creditLine } = edgeZonesPortal
+type Props = { locale: EdgeZonesLocale }
+
+export function EdgeZonesProposalHero({ locale }: Props) {
+  const { hero, primaryCtas, creditLine } = getEdgeZonesPortal(locale)
   const collage = edgeZonesHeroCollagePhotos()
 
   return (
@@ -19,7 +22,7 @@ export function EdgeZonesProposalHero() {
               <EdgeZonesIconBadge icon={Sparkles} accent="teal" size="compact" />
               {hero.eyebrow}
             </p>
-            <h1 className="ez-display mt-4 text-4xl sm:text-5xl lg:text-[3.75rem]">{hero.title}</h1>
+            <h1 className="ez-display mt-4 text-5xl sm:text-6xl lg:text-[4rem]">{hero.title}</h1>
             <p className="ez-heading mt-3 text-xl text-[var(--ez-blue)] sm:text-2xl">{hero.subtitle}</p>
             <div className="ez-body mt-6 space-y-4 text-[var(--ez-muted)]">
               {hero.intro.split('\n\n').map((p) => (
@@ -50,7 +53,7 @@ export function EdgeZonesProposalHero() {
             </ul>
             <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
               {primaryCtas.map((cta) => {
-                const CtaIcon = EDGE_ZONES_CTA_ICONS[cta.label]
+                const CtaIcon = EDGE_ZONES_CTA_ICONS_BY_HREF[cta.href]
                 return (
                   <a
                     key={cta.href}
