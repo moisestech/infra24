@@ -6,6 +6,7 @@
   --ez-surface: #ffffff;
   --ez-ink: #0a0a0a;
   --ez-muted: #4a4a4a;
+  --ez-body-fg: #2a2a2a;
   --ez-border: #1a1a1a;
   --ez-blue: #0066ff;
   --ez-green: #39ff14;
@@ -29,6 +30,7 @@
   --ez-surface: #22211f;
   --ez-ink: #f4f1ea;
   --ez-muted: #b0aaa0;
+  --ez-body-fg: #d8d2c8;
   --ez-border: #3d3a34;
   --ez-blue: #4d9bff;
   --ez-green: #5fff45;
@@ -83,6 +85,36 @@
 .ez-proposal .ez-body {
   font-size: 1.125rem;
   line-height: 1.7;
+}
+
+.ez-proposal .ez-body-prose {
+  color: var(--ez-body-fg);
+}
+
+.ez-proposal .ez-hover-paragraph {
+  margin: 0;
+  padding: 0.85rem 1rem 0.85rem 1.1rem;
+  border-left: 3px solid transparent;
+  border-radius: 0 0.35rem 0.35rem 0;
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.ez-proposal .ez-hover-paragraph:hover,
+.ez-proposal .ez-hover-paragraph:focus-within {
+  border-left-color: var(--ez-blue);
+  background: rgb(0 102 255 / 0.06);
+  color: var(--ez-ink);
+  box-shadow: inset 0 0 0 1px rgb(0 102 255 / 0.08);
+}
+
+.dark .ez-proposal .ez-hover-paragraph:hover,
+.dark .ez-proposal .ez-hover-paragraph:focus-within {
+  background: rgb(77 155 255 / 0.1);
+  box-shadow: inset 0 0 0 1px rgb(77 155 255 / 0.14);
 }
 
 .ez-proposal .ez-caption {
@@ -241,6 +273,29 @@
 .ez-proposal .ez-portrait-logo {
   border: 1px solid var(--ez-border);
   background: var(--ez-surface) !important;
+}
+
+:not(.dark) .ez-proposal .ez-portrait-logo {
+  background-image: url('https://res.cloudinary.com/dck5rzi4h/image/upload/e_brightness:100/o_8/v1783701153/dccmiami/logo/edge-zones-logo-transparent-square_wl5cru.webp');
+  background-repeat: no-repeat;
+  background-position: right 0.35rem bottom 0.35rem;
+  background-size: 28px;
+}
+
+.ez-proposal .ez-logo-watermark {
+  background-color: var(--ez-surface);
+}
+
+.ez-proposal .ez-card-watermark {
+  background-image: url('https://res.cloudinary.com/dck5rzi4h/image/upload/e_brightness:100/o_10/v1783701153/dccmiami/logo/edge-zones-logo-transparent-square_wl5cru.webp');
+  background-repeat: no-repeat;
+  background-position: calc(100% - 0.85rem) calc(100% - 0.85rem);
+  background-size: 44px;
+  opacity: 1;
+}
+
+.dark .ez-proposal .ez-card-watermark {
+  opacity: 0;
 }
 
 .ez-proposal .ez-module-number {
@@ -537,17 +592,128 @@
   );
 }
 
-/* Key theme cards — hover presence: 3D tilt, glow icon, floating keywords, glitch */
+/* Concept icon stage — large icon beside Touching Grass copy */
+.ez-proposal .ez-concept-icon-stage {
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 14rem;
+  padding: 1.5rem;
+  border: 1px solid var(--ez-border);
+  background: var(--ez-surface);
+  overflow: hidden;
+}
+
+.ez-proposal .ez-concept-icon-stage-icon {
+  color: var(--ez-theme-glow);
+  opacity: 0;
+  filter: drop-shadow(0 0 32px var(--ez-theme-glow));
+  transform: scale(0.82) rotate(-10deg);
+  transition:
+    opacity 0.45s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ez-proposal .ez-concept-icon-stage-active .ez-concept-icon-stage-icon {
+  opacity: 0.42;
+  transform: scale(1) rotate(-4deg);
+}
+
+.ez-proposal .ez-concept-icon-stage-placeholder {
+  width: 56%;
+  height: 56%;
+  border: 1px dashed var(--ez-border);
+  border-radius: 0.75rem;
+  opacity: 0.35;
+}
+
+.ez-proposal .ez-concept-icon-stage-scanlines {
+  opacity: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgb(0 0 0 / 0.05) 2px,
+    rgb(0 0 0 / 0.05) 4px
+  );
+  transition: opacity 0.35s ease;
+}
+
+.ez-proposal .ez-concept-icon-stage-pixel-grid {
+  opacity: 0;
+  background-image:
+    linear-gradient(rgb(0 0 0 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 0 0 / 0.04) 1px, transparent 1px);
+  background-size: 6px 6px;
+  transition: opacity 0.35s ease;
+}
+
+.ez-proposal .ez-concept-icon-stage-active .ez-concept-icon-stage-scanlines,
+.ez-proposal .ez-concept-icon-stage-active .ez-concept-icon-stage-pixel-grid {
+  opacity: 0.3;
+}
+
+.ez-proposal .ez-diagram-chip {
+  cursor: default;
+  border: 1px solid var(--ez-border);
+  background: var(--ez-surface);
+  color: var(--ez-ink);
+}
+
+.ez-proposal .ez-diagram-chip:hover,
+.ez-proposal .ez-diagram-chip:focus-visible {
+  border-color: transparent;
+  box-shadow:
+    0 0 0 1px var(--ez-theme-glow-soft),
+    0 0 20px var(--ez-theme-glow-soft);
+  outline: none;
+}
+
+.ez-proposal .ez-diagram-chip-icon {
+  color: var(--ez-blue);
+  transition:
+    color 0.3s ease,
+    filter 0.3s ease,
+    transform 0.3s ease;
+}
+
+.ez-proposal .ez-diagram-chip:hover .ez-diagram-chip-icon,
+.ez-proposal .ez-diagram-chip:focus-visible .ez-diagram-chip-icon {
+  color: var(--ez-theme-glow);
+  filter: drop-shadow(0 0 10px var(--ez-theme-glow));
+  transform: scale(1.12);
+}
+
+.ez-proposal .ez-hero-collage {
+  will-change: transform;
+}
+/* Key theme cards — hover keywords + shared icon stage; description stays visible */
 .ez-proposal .ez-theme-card {
   position: relative;
   overflow: hidden;
   padding: 1.25rem;
-  transform-style: preserve-3d;
-  perspective: 900px;
+  outline: none;
   transition:
-    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.45s ease,
-    border-color 0.35s ease;
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    transform 0.35s ease;
+}
+
+.ez-proposal .ez-theme-content {
+  position: relative;
+  z-index: 3;
+}
+
+.ez-proposal .ez-theme-description {
+  position: relative;
+  z-index: 2;
+  padding-right: 0.25rem;
+  transition: color 0.25s ease;
+}
+
+.ez-proposal .ez-theme-card:hover .ez-theme-description,
+.ez-proposal .ez-theme-card:focus-visible .ez-theme-description {
+  color: var(--ez-ink);
 }
 
 .ez-proposal .ez-theme-accent-blue {
@@ -580,41 +746,22 @@
   --ez-theme-glow-soft: rgb(99 102 241 / 0.14);
 }
 
-.ez-proposal .ez-theme-card:hover {
-  transform: perspective(900px) rotateX(4deg) rotateY(-5deg) translateY(-6px) scale(1.02);
+.ez-proposal .ez-theme-card:hover,
+.ez-proposal .ez-theme-card:focus-visible {
+  transform: translateY(-3px);
   border-color: transparent;
   box-shadow:
     0 0 0 1px var(--ez-theme-glow-soft),
-    0 0 32px var(--ez-theme-glow-soft),
-    0 0 64px rgb(0 0 0 / 0.08),
-    0 18px 40px rgb(0 0 0 / 0.12);
+    0 0 28px var(--ez-theme-glow-soft),
+    0 12px 32px rgb(0 0 0 / 0.08);
 }
 
-.dark .ez-proposal .ez-theme-card:hover {
+.dark .ez-proposal .ez-theme-card:hover,
+.dark .ez-proposal .ez-theme-card:focus-visible {
   box-shadow:
     0 0 0 1px var(--ez-theme-glow-soft),
-    0 0 40px var(--ez-theme-glow-soft),
-    0 0 72px rgb(0 0 0 / 0.35),
-    0 18px 40px rgb(0 0 0 / 0.4);
-}
-
-.ez-proposal .ez-theme-bg-icon {
-  right: -12%;
-  bottom: -18%;
-  width: 72%;
-  height: 72%;
-  color: var(--ez-theme-glow);
-  opacity: 0;
-  filter: drop-shadow(0 0 28px var(--ez-theme-glow));
-  transform: scale(0.75) rotate(-14deg) translateZ(0);
-  transition:
-    opacity 0.5s ease,
-    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.ez-proposal .ez-theme-card:hover .ez-theme-bg-icon {
-  opacity: 0.22;
-  transform: scale(1.08) rotate(-8deg) translateZ(36px) translateX(-4%);
+    0 0 36px var(--ez-theme-glow-soft),
+    0 12px 32px rgb(0 0 0 / 0.35);
 }
 
 .ez-proposal .ez-theme-scanlines {
@@ -640,8 +787,10 @@
 }
 
 .ez-proposal .ez-theme-card:hover .ez-theme-scanlines,
-.ez-proposal .ez-theme-card:hover .ez-theme-pixel-grid {
-  opacity: 0.35;
+.ez-proposal .ez-theme-card:focus-visible .ez-theme-scanlines,
+.ez-proposal .ez-theme-card:hover .ez-theme-pixel-grid,
+.ez-proposal .ez-theme-card:focus-visible .ez-theme-pixel-grid {
+  opacity: 0.28;
 }
 
 .ez-proposal .ez-theme-keyword {
@@ -653,13 +802,14 @@
   text-transform: uppercase;
   color: var(--ez-theme-glow);
   opacity: 0;
-  transform: translateY(8px) scale(0.92);
+  transform: translateY(6px) scale(0.94);
   animation: ez-theme-keyword-float 6s ease-in-out infinite;
   text-shadow: 0 0 12px var(--ez-theme-glow-soft);
 }
 
-.ez-proposal .ez-theme-card:hover .ez-theme-keyword {
-  opacity: 0.75;
+.ez-proposal .ez-theme-card:hover .ez-theme-keyword,
+.ez-proposal .ez-theme-card:focus-visible .ez-theme-keyword {
+  opacity: 0.65;
 }
 
 .ez-proposal .ez-theme-particle {
@@ -673,8 +823,9 @@
   animation: ez-theme-particle-drift 4.5s ease-in-out infinite;
 }
 
-.ez-proposal .ez-theme-card:hover .ez-theme-particle {
-  opacity: 0.85;
+.ez-proposal .ez-theme-card:hover .ez-theme-particle,
+.ez-proposal .ez-theme-card:focus-visible .ez-theme-particle {
+  opacity: 0.7;
 }
 
 .ez-proposal .ez-theme-label {
@@ -690,11 +841,13 @@
   clip-path: inset(0 0 0 0);
 }
 
-.ez-proposal .ez-theme-card:hover .ez-theme-label-base {
+.ez-proposal .ez-theme-card:hover .ez-theme-label-base,
+.ez-proposal .ez-theme-card:focus-visible .ez-theme-label-base {
   animation: ez-theme-glitch-shift 0.55s steps(2, end) infinite;
 }
 
-.ez-proposal .ez-theme-card:hover .ez-theme-label-glitch {
+.ez-proposal .ez-theme-card:hover .ez-theme-label-glitch,
+.ez-proposal .ez-theme-card:focus-visible .ez-theme-label-glitch {
   opacity: 0.85;
   animation: ez-theme-glitch-clip 0.45s steps(2, end) infinite;
 }
@@ -778,24 +931,24 @@
     animation: none;
   }
 
-  .ez-proposal .ez-theme-card:hover {
+  .ez-proposal .ez-theme-card:hover,
+  .ez-proposal .ez-theme-card:focus-visible {
     transform: none;
   }
 
   .ez-proposal .ez-theme-card:hover .ez-theme-label-base,
-  .ez-proposal .ez-theme-card:hover .ez-theme-label-glitch {
+  .ez-proposal .ez-theme-card:focus-visible .ez-theme-label-base,
+  .ez-proposal .ez-theme-card:hover .ez-theme-label-glitch,
+  .ez-proposal .ez-theme-card:focus-visible .ez-theme-label-glitch {
     animation: none;
   }
 
   .ez-proposal .ez-theme-card:hover .ez-theme-keyword,
-  .ez-proposal .ez-theme-card:hover .ez-theme-particle {
-    opacity: 0.5;
+  .ez-proposal .ez-theme-card:focus-visible .ez-theme-keyword,
+  .ez-proposal .ez-theme-card:hover .ez-theme-particle,
+  .ez-proposal .ez-theme-card:focus-visible .ez-theme-particle {
+    opacity: 0.45;
     animation: none;
-  }
-
-  .ez-proposal .ez-theme-card:hover .ez-theme-bg-icon {
-    opacity: 0.14;
-    transform: scale(1) rotate(-8deg);
   }
 }
 

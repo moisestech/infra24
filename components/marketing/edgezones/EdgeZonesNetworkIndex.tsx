@@ -25,7 +25,12 @@ function roleBadge(role: string, ui: EdgeZonesUiCopy) {
   if (normalized.includes('curator')) {
     return { label: ui.invitedCuratorBadge, className: 'ez-chip-blue', icon: Palette }
   }
-  return { label: ui.participatingArtistBadge, className: 'ez-chip-green', icon: UserRound }
+  return {
+    label: ui.participatingArtistBadge,
+    labelShort: ui.participatingArtistBadgeShort,
+    className: 'ez-chip-green',
+    icon: UserRound,
+  }
 }
 
 function materialsPending(name: string): boolean {
@@ -61,7 +66,8 @@ function NetworkCard({
   const BadgeIcon = badge.icon
 
   return (
-    <article className="ez-card overflow-hidden transition-transform">
+    <article className="ez-card ez-logo-watermark overflow-hidden transition-transform">
+      <span className="ez-card-watermark pointer-events-none absolute inset-0 z-0" aria-hidden />
       <div className="flex gap-4 p-5">
         <EdgeZonesPortrait
           name={profile.name}
@@ -73,7 +79,14 @@ function NetworkCard({
         <div className="min-w-0 flex-1">
           <span className={cn('ez-chip inline-flex items-center gap-1.5 rounded px-2.5 py-1', badge.className)}>
             <BadgeIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            {badge.label}
+            {'labelShort' in badge ? (
+              <>
+                <span className="hidden sm:inline">{badge.label}</span>
+                <span className="sm:hidden">{badge.labelShort}</span>
+              </>
+            ) : (
+              badge.label
+            )}
           </span>
           <h3 className="ez-heading ez-subsection-title mt-2">{profile.name}</h3>
           {profile.roleType && !badgeKey ? (

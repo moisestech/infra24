@@ -1,8 +1,9 @@
 'use client'
 
-import Image from 'next/image'
 import { EdgeZonesIcon } from '@/components/marketing/edgezones/EdgeZonesIcon'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
+import { EdgeZonesHighlightParagraph } from '@/components/marketing/edgezones/EdgeZonesHighlightParagraph'
+import { EdgeZonesHeroCollage } from '@/components/marketing/edgezones/EdgeZonesHeroCollage'
 import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLocaleProvider'
 import { EDGE_ZONES_CTA_ICONS_BY_HREF, EDGE_ZONES_HERO_CHIP_ICONS } from '@/lib/marketing/edgezones-icons'
 import { edgeZonesHeroCollagePhotos } from '@/lib/marketing/edgezones-media'
@@ -24,12 +25,12 @@ export function EdgeZonesProposalHero() {
             </p>
             <h1 className="ez-display mt-4 text-5xl sm:text-6xl lg:text-[4rem]">{hero.title}</h1>
             <p className="ez-heading mt-3 text-xl text-[var(--ez-blue)] sm:text-2xl">{hero.subtitle}</p>
-            <div className="ez-body mt-6 space-y-4 text-[var(--ez-muted)]">
+            <div className="mt-6 space-y-4">
               {hero.intro.split('\n\n').map((p) => (
-                <p key={p.slice(0, 24)}>{p}</p>
+                <EdgeZonesHighlightParagraph key={p.slice(0, 24)}>{p}</EdgeZonesHighlightParagraph>
               ))}
             </div>
-            <p className="ez-body mt-6 border-l-2 border-[var(--ez-ink)] pl-4 font-medium">
+            <p className="ez-body mt-6 border-l-2 border-[var(--ez-ink)] pl-4 font-medium text-[var(--ez-body-fg)]">
               {creditLine}
             </p>
             <ul className="mt-5 flex flex-wrap gap-2">
@@ -68,25 +69,7 @@ export function EdgeZonesProposalHero() {
             </div>
           </div>
 
-          <div className="relative">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="relative col-span-2 aspect-[16/9] overflow-hidden border border-[var(--ez-border)] sm:aspect-[5/3]">
-                <Image src={collage[0].src} alt={collage[0].alt} fill className="object-cover" sizes="520px" priority />
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-[var(--ez-blue)]" aria-hidden />
-              </div>
-              {collage.slice(1).map((photo, i) => (
-                <div key={photo.src} className="relative aspect-square overflow-hidden border border-[var(--ez-border)] sm:aspect-[4/5]">
-                  <Image src={photo.src} alt={photo.alt} fill className="object-cover" sizes="260px" />
-                  <div
-                    className={cn('absolute bottom-0 left-0 right-0 h-1', i === 0 ? 'bg-[var(--ez-green)]' : 'bg-[var(--ez-orange)]')}
-                    aria-hidden
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="absolute -right-2 -top-2 h-8 w-8 border border-[var(--ez-blue)] bg-[var(--ez-blue)] opacity-80" aria-hidden />
-            <div className="absolute -bottom-2 -left-2 h-6 w-6 border border-[var(--ez-orange)] bg-[var(--ez-orange)] opacity-70" aria-hidden />
-          </div>
+          <EdgeZonesHeroCollage photos={collage} />
         </div>
       </div>
       <div className="ez-pixel-divider" aria-hidden />

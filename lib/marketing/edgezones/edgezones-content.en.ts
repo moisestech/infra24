@@ -1,5 +1,5 @@
 import { TOUCHING_GRASS_EXHIBITION } from '@/lib/marketing/edgezones-exhibition'
-import { EDGE_ZONES_GALLERY_WEBSITE } from '@/lib/marketing/edgezones-network-index'
+import { EDGE_ZONES_GALLERY_WEBSITE, JORDAN_HORTON_INSTAGRAM_URL, DCC_MIAMI_WEBSITE } from '@/lib/marketing/edgezones-network-index'
 import type { EdgeZonesPortalContent, EdgeZonesSupportModule } from './types'
 
 export const edgeZonesPortalEn: EdgeZonesPortalContent = {
@@ -61,6 +61,8 @@ The exhibition brings together artists whose practices examine how digital techn
         'Gathering artist materials in ready-to-post format',
       ],
       accent: 'indigo',
+      href: JORDAN_HORTON_INSTAGRAM_URL,
+      hrefLabel: 'horton.exe',
     },
     dccMiami: {
       title: 'DCC Miami',
@@ -77,6 +79,8 @@ The exhibition brings together artists whose practices examine how digital techn
         'One public program, workshop, conversation, or activation connected to the exhibition',
       ],
       accent: 'teal',
+      href: DCC_MIAMI_WEBSITE,
+      hrefLabel: 'dcc.miami',
     },
   },
   concept: {
@@ -288,6 +292,7 @@ The exhibition brings together artists whose practices examine how digital techn
     hostSpaceBadge: 'Host Space',
     invitedCuratorBadge: 'Invited Curator',
     participatingArtistBadge: 'Participating Artist',
+    participatingArtistBadgeShort: 'Artist',
     workImageComingSoon: 'Work image coming soon',
     artistMaterialsPending: 'Artist materials pending',
     openResearchMap: 'Open research map →',

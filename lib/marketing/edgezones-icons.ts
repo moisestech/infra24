@@ -100,6 +100,8 @@ export function edgeZonesConceptThemeIcon(label: string): EdgeZonesIconName {
 
 export type EdgeZonesThemeAccent = 'blue' | 'orange' | 'green' | 'magenta' | 'teal' | 'indigo'
 
+export const EDGE_ZONES_CONCEPT_DIAGRAM_ACCENTS: EdgeZonesThemeAccent[] = ['blue', 'indigo', 'green']
+
 const THEME_ACCENT_BY_ICON: Record<EdgeZonesIconName, EdgeZonesThemeAccent> = {
   archive: 'indigo',
   bookOpen: 'indigo',

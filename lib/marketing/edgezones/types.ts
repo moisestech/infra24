@@ -23,6 +23,7 @@ export type EdgeZonesUiCopy = {
   hostSpaceBadge: string
   invitedCuratorBadge: string
   participatingArtistBadge: string
+  participatingArtistBadgeShort: string
   workImageComingSoon: string
   artistMaterialsPending: string
   openResearchMap: string
@@ -74,6 +75,8 @@ export type EdgeZonesPortalContent = {
       intro: string
       items: string[]
       accent: 'indigo'
+      href: string
+      hrefLabel: string
     }
     dccMiami: {
       title: string
@@ -81,6 +84,8 @@ export type EdgeZonesPortalContent = {
       intro: string
       items: string[]
       accent: 'teal'
+      href: string
+      hrefLabel: string
     }
   }
   concept: {

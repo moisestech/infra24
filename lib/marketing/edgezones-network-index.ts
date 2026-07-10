@@ -25,6 +25,10 @@ export const EDGE_ZONES_GALLERY_MARK_URL =
 
 export const EDGE_ZONES_GALLERY_WEBSITE = 'https://edgezones.org' as const
 
+export const JORDAN_HORTON_INSTAGRAM_URL = 'https://instagram.com/horton.exe' as const
+
+export const DCC_MIAMI_WEBSITE = 'https://dcc.miami' as const
+
 /**
  * Jordan Horton portrait — upload to this Cloudinary path when available.
  * Falls back to initials in UI when the asset 404s.
