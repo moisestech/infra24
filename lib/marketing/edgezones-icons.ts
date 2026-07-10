@@ -9,8 +9,9 @@ import {
   FileText,
   Footprints,
   Globe,
-  Handshake,
+  Hammer,
   Heart,
+  HeartHandshake,
   Layers,
   Leaf,
   Link2,
@@ -19,7 +20,6 @@ import {
   Monitor,
   Network,
   Palette,
-  Pickaxe,
   Sparkles,
   Sprout,
   Users,
@@ -62,7 +62,7 @@ export type EdgeZonesRoleAccent = 'coral' | 'indigo' | 'teal'
 
 export const EDGE_ZONES_SECTION_ICONS: Record<EdgeZonesSectionIconKey, LucideIcon> = {
   overview: Sparkles,
-  roles: Handshake,
+  roles: HeartHandshake,
   concept: Sprout,
   artists: Users,
   support: Layers,
@@ -84,11 +84,17 @@ export const EDGE_ZONES_CONCEPT_DIAGRAM_ICONS: LucideIcon[] = [Monitor, Building
 
 const CONCEPT_THEME_ICON_BY_LABEL: Record<string, LucideIcon> = {
   Attention: Eye,
-  Extraction: Pickaxe,
+  Atención: Eye,
+  Extraction: Hammer,
+  Extracción: Hammer,
   Ecology: Leaf,
+  Ecología: Leaf,
   Care: Heart,
+  Cuidado: Heart,
   Reconnection: Link2,
+  Reconexión: Link2,
   'Embodied Reality': Footprints,
+  'Realidad encarnada': Footprints,
 }
 
 export function edgeZonesConceptThemeIcon(label: string): LucideIcon {
