@@ -7,6 +7,7 @@ export { NavigationMenu } from './NavigationMenu'
 export { AdminTools } from './AdminTools'
 export { UserMenu } from './UserMenu'
 export { MobileMenu } from './MobileMenu'
+export { NavigationOverflowMenu } from './NavigationOverflowMenu'
 
 // Types
 export type { 

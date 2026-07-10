@@ -367,6 +367,14 @@ const pages: CdcPageDef[] = [
     layout: 'support',
   }),
   p({
+    path: '/grant/wolfsonian-fellowship',
+    title: 'Wolfsonian Creative Fellowship',
+    description:
+      'The Archive Dreams in Public — a Wolfsonian-FIU Creative Fellowship proposal on archival memory, agents, and citation-aware interpretation.',
+    parent: '/grants',
+    layout: 'support',
+  }),
+  p({
     path: '/knight/founders',
     title: 'Founder bios',
     description:

@@ -8,6 +8,7 @@ import { useOrganizationTheme } from '@/components/carousel/OrganizationThemeCon
 import { useTheme } from '@/contexts/ThemeContext'
 import { useMemoryAgentChat } from '@/hooks/memory-agent/useMemoryAgentChat'
 import { useMemoryAgentDevMode } from '@/hooks/memory-agent/useMemoryAgentDevMode'
+import { useMemoryAgentKioskScale } from '@/hooks/memory-agent/useMemoryAgentKioskScale'
 import { useMemoryAgentGeneratedAssets } from '@/hooks/memory-agent/useMemoryAgentGeneratedAssets'
 import { useMemoryAgentStatus } from '@/hooks/memory-agent/useMemoryAgentStatus'
 import { useMemoryAgentVoice } from '@/hooks/memory-agent/useMemoryAgentVoice'
@@ -50,6 +51,7 @@ import { MemoryWaveCanvas } from '@/components/memory-agent/MemoryWaveCanvas'
 import { createMemoryAgentAudioVizPalette } from '@/lib/memory-agent/audio-viz-palette'
 import { isStaffOperatorMode } from '@/lib/memory-agent/mode'
 import { getMemoryAgentBranding } from '@/lib/memory-agent/org-branding'
+import { memoryAgentContentMaxWidthClass } from '@/lib/memory-agent/kiosk-viewport'
 import { buildMemoryAgentBrandVars, ma } from '@/lib/memory-agent/ui-tokens'
 import { getTenantConfig } from '@/lib/tenant'
 import { cn } from '@/lib/utils'
@@ -244,6 +246,8 @@ export function MemoryAgentClient({
   }, [])
 
   const { isDevMode, disableDevMode } = useMemoryAgentDevMode()
+  const kioskScale = useMemoryAgentKioskScale()
+  const contentMaxWidth = memoryAgentContentMaxWidthClass(kioskScale)
 
   const {
     mode,
@@ -514,10 +518,14 @@ export function MemoryAgentClient({
       style={orgSurfaceTheme.vars}
       data-ma-theme={slug === 'sohohouse' ? 'dark' : resolvedTheme}
       data-ma-variant={slug === 'sohohouse' ? 'soho' : undefined}
+      data-ma-kiosk-scale={kioskScale > 1 ? kioskScale : undefined}
     >
-        <UnifiedNavigation config={getNavigationConfig(slug)} />
+        <div className={cn(kioskScale > 1 && 'ma-kiosk-nav-legacy-size')}>
+          <UnifiedNavigation config={getNavigationConfig(slug)} />
+        </div>
+        <div className={cn(kioskScale > 1 && 'ma-kiosk-content-surface')}>
         <main
-          className="mx-auto max-w-3xl px-4 pt-8 md:pt-10"
+          className={cn('mx-auto px-4 pt-8 md:pt-10', contentMaxWidth)}
           style={{
             paddingBottom: `calc(${footerInsetPx}px + env(safe-area-inset-bottom, 0px))`,
             scrollPaddingBottom: `calc(${footerInsetPx}px + env(safe-area-inset-bottom, 0px))`,
@@ -633,7 +641,7 @@ export function MemoryAgentClient({
               variant={heroFrequency.variant}
               synthesizing={heroFrequency.synthesizing}
               palette={audioVizPalette}
-              height={inConversation ? 72 : 148}
+              height={(inConversation ? 72 : 148) * kioskScale}
             />
             {!inConversation ? (
               <MemoryAgentAudioOrb state={agentAudioState} levelRms={orbLevel} />
@@ -1009,7 +1017,8 @@ export function MemoryAgentClient({
           {voicePipelinePhase ? (
             <div
               className={cn(
-                'mx-auto mb-3 flex max-w-3xl flex-col gap-2 rounded-xl border-2 px-3 py-2.5 lg:hidden',
+                'mx-auto mb-3 flex flex-col gap-2 rounded-xl border-2 px-3 py-2.5 lg:hidden',
+                contentMaxWidth,
                 'border-[color:color-mix(in_srgb,var(--ma-primary)_50%,var(--ma-border))]',
                 'bg-[color-mix(in_srgb,var(--ma-primary)_10%,var(--ma-footer-bg))]'
               )}
@@ -1037,7 +1046,7 @@ export function MemoryAgentClient({
             </div>
           ) : null}
           {showFooterWaveforms ? (
-            <div className="mx-auto mb-3 max-w-3xl space-y-2">
+            <div className={cn('mx-auto mb-3 space-y-2', contentMaxWidth)}>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <MemoryWaveCanvas
                   levels={inputLevels}
@@ -1063,7 +1072,7 @@ export function MemoryAgentClient({
               />
             </div>
           ) : null}
-          <div className="mx-auto flex max-w-3xl gap-2">
+          <div className={cn('mx-auto flex gap-2', contentMaxWidth)}>
             <Button
               type="button"
               variant={voice.isRecording ? 'destructive' : 'outline'}
@@ -1143,6 +1152,7 @@ export function MemoryAgentClient({
             </Button>
           </div>
           <audio ref={audioRef} className="hidden" controls={false} />
+        </div>
         </div>
 
     </div>

@@ -68,13 +68,13 @@ export function NavigationBrand({
     <div className={cn('flex items-center', className)}>
       <Link 
         href={`/o/${organization.slug}`} 
-        className="flex items-center py-3 hover:opacity-80 transition-opacity"
+        className="flex items-center py-2 hover:opacity-80 transition-opacity sm:py-3"
       >
         <OrganizationLogo 
           organizationSlug={organization.slug} 
           variant="horizontal" 
           size="md" 
-          className="h-12"
+          className="h-10 w-auto sm:h-12"
         />
       </Link>
     </div>

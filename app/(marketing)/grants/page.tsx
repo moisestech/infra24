@@ -51,6 +51,12 @@ const grantCards = [
     title: 'Knight pilot packet',
     description: 'Single short URL for reviewers: narrative, identity, downloads, evidence, and contact.',
   },
+  {
+    href: '/grant/wolfsonian-fellowship',
+    title: 'Wolfsonian Creative Fellowship',
+    description:
+      'The Archive Dreams in Public — fellowship proposal on archival memory, agents, and citation-aware interpretation.',
+  },
 ] as const;
 
 export default function GrantsIndexPage() {

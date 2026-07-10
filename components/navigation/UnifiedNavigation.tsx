@@ -3,6 +3,7 @@
 import { NavigationProps } from './types'
 import { NavigationBrand } from './NavigationBrand'
 import { NavigationMenu } from './NavigationMenu'
+import { NavigationOverflowMenu } from './NavigationOverflowMenu'
 import { AdminTools } from './AdminTools'
 import { UserMenu } from './UserMenu'
 
@@ -86,15 +87,23 @@ export function UnifiedNavigation({
           : `bg-white dark:bg-gray-900 shadow-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 ${className}`
       }
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-2">
-          <NavigationBrand organization={organization} chromeVariant={chromeVariant} className="min-w-0 shrink-0" />
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center gap-2 sm:gap-3">
+          <NavigationBrand organization={organization} chromeVariant={chromeVariant} className="shrink-0" />
 
-          {/* Icon rail — all breakpoints (scroll on small screens) */}
+          {/* Icon rail — scroll; overflow menu always available for hidden items */}
           <div className="flex min-w-0 flex-1 items-center justify-end gap-1">
             <div className="flex min-w-0 max-w-full flex-1 justify-end overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <NavigationMenu items={filteredUserItems} colors={colors} chromeVariant={chromeVariant} />
             </div>
+            <NavigationOverflowMenu
+              organization={organization}
+              userItems={filteredUserItems}
+              adminItems={filteredAdminItems}
+              colors={colors}
+              userRole={userRole}
+              chromeVariant={chromeVariant}
+            />
             {features.adminTools ? (
               <AdminTools items={filteredAdminItems} colors={colors} userRole={userRole} />
             ) : null}
