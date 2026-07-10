@@ -7,6 +7,7 @@ import {
   edgeZonesNetworkIndex,
   staticProfilesToArtistProfiles,
 } from '@/lib/marketing/edgezones-network-index'
+import { edgeZonesGalleryForMemoryAgent } from '@/lib/marketing/edgezones-media'
 
 export type EdgeZonesExhibitionConfig = {
   key: string
@@ -100,7 +101,7 @@ Location: Edge Zones Gallery, Miami`,
     'Which artists work with new media in Miami?',
     "Join Miami's Digital Culture Map",
   ],
-  galleryImages: [],
+  galleryImages: edgeZonesGalleryForMemoryAgent(),
 }
 
 export const EDGE_ZONES_EXHIBITION_SUGGESTED_QUESTIONS = [

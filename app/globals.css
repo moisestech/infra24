@@ -533,6 +533,44 @@
   box-shadow: 0 0 0 1000px var(--ma-input-bg) inset !important;
 }
 
+/* Portrait smart-sign kiosk (~1080×1800) — root rem doubled via useMemoryAgentKioskScale */
+.memory-agent-theme[data-ma-kiosk-scale='2'] {
+  --ma-ui-scale: 2;
+}
+
+.memory-agent-theme[data-ma-kiosk-scale='2'] .ma-kiosk-content-surface {
+  overflow-x: clip;
+}
+
+/* Keep site nav at pre-kiosk size while the rest of the page scales up */
+.memory-agent-theme[data-ma-kiosk-scale='2'] .ma-kiosk-nav-legacy-size {
+  zoom: calc(1 / var(--ma-ui-scale));
+  width: calc(100% * var(--ma-ui-scale));
+  max-width: calc(100% * var(--ma-ui-scale));
+  transform-origin: top left;
+  margin-left: 0;
+}
+
+.memory-agent-theme[data-ma-kiosk-scale='2'] .ma-kiosk-nav-legacy-size nav {
+  overflow: visible;
+}
+
+.memory-agent-theme[data-ma-kiosk-scale='2'] .ma-kiosk-nav-legacy-size .container {
+  margin-inline: 0;
+  max-width: 100%;
+  width: 100%;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.memory-agent-theme[data-ma-kiosk-scale='2'] .text-\[10px\] {
+  font-size: 20px;
+}
+
+.memory-agent-theme[data-ma-kiosk-scale='2'] .text-\[11px\] {
+  font-size: 22px;
+}
+
 /* Catalogue / directory search — typed text readable in light and dark */
 input.catalogue-search-input {
   background-color: #ffffff !important;
@@ -1434,4 +1472,94 @@ html.dark .catalogue-filters [data-radix-select-content] {
   .soho-funnel-btn-ghost:hover {
     transform: none;
   }
+}
+
+/* Edge Zones — network index atmosphere */
+.ez-network-backdrop {
+  background-image:
+    radial-gradient(ellipse 90% 55% at 8% 0%, rgb(153 246 228 / 0.28), transparent 52%),
+    radial-gradient(ellipse 80% 50% at 92% 12%, rgb(196 181 253 / 0.22), transparent 48%),
+    radial-gradient(ellipse 70% 45% at 50% 100%, rgb(45 212 191 / 0.14), transparent 50%);
+}
+
+.dark .ez-network-backdrop {
+  background-image:
+    radial-gradient(ellipse 90% 55% at 8% 0%, rgb(13 148 136 / 0.18), transparent 52%),
+    radial-gradient(ellipse 80% 50% at 92% 12%, rgb(91 33 182 / 0.16), transparent 48%),
+    radial-gradient(ellipse 70% 45% at 50% 100%, rgb(20 184 166 / 0.12), transparent 50%);
+}
+
+.ez-network-grid {
+  background-image:
+    linear-gradient(to right, rgb(13 148 136 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(13 148 136 / 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 40%, black 20%, transparent 78%);
+}
+
+.dark .ez-network-grid {
+  background-image:
+    linear-gradient(to right, rgb(45 212 191 / 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(45 212 191 / 0.07) 1px, transparent 1px);
+}
+
+.ez-network-card-shine {
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.45) 42%,
+    transparent 58%
+  );
+  transform: translateX(-120%);
+  animation: ez-network-card-shine 4.5s ease-in-out infinite;
+}
+
+.dark .ez-network-card-shine {
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.08) 42%,
+    transparent 58%
+  );
+}
+
+@keyframes ez-network-card-shine {
+  0%,
+  72% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.ez-network-live-pill {
+  box-shadow: 0 0 20px rgb(45 212 191 / 0.22);
+  animation: ez-network-pill-glow 2.8s ease-in-out infinite;
+}
+
+@keyframes ez-network-pill-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 16px rgb(45 212 191 / 0.18);
+  }
+  50% {
+    box-shadow: 0 0 28px rgb(45 212 191 / 0.38);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ez-network-card-shine,
+  .ez-network-live-pill {
+    animation: none !important;
+  }
+}
+
+.ez-banner-scrim {
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 0.55) 0%,
+    rgb(0 0 0 / 0.12) 45%,
+    transparent 72%
+  );
 }

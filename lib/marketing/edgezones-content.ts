@@ -2,6 +2,13 @@
 
 import { TOUCHING_GRASS_EXHIBITION } from '@/lib/marketing/edgezones-exhibition'
 import { EDGE_ZONES_GALLERY_WEBSITE, partnershipPortraitFor } from '@/lib/marketing/edgezones-network-index'
+import type {
+  EdgeZonesIconAccent,
+  EdgeZonesProgramIconKey,
+  EdgeZonesSupportIconKey,
+  EdgeZonesVisionIconKey,
+} from '@/lib/marketing/edgezones-icons'
+import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients'
 
 export type EdgeZonesModuleStatus = 'live' | 'coming-soon'
 
@@ -22,6 +29,21 @@ export type EdgeZonesSupportModule = {
   description: string
   href: string
   status: EdgeZonesModuleStatus
+  icon: EdgeZonesSupportIconKey
+  accent: EdgeZonesIconAccent
+}
+
+export type EdgeZonesVisionPillar = {
+  title: string
+  description: string
+  icon: EdgeZonesVisionIconKey
+  accent: EdgeZonesIconAccent
+}
+
+export type EdgeZonesProgramBucket = {
+  label: string
+  icon: EdgeZonesProgramIconKey
+  gradientId: MarketingGradientId
 }
 
 export const edgeZonesPortal = {
@@ -87,6 +109,8 @@ export const edgeZonesPortal = {
           description: 'Partnership portal and exhibition landing — the public face of the show online.',
           href: '#top',
           status: 'live',
+          icon: 'globe',
+          accent: 'teal',
         },
         {
           id: 'artist-index',
@@ -94,6 +118,8 @@ export const edgeZonesPortal = {
           description: 'Network index of participating artists and host space — discoverable before, during, and after the show.',
           href: '#artists',
           status: 'live',
+          icon: 'users',
+          accent: 'indigo',
         },
         {
           id: 'virtual-studio-visits',
@@ -101,6 +127,8 @@ export const edgeZonesPortal = {
           description: 'Remote studio pathways connecting audiences to artists in the exhibition network.',
           href: '#studio-visits',
           status: 'coming-soon',
+          icon: 'video',
+          accent: 'magenta',
         },
         {
           id: 'documentation-archive',
@@ -108,6 +136,8 @@ export const edgeZonesPortal = {
           description: 'Installation photos, video, press, interviews, and post-show summaries.',
           href: '#archive',
           status: 'coming-soon',
+          icon: 'archive',
+          accent: 'coral',
         },
         {
           id: 'audience-signup',
@@ -115,6 +145,8 @@ export const edgeZonesPortal = {
           description: 'Quick intake for artists, audiences, and collaborators to join Miami’s digital culture map.',
           href: '#join',
           status: 'live',
+          icon: 'mail',
+          accent: 'teal',
         },
         {
           id: 'public-programs',
@@ -122,6 +154,8 @@ export const edgeZonesPortal = {
           description: 'Talks, workshops, studio visits, and opening events — RSVP and updates in one place.',
           href: '#programs',
           status: 'coming-soon',
+          icon: 'calendar',
+          accent: 'indigo',
         },
         {
           id: 'digital-publishing',
@@ -129,6 +163,8 @@ export const edgeZonesPortal = {
           description: 'Essays, interviews, and institutional memory published through DCC’s digital layer.',
           href: '#publishing',
           status: 'coming-soon',
+          icon: 'bookOpen',
+          accent: 'magenta',
         },
       ] satisfies EdgeZonesSupportModule[],
     },
@@ -141,28 +177,40 @@ export const edgeZonesPortal = {
         {
           title: 'Curator-led exhibition',
           description: 'Artistic direction anchored in Jordan Horton’s curatorial frame.',
+          icon: 'sparkles',
+          accent: 'teal',
         },
         {
           title: 'Physical host space',
           description: 'Edge Zones as gallery, programming hub, and on-site experience.',
+          icon: 'building',
+          accent: 'coral',
         },
         {
           title: 'Digital culture platform',
           description: 'DCC as the public infrastructure layer — discoverable, documented, and durable.',
+          icon: 'layers',
+          accent: 'indigo',
         },
         {
           title: 'Public programming',
           description: 'Talks, workshops, and events that create repeatable audience pathways.',
+          icon: 'mic',
+          accent: 'magenta',
         },
         {
           title: 'Artist network',
           description: 'Participating artists as connected nodes in Miami’s digital culture map.',
+          icon: 'network',
+          accent: 'teal',
         },
         {
           title: 'Long-term archive',
           description: 'Documentation and publishing that outlasts the exhibition run.',
+          icon: 'database',
+          accent: 'indigo',
         },
-      ],
+      ] satisfies EdgeZonesVisionPillar[],
     },
     studioVisits: {
       id: 'studio-visits',
@@ -180,7 +228,13 @@ export const edgeZonesPortal = {
       id: 'programs',
       title: 'Public programs',
       intro: 'Program details will be posted here as they are confirmed. Structure is live now so RSVP and updates have a home.',
-      buckets: ['Upcoming programs', 'Artist talks', 'Workshops', 'Studio visits', 'Opening / closing events'],
+      buckets: [
+        { label: 'Upcoming programs', icon: 'calendar', gradientId: 'stackTeal' },
+        { label: 'Artist talks', icon: 'mic', gradientId: 'fieldViolet' },
+        { label: 'Workshops', icon: 'wrench', gradientId: 'signalCyan' },
+        { label: 'Studio visits', icon: 'video', gradientId: 'pulseMagenta' },
+        { label: 'Opening / closing events', icon: 'sparkles', gradientId: 'warmAmber' },
+      ] satisfies EdgeZonesProgramBucket[],
       status: 'Schedule coming soon — check back or join below for updates.',
     },
     archive: {
@@ -208,7 +262,9 @@ export const edgeZonesNavAnchors = [
   { id: 'support', label: 'Support' },
   { id: 'vision', label: 'Vision' },
   { id: 'programs', label: 'Programs' },
+  { id: 'studio-visits', label: 'Studios' },
   { id: 'archive', label: 'Archive' },
+  { id: 'publishing', label: 'Publishing' },
   { id: 'join', label: 'Join' },
 ] as const
 

@@ -75,6 +75,7 @@ describe('applyShowcaseExhibitionResponse for dcc', () => {
     expect(result.events?.[0]?.title).toBe('Touching Grass')
     expect(result.events?.[0]?.ctaUrl).toBe('/edgezones#exhibition')
     expect(result.events?.[0]?.curator).toBe('Jordan Horton')
+    expect(TOUCHING_GRASS_EXHIBITION.galleryImages.length).toBeGreaterThan(0)
   })
 
   it('does not override unrelated questions', () => {
