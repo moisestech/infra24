@@ -8,11 +8,32 @@ import type { EdgeZonesPhoto } from '@/lib/marketing/edgezones-media-types'
 
 export type { EdgeZonesPhoto, EdgeZonesGallerySlotKey } from '@/lib/marketing/edgezones-media-types'
 
+const CLOUDINARY_BASE = 'https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto' as const
+
+/** Touching Grass × Edge Zones exhibition documentation (Cloudinary). */
+export const TOUCHING_GRASS_EXHIBITION_PHOTOS = {
+  one: {
+    src: `${CLOUDINARY_BASE}/v1783707588/dccmiami/exhibition/touching-grass/touching-grass-edge-zones-dccmiami-1_asko95.png`,
+    alt: 'Touching Grass exhibition at Edge Zones — installation view',
+    caption: 'Touching Grass at Edge Zones',
+  },
+  two: {
+    src: `${CLOUDINARY_BASE}/v1783707587/dccmiami/exhibition/touching-grass/touching-grass-edge-zones-dccmiami-2_uywpji.png`,
+    alt: 'Touching Grass exhibition at Edge Zones — gallery detail',
+    caption: 'Touching Grass at Edge Zones',
+  },
+  three: {
+    src: `${CLOUDINARY_BASE}/v1783707674/dccmiami/exhibition/touching-grass/touching-grass-edge-zones-dccmiami-3_ismewj.png`,
+    alt: 'Touching Grass exhibition at Edge Zones — space and works on view',
+    caption: 'Touching Grass at Edge Zones',
+  },
+} as const satisfies Record<string, EdgeZonesPhoto>
+
 /** Named slots — set Cloudinary URLs when available; null uses fallback. */
 export const EDGE_ZONES_GALLERY_SLOTS = {
-  exterior: null as string | null,
-  emptyGallery: null as string | null,
-  hallwayInstall: null as string | null,
+  exterior: TOUCHING_GRASS_EXHIBITION_PHOTOS.one.src,
+  emptyGallery: TOUCHING_GRASS_EXHIBITION_PHOTOS.two.src,
+  hallwayInstall: TOUCHING_GRASS_EXHIBITION_PHOTOS.three.src,
   mapTexture: null as string | null,
   pdfPreview:
     'https://res.cloudinary.com/dck5rzi4h/image/upload/v1783704743/dccmiami/booklet/desktop-cover-edgezones-proposal-dccmiami_p0mrvu.png' as string | null,
@@ -40,6 +61,9 @@ export function edgeZonesSlotPhoto(
   fallback?: EdgeZonesPhoto
 ): EdgeZonesPhoto {
   const url = EDGE_ZONES_GALLERY_SLOTS[slot]
+  if (slot === 'exterior' && url) return TOUCHING_GRASS_EXHIBITION_PHOTOS.one
+  if (slot === 'emptyGallery' && url) return TOUCHING_GRASS_EXHIBITION_PHOTOS.two
+  if (slot === 'hallwayInstall' && url) return TOUCHING_GRASS_EXHIBITION_PHOTOS.three
   if (url) return { src: url, alt: `Edge Zones — ${slot}` }
   if (fallback) return fallback
   const fb = SLOT_FALLBACKS[slot as keyof typeof SLOT_FALLBACKS]
@@ -50,25 +74,24 @@ export function edgeZonesSlotPhoto(
 export type EdgeZonesBannerKey = 'hero' | 'exhibition' | 'programs' | 'archive' | 'concept'
 
 export const EDGE_ZONES_BANNERS: Record<EdgeZonesBannerKey, EdgeZonesPhoto> = {
-  hero: edgeZonesSlotPhoto('exterior', dccHomePhotos.touchgrassTreadmillWide),
-  exhibition: edgeZonesSlotPhoto('emptyGallery', dccHomePhotos.touchgrassTreadmillFigure),
-  concept: edgeZonesSlotPhoto('emptyGallery', dccHomePhotos.galleryInteractiveStations),
-  programs: dccHomePhotos.galleryCrowdOpening,
-  archive: edgeZonesSlotPhoto('hallwayInstall', dccHomePhotos.galleryInteractiveStations),
+  hero: TOUCHING_GRASS_EXHIBITION_PHOTOS.three,
+  exhibition: TOUCHING_GRASS_EXHIBITION_PHOTOS.one,
+  concept: TOUCHING_GRASS_EXHIBITION_PHOTOS.two,
+  programs: TOUCHING_GRASS_EXHIBITION_PHOTOS.three,
+  archive: TOUCHING_GRASS_EXHIBITION_PHOTOS.one,
 }
 
 export const EDGE_ZONES_GALLERY: readonly EdgeZonesPhoto[] = [
-  dccHomePhotos.touchgrassTreadmillFigure,
-  dccHomePhotos.fabiolaSurveillanceCutie2024,
-  dccHomePhotos.digitalDivinities,
-  dccHomePhotos.galleryInteractiveStations,
+  TOUCHING_GRASS_EXHIBITION_PHOTOS.one,
+  TOUCHING_GRASS_EXHIBITION_PHOTOS.two,
+  TOUCHING_GRASS_EXHIBITION_PHOTOS.three,
 ] as const
 
 export function edgeZonesGalleryForMemoryAgent(): MemoryAgentGalleryImage[] {
   return EDGE_ZONES_GALLERY.map((photo) => ({
     url: photo.src,
     title: photo.caption ?? photo.alt,
-    subtitle: 'Touching Grass · Edge Zones partnership (interim documentation)',
+    subtitle: 'Touching Grass · Edge Zones partnership',
   }))
 }
 
