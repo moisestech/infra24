@@ -1,9 +1,10 @@
 'use client'
 
-import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
+import { EdgeZonesConceptBanner } from '@/components/marketing/edgezones/EdgeZonesConceptBanner'
 import { EdgeZonesConceptHoverProvider } from '@/components/marketing/edgezones/EdgeZonesConceptHoverContext'
 import { EdgeZonesConceptIconStage } from '@/components/marketing/edgezones/EdgeZonesConceptIconStage'
+import { EdgeZonesConceptParagraph } from '@/components/marketing/edgezones/EdgeZonesConceptParagraph'
 import { EdgeZonesDiagramChip } from '@/components/marketing/edgezones/EdgeZonesDiagramChip'
 import { EdgeZonesHighlightParagraph } from '@/components/marketing/edgezones/EdgeZonesHighlightParagraph'
 import { EdgeZonesThemeCard } from '@/components/marketing/edgezones/EdgeZonesThemeCard'
@@ -12,6 +13,8 @@ import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLo
 import {
   EDGE_ZONES_CONCEPT_DIAGRAM_ACCENTS,
   EDGE_ZONES_CONCEPT_DIAGRAM_ICONS,
+  EDGE_ZONES_CONCEPT_PARAGRAPH_STAGE_ACCENTS,
+  EDGE_ZONES_CONCEPT_PARAGRAPH_STAGE_ICONS,
   EDGE_ZONES_SECTION_ICONS,
 } from '@/lib/marketing/edgezones-icons'
 import { EDGE_ZONES_BANNERS } from '@/lib/marketing/edgezones-media'
@@ -25,12 +28,7 @@ export function TouchingGrassConcept() {
     <EdgeZonesConceptHoverProvider>
       <section id="concept" className="ez-section border-b border-[var(--ez-border)]">
         <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-          <div className="relative mb-8 overflow-hidden border border-[var(--ez-border)]">
-            <div className="relative aspect-[21/9] w-full min-h-[12rem] sm:min-h-[16rem]">
-              <Image src={banner.src} alt={banner.alt} fill className="object-cover" sizes="1152px" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[var(--ez-paper)] via-[var(--ez-paper)]/70 to-transparent" />
-            </div>
-          </div>
+          <EdgeZonesConceptBanner banner={banner} />
 
           <EdgeZonesSectionHeader
             icon={EDGE_ZONES_SECTION_ICONS.concept}
@@ -39,11 +37,29 @@ export function TouchingGrassConcept() {
           />
           <p className="ez-heading ez-lead mt-3 text-[var(--ez-blue)]">{concept.subtitle}</p>
 
-          <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(200px,280px)] lg:items-start">
+          <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(220px,300px)] lg:items-start">
             <div className="space-y-4">
-              {concept.paragraphs.map((p) => (
-                <EdgeZonesHighlightParagraph key={p.slice(0, 30)}>{p}</EdgeZonesHighlightParagraph>
-              ))}
+              {concept.paragraphs.map((p, index) => {
+                const stage = concept.paragraphStages[index]
+                const stageIcon = EDGE_ZONES_CONCEPT_PARAGRAPH_STAGE_ICONS[index]
+                const stageAccent = EDGE_ZONES_CONCEPT_PARAGRAPH_STAGE_ACCENTS[index]
+
+                if (stage && stageIcon && stageAccent) {
+                  return (
+                    <EdgeZonesConceptParagraph
+                      key={p.slice(0, 30)}
+                      icon={stageIcon}
+                      accent={stageAccent}
+                      label={stage.label}
+                      caption={stage.caption}
+                    >
+                      {p}
+                    </EdgeZonesConceptParagraph>
+                  )
+                }
+
+                return <EdgeZonesHighlightParagraph key={p.slice(0, 30)}>{p}</EdgeZonesHighlightParagraph>
+              })}
 
               <div className="flex flex-wrap items-center gap-2 pt-2">
                 {concept.diagram.map((step, i) => {

@@ -599,31 +599,249 @@
   );
 }
 
+/* Concept banner — parallax media + CSS 3D frame glow on hover */
+.ez-proposal .ez-concept-banner {
+  perspective: 1200px;
+}
+
+.ez-proposal .ez-concept-banner-frame {
+  position: relative;
+  border: 1px solid var(--ez-border);
+  background: var(--ez-surface);
+  transform-style: preserve-3d;
+  transform: rotateX(var(--ez-banner-tilt-x, 0deg)) rotateY(var(--ez-banner-tilt-y, 0deg));
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.ez-proposal .ez-concept-banner-frame-active {
+  border-color: transparent;
+  box-shadow:
+    0 0 0 1px rgb(0 102 255 / 0.22),
+    0 0 36px rgb(0 102 255 / 0.18),
+    0 0 72px rgb(57 255 20 / 0.08),
+    0 22px 48px rgb(0 0 0 / 0.14);
+}
+
+.dark .ez-proposal .ez-concept-banner-frame-active {
+  box-shadow:
+    0 0 0 1px rgb(77 155 255 / 0.28),
+    0 0 40px rgb(77 155 255 / 0.22),
+    0 0 80px rgb(95 255 69 / 0.08),
+    0 22px 48px rgb(0 0 0 / 0.38);
+}
+
+.ez-proposal .ez-concept-banner-glow {
+  z-index: 2;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--ez-banner-glow-x, 50%) var(--ez-banner-glow-y, 50%),
+    rgb(0 102 255 / 0.28) 0%,
+    rgb(57 255 20 / 0.12) 34%,
+    transparent 68%
+  );
+  transition: opacity 0.35s ease;
+}
+
+.ez-proposal .ez-concept-banner-frame-active .ez-concept-banner-glow {
+  opacity: 1;
+}
+
+.ez-proposal .ez-concept-banner-corners {
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.ez-proposal .ez-concept-banner-frame-active .ez-concept-banner-corners {
+  opacity: 1;
+}
+
+.ez-proposal .ez-concept-banner-corner {
+  position: absolute;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-color: var(--ez-blue);
+  border-style: solid;
+  transition: transform 0.25s ease;
+}
+
+.ez-proposal .ez-concept-banner-corner-tl {
+  top: 0.65rem;
+  left: 0.65rem;
+  border-width: 2px 0 0 2px;
+}
+
+.ez-proposal .ez-concept-banner-corner-tr {
+  top: 0.65rem;
+  right: 0.65rem;
+  border-width: 2px 2px 0 0;
+}
+
+.ez-proposal .ez-concept-banner-corner-bl {
+  bottom: 0.65rem;
+  left: 0.65rem;
+  border-width: 0 0 2px 2px;
+}
+
+.ez-proposal .ez-concept-banner-corner-br {
+  right: 0.65rem;
+  bottom: 0.65rem;
+  border-width: 0 2px 2px 0;
+}
+
+.ez-proposal .ez-concept-banner-frame-active .ez-concept-banner-corner-tl {
+  transform: translate(calc(var(--ez-banner-shift-x, 0px) * -0.15), calc(var(--ez-banner-shift-y, 0px) * -0.15));
+}
+
+.ez-proposal .ez-concept-banner-frame-active .ez-concept-banner-corner-tr {
+  transform: translate(calc(var(--ez-banner-shift-x, 0px) * 0.15), calc(var(--ez-banner-shift-y, 0px) * -0.15));
+}
+
+.ez-proposal .ez-concept-banner-frame-active .ez-concept-banner-corner-bl {
+  transform: translate(calc(var(--ez-banner-shift-x, 0px) * -0.15), calc(var(--ez-banner-shift-y, 0px) * 0.15));
+}
+
+.ez-proposal .ez-concept-banner-frame-active .ez-concept-banner-corner-br {
+  transform: translate(calc(var(--ez-banner-shift-x, 0px) * 0.15), calc(var(--ez-banner-shift-y, 0px) * 0.15));
+}
+
+.ez-proposal .ez-concept-banner-media {
+  transform: translate3d(var(--ez-banner-shift-x, 0px), var(--ez-banner-shift-y, 0px), 0) scale(1.06);
+  transition: transform 0.18s ease-out;
+  will-change: transform;
+}
+
+.ez-proposal .ez-concept-banner-scanlines {
+  opacity: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgb(0 0 0 / 0.05) 2px,
+    rgb(0 0 0 / 0.05) 4px
+  );
+  mix-blend-mode: multiply;
+  transition: opacity 0.35s ease;
+}
+
+.ez-proposal .ez-concept-banner-frame-active .ez-concept-banner-scanlines {
+  opacity: 0.28;
+}
+
+.ez-proposal .ez-concept-paragraph {
+  cursor: default;
+  outline: none;
+}
+
+.ez-proposal .ez-concept-paragraph:focus-visible {
+  border-left-color: var(--ez-blue);
+}
+
 /* Concept icon stage — large icon beside Touching Grass copy */
 .ez-proposal .ez-concept-icon-stage {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 14rem;
-  padding: 1.5rem;
+  min-height: 16rem;
+  padding: 1.25rem;
   border: 1px solid var(--ez-border);
   background: var(--ez-surface);
   overflow: hidden;
+  transform-style: preserve-3d;
+  transition:
+    box-shadow 0.4s ease,
+    border-color 0.35s ease,
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ez-proposal .ez-concept-icon-stage-active {
+  border-color: transparent;
+  transform: perspective(900px) rotateX(2deg) rotateY(-3deg) translateY(-4px);
+  box-shadow:
+    0 0 0 1px var(--ez-theme-glow-soft),
+    0 0 32px var(--ez-theme-glow-soft),
+    0 16px 40px rgb(0 0 0 / 0.1);
+}
+
+.dark .ez-proposal .ez-concept-icon-stage-active {
+  box-shadow:
+    0 0 0 1px var(--ez-theme-glow-soft),
+    0 0 40px var(--ez-theme-glow-soft),
+    0 16px 40px rgb(0 0 0 / 0.35);
+}
+
+.ez-proposal .ez-concept-icon-stage-glow {
+  opacity: 0;
+  background: radial-gradient(circle at 50% 42%, var(--ez-theme-glow-soft) 0%, transparent 68%);
+  transition: opacity 0.45s ease;
+}
+
+.ez-proposal .ez-concept-icon-stage-active .ez-concept-icon-stage-glow {
+  opacity: 1;
+}
+
+.ez-proposal .ez-concept-icon-stage-badge {
+  opacity: 0;
+  transform: translateY(8px) scale(0.92);
+  transition:
+    opacity 0.35s ease,
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ez-proposal .ez-concept-icon-stage-active .ez-concept-icon-stage-badge {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.ez-proposal .ez-concept-icon-stage-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ez-proposal .ez-concept-icon-stage-icon {
   color: var(--ez-theme-glow);
   opacity: 0;
   filter: drop-shadow(0 0 32px var(--ez-theme-glow));
-  transform: scale(0.82) rotate(-10deg);
+  transform: scale(0.78) rotate(-12deg);
   transition:
     opacity 0.45s ease,
     transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .ez-proposal .ez-concept-icon-stage-active .ez-concept-icon-stage-icon {
-  opacity: 0.42;
+  opacity: 0.5;
   transform: scale(1) rotate(-4deg);
+  animation: ez-concept-icon-pulse 3.2s ease-in-out infinite;
+}
+
+.ez-proposal .ez-concept-icon-stage-label {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.4s ease 0.05s,
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.05s;
+}
+
+.ez-proposal .ez-concept-icon-stage-active .ez-concept-icon-stage-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ez-proposal .ez-concept-icon-stage-caption {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.4s ease 0.12s,
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
+}
+
+.ez-proposal .ez-concept-icon-stage-active .ez-concept-icon-stage-caption {
+  opacity: 0.9;
+  transform: translateY(0);
 }
 
 .ez-proposal .ez-concept-icon-stage-placeholder {
@@ -876,6 +1094,16 @@
   animation: ez-theme-glitch-clip 0.45s steps(2, end) infinite;
 }
 
+@keyframes ez-concept-icon-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 24px var(--ez-theme-glow));
+  }
+  50% {
+    filter: drop-shadow(0 0 42px var(--ez-theme-glow));
+  }
+}
+
 @keyframes ez-theme-keyword-float {
   0%,
   100% {
@@ -952,6 +1180,25 @@
   }
 
   .ez-proposal .ez-card::after {
+    animation: none;
+  }
+
+  .ez-proposal .ez-concept-banner-frame-active {
+    transform: none;
+    box-shadow:
+      0 0 0 1px rgb(0 102 255 / 0.18),
+      0 0 24px rgb(0 102 255 / 0.12);
+  }
+
+  .ez-proposal .ez-concept-banner-media {
+    transform: none;
+  }
+
+  .ez-proposal .ez-concept-icon-stage-active {
+    transform: none;
+  }
+
+  .ez-proposal .ez-concept-icon-stage-active .ez-concept-icon-stage-icon {
     animation: none;
   }
 

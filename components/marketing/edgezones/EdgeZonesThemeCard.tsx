@@ -34,7 +34,7 @@ export function EdgeZonesThemeCard({ label, description, keywords }: Props) {
         `ez-theme-accent-${accent}`
       )}
       data-theme-icon={icon}
-      onMouseEnter={() => setHover({ icon, accent })}
+      onMouseEnter={() => setHover({ icon, accent, label })}
       onFocus={() => setHover({ icon, accent })}
       tabIndex={0}
     >

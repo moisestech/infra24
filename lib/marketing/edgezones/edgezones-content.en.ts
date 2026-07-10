@@ -90,6 +90,16 @@ The exhibition brings together artists whose practices examine how digital techn
       'Touching Grass invites viewers to step out of the screen and into physical space, toward slowness, care, texture, and lived experience.',
       'The exhibition asks how digital systems shape perception and behavior, and how art can reconnect those systems to the body, the land, and the shared conditions of social life.',
     ],
+    paragraphStages: [
+      {
+        label: 'Step outside the screen',
+        caption: 'Slowness · care · texture · lived experience',
+      },
+      {
+        label: 'Systems meet bodies',
+        caption: 'Perception · land · shared social life',
+      },
+    ],
     themes: [
       {
         label: 'Attention',

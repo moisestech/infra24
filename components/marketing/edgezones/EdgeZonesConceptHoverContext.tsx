@@ -6,6 +6,8 @@ import type { EdgeZonesIconName, EdgeZonesThemeAccent } from '@/lib/marketing/ed
 export type EdgeZonesConceptHoverState = {
   icon: EdgeZonesIconName
   accent: EdgeZonesThemeAccent
+  label?: string
+  caption?: string
 } | null
 
 type ContextValue = {

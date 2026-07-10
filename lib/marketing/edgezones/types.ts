@@ -92,6 +92,7 @@ export type EdgeZonesPortalContent = {
     title: string
     subtitle: string
     paragraphs: string[]
+    paragraphStages: { label: string; caption: string }[]
     themes: { label: string; description: string; keywords: string[] }[]
     diagram: string[]
   }

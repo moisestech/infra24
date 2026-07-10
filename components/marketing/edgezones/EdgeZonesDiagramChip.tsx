@@ -21,7 +21,7 @@ export function EdgeZonesDiagramChip({ label, icon, accent }: Props) {
         'ez-diagram-chip ez-chip inline-flex items-center gap-2 rounded px-3 py-1.5 transition',
         `ez-theme-accent-${accent}`
       )}
-      onMouseEnter={() => setHover({ icon, accent })}
+      onMouseEnter={() => setHover({ icon, accent, label })}
       onFocus={() => setHover({ icon, accent })}
     >
       <EdgeZonesIcon name={icon} className="ez-diagram-chip-icon h-3.5 w-3.5 shrink-0" strokeWidth={2} />
