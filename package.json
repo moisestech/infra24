@@ -45,7 +45,13 @@
     "import:oolite-2026-cohort": "npx tsx scripts/import-oolite-2026-cohort.ts",
     "import:oolite-workshops": "npx tsx scripts/import-oolite-workshops.ts",
     "setup:oolite-programming-options": "npx tsx scripts/setup-oolite-programming-options.ts",
-    "audit:announcements-display-month": "npx tsx scripts/tools/audit-announcements-display-month.ts"
+    "audit:announcements-display-month": "npx tsx scripts/tools/audit-announcements-display-month.ts",
+    "sync:memory-agent-embeddings": "npx tsx --require ./scripts/tools/register-server-only.cjs scripts/tools/sync-memory-agent-embeddings.ts",
+    "eval:memory-agent": "npx tsx --require ./scripts/tools/register-server-only.cjs scripts/tools/eval-memory-agent.ts",
+    "network-builder:schema-gap": "npx tsx scripts/tools/network-builder-schema-gap-report.ts",
+    "life-os:discover": "npx tsx scripts/tools/life-os-tasks.ts discover",
+    "life-os:list": "npx tsx scripts/tools/life-os-tasks.ts list",
+    "life-os:tasks": "npx tsx scripts/tools/life-os-tasks.ts"
   },
   "dependencies": {
     "@azure/msal-node": "^3.8.0",

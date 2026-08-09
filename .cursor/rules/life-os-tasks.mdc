@@ -1,0 +1,18 @@
+---
+description: When working from LIFE OS Airtable tasks — claim, implement, write status back
+alwaysApply: true
+---
+
+# LIFE OS task loop
+
+LIFE OS (`apprswzWnLrHBwFcx`) is the **project-management** backlog for infra24. DCC OS is staff product data — do not treat DCC Jobs as the engineering queue.
+
+When the user says **work from LIFE OS**, **pull a LIFE OS task**, or similar:
+
+1. Run `npm run life-os:list` (or `npx tsx scripts/tools/life-os-tasks.ts list`).
+2. Confirm which task with the user if multiple; then `claim <recId>`.
+3. Implement in this repo.
+4. Write back: `done <recId> --pr=…` and/or `deployed <recId>` after ship.
+5. Notes always get provenance via the module (`[cursor:life-os]`).
+
+If LIFE OS is not configured, tell the user to set `AIRTABLE_LIFE_OS_TABLE_TASKS` and run `npm run life-os:discover`. See `docs/life-os/TASKS_SCHEMA.md`.

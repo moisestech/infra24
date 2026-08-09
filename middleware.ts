@@ -71,6 +71,15 @@ function isPublicRoute(pathname: string): boolean {
     '/events',
     '/newsletter',
     '/opportunities',
+    /** DCC.MIAMI public product surfaces */
+    '/machines',
+    '/pricing',
+    '/make',
+    '/scale-up',
+    '/dashboard/ceo',
+    '/api/dcc/make',
+    '/api/scale-up',
+    '/api/signage',
   ]
 
   return publicRoutes.some((route) => pathname.startsWith(route))

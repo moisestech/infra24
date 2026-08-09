@@ -136,3 +136,11 @@ Map via `AIRTABLE_{ORG}_ALUMNI_FIELD_*` env vars (see `lib/airtable/org-alumni-c
 - **Memory Agent**: `/o/[slug]/memory-agent` — conversational demo over the same Airtable alumni rows (with governance fields when mapped). See API section above. Roadmap and entry points: `docs/MEMORY_AGENT_ROADMAP.md`.
 
 See also `docs/AIRTABLE_BUDGET_AUDIT.md` if present for budget-specific notes.
+
+## Dual bases (LIFE OS + DCC OS)
+
+See [`docs/DCC_DUAL_AIRTABLE.md`](./DCC_DUAL_AIRTABLE.md) and [`docs/life-os/TASKS_SCHEMA.md`](./life-os/TASKS_SCHEMA.md).
+
+- **LIFE OS** (`apprswzWnLrHBwFcx`) — agent PM backlog (`lib/life-os/*`, `npm run life-os:*`)
+- **DCC OS** (`appWoYBRdklcz2RJH`) — staff product tables (`lib/dcc/machines.ts`, `services.ts`, `jobs.ts`, …) plus existing CRM / Network Builder env (`AIRTABLE_DCC_CRM_*`)
+
