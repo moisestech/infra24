@@ -472,7 +472,8 @@ export function rankProgrammingForQuestion(
   records: KnowledgeRecord[],
   question: string,
   questionEmbedding: number[] | null,
-  rowEmbeddings: Map<string, number[]>
+  rowEmbeddings: Map<string, number[]>,
+  vectorBoost?: Map<string, number>
 ): ScoredKnowledgeRecord[] {
   const scored: ScoredKnowledgeRecord[] = []
   for (const record of records) {
@@ -513,6 +514,8 @@ export function rankProgrammingForQuestion(
     }
     if (workshopQuestion && record.recordKind === 'workshop') relationBoost += 0.16
     if (registerQuestion && (record.bookingCta?.grounded || record.bookable)) relationBoost += 0.18
+    const vb = vectorBoost?.get(record.id) ?? 0
+    const pgBoost = vb > 0 ? vb * 0.25 : 0
     const score =
       (questionEmbedding ? kw * 0.35 + sem * 0.65 : kw) +
       priorityBoost +
@@ -521,7 +524,8 @@ export function rankProgrammingForQuestion(
       workshopBoost +
       airtableBoost +
       instructorBoost +
-      relationBoost
+      relationBoost +
+      pgBoost
     scored.push({ record, score })
   }
   scored.sort((a, b) => b.score - a.score)

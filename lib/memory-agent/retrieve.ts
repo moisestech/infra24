@@ -110,10 +110,13 @@ export function rankAlumniForQuestion(
   options?: {
     featuredArtistNames?: string[]
     relatedPeopleIds?: string[]
+    /** pgvector similarity boost by source_id (0–1). */
+    vectorBoost?: Map<string, number>
   }
 ): ScoredAlumni[] {
   const featured = options?.featuredArtistNames ?? []
   const linkedIds = new Set(options?.relatedPeopleIds ?? [])
+  const vectorBoost = options?.vectorBoost
   const exhibitionQuestion =
     /\b(exhibit|exhibiting|exhibition|sites of the self|from within|who is in|which artists)\b/i.test(
       question
@@ -134,6 +137,8 @@ export function rankAlumniForQuestion(
     }
     const crmId = row.id.startsWith('crm_people:') ? row.id.slice('crm_people:'.length) : row.id
     if (linkedIds.has(crmId)) boost += 0.2
+    const vb = vectorBoost?.get(row.id) ?? 0
+    if (vb > 0) boost += vb * 0.25
     const score = (questionEmbedding ? kw * 0.35 + sem * 0.65 : kw) + boost
     scored.push({ row, score })
   }

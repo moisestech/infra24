@@ -72,6 +72,7 @@ export function MemoryAgentContextInspectorPanel({ data }: { data: MemoryAgentCo
                 ? ` · ${r.totalCandidateCount} eligible after governance`
                 : null}
               {typeof r.baseTotalCount === 'number' ? ` · ${r.baseTotalCount} rows in base` : null}
+              {r.pgvectorUsed ? ` · pgvector (${r.vectorHitCount ?? 0} hits)` : null}
             </p>
             <ul
               className={cn(
@@ -97,6 +98,30 @@ export function MemoryAgentContextInspectorPanel({ data }: { data: MemoryAgentCo
               <span className="font-semibold">Allowed artist IDs</span>{' '}
               <span className="font-mono break-all">{r.allowedArtistIds.join(', ') || '(none)'}</span>
             </p>
+          </div>
+        ) : null}
+
+        {data.sources?.length ? (
+          <div className="space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--ma-text-muted)]">
+              Citations
+            </p>
+            <ul
+              className={cn(
+                'max-h-32 space-y-1 overflow-y-auto rounded border border-[var(--ma-border)] p-2 text-[11px]',
+                'bg-[var(--ma-surface)]'
+              )}
+            >
+              {data.sources.map((c) => (
+                <li key={`${c.type}:${c.id}`} className="flex flex-wrap gap-x-2">
+                  <span className="rounded bg-[var(--ma-surface-muted)] px-1.5 py-0.5 font-mono text-[10px] uppercase">
+                    {c.type}
+                  </span>
+                  <span className="font-mono text-[var(--ma-text-muted)]">{c.id}</span>
+                  <span className={ma.body}>{c.title}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         ) : null}
 

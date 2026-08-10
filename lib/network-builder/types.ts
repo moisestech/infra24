@@ -172,6 +172,8 @@ export type NetworkReadinessRunSummary = {
   }
   supabasePersisted?: boolean
   reportMarkdown?: string
+  reportAssetId?: string
+  reportPersistError?: string
 }
 
 export type NetworkReadinessRunOptions = {

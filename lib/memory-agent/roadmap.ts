@@ -40,7 +40,8 @@ export const MEMORY_AGENT_ROADMAP_PHASES: MemoryAgentRoadmapPhase[] = [
   {
     id: 'scale',
     title: 'Scale & ops',
-    status: 'planned',
-    detail: 'Cached sync to Supabase, pgvector, auth, admin review dashboard, usage analytics.',
+    status: 'current',
+    detail:
+      'Supabase pgvector embedding sync, hybrid retrieval boost, citation IDs in staff inspector, golden-set eval (see npm run eval:memory-agent).',
   },
 ]

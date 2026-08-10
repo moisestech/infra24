@@ -201,6 +201,17 @@ const nextConfig = {
       { source: '/edgezones/artists', destination: '/edgezones#artists', permanent: false },
       { source: '/edgezones/programs', destination: '/edgezones#programs', permanent: false },
       { source: '/edgezones/archive', destination: '/edgezones#archive', permanent: false },
+      /** Recruiter-safe Applied AI demo aliases → DCC Memory Agent */
+      {
+        source: '/memory-agent',
+        destination: '/o/dcc/memory-agent',
+        permanent: false,
+      },
+      {
+        source: '/memory-agent/:path*',
+        destination: '/o/dcc/memory-agent/:path*',
+        permanent: false,
+      },
     ];
   },
 
