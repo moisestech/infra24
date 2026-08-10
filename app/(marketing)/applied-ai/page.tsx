@@ -53,7 +53,7 @@ export default function AppliedAiEngineeringPage() {
       <PageHero
         eyebrow="Applied AI · Pilot"
         title="Infra24 applied AI engineering demos"
-        description="Governed RAG and approval-gated agent actions on DCC Miami infrastructure — for technical interviews and partner conversations. Career CV and role dossiers live on moises.tech."
+        description="Governed Memory Agent retrieval and approval-gated agent actions on DCC Miami infrastructure — for technical interviews and partner conversations. Career CV and role dossiers live on moises.tech."
         breadcrumbs={getCdcBreadcrumbs(path)}
       />
 
