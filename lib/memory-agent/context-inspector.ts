@@ -4,6 +4,7 @@ import { parseSignageDraft } from '@/lib/memory-agent/outputs'
 import type { ScoredAlumni } from '@/lib/memory-agent/retrieve'
 import type {
   MemoryAgentArtistCard,
+  MemoryAgentCitation,
   MemoryAgentContextInspector,
   MemoryAgentMode,
   MemoryAgentSignageDraft,
@@ -25,6 +26,9 @@ export function buildMemoryAgentContextInspector(args: {
   tripleOutputs: MemoryAgentTripleOutputs | undefined
   signageDraft: MemoryAgentSignageDraft | undefined
   signageDraftRaw: unknown
+  pgvectorUsed?: boolean
+  vectorHitCount?: number
+  sources?: MemoryAgentCitation[]
 }): MemoryAgentContextInspector {
   const allowedArtistIds = args.contextRows.map((r) => r.id)
   const allowedSet = new Set(allowedArtistIds)
@@ -37,6 +41,10 @@ export function buildMemoryAgentContextInspector(args: {
   const warnings: string[] = []
   if (!args.questionEmbedding) {
     warnings.push('Embeddings unavailable; retrieval used keyword-heavy blend.')
+  } else if (args.pgvectorUsed) {
+    warnings.push(
+      `pgvector hybrid retrieval active (${args.vectorHitCount ?? 0} vector hits).`
+    )
   }
 
   const droppedFields: string[] = []
@@ -75,7 +83,10 @@ export function buildMemoryAgentContextInspector(args: {
       selectedCount: args.contextRows.length,
       selectedRecords,
       allowedArtistIds,
+      pgvectorUsed: args.pgvectorUsed,
+      vectorHitCount: args.vectorHitCount,
     },
+    ...(args.sources?.length ? { sources: args.sources } : {}),
     contextPreview: {
       text: args.userPromptForModel,
       characterCount: args.userPromptForModel.length,

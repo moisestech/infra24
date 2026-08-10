@@ -80,6 +80,13 @@ import {
   buildStructuredDataGaps,
   toClientStructuredDataGaps,
 } from '@/lib/memory-agent/data-gap-actions'
+import {
+  buildDocContextFromVectorHits,
+  citationsFromContext,
+  queryMemoryAgentVectors,
+  vectorBoostMap,
+  type VectorMatchHit,
+} from '@/lib/memory-agent/vector-retrieve'
 import { getMemoryAgentBranding } from '@/lib/memory-agent/org-branding'
 import {
   isSohoDemoOrg,
@@ -163,11 +170,14 @@ export async function runMemoryAgentAsk(params: {
   const needsProgramming = intentNeedsProgramming(intent)
   const needsRecognition = intentNeedsRecognition(intent)
   const sohoDemo = isSohoDemoOrg(orgSlug)
+  const dccDocOnly = orgSlug.trim().toLowerCase() === 'dcc'
 
   const conn = getAlumniConnectionForOrg(orgSlug)
-  if (needsPeople && !conn && !sohoDemo) {
+  if (needsPeople && !conn && !sohoDemo && !dccDocOnly) {
     return { ok: false, code: 'not_configured', message: 'Alumni Airtable is not configured for this organization.' }
   }
+
+  const effectiveNeedsPeople = needsPeople && !!(conn && !sohoDemo)
 
   const openai = getOpenAIClient()
   if (!openai) {
@@ -184,7 +194,7 @@ export async function runMemoryAgentAsk(params: {
 
   let publicDirectoryProfiles: OolitePublicDirectoryProfile[] = []
 
-  if (needsPeople && conn && !sohoDemo) {
+  if (effectiveNeedsPeople && conn && !sohoDemo) {
     const fetched = await fetchAlumniFromAirtableDetailed(orgSlug)
     if (!fetched.ok) {
       if (fetched.reason === 'not_configured') {
@@ -331,10 +341,12 @@ export async function runMemoryAgentAsk(params: {
 
   let questionEmbedding: number[] | null = null
   const rowEmbeddings = new Map<string, number[]>()
+  let vectorHits: VectorMatchHit[] = []
+  let pgvectorUsed = false
 
   try {
     const embedInputs: string[] = [q]
-    if (needsPeople && eligible.length) {
+    if (effectiveNeedsPeople && eligible.length) {
       embedInputs.push(...eligible.map((r) => buildEmbeddingInput(r)))
     }
     if (needsProgramming && programmingPool?.ok && programmingPool.records.length) {
@@ -343,7 +355,7 @@ export async function runMemoryAgentAsk(params: {
     const vectors = await embedTexts(openai, embedInputs)
     questionEmbedding = vectors[0] ?? null
     let idx = 1
-    if (needsPeople && eligible.length) {
+    if (effectiveNeedsPeople && eligible.length) {
       for (let i = 0; i < eligible.length; i++) {
         const row = eligible[i]
         const v = vectors[idx]
@@ -364,7 +376,21 @@ export async function runMemoryAgentAsk(params: {
     rowEmbeddings.clear()
   }
 
-  if (needsPeople && eligible.length) {
+  if (questionEmbedding) {
+    const vectorResult = await queryMemoryAgentVectors({
+      orgSlug,
+      questionEmbedding,
+      limit: 28,
+    })
+    if (vectorResult.ok) {
+      vectorHits = vectorResult.hits
+      pgvectorUsed = vectorResult.usedPgvector
+    }
+  }
+
+  const vectorBoost = vectorBoostMap(vectorHits)
+
+  if (effectiveNeedsPeople && eligible.length) {
     const programmingRecords = programmingPool?.ok ? programmingPool.records : []
     const featuredArtistNames = programmingRecords.flatMap((r) =>
       parseFeaturedArtistNames(r.featuredArtists)
@@ -375,6 +401,7 @@ export async function runMemoryAgentAsk(params: {
     ranked = rankAlumniForQuestion(eligible, q, questionEmbedding, rowEmbeddings, {
       featuredArtistNames,
       relatedPeopleIds,
+      vectorBoost,
     })
     contextRows = selectContextRows(ranked, needsProgramming ? 18 : 28)
   }
@@ -384,7 +411,8 @@ export async function runMemoryAgentAsk(params: {
       programmingPool.records,
       q,
       questionEmbedding,
-      rowEmbeddings
+      rowEmbeddings,
+      vectorBoost
     )
     programmingContextRows = selectProgrammingContextRows(
       programmingRanked,
@@ -462,6 +490,12 @@ export async function runMemoryAgentAsk(params: {
     )
   }
 
+  if (needsPeople && !artistBlock && dccDocOnly) {
+    contextSections.push(
+      'Artist / alumni records: (DCC pilot uses reference documents and programming — CRM people optional.)'
+    )
+  }
+
   if (needsPeople && !artistBlock && sohoDemo) {
     contextSections.push(
       'Artist / alumni records: (Soho demo uses programming and House knowledge only — not private member matching or Oolite alumni.)'
@@ -472,6 +506,11 @@ export async function runMemoryAgentAsk(params: {
     contextSections.push(
       'Artist / alumni records: (none in context — do not invent people. Explain in dataGaps.)'
     )
+  }
+
+  const docBlock = buildDocContextFromVectorHits(vectorHits)
+  if (docBlock) {
+    contextSections.push(`DCC reference documents (pgvector retrieval):\n${docBlock}`)
   }
 
   const system =
@@ -581,6 +620,20 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
     tripleOutputs: parsed.outputs,
   })
 
+  const sources = citationsFromContext({
+    contextRows: contextRows.map((row) => ({
+      id: row.id,
+      name: alumniDisplayName(row),
+      medium: row.medium,
+    })),
+    programmingRows: programmingContextRows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      recordKind: row.recordKind,
+    })),
+    docHits: vectorHits.filter((h) => h.sourceType === 'dcc_doc'),
+  })
+
   let contextInspector: MemoryAgentContextInspector | undefined
   if (mode === 'staff_operator') {
     contextInspector = buildMemoryAgentContextInspector({
@@ -598,6 +651,9 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
       tripleOutputs: parsed.outputs,
       signageDraft,
       signageDraftRaw: parsed.signageDraftRaw,
+      pgvectorUsed,
+      vectorHitCount: vectorHits.length,
+      sources,
     })
   }
 
@@ -643,6 +699,7 @@ ${contextSections.join('\n\n') || '(no records — say no matches and list dataG
                 ...(events.length > 0 ? { events } : {}),
                 followUps: parsed.followUps.slice(0, 6),
                 dataGaps: dataGaps.slice(0, 8),
+                ...(sources.length > 0 ? { sources } : {}),
                 ...(structuredDataGaps.length > 0 ? { structuredDataGaps } : {}),
                 outputs: toClientOutputs(parsed.outputs, mode),
                 ...(signageDraft ? { signageDraft } : {}),

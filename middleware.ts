@@ -71,6 +71,10 @@ function isPublicRoute(pathname: string): boolean {
     '/events',
     '/newsletter',
     '/opportunities',
+    /** Recruiter-safe Applied AI demo surfaces */
+    '/memory-agent',
+    '/applied-ai',
+    '/network/agent',
     /** DCC.MIAMI public product surfaces */
     '/machines',
     '/pricing',

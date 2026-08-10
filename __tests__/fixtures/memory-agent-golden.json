@@ -1,0 +1,120 @@
+[
+  {
+    "id": "dcc-workshops-ai-net-art",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "What DCC programming covers vibecoding or creative code workshops?",
+    "mustCiteSourceTypes": ["dcc_doc"],
+    "mustNotIncludePatterns": ["I don't have access"]
+  },
+  {
+    "id": "dcc-network-signup",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "What is the DCC Index and what fields matter for network readiness?",
+    "mustCiteSourceTypes": ["dcc_doc"],
+    "answerMustMatch": ["readiness", "index"]
+  },
+  {
+    "id": "dcc-empty-fabrication-guard",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "Who won the Nobel Prize in Physics at DCC last Tuesday?",
+    "expectDataGaps": true,
+    "mustNotIncludePatterns": ["Nobel laureate", "won the Nobel"]
+  },
+  {
+    "id": "oolite-programming-week",
+    "orgSlug": "oolite",
+    "mode": "staff_operator",
+    "question": "What should visitors see at Oolite this week?",
+    "skipIfNotConfigured": true
+  },
+  {
+    "id": "oolite-artist-grounding",
+    "orgSlug": "oolite",
+    "mode": "staff_operator",
+    "question": "Tell me about Mark Delmont.",
+    "skipIfNotConfigured": true,
+    "mustNotIncludePatterns": ["fictional", "made up"]
+  },
+  {
+    "id": "oolite-residents-2026",
+    "orgSlug": "oolite",
+    "mode": "staff_operator",
+    "question": "Who are the 2026 Studio Residents?",
+    "skipIfNotConfigured": true
+  },
+  {
+    "id": "dcc-agent-approvals-faq",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "What happens after DCC network signup?",
+    "mustCiteSourceTypes": ["dcc_doc"],
+    "answerMustMatch": ["approval"]
+  },
+  {
+    "id": "dcc-workshop-catalog-themes",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "What DCC clinics cover vibecoding or creative code?",
+    "mustCiteSourceTypes": ["dcc_doc"],
+    "answerMustMatch": ["vibecod", "creative code"]
+  },
+  {
+    "id": "oolite-public-mode-redaction",
+    "orgSlug": "oolite",
+    "mode": "public",
+    "question": "What exhibitions are coming up?",
+    "skipIfNotConfigured": true,
+    "mustNotIncludePatterns": ["@", "phone:"]
+  },
+  {
+    "id": "dcc-privacy-ai",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "How does DCC handle privacy and AI use for the memory agent?",
+    "mustCiteSourceTypes": ["dcc_doc"],
+    "answerMustMatch": ["do not use", "approved"]
+  },
+  {
+    "id": "dcc-open-lab",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "What is DCC Open Lab and how does it differ from workshops?",
+    "mustCiteSourceTypes": ["dcc_doc"],
+    "answerMustMatch": ["open lab"]
+  },
+  {
+    "id": "dcc-partner-pathways",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "What do DCC partners get and how are outreach drafts approved?",
+    "mustCiteSourceTypes": ["dcc_doc"],
+    "answerMustMatch": ["approv"]
+  },
+  {
+    "id": "dcc-era-pathways",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "What are the Born-Digital Era pathways into DCC?",
+    "mustCiteSourceTypes": ["dcc_doc"],
+    "answerMustMatch": ["network", "workshop"]
+  },
+  {
+    "id": "dcc-governance-pilot",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "What is the pilot scope of the Institutional Memory agent?",
+    "mustCiteSourceTypes": ["dcc_doc"],
+    "answerMustMatch": ["pilot"]
+  },
+  {
+    "id": "dcc-artist-support",
+    "orgSlug": "dcc",
+    "mode": "staff_operator",
+    "question": "What artist support modules does DCC offer?",
+    "mustCiteSourceTypes": ["dcc_doc"],
+    "answerMustMatch": ["audit", "portfolio"]
+  }
+]

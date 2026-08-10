@@ -18,6 +18,8 @@ import {
 import { persistNetworkRun } from '@/lib/network-builder/supabase-repo'
 import type { NetworkReadinessRunOptions, NetworkReadinessRunSummary } from '@/lib/network-builder/types'
 import { writeActionsToAirtable } from '@/lib/network-builder/write-approvals'
+import { persistNetworkReportAsset } from '@/lib/network-builder/persist-report-asset'
+import { personalizeDraftWithLLM } from '@/lib/network-builder/personalize-draft'
 
 function generateRunId(): string {
   return `run_${randomBytes(8).toString('hex')}`
@@ -66,6 +68,18 @@ export async function runNetworkReadinessAgent(
   const contactsById = new Map(contacts.map((c) => [c.recordId, c]))
   const proposedActions = generateRelationshipActions(ranked, contactsById, limit)
   const missingFieldCounts = Object.fromEntries(detectMissingFields(scores))
+
+  if (process.env.NETWORK_BUILDER_LLM_POLISH === 'true') {
+    for (const action of proposedActions) {
+      const contact = contactsById.get(action.contactId)
+      if (!contact) continue
+      action.proposedMessage = await personalizeDraftWithLLM({
+        contact,
+        actionType: action.actionType,
+        templateDraft: action.proposedMessage,
+      })
+    }
+  }
 
   const topIncomplete = [...scores]
     .filter((s) => !s.networkReady)
@@ -136,6 +150,20 @@ export async function runNetworkReadinessAgent(
         const msg = err instanceof Error ? err.message : String(err)
         result.airtableWrite.errors.push(`Supabase persist: ${msg}`)
       }
+    }
+  }
+
+  if (writeApprovals && result.reportMarkdown) {
+    try {
+      const persisted = await persistNetworkReportAsset(result)
+      if (persisted.assetId) {
+        result.reportAssetId = persisted.assetId
+      } else if (persisted.error) {
+        result.reportPersistError = persisted.error
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      result.reportPersistError = msg
     }
   }
 

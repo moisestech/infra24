@@ -48,6 +48,9 @@
     "audit:announcements-display-month": "npx tsx scripts/tools/audit-announcements-display-month.ts",
     "sync:memory-agent-embeddings": "npx tsx --require ./scripts/tools/register-server-only.cjs scripts/tools/sync-memory-agent-embeddings.ts",
     "eval:memory-agent": "npx tsx --require ./scripts/tools/register-server-only.cjs scripts/tools/eval-memory-agent.ts",
+    "secret-scan": "node scripts/tools/secret-scan.mjs",
+    "verify:career": "npm run secret-scan && npm run lint && npm run test && npm run build:career",
+    "build:career": "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_ci CLERK_SECRET_KEY=clerk_ci_placeholder NEXT_PUBLIC_SUPABASE_URL=https://ci-placeholder.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=ci-placeholder-anon-key SUPABASE_SERVICE_ROLE_KEY=ci-placeholder-service-key RESEND_API_KEY=re_ci_placeholder npm run build",
     "network-builder:schema-gap": "npx tsx scripts/tools/network-builder-schema-gap-report.ts",
     "life-os:discover": "npx tsx scripts/tools/life-os-tasks.ts discover",
     "life-os:list": "npx tsx scripts/tools/life-os-tasks.ts list",
@@ -185,6 +188,5 @@
   "bugs": {
     "url": "https://github.com/your-org/infra24/issues"
   },
-  "homepage": "https://github.com/your-org/infra24#readme",
-  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
+  "homepage": "https://github.com/your-org/infra24#readme"
 }

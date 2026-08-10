@@ -6,10 +6,15 @@ yarn-error.log*
 
 # Environment variables
 .env
+.env.*
+!.env.example
 .env.local
+.env.local.*
 .env.development.local
 .env.test.local
 .env.production.local
+*.local-backup
+**/.env.local.local-backup
 
 # Next.js
 .next/
@@ -117,6 +122,9 @@ Thumbs.db
 *.backup
 *.old
 
+# Local / dated eval reports (commit fixtures under __tests__/fixtures only)
+reports/
+
 # Test files
 test-results/
 playwright-report/
@@ -127,3 +135,6 @@ test-results.xml
 
 # Local development
 .local
+
+# Clerk local keyless / telemetry (never commit)
+.clerk/

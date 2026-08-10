@@ -1,6 +1,16 @@
 # Infra24 - Multi-Tenant Platform
 
-A comprehensive multi-tenant platform for workshops, digital labs, artist profiles, and announcements with integrated booking system.
+Multi-tenant platform for workshops, digital labs, artist profiles, bookings — plus DCC Applied AI pilot demos (Memory Agent, Network Readiness).
+
+## 60-second orientation
+
+1. **Install:** `npm ci` (npm is canonical; see `package-lock.json`).
+2. **Dev:** copy `.env.example` → `.env.local`, then `npm run dev`.
+3. **Career / demo truth:** read [`docs/career-evidence/REPO_TRUTH_AUDIT.md`](./docs/career-evidence/REPO_TRUTH_AUDIT.md) before claiming RAG/eval status.
+4. **Demo paths:** `/memory-agent` (→ DCC Memory Agent), `/applied-ai` (hub, noindex), `/network/agent` (approval-gated).
+5. **Verify without prod secrets:** `npm run verify:career`.
+
+**Status labels (honest):** Memory Agent hybrid retrieval = shipped in app code. pgvector indexed RAG = code present, live claim only after migration + sync + eval. Eval harness = present; green scoreboard = not claimed.
 
 ## 📑 Table of Contents
 

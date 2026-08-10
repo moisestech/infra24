@@ -301,7 +301,10 @@ export type MemoryAgentContextInspector = {
       reason?: string
     }>
     allowedArtistIds: string[]
+    pgvectorUsed?: boolean
+    vectorHitCount?: number
   }
+  sources?: MemoryAgentCitation[]
   contextPreview?: {
     text: string
     characterCount: number
@@ -316,6 +319,19 @@ export type MemoryAgentContextInspector = {
   }
 }
 
+export type MemoryAgentCitationSourceType =
+  | 'alumni'
+  | 'programming'
+  | 'recognition'
+  | 'dcc_doc'
+
+/** Grounded source record cited in the ask response (staff-visible detail in context inspector). */
+export type MemoryAgentCitation = {
+  id: string
+  type: MemoryAgentCitationSourceType
+  title: string
+}
+
 export type MemoryAgentAnswer = {
   answer: string
   /** When set, TTS reads this instead of `answer` (richer on-screen copy). */
@@ -324,6 +340,8 @@ export type MemoryAgentAnswer = {
   events?: MemoryAgentEventCard[]
   followUps: string[]
   dataGaps: string[]
+  /** Retrieved record/chunk IDs used to ground the answer. */
+  sources?: MemoryAgentCitation[]
   /** Source-aware staff actions; action links omitted in public mode. */
   structuredDataGaps?: MemoryAgentDataGap[]
   /** Optional audience outputs; UI hides when absent. */
