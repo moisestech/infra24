@@ -10,6 +10,12 @@ function isPublicRoute(pathname: string): boolean {
   /** Public workshop reader chapters: canonical `/workshop/{slug}/{chapter}`. */
   if (pathname === '/workshop' || pathname.startsWith('/workshop/')) return true
 
+  /** Live workshop room surfaces (join / TV / facilitator). */
+  if (pathname.startsWith('/session/') || pathname.startsWith('/present/') || pathname.startsWith('/facilitate/')) {
+    return true
+  }
+  if (pathname.startsWith('/api/workshop-live-sessions')) return true
+
   /** Tenant workshop UI under `/o/{org}/workshops` requires sign-in (full catalog, drafts, digital-lab tools). */
   if (/^\/o\/[^/]+\/workshops(\/.*)?$/.test(pathname)) return false
 

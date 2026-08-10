@@ -1,0 +1,383 @@
+import type { Workshop, WorkshopModule } from '@/lib/workshop-engine/types'
+
+const BOOKLET_ID = 'oolite-resin-artist-guide'
+
+function booklet(sectionTitle: string): WorkshopModule['bookletRefs'] {
+  return [
+    {
+      bookletId: BOOKLET_ID,
+      sectionTitle,
+      mappingPending: true,
+    },
+  ]
+}
+
+export const RESIN_PRINTING_MODULES: WorkshopModule[] = [
+  {
+    id: 'welcome',
+    slug: 'welcome',
+    order: 0,
+    title: 'Welcome & Join',
+    estimatedMinutes: 10,
+    promise: 'Know what the class covers and what it does not certify.',
+    keyIdeas: [
+      'This is preparation for a supervised print appointment — not independent operator certification.',
+      'You can Follow class with the facilitator or work at My pace.',
+      'Resin equipment stays instructor-led for this beginner workshop.',
+    ],
+    watchNotice: 'Join QR on the TV, meet facilitators, and hear the expectation statement.',
+    physicalSample: 'Printed join sign / QR backup card',
+    activity: {
+      kind: 'choice',
+      prompt: 'Choose how you want to move through class tonight.',
+      items: ['Follow class', 'My pace'],
+    },
+    bookletRefs: booklet('Front matter'),
+    safetyLevel: 'note',
+    safetyNote: 'You will learn the full workflow. You will not independently operate resin equipment tonight.',
+    facilitatorNotes: [
+      'Open join screen on TVs.',
+      'State expectation statement aloud.',
+      'Confirm everyone picked Follow class or My pace.',
+    ],
+    tvPrompt: 'Scan to join. Choose Follow class or My pace.',
+  },
+  {
+    id: 'why-resin',
+    slug: 'why-resin',
+    order: 1,
+    title: 'Why Resin?',
+    estimatedMinutes: 15,
+    promise: 'Decide whether resin is appropriate for an artwork.',
+    keyIdeas: [
+      'Resin excels at fine detail and smooth surfaces at smaller scales.',
+      'Trade-offs include brittleness, cost, and liquid-resin safety overhead.',
+      'Some projects need FDM, fabrication, or a consultation instead.',
+    ],
+    watchNotice: 'Compare successful art objects at different scales and detail levels.',
+    physicalSample: 'Successful cured prints with scale reference',
+    activity: {
+      kind: 'classify',
+      prompt: 'Match each project example to resin, not resin, or needs consultation.',
+      items: [
+        'Jewelry-scale pendant with hair-fine relief',
+        'Large outdoor garden stool',
+        'Hollow figurative bust with unknown wall thickness',
+      ],
+      labels: ['resin', 'not resin', 'consultation'],
+    },
+    knowledgeCheck: {
+      prompt: 'Resin is usually the best default for every sculpture scale.',
+      options: [
+        {
+          id: 'a',
+          label: 'True',
+          explanation: 'Scale, strength, cost, and outdoor durability often push projects to other processes.',
+        },
+        {
+          id: 'b',
+          label: 'False',
+          correct: true,
+          explanation: 'Resin is a fit decision — detail and surface quality vs. size, toughness, and post-processing.',
+        },
+      ],
+    },
+    bookletRefs: booklet('Resin overview'),
+    safetyLevel: 'none',
+    facilitatorNotes: [
+      'Hold up scale samples.',
+      'Do not oversell resin for large structural work.',
+    ],
+    tvPrompt: 'When is resin the right tool — and when is it not?',
+  },
+  {
+    id: 'safety-zones',
+    slug: 'safety-zones',
+    order: 2,
+    title: 'Safety & Zones',
+    estimatedMinutes: 20,
+    promise: 'Distinguish cured from uncured resin and identify clean vs controlled zones.',
+    keyIdeas: [
+      'Uncured resin requires PPE, containment, and instructor-led handling.',
+      'Clean participant zone vs controlled resin zone are separate.',
+      'Stop-work conditions override the schedule.',
+    ],
+    watchNotice: 'Full-screen room-zone diagram and PPE demonstration.',
+    physicalSample: 'PPE set, zone markers, waste/spill setup, SDS reference',
+    activity: {
+      kind: 'checklist',
+      prompt: 'Confirm each safety statement before continuing.',
+      items: [
+        'Uncured resin is not skin-safe.',
+        'Controlled zone work is instructor-led tonight.',
+        'I know where PPE and spill supplies live.',
+        'Cured prints are different from wet/uncured parts.',
+        'I will not operate the printer independently after class.',
+      ],
+    },
+    knowledgeCheck: {
+      prompt: 'Who operates the printer and handles uncured resin in this beginner workshop?',
+      options: [
+        {
+          id: 'a',
+          label: 'Any participant who finished the safety check',
+          explanation: 'Completion is not operator certification.',
+        },
+        {
+          id: 'b',
+          label: 'Instructors only in the controlled resin zone',
+          correct: true,
+          explanation: 'Participants learn the workflow and prepare projects for supervised appointments.',
+        },
+      ],
+    },
+    bookletRefs: booklet('Safety'),
+    safetyLevel: 'required',
+    safetyNote:
+      'Uncured resin, machine operation, build-plate removal, washing, curing, spills, and waste remain instructor-led.',
+    facilitatorNotes: [
+      'Demonstrate PPE without rushing.',
+      'Point to clean vs controlled zones.',
+      'Name the venue stop-work condition.',
+    ],
+    tvPrompt: 'Clean zone vs controlled resin zone. PPE on before demo.',
+  },
+  {
+    id: 'complete-workflow',
+    slug: 'complete-workflow',
+    order: 3,
+    title: 'Complete Workflow',
+    estimatedMinutes: 20,
+    promise: 'Explain model → slice → print → wash → cure.',
+    keyIdeas: [
+      'The pipeline is staged; class does not depend on a live print finishing.',
+      'Each stage has its own tools, risks, and quality checks.',
+      'File readiness happens before the printer ever starts.',
+    ],
+    watchNotice: 'Walk the five staged physical pipeline objects.',
+    physicalSample: 'Raw file → sliced file → supported print → washed/cured print → finished object',
+    activity: {
+      kind: 'order',
+      prompt: 'Put the five stages in order.',
+      items: ['Model / file', 'Slice & support', 'Print', 'Wash', 'Cure / finish'],
+      correctOrder: [0, 1, 2, 3, 4],
+    },
+    bookletRefs: booklet('Workflow'),
+    safetyLevel: 'note',
+    safetyNote: 'Wash and cure demos stay instructor-led.',
+    facilitatorNotes: [
+      'Use staged objects — do not wait on a live print.',
+      'Name each stage out loud as you point.',
+    ],
+    tvPrompt: 'Model → slice → print → wash → cure.',
+  },
+  {
+    id: 'file-readiness',
+    slug: 'file-readiness',
+    order: 4,
+    title: 'Is the File Printable?',
+    estimatedMinutes: 25,
+    promise: 'Identify scale, geometry, wall, cavity, and fragility problems.',
+    keyIdeas: [
+      'Units and scale errors are the most common beginner failure.',
+      'Thin walls, open geometry, trapped cavities, and fragile details need review.',
+      'Ready / repair / consultation is a preparation decision, not a grade.',
+    ],
+    watchNotice: 'Annotate one good model and one problematic model.',
+    physicalSample: 'Thin wall, open geometry, fragile detail, hollow cavity examples',
+    activity: {
+      kind: 'classify',
+      prompt: 'Mark each sample ready, repair, or consultation.',
+      items: [
+        'Closed manifold cube at correct mm scale',
+        'Figurine with 0.2 mm fingers and no supports plan',
+        'Hollow form with no drain holes',
+      ],
+      labels: ['ready', 'repair', 'consultation'],
+    },
+    bookletRefs: booklet('File preparation'),
+    safetyLevel: 'none',
+    facilitatorNotes: [
+      'Project one good and one bad file on the TV.',
+      'Keep language diagnostic, not shaming.',
+    ],
+    tvPrompt: 'Scale, walls, cavities, fragility — ready, repair, or consult?',
+  },
+  {
+    id: 'slicer-lab',
+    slug: 'slicer-lab',
+    order: 5,
+    title: 'Slicer Lab',
+    estimatedMinutes: 40,
+    promise: 'Prepare a model using one repeatable sequence.',
+    keyIdeas: [
+      'One validated slicer + one known-good profile for this venue.',
+      'Sequence: import → units/scale → repair → orient → support → hollow → drain → preview → estimate → export.',
+      'Exposure settings are venue/profile data, not universal advice.',
+    ],
+    watchNotice: 'Live slicer demo of the full repeatable sequence.',
+    physicalSample: 'Demo model, validated project file, USB/screenshot backup',
+    activity: {
+      kind: 'checklist',
+      prompt: 'Check off each slicer checkpoint as you reach it.',
+      items: [
+        'Import sample model',
+        'Confirm units and scale',
+        'Orient for peel forces',
+        'Add supports',
+        'Hollow + drain if needed',
+        'Preview layers and estimate',
+      ],
+    },
+    bookletRefs: booklet('Slicing / supports / hollowing'),
+    safetyLevel: 'note',
+    safetyNote: 'Exporting a slice file is not permission to start the printer.',
+    facilitatorNotes: [
+      'Use the exact venue profile label.',
+      'Keep a screenshot/video backup ready.',
+      'Circulate — do not leave the room mid-demo.',
+    ],
+    tvPrompt: 'Import → scale → orient → support → hollow → preview → export.',
+  },
+  {
+    id: 'print-wash-cure',
+    slug: 'print-wash-cure',
+    order: 6,
+    title: 'Print, Wash & Cure',
+    estimatedMinutes: 20,
+    promise: 'Understand machine and post-processing stages without independently operating equipment.',
+    keyIdeas: [
+      'Build plate, vat, wash, and cure each have distinct hazards.',
+      'Participants observe; instructors operate.',
+      'Cured parts are handled differently from wet prints.',
+    ],
+    watchNotice: 'Instructor-only staged demo of print/wash/cure stations.',
+    physicalSample: 'Build plate, vat, wash station, curing station, removal tools',
+    activity: {
+      kind: 'classify',
+      prompt: 'Which stage does each tool belong to?',
+      items: ['Plastic scraper', 'IPA wash basket', 'Cure turntable', 'Resin vat'],
+      labels: ['print/removal', 'wash', 'cure', 'print'],
+    },
+    bookletRefs: booklet('Printing / post-processing'),
+    safetyLevel: 'required',
+    safetyNote: 'Do not touch uncured resin, vats, or running equipment. Instructor demo only.',
+    facilitatorNotes: [
+      'Keep participants in the clean zone.',
+      'Narrate PPE and spill response while demonstrating.',
+    ],
+    tvPrompt: 'Instructor demo only — print, wash, cure stations.',
+  },
+  {
+    id: 'failure-clinic',
+    slug: 'failure-clinic',
+    order: 7,
+    title: 'Failure Clinic',
+    estimatedMinutes: 12,
+    promise: 'Diagnose evidence without assuming one universal cause.',
+    keyIdeas: [
+      'Failures are evidence plus contributing factors — not a single guaranteed diagnosis.',
+      'Look at stage: plate/film, supports, exposure, wash/cure, design.',
+      'Cured failure samples are teaching objects, not trash.',
+    ],
+    watchNotice: 'Show cured failed prints one at a time.',
+    physicalSample: 'Plate/film failure, detached object, crack, white bloom, warp/soft detail',
+    activity: {
+      kind: 'classify',
+      prompt: 'Choose the likely stage for each failure sample.',
+      items: [
+        'Nothing stuck to the plate',
+        'Part detached mid-print',
+        'White bloom after wash',
+        'Soft detail / undercured look',
+      ],
+      labels: ['plate/film or exposure', 'supports/orientation', 'wash/IPA', 'cure'],
+    },
+    bookletRefs: booklet('Troubleshooting'),
+    safetyLevel: 'none',
+    facilitatorNotes: [
+      'Avoid “this always means X” language.',
+      'Invite participants to name evidence first.',
+    ],
+    tvPrompt: 'Evidence first. Then likely stage and factors.',
+  },
+  {
+    id: 'project-readiness',
+    slug: 'project-readiness',
+    order: 8,
+    title: 'Project Readiness',
+    estimatedMinutes: 8,
+    promise: 'Know the next step for a supervised print appointment.',
+    keyIdeas: [
+      'Exit with ready / repair / consultation — not operator certification.',
+      'Appointment pathway is venue-specific.',
+      'Resources and booklet stay available after class.',
+    ],
+    watchNotice: 'Recap, resource QR, appointment pathway.',
+    physicalSample: 'Appointment checklist and resource QR backup',
+    activity: {
+      kind: 'readiness',
+      prompt: 'Select your project status and next step.',
+      items: ['Ready for supervised appointment', 'Needs repair first', 'Needs consultation'],
+    },
+    bookletRefs: booklet('Checklist'),
+    safetyLevel: 'note',
+    safetyNote: 'A readiness summary is preparation status — not a license to operate equipment alone.',
+    facilitatorNotes: [
+      'Push resource QR on TVs.',
+      'Collect readiness outcomes if tracking appointments.',
+      'Mark session complete when done.',
+    ],
+    tvPrompt: 'Ready · Repair · Consultation — then book supervised print time.',
+  },
+]
+
+export const RESIN_PRINTING_WORKSHOP: Workshop = {
+  slug: 'resin-printing',
+  title: 'Intro to 3D Resin Printing for Artists',
+  promise:
+    'Prepare a project, make informed slicing decisions, understand the complete workflow, and arrive ready for a supervised print appointment.',
+  audience: 'Beginner artists and makers (no prior resin experience required)',
+  durationMinutes: 180,
+  capacity: 8,
+  safetyBoundary:
+    'Participants learn the complete workflow but do not independently operate resin equipment.',
+  expectationStatement:
+    'Tonight you will not be certified to operate the printer alone. You will learn how to prepare a project, make informed slicing decisions, understand the complete workflow, and arrive ready for a supervised print appointment.',
+  facilitators: ['Moises Sanabria', 'Fabiola Larios'],
+  moduleIds: RESIN_PRINTING_MODULES.map((m) => m.id),
+  resourceIds: [
+    'booklet-draft',
+    'sample-stl',
+    'slicer-link',
+    'readiness-checklist',
+    'glossary',
+  ],
+  venueConfigIds: ['oolite', 'bakehouse'],
+  bookletId: BOOKLET_ID,
+}
+
+export const RESIN_BREAK_MODULE = {
+  id: 'break',
+  title: 'Break',
+  estimatedMinutes: 10,
+  tvPrompt: 'Break — stretch, water, glossary optional. Next module coming up.',
+} as const
+
+export function getResinModuleBySlug(slug: string): WorkshopModule | undefined {
+  return RESIN_PRINTING_MODULES.find((m) => m.slug === slug)
+}
+
+export function getResinModuleById(id: string): WorkshopModule | undefined {
+  return RESIN_PRINTING_MODULES.find((m) => m.id === id)
+}
+
+export function getResinModuleNav(slug: string) {
+  const index = RESIN_PRINTING_MODULES.findIndex((m) => m.slug === slug)
+  if (index < 0) return { prev: null, next: null, index: -1 }
+  return {
+    index,
+    prev: index > 0 ? RESIN_PRINTING_MODULES[index - 1] : null,
+    next: index < RESIN_PRINTING_MODULES.length - 1 ? RESIN_PRINTING_MODULES[index + 1] : null,
+  }
+}

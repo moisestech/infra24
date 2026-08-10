@@ -92,6 +92,10 @@ public
 !public/docs/**
 !public/marketing/edgezones/
 !public/marketing/edgezones/**
+!public/workshops/
+!public/workshops/**
+!public/workshops/resin-printing/
+!public/workshops/resin-printing/**
 
 # Storybook build outputs
 .out
