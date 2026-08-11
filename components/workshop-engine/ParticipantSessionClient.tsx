@@ -18,6 +18,10 @@ import { SafetyGate } from "@/components/workshop-engine/SafetyAndTimer";
 import { ModuleVisualPlaceholder } from "@/components/workshop-engine/WorkshopVisuals";
 import { useLiveSessionPolling } from "@/components/workshop-engine/TvPresentationClient";
 import {
+  weSpace,
+  weType,
+} from "@/components/workshop-engine/responsive";
+import {
   RESIN_PRINTING_MODULES,
   getResinModuleById,
   getResinModuleNav,
@@ -27,6 +31,8 @@ import type {
   WorkshopLiveSession,
   WorkshopModule,
 } from "@/lib/workshop-engine/types";
+import { cn } from "@/lib/utils";
+import { ClipboardList, Eye, Lightbulb, Mic } from "lucide-react";
 
 const PACE_KEY = "infra24-resin-pace";
 const SAFETY_KEY = "infra24-resin-safety-gate";
@@ -79,13 +85,13 @@ export function ParticipantSessionClient({
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
-      <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+    <div className="mx-auto w-full max-w-3xl space-y-5 px-4 py-6 sm:max-w-3xl md:max-w-4xl md:space-y-6 md:px-6 md:py-8 lg:max-w-5xl 2xl:max-w-6xl 2xl:space-y-8 2xl:px-8 2xl:py-10">
+      <div className="space-y-3 md:space-y-4">
+        <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-500 sm:text-xs 2xl:text-sm">
           Session {session.joinCode}
         </p>
         <PaceSelector value={pace} onChange={setPace} />
-        {pace === "self-paced" ? (
+        {pace === 'self-paced' ? (
           <LivePositionBanner
             moduleTitle={liveModule.title}
             onRejoin={rejoin}
@@ -101,7 +107,12 @@ export function ParticipantSessionClient({
         showSafetyGate={currentModule.safetyLevel === "required"}
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200 pt-4 text-sm">
+      <div
+        className={cn(
+          "flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200 pt-4",
+          weType.label,
+        )}
+      >
         {pace === "self-paced" && nav.prev ? (
           <button
             type="button"
@@ -124,7 +135,7 @@ export function ParticipantSessionClient({
         ) : null}
       </div>
 
-      <p className="text-xs text-neutral-500">
+      <p className={cn(weType.label, "text-slate-500")}>
         <Link className="underline" href="/workshop/resin-printing">
           Workshop overview
         </Link>
@@ -147,7 +158,7 @@ export function ModuleView({
   showFacilitatorNotes?: boolean;
 }) {
   return (
-    <article className="space-y-6">
+    <article className={cn(weSpace.stack, "space-y-5 md:space-y-6")}>
       <ModuleHeader
         order={workshopModule.order}
         moduleId={workshopModule.id}
@@ -186,18 +197,37 @@ export function ModuleView({
 
       <ModuleVisualPlaceholder moduleId={workshopModule.id} />
 
-      <section className="space-y-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
+      <section className={weSpace.stackTight}>
+        <h2
+          className={cn(
+            weType.meta,
+            "inline-flex items-center gap-2 text-cyan-800",
+          )}
+        >
+          <Eye aria-hidden className="h-3.5 w-3.5 md:h-4 md:w-4" />
           Watch / notice
         </h2>
-        <p className="text-neutral-800">{workshopModule.watchNotice}</p>
+        <p className={cn(weType.body, "text-slate-800")}>
+          {workshopModule.watchNotice}
+        </p>
       </section>
 
-      <section className="space-y-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
+      <section className={weSpace.stackTight}>
+        <h2
+          className={cn(
+            weType.meta,
+            "inline-flex items-center gap-2 text-indigo-800",
+          )}
+        >
+          <Lightbulb aria-hidden className="h-3.5 w-3.5 md:h-4 md:w-4" />
           Key ideas
         </h2>
-        <ul className="list-disc space-y-1 pl-5 text-neutral-800">
+        <ul
+          className={cn(
+            weType.body,
+            "list-disc space-y-1.5 pl-5 text-slate-800 md:space-y-2",
+          )}
+        >
           {workshopModule.keyIdeas.map((idea) => (
             <li key={idea}>{idea}</li>
           ))}
@@ -206,11 +236,23 @@ export function ModuleView({
 
       <ModuleActivity activity={workshopModule.activity} />
 
-      <section className="rounded-md border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-700">
-        <span className="font-medium text-neutral-950">
-          Physical evidence:{" "}
-        </span>
-        {workshopModule.physicalSample}
+      <section
+        className={cn(
+          "rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-950",
+          weSpace.cardPad,
+          weType.body,
+        )}
+      >
+        <p className="inline-flex items-center gap-2 font-semibold">
+          <ClipboardList
+            aria-hidden
+            className="h-4 w-4 shrink-0 text-emerald-800 md:h-5 md:w-5"
+          />
+          Physical evidence
+        </p>
+        <p className="mt-1.5 text-emerald-900/90">
+          {workshopModule.physicalSample}
+        </p>
       </section>
 
       {workshopModule.bookletRefs.map((ref) => (
@@ -231,9 +273,18 @@ export function ModuleView({
       ) : null}
 
       {showFacilitatorNotes ? (
-        <aside className="rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
-          <p className="font-medium">Facilitator cues</p>
-          <ul className="mt-2 list-disc pl-5">
+        <aside
+          className={cn(
+            "rounded-xl border border-sky-200 bg-sky-50 text-sky-950",
+            weSpace.cardPad,
+            weType.body,
+          )}
+        >
+          <p className="inline-flex items-center gap-2 font-semibold md:text-lg 2xl:text-xl">
+            <Mic aria-hidden className="h-4 w-4 text-sky-800 md:h-5 md:w-5" />
+            Facilitator cues
+          </p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 md:mt-3">
             {workshopModule.facilitatorNotes.map((n) => (
               <li key={n}>{n}</li>
             ))}

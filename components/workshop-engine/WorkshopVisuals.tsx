@@ -95,7 +95,7 @@ export function ModulePhaseChip({ moduleId }: { moduleId: string }) {
   return (
     <span
       className={cn(
-        'inline-flex rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em]',
+        'inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] sm:px-2.5 sm:py-1 sm:text-[11px] 2xl:px-3 2xl:text-xs',
         identity.chip
       )}
     >
@@ -153,10 +153,14 @@ export function WorkshopImagePlaceholder({
           <span className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/80 text-slate-700 shadow-sm">
             <ImageIcon aria-hidden="true" className="h-5 w-5" />
           </span>
-          <p className="mt-3 text-sm font-semibold text-slate-950">{title}</p>
-          <p className="mt-1 text-xs leading-relaxed text-slate-600">{shot}</p>
+          <p className="mt-3 text-sm font-semibold text-slate-950 md:text-base 2xl:text-lg">
+            {title}
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-600 md:text-sm 2xl:text-base">
+            {shot}
+          </p>
           {assetId ? (
-            <p className="mt-2 font-mono text-[10px] uppercase tracking-wide text-slate-500">
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-wide text-slate-500 md:text-xs 2xl:text-sm">
               {assetId}
             </p>
           ) : null}

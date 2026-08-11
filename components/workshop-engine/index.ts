@@ -36,3 +36,9 @@ export {
   ModuleVisualPlaceholder,
   WorkshopImagePlaceholder,
 } from "@/components/workshop-engine/WorkshopVisuals";
+export {
+  weShell,
+  weType,
+  weSpace,
+  weIconBox,
+} from "@/components/workshop-engine/responsive";

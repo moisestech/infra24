@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { LogIn } from 'lucide-react'
 import { normalizeJoinCode } from '@/lib/workshop-engine/join-code'
 
 export function JoinSessionForm() {
@@ -10,7 +11,7 @@ export function JoinSessionForm() {
 
   return (
     <form
-      className="flex flex-wrap items-center gap-2"
+      className="flex flex-wrap items-center gap-2 md:gap-3"
       onSubmit={(e) => {
         e.preventDefault()
         const next = normalizeJoinCode(code)
@@ -26,14 +27,15 @@ export function JoinSessionForm() {
         value={code}
         onChange={(e) => setCode(e.target.value.toUpperCase())}
         placeholder="Join code"
-        className="rounded-md border border-neutral-300 px-3 py-2 text-sm uppercase tracking-widest"
+        className="rounded-lg border border-slate-300 bg-white px-3 py-2.5 font-mono text-sm uppercase tracking-widest text-slate-950 md:px-4 md:py-3 md:text-base 2xl:px-5 2xl:py-3.5 2xl:text-lg"
         maxLength={8}
         required
       />
       <button
         type="submit"
-        className="rounded-md border border-neutral-300 bg-white px-4 py-2.5 text-sm font-medium"
+        className="inline-flex items-center gap-2 rounded-lg border border-cyan-700 bg-cyan-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-cyan-800 md:px-5 md:py-3 md:text-base 2xl:px-6 2xl:py-3.5 2xl:text-lg"
       >
+        <LogIn aria-hidden className="h-4 w-4 md:h-5 md:w-5" />
         Join
       </button>
     </form>

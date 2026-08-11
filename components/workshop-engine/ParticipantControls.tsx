@@ -3,6 +3,13 @@
 import { useState } from 'react'
 import type { PaceMode } from '@/lib/workshop-engine/types'
 import { cn } from '@/lib/utils'
+import { weSpace, weType } from '@/components/workshop-engine/responsive'
+import {
+  CheckCircle2,
+  CircleHelp,
+  Footprints,
+  Radio,
+} from 'lucide-react'
 
 export function PaceSelector({
   value,
@@ -12,36 +19,58 @@ export function PaceSelector({
   onChange: (mode: PaceMode) => void
 }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2" role="group" aria-label="Pace mode">
+    <div
+      className="grid gap-3 sm:grid-cols-2 md:gap-4 2xl:gap-5"
+      role="group"
+      aria-label="Pace mode"
+    >
       {(
         [
           {
             id: 'follow' as const,
             title: 'Follow class',
-            body: 'Stay on the facilitator’s current module. Safety screens can interrupt.',
+            body: 'Stay on the facilitator\'s current module. Safety screens can interrupt.',
+            Icon: Radio,
+            accent: 'border-cyan-300 bg-cyan-50 text-cyan-950',
+            selected: 'border-cyan-900 bg-cyan-900 text-white',
           },
           {
             id: 'self-paced' as const,
             title: 'My pace',
             body: 'Navigate modules independently. Rejoin live anytime.',
+            Icon: Footprints,
+            accent: 'border-indigo-300 bg-indigo-50 text-indigo-950',
+            selected: 'border-indigo-900 bg-indigo-900 text-white',
           },
         ] as const
       ).map((option) => {
         const selected = value === option.id
+        const Icon = option.Icon
         return (
           <button
             key={option.id}
             type="button"
             onClick={() => onChange(option.id)}
             className={cn(
-              'rounded-md border px-4 py-3 text-left transition',
-              selected
-                ? 'border-neutral-950 bg-neutral-950 text-white'
-                : 'border-neutral-300 bg-white text-neutral-800 hover:border-neutral-500'
+              'rounded-xl border px-4 py-3 text-left transition md:px-5 md:py-4 2xl:px-6 2xl:py-5',
+              selected ? option.selected : option.accent
             )}
           >
-            <span className="block text-sm font-semibold">{option.title}</span>
-            <span className={cn('mt-1 block text-xs', selected ? 'text-neutral-200' : 'text-neutral-600')}>
+            <span className="flex items-center gap-2">
+              <Icon
+                aria-hidden
+                className="h-4 w-4 md:h-5 md:w-5 2xl:h-6 2xl:w-6"
+              />
+              <span className="text-sm font-semibold md:text-base 2xl:text-lg">
+                {option.title}
+              </span>
+            </span>
+            <span
+              className={cn(
+                'mt-1.5 block text-xs leading-relaxed md:text-sm 2xl:text-base',
+                selected ? 'text-white/85' : 'opacity-80'
+              )}
+            >
               {option.body}
             </span>
           </button>
@@ -59,15 +88,27 @@ export function LivePositionBanner({
   onRejoin?: () => void
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-950">
-      <p>
-        Live class is on <span className="font-semibold">{moduleTitle}</span>
+    <div
+      className={cn(
+        'flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-950',
+        weSpace.cardPad,
+        weType.body
+      )}
+    >
+      <p className="inline-flex items-start gap-2">
+        <Radio
+          aria-hidden
+          className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700 md:h-5 md:w-5"
+        />
+        <span>
+          Live class is on <span className="font-semibold">{moduleTitle}</span>
+        </span>
       </p>
       {onRejoin ? (
         <button
           type="button"
           onClick={onRejoin}
-          className="rounded border border-emerald-800 px-3 py-1.5 text-xs font-medium hover:bg-emerald-100"
+          className="rounded-lg border border-emerald-800 px-3 py-1.5 text-xs font-medium hover:bg-emerald-100 md:text-sm 2xl:px-4 2xl:py-2 2xl:text-base"
         >
           Rejoin live
         </button>
@@ -81,15 +122,28 @@ export function KnowledgeCheck({
   options,
 }: {
   prompt: string
-  options: { id: string; label: string; correct?: boolean; explanation: string }[]
+  options: {
+    id: string
+    label: string
+    correct?: boolean
+    explanation: string
+  }[]
 }) {
   const [selected, setSelected] = useState<string | null>(null)
   const chosen = options.find((o) => o.id === selected)
 
   return (
-    <div className="space-y-3 rounded-md border border-neutral-200 bg-white p-4">
-      <p className="font-medium text-neutral-950">Checkpoint</p>
-      <p className="text-sm text-neutral-700">{prompt}</p>
+    <div
+      className={cn(
+        'space-y-3 rounded-xl border border-indigo-200 bg-white',
+        weSpace.cardPad
+      )}
+    >
+      <p className="inline-flex items-center gap-2 font-semibold text-slate-950 md:text-lg 2xl:text-xl">
+        <CircleHelp aria-hidden className="h-4 w-4 text-indigo-700 md:h-5 md:w-5" />
+        Checkpoint
+      </p>
+      <p className={cn(weType.body, 'text-slate-700')}>{prompt}</p>
       <div className="flex flex-col gap-2">
         {options.map((option) => (
           <button
@@ -97,10 +151,10 @@ export function KnowledgeCheck({
             type="button"
             onClick={() => setSelected(option.id)}
             className={cn(
-              'rounded border px-3 py-2 text-left text-sm',
+              'rounded-lg border px-3 py-2.5 text-left text-sm transition md:px-4 md:py-3 md:text-base 2xl:text-lg',
               selected === option.id
-                ? 'border-neutral-950 bg-neutral-100'
-                : 'border-neutral-200 hover:border-neutral-400'
+                ? 'border-indigo-900 bg-indigo-50'
+                : 'border-slate-200 hover:border-slate-400'
             )}
           >
             {option.label}
@@ -110,12 +164,19 @@ export function KnowledgeCheck({
       {chosen ? (
         <p
           className={cn(
-            'text-sm',
+            'inline-flex items-start gap-2 text-sm md:text-base 2xl:text-lg',
             chosen.correct ? 'text-emerald-800' : 'text-amber-900'
           )}
         >
-          {chosen.correct ? 'Yes. ' : 'Not quite. '}
-          {chosen.explanation}
+          {chosen.correct ? (
+            <CheckCircle2 aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
+          ) : (
+            <CircleHelp aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
+          )}
+          <span>
+            {chosen.correct ? 'Yes. ' : 'Not quite. '}
+            {chosen.explanation}
+          </span>
         </p>
       ) : null}
     </div>

@@ -3,6 +3,14 @@
 import { useMemo, useState } from 'react'
 import type { Activity, ReadinessResult } from '@/lib/workshop-engine/types'
 import { cn } from '@/lib/utils'
+import { weType } from '@/components/workshop-engine/responsive'
+import {
+  CheckCircle2,
+  FlaskConical,
+  GripVertical,
+  ListChecks,
+  Sparkles,
+} from 'lucide-react'
 
 export function ModuleActivity({ activity }: { activity: Activity }) {
   if (activity.kind === 'checklist') {
@@ -26,26 +34,33 @@ export function ModuleActivity({ activity }: { activity: Activity }) {
   return <ChoiceActivity prompt={activity.prompt} items={activity.items} />
 }
 
+const choiceBtn =
+  'rounded-lg border px-3 py-2 text-sm transition md:px-4 md:py-2.5 md:text-base 2xl:px-5 2xl:py-3 2xl:text-lg'
+
 function ChoiceActivity({ prompt, items }: { prompt: string; items: string[] }) {
   const [picked, setPicked] = useState<string | null>(null)
   return (
-    <ActivityShell title="Try it" prompt={prompt}>
-      <div className="flex flex-wrap gap-2">
+    <ActivityShell title="Try it" Icon={Sparkles} prompt={prompt}>
+      <div className="flex flex-wrap gap-2 md:gap-3">
         {items.map((item) => (
           <button
             key={item}
             type="button"
             onClick={() => setPicked(item)}
             className={cn(
-              'rounded border px-3 py-2 text-sm',
-              picked === item ? 'border-neutral-950 bg-neutral-950 text-white' : 'border-neutral-300 bg-white'
+              choiceBtn,
+              picked === item
+                ? 'border-cyan-900 bg-cyan-900 text-white'
+                : 'border-slate-300 bg-white text-slate-900 hover:border-slate-500'
             )}
           >
             {item}
           </button>
         ))}
       </div>
-      {picked ? <p className="text-sm text-neutral-600">Selected: {picked}</p> : null}
+      {picked ? (
+        <p className={cn(weType.label, 'text-slate-600')}>Selected: {picked}</p>
+      ) : null}
     </ActivityShell>
   )
 }
@@ -54,23 +69,40 @@ function ChecklistActivity({ prompt, items }: { prompt: string; items: string[] 
   const [checked, setChecked] = useState<Record<string, boolean>>({})
   const done = items.every((item) => checked[item])
   return (
-    <ActivityShell title="Try it" prompt={prompt}>
-      <ul className="space-y-2">
+    <ActivityShell title="Try it" Icon={ListChecks} prompt={prompt}>
+      <ul className="space-y-2 md:space-y-3">
         {items.map((item) => (
           <li key={item}>
-            <label className="flex cursor-pointer items-start gap-2 text-sm text-neutral-800">
+            <label
+              className={cn(
+                'flex cursor-pointer items-start gap-2.5 text-slate-800 md:gap-3',
+                weType.body
+              )}
+            >
               <input
                 type="checkbox"
-                className="mt-1"
+                className="mt-1 h-4 w-4 accent-emerald-700 md:h-5 md:w-5"
                 checked={Boolean(checked[item])}
-                onChange={(e) => setChecked((prev) => ({ ...prev, [item]: e.target.checked }))}
+                onChange={(e) =>
+                  setChecked((prev) => ({ ...prev, [item]: e.target.checked }))
+                }
               />
               <span>{item}</span>
             </label>
           </li>
         ))}
       </ul>
-      {done ? <p className="text-sm text-emerald-800">Checklist complete.</p> : null}
+      {done ? (
+        <p
+          className={cn(
+            'inline-flex items-center gap-2 text-emerald-800',
+            weType.label
+          )}
+        >
+          <CheckCircle2 aria-hidden className="h-4 w-4 md:h-5 md:w-5" />
+          Checklist complete.
+        </p>
+      ) : null}
     </ActivityShell>
   )
 }
@@ -84,35 +116,43 @@ function OrderActivity({ prompt, items }: { prompt: string; items: string[] }) {
   )
 
   return (
-    <ActivityShell title="Try it" prompt={prompt}>
-      <div className="flex flex-wrap gap-2">
+    <ActivityShell title="Try it" Icon={GripVertical} prompt={prompt}>
+      <div className="flex flex-wrap gap-2 md:gap-3">
         {remaining.map((item) => (
           <button
             key={item}
             type="button"
             onClick={() => setOrder((prev) => [...prev, item])}
-            className="rounded border border-neutral-300 bg-white px-3 py-2 text-sm"
+            className={cn(
+              choiceBtn,
+              'border-slate-300 bg-white text-slate-900 hover:border-slate-500'
+            )}
           >
             {item}
           </button>
         ))}
       </div>
-      <ol className="list-decimal space-y-1 pl-5 text-sm text-neutral-800">
+      <ol className={cn('list-decimal space-y-1 pl-5 text-slate-800', weType.body)}>
         {order.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ol>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
-          className="text-xs underline"
+          className="text-xs underline md:text-sm 2xl:text-base"
           onClick={() => setOrder([])}
         >
           Reset
         </button>
         {order.length === items.length ? (
-          <p className={cn('text-sm', correct ? 'text-emerald-800' : 'text-amber-900')}>
-            {correct ? 'Correct order.' : 'Not quite — reset and try again.'}
+          <p
+            className={cn(
+              weType.label,
+              correct ? 'text-emerald-800' : 'text-amber-900'
+            )}
+          >
+            {correct ? 'Order matches the workflow.' : 'Not quite — reset and try again.'}
           </p>
         ) : null}
       </div>
@@ -129,24 +169,24 @@ function ClassifyActivity({
   items: string[]
   labels: string[]
 }) {
-  const [picks, setPicks] = useState<Record<string, string>>({})
+  const [map, setMap] = useState<Record<string, string>>({})
   return (
-    <ActivityShell title="Try it" prompt={prompt}>
-      <ul className="space-y-3">
+    <ActivityShell title="Try it" Icon={FlaskConical} prompt={prompt}>
+      <ul className="space-y-3 md:space-y-4">
         {items.map((item) => (
-          <li key={item} className="rounded border border-neutral-200 p-3">
-            <p className="text-sm font-medium text-neutral-900">{item}</p>
-            <div className="mt-2 flex flex-wrap gap-2">
+          <li key={item} className="space-y-2">
+            <p className={cn('font-medium text-slate-900', weType.body)}>{item}</p>
+            <div className="flex flex-wrap gap-2">
               {labels.map((label) => (
                 <button
                   key={label}
                   type="button"
-                  onClick={() => setPicks((prev) => ({ ...prev, [item]: label }))}
+                  onClick={() => setMap((prev) => ({ ...prev, [item]: label }))}
                   className={cn(
-                    'rounded border px-2 py-1 text-xs',
-                    picks[item] === label
-                      ? 'border-neutral-950 bg-neutral-950 text-white'
-                      : 'border-neutral-300'
+                    'rounded-lg border px-2.5 py-1.5 text-xs md:px-3 md:py-2 md:text-sm 2xl:text-base',
+                    map[item] === label
+                      ? 'border-indigo-900 bg-indigo-900 text-white'
+                      : 'border-slate-300 bg-white'
                   )}
                 >
                   {label}
@@ -167,10 +207,15 @@ function ReadinessActivity({ prompt, items }: { prompt: string; items: string[] 
     [items[1] ?? '']: 'repair',
     [items[2] ?? '']: 'consultation',
   }
+  const selectedStyle: Record<ReadinessResult, string> = {
+    ready: 'border-emerald-800 bg-emerald-800 text-white',
+    repair: 'border-amber-800 bg-amber-800 text-white',
+    consultation: 'border-rose-800 bg-rose-800 text-white',
+  }
 
   return (
-    <ActivityShell title="Exit check" prompt={prompt}>
-      <div className="grid gap-2 sm:grid-cols-3">
+    <ActivityShell title="Exit check" Icon={CheckCircle2} prompt={prompt}>
+      <div className="grid gap-2 sm:grid-cols-3 md:gap-3">
         {items.map((item) => {
           const key = map[item]
           return (
@@ -179,10 +224,10 @@ function ReadinessActivity({ prompt, items }: { prompt: string; items: string[] 
               type="button"
               onClick={() => setResult(key)}
               className={cn(
-                'rounded-md border px-3 py-3 text-left text-sm',
+                'rounded-lg border px-3 py-3 text-left text-sm md:px-4 md:py-3.5 md:text-base 2xl:text-lg',
                 result === key
-                  ? 'border-neutral-950 bg-neutral-950 text-white'
-                  : 'border-neutral-300 bg-white'
+                  ? selectedStyle[key]
+                  : 'border-slate-300 bg-white'
               )}
             >
               {item}
@@ -191,9 +236,9 @@ function ReadinessActivity({ prompt, items }: { prompt: string; items: string[] 
         })}
       </div>
       {result ? (
-        <p className="text-sm text-neutral-700">
-          Saved locally as <span className="font-medium">{result}</span>. This is a preparation
-          summary, not certification.
+        <p className={cn(weType.label, 'text-slate-700')}>
+          Saved locally as <span className="font-medium">{result}</span>. This is a
+          preparation summary, not certification.
         </p>
       ) : null}
     </ActivityShell>
@@ -204,15 +249,22 @@ function ActivityShell({
   title,
   prompt,
   children,
+  Icon = Sparkles,
 }: {
   title: string
   prompt: string
   children: React.ReactNode
+  Icon?: typeof Sparkles
 }) {
   return (
-    <div className="space-y-3 rounded-md border border-neutral-200 bg-white p-4">
-      <p className="font-medium text-neutral-950">{title}</p>
-      <p className="text-sm text-neutral-700">{prompt}</p>
+    <div className="space-y-3 rounded-xl border border-indigo-200 bg-white p-4 md:space-y-4 md:p-5 2xl:p-6">
+      <p className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-950 md:text-base 2xl:text-lg">
+        <Icon aria-hidden className="h-4 w-4 text-indigo-700 md:h-5 md:w-5" />
+        {title}
+      </p>
+      <p className="text-sm leading-relaxed text-slate-700 md:text-base 2xl:text-lg">
+        {prompt}
+      </p>
       {children}
     </div>
   )
