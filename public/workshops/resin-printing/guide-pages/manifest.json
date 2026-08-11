@@ -1,0 +1,10 @@
+{
+  "editionId": "oolite-resin-artist-guide",
+  "logicalPageCount": 44,
+  "pdfSheetCount": 21,
+  "missingLogicalPages": [10, 35],
+  "format": "printer-spreads",
+  "previewPattern": "/workshops/resin-printing/guide-pages/page-{NN}.jpg",
+  "note": "Logical-page JPG previews are expected here excluding pages 10 and 35. UI falls back gracefully when a file is absent.",
+  "pages": []
+}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="znTitle znDesc">
+  <title id="znTitle">Clean zone and controlled resin zone</title>
+  <desc id="znDesc">Venue-neutral diagram separating participant clean zone from instructor-led controlled resin zone.</desc>
+  <rect width="960" height="420" fill="#f8fafc"/>
+  <rect x="40" y="48" width="420" height="300" rx="20" fill="#ecfeff" stroke="#0891b2" stroke-width="3"/>
+  <text x="250" y="92" text-anchor="middle" fill="#0e7490" font-size="22" font-weight="700" font-family="system-ui, sans-serif">Clean zone</text>
+  <text x="250" y="128" text-anchor="middle" fill="#334155" font-size="14" font-family="system-ui, sans-serif">Participants · phones · notes</text>
+  <text x="250" y="156" text-anchor="middle" fill="#334155" font-size="14" font-family="system-ui, sans-serif">Cured samples · booklets</text>
+  <text x="250" y="200" text-anchor="middle" fill="#0f766e" font-size="13" font-family="system-ui, sans-serif">No uncured resin handling</text>
+
+  <rect x="500" y="48" width="420" height="300" rx="20" fill="#fffbeb" stroke="#d97706" stroke-width="3"/>
+  <text x="710" y="92" text-anchor="middle" fill="#b45309" font-size="22" font-weight="700" font-family="system-ui, sans-serif">Controlled zone</text>
+  <text x="710" y="128" text-anchor="middle" fill="#334155" font-size="14" font-family="system-ui, sans-serif">Printer · vat · wash · cure</text>
+  <text x="710" y="156" text-anchor="middle" fill="#334155" font-size="14" font-family="system-ui, sans-serif">PPE · spill · waste</text>
+  <text x="710" y="200" text-anchor="middle" fill="#9a3412" font-size="13" font-family="system-ui, sans-serif">Instructor-led only tonight</text>
+
+  <path d="M460 198 H500" stroke="#94a3b8" stroke-width="3" stroke-dasharray="8 6"/>
+  <text x="480" y="188" text-anchor="middle" fill="#64748b" font-size="12" font-family="system-ui, sans-serif">boundary</text>
+  <text x="480" y="390" text-anchor="middle" fill="#64748b" font-size="13" font-family="system-ui, sans-serif">Venue-neutral instructional diagram · replace with room photo later</text>
+</svg>
