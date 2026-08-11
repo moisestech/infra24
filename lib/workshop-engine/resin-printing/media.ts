@@ -1,12 +1,21 @@
 import type { ModuleMediaPlaceholder } from '@/lib/workshop-engine/types'
 
+export const RESIN_ASSET_PATHS = {
+  hero: '/workshops/resin-printing/assets/resin-hero-01.png',
+  workflowDiagram: '/workshops/resin-printing/assets/resin-diagram-workflow-01.svg',
+  zonesDiagram: '/workshops/resin-printing/assets/resin-diagram-zones-01.svg',
+} as const
+
 export const RESIN_HERO_MEDIA: ModuleMediaPlaceholder = {
   assetId: 'resin-hero-01',
   title: 'Workshop hero image',
-  shot: 'Photon Mono M7 Max + cured samples on a clean workstation. No people or readable UI text.',
-  altIntent: 'Resin printer and finished artist samples in the workshop space.',
+  shot: 'Illustrative placeholder: resin printer silhouette and cured samples on a clean workstation. Replace with a real Oolite shot.',
+  altIntent: 'Illustrative resin printer and finished artist samples in a workshop space.',
   aspect: 'landscape 16:10',
   minSize: '2400×1500',
+  src: RESIN_ASSET_PATHS.hero,
+  caption: 'Illustrative placeholder',
+  kind: 'illustrative',
 }
 
 /** Primary teaching still per module (replaces on-page placeholders). */
@@ -28,20 +37,26 @@ export const RESIN_MODULE_PRIMARY_MEDIA: Record<string, ModuleMediaPlaceholder> 
     minSize: '1600×2000',
   },
   'safety-zones': {
-    assetId: 'resin-mod-safety-01',
+    assetId: 'resin-diagram-zones-01',
     title: 'Clean zone / controlled zone',
-    shot: 'Straight-on room overview with zone labels, PPE laid out, spill kit, waste, and resin station visible.',
-    altIntent: 'Separated participant and resin-handling areas in the workshop room.',
+    shot: 'Venue-neutral instructional diagram of clean vs controlled resin zones.',
+    altIntent: 'Separated participant and resin-handling areas.',
     aspect: 'landscape 16:9',
-    minSize: '2400×1350',
+    minSize: '960×420',
+    src: RESIN_ASSET_PATHS.zonesDiagram,
+    caption: 'Instructional diagram',
+    kind: 'diagram',
   },
   'complete-workflow': {
-    assetId: 'resin-mod-workflow-01',
+    assetId: 'resin-diagram-workflow-01',
     title: 'Five-stage material workflow',
-    shot: 'Top-down sequence: model/STL, sliced view, supported print, washed part, cured finished object.',
-    altIntent: 'Five physical and digital stages of the resin printing workflow.',
+    shot: 'Instructional diagram: model → slice → print → wash → cure.',
+    altIntent: 'Five stages of the resin printing workflow.',
     aspect: 'landscape 16:9',
-    minSize: '2400×1350',
+    minSize: '960×360',
+    src: RESIN_ASSET_PATHS.workflowDiagram,
+    caption: 'Instructional diagram',
+    kind: 'diagram',
   },
   'file-readiness': {
     assetId: 'resin-mod-file-good-01',

@@ -37,23 +37,36 @@ export type Activity = {
   labels?: string[]
 }
 
+export type BookletReferenceStatus = 'verified' | 'related' | 'missing'
+
 export type BookletReference = {
   bookletId: string
   sectionTitle: string
   startPage?: number
   endPage?: number
-  anchor?: string
+  /** @deprecated Prefer status */
   mappingPending?: boolean
+  status?: BookletReferenceStatus
+  pagePreviewHref?: string
+  note?: string
+  anchor?: string
 }
 
 export type BookletEdition = {
   id: string
   title: string
-  /** Human-readable edition note (e.g. Jun10 Canva 44-page spread). */
+  /** Human-readable edition note. */
   editionNote: string
+  /** @deprecated Prefer logicalPageCount */
   pageCount?: number
-  /** Exact page mapping verified against PDF. */
+  logicalPageCount: number
+  pdfSheetCount: number
+  missingLogicalPages: number[]
+  format: 'reading-order' | 'printer-spreads'
+  /** Exact page mapping verified against the guide inventory. */
   pagesVerified: boolean
+  previewBaseHref?: string
+  downloadHref?: string
 }
 
 /** Semantic color families — mapped to Tailwind bundles in workshop theme files. */
@@ -93,6 +106,11 @@ export type ModuleMediaPlaceholder = {
   altIntent: string
   aspect: string
   minSize: string
+  /** Public path when a real or illustrative asset is available. */
+  src?: string
+  /** Caption / status for illustrative vs documentary assets. */
+  caption?: string
+  kind?: 'illustrative' | 'diagram' | 'photo' | 'placeholder'
 }
 
 /** Resolved style classes for a color token (kept out of curriculum data). */

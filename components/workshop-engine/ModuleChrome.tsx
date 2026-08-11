@@ -1,4 +1,4 @@
-import type { SafetyLevel } from '@/lib/workshop-engine/types'
+import type { BookletReferenceStatus, SafetyLevel } from '@/lib/workshop-engine/types'
 import { cn } from '@/lib/utils'
 import {
   getModuleIdentity,
@@ -8,13 +8,20 @@ import {
 import {
   weIconBox,
   weSpace,
+  weTouch,
   weType,
 } from '@/components/workshop-engine/responsive'
+import {
+  bookletDownloadHref,
+  bookletReferenceAriaLabel,
+  formatLogicalPageLabel,
+} from '@/lib/workshop-engine/resin-printing/booklet'
 import {
   AlertTriangle,
   BookOpen,
   CheckCircle2,
   ClipboardList,
+  Link2Off,
   ShieldAlert,
   Target,
 } from 'lucide-react'
@@ -112,45 +119,126 @@ export function BookletReference({
   startPage,
   endPage,
   mappingPending,
-  href = '/workshop/resin-printing/booklet',
+  status,
+  note,
+  pagePreviewHref,
+  href,
 }: {
   sectionTitle: string
   startPage?: number
   endPage?: number
   mappingPending?: boolean
+  status?: BookletReferenceStatus
+  note?: string
+  pagePreviewHref?: string
   href?: string
 }) {
-  const pages =
-    typeof startPage === 'number'
-      ? endPage && endPage !== startPage
-        ? `pp. ${startPage}–${endPage}`
-        : `p. ${startPage}`
-      : null
+  const resolvedStatus: BookletReferenceStatus =
+    status ?? (mappingPending || typeof startPage !== 'number' ? 'missing' : 'verified')
+  const pages = formatLogicalPageLabel(startPage, endPage)
+  const downloadHref = href ?? bookletDownloadHref()
+  const aria = bookletReferenceAriaLabel({
+    bookletId: 'ref',
+    sectionTitle,
+    startPage,
+    endPage,
+    status: resolvedStatus,
+  })
+  const statusLabel =
+    resolvedStatus === 'verified'
+      ? 'Verified'
+      : resolvedStatus === 'related'
+        ? 'Related'
+        : 'Unavailable'
+  const statusClass =
+    resolvedStatus === 'verified'
+      ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+      : resolvedStatus === 'related'
+        ? 'border-indigo-200 bg-indigo-50 text-indigo-900'
+        : 'border-amber-200 bg-amber-50 text-amber-950'
+
+  const body = (
+    <>
+      <span
+        className={cn(
+          'relative flex aspect-[4/3] w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:w-28',
+        )}
+      >
+        {pagePreviewHref && resolvedStatus !== 'missing' ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={pagePreviewHref}
+            alt=""
+            className="h-full w-full object-contain"
+          />
+        ) : (
+          <Link2Off aria-hidden className="h-5 w-5 text-slate-400" />
+        )}
+        {pages ? (
+          <span className="absolute bottom-1 left-1 rounded bg-slate-950/80 px-1.5 py-0.5 text-[10px] font-medium text-white">
+            {pages}
+          </span>
+        ) : null}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-center gap-2">
+          <span className="font-semibold text-slate-950">{sectionTitle}</span>
+          <span
+            className={cn(
+              'inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide',
+              statusClass,
+            )}
+          >
+            {statusLabel}
+          </span>
+        </span>
+        {pages ? (
+          <span className="mt-1 block text-slate-600">Booklet {pages}</span>
+        ) : null}
+        {note ? (
+          <span className="mt-1 block text-xs text-slate-600 md:text-sm">{note}</span>
+        ) : null}
+        {resolvedStatus === 'missing' ? (
+          <span className="mt-1 block text-xs text-amber-800 md:text-sm">
+            Page unavailable in this export
+          </span>
+        ) : null}
+      </span>
+    </>
+  )
+
+  if (resolvedStatus === 'missing') {
+    return (
+      <div
+        className={cn(
+          'flex gap-3 rounded-xl border border-dashed border-slate-300 bg-white text-slate-700',
+          weSpace.cardPad,
+          weType.body,
+        )}
+      >
+        {body}
+      </div>
+    )
+  }
 
   return (
     <a
-      href={href}
+      href={downloadHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={aria}
       className={cn(
-        'flex gap-3 rounded-xl border border-dashed border-slate-300 bg-white text-slate-700 transition hover:border-slate-500',
+        weTouch.button,
+        'h-auto w-full justify-start gap-3 rounded-xl border border-dashed border-slate-300 bg-white text-left text-slate-700 transition hover:border-slate-500',
         weSpace.cardPad,
-        weType.body
+        weType.body,
       )}
     >
       <BookOpen
         aria-hidden
-        className="mt-0.5 h-5 w-5 shrink-0 text-slate-600 md:h-6 md:w-6"
+        className="mt-0.5 hidden h-5 w-5 shrink-0 text-slate-600 sm:block md:h-6 md:w-6"
       />
-      <span>
-        <span className="font-semibold text-slate-950">
-          Booklet · {sectionTitle}
-        </span>
-        {pages ? <span className="text-slate-500"> — {pages}</span> : null}
-        {mappingPending || !pages ? (
-          <span className="mt-1 block text-xs text-amber-800 md:text-sm">
-            Page mapping pending
-          </span>
-        ) : null}
-      </span>
+      {body}
     </a>
   )
 }

@@ -1,5 +1,8 @@
 import type { Workshop, WorkshopModule } from '@/lib/workshop-engine/types'
-import { RESIN_BOOKLET_ID } from '@/lib/workshop-engine/resin-printing/booklet'
+import {
+  RESIN_BOOKLET_ID,
+  resinBookletRef,
+} from '@/lib/workshop-engine/resin-printing/booklet'
 import {
   RESIN_HERO_MEDIA,
   RESIN_MODULE_MEDIA_IDS,
@@ -9,16 +12,6 @@ import {
   DEFAULT_MODULE_VISUAL,
   RESIN_MODULE_VISUALS,
 } from '@/lib/workshop-engine/resin-printing/theme'
-
-function booklet(sectionTitle: string): WorkshopModule['bookletRefs'] {
-  return [
-    {
-      bookletId: RESIN_BOOKLET_ID,
-      sectionTitle,
-      mappingPending: true,
-    },
-  ]
-}
 
 const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
   {
@@ -40,13 +33,31 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       prompt: 'Choose how you want to move through class tonight.',
       items: ['Follow class', 'My pace'],
     },
-    bookletRefs: booklet('Front matter'),
+    bookletRefs: [
+      resinBookletRef({
+        sectionTitle: 'Index',
+        startPage: 2,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Ready to Print? Start Here.',
+        startPage: 43,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Back cover / contacts',
+        startPage: 44,
+        status: 'verified',
+        note: 'Supporting reference.',
+      }),
+    ],
     safetyLevel: 'note',
     safetyNote: 'You will learn the full workflow. You will not independently operate resin equipment tonight.',
     facilitatorNotes: [
       'Open join screen on TVs.',
       'State expectation statement aloud.',
       'Confirm everyone picked Follow class or My pace.',
+      'Avoid featuring cover page 1 until independent-use wording is corrected.',
     ],
     tvPrompt: 'Scan to join. Choose Follow class or My pace.',
   },
@@ -90,7 +101,38 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
         },
       ],
     },
-    bookletRefs: booklet('Resin overview'),
+    bookletRefs: [
+      resinBookletRef({
+        sectionTitle: 'From 3D Model to Resin Print',
+        startPage: 3,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Is Your Model Ready to Print?',
+        startPage: 13,
+        endPage: 15,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Estimate Resin Before You Print',
+        startPage: 17,
+        status: 'verified',
+        note: 'Supporting reference.',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Oolite Cost-Recovery Policy',
+        startPage: 19,
+        status: 'verified',
+        note: 'Supporting reference.',
+      }),
+      resinBookletRef({
+        sectionTitle: 'How Resin Color Works',
+        startPage: 30,
+        endPage: 31,
+        status: 'verified',
+        note: 'Supporting reference.',
+      }),
+    ],
     safetyLevel: 'none',
     facilitatorNotes: [
       'Hold up scale samples.',
@@ -139,7 +181,30 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
         },
       ],
     },
-    bookletRefs: booklet('Safety'),
+    bookletRefs: [
+      resinBookletRef({
+        sectionTitle: 'Resin, Color, Safety, and Cleanup',
+        startPage: 29,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Bringing Your Own Resin / Print → Wash → Cure / Cured vs Uncured',
+        startPage: 32,
+        endPage: 34,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Waste Streams and Storage',
+        startPage: 36,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'FAQ — resin/cleanup',
+        startPage: 37,
+        status: 'verified',
+        note: 'Supporting reference. Logical page 35 is missing from this export.',
+      }),
+    ],
     safetyLevel: 'required',
     safetyNote:
       'Uncured resin, machine operation, build-plate removal, washing, curing, spills, and waste remain instructor-led.',
@@ -170,7 +235,28 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       items: ['Model / file', 'Slice & support', 'Print', 'Wash', 'Cure / finish'],
       correctOrder: [0, 1, 2, 3, 4],
     },
-    bookletRefs: booklet('Workflow'),
+    bookletRefs: [
+      resinBookletRef({
+        sectionTitle: 'From 3D Model to Resin Print',
+        startPage: 3,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Two Workflows at Oolite',
+        startPage: 9,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Print → Wash → Cure',
+        startPage: 33,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: "Oolite's Resin 3D Printing Workflow",
+        startPage: 39,
+        status: 'verified',
+      }),
+    ],
     safetyLevel: 'note',
     safetyNote: 'Wash and cure demos stay instructor-led.',
     facilitatorNotes: [
@@ -203,7 +289,20 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       ],
       labels: ['ready', 'repair', 'consultation'],
     },
-    bookletRefs: booklet('File preparation'),
+    bookletRefs: [
+      resinBookletRef({
+        sectionTitle: 'Is Your Model Ready to Print? through Scale and Units',
+        startPage: 13,
+        endPage: 18,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Final Preflight Checklist',
+        startPage: 42,
+        status: 'verified',
+        note: 'Supporting reference — staff-assisted for this beginner workshop.',
+      }),
+    ],
     safetyLevel: 'none',
     facilitatorNotes: [
       'Project one good and one bad file on the TV.',
@@ -237,7 +336,32 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
         'Preview layers and estimate',
       ],
     },
-    bookletRefs: booklet('Slicing / supports / hollowing'),
+    bookletRefs: [
+      resinBookletRef({
+        sectionTitle: 'Understanding the Slicer through Two Workflows',
+        startPage: 4,
+        endPage: 9,
+        status: 'verified',
+        note: 'Logical page 10 is missing from this export.',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Slicer Trade-Offs',
+        startPage: 11,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Orientation, Supports, and Hollowing',
+        startPage: 20,
+        endPage: 28,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'FAQ — slicers',
+        startPage: 12,
+        status: 'verified',
+        note: 'Supporting reference.',
+      }),
+    ],
     safetyLevel: 'note',
     safetyNote: 'Exporting a slice file is not permission to start the printer.',
     facilitatorNotes: [
@@ -267,7 +391,25 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       items: ['Plastic scraper', 'IPA wash basket', 'Cure turntable', 'Resin vat'],
       labels: ['print/removal', 'wash', 'cure', 'print'],
     },
-    bookletRefs: booklet('Printing / post-processing'),
+    bookletRefs: [
+      resinBookletRef({
+        sectionTitle: 'Print → Wash → Cure / Cured vs Uncured',
+        startPage: 33,
+        endPage: 34,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Waste Streams and Storage',
+        startPage: 36,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Resin, Color, Safety, and Cleanup',
+        startPage: 29,
+        status: 'verified',
+        note: 'Supporting reference.',
+      }),
+    ],
     safetyLevel: 'required',
     safetyNote: 'Do not touch uncured resin, vats, or running equipment. Instructor demo only.',
     facilitatorNotes: [
@@ -301,11 +443,46 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       ],
       labels: ['plate/film or exposure', 'supports/orientation', 'wash/IPA', 'cure'],
     },
-    bookletRefs: booklet('Troubleshooting'),
+    bookletRefs: [
+      resinBookletRef({
+        sectionTitle: 'What Watertight Means',
+        startPage: 14,
+        status: 'related',
+        note: 'Related guide pages only — the booklet does not contain the full five-failure diagnostic exercise.',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Orientation: The Angle Matters',
+        startPage: 21,
+        status: 'related',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Too Few vs Too Many Supports',
+        startPage: 24,
+        endPage: 25,
+        status: 'related',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Drain Holes Are Not Optional',
+        startPage: 27,
+        status: 'related',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Cured vs Uncured',
+        startPage: 34,
+        status: 'related',
+      }),
+      resinBookletRef({
+        sectionTitle: 'FAQ — resin/cleanup',
+        startPage: 37,
+        status: 'related',
+        note: 'Supporting related reference.',
+      }),
+    ],
     safetyLevel: 'none',
     facilitatorNotes: [
       'Avoid “this always means X” language.',
       'Invite participants to name evidence first.',
+      'Do not imply the booklet covers the full failure clinic.',
     ],
     tvPrompt: 'Evidence first. Then likely stage and factors.',
   },
@@ -328,7 +505,32 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       prompt: 'Select your project status and next step.',
       items: ['Ready for supervised appointment', 'Needs repair first', 'Needs consultation'],
     },
-    bookletRefs: booklet('Checklist'),
+    bookletRefs: [
+      resinBookletRef({
+        sectionTitle: 'Access, Scheduling, and Documentation through Ready to Print?',
+        startPage: 38,
+        endPage: 43,
+        status: 'verified',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Is Your Model Ready to Print?',
+        startPage: 13,
+        status: 'verified',
+        note: 'Supporting reference.',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Estimate Resin Before You Print',
+        startPage: 17,
+        status: 'verified',
+        note: 'Supporting reference.',
+      }),
+      resinBookletRef({
+        sectionTitle: 'Oolite Cost-Recovery Policy',
+        startPage: 19,
+        status: 'verified',
+        note: 'Supporting reference.',
+      }),
+    ],
     safetyLevel: 'note',
     safetyNote: 'A readiness summary is preparation status — not a license to operate equipment alone.',
     facilitatorNotes: [
@@ -364,9 +566,10 @@ export const RESIN_PRINTING_WORKSHOP: Workshop = {
   facilitators: ['Moises Sanabria', 'Fabiola Larios'],
   moduleIds: RESIN_PRINTING_MODULES.map((m) => m.id),
   resourceIds: [
-    'booklet-draft',
+    'booklet-print-spreads',
     'sample-stl',
     'slicer-link',
+    'photon-workshop',
     'readiness-checklist',
     'glossary',
     'media-shot-list',

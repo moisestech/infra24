@@ -112,6 +112,9 @@ export function WorkshopImagePlaceholder({
   aspect = 'landscape 16:10',
   assetId,
   minSize,
+  src,
+  caption,
+  kind,
   className,
 }: {
   moduleId?: string
@@ -121,9 +124,39 @@ export function WorkshopImagePlaceholder({
   aspect?: string
   assetId?: string
   minSize?: string
+  src?: string
+  caption?: string
+  kind?: 'illustrative' | 'diagram' | 'photo' | 'placeholder'
   className?: string
 }) {
   const identity = getModuleIdentity(moduleId ?? '')
+  if (src) {
+    return (
+      <figure
+        className={cn(
+          'overflow-hidden rounded-2xl border bg-white',
+          identity.border,
+          className
+        )}
+      >
+        <div className="relative aspect-[16/10] bg-slate-50">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={altIntent}
+            className="h-full w-full object-contain"
+          />
+        </div>
+        <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 px-4 py-3 text-[11px] uppercase tracking-[0.12em] text-slate-500">
+          <span>
+            {caption ?? (kind === 'illustrative' ? 'Illustrative placeholder' : title)}
+            {minSize ? ` · ${minSize}` : ''}
+          </span>
+          <span>{aspect}</span>
+        </figcaption>
+      </figure>
+    )
+  }
   return (
     <figure
       role="img"
@@ -186,6 +219,9 @@ export function ModuleVisualPlaceholder({ moduleId }: { moduleId: string }) {
       aspect={media.aspect}
       assetId={media.assetId}
       minSize={media.minSize}
+      src={media.src}
+      caption={media.caption}
+      kind={media.kind}
     />
   )
 }

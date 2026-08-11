@@ -56,8 +56,8 @@ export default function ResinResourcesPage() {
       </section>
 
       <p className="text-sm text-neutral-600">
-        Booklet draft:{' '}
-        <a className="underline" href={RESIN_BOOKLET_DRAFT_HREF}>
+        Print-spread guide:{' '}
+        <a className="underline" href={RESIN_BOOKLET_DRAFT_HREF} target="_blank" rel="noopener noreferrer">
           Download PDF
         </a>
       </p>

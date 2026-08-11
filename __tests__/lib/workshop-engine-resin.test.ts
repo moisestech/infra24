@@ -1,4 +1,6 @@
 import {
+  RESIN_ASSET_PATHS,
+  RESIN_BOOKLET_EDITION,
   RESIN_HERO_MEDIA,
   RESIN_MODULE_MEDIA_IDS,
   RESIN_MODULE_PRIMARY_MEDIA,
@@ -6,6 +8,8 @@ import {
   RESIN_PRINTING_WORKSHOP,
   getResinModuleBySlug,
   getResinVenue,
+  guidePagePreviewHref,
+  isMissingLogicalPage,
 } from '@/lib/workshop-engine'
 import {
   DEFAULT_MODULE_VISUAL,
@@ -17,11 +21,15 @@ describe('resin workshop curriculum', () => {
   it('has nine ordered modules with visual + primary media', () => {
     expect(RESIN_PRINTING_MODULES).toHaveLength(9)
     expect(RESIN_PRINTING_WORKSHOP.moduleIds).toHaveLength(9)
-    expect(RESIN_PRINTING_MODULES.map((m) => m.order)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8])
+    expect(RESIN_PRINTING_MODULES.map((m) => m.order)).toEqual([
+      0, 1, 2, 3, 4, 5, 6, 7, 8,
+    ])
     for (const m of RESIN_PRINTING_MODULES) {
       expect(m.visual?.phase).toBeTruthy()
       expect(m.primaryMedia?.assetId).toBeTruthy()
-      expect(RESIN_MODULE_PRIMARY_MEDIA[m.id]?.assetId).toBe(m.primaryMedia?.assetId)
+      expect(RESIN_MODULE_PRIMARY_MEDIA[m.id]?.assetId).toBe(
+        m.primaryMedia?.assetId
+      )
     }
     expect(RESIN_PRINTING_WORKSHOP.heroMedia?.assetId).toBe(RESIN_HERO_MEDIA.assetId)
   })
@@ -41,7 +49,86 @@ describe('resin workshop curriculum', () => {
     expect(getResinVenue('bakehouse')?.namingNote).toBeTruthy()
     expect(getVenueAccent('oolite-teal')?.label).toMatch(/teal/i)
     expect(getVenueAccent('bakehouse-copper')?.label).toMatch(/copper/i)
-    expect(getColorTokenClasses(DEFAULT_MODULE_VISUAL.colorTokenId).border).toContain('slate')
+    expect(getColorTokenClasses(DEFAULT_MODULE_VISUAL.colorTokenId).border).toContain(
+      'slate'
+    )
     expect(RESIN_MODULE_MEDIA_IDS['slicer-lab']?.length).toBeGreaterThan(3)
+  })
+})
+
+describe('resin booklet V02 mapping', () => {
+  it('describes the Aug 10 print-spread edition accurately', () => {
+    expect(RESIN_BOOKLET_EDITION.pdfSheetCount).toBe(21)
+    expect(RESIN_BOOKLET_EDITION.logicalPageCount).toBe(44)
+    expect(RESIN_BOOKLET_EDITION.missingLogicalPages).toEqual([10, 35])
+    expect(RESIN_BOOKLET_EDITION.format).toBe('printer-spreads')
+    expect(RESIN_BOOKLET_EDITION.pagesVerified).toBe(true)
+    expect(RESIN_BOOKLET_EDITION.downloadHref).toContain(
+      'Oolite-Arts-Resin-Printing-Guide.pdf'
+    )
+  })
+
+  it('never generates links or previews for missing pages 10 and 35', () => {
+    expect(isMissingLogicalPage(10)).toBe(true)
+    expect(isMissingLogicalPage(35)).toBe(true)
+    expect(guidePagePreviewHref(10)).toBeUndefined()
+    expect(guidePagePreviewHref(35)).toBeUndefined()
+    expect(guidePagePreviewHref(5)).toBe(
+      '/workshops/resin-printing/guide-pages/page-05.jpg'
+    )
+
+    for (const m of RESIN_PRINTING_MODULES) {
+      for (const ref of m.bookletRefs) {
+        expect(ref.startPage).not.toBe(10)
+        expect(ref.endPage).not.toBe(10)
+        expect(ref.startPage).not.toBe(35)
+        expect(ref.endPage).not.toBe(35)
+        if (ref.pagePreviewHref) {
+          expect(ref.pagePreviewHref.includes('page-10')).toBe(false)
+          expect(ref.pagePreviewHref.includes('page-35')).toBe(false)
+        }
+      }
+    }
+  })
+
+  it('marks Failure Clinic references as related only', () => {
+    const failure = getResinModuleBySlug('failure-clinic')
+    expect(failure).toBeTruthy()
+    expect(failure!.bookletRefs.length).toBeGreaterThan(0)
+    for (const ref of failure!.bookletRefs) {
+      expect(ref.status).toBe('related')
+    }
+  })
+
+  it('has exact primary booklet pages for every module', () => {
+    const expected: Record<string, number[]> = {
+      welcome: [2, 43, 44],
+      'why-resin': [3, 13, 17, 19, 30],
+      'safety-zones': [29, 32, 36, 37],
+      'complete-workflow': [3, 9, 33, 39],
+      'file-readiness': [13, 42],
+      'slicer-lab': [4, 11, 20, 12],
+      'print-wash-cure': [33, 36, 29],
+      'failure-clinic': [14, 21, 24, 27, 34, 37],
+      'project-readiness': [38, 13, 17, 19],
+    }
+
+    for (const [slug, starts] of Object.entries(expected)) {
+      const workshopModule = getResinModuleBySlug(slug)
+      expect(workshopModule).toBeTruthy()
+      const actualStarts = workshopModule!.bookletRefs.map((r) => r.startPage)
+      expect(actualStarts).toEqual(starts)
+      expect(workshopModule!.bookletRefs.every((r) => r.status)).toBe(true)
+    }
+  })
+
+  it('resolves hero and diagram asset paths in media metadata', () => {
+    expect(RESIN_HERO_MEDIA.src).toBe(RESIN_ASSET_PATHS.hero)
+    expect(RESIN_MODULE_PRIMARY_MEDIA['safety-zones']?.src).toBe(
+      RESIN_ASSET_PATHS.zonesDiagram
+    )
+    expect(RESIN_MODULE_PRIMARY_MEDIA['complete-workflow']?.src).toBe(
+      RESIN_ASSET_PATHS.workflowDiagram
+    )
   })
 })

@@ -295,6 +295,9 @@ export function ModuleView({
           startPage={ref.startPage}
           endPage={ref.endPage}
           mappingPending={ref.mappingPending}
+          status={ref.status}
+          note={ref.note}
+          pagePreviewHref={ref.pagePreviewHref}
         />
       ))}
 

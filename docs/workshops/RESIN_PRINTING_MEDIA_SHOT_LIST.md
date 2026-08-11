@@ -4,7 +4,7 @@ Production checklist for the Infra24 resin workshop engine. Documentary natural 
 
 Canonical IDs below are wired into curriculum media placeholders (`lib/workshop-engine/resin-printing/media.ts`). UI placeholders show the same `assetId` values.
 
-**Booklet edition note:** Jun10 Canva (`ResinPrinter-Booklet-Version-Jun10th-TEST.pdf`) is a 22-sheet PDF with labeled booklet pages Cover=1 … Back=44. Exact module→page mapping remains **pending**.
+**Booklet edition note:** August 10, 2026 Canva export (`Oolite-Arts-Resin-Printing-Guide.pdf`) — 21 physical PDF sheets with printed logical page labels 1–44 (printer-imposed spreads). Logical pages **10** and **35** are missing from this upload. Module→page mapping is verified against the handoff inventory; a reading-order PDF is forthcoming.
 
 ---
 

@@ -13,15 +13,25 @@ export {
   RESIN_RESOURCES,
   RESIN_GLOSSARY,
   RESIN_BOOKLET_DRAFT_HREF,
+  RESIN_BOOKLET_PDF_HREF,
 } from '@/lib/workshop-engine/resin-printing/resources'
 
 export {
   RESIN_HERO_MEDIA,
   RESIN_MODULE_PRIMARY_MEDIA,
   RESIN_MODULE_MEDIA_IDS,
+  RESIN_ASSET_PATHS,
 } from '@/lib/workshop-engine/resin-printing/media'
 
-export { RESIN_BOOKLET_EDITION, RESIN_BOOKLET_ID } from '@/lib/workshop-engine/resin-printing/booklet'
+export {
+  RESIN_BOOKLET_EDITION,
+  RESIN_BOOKLET_ID,
+  resinBookletRef,
+  guidePagePreviewHref,
+  isMissingLogicalPage,
+  bookletDownloadHref,
+  formatLogicalPageLabel,
+} from '@/lib/workshop-engine/resin-printing/booklet'
 
 export {
   MODULE_COLOR_TOKENS,

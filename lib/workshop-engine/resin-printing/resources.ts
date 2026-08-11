@@ -1,16 +1,20 @@
 import type { WorkshopResource } from '@/lib/workshop-engine/types'
-import { RESIN_BOOKLET_EDITION } from '@/lib/workshop-engine/resin-printing/booklet'
+import {
+  RESIN_BOOKLET_EDITION,
+  bookletDownloadHref,
+} from '@/lib/workshop-engine/resin-printing/booklet'
 
-/** Interim 9-page draft (in-repo). Full Canva booklet is too large for git — host separately. */
-export const RESIN_BOOKLET_DRAFT_HREF =
-  '/workshops/resin-printing/artist-guide-draft.pdf'
+/** @deprecated Prefer bookletDownloadHref() — kept for older imports. */
+export const RESIN_BOOKLET_DRAFT_HREF = bookletDownloadHref()
+
+export const RESIN_BOOKLET_PDF_HREF = bookletDownloadHref()
 
 export const RESIN_RESOURCES: WorkshopResource[] = [
   {
-    id: 'booklet-draft',
-    title: 'Artist guide draft (PDF)',
-    description: `${RESIN_BOOKLET_EDITION.editionNote} Interim 9-page draft download available; exact page mapping still pending.`,
-    href: RESIN_BOOKLET_DRAFT_HREF,
+    id: 'booklet-print-spreads',
+    title: 'Artist guide (print-spread PDF)',
+    description: `${RESIN_BOOKLET_EDITION.editionNote}`,
+    href: RESIN_BOOKLET_PDF_HREF,
     status: 'ready',
   },
   {
@@ -24,6 +28,14 @@ export const RESIN_RESOURCES: WorkshopResource[] = [
     title: 'Validated slicer',
     description: 'Venue-specific slicer + known-good profile (enter before publish).',
     status: 'placeholder',
+  },
+  {
+    id: 'photon-workshop',
+    title: 'Photon Workshop (slicer)',
+    description:
+      'Validated Anycubic Photon Workshop resource for the slicer lab. Exporting a slice file is not permission to start the printer.',
+    href: 'https://www.anycubic.com/pages/anycubic-photon-workshop',
+    status: 'ready',
   },
   {
     id: 'readiness-checklist',

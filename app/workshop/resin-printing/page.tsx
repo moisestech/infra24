@@ -83,6 +83,9 @@ export default function ResinPrintingHubPage() {
           aspect={RESIN_PRINTING_WORKSHOP.heroMedia?.aspect ?? 'landscape 16:10'}
           assetId={RESIN_PRINTING_WORKSHOP.heroMedia?.assetId}
           minSize={RESIN_PRINTING_WORKSHOP.heroMedia?.minSize}
+          src={RESIN_PRINTING_WORKSHOP.heroMedia?.src}
+          caption={RESIN_PRINTING_WORKSHOP.heroMedia?.caption}
+          kind={RESIN_PRINTING_WORKSHOP.heroMedia?.kind}
         />
       </section>
 
