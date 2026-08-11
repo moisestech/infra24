@@ -59,11 +59,11 @@ export function TvPresentationClient({
     };
   }, [code]);
 
-  const module =
+  const liveModule =
     getResinModuleById(session.liveModuleId) ?? RESIN_PRINTING_MODULES[0];
-  const identity = getModuleIdentity(module.id);
+  const identity = getModuleIdentity(liveModule.id);
   const joinUrl = `${origin}/session/${session.joinCode}`;
-  const progress = ((module.order + 1) / RESIN_PRINTING_MODULES.length) * 100;
+  const progress = ((liveModule.order + 1) / RESIN_PRINTING_MODULES.length) * 100;
 
   return (
     <div
@@ -82,20 +82,20 @@ export function TvPresentationClient({
       <header className="flex items-start justify-between gap-6 px-12 pt-10">
         <div className="flex items-start gap-6">
           <ModuleIcon
-            moduleId={module.id}
+            moduleId={liveModule.id}
             className="h-20 w-20 ring-1 ring-white/20"
           />
           <div>
             <div className="flex items-center gap-4">
-              <ModulePhaseChip moduleId={module.id} />
+              <ModulePhaseChip moduleId={liveModule.id} />
               <p className="text-2xl uppercase tracking-[0.2em] text-neutral-400">
-                Module {String(module.order).padStart(2, "0")}
+                Module {String(liveModule.order).padStart(2, "0")}
               </p>
             </div>
             <h1 className="mt-3 max-w-5xl text-6xl font-semibold leading-tight md:text-7xl">
               {session.tvScreen === "break"
                 ? RESIN_BREAK_MODULE.title
-                : module.title}
+                : liveModule.title}
             </h1>
           </div>
         </div>
@@ -171,11 +171,11 @@ export function TvPresentationClient({
           <div className="grid items-center gap-12 lg:grid-cols-[1fr_auto]">
             <div className="space-y-8">
               <p className="max-w-5xl text-5xl font-medium leading-snug text-neutral-50 md:text-6xl">
-                {module.tvPrompt}
+                {liveModule.tvPrompt}
               </p>
               <p className="max-w-4xl text-3xl text-neutral-300">
                 <span className="text-neutral-500">Physical evidence · </span>
-                {module.physicalSample}
+                {liveModule.physicalSample}
               </p>
             </div>
             <div className="min-w-72">

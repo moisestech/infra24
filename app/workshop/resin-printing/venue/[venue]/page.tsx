@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getResinVenue } from '@/lib/workshop-engine/resin-printing'
+import { getVenueAccent } from '@/lib/workshop-engine/resin-printing/theme'
+import { WorkshopImagePlaceholder } from '@/components/workshop-engine/WorkshopVisuals'
+import { cn } from '@/lib/utils'
 
 type Props = { params: Promise<{ venue: string }> | { venue: string } }
 
@@ -28,14 +31,28 @@ export default async function ResinVenuePage({ params }: Props) {
   const { venue } = await resolveParams(params)
   const config = getResinVenue(venue)
   if (!config) notFound()
+  const accent = getVenueAccent(config.themeAccentId)
 
   return (
     <div className="space-y-8">
-      <header className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
-          Venue configuration
+      <header
+        className={cn(
+          'space-y-3 rounded-2xl border bg-gradient-to-br p-5 md:p-7',
+          accent?.border ?? 'border-neutral-200',
+          accent ? `bg-gradient-to-br ${accent.gradient}` : 'bg-white'
+        )}
+      >
+        <p
+          className={cn(
+            'text-xs font-semibold uppercase tracking-[0.14em]',
+            accent?.chip ?? 'text-neutral-500'
+          )}
+        >
+          {accent?.label ?? 'Venue configuration'}
         </p>
-        <h1 className="text-3xl font-semibold text-neutral-950">{config.venueName}</h1>
+        <h1 className={cn('text-3xl font-semibold', accent?.heading ?? 'text-neutral-950')}>
+          {config.venueName}
+        </h1>
         <p className="text-neutral-700">
           {config.organization} · {config.roomName}
         </p>
@@ -45,6 +62,22 @@ export default async function ResinVenuePage({ params }: Props) {
           </p>
         ) : null}
       </header>
+
+      {config.brandMediaId ? (
+        <WorkshopImagePlaceholder
+          moduleId={config.id === 'oolite' ? 'file-readiness' : 'print-wash-cure'}
+          title={`${config.venueName} brand / room proof`}
+          shot={
+            config.id === 'oolite'
+              ? 'Room corner with Oolite/DigiLab context; no private screens readable.'
+              : 'Bakehouse / DCC.MIAMI context when available — keep placeholder until shot.'
+          }
+          altIntent={`Venue proof image for ${config.organization}.`}
+          aspect="landscape 16:9"
+          assetId={config.brandMediaId}
+          minSize="2400×1350"
+        />
+      ) : null}
 
       <dl className="grid gap-4 sm:grid-cols-2 text-sm">
         <Field label="Printer" value={config.printerModel} />

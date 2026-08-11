@@ -13,6 +13,8 @@ export const RESIN_VENUES: Record<string, VenueConfig> = {
     resinLabel: 'TBD — enter before publish',
     safetyContact: 'TBD — Digital Lab staff contact',
     appointmentUrl: undefined,
+    themeAccentId: 'oolite-teal',
+    brandMediaId: 'resin-oolite-brand-01',
     zoneNotes: [
       'Clean participant zone for laptops, notes, and cured-sample inspection.',
       'Controlled resin zone for printer, vat, wash/cure, and uncured materials — instructors only during live demo.',
@@ -37,6 +39,8 @@ export const RESIN_VENUES: Record<string, VenueConfig> = {
     resinLabel: 'TBD — enter before publish',
     safetyContact: 'TBD — DCC.MIAMI / Bakehouse technical contact',
     appointmentUrl: undefined,
+    themeAccentId: 'bakehouse-copper',
+    brandMediaId: 'resin-bakehouse-brand-01',
     namingNote:
       'Do not market this as a “Bakehouse Digital Lab” unless Bakehouse explicitly approves that name. Use DCC.MIAMI at Bakehouse Art Complex.',
     zoneNotes: [

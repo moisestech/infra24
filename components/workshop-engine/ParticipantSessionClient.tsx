@@ -57,7 +57,7 @@ export function ParticipantSessionClient({
   const liveModule =
     getResinModuleById(session.liveModuleId) ?? RESIN_PRINTING_MODULES[0];
   const viewingSlug = pace === "follow" ? liveModule.slug : selfSlug;
-  const module = useMemo(
+  const currentModule = useMemo(
     () =>
       RESIN_PRINTING_MODULES.find((m) => m.slug === viewingSlug) ?? liveModule,
     [viewingSlug, liveModule],
@@ -71,7 +71,7 @@ export function ParticipantSessionClient({
     }
   }, [pace, liveModule]);
 
-  const nav = getResinModuleNav(module.slug);
+  const nav = getResinModuleNav(currentModule.slug);
 
   function rejoin() {
     setPace("follow");
@@ -96,9 +96,9 @@ export function ParticipantSessionClient({
       </div>
 
       <ModuleView
-        module={module}
+        workshopModule={currentModule}
         liveLabel={pace === "follow" ? "Following live" : "My pace"}
-        showSafetyGate={module.safetyLevel === "required"}
+        showSafetyGate={currentModule.safetyLevel === "required"}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200 pt-4 text-sm">
@@ -136,12 +136,12 @@ export function ParticipantSessionClient({
 }
 
 export function ModuleView({
-  module,
+  workshopModule,
   liveLabel,
   showSafetyGate,
   showFacilitatorNotes = false,
 }: {
-  module: WorkshopModule;
+  workshopModule: WorkshopModule;
   liveLabel?: string;
   showSafetyGate?: boolean;
   showFacilitatorNotes?: boolean;
@@ -149,48 +149,48 @@ export function ModuleView({
   return (
     <article className="space-y-6">
       <ModuleHeader
-        order={module.order}
-        moduleId={module.id}
-        title={module.title}
-        estimatedMinutes={module.estimatedMinutes}
+        order={workshopModule.order}
+        moduleId={workshopModule.id}
+        title={workshopModule.title}
+        estimatedMinutes={workshopModule.estimatedMinutes}
         liveLabel={liveLabel}
-        safetyLevel={module.safetyLevel}
+        safetyLevel={workshopModule.safetyLevel}
       />
-      <LearningPromise>{module.promise}</LearningPromise>
+      <LearningPromise>{workshopModule.promise}</LearningPromise>
 
-      {module.safetyNote ? (
+      {workshopModule.safetyNote ? (
         <SafetyBanner
-          note={module.safetyNote}
-          required={module.safetyLevel === "required"}
+          note={workshopModule.safetyNote}
+          required={workshopModule.safetyLevel === "required"}
         />
       ) : null}
 
       {showSafetyGate ? (
         <SafetyGate
           note={
-            module.safetyNote ??
+            workshopModule.safetyNote ??
             "Complete the safety check before continuing. Equipment stays instructor-led."
           }
           checklist={
-            module.activity.kind === "checklist"
-              ? module.activity.items
+            workshopModule.activity.kind === "checklist"
+              ? workshopModule.activity.items
               : [
                   "I will not operate resin equipment independently tonight.",
                   "I know clean zone vs controlled zone.",
                   "I understand uncured resin requires PPE.",
                 ]
           }
-          storageKey={`${SAFETY_KEY}-${module.id}`}
+          storageKey={`${SAFETY_KEY}-${workshopModule.id}`}
         />
       ) : null}
 
-      <ModuleVisualPlaceholder moduleId={module.id} />
+      <ModuleVisualPlaceholder moduleId={workshopModule.id} />
 
       <section className="space-y-2">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
           Watch / notice
         </h2>
-        <p className="text-neutral-800">{module.watchNotice}</p>
+        <p className="text-neutral-800">{workshopModule.watchNotice}</p>
       </section>
 
       <section className="space-y-2">
@@ -198,22 +198,22 @@ export function ModuleView({
           Key ideas
         </h2>
         <ul className="list-disc space-y-1 pl-5 text-neutral-800">
-          {module.keyIdeas.map((idea) => (
+          {workshopModule.keyIdeas.map((idea) => (
             <li key={idea}>{idea}</li>
           ))}
         </ul>
       </section>
 
-      <ModuleActivity activity={module.activity} />
+      <ModuleActivity activity={workshopModule.activity} />
 
       <section className="rounded-md border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-700">
         <span className="font-medium text-neutral-950">
           Physical evidence:{" "}
         </span>
-        {module.physicalSample}
+        {workshopModule.physicalSample}
       </section>
 
-      {module.bookletRefs.map((ref) => (
+      {workshopModule.bookletRefs.map((ref) => (
         <BookletReference
           key={`${ref.bookletId}-${ref.sectionTitle}`}
           sectionTitle={ref.sectionTitle}
@@ -223,10 +223,10 @@ export function ModuleView({
         />
       ))}
 
-      {module.knowledgeCheck ? (
+      {workshopModule.knowledgeCheck ? (
         <KnowledgeCheck
-          prompt={module.knowledgeCheck.prompt}
-          options={module.knowledgeCheck.options}
+          prompt={workshopModule.knowledgeCheck.prompt}
+          options={workshopModule.knowledgeCheck.options}
         />
       ) : null}
 
@@ -234,7 +234,7 @@ export function ModuleView({
         <aside className="rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
           <p className="font-medium">Facilitator cues</p>
           <ul className="mt-2 list-disc pl-5">
-            {module.facilitatorNotes.map((n) => (
+            {workshopModule.facilitatorNotes.map((n) => (
               <li key={n}>{n}</li>
             ))}
           </ul>

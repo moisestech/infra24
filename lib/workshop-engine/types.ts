@@ -46,6 +46,75 @@ export type BookletReference = {
   mappingPending?: boolean
 }
 
+export type BookletEdition = {
+  id: string
+  title: string
+  /** Human-readable edition note (e.g. Jun10 Canva 44-page spread). */
+  editionNote: string
+  pageCount?: number
+  /** Exact page mapping verified against PDF. */
+  pagesVerified: boolean
+}
+
+/** Semantic color families — mapped to Tailwind bundles in workshop theme files. */
+export type ModuleColorTokenId =
+  | 'cyan'
+  | 'sky'
+  | 'amber'
+  | 'blue'
+  | 'teal'
+  | 'indigo'
+  | 'orange'
+  | 'rose'
+  | 'emerald'
+  | 'slate'
+
+export type ModuleIconKey =
+  | 'circle-dot'
+  | 'sparkles'
+  | 'shield-check'
+  | 'workflow'
+  | 'scan-line'
+  | 'sliders'
+  | 'droplets'
+  | 'search'
+  | 'clipboard-check'
+
+export type ModuleVisualIdentity = {
+  phase: string
+  iconKey: ModuleIconKey
+  colorTokenId: ModuleColorTokenId
+}
+
+export type ModuleMediaPlaceholder = {
+  assetId: string
+  title: string
+  shot: string
+  altIntent: string
+  aspect: string
+  minSize: string
+}
+
+/** Resolved style classes for a color token (kept out of curriculum data). */
+export type ModuleColorTokenClasses = {
+  chip: string
+  icon: string
+  surface: string
+  border: string
+  gradient: string
+  tvGlow: string
+}
+
+export type VenueAccentId = 'oolite-teal' | 'bakehouse-copper'
+
+export type VenueAccentClasses = {
+  label: string
+  chip: string
+  border: string
+  gradient: string
+  heading: string
+}
+
 export type WorkshopModule = {
   id: string
   slug: string
@@ -63,6 +132,10 @@ export type WorkshopModule = {
   safetyNote?: string
   facilitatorNotes: string[]
   tvPrompt: string
+  visual?: ModuleVisualIdentity
+  primaryMedia?: ModuleMediaPlaceholder
+  /** Additional shot-list asset IDs related to this module. */
+  mediaIds?: string[]
 }
 
 export type WorkshopResource = {
@@ -87,6 +160,7 @@ export type Workshop = {
   resourceIds: string[]
   venueConfigIds: string[]
   bookletId?: string
+  heroMedia?: ModuleMediaPlaceholder
 }
 
 export type VenueConfig = {
@@ -104,6 +178,8 @@ export type VenueConfig = {
   namingNote?: string
   zoneNotes: string[]
   stopWorkConditions: string[]
+  themeAccentId?: VenueAccentId
+  brandMediaId?: string
 }
 
 export type WorkshopLiveSession = {

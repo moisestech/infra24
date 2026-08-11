@@ -51,10 +51,18 @@ export default function ResinPrintingHubPage() {
         </div>
         <WorkshopImagePlaceholder
           moduleId="welcome"
-          title="Workshop hero image"
-          shot="Printer, cured samples, and the staged workflow arranged in the Digital Lab. No people or text."
-          altIntent="Resin printer and finished artist samples in the workshop space."
-          aspect="landscape 16:10"
+          title={RESIN_PRINTING_WORKSHOP.heroMedia?.title ?? 'Workshop hero image'}
+          shot={
+            RESIN_PRINTING_WORKSHOP.heroMedia?.shot ??
+            'Printer, cured samples, and the staged workflow arranged in the Digital Lab. No people or text.'
+          }
+          altIntent={
+            RESIN_PRINTING_WORKSHOP.heroMedia?.altIntent ??
+            'Resin printer and finished artist samples in the workshop space.'
+          }
+          aspect={RESIN_PRINTING_WORKSHOP.heroMedia?.aspect ?? 'landscape 16:10'}
+          assetId={RESIN_PRINTING_WORKSHOP.heroMedia?.assetId}
+          minSize={RESIN_PRINTING_WORKSHOP.heroMedia?.minSize}
         />
       </section>
 

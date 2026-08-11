@@ -1,18 +1,26 @@
 import type { Workshop, WorkshopModule } from '@/lib/workshop-engine/types'
-
-const BOOKLET_ID = 'oolite-resin-artist-guide'
+import { RESIN_BOOKLET_ID } from '@/lib/workshop-engine/resin-printing/booklet'
+import {
+  RESIN_HERO_MEDIA,
+  RESIN_MODULE_MEDIA_IDS,
+  RESIN_MODULE_PRIMARY_MEDIA,
+} from '@/lib/workshop-engine/resin-printing/media'
+import {
+  DEFAULT_MODULE_VISUAL,
+  RESIN_MODULE_VISUALS,
+} from '@/lib/workshop-engine/resin-printing/theme'
 
 function booklet(sectionTitle: string): WorkshopModule['bookletRefs'] {
   return [
     {
-      bookletId: BOOKLET_ID,
+      bookletId: RESIN_BOOKLET_ID,
       sectionTitle,
       mappingPending: true,
     },
   ]
 }
 
-export const RESIN_PRINTING_MODULES: WorkshopModule[] = [
+const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
   {
     id: 'welcome',
     slug: 'welcome',
@@ -332,6 +340,15 @@ export const RESIN_PRINTING_MODULES: WorkshopModule[] = [
   },
 ]
 
+export const RESIN_PRINTING_MODULES: WorkshopModule[] = RESIN_PRINTING_MODULES_BASE.map(
+  (m) => ({
+    ...m,
+    visual: RESIN_MODULE_VISUALS[m.id] ?? DEFAULT_MODULE_VISUAL,
+    primaryMedia: RESIN_MODULE_PRIMARY_MEDIA[m.id],
+    mediaIds: RESIN_MODULE_MEDIA_IDS[m.id],
+  })
+)
+
 export const RESIN_PRINTING_WORKSHOP: Workshop = {
   slug: 'resin-printing',
   title: 'Intro to 3D Resin Printing for Artists',
@@ -352,9 +369,11 @@ export const RESIN_PRINTING_WORKSHOP: Workshop = {
     'slicer-link',
     'readiness-checklist',
     'glossary',
+    'media-shot-list',
   ],
   venueConfigIds: ['oolite', 'bakehouse'],
-  bookletId: BOOKLET_ID,
+  bookletId: RESIN_BOOKLET_ID,
+  heroMedia: RESIN_HERO_MEDIA,
 }
 
 export const RESIN_BREAK_MODULE = {

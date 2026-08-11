@@ -1,4 +1,5 @@
 import type { WorkshopResource } from '@/lib/workshop-engine/types'
+import { RESIN_BOOKLET_EDITION } from '@/lib/workshop-engine/resin-printing/booklet'
 
 /** Interim 9-page draft (in-repo). Full Canva booklet is too large for git — host separately. */
 export const RESIN_BOOKLET_DRAFT_HREF =
@@ -8,8 +9,7 @@ export const RESIN_RESOURCES: WorkshopResource[] = [
   {
     id: 'booklet-draft',
     title: 'Artist guide draft (PDF)',
-    description:
-      'Interim 9-page draft. Page-level mapping to the full booklet is still pending.',
+    description: `${RESIN_BOOKLET_EDITION.editionNote} Interim 9-page draft download available; exact page mapping still pending.`,
     href: RESIN_BOOKLET_DRAFT_HREF,
     status: 'ready',
   },
@@ -39,31 +39,45 @@ export const RESIN_RESOURCES: WorkshopResource[] = [
     href: '/workshop/resin-printing/resources#glossary',
     status: 'ready',
   },
+  {
+    id: 'media-shot-list',
+    title: 'Media shot list',
+    description:
+      'Production checklist of stills, kit pack shots, class photos, video loops, and diagrams to capture or match.',
+    href: '/workshop/resin-printing/media',
+    status: 'ready',
+  },
 ]
 
 export const RESIN_GLOSSARY: { term: string; definition: string }[] = [
   {
     term: 'Uncured resin',
-    definition: 'Liquid or sticky photopolymer that has not fully hardened — requires PPE and containment.',
+    definition:
+      'Liquid or sticky photopolymer that has not fully hardened — requires PPE and containment.',
   },
   {
     term: 'Controlled zone',
-    definition: 'Area for printer, vat, wash/cure, and uncured materials. Instructor-led in this workshop.',
+    definition:
+      'Area for printer, vat, wash/cure, and uncured materials. Instructor-led in this workshop.',
   },
   {
     term: 'Supports',
-    definition: 'Temporary structures added in the slicer so overhangs survive peel forces during printing.',
+    definition:
+      'Temporary structures added in the slicer so overhangs survive peel forces during printing.',
   },
   {
     term: 'Hollow + drain',
-    definition: 'Hollowing reduces resin use; drain holes prevent trapped liquid resin inside the part.',
+    definition:
+      'Hollowing reduces resin use; drain holes prevent trapped liquid resin inside the part.',
   },
   {
     term: 'Wash',
-    definition: 'Solvent cleaning step (often IPA) to remove uncured resin from the surface before curing.',
+    definition:
+      'Solvent cleaning step (often IPA) to remove uncured resin from the surface before curing.',
   },
   {
     term: 'Cure',
-    definition: 'UV post-exposure that hardens remaining reactive material after washing.',
+    definition:
+      'UV post-exposure that hardens remaining reactive material after washing.',
   },
 ]

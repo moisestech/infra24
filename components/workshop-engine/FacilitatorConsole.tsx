@@ -48,10 +48,10 @@ export function FacilitatorConsole({
     initialSession,
   );
   const [busy, setBusy] = useState(false);
-  const module =
+  const liveModule =
     getResinModuleById(session.liveModuleId) ?? RESIN_PRINTING_MODULES[0];
   const moduleIndex = RESIN_PRINTING_MODULES.findIndex(
-    (m) => m.id === module.id,
+    (m) => m.id === liveModule.id,
   );
 
   const apply = useCallback(
@@ -139,11 +139,11 @@ export function FacilitatorConsole({
           {session.tvScreen}
         </p>
         <div className="flex items-center gap-3">
-          <ModuleIcon moduleId={module.id} className="h-12 w-12" />
+          <ModuleIcon moduleId={liveModule.id} className="h-12 w-12" />
           <div>
-            <ModulePhaseChip moduleId={module.id} />
+            <ModulePhaseChip moduleId={liveModule.id} />
             <h1 className="mt-2 text-3xl font-semibold text-neutral-950">
-              {module.order.toString().padStart(2, "0")}. {module.title}
+              {liveModule.order.toString().padStart(2, "0")}. {liveModule.title}
             </h1>
           </div>
         </div>
@@ -241,13 +241,13 @@ export function FacilitatorConsole({
       <section className="rounded-md border border-sky-200 bg-sky-50 p-4 text-sm text-sky-950">
         <p className="font-medium">Private facilitator notes</p>
         <ul className="mt-2 list-disc space-y-1 pl-5">
-          {module.facilitatorNotes.map((note) => (
+          {liveModule.facilitatorNotes.map((note) => (
             <li key={note}>{note}</li>
           ))}
         </ul>
         <p className="mt-3 text-sky-900">
           Next physical sample:{" "}
-          <span className="font-medium">{module.physicalSample}</span>
+          <span className="font-medium">{liveModule.physicalSample}</span>
         </p>
       </section>
 
@@ -264,7 +264,7 @@ export function FacilitatorConsole({
                 onClick={() => void goModule(index)}
                 className={cn(
                   "flex items-center gap-3 rounded-xl border px-3 py-2 text-left text-sm transition",
-                  m.id === module.id
+                  m.id === liveModule.id
                     ? "border-neutral-950 bg-neutral-950 text-white"
                     : cn("bg-white hover:shadow-sm", identity.border),
                 )}
