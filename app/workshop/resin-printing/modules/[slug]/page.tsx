@@ -2,11 +2,13 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ModuleView } from '@/components/workshop-engine/ParticipantSessionClient'
+import { weTouch } from '@/components/workshop-engine/responsive'
 import {
   RESIN_PRINTING_MODULES,
   getResinModuleBySlug,
   getResinModuleNav,
 } from '@/lib/workshop-engine/resin-printing'
+import { cn } from '@/lib/utils'
 
 type Props = { params: Promise<{ slug: string }> | { slug: string } }
 
@@ -47,25 +49,28 @@ export default async function ResinModulePage({ params }: Props) {
       <nav className="flex flex-wrap justify-between gap-3 border-t border-neutral-200 pt-4 text-sm">
         {nav.prev ? (
           <Link
-            className="underline"
+            className={cn(weTouch.button, 'underline')}
             href={`/workshop/resin-printing/modules/${nav.prev.slug}`}
           >
             ← {nav.prev.title}
           </Link>
         ) : (
-          <Link className="underline" href="/workshop/resin-printing">
+          <Link className={cn(weTouch.button, 'underline')} href="/workshop/resin-printing">
             ← Overview
           </Link>
         )}
         {nav.next ? (
           <Link
-            className="underline"
+            className={cn(weTouch.button, 'underline')}
             href={`/workshop/resin-printing/modules/${nav.next.slug}`}
           >
             {nav.next.title} →
           </Link>
         ) : (
-          <Link className="underline" href="/workshop/resin-printing/resources">
+          <Link
+            className={cn(weTouch.button, 'underline')}
+            href="/workshop/resin-printing/resources"
+          >
             Resources →
           </Link>
         )}

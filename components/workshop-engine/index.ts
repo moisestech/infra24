@@ -41,4 +41,8 @@ export {
   weType,
   weSpace,
   weIconBox,
+  weTouch,
+  weLayout,
+  weMeasure,
 } from "@/components/workshop-engine/responsive";
+export { ModuleLayout } from "@/components/workshop-engine/ModuleLayout";

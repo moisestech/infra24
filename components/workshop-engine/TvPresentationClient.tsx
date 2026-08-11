@@ -15,6 +15,7 @@ import {
 } from "@/lib/workshop-engine/resin-printing";
 import type { WorkshopLiveSession } from "@/lib/workshop-engine/types";
 import { cn } from "@/lib/utils";
+import { weType } from "@/components/workshop-engine/responsive";
 
 async function fetchSession(code: string): Promise<WorkshopLiveSession | null> {
   const res = await fetch(
@@ -92,7 +93,7 @@ export function TvPresentationClient({
                 Module {String(liveModule.order).padStart(2, '0')}
               </p>
             </div>
-            <h1 className="mt-2 max-w-5xl text-3xl font-semibold leading-tight sm:text-4xl md:mt-3 md:text-6xl lg:text-7xl 2xl:text-8xl">
+            <h1 className={cn("mt-2 max-w-5xl", weType.tvTitle)}>
               {session.tvScreen === 'break'
                 ? RESIN_BREAK_MODULE.title
                 : liveModule.title}
@@ -176,10 +177,10 @@ export function TvPresentationClient({
         {session.tvScreen === 'module' ? (
           <div className="grid items-center gap-6 md:gap-10 lg:grid-cols-[1fr_auto] lg:gap-12">
             <div className="space-y-4 md:space-y-6 lg:space-y-8">
-              <p className="max-w-5xl text-2xl font-medium leading-snug text-neutral-50 sm:text-3xl md:text-5xl lg:text-6xl 2xl:text-7xl">
+              <p className={cn("max-w-5xl", weType.tvPrompt)}>
                 {liveModule.tvPrompt}
               </p>
-              <p className="max-w-4xl text-lg text-neutral-300 sm:text-xl md:text-3xl 2xl:text-4xl">
+              <p className="max-w-4xl text-[clamp(1.125rem,2vw,2.5rem)] text-neutral-300">
                 <span className="text-neutral-500">Physical evidence · </span>
                 {liveModule.physicalSample}
               </p>

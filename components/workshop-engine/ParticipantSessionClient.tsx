@@ -16,9 +16,12 @@ import { ModuleActivity } from "@/components/workshop-engine/ModuleActivity";
 import { KnowledgeCheck } from "@/components/workshop-engine/ParticipantControls";
 import { SafetyGate } from "@/components/workshop-engine/SafetyAndTimer";
 import { ModuleVisualPlaceholder } from "@/components/workshop-engine/WorkshopVisuals";
+import { ModuleLayout } from "@/components/workshop-engine/ModuleLayout";
 import { useLiveSessionPolling } from "@/components/workshop-engine/TvPresentationClient";
 import {
+  weShell,
   weSpace,
+  weTouch,
   weType,
 } from "@/components/workshop-engine/responsive";
 import {
@@ -69,7 +72,6 @@ export function ParticipantSessionClient({
     [viewingSlug, liveModule],
   );
 
-  // Safety-critical live module interrupts Follow class.
   useEffect(() => {
     if (pace !== "follow") return;
     if (liveModule.safetyLevel === "required") {
@@ -85,13 +87,13 @@ export function ParticipantSessionClient({
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-5 px-4 py-6 sm:max-w-3xl md:max-w-4xl md:space-y-6 md:px-6 md:py-8 lg:max-w-5xl 2xl:max-w-6xl 2xl:space-y-8 2xl:px-8 2xl:py-10">
+    <div className={cn(weShell.width, weShell.pad, weShell.mainPy, weSpace.stack)}>
       <div className="space-y-3 md:space-y-4">
         <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-500 sm:text-xs 2xl:text-sm">
           Session {session.joinCode}
         </p>
         <PaceSelector value={pace} onChange={setPace} />
-        {pace === 'self-paced' ? (
+        {pace === "self-paced" ? (
           <LivePositionBanner
             moduleTitle={liveModule.title}
             onRejoin={rejoin}
@@ -116,7 +118,7 @@ export function ParticipantSessionClient({
         {pace === "self-paced" && nav.prev ? (
           <button
             type="button"
-            className="underline"
+            className={cn(weTouch.button, "underline")}
             onClick={() => setSelfSlug(nav.prev!.slug)}
           >
             ← {nav.prev.title}
@@ -127,7 +129,7 @@ export function ParticipantSessionClient({
         {pace === "self-paced" && nav.next ? (
           <button
             type="button"
-            className="underline"
+            className={cn(weTouch.button, "underline")}
             onClick={() => setSelfSlug(nav.next!.slug)}
           >
             {nav.next.title} →
@@ -157,8 +159,8 @@ export function ModuleView({
   showSafetyGate?: boolean;
   showFacilitatorNotes?: boolean;
 }) {
-  return (
-    <article className={cn(weSpace.stack, "space-y-5 md:space-y-6")}>
+  const main = (
+    <>
       <ModuleHeader
         order={workshopModule.order}
         moduleId={workshopModule.id}
@@ -236,6 +238,37 @@ export function ModuleView({
 
       <ModuleActivity activity={workshopModule.activity} />
 
+      {workshopModule.knowledgeCheck ? (
+        <KnowledgeCheck
+          prompt={workshopModule.knowledgeCheck.prompt}
+          options={workshopModule.knowledgeCheck.options}
+        />
+      ) : null}
+
+      {showFacilitatorNotes ? (
+        <aside
+          className={cn(
+            "rounded-xl border border-sky-200 bg-sky-50 text-sky-950 lg:hidden",
+            weSpace.cardPad,
+            weType.body,
+          )}
+        >
+          <p className="inline-flex items-center gap-2 font-semibold md:text-lg 2xl:text-xl">
+            <Mic aria-hidden className="h-4 w-4 text-sky-800 md:h-5 md:w-5" />
+            Facilitator cues
+          </p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 md:mt-3">
+            {workshopModule.facilitatorNotes.map((n) => (
+              <li key={n}>{n}</li>
+            ))}
+          </ul>
+        </aside>
+      ) : null}
+    </>
+  );
+
+  const rail = (
+    <>
       <section
         className={cn(
           "rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-950",
@@ -257,7 +290,7 @@ export function ModuleView({
 
       {workshopModule.bookletRefs.map((ref) => (
         <BookletReference
-          key={`${ref.bookletId}-${ref.sectionTitle}`}
+          key={`${ref.bookletId}-${ref.sectionTitle}-${ref.startPage ?? "x"}`}
           sectionTitle={ref.sectionTitle}
           startPage={ref.startPage}
           endPage={ref.endPage}
@@ -265,17 +298,10 @@ export function ModuleView({
         />
       ))}
 
-      {workshopModule.knowledgeCheck ? (
-        <KnowledgeCheck
-          prompt={workshopModule.knowledgeCheck.prompt}
-          options={workshopModule.knowledgeCheck.options}
-        />
-      ) : null}
-
       {showFacilitatorNotes ? (
         <aside
           className={cn(
-            "rounded-xl border border-sky-200 bg-sky-50 text-sky-950",
+            "hidden rounded-xl border border-sky-200 bg-sky-50 text-sky-950 lg:block",
             weSpace.cardPad,
             weType.body,
           )}
@@ -291,6 +317,12 @@ export function ModuleView({
           </ul>
         </aside>
       ) : null}
+    </>
+  );
+
+  return (
+    <article>
+      <ModuleLayout main={<div className={weSpace.stack}>{main}</div>} rail={rail} />
     </article>
   );
 }

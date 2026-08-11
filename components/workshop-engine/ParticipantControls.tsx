@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { weSpace, weType } from '@/components/workshop-engine/responsive'
 import {
   CheckCircle2,
-  CircleHelp,
+  HelpCircle,
   Footprints,
   Radio,
 } from 'lucide-react'
@@ -53,6 +53,7 @@ export function PaceSelector({
             onClick={() => onChange(option.id)}
             className={cn(
               'rounded-xl border px-4 py-3 text-left transition md:px-5 md:py-4 2xl:px-6 2xl:py-5',
+              'min-h-11',
               selected ? option.selected : option.accent
             )}
           >
@@ -108,7 +109,7 @@ export function LivePositionBanner({
         <button
           type="button"
           onClick={onRejoin}
-          className="rounded-lg border border-emerald-800 px-3 py-1.5 text-xs font-medium hover:bg-emerald-100 md:text-sm 2xl:px-4 2xl:py-2 2xl:text-base"
+          className="min-h-11 rounded-lg border border-emerald-800 px-3 py-2 text-xs font-medium hover:bg-emerald-100 md:text-sm 2xl:px-4 2xl:text-base"
         >
           Rejoin live
         </button>
@@ -140,7 +141,7 @@ export function KnowledgeCheck({
       )}
     >
       <p className="inline-flex items-center gap-2 font-semibold text-slate-950 md:text-lg 2xl:text-xl">
-        <CircleHelp aria-hidden className="h-4 w-4 text-indigo-700 md:h-5 md:w-5" />
+        <HelpCircle aria-hidden className="h-4 w-4 text-indigo-700 md:h-5 md:w-5" />
         Checkpoint
       </p>
       <p className={cn(weType.body, 'text-slate-700')}>{prompt}</p>
@@ -151,7 +152,7 @@ export function KnowledgeCheck({
             type="button"
             onClick={() => setSelected(option.id)}
             className={cn(
-              'rounded-lg border px-3 py-2.5 text-left text-sm transition md:px-4 md:py-3 md:text-base 2xl:text-lg',
+              'min-h-11 rounded-lg border px-3 py-2.5 text-left text-sm transition md:px-4 md:py-3 md:text-base 2xl:text-lg',
               selected === option.id
                 ? 'border-indigo-900 bg-indigo-50'
                 : 'border-slate-200 hover:border-slate-400'
@@ -171,7 +172,7 @@ export function KnowledgeCheck({
           {chosen.correct ? (
             <CheckCircle2 aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
           ) : (
-            <CircleHelp aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
+            <HelpCircle aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />
           )}
           <span>
             {chosen.correct ? 'Yes. ' : 'Not quite. '}

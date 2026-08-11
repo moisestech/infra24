@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { Beaker, BookOpen, Building2, Grid2X2, Library } from 'lucide-react'
-import { weShell, weType } from '@/components/workshop-engine/responsive'
+import { weShell, weTouch, weType } from '@/components/workshop-engine/responsive'
 
 const NAV = [
   { href: '/workshop/resin-printing', label: 'Overview', Icon: Grid2X2 },
@@ -76,7 +76,7 @@ export function WorkshopEngineShell({
           className={cn(
             weShell.width,
             weShell.pad,
-            '-mx-1 flex gap-1 overflow-x-auto pb-3 md:flex-wrap md:gap-x-2 md:gap-y-2 md:overflow-visible md:pb-4 2xl:gap-3'
+            'flex gap-1 overflow-x-auto pb-3 [-ms-overflow-style:none] [scrollbar-width:none] md:pb-4 [&::-webkit-scrollbar]:hidden'
           )}
           aria-label="Workshop sections"
         >
@@ -92,7 +92,7 @@ export function WorkshopEngineShell({
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium transition md:gap-2 md:px-3 md:py-1.5 md:text-sm 2xl:px-4 2xl:py-2 2xl:text-base',
+                  weTouch.navPill,
                   active
                     ? 'bg-slate-950 text-white'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
