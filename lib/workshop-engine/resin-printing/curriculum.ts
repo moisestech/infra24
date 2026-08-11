@@ -8,6 +8,7 @@ import {
   RESIN_MODULE_MEDIA_IDS,
   RESIN_MODULE_PRIMARY_MEDIA,
 } from '@/lib/workshop-engine/resin-printing/media'
+import { RESIN_MODULE_BANNERS } from '@/lib/workshop-engine/resin-printing/banners'
 import {
   DEFAULT_MODULE_VISUAL,
   RESIN_MODULE_VISUALS,
@@ -556,6 +557,7 @@ export const RESIN_PRINTING_MODULES: WorkshopModule[] = RESIN_PRINTING_MODULES_B
     ...m,
     visual: RESIN_MODULE_VISUALS[m.id] ?? DEFAULT_MODULE_VISUAL,
     primaryMedia: RESIN_MODULE_PRIMARY_MEDIA[m.id],
+    banner: RESIN_MODULE_BANNERS[m.id],
     mediaIds: RESIN_MODULE_MEDIA_IDS[m.id],
   })
 )

@@ -7,6 +7,7 @@ export type {
   Activity,
   KnowledgeCheck,
   BookletReference,
+  ModuleBanner,
   WorkshopModule,
   WorkshopResource,
   Workshop,

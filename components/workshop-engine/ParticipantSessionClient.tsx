@@ -180,6 +180,8 @@ export function ModuleView({
         estimatedMinutes={workshopModule.estimatedMinutes}
         liveLabel={liveLabel}
         safetyLevel={workshopModule.safetyLevel}
+        banner={workshopModule.banner}
+        bannerPriority
       />
       <LearningOutcome>{workshopModule.promise}</LearningOutcome>
 

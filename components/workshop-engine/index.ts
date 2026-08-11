@@ -6,6 +6,7 @@ export {
   FacilitatorCue,
   SafetyBanner,
 } from "@/components/workshop-engine/ModuleChrome";
+export { ModuleBanner } from "@/components/workshop-engine/ModuleBanner";
 export {
   PaceSelector,
   LivePositionBanner,

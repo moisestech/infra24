@@ -110,7 +110,21 @@ export type ModuleMediaPlaceholder = {
   src?: string
   /** Caption / status for illustrative vs documentary assets. */
   caption?: string
-  kind?: 'illustrative' | 'diagram' | 'photo' | 'placeholder'
+  kind?: 'illustrative' | 'illustration' | 'diagram' | 'photo' | 'placeholder'
+}
+
+/** Ultra-wide module banner for HTML title overlays (not documentary evidence). */
+export type ModuleBanner = {
+  src: string
+  /** Optional PNG master path. */
+  masterSrc?: string
+  width: number
+  height: number
+  alt: string
+  objectPosition?: string
+  kind: 'illustration'
+  /** Accent label for art direction notes (not shown as image text). */
+  accent?: string
 }
 
 /** Resolved style classes for a color token (kept out of curriculum data). */
@@ -154,6 +168,8 @@ export type WorkshopModule = {
   tvPrompt: string
   visual?: ModuleVisualIdentity
   primaryMedia?: ModuleMediaPlaceholder
+  /** Ultra-wide illustrative banner for module identity (HTML overlays). */
+  banner?: ModuleBanner
   /** Additional shot-list asset IDs related to this module. */
   mediaIds?: string[]
 }

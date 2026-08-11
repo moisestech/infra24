@@ -1,10 +1,15 @@
-import type { BookletReferenceStatus, SafetyLevel } from '@/lib/workshop-engine/types'
+import type {
+  BookletReferenceStatus,
+  ModuleBanner as ModuleBannerMeta,
+  SafetyLevel,
+} from '@/lib/workshop-engine/types'
 import { cn } from '@/lib/utils'
 import {
   getModuleIdentity,
   ModuleIcon,
   ModulePhaseChip,
 } from '@/components/workshop-engine/WorkshopVisuals'
+import { ModuleBanner } from '@/components/workshop-engine/ModuleBanner'
 import {
   weIconBox,
   weSpace,
@@ -33,6 +38,8 @@ export function ModuleHeader({
   estimatedMinutes,
   liveLabel,
   safetyLevel,
+  banner,
+  bannerPriority = false,
 }: {
   order: number
   moduleId: string
@@ -40,8 +47,61 @@ export function ModuleHeader({
   estimatedMinutes: number
   liveLabel?: string
   safetyLevel?: SafetyLevel
+  banner?: ModuleBannerMeta
+  bannerPriority?: boolean
 }) {
   const identity = getModuleIdentity(moduleId)
+
+  const meta = (
+    <div
+      className={cn(
+        'flex flex-wrap items-center gap-2',
+        weType.meta,
+        'normal-case tracking-wide',
+        banner ? 'text-slate-700' : 'text-slate-600'
+      )}
+    >
+      <ModulePhaseChip moduleId={moduleId} />
+      <span className="uppercase tracking-[0.12em]">
+        Module {String(order).padStart(2, '0')}
+      </span>
+      <span aria-hidden>·</span>
+      <span>{estimatedMinutes} min</span>
+      {safetyLevel === 'required' ? (
+        <>
+          <span aria-hidden>·</span>
+          <span className="inline-flex items-center gap-1 font-semibold uppercase tracking-[0.12em] text-amber-900">
+            <ShieldAlert aria-hidden className="h-3.5 w-3.5" />
+            Safety required
+          </span>
+        </>
+      ) : null}
+      {liveLabel ? (
+        <>
+          <span aria-hidden>·</span>
+          <span className="inline-flex items-center gap-1 font-semibold text-emerald-800">
+            <CheckCircle2 aria-hidden className="h-3.5 w-3.5" />
+            {liveLabel}
+          </span>
+        </>
+      ) : null}
+    </div>
+  )
+
+  if (banner) {
+    return (
+      <ModuleBanner banner={banner} priority={bannerPriority} decorative>
+        <div className="flex items-start gap-3 md:gap-4">
+          <ModuleIcon moduleId={moduleId} className={weIconBox.lg} />
+          <div className="min-w-0 flex-1 space-y-2 md:space-y-3">
+            {meta}
+            <h1 className={cn(weType.title, 'text-slate-950')}>{title}</h1>
+          </div>
+        </div>
+      </ModuleBanner>
+    )
+  }
+
   return (
     <header
       className={cn(
@@ -54,38 +114,7 @@ export function ModuleHeader({
       <div className="flex items-start gap-3 md:gap-4 2xl:gap-5">
         <ModuleIcon moduleId={moduleId} className={weIconBox.lg} />
         <div className="min-w-0 flex-1 space-y-2 md:space-y-3">
-          <div
-            className={cn(
-              'flex flex-wrap items-center gap-2',
-              weType.meta,
-              'normal-case tracking-wide text-slate-600'
-            )}
-          >
-            <ModulePhaseChip moduleId={moduleId} />
-            <span className="uppercase tracking-[0.12em]">
-              Module {String(order).padStart(2, '0')}
-            </span>
-            <span aria-hidden>·</span>
-            <span>{estimatedMinutes} min</span>
-            {safetyLevel === 'required' ? (
-              <>
-                <span aria-hidden>·</span>
-                <span className="inline-flex items-center gap-1 font-semibold uppercase tracking-[0.12em] text-amber-900">
-                  <ShieldAlert aria-hidden className="h-3.5 w-3.5" />
-                  Safety required
-                </span>
-              </>
-            ) : null}
-            {liveLabel ? (
-              <>
-                <span aria-hidden>·</span>
-                <span className="inline-flex items-center gap-1 font-semibold text-emerald-800">
-                  <CheckCircle2 aria-hidden className="h-3.5 w-3.5" />
-                  {liveLabel}
-                </span>
-              </>
-            ) : null}
-          </div>
+          {meta}
           <h1 className={weType.title}>{title}</h1>
         </div>
       </div>

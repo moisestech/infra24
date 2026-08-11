@@ -24,6 +24,11 @@ export {
 } from '@/lib/workshop-engine/resin-printing/media'
 
 export {
+  RESIN_MODULE_BANNERS,
+  RESIN_BANNER_SIZE,
+} from '@/lib/workshop-engine/resin-printing/banners'
+
+export {
   RESIN_BOOKLET_EDITION,
   RESIN_BOOKLET_ID,
   resinBookletRef,

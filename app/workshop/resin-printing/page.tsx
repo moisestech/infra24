@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { StartSessionButton } from '@/components/workshop-engine/StartSessionButton'
 import { JoinSessionForm } from '@/components/workshop-engine/JoinSessionForm'
 import { WorkshopModuleCard } from '@/components/workshop-engine/SessionJoinCard'
-import { WorkshopImagePlaceholder } from '@/components/workshop-engine/WorkshopVisuals'
+import { ModuleBanner } from '@/components/workshop-engine/ModuleBanner'
 import {
   weSpace,
   weType,
@@ -16,6 +16,7 @@ import {
   ShieldCheck,
 } from 'lucide-react'
 import {
+  RESIN_MODULE_BANNERS,
   RESIN_PRINTING_MODULES,
   RESIN_PRINTING_WORKSHOP,
 } from '@/lib/workshop-engine/resin-printing'
@@ -69,23 +70,11 @@ export default function ResinPrintingHubPage() {
             configured separately for Oolite and DCC.MIAMI at Bakehouse.
           </p>
         </div>
-        <WorkshopImagePlaceholder
-          moduleId="welcome"
-          title={RESIN_PRINTING_WORKSHOP.heroMedia?.title ?? 'Workshop hero image'}
-          shot={
-            RESIN_PRINTING_WORKSHOP.heroMedia?.shot ??
-            'Printer, cured samples, and the staged workflow arranged in the Digital Lab. No people or text.'
-          }
-          altIntent={
-            RESIN_PRINTING_WORKSHOP.heroMedia?.altIntent ??
-            'Resin printer and finished artist samples in the workshop space.'
-          }
-          aspect={RESIN_PRINTING_WORKSHOP.heroMedia?.aspect ?? 'landscape 16:10'}
-          assetId={RESIN_PRINTING_WORKSHOP.heroMedia?.assetId}
-          minSize={RESIN_PRINTING_WORKSHOP.heroMedia?.minSize}
-          src={RESIN_PRINTING_WORKSHOP.heroMedia?.src}
-          caption={RESIN_PRINTING_WORKSHOP.heroMedia?.caption}
-          kind={RESIN_PRINTING_WORKSHOP.heroMedia?.kind}
+        <ModuleBanner
+          banner={RESIN_MODULE_BANNERS.welcome}
+          priority
+          decorative={false}
+          className="w-full"
         />
       </section>
 

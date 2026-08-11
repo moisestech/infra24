@@ -1,7 +1,9 @@
 import {
   RESIN_ASSET_PATHS,
+  RESIN_BANNER_SIZE,
   RESIN_BOOKLET_EDITION,
   RESIN_HERO_MEDIA,
+  RESIN_MODULE_BANNERS,
   RESIN_MODULE_MEDIA_IDS,
   RESIN_MODULE_PRIMARY_MEDIA,
   RESIN_PRINTING_MODULES,
@@ -32,6 +34,23 @@ describe('resin workshop curriculum', () => {
       )
     }
     expect(RESIN_PRINTING_WORKSHOP.heroMedia?.assetId).toBe(RESIN_HERO_MEDIA.assetId)
+  })
+
+  it('attaches illustrative 21:9 banners to every module', () => {
+    expect(Object.keys(RESIN_MODULE_BANNERS)).toHaveLength(9)
+    expect(RESIN_BANNER_SIZE).toEqual({ width: 1915, height: 821 })
+    for (const m of RESIN_PRINTING_MODULES) {
+      const banner = m.banner
+      expect(banner).toBeTruthy()
+      expect(banner?.kind).toBe('illustration')
+      expect(banner?.width).toBe(1915)
+      expect(banner?.height).toBe(821)
+      expect(banner?.src).toMatch(/^\/workshops\/resin-printing\/banners\/.+\.webp$/)
+      expect(banner?.masterSrc).toMatch(/^\/workshops\/resin-printing\/banners\/png\/.+\.png$/)
+      expect(banner?.alt.length).toBeGreaterThan(20)
+      expect(banner?.objectPosition).toBe('center right')
+      expect(RESIN_MODULE_BANNERS[m.id]?.src).toBe(banner?.src)
+    }
   })
 
   it('keeps safety boundary language off certification', () => {
