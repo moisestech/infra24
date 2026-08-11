@@ -1,74 +1,81 @@
-'use client'
+"use client";
 
-import { useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   LivePositionBanner,
   PaceSelector,
-} from '@/components/workshop-engine/ParticipantControls'
+} from "@/components/workshop-engine/ParticipantControls";
 import {
   BookletReference,
   LearningPromise,
   ModuleHeader,
   SafetyBanner,
-} from '@/components/workshop-engine/ModuleChrome'
-import { ModuleActivity } from '@/components/workshop-engine/ModuleActivity'
-import { KnowledgeCheck } from '@/components/workshop-engine/ParticipantControls'
-import { SafetyGate } from '@/components/workshop-engine/SafetyAndTimer'
-import { useLiveSessionPolling } from '@/components/workshop-engine/TvPresentationClient'
+} from "@/components/workshop-engine/ModuleChrome";
+import { ModuleActivity } from "@/components/workshop-engine/ModuleActivity";
+import { KnowledgeCheck } from "@/components/workshop-engine/ParticipantControls";
+import { SafetyGate } from "@/components/workshop-engine/SafetyAndTimer";
+import { ModuleVisualPlaceholder } from "@/components/workshop-engine/WorkshopVisuals";
+import { useLiveSessionPolling } from "@/components/workshop-engine/TvPresentationClient";
 import {
   RESIN_PRINTING_MODULES,
   getResinModuleById,
   getResinModuleNav,
-} from '@/lib/workshop-engine/resin-printing'
-import type { PaceMode, WorkshopLiveSession, WorkshopModule } from '@/lib/workshop-engine/types'
+} from "@/lib/workshop-engine/resin-printing";
+import type {
+  PaceMode,
+  WorkshopLiveSession,
+  WorkshopModule,
+} from "@/lib/workshop-engine/types";
 
-const PACE_KEY = 'infra24-resin-pace'
-const SAFETY_KEY = 'infra24-resin-safety-gate'
+const PACE_KEY = "infra24-resin-pace";
+const SAFETY_KEY = "infra24-resin-safety-gate";
 
 export function ParticipantSessionClient({
   code,
   initialSession,
 }: {
-  code: string
-  initialSession: WorkshopLiveSession
+  code: string;
+  initialSession: WorkshopLiveSession;
 }) {
-  const { session } = useLiveSessionPolling(code, initialSession)
-  const [pace, setPace] = useState<PaceMode>('follow')
-  const [selfSlug, setSelfSlug] = useState(RESIN_PRINTING_MODULES[0].slug)
-  const [ready, setReady] = useState(false)
+  const { session } = useLiveSessionPolling(code, initialSession);
+  const [pace, setPace] = useState<PaceMode>("follow");
+  const [selfSlug, setSelfSlug] = useState(RESIN_PRINTING_MODULES[0].slug);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(PACE_KEY) as PaceMode | null
-    if (stored === 'follow' || stored === 'self-paced') setPace(stored)
-    setReady(true)
-  }, [])
+    const stored = window.localStorage.getItem(PACE_KEY) as PaceMode | null;
+    if (stored === "follow" || stored === "self-paced") setPace(stored);
+    setReady(true);
+  }, []);
 
   useEffect(() => {
-    if (!ready) return
-    window.localStorage.setItem(PACE_KEY, pace)
-  }, [pace, ready])
+    if (!ready) return;
+    window.localStorage.setItem(PACE_KEY, pace);
+  }, [pace, ready]);
 
-  const liveModule = getResinModuleById(session.liveModuleId) ?? RESIN_PRINTING_MODULES[0]
-  const viewingSlug = pace === 'follow' ? liveModule.slug : selfSlug
+  const liveModule =
+    getResinModuleById(session.liveModuleId) ?? RESIN_PRINTING_MODULES[0];
+  const viewingSlug = pace === "follow" ? liveModule.slug : selfSlug;
   const module = useMemo(
-    () => RESIN_PRINTING_MODULES.find((m) => m.slug === viewingSlug) ?? liveModule,
-    [viewingSlug, liveModule]
-  )
+    () =>
+      RESIN_PRINTING_MODULES.find((m) => m.slug === viewingSlug) ?? liveModule,
+    [viewingSlug, liveModule],
+  );
 
   // Safety-critical live module interrupts Follow class.
   useEffect(() => {
-    if (pace !== 'follow') return
-    if (liveModule.safetyLevel === 'required') {
-      setSelfSlug(liveModule.slug)
+    if (pace !== "follow") return;
+    if (liveModule.safetyLevel === "required") {
+      setSelfSlug(liveModule.slug);
     }
-  }, [pace, liveModule])
+  }, [pace, liveModule]);
 
-  const nav = getResinModuleNav(module.slug)
+  const nav = getResinModuleNav(module.slug);
 
   function rejoin() {
-    setPace('follow')
-    setSelfSlug(liveModule.slug)
+    setPace("follow");
+    setSelfSlug(liveModule.slug);
   }
 
   return (
@@ -78,8 +85,11 @@ export function ParticipantSessionClient({
           Session {session.joinCode}
         </p>
         <PaceSelector value={pace} onChange={setPace} />
-        {pace === 'self-paced' ? (
-          <LivePositionBanner moduleTitle={liveModule.title} onRejoin={rejoin} />
+        {pace === "self-paced" ? (
+          <LivePositionBanner
+            moduleTitle={liveModule.title}
+            onRejoin={rejoin}
+          />
         ) : (
           <LivePositionBanner moduleTitle={liveModule.title} />
         )}
@@ -87,12 +97,12 @@ export function ParticipantSessionClient({
 
       <ModuleView
         module={module}
-        liveLabel={pace === 'follow' ? 'Following live' : 'My pace'}
-        showSafetyGate={module.safetyLevel === 'required'}
+        liveLabel={pace === "follow" ? "Following live" : "My pace"}
+        showSafetyGate={module.safetyLevel === "required"}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-neutral-200 pt-4 text-sm">
-        {pace === 'self-paced' && nav.prev ? (
+        {pace === "self-paced" && nav.prev ? (
           <button
             type="button"
             className="underline"
@@ -103,7 +113,7 @@ export function ParticipantSessionClient({
         ) : (
           <span />
         )}
-        {pace === 'self-paced' && nav.next ? (
+        {pace === "self-paced" && nav.next ? (
           <button
             type="button"
             className="underline"
@@ -118,11 +128,11 @@ export function ParticipantSessionClient({
         <Link className="underline" href="/workshop/resin-printing">
           Workshop overview
         </Link>
-        {' · '}
+        {" · "}
         Independent navigation never authorizes equipment operation.
       </p>
     </div>
-  )
+  );
 }
 
 export function ModuleView({
@@ -131,15 +141,16 @@ export function ModuleView({
   showSafetyGate,
   showFacilitatorNotes = false,
 }: {
-  module: WorkshopModule
-  liveLabel?: string
-  showSafetyGate?: boolean
-  showFacilitatorNotes?: boolean
+  module: WorkshopModule;
+  liveLabel?: string;
+  showSafetyGate?: boolean;
+  showFacilitatorNotes?: boolean;
 }) {
   return (
     <article className="space-y-6">
       <ModuleHeader
         order={module.order}
+        moduleId={module.id}
         title={module.title}
         estimatedMinutes={module.estimatedMinutes}
         liveLabel={liveLabel}
@@ -148,27 +159,32 @@ export function ModuleView({
       <LearningPromise>{module.promise}</LearningPromise>
 
       {module.safetyNote ? (
-        <SafetyBanner note={module.safetyNote} required={module.safetyLevel === 'required'} />
+        <SafetyBanner
+          note={module.safetyNote}
+          required={module.safetyLevel === "required"}
+        />
       ) : null}
 
       {showSafetyGate ? (
         <SafetyGate
           note={
             module.safetyNote ??
-            'Complete the safety check before continuing. Equipment stays instructor-led.'
+            "Complete the safety check before continuing. Equipment stays instructor-led."
           }
           checklist={
-            module.activity.kind === 'checklist'
+            module.activity.kind === "checklist"
               ? module.activity.items
               : [
-                  'I will not operate resin equipment independently tonight.',
-                  'I know clean zone vs controlled zone.',
-                  'I understand uncured resin requires PPE.',
+                  "I will not operate resin equipment independently tonight.",
+                  "I know clean zone vs controlled zone.",
+                  "I understand uncured resin requires PPE.",
                 ]
           }
           storageKey={`${SAFETY_KEY}-${module.id}`}
         />
       ) : null}
+
+      <ModuleVisualPlaceholder moduleId={module.id} />
 
       <section className="space-y-2">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">
@@ -191,7 +207,9 @@ export function ModuleView({
       <ModuleActivity activity={module.activity} />
 
       <section className="rounded-md border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-700">
-        <span className="font-medium text-neutral-950">Physical evidence: </span>
+        <span className="font-medium text-neutral-950">
+          Physical evidence:{" "}
+        </span>
         {module.physicalSample}
       </section>
 
@@ -223,5 +241,5 @@ export function ModuleView({
         </aside>
       ) : null}
     </article>
-  )
+  );
 }
