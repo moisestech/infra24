@@ -97,6 +97,8 @@ function isPublicRoute(pathname: string): boolean {
 
 export default authMiddleware({
   publicRoutes: (req) => isPublicRoute(req.nextUrl.pathname),
+  // Bypass Clerk entirely for live-session APIs (public join/facilitate sync).
+  ignoredRoutes: ['/api/workshop-live-sessions(.*)'],
   afterAuth: (auth, req) => {
     const { pathname } = req.nextUrl
     const { userId } = auth
