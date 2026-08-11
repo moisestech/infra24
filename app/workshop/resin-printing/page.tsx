@@ -33,8 +33,8 @@ export default function ResinPrintingHubPage() {
 
   return (
     <div className={cn(weSpace.stack, '2xl:space-y-14')}>
-      <section className="grid items-center gap-6 md:gap-8 lg:grid-cols-[1.05fr_.95fr] 2xl:gap-10">
-        <div className="space-y-4 md:space-y-5 2xl:space-y-6">
+      <section className="grid min-w-0 items-center gap-6 md:gap-8 lg:grid-cols-[1.05fr_.95fr] 2xl:gap-10">
+        <div className="min-w-0 space-y-4 md:space-y-5 2xl:space-y-6">
           <div className="flex flex-wrap gap-2">
             {[
               `${w.durationMinutes} min`,
@@ -74,7 +74,7 @@ export default function ResinPrintingHubPage() {
           banner={RESIN_MODULE_BANNERS.welcome}
           priority
           decorative={false}
-          className="w-full"
+          className="w-full min-w-0 max-w-full"
         />
       </section>
 

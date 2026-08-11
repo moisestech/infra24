@@ -26,12 +26,12 @@ export function ModuleBanner({
   return (
     <header
       className={cn(
-        'relative isolate overflow-hidden rounded-2xl border border-slate-200 bg-slate-100',
+        'relative isolate w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-slate-100',
         className
       )}
     >
       <div
-        className="relative min-h-[11rem] w-full sm:min-h-[13rem] md:min-h-[15rem] lg:min-h-0"
+        className="relative min-h-[11rem] w-full min-w-0 max-w-full sm:min-h-[13rem] md:min-h-[15rem] lg:min-h-0"
         style={{ aspectRatio: `${banner.width} / ${banner.height}` }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -43,7 +43,7 @@ export function ModuleBanner({
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
           fetchPriority={priority ? 'high' : undefined}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full max-w-full object-cover"
           style={{
             objectPosition: banner.objectPosition ?? 'center right',
           }}
