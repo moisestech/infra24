@@ -122,6 +122,12 @@ describe('resin booklet V02 mapping', () => {
     }
   })
 
+  it('includes a discussion prompt on every module', () => {
+    for (const m of RESIN_PRINTING_MODULES) {
+      expect(m.discussionPrompt?.length).toBeGreaterThan(20)
+    }
+  })
+
   it('resolves hero and diagram asset paths in media metadata', () => {
     expect(RESIN_HERO_MEDIA.src).toBe(RESIN_ASSET_PATHS.hero)
     expect(RESIN_MODULE_PRIMARY_MEDIA['safety-zones']?.src).toBe(

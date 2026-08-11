@@ -46,3 +46,12 @@ export {
   weMeasure,
 } from "@/components/workshop-engine/responsive";
 export { ModuleLayout } from "@/components/workshop-engine/ModuleLayout";
+export {
+  LearningOutcome,
+  WatchNotice,
+  KeyIdeas,
+  DiscussionPrompt,
+  PhysicalEvidence,
+  FacilitatorCues,
+  NextStepNav,
+} from "@/components/workshop-engine/TeachingSurfaces";

@@ -27,6 +27,7 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       'Resin equipment stays instructor-led for this beginner workshop.',
     ],
     watchNotice: 'Join QR on the TV, meet facilitators, and hear the expectation statement.',
+    discussionPrompt: 'What do you hope to print, and are you following the class or moving at your own pace?',
     physicalSample: 'Printed join sign / QR backup card',
     activity: {
       kind: 'choice',
@@ -74,6 +75,7 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       'Some projects need FDM, fabrication, or a consultation instead.',
     ],
     watchNotice: 'Compare successful art objects at different scales and detail levels.',
+    discussionPrompt: 'What detail, scale, or surface quality makes this project a resin candidate?',
     physicalSample: 'Successful cured prints with scale reference',
     activity: {
       kind: 'classify',
@@ -153,6 +155,7 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       'Stop-work conditions override the schedule.',
     ],
     watchNotice: 'Full-screen room-zone diagram and PPE demonstration.',
+    discussionPrompt: 'Which objects belong in the clean zone, which belong in the controlled zone, and who may handle them?',
     physicalSample: 'PPE set, zone markers, waste/spill setup, SDS reference',
     activity: {
       kind: 'checklist',
@@ -228,6 +231,7 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       'File readiness happens before the printer ever starts.',
     ],
     watchNotice: 'Walk the five staged physical pipeline objects.',
+    discussionPrompt: 'At which stage could a file problem become a material or safety problem?',
     physicalSample: 'Raw file → sliced file → supported print → washed/cured print → finished object',
     activity: {
       kind: 'order',
@@ -278,6 +282,7 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       'Ready / repair / consultation is a preparation decision, not a grade.',
     ],
     watchNotice: 'Annotate one good model and one problematic model.',
+    discussionPrompt: 'Is this model ready, repairable, or better handled through a consultation—and what evidence supports that decision?',
     physicalSample: 'Thin wall, open geometry, fragile detail, hollow cavity examples',
     activity: {
       kind: 'classify',
@@ -323,6 +328,7 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       'Exposure settings are venue/profile data, not universal advice.',
     ],
     watchNotice: 'Live slicer demo of the full repeatable sequence.',
+    discussionPrompt: 'What changes when we rotate the model, and where will supports leave evidence on the finished object?',
     physicalSample: 'Demo model, validated project file, USB/screenshot backup',
     activity: {
       kind: 'checklist',
@@ -384,6 +390,7 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       'Cured parts are handled differently from wet prints.',
     ],
     watchNotice: 'Instructor-only staged demo of print/wash/cure stations.',
+    discussionPrompt: 'What happens at each station, what is the hazard, and who operates it during this workshop?',
     physicalSample: 'Build plate, vat, wash station, curing station, removal tools',
     activity: {
       kind: 'classify',
@@ -431,6 +438,7 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       'Cured failure samples are teaching objects, not trash.',
     ],
     watchNotice: 'Show cured failed prints one at a time.',
+    discussionPrompt: 'What evidence do we see, at what stage did it appear, and what is the smallest useful next test?',
     physicalSample: 'Plate/film failure, detached object, crack, white bloom, warp/soft detail',
     activity: {
       kind: 'classify',
@@ -499,6 +507,7 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
       'Resources and booklet stay available after class.',
     ],
     watchNotice: 'Recap, resource QR, appointment pathway.',
+    discussionPrompt: 'Is your project ready, in need of repair, or in need of consultation—and what is your next documented step?',
     physicalSample: 'Appointment checklist and resource QR backup',
     activity: {
       kind: 'readiness',

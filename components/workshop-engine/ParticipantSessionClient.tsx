@@ -5,18 +5,25 @@ import Link from "next/link";
 import {
   LivePositionBanner,
   PaceSelector,
+  KnowledgeCheck,
 } from "@/components/workshop-engine/ParticipantControls";
 import {
   BookletReference,
-  LearningPromise,
   ModuleHeader,
   SafetyBanner,
 } from "@/components/workshop-engine/ModuleChrome";
 import { ModuleActivity } from "@/components/workshop-engine/ModuleActivity";
-import { KnowledgeCheck } from "@/components/workshop-engine/ParticipantControls";
 import { SafetyGate } from "@/components/workshop-engine/SafetyAndTimer";
 import { ModuleVisualPlaceholder } from "@/components/workshop-engine/WorkshopVisuals";
 import { ModuleLayout } from "@/components/workshop-engine/ModuleLayout";
+import {
+  DiscussionPrompt,
+  FacilitatorCues,
+  KeyIdeas,
+  LearningOutcome,
+  PhysicalEvidence,
+  WatchNotice,
+} from "@/components/workshop-engine/TeachingSurfaces";
 import { useLiveSessionPolling } from "@/components/workshop-engine/TvPresentationClient";
 import {
   weShell,
@@ -35,7 +42,6 @@ import type {
   WorkshopModule,
 } from "@/lib/workshop-engine/types";
 import { cn } from "@/lib/utils";
-import { ClipboardList, Eye, Lightbulb, Mic } from "lucide-react";
 
 const PACE_KEY = "infra24-resin-pace";
 const SAFETY_KEY = "infra24-resin-safety-gate";
@@ -148,6 +154,12 @@ export function ParticipantSessionClient({
   );
 }
 
+/**
+ * Module anatomy (V02):
+ * 1 identity → 2 outcome → 3 safety → 4 visual → 5 watch → 6 ideas →
+ * 7 activity → 8 discussion → 9 booklet (rail) → 10 knowledge →
+ * 11 physical evidence (rail) → 12 facilitator cues → 13 nav (page-level)
+ */
 export function ModuleView({
   workshopModule,
   liveLabel,
@@ -169,7 +181,7 @@ export function ModuleView({
         liveLabel={liveLabel}
         safetyLevel={workshopModule.safetyLevel}
       />
-      <LearningPromise>{workshopModule.promise}</LearningPromise>
+      <LearningOutcome>{workshopModule.promise}</LearningOutcome>
 
       {workshopModule.safetyNote ? (
         <SafetyBanner
@@ -198,45 +210,12 @@ export function ModuleView({
       ) : null}
 
       <ModuleVisualPlaceholder moduleId={workshopModule.id} />
-
-      <section className={weSpace.stackTight}>
-        <h2
-          className={cn(
-            weType.meta,
-            "inline-flex items-center gap-2 text-cyan-800",
-          )}
-        >
-          <Eye aria-hidden className="h-3.5 w-3.5 md:h-4 md:w-4" />
-          Watch / notice
-        </h2>
-        <p className={cn(weType.body, "text-slate-800")}>
-          {workshopModule.watchNotice}
-        </p>
-      </section>
-
-      <section className={weSpace.stackTight}>
-        <h2
-          className={cn(
-            weType.meta,
-            "inline-flex items-center gap-2 text-indigo-800",
-          )}
-        >
-          <Lightbulb aria-hidden className="h-3.5 w-3.5 md:h-4 md:w-4" />
-          Key ideas
-        </h2>
-        <ul
-          className={cn(
-            weType.body,
-            "list-disc space-y-1.5 pl-5 text-slate-800 md:space-y-2",
-          )}
-        >
-          {workshopModule.keyIdeas.map((idea) => (
-            <li key={idea}>{idea}</li>
-          ))}
-        </ul>
-      </section>
-
+      <WatchNotice>{workshopModule.watchNotice}</WatchNotice>
+      <KeyIdeas ideas={workshopModule.keyIdeas} />
       <ModuleActivity activity={workshopModule.activity} />
+      {workshopModule.discussionPrompt ? (
+        <DiscussionPrompt prompt={workshopModule.discussionPrompt} />
+      ) : null}
 
       {workshopModule.knowledgeCheck ? (
         <KnowledgeCheck
@@ -246,48 +225,16 @@ export function ModuleView({
       ) : null}
 
       {showFacilitatorNotes ? (
-        <aside
-          className={cn(
-            "rounded-xl border border-sky-200 bg-sky-50 text-sky-950 lg:hidden",
-            weSpace.cardPad,
-            weType.body,
-          )}
-        >
-          <p className="inline-flex items-center gap-2 font-semibold md:text-lg 2xl:text-xl">
-            <Mic aria-hidden className="h-4 w-4 text-sky-800 md:h-5 md:w-5" />
-            Facilitator cues
-          </p>
-          <ul className="mt-2 list-disc space-y-1 pl-5 md:mt-3">
-            {workshopModule.facilitatorNotes.map((n) => (
-              <li key={n}>{n}</li>
-            ))}
-          </ul>
-        </aside>
+        <div className="lg:hidden">
+          <FacilitatorCues notes={workshopModule.facilitatorNotes} />
+        </div>
       ) : null}
     </>
   );
 
   const rail = (
     <>
-      <section
-        className={cn(
-          "rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-950",
-          weSpace.cardPad,
-          weType.body,
-        )}
-      >
-        <p className="inline-flex items-center gap-2 font-semibold">
-          <ClipboardList
-            aria-hidden
-            className="h-4 w-4 shrink-0 text-emerald-800 md:h-5 md:w-5"
-          />
-          Physical evidence
-        </p>
-        <p className="mt-1.5 text-emerald-900/90">
-          {workshopModule.physicalSample}
-        </p>
-      </section>
-
+      <PhysicalEvidence>{workshopModule.physicalSample}</PhysicalEvidence>
       {workshopModule.bookletRefs.map((ref) => (
         <BookletReference
           key={`${ref.bookletId}-${ref.sectionTitle}-${ref.startPage ?? "x"}`}
@@ -300,25 +247,10 @@ export function ModuleView({
           pagePreviewHref={ref.pagePreviewHref}
         />
       ))}
-
       {showFacilitatorNotes ? (
-        <aside
-          className={cn(
-            "hidden rounded-xl border border-sky-200 bg-sky-50 text-sky-950 lg:block",
-            weSpace.cardPad,
-            weType.body,
-          )}
-        >
-          <p className="inline-flex items-center gap-2 font-semibold md:text-lg 2xl:text-xl">
-            <Mic aria-hidden className="h-4 w-4 text-sky-800 md:h-5 md:w-5" />
-            Facilitator cues
-          </p>
-          <ul className="mt-2 list-disc space-y-1 pl-5 md:mt-3">
-            {workshopModule.facilitatorNotes.map((n) => (
-              <li key={n}>{n}</li>
-            ))}
-          </ul>
-        </aside>
+        <div className="hidden lg:block">
+          <FacilitatorCues notes={workshopModule.facilitatorNotes} />
+        </div>
       ) : null}
     </>
   );

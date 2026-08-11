@@ -142,6 +142,8 @@ export type WorkshopModule = {
   promise: string
   keyIdeas: string[]
   watchNotice: string
+  /** Optional in-room discussion prompt (curriculum metadata). */
+  discussionPrompt?: string
   physicalSample: string
   activity: Activity
   knowledgeCheck?: KnowledgeCheck
