@@ -15,6 +15,7 @@ export const MODULE_COLOR_TOKENS: Record<ModuleColorTokenId, ModuleColorTokenCla
     surface: 'bg-cyan-50/70',
     border: 'border-cyan-200',
     gradient: 'from-cyan-100 via-sky-50 to-white',
+    bannerWash: 'from-cyan-50/95 via-cyan-50/55 to-transparent',
     tvGlow: 'from-cyan-500/30 via-slate-950 to-slate-950',
   },
   sky: {
@@ -23,6 +24,7 @@ export const MODULE_COLOR_TOKENS: Record<ModuleColorTokenId, ModuleColorTokenCla
     surface: 'bg-sky-50/70',
     border: 'border-sky-200',
     gradient: 'from-sky-100 via-cyan-50 to-white',
+    bannerWash: 'from-sky-50/95 via-sky-50/55 to-transparent',
     tvGlow: 'from-sky-500/30 via-slate-950 to-slate-950',
   },
   amber: {
@@ -31,6 +33,7 @@ export const MODULE_COLOR_TOKENS: Record<ModuleColorTokenId, ModuleColorTokenCla
     surface: 'bg-amber-50/80',
     border: 'border-amber-300',
     gradient: 'from-amber-100 via-orange-50 to-white',
+    bannerWash: 'from-amber-50/95 via-amber-50/55 to-transparent',
     tvGlow: 'from-amber-500/30 via-slate-950 to-slate-950',
   },
   blue: {
@@ -39,6 +42,7 @@ export const MODULE_COLOR_TOKENS: Record<ModuleColorTokenId, ModuleColorTokenCla
     surface: 'bg-blue-50/70',
     border: 'border-blue-200',
     gradient: 'from-blue-100 via-sky-50 to-white',
+    bannerWash: 'from-blue-50/95 via-blue-50/55 to-transparent',
     tvGlow: 'from-blue-500/30 via-slate-950 to-slate-950',
   },
   teal: {
@@ -47,6 +51,7 @@ export const MODULE_COLOR_TOKENS: Record<ModuleColorTokenId, ModuleColorTokenCla
     surface: 'bg-teal-50/70',
     border: 'border-teal-200',
     gradient: 'from-teal-100 via-cyan-50 to-white',
+    bannerWash: 'from-teal-50/95 via-teal-50/55 to-transparent',
     tvGlow: 'from-teal-500/30 via-slate-950 to-slate-950',
   },
   indigo: {
@@ -55,6 +60,7 @@ export const MODULE_COLOR_TOKENS: Record<ModuleColorTokenId, ModuleColorTokenCla
     surface: 'bg-indigo-50/70',
     border: 'border-indigo-200',
     gradient: 'from-indigo-100 via-blue-50 to-white',
+    bannerWash: 'from-indigo-50/95 via-indigo-50/55 to-transparent',
     tvGlow: 'from-indigo-500/30 via-slate-950 to-slate-950',
   },
   orange: {
@@ -63,6 +69,7 @@ export const MODULE_COLOR_TOKENS: Record<ModuleColorTokenId, ModuleColorTokenCla
     surface: 'bg-orange-50/70',
     border: 'border-orange-200',
     gradient: 'from-orange-100 via-amber-50 to-white',
+    bannerWash: 'from-orange-50/95 via-orange-50/55 to-transparent',
     tvGlow: 'from-orange-500/30 via-slate-950 to-slate-950',
   },
   rose: {
@@ -71,6 +78,7 @@ export const MODULE_COLOR_TOKENS: Record<ModuleColorTokenId, ModuleColorTokenCla
     surface: 'bg-rose-50/70',
     border: 'border-rose-200',
     gradient: 'from-rose-100 via-orange-50 to-white',
+    bannerWash: 'from-rose-50/95 via-rose-50/55 to-transparent',
     tvGlow: 'from-rose-500/30 via-slate-950 to-slate-950',
   },
   emerald: {
@@ -79,6 +87,7 @@ export const MODULE_COLOR_TOKENS: Record<ModuleColorTokenId, ModuleColorTokenCla
     surface: 'bg-emerald-50/70',
     border: 'border-emerald-200',
     gradient: 'from-emerald-100 via-teal-50 to-white',
+    bannerWash: 'from-emerald-50/95 via-emerald-50/55 to-transparent',
     tvGlow: 'from-emerald-500/30 via-slate-950 to-slate-950',
   },
   slate: {
@@ -87,6 +96,7 @@ export const MODULE_COLOR_TOKENS: Record<ModuleColorTokenId, ModuleColorTokenCla
     surface: 'bg-slate-50',
     border: 'border-slate-200',
     gradient: 'from-slate-200/80 via-white to-white',
+    bannerWash: 'from-slate-100/95 via-slate-50/60 to-transparent',
     tvGlow: 'from-slate-500/25 via-slate-950 to-slate-950',
   },
 }

@@ -7,6 +7,7 @@ import {
   RESIN_HERO_MEDIA,
   RESIN_MODULE_MEDIA_IDS,
   RESIN_MODULE_PRIMARY_MEDIA,
+  RESIN_MODULE_TUTORIAL_VIDEOS,
 } from '@/lib/workshop-engine/resin-printing/media'
 import { RESIN_MODULE_BANNERS } from '@/lib/workshop-engine/resin-printing/banners'
 import {
@@ -29,11 +30,31 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
     ],
     watchNotice: 'Join QR on the TV, meet facilitators, and hear the expectation statement.',
     discussionPrompt: 'What do you hope to print, and are you following the class or moving at your own pace?',
+    tips: [
+      'Scan the TV QR or use the backup join card — both open the same participant session.',
+      'My pace never authorizes independent equipment use.',
+    ],
     physicalSample: 'Printed join sign / QR backup card',
     activity: {
       kind: 'choice',
       prompt: 'Choose how you want to move through class tonight.',
       items: ['Follow class', 'My pace'],
+    },
+    knowledgeCheck: {
+      prompt: 'Finishing tonight’s modules certifies you to operate the resin printer alone.',
+      options: [
+        {
+          id: 'a',
+          label: 'True',
+          explanation: 'This workshop prepares you for a supervised appointment — it is not operator certification.',
+        },
+        {
+          id: 'b',
+          label: 'False',
+          correct: true,
+          explanation: 'You learn the workflow and prepare a project; equipment stays instructor-led.',
+        },
+      ],
     },
     bookletRefs: [
       resinBookletRef({
@@ -77,6 +98,10 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
     ],
     watchNotice: 'Compare successful art objects at different scales and detail levels.',
     discussionPrompt: 'What detail, scale, or surface quality makes this project a resin candidate?',
+    tips: [
+      'Ask what fails first: detail, strength, cost, or outdoor durability.',
+      'A consultation is a valid outcome — not a failure.',
+    ],
     physicalSample: 'Successful cured prints with scale reference',
     activity: {
       kind: 'classify',
@@ -157,6 +182,10 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
     ],
     watchNotice: 'Full-screen room-zone diagram and PPE demonstration.',
     discussionPrompt: 'Which objects belong in the clean zone, which belong in the controlled zone, and who may handle them?',
+    tips: [
+      'If you are unsure which zone an object belongs in, leave it and ask.',
+      'Stop-work conditions override the schedule — say something early.',
+    ],
     physicalSample: 'PPE set, zone markers, waste/spill setup, SDS reference',
     activity: {
       kind: 'checklist',
@@ -233,12 +262,37 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
     ],
     watchNotice: 'Walk the five staged physical pipeline objects.',
     discussionPrompt: 'At which stage could a file problem become a material or safety problem?',
+    tips: [
+      'Name the stage out loud before you name the tool.',
+      'File problems are cheaper to fix than wet-resin problems.',
+    ],
     physicalSample: 'Raw file → sliced file → supported print → washed/cured print → finished object',
     activity: {
       kind: 'order',
       prompt: 'Put the five stages in order.',
       items: ['Model / file', 'Slice & support', 'Print', 'Wash', 'Cure / finish'],
       correctOrder: [0, 1, 2, 3, 4],
+    },
+    knowledgeCheck: {
+      prompt: 'Which stage comes immediately after slicing and supports?',
+      options: [
+        {
+          id: 'a',
+          label: 'Wash',
+          explanation: 'Wash happens after a print exists — not after slicing.',
+        },
+        {
+          id: 'b',
+          label: 'Print',
+          correct: true,
+          explanation: 'Model → slice & support → print → wash → cure / finish.',
+        },
+        {
+          id: 'c',
+          label: 'Cure',
+          explanation: 'Cure is near the end of the pipeline, after wash.',
+        },
+      ],
     },
     bookletRefs: [
       resinBookletRef({
@@ -284,6 +338,10 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
     ],
     watchNotice: 'Annotate one good model and one problematic model.',
     discussionPrompt: 'Is this model ready, repairable, or better handled through a consultation—and what evidence supports that decision?',
+    tips: [
+      'Check units and overall scale before hunting for tiny defects.',
+      'Ready / repair / consultation is preparation status — not a grade.',
+    ],
     physicalSample: 'Thin wall, open geometry, fragile detail, hollow cavity examples',
     activity: {
       kind: 'classify',
@@ -294,6 +352,22 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
         'Hollow form with no drain holes',
       ],
       labels: ['ready', 'repair', 'consultation'],
+    },
+    knowledgeCheck: {
+      prompt: 'A hollow form with no drain holes is usually ready to print as-is.',
+      options: [
+        {
+          id: 'a',
+          label: 'True',
+          explanation: 'Trapped resin and wash fluid make undrained hollows a repair or consultation case.',
+        },
+        {
+          id: 'b',
+          label: 'False',
+          correct: true,
+          explanation: 'Drain paths are part of printable readiness for hollow forms.',
+        },
+      ],
     },
     bookletRefs: [
       resinBookletRef({
@@ -330,6 +404,10 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
     ],
     watchNotice: 'Live slicer demo of the full repeatable sequence.',
     discussionPrompt: 'What changes when we rotate the model, and where will supports leave evidence on the finished object?',
+    tips: [
+      'Supports leave scars — place them where cleanup is acceptable.',
+      'Exporting a slice file is not permission to start the printer.',
+    ],
     physicalSample: 'Demo model, validated project file, USB/screenshot backup',
     activity: {
       kind: 'checklist',
@@ -341,6 +419,22 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
         'Add supports',
         'Hollow + drain if needed',
         'Preview layers and estimate',
+      ],
+    },
+    knowledgeCheck: {
+      prompt: 'Which statement matches this workshop’s slicer lab?',
+      options: [
+        {
+          id: 'a',
+          label: 'Any online exposure chart is fine for tonight’s venue profile',
+          explanation: 'Use the validated venue profile — exposure is not universal advice.',
+        },
+        {
+          id: 'b',
+          label: 'Follow one repeatable sequence on the validated venue profile',
+          correct: true,
+          explanation: 'One slicer + one known-good profile keeps the room coherent.',
+        },
       ],
     },
     bookletRefs: [
@@ -392,12 +486,32 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
     ],
     watchNotice: 'Instructor-only staged demo of print/wash/cure stations.',
     discussionPrompt: 'What happens at each station, what is the hazard, and who operates it during this workshop?',
+    tips: [
+      'Stay in the clean zone unless an instructor invites you closer.',
+      'Narrate the hazard at each station before the action.',
+    ],
     physicalSample: 'Build plate, vat, wash station, curing station, removal tools',
     activity: {
       kind: 'classify',
       prompt: 'Which stage does each tool belong to?',
       items: ['Plastic scraper', 'IPA wash basket', 'Cure turntable', 'Resin vat'],
       labels: ['print/removal', 'wash', 'cure', 'print'],
+    },
+    knowledgeCheck: {
+      prompt: 'During this beginner workshop, who operates print, wash, and cure equipment?',
+      options: [
+        {
+          id: 'a',
+          label: 'Participants who finished the slicer checklist',
+          explanation: 'Checklists prepare projects; they do not authorize machine operation.',
+        },
+        {
+          id: 'b',
+          label: 'Instructors only — participants observe from the clean zone',
+          correct: true,
+          explanation: 'Stations are instructor-led; participants learn roles and hazards.',
+        },
+      ],
     },
     bookletRefs: [
       resinBookletRef({
@@ -440,6 +554,10 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
     ],
     watchNotice: 'Show cured failed prints one at a time.',
     discussionPrompt: 'What evidence do we see, at what stage did it appear, and what is the smallest useful next test?',
+    tips: [
+      'Name the evidence before naming a cause.',
+      'One failure can have several contributing factors — avoid “always means.”',
+    ],
     physicalSample: 'Plate/film failure, detached object, crack, white bloom, warp/soft detail',
     activity: {
       kind: 'classify',
@@ -451,6 +569,22 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
         'Soft detail / undercured look',
       ],
       labels: ['plate/film or exposure', 'supports/orientation', 'wash/IPA', 'cure'],
+    },
+    knowledgeCheck: {
+      prompt: 'The best first move when inspecting a failed print is to:',
+      options: [
+        {
+          id: 'a',
+          label: 'Declare a single universal cause',
+          explanation: 'Skip certainty — start with observable evidence and stage.',
+        },
+        {
+          id: 'b',
+          label: 'Describe the evidence and the stage where it showed up',
+          correct: true,
+          explanation: 'Evidence + stage narrows useful next tests without overclaiming.',
+        },
+      ],
     },
     bookletRefs: [
       resinBookletRef({
@@ -509,11 +643,31 @@ const RESIN_PRINTING_MODULES_BASE: WorkshopModule[] = [
     ],
     watchNotice: 'Recap, resource QR, appointment pathway.',
     discussionPrompt: 'Is your project ready, in need of repair, or in need of consultation—and what is your next documented step?',
+    tips: [
+      'Write one next step you can actually book or complete this week.',
+      'Ready means ready for staff review / supervised time — not solo operation.',
+    ],
     physicalSample: 'Appointment checklist and resource QR backup',
     activity: {
       kind: 'readiness',
       prompt: 'Select your project status and next step.',
       items: ['Ready for supervised appointment', 'Needs repair first', 'Needs consultation'],
+    },
+    knowledgeCheck: {
+      prompt: 'Selecting “Ready” tonight means:',
+      options: [
+        {
+          id: 'a',
+          label: 'You may start the printer independently after class',
+          explanation: 'Ready is preparation for supervised time — not certification.',
+        },
+        {
+          id: 'b',
+          label: 'You are prepared to book or attend a supervised print appointment',
+          correct: true,
+          explanation: 'Exit status is about the appointment pathway, not solo machine use.',
+        },
+      ],
     },
     bookletRefs: [
       resinBookletRef({
@@ -559,6 +713,7 @@ export const RESIN_PRINTING_MODULES: WorkshopModule[] = RESIN_PRINTING_MODULES_B
     primaryMedia: RESIN_MODULE_PRIMARY_MEDIA[m.id],
     banner: RESIN_MODULE_BANNERS[m.id],
     mediaIds: RESIN_MODULE_MEDIA_IDS[m.id],
+    tutorialVideo: RESIN_MODULE_TUTORIAL_VIDEOS[m.id],
   })
 )
 

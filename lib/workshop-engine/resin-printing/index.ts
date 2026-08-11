@@ -20,6 +20,7 @@ export {
   RESIN_HERO_MEDIA,
   RESIN_MODULE_PRIMARY_MEDIA,
   RESIN_MODULE_MEDIA_IDS,
+  RESIN_MODULE_TUTORIAL_VIDEOS,
   RESIN_ASSET_PATHS,
 } from '@/lib/workshop-engine/resin-printing/media'
 

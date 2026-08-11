@@ -257,9 +257,15 @@ function ActivityShell({
   Icon?: typeof Sparkles
 }) {
   return (
-    <div className="space-y-3 rounded-xl border border-indigo-200 bg-white p-4 md:space-y-4 md:p-5 2xl:p-6">
-      <p className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-950 md:text-base 2xl:text-lg">
-        <Icon aria-hidden className="h-4 w-4 text-indigo-700 md:h-5 md:w-5" />
+    <div
+      className={cn(
+        'space-y-3 rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50/80 via-white to-white p-4 md:space-y-4 md:p-5 2xl:p-6'
+      )}
+    >
+      <p className="inline-flex items-center gap-2 text-sm font-semibold text-violet-950 md:text-base 2xl:text-lg">
+        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-violet-700 text-white md:h-7 md:w-7">
+          <Icon aria-hidden className="h-3.5 w-3.5 md:h-4 md:w-4" />
+        </span>
         {title}
       </p>
       <p className="text-sm leading-relaxed text-slate-700 md:text-base 2xl:text-lg">

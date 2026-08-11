@@ -31,11 +31,26 @@ export { StartSessionButton } from "@/components/workshop-engine/StartSessionBut
 export { JoinSessionForm } from "@/components/workshop-engine/JoinSessionForm";
 export { ResinPrintingShell } from "@/components/workshop-engine/ResinPrintingShell";
 export {
+  LearningOutcome,
+  WatchNotice,
+  KeyIdeas,
+  TipCallout,
+  DiscussionPrompt,
+  PhysicalEvidence,
+  FacilitatorCues,
+  NextStepNav,
+  SectionLabel,
+  TeachingPanel,
+} from "@/components/workshop-engine/TeachingSurfaces";
+export {
   getModuleIdentity,
   ModuleIcon,
   ModulePhaseChip,
   ModuleVisualPlaceholder,
+  ModuleTutorialVideoSlot,
+  ModuleRelatedMediaStrip,
   WorkshopImagePlaceholder,
+  WorkshopVideoPlaceholder,
 } from "@/components/workshop-engine/WorkshopVisuals";
 export {
   weShell,
@@ -47,12 +62,3 @@ export {
   weMeasure,
 } from "@/components/workshop-engine/responsive";
 export { ModuleLayout } from "@/components/workshop-engine/ModuleLayout";
-export {
-  LearningOutcome,
-  WatchNotice,
-  KeyIdeas,
-  DiscussionPrompt,
-  PhysicalEvidence,
-  FacilitatorCues,
-  NextStepNav,
-} from "@/components/workshop-engine/TeachingSurfaces";

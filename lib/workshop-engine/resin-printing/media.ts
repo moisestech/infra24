@@ -1,4 +1,7 @@
-import type { ModuleMediaPlaceholder } from '@/lib/workshop-engine/types'
+import type {
+  ModuleMediaPlaceholder,
+  ModuleTutorialVideo,
+} from '@/lib/workshop-engine/types'
 
 export const RESIN_ASSET_PATHS = {
   hero: '/workshops/resin-printing/assets/resin-hero-01.png',
@@ -139,3 +142,71 @@ export const RESIN_MODULE_MEDIA_IDS: Record<string, string[]> = {
 }
 
 export const RESIN_MEDIA_SHOT_LIST_HREF = '/workshop/resin-printing/media'
+
+/** Short tutorial / demo video slots (placeholders until assets land). */
+export const RESIN_MODULE_TUTORIAL_VIDEOS: Record<string, ModuleTutorialVideo> = {
+  welcome: {
+    assetId: 'resin-vid-welcome-01',
+    title: 'How join + pace modes work',
+    shot: '15–30s loop: TV join QR, Follow class vs My pace toggle, expectation statement on screen.',
+    aspect: 'landscape 16:9',
+    caption: 'Tutorial video slot',
+  },
+  'why-resin': {
+    assetId: 'resin-vid-why-01',
+    title: 'Detail vs scale comparison',
+    shot: 'Macro pan across cured fine-detail sample beside a larger structural FDM/other sample.',
+    aspect: 'landscape 16:9',
+    caption: 'Tutorial video slot',
+  },
+  'safety-zones': {
+    assetId: 'resin-vid-safety-01',
+    title: 'Clean zone vs controlled zone walkthrough',
+    shot: 'Illustrative room walk: clean table → amber boundary → controlled kit (no liquid handling).',
+    aspect: 'landscape 16:9',
+    caption: 'Tutorial video slot — not a PPE procedure film',
+  },
+  'complete-workflow': {
+    assetId: 'resin-vid-workflow-01',
+    title: 'Five-stage pipeline in 30 seconds',
+    shot: 'Cut between staged objects: file → supports → print → wash vessel → cured finish.',
+    aspect: 'landscape 16:9',
+    caption: 'Tutorial video slot',
+  },
+  'file-readiness': {
+    assetId: 'resin-vid-file-01',
+    title: 'Spot wall, cavity, and overhang issues',
+    shot: 'Section cut animation on one sculptural form highlighting thin wall, cavity, overhang.',
+    aspect: 'landscape 16:9',
+    caption: 'Tutorial video slot',
+  },
+  'slicer-lab': {
+    assetId: 'resin-vid-slicer-01',
+    title: 'Orientation + supports overview',
+    shot: 'Concept loop: rotate model, grow supports, pass translucent slice planes (no branded UI).',
+    aspect: 'landscape 16:9',
+    caption: 'Tutorial video slot — not a slicer screenshot demo',
+  },
+  'print-wash-cure': {
+    assetId: 'resin-vid-stations-01',
+    title: 'Station roles (observe only)',
+    shot: 'Three-beat cut: supported print → sealed wash vessel → curing glow. No hands-on operation.',
+    aspect: 'landscape 16:9',
+    caption: 'Tutorial video slot — instructor-led process only',
+  },
+  'failure-clinic': {
+    assetId: 'resin-vid-fail-01',
+    title: 'Evidence before diagnosis',
+    shot: 'Raking light across four cured failure specimens; pause on each surface clue.',
+    aspect: 'landscape 16:9',
+    caption: 'Tutorial video slot — illustrative specimens',
+  },
+  'project-readiness': {
+    assetId: 'resin-vid-ready-01',
+    title: 'Ready / repair / consultation triage',
+    shot: 'Top-down kit assemble: checklist, USB, sample, then three token states without badges.',
+    aspect: 'landscape 16:9',
+    caption: 'Tutorial video slot',
+  },
+}
+

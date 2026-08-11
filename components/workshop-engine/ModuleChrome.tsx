@@ -90,7 +90,12 @@ export function ModuleHeader({
 
   if (banner) {
     return (
-      <ModuleBanner banner={banner} priority={bannerPriority} decorative>
+      <ModuleBanner
+        banner={banner}
+        priority={bannerPriority}
+        decorative
+        washClassName={identity.bannerWash}
+      >
         <div className="flex items-start gap-3 md:gap-4">
           <ModuleIcon moduleId={moduleId} className={weIconBox.lg} />
           <div className="min-w-0 flex-1 space-y-2 md:space-y-3">

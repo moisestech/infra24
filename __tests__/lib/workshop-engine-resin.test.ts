@@ -8,6 +8,7 @@ import {
   RESIN_MODULE_PRIMARY_MEDIA,
   RESIN_PRINTING_MODULES,
   RESIN_PRINTING_WORKSHOP,
+  TEACHING_SECTION_ROLES,
   getResinModuleBySlug,
   getResinVenue,
   guidePagePreviewHref,
@@ -144,6 +145,27 @@ describe('resin booklet V02 mapping', () => {
   it('includes a discussion prompt on every module', () => {
     for (const m of RESIN_PRINTING_MODULES) {
       expect(m.discussionPrompt?.length).toBeGreaterThan(20)
+    }
+  })
+
+  it('includes tips, checkpoints, and tutorial video slots on every module', () => {
+    for (const m of RESIN_PRINTING_MODULES) {
+      expect(m.tips?.length).toBeGreaterThan(0)
+      expect(m.knowledgeCheck?.prompt).toBeTruthy()
+      expect(m.knowledgeCheck?.options.some((o) => o.correct)).toBe(true)
+      expect(m.tutorialVideo?.assetId).toBeTruthy()
+      expect(m.tutorialVideo?.title).toBeTruthy()
+    }
+  })
+
+  it('keeps teaching section roles paired with icons and labels', () => {
+    const roles = Object.values(TEACHING_SECTION_ROLES)
+    expect(roles.length).toBeGreaterThanOrEqual(10)
+    for (const role of roles) {
+      expect(role.label).toBeTruthy()
+      expect(role.Icon).toBeTruthy()
+      expect(role.iconWrap).toMatch(/bg-/)
+      expect(role.border).toMatch(/border-/)
     }
   })
 

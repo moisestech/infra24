@@ -11,6 +11,7 @@ export function ModuleBanner({
   className,
   priority = false,
   decorative = true,
+  washClassName,
 }: {
   banner: ModuleBannerMeta
   children?: React.ReactNode
@@ -19,6 +20,8 @@ export function ModuleBanner({
   priority?: boolean
   /** When true, alt is empty because the heading communicates the module. */
   decorative?: boolean
+  /** Module-token left wash for live HTML titles (does not bake into the asset). */
+  washClassName?: string
 }) {
   return (
     <header
@@ -45,11 +48,14 @@ export function ModuleBanner({
             objectPosition: banner.objectPosition ?? 'center right',
           }}
         />
-        {/* Theme-aware gradient for live HTML titles — does not bake into the asset. */}
         {children ? (
           <div
             aria-hidden
-            className="absolute inset-0 bg-gradient-to-r from-[#f5f7f5]/95 via-[#f5f7f5]/75 to-transparent sm:from-[#f5f7f5]/92 sm:via-[#f5f7f5]/55 sm:to-transparent"
+            className={cn(
+              'absolute inset-0 bg-gradient-to-r',
+              washClassName ??
+                'from-[#f5f7f5]/95 via-[#f5f7f5]/75 to-transparent sm:from-[#f5f7f5]/92 sm:via-[#f5f7f5]/55'
+            )}
           />
         ) : null}
         {children ? (

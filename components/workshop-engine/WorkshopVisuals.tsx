@@ -23,6 +23,7 @@ import {
   DEFAULT_MODULE_VISUAL,
   getColorTokenClasses,
 } from '@/lib/workshop-engine/resin-printing/theme'
+import { TEACHING_SECTION_ROLES } from '@/lib/workshop-engine/section-roles'
 
 const ICON_REGISTRY: Record<ModuleIconKey, LucideIcon> = {
   'circle-dot': CircleDot,
@@ -126,7 +127,7 @@ export function WorkshopImagePlaceholder({
   minSize?: string
   src?: string
   caption?: string
-  kind?: 'illustrative' | 'diagram' | 'photo' | 'placeholder'
+  kind?: 'illustrative' | 'illustration' | 'diagram' | 'photo' | 'placeholder'
   className?: string
 }) {
   const identity = getModuleIdentity(moduleId ?? '')
@@ -223,5 +224,172 @@ export function ModuleVisualPlaceholder({ moduleId }: { moduleId: string }) {
       caption={media.caption}
       kind={media.kind}
     />
+  )
+}
+
+export function WorkshopVideoPlaceholder({
+  moduleId,
+  title,
+  shot,
+  assetId,
+  aspect = 'landscape 16:9',
+  src,
+  caption,
+  className,
+}: {
+  moduleId?: string
+  title: string
+  shot: string
+  assetId?: string
+  aspect?: string
+  src?: string
+  caption?: string
+  className?: string
+}) {
+  const identity = getModuleIdentity(moduleId ?? '')
+  const section = TEACHING_SECTION_ROLES.video
+  const Icon = section.Icon
+
+  if (src) {
+    return (
+      <figure
+        className={cn(
+          'overflow-hidden rounded-2xl border bg-white',
+          identity.border,
+          className
+        )}
+      >
+        <div className="relative aspect-video bg-slate-950">
+          <video
+            src={src}
+            controls
+            className="h-full w-full object-contain"
+            preload="metadata"
+          >
+            {title}
+          </video>
+        </div>
+        <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 px-4 py-3 text-[11px] uppercase tracking-[0.12em] text-slate-500">
+          <span>{caption ?? title}</span>
+          <span>{aspect}</span>
+        </figcaption>
+      </figure>
+    )
+  }
+
+  return (
+    <figure
+      role="img"
+      aria-label={`Tutorial video placeholder: ${title}`}
+      className={cn(
+        'overflow-hidden rounded-2xl border',
+        section.border,
+        className
+      )}
+    >
+      <div
+        className={cn(
+          'relative flex aspect-video items-center justify-center overflow-hidden bg-gradient-to-br p-6',
+          identity.gradient
+        )}
+      >
+        <div className="absolute inset-0 bg-slate-950/10" aria-hidden />
+        <div className="relative max-w-sm text-center">
+          <span
+            className={cn(
+              'mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full shadow-sm',
+              section.iconWrap
+            )}
+          >
+            <Icon aria-hidden className="h-6 w-6" />
+          </span>
+          <p className="mt-3 text-sm font-semibold text-slate-950 md:text-base">
+            {title}
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-600 md:text-sm">
+            {shot}
+          </p>
+          {assetId ? (
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-wide text-slate-500">
+              {assetId}
+            </p>
+          ) : null}
+        </div>
+      </div>
+      <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-white px-4 py-3 text-[11px] uppercase tracking-[0.12em] text-slate-500">
+        <span>{caption ?? 'Tutorial video slot'}</span>
+        <span>{aspect}</span>
+      </figcaption>
+    </figure>
+  )
+}
+
+export function ModuleTutorialVideoSlot({ moduleId }: { moduleId: string }) {
+  const video = getResinModuleById(moduleId)?.tutorialVideo
+  if (!video) return null
+  return (
+    <WorkshopVideoPlaceholder
+      moduleId={moduleId}
+      title={video.title}
+      shot={video.shot}
+      assetId={video.assetId}
+      aspect={video.aspect}
+      src={video.src}
+      caption={video.caption}
+    />
+  )
+}
+
+/** Compact related visuals from mediaIds (beyond primary). */
+export function ModuleRelatedMediaStrip({ moduleId }: { moduleId: string }) {
+  const workshopModule = getResinModuleById(moduleId)
+  const primaryId = workshopModule?.primaryMedia?.assetId
+  const ids = (workshopModule?.mediaIds ?? []).filter((id) => id !== primaryId)
+  if (!ids.length) return null
+  const identity = getModuleIdentity(moduleId)
+  const shown = ids.slice(0, 4)
+
+  return (
+    <section
+      className={cn(
+        'rounded-xl border p-3 md:p-4',
+        identity.border,
+        identity.surface
+      )}
+    >
+      <p
+        className={cn(
+          'mb-3 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em]',
+          TEACHING_SECTION_ROLES.media.heading
+        )}
+      >
+        <span
+          className={cn(
+            'inline-flex h-6 w-6 items-center justify-center rounded-full',
+            identity.icon
+          )}
+        >
+          <ImageIcon aria-hidden className="h-3.5 w-3.5" />
+        </span>
+        Related visuals
+      </p>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:gap-3">
+        {shown.map((assetId) => (
+          <a
+            key={assetId}
+            href="/workshop/resin-printing/media"
+            className={cn(
+              'flex min-h-[4.5rem] flex-col justify-end overflow-hidden rounded-lg border bg-gradient-to-br p-2.5 transition hover:border-slate-400',
+              identity.border,
+              identity.gradient
+            )}
+          >
+            <span className="font-mono text-[9px] uppercase tracking-wide text-slate-600">
+              {assetId}
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
   )
 }

@@ -136,12 +136,14 @@ export function KnowledgeCheck({
   return (
     <div
       className={cn(
-        'space-y-3 rounded-xl border border-indigo-200 bg-white',
+        'space-y-3 rounded-xl border border-teal-200 bg-gradient-to-br from-teal-50 via-cyan-50/40 to-white',
         weSpace.cardPad
       )}
     >
-      <p className="inline-flex items-center gap-2 font-semibold text-slate-950 md:text-lg 2xl:text-xl">
-        <HelpCircle aria-hidden className="h-4 w-4 text-indigo-700 md:h-5 md:w-5" />
+      <p className="inline-flex items-center gap-2 font-semibold text-teal-950 md:text-lg 2xl:text-xl">
+        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-teal-700 text-white md:h-7 md:w-7">
+          <HelpCircle aria-hidden className="h-3.5 w-3.5 md:h-4 md:w-4" />
+        </span>
         Checkpoint
       </p>
       <p className={cn(weType.body, 'text-slate-700')}>{prompt}</p>
@@ -154,8 +156,8 @@ export function KnowledgeCheck({
             className={cn(
               'min-h-11 rounded-lg border px-3 py-2.5 text-left text-sm transition md:px-4 md:py-3 md:text-base 2xl:text-lg',
               selected === option.id
-                ? 'border-indigo-900 bg-indigo-50'
-                : 'border-slate-200 hover:border-slate-400'
+                ? 'border-teal-800 bg-teal-50'
+                : 'border-slate-200 bg-white/80 hover:border-slate-400'
             )}
           >
             {option.label}

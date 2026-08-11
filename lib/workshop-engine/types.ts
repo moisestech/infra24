@@ -134,7 +134,20 @@ export type ModuleColorTokenClasses = {
   surface: string
   border: string
   gradient: string
+  /** Left-to-right wash for HTML title overlays on banners. */
+  bannerWash: string
   tvGlow: string
+}
+
+/** Placeholder for a short tutorial / demo loop (not live equipment footage). */
+export type ModuleTutorialVideo = {
+  assetId: string
+  title: string
+  shot: string
+  aspect?: string
+  /** Public path or embed URL when available. */
+  src?: string
+  caption?: string
 }
 
 export type VenueAccentId = 'oolite-teal' | 'bakehouse-copper'
@@ -158,6 +171,8 @@ export type WorkshopModule = {
   watchNotice: string
   /** Optional in-room discussion prompt (curriculum metadata). */
   discussionPrompt?: string
+  /** Short participant tips (displayed with tip icon + amber pairing). */
+  tips?: string[]
   physicalSample: string
   activity: Activity
   knowledgeCheck?: KnowledgeCheck
@@ -172,6 +187,8 @@ export type WorkshopModule = {
   banner?: ModuleBanner
   /** Additional shot-list asset IDs related to this module. */
   mediaIds?: string[]
+  /** Optional tutorial / demo video slot (placeholder until asset lands). */
+  tutorialVideo?: ModuleTutorialVideo
 }
 
 export type WorkshopResource = {

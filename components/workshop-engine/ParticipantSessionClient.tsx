@@ -14,7 +14,11 @@ import {
 } from "@/components/workshop-engine/ModuleChrome";
 import { ModuleActivity } from "@/components/workshop-engine/ModuleActivity";
 import { SafetyGate } from "@/components/workshop-engine/SafetyAndTimer";
-import { ModuleVisualPlaceholder } from "@/components/workshop-engine/WorkshopVisuals";
+import {
+  ModuleRelatedMediaStrip,
+  ModuleTutorialVideoSlot,
+  ModuleVisualPlaceholder,
+} from "@/components/workshop-engine/WorkshopVisuals";
 import { ModuleLayout } from "@/components/workshop-engine/ModuleLayout";
 import {
   DiscussionPrompt,
@@ -22,6 +26,7 @@ import {
   KeyIdeas,
   LearningOutcome,
   PhysicalEvidence,
+  TipCallout,
   WatchNotice,
 } from "@/components/workshop-engine/TeachingSurfaces";
 import { useLiveSessionPolling } from "@/components/workshop-engine/TvPresentationClient";
@@ -212,8 +217,13 @@ export function ModuleView({
       ) : null}
 
       <ModuleVisualPlaceholder moduleId={workshopModule.id} />
+      <ModuleTutorialVideoSlot moduleId={workshopModule.id} />
       <WatchNotice>{workshopModule.watchNotice}</WatchNotice>
       <KeyIdeas ideas={workshopModule.keyIdeas} />
+      {workshopModule.tips?.length ? (
+        <TipCallout tips={workshopModule.tips} />
+      ) : null}
+      <ModuleRelatedMediaStrip moduleId={workshopModule.id} />
       <ModuleActivity activity={workshopModule.activity} />
       {workshopModule.discussionPrompt ? (
         <DiscussionPrompt prompt={workshopModule.discussionPrompt} />
