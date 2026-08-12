@@ -31,6 +31,10 @@ export { StartSessionButton } from "@/components/workshop-engine/StartSessionBut
 export { JoinSessionForm } from "@/components/workshop-engine/JoinSessionForm";
 export { ResinPrintingShell } from "@/components/workshop-engine/ResinPrintingShell";
 export {
+  ConceptualIllustration,
+  InstructionalConceptsBlock,
+} from "@/components/workshop-engine/InstructionalConcepts";
+export {
   LearningOutcome,
   WatchNotice,
   KeyIdeas,

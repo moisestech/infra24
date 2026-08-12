@@ -30,6 +30,12 @@ export {
 } from '@/lib/workshop-engine/resin-printing/banners'
 
 export {
+  RESIN_MODULE_INSTRUCTIONAL_CONCEPTS,
+  SLICER_LAB_CONCEPTS,
+  INSTRUCTIONAL_CONCEPT_SIZE,
+} from '@/lib/workshop-engine/resin-printing/instructional-concepts'
+
+export {
   RESIN_BOOKLET_EDITION,
   RESIN_BOOKLET_ID,
   resinBookletRef,

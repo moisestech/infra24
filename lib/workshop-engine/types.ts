@@ -150,6 +150,72 @@ export type ModuleTutorialVideo = {
   caption?: string
 }
 
+/** Evidence strength for workshop media (conceptual ≠ documentary proof). */
+export type WorkshopMediaEvidenceLevel =
+  | 'atmospheric'
+  | 'conceptual'
+  | 'documentary'
+  | 'validated'
+
+export type WorkshopMediaKind =
+  | 'illustration'
+  | 'photo'
+  | 'screenshot'
+  | 'diagram'
+  | 'booklet-page'
+
+export type WorkshopMediaRole =
+  | 'banner'
+  | 'lesson'
+  | 'comparison'
+  | 'evidence'
+  | 'reference'
+
+/**
+ * Generic workshop media metadata. Curriculum owns paths/alt/role;
+ * components stay engine-generic.
+ */
+export type WorkshopMedia = {
+  id: string
+  src: string
+  width: number
+  height: number
+  alt: string
+  kind: WorkshopMediaKind
+  evidenceLevel: WorkshopMediaEvidenceLevel
+  role: WorkshopMediaRole
+  caption?: string
+  objectPosition?: string
+  /** Short HTML prompt shown beside/below the image. */
+  prompt?: string
+  /** Lucide icon key for section chrome (resolved in UI). */
+  iconKey?:
+    | 'rotate-3d'
+    | 'network'
+    | 'circle-dashed'
+    | 'layers-3'
+    | 'ruler'
+    | 'list-checks'
+    | 'sparkles'
+    | 'search-check'
+  /** Enable zoom/fullscreen for comparison detail. */
+  zoomable?: boolean
+}
+
+/** Conceptual teaching stills attached to a module (supporting layer). */
+export type ModuleInstructionalConcepts = {
+  /** Single concept or lead image. */
+  items: WorkshopMedia[]
+  /** Optional heading for the concept block. */
+  title?: string
+  /** Optional intro under the heading. */
+  intro?: string
+  /** Layout hint: single stack vs slicer four-step lab. */
+  layout?: 'single' | 'slicer-sequence' | 'expandable'
+  /** HTML-only list rendered with the concepts (never baked into images). */
+  htmlPoints?: string[]
+}
+
 export type VenueAccentId = 'oolite-teal' | 'bakehouse-copper'
 
 export type VenueAccentClasses = {
@@ -189,6 +255,8 @@ export type WorkshopModule = {
   mediaIds?: string[]
   /** Optional tutorial / demo video slot (placeholder until asset lands). */
   tutorialVideo?: ModuleTutorialVideo
+  /** Conceptual teaching illustrations (supporting layer; not banners). */
+  instructionalConcepts?: ModuleInstructionalConcepts
 }
 
 export type WorkshopResource = {

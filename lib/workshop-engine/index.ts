@@ -9,6 +9,8 @@ export type {
   BookletReference,
   ModuleBanner,
   ModuleTutorialVideo,
+  WorkshopMedia,
+  ModuleInstructionalConcepts,
   WorkshopModule,
   WorkshopResource,
   Workshop,

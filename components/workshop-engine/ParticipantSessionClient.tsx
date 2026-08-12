@@ -29,6 +29,7 @@ import {
   TipCallout,
   WatchNotice,
 } from "@/components/workshop-engine/TeachingSurfaces";
+import { InstructionalConceptsBlock } from "@/components/workshop-engine/InstructionalConcepts";
 import { useLiveSessionPolling } from "@/components/workshop-engine/TvPresentationClient";
 import {
   weShell,
@@ -217,11 +218,27 @@ export function ModuleView({
       ) : null}
 
       <ModuleVisualPlaceholder moduleId={workshopModule.id} />
+      {workshopModule.instructionalConcepts &&
+      (workshopModule.id === "file-readiness" ||
+        workshopModule.id === "print-wash-cure" ||
+        workshopModule.id === "failure-clinic") ? (
+        <InstructionalConceptsBlock
+          concepts={workshopModule.instructionalConcepts}
+        />
+      ) : null}
       <ModuleTutorialVideoSlot moduleId={workshopModule.id} />
       <WatchNotice>{workshopModule.watchNotice}</WatchNotice>
       <KeyIdeas ideas={workshopModule.keyIdeas} />
       {workshopModule.tips?.length ? (
         <TipCallout tips={workshopModule.tips} />
+      ) : null}
+      {workshopModule.instructionalConcepts &&
+      (workshopModule.id === "why-resin" ||
+        workshopModule.id === "project-readiness" ||
+        workshopModule.id === "slicer-lab") ? (
+        <InstructionalConceptsBlock
+          concepts={workshopModule.instructionalConcepts}
+        />
       ) : null}
       <ModuleRelatedMediaStrip moduleId={workshopModule.id} />
       <ModuleActivity activity={workshopModule.activity} />

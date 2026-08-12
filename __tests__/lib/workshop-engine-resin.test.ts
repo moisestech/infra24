@@ -8,6 +8,8 @@ import {
   RESIN_MODULE_PRIMARY_MEDIA,
   RESIN_PRINTING_MODULES,
   RESIN_PRINTING_WORKSHOP,
+  INSTRUCTIONAL_CONCEPT_SIZE,
+  SLICER_LAB_CONCEPTS,
   TEACHING_SECTION_ROLES,
   getResinModuleBySlug,
   getResinVenue,
@@ -156,6 +158,42 @@ describe('resin booklet V02 mapping', () => {
       expect(m.tutorialVideo?.assetId).toBeTruthy()
       expect(m.tutorialVideo?.title).toBeTruthy()
     }
+  })
+
+  it('attaches conceptual instructional illustrations where mapped', () => {
+    expect(INSTRUCTIONAL_CONCEPT_SIZE).toEqual({ width: 1672, height: 941 })
+    expect(SLICER_LAB_CONCEPTS).toHaveLength(4)
+    expect(SLICER_LAB_CONCEPTS.map((c) => c.id)).toEqual([
+      '107-slicer-orientation-compare',
+      '108-slicer-support-patterns',
+      '109-slicer-hollow-drain-logic',
+      '110-slicer-layer-preview',
+    ])
+
+    const mapped = [
+      'why-resin',
+      'file-readiness',
+      'slicer-lab',
+      'print-wash-cure',
+      'failure-clinic',
+      'project-readiness',
+    ]
+    for (const slug of mapped) {
+      const workshopModule = getResinModuleBySlug(slug)
+      expect(workshopModule?.instructionalConcepts?.items.length).toBeGreaterThan(0)
+      for (const item of workshopModule!.instructionalConcepts!.items) {
+        expect(item.kind).toBe('illustration')
+        expect(item.evidenceLevel).toBe('conceptual')
+        expect(item.src).toMatch(
+          /^\/workshops\/resin-printing\/instructional-concepts\/.+\.webp$/
+        )
+        expect(item.width).toBe(1672)
+        expect(item.height).toBe(941)
+        expect(item.alt.length).toBeGreaterThan(20)
+      }
+    }
+    expect(getResinModuleBySlug('welcome')?.instructionalConcepts).toBeUndefined()
+    expect(getResinModuleBySlug('safety-zones')?.instructionalConcepts).toBeUndefined()
   })
 
   it('keeps teaching section roles paired with icons and labels', () => {
