@@ -67,12 +67,26 @@ export default async function ResinModulePage({ params }: Props) {
             {nav.next.title} →
           </Link>
         ) : (
-          <Link
-            className={cn(weTouch.button, 'underline')}
-            href="/workshop/resin-printing/resources"
-          >
-            Resources →
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              className={cn(weTouch.button, 'underline')}
+              href="/fabricate/pricing"
+            >
+              Browse pricing
+            </Link>
+            <Link
+              className={cn(weTouch.button, 'underline')}
+              href="/fabricate/finishes"
+            >
+              Finish levels
+            </Link>
+            <Link
+              className={cn(weTouch.button, 'font-medium underline')}
+              href="/fabricate/quote"
+            >
+              Request quote →
+            </Link>
+          </div>
         )}
       </nav>
     </div>

@@ -217,6 +217,24 @@ export default function ResinPrintingHubPage() {
         >
           Media shot list
         </Link>
+        <Link
+          className="inline-flex items-center gap-2 rounded-full border border-cyan-300 bg-cyan-50 px-3 py-1.5 text-cyan-950 hover:border-cyan-800 md:px-4 md:py-2"
+          href="/fabricate/pricing"
+        >
+          Browse pricing
+        </Link>
+        <Link
+          className="inline-flex items-center gap-2 rounded-full border border-cyan-300 bg-cyan-50 px-3 py-1.5 text-cyan-950 hover:border-cyan-800 md:px-4 md:py-2"
+          href="/fabricate/finishes"
+        >
+          Finish levels
+        </Link>
+        <Link
+          className="inline-flex items-center gap-2 rounded-full border border-slate-950 bg-slate-950 px-3 py-1.5 text-white hover:bg-slate-800 md:px-4 md:py-2"
+          href="/fabricate/quote"
+        >
+          Request quote
+        </Link>
       </section>
     </div>
   )

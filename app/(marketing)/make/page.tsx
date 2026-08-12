@@ -26,6 +26,17 @@ export default function MakePage() {
           Revenue funnel entry. Creates a real Inquiry in DCC Jobs &amp; Quotes. You cannot set your
           own price — staff quotes after review.
         </p>
+        <p className="mt-4 rounded-xl border border-[var(--cdc-border)] bg-neutral-50 px-4 py-3 text-sm text-neutral-700 dark:bg-neutral-900/40 dark:text-neutral-300">
+          Prefer transparent rates and finish levels first? See{' '}
+          <a href="/fabricate" className="font-medium text-[var(--cdc-teal)] underline">
+            /fabricate
+          </a>{' '}
+          or start a structured quote at{' '}
+          <a href="/fabricate/quote" className="font-medium text-[var(--cdc-teal)] underline">
+            /fabricate/quote
+          </a>
+          .
+        </p>
       </header>
       <Suspense fallback={<p className="text-sm text-neutral-500">Loading form…</p>}>
         <MakeRequestForm />

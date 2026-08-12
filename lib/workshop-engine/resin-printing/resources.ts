@@ -45,6 +45,28 @@ export const RESIN_RESOURCES: WorkshopResource[] = [
     status: 'ready',
   },
   {
+    id: 'fabricate-pricing',
+    title: 'Transparent fabrication pricing',
+    description:
+      'Full-Service, Artist Access, and Commercial rates with worked examples — separate from workshop curriculum.',
+    href: '/fabricate/pricing',
+    status: 'ready',
+  },
+  {
+    id: 'fabricate-finishes',
+    title: 'Finish levels',
+    description: 'Raw through finished object — in-house Levels 0–2, custom quote for 3–4.',
+    href: '/fabricate/finishes',
+    status: 'ready',
+  },
+  {
+    id: 'fabricate-quote',
+    title: 'Request a fabrication quote',
+    description: 'Submit a project for staff review and a transparent estimate.',
+    href: '/fabricate/quote',
+    status: 'ready',
+  },
+  {
     id: 'glossary',
     title: 'Quick glossary',
     description: 'Plain-language terms: vat, FEP/film, supports, hollow, drain, cure.',

@@ -85,6 +85,7 @@ function isPublicRoute(pathname: string): boolean {
     '/machines',
     '/pricing',
     '/make',
+    '/fabricate',
     '/scale-up',
     '/dashboard/ceo',
     '/api/dcc/make',
