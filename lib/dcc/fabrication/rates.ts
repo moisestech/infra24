@@ -1,3 +1,5 @@
+import type { FabricationColorTokenId } from '@/lib/dcc/fabrication/theme'
+
 /** Rate tier for DCC Fabrication transparent pricing v0.1. */
 export type FabricationRateTierId =
   | 'full_service_artist'
@@ -15,6 +17,8 @@ export type FabricationRateCard = {
   minimum: number
   /** Optional membership note (Artist Access). */
   membershipNote?: string
+  colorTokenId: FabricationColorTokenId
+  iconKey: 'handshake' | 'badge-check' | 'building'
 }
 
 export const FABRICATION_RATE_CARDS: FabricationRateCard[] = [
@@ -27,6 +31,8 @@ export const FABRICATION_RATE_CARDS: FabricationRateCard[] = [
     materialGram: 0.08,
     laborHour: 50,
     minimum: 50,
+    colorTokenId: 'cyan',
+    iconKey: 'handshake',
   },
   {
     id: 'artist_access',
@@ -40,6 +46,8 @@ export const FABRICATION_RATE_CARDS: FabricationRateCard[] = [
     minimum: 35,
     membershipNote:
       '$25 / month, or included for 60 days after a paid workshop. Access rates apply when you prepare and run within DCC-approved procedures; DCC labor is added when staff must run, repair, segment, or finish.',
+    colorTokenId: 'emerald',
+    iconKey: 'badge-check',
   },
   {
     id: 'commercial',
@@ -51,6 +59,8 @@ export const FABRICATION_RATE_CARDS: FabricationRateCard[] = [
     materialGram: 0.12,
     laborHour: 75,
     minimum: 250,
+    colorTokenId: 'orange',
+    iconKey: 'building',
   },
 ]
 

@@ -1,3 +1,5 @@
+import type { FabricationColorTokenId } from '@/lib/dcc/fabrication/theme'
+
 export type ServiceLaneId = 'print-my-file' | 'prepare-fabricate' | 'make-it-with-me'
 
 export type FabricationServiceLane = {
@@ -7,6 +9,8 @@ export type FabricationServiceLane = {
   includes: string[]
   excludes?: string[]
   typicalTicket: string
+  iconKey: 'file' | 'wrench' | 'sparkles'
+  colorTokenId: FabricationColorTokenId
 }
 
 export const FABRICATION_SERVICE_LANES: FabricationServiceLane[] = [
@@ -30,6 +34,8 @@ export const FABRICATION_SERVICE_LANES: FabricationServiceLane[] = [
       'Assembly beyond basic cleanup',
     ],
     typicalTicket: '$50–$175 early target',
+    iconKey: 'file',
+    colorTokenId: 'cyan',
   },
   {
     id: 'prepare-fabricate',
@@ -46,6 +52,8 @@ export const FABRICATION_SERVICE_LANES: FabricationServiceLane[] = [
       'Print execution',
     ],
     typicalTicket: '$200–$500 early target',
+    iconKey: 'wrench',
+    colorTokenId: 'indigo',
   },
   {
     id: 'make-it-with-me',
@@ -61,5 +69,7 @@ export const FABRICATION_SERVICE_LANES: FabricationServiceLane[] = [
       'Finishing plan',
     ],
     typicalTicket: '$500–$1,500+ custom',
+    iconKey: 'sparkles',
+    colorTokenId: 'violet',
   },
 ]

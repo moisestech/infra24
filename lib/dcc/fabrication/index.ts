@@ -46,3 +46,25 @@ export {
   FABRICATION_WORKSHOP_BOUNDARY,
 } from '@/lib/dcc/fabrication/policies'
 export type { FabricationPolicy } from '@/lib/dcc/fabrication/policies'
+
+export {
+  FABRICATION_COLOR_TOKENS,
+  getFabricationColor,
+} from '@/lib/dcc/fabrication/theme'
+export type {
+  FabricationColorClasses,
+  FabricationColorTokenId,
+} from '@/lib/dcc/fabrication/theme'
+
+export {
+  FABRICATION_SECTION_MEDIA,
+  FABRICATION_FINISHES_STANDIN_SRC,
+  FABRICATION_PLANNING_STANDIN_SRC,
+  FABRICATION_MEDIA_DROP_PATH,
+  getFabricationSectionMedia,
+  resolveFabricationSectionMedia,
+} from '@/lib/dcc/fabrication/section-media'
+export type {
+  FabricationSectionMedia,
+  FabricationSectionMediaId,
+} from '@/lib/dcc/fabrication/section-media'

@@ -1,3 +1,5 @@
+import type { FabricationColorTokenId } from '@/lib/dcc/fabrication/theme'
+
 export type FinishLevelId =
   | 'raw'
   | 'clean'
@@ -14,6 +16,13 @@ export type FabricationFinishLevel = {
   inHouse: boolean
   laborNote: string
   iconKey: 'box' | 'sparkles' | 'puzzle' | 'brush' | 'palette'
+  colorTokenId: FabricationColorTokenId
+  mediaId:
+    | 'finishRaw'
+    | 'finishClean'
+    | 'finishAssembly'
+    | 'finishExhibition'
+    | 'finishFinished'
 }
 
 export const FABRICATION_FINISH_LEVELS: FabricationFinishLevel[] = [
@@ -27,6 +36,8 @@ export const FABRICATION_FINISH_LEVELS: FabricationFinishLevel[] = [
     laborNote:
       'Usually covered by job setup on Print My File. Extra cleanup billed as human labor at the active rate.',
     iconKey: 'box',
+    colorTokenId: 'slate',
+    mediaId: 'finishRaw',
   },
   {
     id: 'clean',
@@ -35,8 +46,11 @@ export const FABRICATION_FINISH_LEVELS: FabricationFinishLevel[] = [
     summary: 'Support cleanup, light deburring, minor sanding.',
     includes: ['Support cleanup', 'Light deburring', 'Minor sanding'],
     inHouse: true,
-    laborNote: 'Billed as DCC human labor ($50/hr artist rates; $75/hr commercial starting point).',
+    laborNote:
+      'Billed as DCC human labor ($50/hr artist rates; $75/hr commercial starting point).',
     iconKey: 'sparkles',
+    colorTokenId: 'teal',
+    mediaId: 'finishClean',
   },
   {
     id: 'assembly-ready',
@@ -51,6 +65,8 @@ export const FABRICATION_FINISH_LEVELS: FabricationFinishLevel[] = [
     inHouse: true,
     laborNote: 'Quoted as labor hours after intake. Start in-house for Levels 0–2.',
     iconKey: 'puzzle',
+    colorTokenId: 'indigo',
+    mediaId: 'finishAssembly',
   },
   {
     id: 'exhibition-prep',
@@ -62,6 +78,8 @@ export const FABRICATION_FINISH_LEVELS: FabricationFinishLevel[] = [
     laborNote:
       'Custom quote or outsource until demand supports an in-house finishing bench.',
     iconKey: 'brush',
+    colorTokenId: 'amber',
+    mediaId: 'finishExhibition',
   },
   {
     id: 'finished-object',
@@ -77,6 +95,8 @@ export const FABRICATION_FINISH_LEVELS: FabricationFinishLevel[] = [
     inHouse: false,
     laborNote: 'Custom quote. Often pairs with Make It With Me or commercial production.',
     iconKey: 'palette',
+    colorTokenId: 'rose',
+    mediaId: 'finishFinished',
   },
 ]
 

@@ -3,7 +3,9 @@ import {
   FABRICATION_QUOTE_EXAMPLES,
   FABRICATION_FINISH_LEVELS,
   FABRICATION_RATE_CARDS,
+  FABRICATION_SECTION_MEDIA,
   FABRICATION_SERVICE_LANES,
+  getFabricationSectionMedia,
 } from '@/lib/dcc/fabrication'
 import { RESIN_RESOURCES } from '@/lib/workshop-engine/resin-printing'
 
@@ -36,6 +38,22 @@ describe('dcc fabrication estimateQuote', () => {
     expect(FABRICATION_FINISH_LEVELS.map((f) => f.level)).toEqual([0, 1, 2, 3, 4])
     expect(FABRICATION_FINISH_LEVELS.filter((f) => f.inHouse)).toHaveLength(3)
     expect(FABRICATION_SERVICE_LANES).toHaveLength(3)
+    for (const lane of FABRICATION_SERVICE_LANES) {
+      expect(lane.colorTokenId).toBeTruthy()
+      expect(lane.iconKey).toBeTruthy()
+    }
+    for (const finish of FABRICATION_FINISH_LEVELS) {
+      expect(finish.colorTokenId).toBeTruthy()
+      expect(finish.mediaId).toBeTruthy()
+    }
+  })
+
+  it('lists swap-ready section media slots for upcoming assets', () => {
+    expect(Object.keys(FABRICATION_SECTION_MEDIA).length).toBeGreaterThanOrEqual(10)
+    expect(FABRICATION_SECTION_MEDIA.hero.fileName).toBe('01-fabricate-hero.webp')
+    expect(getFabricationSectionMedia('finishesHero').src).toContain(
+      '113-post-processing-states'
+    )
   })
 })
 
