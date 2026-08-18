@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" role="img" aria-labelledby="wfTitle wfDesc">
+  <title id="wfTitle">Resin printing workflow</title>
+  <desc id="wfDesc">Five stages: model file, slice and support, print, wash, cure and finish.</desc>
+  <rect width="960" height="360" fill="#f8fafc"/>
+  <g font-family="system-ui, sans-serif" text-anchor="middle">
+    <g transform="translate(96,180)">
+      <rect x="-70" y="-56" width="140" height="112" rx="16" fill="#ecfeff" stroke="#0891b2" stroke-width="2"/>
+      <text y="-8" fill="#0e7490" font-size="15" font-weight="600">1. Model</text>
+      <text y="18" fill="#334155" font-size="12">STL / OBJ</text>
+    </g>
+    <path d="M176 180 H224" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(288,180)">
+      <rect x="-70" y="-56" width="140" height="112" rx="16" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>
+      <text y="-8" fill="#3730a3" font-size="15" font-weight="600">2. Slice</text>
+      <text y="18" fill="#334155" font-size="12">Orient · support</text>
+    </g>
+    <path d="M368 180 H416" stroke="#94a3b8" stroke-width="3"/>
+    <g transform="translate(480,180)">
+      <rect x="-70" y="-56" width="140" height="112" rx="16" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+      <text y="-8" fill="#c2410c" font-size="15" font-weight="600">3. Print</text>
+      <text y="18" fill="#334155" font-size="12">Instructor-led</text>
+    </g>
+    <path d="M560 180 H608" stroke="#94a3b8" stroke-width="3"/>
+    <g transform="translate(672,180)">
+      <rect x="-70" y="-56" width="140" height="112" rx="16" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+      <text y="-8" fill="#b45309" font-size="15" font-weight="600">4. Wash</text>
+      <text y="18" fill="#334155" font-size="12">Solvent clean</text>
+    </g>
+    <path d="M752 180 H800" stroke="#94a3b8" stroke-width="3"/>
+    <g transform="translate(864,180)">
+      <rect x="-70" y="-56" width="140" height="112" rx="16" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+      <text y="-8" fill="#047857" font-size="15" font-weight="600">5. Cure</text>
+      <text y="18" fill="#334155" font-size="12">UV finish</text>
+    </g>
+  </g>
+  <text x="480" y="320" text-anchor="middle" fill="#64748b" font-size="13" font-family="system-ui, sans-serif">Instructional diagram · supervised workflow</text>
+</svg>
