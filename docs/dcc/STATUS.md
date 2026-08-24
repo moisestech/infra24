@@ -17,15 +17,15 @@
 | Field | Value |
 |---|---|
 | Date | 24 August 2026 |
-| Branch | `feature/dcc-culture-layer` (pushed, **not merged** to `main`) |
-| Last culture commits | `d988615` primitives → `4b75bd8` QA/packet/motion → `bc63daf` studio-tour light tone → founder artist records |
+| Branch | `feature/dcc-culture-layer` (pushed, **PR to `main`**) |
+| Last culture commits | `d988615` primitives → founder artists `0301f73` → offerings + wayfinding `1d7eb46` |
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
 | Culture records published | 1 program (Clandestine 2026). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). 0 journal entries. 0 culture projects. |
 | Fabricate Phase 2 | Parked on sibling `feature/dcc-fabricate-phase2` (`1329ff1`). Hero still a placeholder. |
 
 ### Namespace commit rule
 
-One namespace per commit: `culture` / `studios` / `fabricate` / `civic-projects`. Do not mix fabrication pricing into workshop curriculum. Do not mix civic `/projects` with culture `DccProject` or `/fabricate/projects`.
+One namespace per commit: `culture` / `studios` / `fabricate` / `civic-projects` / `education`. Do not mix fabrication pricing into workshop curriculum. Do not mix civic `/projects` with culture `DccProject` or `/fabricate/projects`.
 
 Paste this header on Cursor / ChatGPT handoffs:
 
@@ -178,7 +178,9 @@ Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/re
 - Newsletter: `/newsletter` exists; provider is `NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_ACTION` if set — no dedicated DCC list confirmed in-repo
 - Optional later: flatten journal to `/journal/[slug]` (today `/journal/[category]/[slug]`)
 
-**Non-goals:** podcast launch; Airtable culture schema; ITS3D lockup; merging `/projects` meanings; merge to `main` until asked.
+**Non-goals:** podcast launch; Airtable culture schema; ITS3D lockup; merging `/projects` meanings; enabling Stripe checkout.
+
+Local Next production build succeeded 24 Aug 2026 (`/artists` SSG for Moises, Fabiola, Angelo; `/workshops` offerings band). `tsc --noEmit` still fails on pre-existing files outside this branch.
 
 ---
 
