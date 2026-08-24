@@ -9,6 +9,7 @@ import {
   HeartHandshake,
   Info,
   LayoutGrid,
+  Layers,
   Mail,
   Menu,
   Share2,
@@ -53,6 +54,7 @@ const marketingHeaderNavIconMap: Record<MarketingHeaderNavIconKey, LucideIcon> =
   'share-2': Share2,
   handshake: HeartHandshake,
   mail: Mail,
+  layers: Layers,
 };
 
 export function SiteHeader() {
@@ -119,38 +121,34 @@ export function SiteHeader() {
                     Menu
                   </SheetTitle>
                   <p className="cdc-font-mono-accent max-w-full text-[11px] font-normal leading-relaxed tracking-[0.12em] text-neutral-500 dark:text-neutral-400">
-                    {pathname === '/'
-                      ? 'Apply and Appearance above the list; open sections for pages.'
-                      : 'Icon row when shown; then Apply, Appearance, and grouped links.'}
+                    Programs, artists, workshops, fabricate, and journal — then grouped pages.
                   </p>
                 </div>
               </SheetHeader>
 
-              {pathname !== '/' ? (
-                <nav
-                  className="flex flex-row flex-wrap items-center justify-center gap-2 border-b border-[var(--cdc-border)] px-4 py-4 dark:border-neutral-700"
-                  aria-label="Site sections"
-                >
-                  {headerNavEntries.map(({ href, label, icon }) => {
-                    const Icon = marketingHeaderNavIconMap[icon];
-                    return (
-                      <SheetClose key={href} asChild>
-                        <Link
-                          href={href}
-                          className={cn(
-                            iconNavLinkClass(href),
-                            'h-11 w-11 border border-transparent hover:border-neutral-200 dark:hover:border-neutral-600'
-                          )}
-                          aria-label={label}
-                          aria-current={pathname === href ? 'page' : undefined}
-                        >
-                          <Icon className="h-5 w-5 shrink-0" aria-hidden />
-                        </Link>
-                      </SheetClose>
-                    );
-                  })}
-                </nav>
-              ) : null}
+              <nav
+                className="flex flex-row flex-wrap items-center justify-center gap-2 border-b border-[var(--cdc-border)] px-4 py-4 dark:border-neutral-700"
+                aria-label="Site sections"
+              >
+                {headerNavEntries.map(({ href, label, icon }) => {
+                  const Icon = marketingHeaderNavIconMap[icon];
+                  return (
+                    <SheetClose key={href} asChild>
+                      <Link
+                        href={href}
+                        className={cn(
+                          iconNavLinkClass(href),
+                          'h-11 w-11 border border-transparent hover:border-neutral-200 dark:hover:border-neutral-600'
+                        )}
+                        aria-label={label}
+                        aria-current={pathname === href ? 'page' : undefined}
+                      >
+                        <Icon className="h-5 w-5 shrink-0" aria-hidden />
+                      </Link>
+                    </SheetClose>
+                  );
+                })}
+              </nav>
 
               <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5">
                 <div className="mb-5 flex flex-col gap-3">

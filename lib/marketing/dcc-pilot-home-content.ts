@@ -186,9 +186,9 @@ export const dccHomePathwaysSection = {
 /** Homepage hero — primary CTAs only (no duplicate intro; footer carries org links). */
 export const dccHomeHeroActionBand = {
   primaries: [
-    { label: 'Join the artist index', href: '/for-artists' },
-    { label: 'Explore workshops', href: '/workshops' },
-    { label: 'Partner with DCC', href: '/partners' },
+    { label: 'Artists', href: '/artists' },
+    { label: 'Workshops', href: '/workshops' },
+    { label: 'Fabricate', href: '/fabricate' },
   ],
 } as const;
 

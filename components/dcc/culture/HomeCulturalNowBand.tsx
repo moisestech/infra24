@@ -29,7 +29,7 @@ export function HomeCulturalNowBand() {
       title: now.title,
       description: now.shortDescription ?? 'Current DCC MIA program.',
       href: getProgramPublicPath(now),
-      label: 'Program page',
+      label: 'View program',
     })
   }
 
@@ -39,7 +39,15 @@ export function HomeCulturalNowBand() {
       title: artist.name,
       description: artist.shortBio ?? artist.location ?? 'Featured DCC artist.',
       href: `/artists/${artist.slug}`,
-      label: 'Artist page',
+      label: 'Meet the artist',
+    })
+  } else {
+    slots.push({
+      eyebrow: 'Artists',
+      title: 'Artists',
+      description: 'A curated record of artists DCC presents and works with.',
+      href: '/artists',
+      label: 'View artists',
     })
   }
 
@@ -48,7 +56,7 @@ export function HomeCulturalNowBand() {
     title: 'Workshops',
     description: 'Hands-on sessions for artists working with contemporary tools and processes.',
     href: '/workshops',
-    label: 'Workshop catalog',
+    label: 'Browse workshops',
   })
 
   slots.push({
@@ -56,7 +64,7 @@ export function HomeCulturalNowBand() {
     title: 'Fabricate',
     description: 'Production for artists and cultural projects — estimate, finishes, and quote.',
     href: '/fabricate',
-    label: 'Fabrication',
+    label: 'View fabrication',
   })
 
   if (journal) {
@@ -66,6 +74,14 @@ export function HomeCulturalNowBand() {
       description: journal.dek ?? journal.excerpt ?? 'Latest from DCC MIA.',
       href: getEditorialPublicPath(journal),
       label: 'Read',
+    })
+  } else {
+    slots.push({
+      eyebrow: 'Journal',
+      title: 'Journal',
+      description: 'Conversations and field notes, published as they are recorded.',
+      href: '/journal',
+      label: 'Open journal',
     })
   }
 

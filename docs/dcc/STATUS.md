@@ -146,6 +146,27 @@ Resin banners / technique boards. Not Clandestine artist portraits. No prices in
 - Post-fair installation photography
 - Longer founder bios / practice tags beyond Edge Zones one-liners
 
+### Education / money (do not build checkout this sprint)
+
+`/workshops` on production currently defaults the **filterable list** to the Oolite org slug (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG` or `oolite`). Cards omit dates, seats, and price; default sort used to claim “most popular” while booking counts are often zero.
+
+DCC sessions with real pages now sit in `lib/dcc/education/offerings.ts` (Saturday Lab, resin — 8 people / 3 hr, Vibecoding & Net Art, IP in the Age of AI). Capacity only where the engine already has it. **No prices in the offering records.**
+
+**What is actually live for money**
+
+- In-app workshop path: free RSVP / interest (`/api/workshop-registrations`). No card charge.
+- Oolite paid Digital Lab: **QGiv / Bloomerang** (`lib/orgs/oolite/digital-lab-qgiv-offerings.ts`) — Infra24 promotes, QGiv converts.
+- Stripe: code exists (`lib/stripe/service.ts`) but **checkout/webhook routes are disabled**. Not wired to workshops.
+- Mercury: **not in the repo**.
+- QuickBooks: **not in the repo** (Scale Up stays public numbers only).
+- DCC OS Transactions: Airtable read for fabrication/ops, not workshop tuition.
+
+**Later compounding (ops intent, not encoded)**
+
+1. Syllabus + capacity + inquiry (`/newsletter?source=workshops`) — this step.
+2. A DCC-owned paid SKU only if QGiv is not the system of record (do not duplicate Oolite checkout).
+3. Then: Stripe Checkout → Mercury → QuickBooks as books of record. Do not invent tax mapping in code until the entity is confirmed.
+
 Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/relations.ts`. Journal long form: `body` or `bodyPath` under `content/journal/<slug>.md`.
 
 ---
@@ -170,6 +191,7 @@ Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/re
 5. Homepage H1: keep service/infra hero, or lean harder into the cultural-center line?
 6. Instagram five pillars (Artists / Programs / Lab / Production / Learn): ops doc only, or metadata on records?
 7. Which email provider should `/newsletter` post to before Art Week?
+8. DCC-owned workshop checkout: wait until a DCC SKU exists, or keep Oolite paid classes on QGiv?
 
 ---
 

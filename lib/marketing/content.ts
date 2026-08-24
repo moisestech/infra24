@@ -547,7 +547,8 @@ export type MarketingHeaderNavIconKey =
   | 'flag'
   | 'share-2'
   | 'handshake'
-  | 'mail';
+  | 'mail'
+  | 'layers';
 
 /** Header icon strip (`lg+` only) — left cluster; `href` must exist in `navItems`; `label` for tooltips and `aria-label`. */
 export const marketingHeaderNavLeft = [
@@ -555,6 +556,7 @@ export const marketingHeaderNavLeft = [
   { href: '/programs', label: 'Programs', icon: 'layout-grid' satisfies MarketingHeaderNavIconKey },
   { href: '/artists', label: 'Artists', icon: 'users' satisfies MarketingHeaderNavIconKey },
   { href: '/workshops', label: 'Workshops', icon: 'graduation-cap' satisfies MarketingHeaderNavIconKey },
+  { href: '/fabricate', label: 'Fabricate', icon: 'layers' satisfies MarketingHeaderNavIconKey },
   { href: '/journal', label: 'Journal', icon: 'book-open' satisfies MarketingHeaderNavIconKey },
 ] as const;
 

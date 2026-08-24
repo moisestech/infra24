@@ -11,12 +11,13 @@ One page for ChatGPT, humans, and Cursor. Fill a packet, then edit **one** regis
 | `culture` | `lib/dcc/culture/{artists,programs,editorial,projects}.ts` | `/artists`, `/programs`, `/journal` | civic `/projects`, `/fabricate` |
 | `studios` | `lib/dcc/studios/tours.ts` | `/knight#knight-founders-360` | culture artists until a slug is published |
 | `fabricate` | `lib/dcc/fabrication/*` | `/fabricate/*` | workshop curriculum, culture records |
+| `education` | `lib/dcc/education/offerings.ts` | `/workshops` DCC sessions band | Oolite tenant catalog, Stripe/QBO until checkout is real |
 | `civic-projects` | `lib/cdc/routes.ts` `PROJECT_ENTRIES` | `/projects` | culture `DCC_PROJECTS`, `/fabricate/projects` |
 
 Commit rule: one namespace per commit. Paste this header on every Cursor / ChatGPT handoff:
 
 ```
-NAMESPACE: culture | fabricate | civic-projects | studios
+NAMESPACE: culture | fabricate | civic-projects | studios | education
 INTENT: add-record | update-copy | swap-image | ux-motion | do-not-touch
 RECORD: id / slug
 FACTS CONFIRMED:

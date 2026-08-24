@@ -20,6 +20,11 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(now.getByRole('heading', { name: 'Moises Sanabria' })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Workshops' })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Fabricate' })).toBeVisible()
+    await expect(now.getByRole('heading', { name: 'Journal' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Artists', exact: true }).first()).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Fabricate', exact: true }).first()).toBeVisible()
+    await page.getByRole('link', { name: 'Meet the artist' }).click()
+    await expect(page).toHaveURL(/\/artists\/moises-sanabria/)
   })
 
   test('programs index lists Clandestine without invented dates', async ({
