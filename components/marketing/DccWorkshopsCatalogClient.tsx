@@ -25,6 +25,7 @@ import {
 } from '@/lib/marketing/dcc-workshops-catalog-ui'
 import { DccWorkshopsCatalogFilters } from '@/components/marketing/DccWorkshopsCatalogFilters'
 import { DccWorkshopsPromotedCarousel } from '@/components/marketing/DccWorkshopsPromotedCarousel'
+import { DccWorkshopOfferingsBand } from '@/components/dcc/education/DccWorkshopOfferingsBand'
 import { PartnersCardPaintRegister } from '@/components/marketing/PartnersCardPaintRegister'
 
 function sortFeaturedFirst(a: WorkshopRow, b: WorkshopRow) {
@@ -146,6 +147,7 @@ export function DccWorkshopsCatalogClient() {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <DccWorkshopOfferingsBand />
         <div className="mx-auto h-10 max-w-md animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-800" />
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -158,15 +160,18 @@ export function DccWorkshopsCatalogClient() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Workshop catalog unavailable</h1>
-        <p className="mt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{error}</p>
-        <p className="mt-6 text-sm text-neutral-500 dark:text-neutral-500">
-          <Link href="/contact" className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline">
-            Contact DCC
-          </Link>{' '}
-          if this persists.
-        </p>
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <DccWorkshopOfferingsBand />
+        <div className="mx-auto max-w-2xl text-center">
+          <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Workshop catalog unavailable</h1>
+          <p className="mt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{error}</p>
+          <p className="mt-6 text-sm text-neutral-500 dark:text-neutral-500">
+            <Link href="/contact" className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline">
+              Contact DCC
+            </Link>{' '}
+            if this persists.
+          </p>
+        </div>
       </div>
     )
   }
@@ -238,6 +243,8 @@ export function DccWorkshopsCatalogClient() {
           </div>
         </div>
       </section>
+
+      <DccWorkshopOfferingsBand />
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <section className="scroll-mt-24" id="catalog">

@@ -12,10 +12,11 @@ export const DCC_MARKETING_WORKSHOPS_LANDING: WorkshopsLandingContent = {
   heroEyebrow: 'Digital Culture Center Miami',
   heroTitle: 'Workshop catalog',
   heroTitleAccent: 'for digital practice',
-  heroLead: '',
+  heroLead:
+    'DCC sessions below have a syllabus and a real page. Seat checkout is not live yet — request a seat or use open lab. The filterable list further down is the published org catalog.',
   heroPrimaryCta: {
-    label: 'Browse Catalog',
-    href: '#catalog',
+    label: 'See sessions',
+    href: '#offerings',
   },
   heroSecondaryCta: {
     label: 'Contact DCC',

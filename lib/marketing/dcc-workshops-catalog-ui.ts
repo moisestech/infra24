@@ -9,8 +9,8 @@ export const dccWorkshopsCatalogUi = {
   searchPlaceholder: 'Search workshops…',
   sortLabel: 'Sort by',
   sortOptions: [
-    { value: 'popular', label: 'Most popular' },
-    { value: 'rated', label: 'Highest rated' },
+    { value: 'popular', label: 'Catalog order' },
+    { value: 'rated', label: 'By title' },
     { value: 'recent', label: 'Recently updated' },
     { value: 'featured', label: 'Featured picks' },
   ] as const,

@@ -115,6 +115,16 @@ const nextConfig = {
   async redirects() {
     return [
       { source: '/support', destination: '/grants', permanent: true },
+      {
+        source: '/fabrication',
+        destination: '/fabricate',
+        permanent: false,
+      },
+      {
+        source: '/fabrication/:path*',
+        destination: '/fabricate/:path*',
+        permanent: false,
+      },
       { source: '/support/:path*', destination: '/grants/:path*', permanent: true },
       { source: '/case-studies', destination: '/projects', permanent: true },
       { source: '/case-studies/:slug', destination: '/projects/:slug', permanent: true },

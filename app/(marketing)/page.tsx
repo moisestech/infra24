@@ -46,6 +46,12 @@ const HomeLivingNetworkTeaser = dynamic(
   }
 );
 
+const HomeCulturalNowBand = dynamic(
+  () =>
+    import('@/components/dcc/culture/HomeCulturalNowBand').then((m) => m.HomeCulturalNowBand),
+  { ssr: true }
+);
+
 const EraChannelBand = dynamic(
   () => import('@/components/era/EraChannelBand').then((m) => m.EraChannelBand),
   {
@@ -105,6 +111,8 @@ export default function MarketingHomePage() {
           <CdcHeroVisual />
         </div>
       </section>
+
+      <HomeCulturalNowBand />
 
       <HomeLivingNetworkTeaser />
 

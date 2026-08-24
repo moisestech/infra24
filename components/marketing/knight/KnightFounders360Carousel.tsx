@@ -1,18 +1,20 @@
-import type { KnightFounderMomentoEmbed } from '@/lib/marketing/knight-people';
-import { cn } from '@/lib/utils';
+import { StudioTourEmbed } from '@/components/dcc/studios/StudioTourEmbed'
+import type { KnightFounderMomentoEmbed } from '@/lib/marketing/knight-people'
+import { cn } from '@/lib/utils'
 
 type KnightFounders360CarouselProps = {
-  items: KnightFounderMomentoEmbed[];
-  className?: string;
-};
+  items: KnightFounderMomentoEmbed[]
+  className?: string
+}
 
 /**
- * Edge-to-edge horizontal “carousel” of Momento360 iframes (`scroll-snap` when multiple slides).
+ * Edge-to-edge studio tours. Posters load first; the Momento360 iframe
+ * mounts only after someone clicks enter so two or three tours stay light.
  */
 export function KnightFounders360Carousel({ items, className }: KnightFounders360CarouselProps) {
-  if (items.length === 0) return null;
+  if (items.length === 0) return null
 
-  const multi = items.length > 1;
+  const multi = items.length > 1
 
   return (
     <section
@@ -33,7 +35,7 @@ export function KnightFounders360Carousel({ items, className }: KnightFounders36
             Archive Artists Studios
           </p>
           <p className="mt-1.5 max-w-2xl text-sm leading-snug text-neutral-300">
-            360° captures of studio space — drag or pinch to look around.
+            360° captures of studio space — enter a tour, then drag or pinch to look around.
           </p>
         </div>
       </div>
@@ -51,32 +53,15 @@ export function KnightFounders360Carousel({ items, className }: KnightFounders36
         {items.map((item) => (
           <div
             key={item.id}
-            className="relative min-w-full shrink-0 snap-center snap-always"
+            className="relative min-w-full shrink-0 snap-center snap-always pb-5"
             role="group"
             aria-roledescription="slide"
-            aria-label={item.label}
+            aria-label={item.caption}
           >
-            <div className="relative h-[clamp(260px,42vw,560px)] w-full">
-              <iframe
-                src={item.embedSrc}
-                title={`360° space — ${item.label}`}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-                className="absolute inset-0 h-full w-full border-0"
-              />
-            </div>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent px-4 pb-4 pt-16 sm:px-6 sm:pb-5">
-              <p className="text-sm font-semibold tracking-tight text-white drop-shadow-sm sm:text-base">
-                {item.label}
-              </p>
-              <p className="mt-0.5 text-[11px] text-violet-200/80 sm:text-xs">
-                Archive Artists Studios · 360°
-              </p>
-            </div>
+            <StudioTourEmbed tour={item} showCaption className="mx-auto max-w-6xl pt-4" />
           </div>
         ))}
       </div>
     </section>
-  );
+  )
 }

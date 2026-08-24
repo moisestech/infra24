@@ -8,6 +8,7 @@ import {
   getJournalPostsForCategory,
 } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
+import { JOURNAL_EMPTY_CONVERSATIONS } from '@/lib/dcc/culture';
 
 type Props = { params: { category: string } };
 
@@ -44,7 +45,11 @@ export default function JournalCategoryPage({ params }: Props) {
         {items.length > 0 ? (
           <CardGrid items={items} columnsClassName="sm:grid-cols-2" />
         ) : (
-          <p className="text-sm text-neutral-600">Posts in this category are coming soon.</p>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            {params.category === 'conversations'
+              ? JOURNAL_EMPTY_CONVERSATIONS
+              : 'Posts in this category are coming soon.'}
+          </p>
         )}
       </Section>
     </>

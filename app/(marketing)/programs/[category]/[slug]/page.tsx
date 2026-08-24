@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { ProgramDetail } from '@/components/dcc/culture/ProgramDetail';
 import { ProgramLayout, Section } from '@/components/marketing/cdc';
 import { getCdcPageByPath, getProgramCategorySlugs, getProgramLeaves } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
+import { getListedProgramBySlug } from '@/lib/dcc/culture';
 
 type Props = { params: { category: string; slug: string } };
 
@@ -30,11 +32,20 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const cultureProgram = getListedProgramBySlug(params.slug);
+  if (cultureProgram) {
+    return cdcPageMetadata(`/programs/${params.category}/${params.slug}`);
+  }
   const path = `/programs/${params.category}/${params.slug}`;
   return cdcPageMetadata(path);
 }
 
 export default function ProgramLeafPage({ params }: Props) {
+  const cultureProgram = getListedProgramBySlug(params.slug);
+  if (cultureProgram) {
+    return <ProgramDetail program={cultureProgram} />;
+  }
+
   const path = `/programs/${params.category}/${params.slug}`;
   const def = getCdcPageByPath(path);
   if (!def) notFound();

@@ -4,8 +4,18 @@ import Link from 'next/link';
 import { MarketingSection } from '@/components/marketing/MarketingSection';
 import { PageHero, Section, CardGrid, CtaBlock } from '@/components/marketing/cdc';
 import { EraPill } from '@/components/era/EraPill';
+import { CultureRecordCard } from '@/components/dcc/culture/CultureRecordCard';
 import { getCdcBreadcrumbs, getProgramCategories } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
+import {
+  formatCultureDateRange,
+  getArtistsForProgram,
+  getProgramPublicPath,
+  listCurrentOrUpcomingPrograms,
+  listPastPrograms,
+  PROGRAM_TYPE_LABEL,
+  PROGRAMS_CULTURAL_INTRO,
+} from '@/lib/dcc/culture';
 
 const path = '/programs';
 
@@ -24,6 +34,8 @@ export default function ProgramsIndexPage() {
     title: c.title,
     description: c.description,
   }));
+  const current = listCurrentOrUpcomingPrograms();
+  const past = listPastPrograms();
 
   return (
     <>
@@ -35,10 +47,73 @@ export default function ProgramsIndexPage() {
       <PageHero
         eyebrow="Programs"
         title="Public programs for digital culture"
-        description="Workshops, salons, artist support, and institutional offerings—structured so partners and funders can see a real programmatic arm, not only consulting."
+        description="Workshops, salons, artist support, exhibitions, and institutional offerings—structured so partners and funders can see a real programmatic arm, not only consulting."
         breadcrumbs={getCdcBreadcrumbs(path)}
       />
+      {current.length > 0 || past.length > 0 ? (
+        <Section className="bg-white">
+          <p className="max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            {PROGRAMS_CULTURAL_INTRO}
+          </p>
+          {current.length > 0 ? (
+            <div className="mt-10">
+              <h2 className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500">
+                Current / Upcoming
+              </h2>
+              <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+                {current.map((program) => {
+                  const artists = getArtistsForProgram(program);
+                  return (
+                    <CultureRecordCard
+                      key={program.id}
+                      href={getProgramPublicPath(program)}
+                      title={program.title}
+                      eyebrow={PROGRAM_TYPE_LABEL[program.type]}
+                      meta={[
+                        formatCultureDateRange(program.startDate, program.endDate),
+                        program.locationName,
+                        artists.map((artist) => artist.name).join(', ') || undefined,
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                      description={program.shortDescription}
+                      image={program.heroImage}
+                      imageAlt={program.heroImageAlt ?? program.title}
+                      fallbackLabel="Documentation forthcoming"
+                    />
+                  );
+                })}
+              </ul>
+            </div>
+          ) : null}
+          {past.length > 0 ? (
+            <div className="mt-12">
+              <h2 className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500">
+                Past
+              </h2>
+              <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+                {past.map((program) => (
+                  <CultureRecordCard
+                    key={program.id}
+                    href={getProgramPublicPath(program)}
+                    title={program.title}
+                    eyebrow={PROGRAM_TYPE_LABEL[program.type]}
+                    meta={formatCultureDateRange(program.startDate, program.endDate)}
+                    description={program.shortDescription}
+                    image={program.heroImage}
+                    imageAlt={program.heroImageAlt ?? program.title}
+                    fallbackLabel="Documentation forthcoming"
+                  />
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </Section>
+      ) : null}
       <Section className="bg-[#fafafa]">
+        <h2 className="mb-6 text-xs font-medium uppercase tracking-[0.16em] text-neutral-500">
+          Program areas
+        </h2>
         <CardGrid items={items} />
       </Section>
       <MarketingSection

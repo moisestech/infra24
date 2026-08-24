@@ -144,7 +144,7 @@ export default function FabricatePricingPage() {
         <FabricateSectionHeading
           title="Worked examples"
           description="Estimates use setup + machine + material + labor, then the tier minimum."
-          Icon={Handshake}
+          Icon={HeartHandshake}
           colorTokenId="cyan"
         />
         <div className="mt-2 grid gap-4 md:grid-cols-2">
