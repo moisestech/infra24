@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { EditorialDetail } from '@/components/dcc/culture/EditorialDetail';
 import { PageHero, Section } from '@/components/marketing/cdc';
 import { getAllJournalPosts, getCdcBreadcrumbs, getCdcPageByPath } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
+import { getPublishedEditorialBySlug } from '@/lib/dcc/culture';
 
 type Props = { params: { category: string; slug: string } };
 
@@ -16,6 +18,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function JournalPostPage({ params }: Props) {
+  const cultureEntry = getPublishedEditorialBySlug(params.slug);
+  if (cultureEntry) {
+    return <EditorialDetail entry={cultureEntry} />;
+  }
+
   const path = `/journal/${params.category}/${params.slug}`;
   const def = getCdcPageByPath(path);
   if (!def) notFound();

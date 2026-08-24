@@ -509,7 +509,9 @@ export const navItems = [
   { href: '/about', label: 'About' },
   { href: '/era', label: 'Era' },
   { href: '/programs', label: 'Programs' },
+  { href: '/artists', label: 'Artists' },
   { href: '/workshops', label: 'Workshops' },
+  { href: '/fabricate', label: 'Fabricate' },
   { href: '/network', label: 'Network' },
   { href: '/projects', label: 'Projects' },
   { href: '/partners', label: 'Partners' },
@@ -522,10 +524,14 @@ export const navItems = [
 /** Grouped links for the marketing header Sheet (`<details>` sections). Hrefs must exist in `navItems`. */
 export const marketingNavSheetGroups = [
   {
-    title: 'Explore',
-    hrefs: ['/era', '/programs', '/workshops', '/network', '/projects', '/partners'] as const,
+    title: 'DCC MIA',
+    hrefs: ['/programs', '/artists', '/workshops', '/fabricate', '/journal', '/about'] as const,
   },
-  { title: 'Organization', hrefs: ['/about', '/grants', '/journal'] as const },
+  {
+    title: 'Explore',
+    hrefs: ['/era', '/network', '/projects', '/partners'] as const,
+  },
+  { title: 'Organization', hrefs: ['/grants'] as const },
 ] as const;
 
 export const marketingNavSheetFooterHrefs = ['/contact', '/infra24'] as const;
@@ -535,7 +541,9 @@ export type MarketingHeaderNavIconKey =
   | 'info'
   | 'sparkles'
   | 'layout-grid'
+  | 'users'
   | 'graduation-cap'
+  | 'book-open'
   | 'flag'
   | 'share-2'
   | 'handshake'
@@ -544,10 +552,10 @@ export type MarketingHeaderNavIconKey =
 /** Header icon strip (`lg+` only) — left cluster; `href` must exist in `navItems`; `label` for tooltips and `aria-label`. */
 export const marketingHeaderNavLeft = [
   { href: '/about', label: 'About', icon: 'info' satisfies MarketingHeaderNavIconKey },
-  { href: '/era', label: 'Born-Digital Era', icon: 'sparkles' satisfies MarketingHeaderNavIconKey },
-  { href: '/programs', label: 'Services', icon: 'layout-grid' satisfies MarketingHeaderNavIconKey },
+  { href: '/programs', label: 'Programs', icon: 'layout-grid' satisfies MarketingHeaderNavIconKey },
+  { href: '/artists', label: 'Artists', icon: 'users' satisfies MarketingHeaderNavIconKey },
   { href: '/workshops', label: 'Workshops', icon: 'graduation-cap' satisfies MarketingHeaderNavIconKey },
-  { href: '/grants', label: 'Pilot', icon: 'flag' satisfies MarketingHeaderNavIconKey },
+  { href: '/journal', label: 'Journal', icon: 'book-open' satisfies MarketingHeaderNavIconKey },
 ] as const;
 
 /** Header icon strip (`lg+` only) — right cluster of icons (rendered after left cluster in DOM). */

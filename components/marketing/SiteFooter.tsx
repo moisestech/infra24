@@ -5,8 +5,11 @@ import { dccSiteMeta, marketingFooterBlurb } from '@/lib/marketing/content';
 
 const footerWork = [
   { href: '/programs', label: 'Programs' },
-  { href: '/opportunities', label: 'Opportunities' },
+  { href: '/artists', label: 'Artists' },
   { href: '/workshops', label: 'Workshops' },
+  { href: '/fabricate', label: 'Fabricate' },
+  { href: '/journal', label: 'Journal' },
+  { href: '/opportunities', label: 'Opportunities' },
   { href: '/network/signup', label: 'Join the map' },
   { href: '/network', label: 'Network' },
   { href: '/partners', label: 'Partners' },

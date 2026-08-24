@@ -1,7 +1,19 @@
 /**
  * Digital Culture Center Miami (DCC.miami) — marketing route registry.
  * Single source for breadcrumbs, static params, and sitemap URLs.
+ *
+ * Cultural program / journal / artist records live in `lib/dcc/culture`.
+ * This file registers their public paths so sitemap and breadcrumbs stay coherent.
  */
+
+import {
+  editorialJournalCategory,
+  getEditorialPublicPath,
+  getProgramPublicPath,
+  listArtists,
+  listEditorial,
+  listPrograms,
+} from '@/lib/dcc/culture';
 
 export type CdcLayoutKind = 'default' | 'program' | 'project' | 'support';
 
@@ -68,7 +80,14 @@ const pages: CdcPageDef[] = [
     path: '/programs',
     title: 'Programs',
     description:
-      'Workshops, public programs, artist support, and institutional programs for digital culture in Miami.',
+      'Workshops, public programs, artist support, exhibitions, and institutional programs for digital culture in Miami.',
+    layout: 'default',
+  }),
+  p({
+    path: '/artists',
+    title: 'Artists',
+    description:
+      'Artists DCC MIA has presented or worked with through exhibitions, programs, production and research.',
     layout: 'default',
   }),
   p({
@@ -96,7 +115,7 @@ const pages: CdcPageDef[] = [
     path: '/journal',
     title: 'Journal',
     description:
-      'Essays, field notes, project updates, and workshop reflections on digital culture infrastructure.',
+      'Conversations, field research, artist practices and observations from DCC MIA.',
     layout: 'default',
   }),
   p({
@@ -434,6 +453,11 @@ const PROGRAM_CATEGORIES = [
     description: 'Talks, demos, clinics, and community sessions.',
   },
   {
+    slug: 'art-fairs',
+    title: 'Art fairs',
+    description: 'Fair presentations and invited exhibition platforms.',
+  },
+  {
     slug: 'artist-support',
     title: 'Artist support',
     description: 'Digital audits, visibility, documentation, and archives.',
@@ -492,6 +516,7 @@ const PROGRAM_LEAVES: Record<
       description: 'Neighborhood-facing digital culture programming.',
     },
   ],
+  'art-fairs': [],
   'artist-support': [
     {
       slug: 'digital-audits',
@@ -779,9 +804,11 @@ for (const seg of PARTNER_INQUIRY) {
 }
 
 const JOURNAL_CATEGORIES = [
+  { slug: 'conversations', title: 'Conversations' },
   { slug: 'essays', title: 'Essays' },
   { slug: 'field-notes', title: 'Field notes' },
   { slug: 'project-updates', title: 'Project updates' },
+  { slug: 'program-recaps', title: 'Program recaps' },
   { slug: 'workshop-notes', title: 'Workshop notes' },
   { slug: 'public-letters', title: 'Public letters' },
   { slug: 'interviews', title: 'Interviews' },
@@ -889,6 +916,54 @@ for (const a of CONTACT_AUDIENCES) {
   );
 }
 
+for (const program of listPrograms()) {
+  const path = getProgramPublicPath(program);
+  const parent = `/programs/${path.split('/')[2]}`;
+  if (!pages.some((page) => page.path === path)) {
+    pages.push(
+      p({
+        path,
+        title: program.seoTitle ?? program.title,
+        description: program.seoDescription ?? program.shortDescription ?? program.description ?? program.title,
+        parent,
+        layout: 'program',
+        programCategory: path.split('/')[2],
+      })
+    );
+  }
+}
+
+for (const entry of listEditorial()) {
+  const path = getEditorialPublicPath(entry);
+  const category = editorialJournalCategory(entry.type);
+  if (!pages.some((page) => page.path === path)) {
+    pages.push(
+      p({
+        path,
+        title: entry.seoTitle ?? entry.title,
+        description: entry.seoDescription ?? entry.dek ?? entry.excerpt ?? entry.title,
+        parent: `/journal/${category}`,
+        layout: 'default',
+      })
+    );
+  }
+}
+
+for (const artist of listArtists()) {
+  const path = `/artists/${artist.slug}`;
+  if (!pages.some((page) => page.path === path)) {
+    pages.push(
+      p({
+        path,
+        title: artist.seoTitle ?? artist.name,
+        description: artist.seoDescription ?? artist.shortBio ?? artist.bio ?? artist.name,
+        parent: '/artists',
+        layout: 'default',
+      })
+    );
+  }
+}
+
 const byPath = new Map<string, CdcPageDef>();
 for (const page of pages) {
   byPath.set(page.path, page);
@@ -949,7 +1024,19 @@ export function getProgramCategorySlugs(): string[] {
 }
 
 export function getProgramLeaves(category: string) {
-  return PROGRAM_LEAVES[category as keyof typeof PROGRAM_LEAVES] ?? [];
+  const staticLeaves = PROGRAM_LEAVES[category as keyof typeof PROGRAM_LEAVES] ?? [];
+  const cultureLeaves = listPrograms()
+    .filter((program) => getProgramPublicPath(program).startsWith(`/programs/${category}/`))
+    .map((program) => ({
+      slug: program.slug,
+      title: program.title,
+      description: program.shortDescription ?? program.seoDescription ?? '',
+    }));
+  const bySlug = new Map(staticLeaves.map((leaf) => [leaf.slug, leaf]));
+  for (const leaf of cultureLeaves) {
+    bySlug.set(leaf.slug, leaf);
+  }
+  return [...bySlug.values()];
 }
 
 export function getProjectSlugs(): string[] {
@@ -971,12 +1058,30 @@ export function getJournalCategorySlugs(): string[] {
   return JOURNAL_CATEGORIES.map((c) => c.slug);
 }
 
+function cultureJournalPosts() {
+  return listEditorial().map((entry) => ({
+    category: editorialJournalCategory(entry.type) as (typeof JOURNAL_CATEGORIES)[number]['slug'],
+    slug: entry.slug,
+    title: entry.title,
+  }));
+}
+
 export function getJournalPostsForCategory(category: string) {
-  return JOURNAL_POSTS.filter((p) => p.category === category);
+  const staticPosts = JOURNAL_POSTS.filter((p) => p.category === category);
+  const culturePosts = cultureJournalPosts().filter((p) => p.category === category);
+  const bySlug = new Map(staticPosts.map((post) => [post.slug, post]));
+  for (const post of culturePosts) {
+    bySlug.set(post.slug, post);
+  }
+  return [...bySlug.values()];
 }
 
 export function getAllJournalPosts() {
-  return JOURNAL_POSTS;
+  const byKey = new Map(JOURNAL_POSTS.map((post) => [`${post.category}/${post.slug}`, post]));
+  for (const post of cultureJournalPosts()) {
+    byKey.set(`${post.category}/${post.slug}`, post);
+  }
+  return [...byKey.values()];
 }
 
 export function getContactAudienceSlugs(): string[] {

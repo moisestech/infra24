@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+  BookOpen,
   Flag,
   GraduationCap,
   HeartHandshake,
@@ -12,6 +13,7 @@ import {
   Menu,
   Share2,
   Sparkles,
+  Users,
   type LucideIcon,
 } from 'lucide-react';
 import { MarketingHeaderCenterLogo } from '@/components/marketing/MarketingHeaderCenterLogo';
@@ -44,7 +46,9 @@ const marketingHeaderNavIconMap: Record<MarketingHeaderNavIconKey, LucideIcon> =
   info: Info,
   sparkles: Sparkles,
   'layout-grid': LayoutGrid,
+  users: Users,
   'graduation-cap': GraduationCap,
+  'book-open': BookOpen,
   flag: Flag,
   'share-2': Share2,
   handshake: HeartHandshake,

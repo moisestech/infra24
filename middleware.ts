@@ -46,6 +46,9 @@ function isPublicRoute(pathname: string): boolean {
     '/powered-by-infra24',
     '/faq',
     '/programs',
+    /** Curated DCC artists + existing directory profiles / claim flow. */
+    '/artists',
+    '/for-artists',
     '/grants',
     '/projects',
     '/partners',

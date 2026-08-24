@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { Badge } from '@/components/ui/badge';
 import { TipButton } from '@/components/ui/TipButton';
@@ -59,8 +58,7 @@ interface ArtistProfile {
   updated_at: string;
 }
 
-export default function ArtistProfilePage() {
-  const params = useParams();
+export function ArtistDirectoryProfileClient({ artistId }: { artistId: string }) {
   const { user, isLoaded } = useUser();
   const [artist, setArtist] = useState<ArtistProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,9 +67,9 @@ export default function ArtistProfilePage() {
 
   useEffect(() => {
     async function loadArtist() {
-      if (params.id) {
+      if (artistId) {
         try {
-          const response = await fetch(`/api/artists/${params.id}`);
+          const response = await fetch(`/api/artists/${artistId}`);
           if (response.ok) {
             const data = await response.json();
             setArtist(data);
@@ -88,7 +86,7 @@ export default function ArtistProfilePage() {
     }
 
     loadArtist();
-  }, [params.id]);
+  }, [artistId]);
 
   const getStudioTypeColor = (type: string) => {
     switch (type) {
