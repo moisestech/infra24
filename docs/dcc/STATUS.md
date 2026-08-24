@@ -1,0 +1,190 @@
+# DCC MIA — living status
+
+**Update this file every sprint.** It is the public-memory dashboard for ChatGPT, Cursor, and humans.
+
+- **Not this file:** [`docs/PROJECT_STATUS.md`](../PROJECT_STATUS.md) and [`docs/CURRENT_STATUS_SUMMARY.md`](../CURRENT_STATUS_SUMMARY.md) are Dec 2024 Infra24 SaaS snapshots (booking, tenant orgs). Do not treat them as DCC MIA cultural status.
+- **Record packet (one artist/program/journal change):** [`lib/dcc/culture/RECORD.md`](../../lib/dcc/culture/RECORD.md)
+- **Culture content gaps:** [`lib/dcc/culture/CONTENT.md`](../../lib/dcc/culture/CONTENT.md)
+- **Fabricate image drop list:** [`public/dcc/fabrication/ASSETS.md`](../../public/dcc/fabrication/ASSETS.md)
+- **Resin teaching stills:** [`docs/workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md`](../workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md)
+
+**Do not invent:** artist names, bios, quotations, dates, venue, sales %, ITS3D partnership, documentary photos that do not exist.
+
+---
+
+## Snapshot
+
+| Field | Value |
+|---|---|
+| Date | 24 August 2026 |
+| Branch | `feature/dcc-culture-layer` (pushed, **not merged** to `main`) |
+| Last culture commits | `d988615` primitives → `4b75bd8` QA/packet/motion → `bc63daf` studio-tour light tone |
+| Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
+| Culture records published | 1 program (Clandestine 2026). 0 artists. 0 journal entries. 0 culture projects. |
+| Fabricate Phase 2 | Built in conversation; **mostly uncommitted** in the working tree. Do not report it as shipped. |
+
+### Namespace commit rule
+
+One namespace per commit: `culture` / `studios` / `fabricate` / `civic-projects`. Do not mix fabrication pricing into workshop curriculum. Do not mix civic `/projects` with culture `DccProject` or `/fabricate/projects`.
+
+Paste this header on Cursor / ChatGPT handoffs:
+
+```
+NAMESPACE: culture | fabricate | civic-projects | studios
+INTENT: add-record | update-copy | swap-image | ux-motion | do-not-touch
+RECORD: id / slug
+FACTS CONFIRMED:
+FACTS UNKNOWN: leave empty
+IMAGES: Cloudinary public_id or path + alt
+MOTION: none | gated-on-this-surface
+CURSOR MUST NOT: invent names, partners, prices in workshops, Airtable
+```
+
+---
+
+## Flywheel (architecture, not automation)
+
+Artist → Program / Exhibition → Conversation + Documentation → Website → Instagram / Newsletter → Audience → Workshop / Fabrication / Institutions → Revenue + Relationships → New Artists / Programs.
+
+A second loop exists for production: Project → Revenue → Production data → Documentation / SOP → Better capability.
+
+The site stores the **records and links**. It does not auto-post to Instagram or sync Airtable in this phase.
+
+---
+
+## Public surfaces
+
+| Route | Namespace | Image | Motion / interactivity | Status |
+|---|---|---|---|---|
+| `/` hero, collage, pathways | marketing | Real Cloudinary photography | Rotating headlines (reduced-motion aware); card hover scale | Shipped |
+| `/` `#now` band | culture | None (text slots) | Links only | Shipped; Artist + Journal slots appear only when records exist |
+| `/artists` | culture | None | Still (empty state) | Shipped; honest empty copy |
+| `/artists/[slug]` | culture | None until record + `portrait`/`heroImage` | Hover scale **only if** `src` exists; optional 360 if published slug matches a studio tour | Shipped; culture-first, else UUID directory profile |
+| `/programs` | culture + CDC | Clandestine card has fallback | CardGrid hover on taxonomy cards | Shipped; Current/Upcoming + existing service catalog |
+| `/programs/art-fairs/clandestine-art-fair-2026` | culture | No hero | Still; no fake gallery/testimonials | Program 001; known facts only |
+| `/journal` | culture + CDC | None for DCC Conversations | CardGrid hover on category tiles | Shipped; empty conversations copy; no podcast |
+| `/journal/conversations` | culture | None | Still | Empty on purpose |
+| `/journal/[category]/[slug]` | CDC scaffold + culture | Title-only CDC posts | Culture body when a record exists | CDC shells still say body TBD |
+| `/workshops` | education | Catalog + resin teaching stills | Live catalog client | Shipped separately; do not put fabricate prices in curriculum |
+| `/workshop/resin-printing` | education | Cloudinary banners + technique boards | Workshop-engine clients (session/TV) | Instructional stills, not artist portraits |
+| `/fabricate` | fabricate | Hero **placeholder**; conceptual stills for lanes/pricing/access/quote; Cloudinary finish ladder | Estimate/quote (Phase 2 mostly uncommitted); color+icon chrome | Hero `01-fabricate-hero.webp` not ready; stills labeled conceptual |
+| `/fabricate/projects` | fabricate | Test-case pages | — | Three DCC tests in code; **uncommitted** |
+| `/projects` | civic-projects | Marketing cards/gradients | CardGrid hover | Infra24 civic proof — **do not take over** |
+| `/knight#knight-founders-360` | studios | Posters + Momento360 | Click-to-enter 360 | Moises + Fabiola; no Angelo tour |
+| `/for-artists` | marketing | — | Redirect | → `/network/signup?pathway=index` (join the map, not curated `/artists`) |
+
+Hover rule for culture media: [`cultureMediaMotionEnabled`](../../lib/dcc/culture/media.ts) — empty frames stay still.
+
+---
+
+## What shipped in this conversation
+
+### Culture (committed on this branch)
+
+- Data: `lib/dcc/culture/*` (artists, programs, editorial, projects, relations, taxonomy, media)
+- Nav cluster: Programs, Artists, Workshops, Fabricate, Journal, About (Era / Network / Projects / Partners / Grants kept)
+- `/artists` is public (Clerk had been sending it to sign-in)
+- Studio tours do **not** leak onto `/artists` until a matching published culture record exists
+- Tests: `__tests__/lib/dcc-culture.test.ts`, `__tests__/integration/dcc-culture-layer.spec.ts`
+
+### Fabrication proof (built in thread; mostly **uncommitted**)
+
+Field Lab, estimate planner ($151 seed), Learn→Test→Make flywheel, `/fabricate/projects` DCC tests, Scale Up evidence. Treat as dirty working-tree work until a `fabricate` commit exists.
+
+### Studios (committed)
+
+Moises Studio 43 + Fabiola 360s. Light `tone` on artist pages. Angelo: no tour — do not invent.
+
+---
+
+## Image inventory
+
+### Culture — no record images yet
+
+`DCC_ARTISTS = []`, `DCC_EDITORIAL = []`, `DCC_PROJECTS = []`. Clandestine has no `heroImage`. UI shows “forthcoming” fallbacks.
+
+When real: `public/dcc/culture/artists/{slug}/` or Cloudinary `dccmiami/artists/{slug}/`.
+
+### Studios — has posters + 360
+
+- Moises: Momento360 + homepage `digitalDivinities` poster
+- Fabiola: Momento360 + `fabiolaSurveillanceCutie2024` poster
+- Angelo: none
+
+### Homepage — has photography
+
+[`lib/marketing/dcc-home-photography.ts`](../../lib/marketing/dcc-home-photography.ts). NOW band is text-only.
+
+### Fabricate — mixed
+
+- Missing documentary: hero `01-fabricate-hero.webp`
+- Conceptual local (caption: not a documentary photo): `02`, `03`, `05`, `06`
+- Conceptual Cloudinary: finish 300 + L0–L4 (`301–305`)
+
+### Workshops — teaching stills
+
+Resin banners / technique boards. Not Clandestine artist portraits. No prices in curriculum images.
+
+---
+
+## Motion / interactivity vs still
+
+**Moves:** homepage hero rotation; collage/pathway hover; studio click-to-enter; fabricate estimate/quote (if present in tree); workshop catalog/engine; culture card hover **only with a real `src`**.
+
+**Stays still:** Clandestine skeleton, `/artists` empty, journal empty conversations, homepage NOW band, culture related lists.
+
+**Do not build this phase:** Instagram generation, podcast product, live slicer/machine status, gallery checkout, Airtable culture sync.
+
+---
+
+## Content gaps (blocked on real facts)
+
+- Three Clandestine artist names, bios, practice tags, portraits, selected works
+- Exact dates, location, DCC program statement
+- Sales / commission terms (do not encode until disclosed)
+- First DCC Conversation guests + recording/transcript
+- Post-fair installation photography
+
+Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/relations.ts`. Journal long form: `body` or `bodyPath` under `content/journal/<slug>.md`.
+
+---
+
+## Leftovers (ops, not invented content)
+
+- Commit or park uncommitted fabricate Phase 2 (sibling `fabricate` commit, not mixed with culture)
+- Documentary `/fabricate` hero; replace conceptual stills when honest photos exist
+- Scale Up culture-flywheel numbers (public only; no QuickBooks)
+- Newsletter provider/workflow if unset
+- Optional later: flatten journal to `/journal/[slug]` (today `/journal/[category]/[slug]`)
+
+**Non-goals:** podcast launch; Airtable culture schema; ITS3D lockup; merging `/projects` meanings; merge to `main` until asked.
+
+---
+
+## Open questions
+
+1. Names of the three Clandestine artists. May Moises/Fabiola be published as culture artists because studio tours exist, or keep tours Knight-only until Clandestine names land?
+2. Exact Clandestine dates, venue, booth/program statement?
+3. Sales: 0% artist-direct vs test 10–15% only if DCC invoices — encode later?
+4. First Conversation: who, and is the website interview the canonical artifact?
+5. Uncommitted `/fabricate` Phase 2: this branch, a sibling branch, or wait?
+6. Homepage H1: keep service/infra hero, or lean harder into the cultural-center line?
+7. Instagram five pillars (Artists / Programs / Lab / Production / Learn): ops doc only, or metadata on records?
+
+---
+
+## ChatGPT next-sprint prompt
+
+Copy this after reading this file and the record packet:
+
+> Read `docs/dcc/STATUS.md` and `lib/dcc/culture/RECORD.md`. DCC MIA is a small cultural org whose website is the public memory. Culture architecture is live; Clandestine is Program 001 with no artists yet. Do not invent names. Propose the next two-week sprint: content ops (3 artists + conversations) vs finishing uncommitted fabricate vs homepage evolution. Rank by Content Yield (downstream assets per hour), not Instagram likes.
+
+---
+
+## How to update this file
+
+1. Change the **Snapshot** date, branch, and last commit.
+2. Update the **Public surfaces** row that actually changed (image / motion / status).
+3. Move items from **Content gaps** to shipped only when records exist in `lib/dcc/culture/`.
+4. Keep uncommitted work labeled uncommitted.
+5. Commit STATUS.md with the namespace it describes (`culture` if the sprint was cultural; or a tiny docs-only commit).

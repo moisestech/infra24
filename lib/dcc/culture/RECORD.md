@@ -1,5 +1,7 @@
 # Culture record packet
 
+Org status (living report): [`docs/dcc/STATUS.md`](../../../docs/dcc/STATUS.md).
+
 One page for ChatGPT, humans, and Cursor. Fill a packet, then edit **one** registry file. Do not invent blank fields.
 
 ## Namespaces — pick one per change

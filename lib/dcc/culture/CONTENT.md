@@ -1,5 +1,7 @@
 # DCC culture content — open facts
 
+Org status (living report): [`docs/dcc/STATUS.md`](../../../docs/dcc/STATUS.md).
+
 Code-native records live in this folder. Do not invent missing fields.
 
 To add or update a record, fill the packet in [RECORD.md](./RECORD.md) and edit one registry file. One namespace per commit (`culture` / `studios` / `fabricate` / `civic-projects`).
