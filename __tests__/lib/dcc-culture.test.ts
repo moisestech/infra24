@@ -1,9 +1,8 @@
 import { getCdcPageByPath, getProgramLeaves } from '@/lib/cdc/routes'
-import { DCC_STUDIO_TOURS } from '@/lib/dcc/studios'
+import { DCC_STUDIO_TOURS, getStudioTourByArtistSlug } from '@/lib/dcc/studios'
 import {
   ARTISTS_INDEX_INTRO,
   cultureMediaMotionEnabled,
-  DCC_ARTISTS,
   DCC_CULTURAL_POSITION,
   DCC_EDITORIAL,
   DCC_MIA_NAME,
@@ -25,6 +24,7 @@ import {
   listArtists,
   listCurrentOrUpcomingPrograms,
   listEditorial,
+  listFeaturedArtists,
   listPrograms,
   listProjects,
   looksLikeUuid,
@@ -77,19 +77,24 @@ const fixtureRegistry: CultureRegistry = {
 }
 
 describe('dcc culture public seed', () => {
-  it('uses DCC MIA naming and does not invent public artists or editorial', () => {
+  it('uses DCC MIA naming and publishes founders without inventing Clandestine artists', () => {
     expect(DCC_MIA_NAME).toBe('DCC MIA')
     expect(DCC_CULTURAL_POSITION).toMatch(/technological conditions of the present/)
     expect(ARTISTS_INDEX_INTRO).toMatch(/not an open directory/)
-    expect(DCC_ARTISTS).toEqual([])
+    expect(listArtists().map((artist) => artist.slug)).toEqual([
+      'moises-sanabria',
+      'fabiola-larios',
+      'angelo-caruso',
+    ])
+    expect(listArtists().every((artist) => !artist.programIds?.length)).toBe(true)
+    expect(listFeaturedArtists().map((artist) => artist.slug)).toEqual(['moises-sanabria'])
     expect(DCC_EDITORIAL).toEqual([])
     expect(DCC_PROJECTS).toEqual([])
-    expect(listArtists()).toEqual([])
     expect(listEditorial()).toEqual([])
     expect(listProjects()).toEqual([])
-    expect(
-      DCC_STUDIO_TOURS.every((tour) => !DCC_ARTISTS.some((artist) => artist.slug === tour.artistSlug))
-    ).toBe(true)
+    expect(getStudioTourByArtistSlug('moises-sanabria')?.artistSlug).toBe('moises-sanabria')
+    expect(getStudioTourByArtistSlug('fabiola-larios')?.artistSlug).toBe('fabiola-larios')
+    expect(DCC_STUDIO_TOURS.some((tour) => tour.artistSlug === 'angelo-caruso')).toBe(false)
   })
 
   it('seeds Clandestine as the first upcoming art-fair program without invented facts', () => {

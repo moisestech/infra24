@@ -36,12 +36,17 @@ describe('dcc studio tours', () => {
     )
   })
 
-  it('does not publish founder tours as culture artists until a record exists', () => {
-    expect(getPublishedArtistBySlug('moises-sanabria')).toBeUndefined()
-    expect(getPublishedArtistBySlug('fabiola-larios')).toBeUndefined()
+  it('embeds founder 360s on matching published culture artists and does not invent Angelo', () => {
+    expect(getPublishedArtistBySlug('moises-sanabria')?.slug).toBe('moises-sanabria')
+    expect(getPublishedArtistBySlug('fabiola-larios')?.slug).toBe('fabiola-larios')
+    expect(getPublishedArtistBySlug('angelo-caruso')?.slug).toBe('angelo-caruso')
     expect(getStudioTourByArtistSlug('moises-sanabria')?.artistSlug).toBe(
       'moises-sanabria'
     )
+    expect(getStudioTourByArtistSlug('fabiola-larios')?.artistSlug).toBe(
+      'fabiola-larios'
+    )
+    expect(getStudioTourByArtistSlug('angelo-caruso')).toBeUndefined()
     expect(getStudioTourByArtistSlug('fixture-artist-a')).toBeUndefined()
   })
 

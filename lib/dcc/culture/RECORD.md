@@ -65,7 +65,43 @@ Empty image → honest fallback. No fake portraits. Hover / scale motion runs **
 
 - `id`, `slug`, `name`
 - Optional: `location`, `shortBio`, `bio`, `practiceTags`, `portrait` + `portraitAlt`, `heroImage` + `heroImageAlt`, `websiteUrl`, `instagramUrl`, `programIds`, `featured`
-- Studio 360: only if a row in `tours.ts` uses the **same** `artistSlug`. Do not publish founders as culture artists just because a tour exists.
+- Studio 360: only if a row in `tours.ts` uses the **same** `artistSlug`. Tours do not auto-publish culture artists. Founders on `/artists` were added by an explicit culture commit, not because a 360 existed.
+
+## Founders vs Clandestine
+
+- Moises, Fabiola, and Angelo may appear as culture artists without being the fair roster.
+- Do **not** set `programIds: ['clandestine-2026']` or Clandestine `artistIds` until the participating artists are confirmed in a packet.
+- Angelo has no studio tour — do not invent one.
+
+## Clandestine artist packet (later)
+
+Required before publishing a fair artist: preferred spelling, slug, 80–120 word short bio, location, 3–5 practice tags, website, Instagram.
+
+Media: portrait; 3–5 works with artist-approved captions (title, year, medium, dimensions, photo credit).
+
+Fair: which work(s), one paragraph on the selected work, why it belongs in the DCC presentation.
+
+Editorial permissions: conversation, video, audio, transcript, approval expectations.
+
+## Conversation spine (no podcast product)
+
+Canonical artifact: website interview. Recurring questions:
+
+1. What are you trying to understand through the work right now?
+2. What technologies, systems, materials or conditions are affecting how you make it?
+3. Where does producing the work become difficult?
+4. What is currently working—or not working—about making art in Miami?
+5. What do you wish existed here that currently doesn't?
+
+Do not launch a podcast feed in this phase.
+
+## Open Studios capture (ops, not a program record)
+
+Do not add a `DccProgram` until date and venue are confirmed. If a live studio day happens, capture: studio photo/video, fabrication demo, short artist thought, documentary H2D hero if the machine is installed, finish samples, QR → `/?source=open-studios` or `/newsletter?source=open-studios`.
+
+## Newsletter
+
+Reuse `/newsletter`. Optional provider: `NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_ACTION`. Pass `?source=` (`home-now`, `artist-profile`, `clandestine`, `open-studios`, `journal`). Do not build a newsletter platform in the culture namespace.
 
 ## Program (minimum)
 

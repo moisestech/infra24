@@ -17,6 +17,7 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(
       now.getByRole('heading', { name: 'DCC MIA at Clandestine Art Fair 2026' })
     ).toBeVisible()
+    await expect(now.getByRole('heading', { name: 'Moises Sanabria' })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Workshops' })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Fabricate' })).toBeVisible()
   })
@@ -44,13 +45,15 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(page.getByText(/DCC × ITS3D|ITS3D Miami/i)).toHaveCount(0)
   })
 
-  test('artists index uses the honest empty state', async ({ page }) => {
+  test('artists index lists published founders and not an invented Clandestine roster', async ({
+    page,
+  }) => {
     await page.goto('/artists')
-    await expect(page.getByRole('heading', { name: 'Artists' })).toBeVisible()
-    await expect(page.getByText(ARTISTS_EMPTY)).toBeVisible()
-    await expect(page.getByRole('link', { name: /Moises Sanabria/i })).toHaveCount(
-      0
-    )
+    await expect(page.getByRole('heading', { name: 'Artists', exact: true })).toBeVisible()
+    await expect(page.getByText(ARTISTS_EMPTY)).toHaveCount(0)
+    await expect(page.getByRole('link', { name: /Moises Sanabria/i }).first()).toBeVisible()
+    await expect(page.getByRole('link', { name: /Fabiola Larios/i }).first()).toBeVisible()
+    await expect(page.getByRole('link', { name: /Angelo Caruso/i }).first()).toBeVisible()
   })
 
   test('journal conversations category stays empty of invented guests', async ({
