@@ -17,8 +17,8 @@
 | Field | Value |
 |---|---|
 | Date | 24 August 2026 |
-| Branch | `feature/dcc-culture-layer` (pushed, **PR to `main`**) |
-| Last culture commits | `d988615` primitives → founder artists `0301f73` → offerings + wayfinding `1d7eb46` |
+| Branch | `main` (merged `feature/dcc-culture-layer`, `eeaa965`) |
+| Last culture commits | primitives → founder artists `0301f73` → offerings `1d7eb46` → public routes `09f96c0` |
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
 | Culture records published | 1 program (Clandestine 2026). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). 0 journal entries. 0 culture projects. |
 | Fabricate Phase 2 | Parked on sibling `feature/dcc-fabricate-phase2` (`1329ff1`). Hero still a placeholder. |
