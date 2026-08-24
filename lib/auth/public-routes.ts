@@ -19,14 +19,23 @@ export function isPublicRoute(rawPathname: string): boolean {
 
   if (pathname === '/') return true
 
-  /** DCC public artist directory + culture artist pages. */
-  if (matchesPrefix(pathname, '/artists') || pathname === '/for-artists') return true
-
-  /** DCC public workshop catalog (published listings only on the page). */
-  if (matchesPrefix(pathname, '/workshops')) return true
-
-  /** Public workshop reader chapters: canonical `/workshop/{slug}/{chapter}`. */
-  if (matchesPrefix(pathname, '/workshop')) return true
+  /**
+   * DCC MIA public marketing — must not hit Clerk sign-in.
+   * `/fabrication` is an alias of `/fabricate` (redirect in next.config).
+   */
+  const dccPublicMarketing = [
+    '/artists',
+    '/for-artists',
+    '/workshops',
+    '/workshop',
+    '/fabricate',
+    '/fabrication',
+    '/make',
+    '/programs',
+    '/journal',
+    '/newsletter',
+  ]
+  if (dccPublicMarketing.some((route) => matchesPrefix(pathname, route))) return true
 
   /** Live workshop room surfaces (join / TV / facilitator). */
   if (
@@ -67,11 +76,9 @@ export function isPublicRoute(rawPathname: string): boolean {
     '/infra24',
     '/powered-by-infra24',
     '/faq',
-    '/programs',
     '/grants',
     '/projects',
     '/partners',
-    '/journal',
     '/what-we-do',
     '/audit',
     '/pilots',

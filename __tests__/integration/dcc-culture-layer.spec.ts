@@ -80,11 +80,21 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(page.getByText(JOURNAL_EMPTY_CONVERSATIONS)).toBeVisible()
   })
 
-  test('fabricate landing still renders', async ({ page }) => {
+  test('fabricate landing stays public and /fabrication aliases to it', async ({
+    page,
+  }) => {
     await page.goto('/fabricate')
+    await expect(page).not.toHaveURL(/sign-in/)
     await expect(
       page.getByRole('heading', { name: 'Transparent fabrication for artists' })
     ).toBeVisible()
     await expect(page.getByText('DCC Fabrication')).toBeVisible()
+
+    await page.goto('/fabrication')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(page).toHaveURL(/\/fabricate\/?$/)
+    await expect(
+      page.getByRole('heading', { name: 'Transparent fabrication for artists' })
+    ).toBeVisible()
   })
 })

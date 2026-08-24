@@ -16,6 +16,24 @@ describe('isPublicRoute', () => {
     expect(isPublicRoute('/workshop/resin-printing')).toBe(true)
   })
 
+  it('keeps DCC fabricate pages public, including the /fabrication alias', () => {
+    expect(isPublicRoute('/fabricate')).toBe(true)
+    expect(isPublicRoute('/fabricate/pricing')).toBe(true)
+    expect(isPublicRoute('/fabricate/quote')).toBe(true)
+    expect(isPublicRoute('/fabricate/finishes')).toBe(true)
+    expect(isPublicRoute('/fabricate/projects')).toBe(true)
+    expect(isPublicRoute('/fabrication')).toBe(true)
+    expect(isPublicRoute('/fabrication/pricing')).toBe(true)
+    expect(isPublicRoute('/make')).toBe(true)
+  })
+
+  it('keeps other DCC culture marketing pages public without sign-in', () => {
+    expect(isPublicRoute('/programs')).toBe(true)
+    expect(isPublicRoute('/programs/art-fairs/clandestine-art-fair-2026')).toBe(true)
+    expect(isPublicRoute('/journal')).toBe(true)
+    expect(isPublicRoute('/journal/conversations')).toBe(true)
+    expect(isPublicRoute('/newsletter')).toBe(true)
+  })
   it('still requires sign-in for tenant workshop admin surfaces', () => {
     expect(isPublicRoute('/o/oolite/workshops')).toBe(false)
     expect(isPublicRoute('/o/oolite/workshop/ip-age-of-ai')).toBe(false)
