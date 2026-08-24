@@ -3,6 +3,11 @@
  * Set `social.*` when ready; omitted keys hide that button.
  */
 
+import {
+  listPublishedStudioTours,
+  type DccStudioTour,
+} from '@/lib/dcc/studios'
+
 /** Rina Carvajal — recommendation letter (Google Drive). */
 export const knightDriveRecommendationLetterUrl =
   'https://drive.google.com/file/d/1YLbZKWdcoV93xdb0FSGxwH-IUyLIwJOC/view?usp=sharing' as const;
@@ -21,25 +26,11 @@ export const knightFoundersHeroPhoto = {
   alt: 'Fabiola Larios and Moises Sanabria — founding team, Digital Culture Center Miami.',
 } as const;
 
-export type KnightFounderMomentoEmbed = {
-  id: string;
-  label: string;
-  /** Momento360 iframe `src` (include embed query params as needed). */
-  embedSrc: string;
-};
+export type KnightFounderMomentoEmbed = DccStudioTour
 
-/**
- * Full-bleed 360° embeds on `/knight` between People and Packet files.
- * Add a second entry for Moises when the tour is ready.
- */
-export const knightFounderMomentoEmbeds: KnightFounderMomentoEmbed[] = [
-  {
-    id: 'fabiola',
-    label: 'Fabiola Larios',
-    embedSrc:
-      'https://momento360.com/e/u/fd0861891d284eff90e0995a727186fd?utm_campaign=embed&utm_source=other&heading=165.08&pitch=-15.38&field-of-view=75&size=medium&display-plan=true',
-  },
-];
+/** Full-bleed 360° embeds on `/knight` between People and Packet files. */
+export const knightFounderMomentoEmbeds: KnightFounderMomentoEmbed[] =
+  listPublishedStudioTours()
 
 const PORTRAITS = {
   rina:
