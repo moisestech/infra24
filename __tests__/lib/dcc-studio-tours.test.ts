@@ -5,6 +5,7 @@ import {
   getStudioTourByArtistSlug,
   listPublishedStudioTours,
 } from '@/lib/dcc/studios'
+import { getPublishedArtistBySlug } from '@/lib/dcc/culture'
 import { knightFounderMomentoEmbeds } from '@/lib/marketing/knight-people'
 
 describe('dcc studio tours', () => {
@@ -33,6 +34,15 @@ describe('dcc studio tours', () => {
     expect(STUDIO_TOUR_IFRAME_ALLOW).toBe(
       'xr-spatial-tracking; gyroscope; accelerometer'
     )
+  })
+
+  it('does not publish founder tours as culture artists until a record exists', () => {
+    expect(getPublishedArtistBySlug('moises-sanabria')).toBeUndefined()
+    expect(getPublishedArtistBySlug('fabiola-larios')).toBeUndefined()
+    expect(getStudioTourByArtistSlug('moises-sanabria')?.artistSlug).toBe(
+      'moises-sanabria'
+    )
+    expect(getStudioTourByArtistSlug('fixture-artist-a')).toBeUndefined()
   })
 
   it('feeds the Knight studios band from the same registry', () => {

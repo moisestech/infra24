@@ -14,6 +14,8 @@ type StudioTourEmbedProps = {
   /** Hide the figcaption (band layouts that already label the slide). */
   showCaption?: boolean
   showLinks?: boolean
+  /** Knight band is dark; artist pages are light. */
+  tone?: 'dark' | 'light'
 }
 
 export function StudioTourEmbed({
@@ -21,6 +23,7 @@ export function StudioTourEmbed({
   className,
   showCaption = true,
   showLinks = true,
+  tone = 'dark',
 }: StudioTourEmbedProps) {
   const [entered, setEntered] = useState(false)
 
@@ -30,7 +33,12 @@ export function StudioTourEmbed({
       data-artist={tour.artistSlug}
     >
       {showCaption ? (
-        <figcaption className="px-4 pb-3 text-sm font-medium tracking-tight text-white sm:px-6">
+        <figcaption
+          className={cn(
+            'px-4 pb-3 text-sm font-medium tracking-tight sm:px-6',
+            tone === 'light' ? 'text-neutral-900 dark:text-neutral-100' : 'text-white'
+          )}
+        >
           {tour.caption}
         </figcaption>
       ) : null}
@@ -75,12 +83,24 @@ export function StudioTourEmbed({
       </div>
 
       {showLinks ? (
-        <p className="mt-3 px-4 text-sm text-neutral-400 sm:px-6">
+        <p
+          className={cn(
+            'mt-3 px-4 text-sm sm:px-6',
+            tone === 'light'
+              ? 'text-neutral-600 dark:text-neutral-400'
+              : 'text-neutral-400'
+          )}
+        >
           <a
             href={tour.shareUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline-offset-4 hover:text-white hover:underline"
+            className={cn(
+              'underline-offset-4 hover:underline',
+              tone === 'light'
+                ? 'hover:text-neutral-900 dark:hover:text-neutral-100'
+                : 'hover:text-white'
+            )}
           >
             Open tour
           </a>
@@ -91,7 +111,12 @@ export function StudioTourEmbed({
                 href={tour.sourceHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline-offset-4 hover:text-white hover:underline"
+                className={cn(
+                  'underline-offset-4 hover:underline',
+                  tone === 'light'
+                    ? 'hover:text-neutral-900 dark:hover:text-neutral-100'
+                    : 'hover:text-white'
+                )}
               >
                 {tour.sourceLabel ?? 'Open source page'}
               </a>
