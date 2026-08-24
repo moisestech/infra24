@@ -15,6 +15,7 @@ import {
   FabricateChrome,
   FabricateCtaRow,
 } from '@/components/dcc/fabrication/FabricateChrome'
+import { FabricationFlywheel } from '@/components/dcc/fabrication/FabricationFlywheel'
 import {
   FabricateSectionHeading,
   FabricateSectionMedia,
@@ -83,6 +84,8 @@ export default function FabricateLandingPage() {
             { href: '#pricing', label: 'Pricing', color: 'teal' as const },
             { href: '#finishes', label: 'Finishes', color: 'violet' as const },
             { href: '#access', label: 'Access', color: 'emerald' as const },
+            { href: '/fabricate/field-lab', label: 'Field Lab', color: 'amber' as const },
+            { href: '/fabricate/estimate', label: 'Estimate', color: 'indigo' as const },
             { href: '#faq', label: 'FAQ', color: 'sky' as const },
           ] as const
         ).map((item) => {
@@ -297,6 +300,8 @@ export default function FabricateLandingPage() {
           colorTokenId="slate"
         />
       </section>
+
+      <FabricationFlywheel className="mb-10 md:mb-12" />
 
       <section id="faq" className="mb-4 scroll-mt-24">
         <FabricateSectionHeading

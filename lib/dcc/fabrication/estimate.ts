@@ -2,6 +2,8 @@ import {
   getFabricationRateCard,
   type FabricationRateTierId,
 } from '@/lib/dcc/fabrication/rates'
+import type { QueueTierId } from '@/lib/dcc/fabrication/queue'
+import { getFabricationQueueTier } from '@/lib/dcc/fabrication/queue'
 
 export type EstimateQuoteInput = {
   tier: FabricationRateTierId
@@ -74,4 +76,43 @@ export function formatUsd(amount: number): string {
     currency: 'USD',
     maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
   }).format(amount)
+}
+
+/** Default planner seed — medium sculpture Full-Service example ($151). */
+export const PLANNING_ESTIMATE_SEED = {
+  tier: 'full_service_artist' as FabricationRateTierId,
+  printHours: 8,
+  materialGrams: 250,
+  laborHours: 1,
+  queue: 'standard' as QueueTierId,
+}
+
+export function buildPlanningEstimateNote(input: {
+  tier: FabricationRateTierId
+  printHours: number
+  materialGrams: number
+  laborHours: number
+  queue: QueueTierId
+  total: number
+}): string {
+  const card = getFabricationRateCard(input.tier)
+  const queue = getFabricationQueueTier(input.queue)
+  return `[Planning estimate: ${card.label} · ${input.printHours}h print · ${input.materialGrams}g · ${input.laborHours}h labor · ${queue?.label ?? input.queue} · ${formatUsd(input.total)}]`
+}
+
+export function buildQuoteHandoffHref(input: {
+  tier: FabricationRateTierId
+  printHours: number
+  materialGrams: number
+  laborHours: number
+  queue: QueueTierId
+}): string {
+  const params = new URLSearchParams({
+    tier: input.tier,
+    hours: String(input.printHours),
+    grams: String(input.materialGrams),
+    labor: String(input.laborHours),
+    queue: input.queue,
+  })
+  return `/fabricate/quote?${params.toString()}`
 }

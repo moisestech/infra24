@@ -54,7 +54,7 @@ export default function FabricateFinishesPage() {
       <section className="mb-10 md:mb-12">
         <FabricateSectionHeading
           title="Pick a finish level"
-          description="Each level has its own color, icon, and image slot — drop finish-l0…l4 WebPs when ready."
+          description="Each level has its own color, icon, and conceptual image — L0–L2 start in-house; L3–L4 stay custom quote."
           Icon={Layers}
           colorTokenId="violet"
         />

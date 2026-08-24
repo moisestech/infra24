@@ -96,6 +96,12 @@ public
 !public/workshops/**
 !public/workshops/resin-printing/
 !public/workshops/resin-printing/**
+!public/dcc/
+!public/dcc/**
+!public/dcc/fabrication/
+!public/dcc/fabrication/**
+!public/dcc/culture/
+!public/dcc/culture/**
 
 # Storybook build outputs
 .out

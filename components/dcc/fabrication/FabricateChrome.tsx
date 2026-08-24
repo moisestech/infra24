@@ -1,7 +1,10 @@
 import Link from 'next/link'
 import {
   BadgeDollarSign,
+  Calculator,
   ClipboardList,
+  FlaskConical,
+  FolderKanban,
   Layers,
   Sparkles,
   type LucideIcon,
@@ -12,8 +15,17 @@ import {
   type FabricationColorTokenId,
 } from '@/lib/dcc/fabrication/theme'
 
+export type FabricateNavId =
+  | 'home'
+  | 'pricing'
+  | 'finishes'
+  | 'field-lab'
+  | 'estimate'
+  | 'projects'
+  | 'quote'
+
 const NAV: {
-  id: 'home' | 'pricing' | 'finishes' | 'quote'
+  id: FabricateNavId
   href: string
   label: string
   short: string
@@ -45,6 +57,30 @@ const NAV: {
     colorTokenId: 'violet',
   },
   {
+    id: 'field-lab',
+    href: '/fabricate/field-lab',
+    label: 'Field Lab',
+    short: 'Lab',
+    Icon: FlaskConical,
+    colorTokenId: 'amber',
+  },
+  {
+    id: 'estimate',
+    href: '/fabricate/estimate',
+    label: 'Estimate',
+    short: 'Est.',
+    Icon: Calculator,
+    colorTokenId: 'indigo',
+  },
+  {
+    id: 'projects',
+    href: '/fabricate/projects',
+    label: 'Projects',
+    short: 'Tests',
+    Icon: FolderKanban,
+    colorTokenId: 'slate',
+  },
+  {
     id: 'quote',
     href: '/fabricate/quote',
     label: 'Request quote',
@@ -59,7 +95,7 @@ export function FabricateChrome({
   current,
 }: {
   children: React.ReactNode
-  current: 'home' | 'pricing' | 'finishes' | 'quote'
+  current: FabricateNavId
 }) {
   return (
     <div className="mx-auto w-full min-w-0 max-w-5xl px-4 py-8 sm:px-6 md:py-10 lg:max-w-6xl lg:px-8 xl:max-w-7xl xl:py-12 2xl:max-w-[90rem]">
@@ -117,6 +153,12 @@ export function FabricateCtaRow({ className }: { className?: string }) {
         className="inline-flex min-h-11 items-center justify-center rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900"
       >
         Request a quote
+      </Link>
+      <Link
+        href="/fabricate/estimate"
+        className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--cdc-border)] px-4 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-50 dark:text-neutral-100 dark:hover:bg-neutral-800"
+      >
+        Plan an estimate
       </Link>
       <Link
         href="/fabricate/pricing"

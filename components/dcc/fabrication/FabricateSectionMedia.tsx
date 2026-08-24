@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react'
 import { Image as ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
+  FABRICATION_CONCEPTUAL_CAPTION,
   getFabricationSectionMedia,
   type FabricationSectionMedia,
   type FabricationSectionMediaId,
@@ -55,7 +56,10 @@ export function FabricateSectionMedia({
         </div>
         {media.caption ? (
           <figcaption className="border-t border-[var(--cdc-border)] px-3 py-2 text-[11px] uppercase tracking-[0.12em] text-neutral-500">
-            {media.caption}
+            {media.kind === 'conceptual' &&
+            media.caption !== FABRICATION_CONCEPTUAL_CAPTION
+              ? `${media.caption} · conceptual`
+              : media.caption}
           </figcaption>
         ) : null}
       </figure>
