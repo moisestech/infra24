@@ -4,9 +4,15 @@ import { useMemo, useState, useTransition } from 'react'
 import { useSearchParams } from 'next/navigation'
 import {
   FABRICATION_FINISH_LEVELS,
+  FABRICATION_RATE_CARDS,
   FABRICATION_SERVICE_LANES,
   FABRICATION_WORKSHOP_BOUNDARY,
+  buildPlanningEstimateNote,
+  estimateQuote,
+  rushPercentageForQueue,
+  type FabricationRateTierId,
   type FinishLevelId,
+  type QueueTierId,
   type ServiceLaneId,
 } from '@/lib/dcc/fabrication'
 
@@ -17,6 +23,44 @@ export function FabricateQuoteForm() {
   const machineId = search.get('machine') ?? undefined
   const laneParam = search.get('lane') as ServiceLaneId | null
   const finishParam = search.get('finish') as FinishLevelId | null
+  const tierParam = search.get('tier') as FabricationRateTierId | null
+  const hoursParam = search.get('hours')
+  const gramsParam = search.get('grams')
+  const laborParam = search.get('labor')
+  const queueParam = search.get('queue') as QueueTierId | null
+
+  const planningNote = (() => {
+    const knownTier = FABRICATION_RATE_CARDS.some((c) => c.id === tierParam)
+    if (!knownTier || !tierParam || hoursParam == null || gramsParam == null) {
+      return null
+    }
+    const printHours = Number(hoursParam)
+    const materialGrams = Number(gramsParam)
+    const laborHours = laborParam != null ? Number(laborParam) : 0
+    if (Number.isNaN(printHours) || Number.isNaN(materialGrams)) return null
+    const queue: QueueTierId =
+      queueParam === 'access' ||
+      queueParam === 'standard' ||
+      queueParam === 'priority' ||
+      queueParam === 'rush'
+        ? queueParam
+        : 'standard'
+    const breakdown = estimateQuote({
+      tier: tierParam,
+      printHours,
+      materialGrams,
+      laborHours: Number.isNaN(laborHours) ? 0 : laborHours,
+      rushPercentage: rushPercentageForQueue(queue),
+    })
+    return buildPlanningEstimateNote({
+      tier: tierParam,
+      printHours,
+      materialGrams,
+      laborHours: Number.isNaN(laborHours) ? 0 : laborHours,
+      queue,
+      total: breakdown.total,
+    })
+  })()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -33,10 +77,12 @@ export function FabricateQuoteForm() {
       : 'raw'
   )
   const [fileLink, setFileLink] = useState('')
-  const [description, setDescription] = useState('')
+  const [description, setDescription] = useState(planningNote ?? '')
   const [dimensions, setDimensions] = useState('')
   const [deadline, setDeadline] = useState('')
-  const [isAccessMember, setIsAccessMember] = useState(false)
+  const [isAccessMember, setIsAccessMember] = useState(
+    tierParam === 'artist_access'
+  )
   const [consentUpdates, setConsentUpdates] = useState(false)
   const [volumeBracket, setVolumeBracket] = useState<'small' | 'medium' | 'large'>(
     'medium'

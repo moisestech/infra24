@@ -36,3 +36,13 @@ export const FABRICATION_QUEUE_TIERS: FabricationQueueTier[] = [
     surcharge: 0.35,
   },
 ]
+
+export function rushPercentageForQueue(id: QueueTierId): number {
+  return FABRICATION_QUEUE_TIERS.find((q) => q.id === id)?.surcharge ?? 0
+}
+
+export function getFabricationQueueTier(
+  id: QueueTierId
+): FabricationQueueTier | undefined {
+  return FABRICATION_QUEUE_TIERS.find((q) => q.id === id)
+}

@@ -9,7 +9,13 @@ export type {
   FabricationRateTierId,
 } from '@/lib/dcc/fabrication/rates'
 
-export { estimateQuote, formatUsd } from '@/lib/dcc/fabrication/estimate'
+export {
+  estimateQuote,
+  formatUsd,
+  PLANNING_ESTIMATE_SEED,
+  buildPlanningEstimateNote,
+  buildQuoteHandoffHref,
+} from '@/lib/dcc/fabrication/estimate'
 export type {
   EstimateBreakdown,
   EstimateQuoteInput,
@@ -33,7 +39,11 @@ export type {
   ServiceLaneId,
 } from '@/lib/dcc/fabrication/lanes'
 
-export { FABRICATION_QUEUE_TIERS } from '@/lib/dcc/fabrication/queue'
+export {
+  FABRICATION_QUEUE_TIERS,
+  rushPercentageForQueue,
+  getFabricationQueueTier,
+} from '@/lib/dcc/fabrication/queue'
 export type {
   FabricationQueueTier,
   QueueTierId,
@@ -61,10 +71,62 @@ export {
   FABRICATION_FINISHES_STANDIN_SRC,
   FABRICATION_PLANNING_STANDIN_SRC,
   FABRICATION_MEDIA_DROP_PATH,
+  FABRICATION_CONCEPTUAL_CAPTION,
   getFabricationSectionMedia,
   resolveFabricationSectionMedia,
 } from '@/lib/dcc/fabrication/section-media'
 export type {
   FabricationSectionMedia,
   FabricationSectionMediaId,
+  FabricationMediaKind,
 } from '@/lib/dcc/fabrication/section-media'
+
+export { isFabricationRecordPublic } from '@/lib/dcc/fabrication/privacy'
+export type {
+  FabricationPublicBoundary,
+  FabricationSourceType,
+} from '@/lib/dcc/fabrication/privacy'
+
+export {
+  CAPABILITY_STAGE_META,
+  FABRICATION_CAPABILITIES,
+  getCapabilityStageMeta,
+  getPublicCapability,
+  listPublicCapabilities,
+} from '@/lib/dcc/fabrication/capabilities'
+export type {
+  CapabilityStage,
+  FabricationCapability,
+} from '@/lib/dcc/fabrication/capabilities'
+
+export {
+  FABRICATION_FIELD_TESTS,
+  getPublicFieldTest,
+  listPublicFieldTests,
+  listPublicFieldTestsForCapability,
+} from '@/lib/dcc/fabrication/field-tests'
+export type {
+  FieldTest,
+  FieldTestStatus,
+  PublicFieldTest,
+} from '@/lib/dcc/fabrication/field-tests'
+
+export {
+  FABRICATION_PROJECTS,
+  getPublicProject,
+  listPublicProjects,
+  projectEconomics,
+} from '@/lib/dcc/fabrication/projects'
+export type {
+  FabricationProject,
+  FabricationProjectKind,
+} from '@/lib/dcc/fabrication/projects'
+
+export {
+  FABRICATION_CAPITAL_GATES,
+  FABRICATION_NINETY_DAY_MBO,
+  FABRICATION_SCALEUP_THESIS,
+  FABRICATION_WHAT_EXISTS,
+  FABRICATION_WHAT_WE_TEST,
+  getFabricationPublicMetrics,
+} from '@/lib/dcc/fabrication/metrics'

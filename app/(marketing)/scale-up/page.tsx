@@ -8,6 +8,7 @@ import { isDccOsConfigured } from '@/lib/dcc/os-config'
 import { listActiveServices } from '@/lib/dcc/services'
 import { formatTierPrice } from '@/lib/dcc/services'
 import { CeoScorecard } from '@/components/dcc/ceo/CeoScorecard'
+import { ScaleUpFabricationEvidence } from '@/components/dcc/scale-up/ScaleUpFabricationEvidence'
 
 export const metadata: Metadata = {
   title: 'Scale Up',
@@ -148,6 +149,8 @@ export default async function ScaleUpPage() {
         </p>
         <CeoScorecard embed />
       </section>
+
+      <ScaleUpFabricationEvidence />
 
       <section className="mt-16" id="funnel">
         <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-500">
