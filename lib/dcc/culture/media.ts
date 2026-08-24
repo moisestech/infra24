@@ -15,9 +15,15 @@
  *
  * Pages read portrait / heroImage on the record. Empty image → honest fallback.
  * Do not generate fake artist portraits or fair installation photos.
+ * Hover / scale motion is gated: only when a src is present.
  */
 
 export const CULTURE_MEDIA_DROP = '/dcc/culture'
+
+/** Cards and frames stay still until a real image URL exists. */
+export function cultureMediaMotionEnabled(src?: string): boolean {
+  return Boolean(src?.trim())
+}
 
 export function cultureArtistPortraitSrc(slug: string): string {
   return `${CULTURE_MEDIA_DROP}/artists/${slug}/portrait.webp`

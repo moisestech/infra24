@@ -2,6 +2,8 @@
 
 Code-native records live in this folder. Do not invent missing fields.
 
+To add or update a record, fill the packet in [RECORD.md](./RECORD.md) and edit one registry file. One namespace per commit (`culture` / `studios` / `fabricate` / `civic-projects`).
+
 ## Clandestine Art Fair 2026
 
 Still needed before the program page can feel finished:

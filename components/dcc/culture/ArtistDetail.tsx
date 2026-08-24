@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { PageHero, Section } from '@/components/marketing/cdc'
 import { CultureMediaFrame } from '@/components/dcc/culture/CultureMediaFrame'
 import { CultureRelatedList } from '@/components/dcc/culture/CultureRelatedList'
+import { StudioTourEmbed } from '@/components/dcc/studios/StudioTourEmbed'
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes'
 import {
   artistHref,
@@ -14,6 +15,7 @@ import {
   PROGRAM_TYPE_LABEL,
   type DccArtist,
 } from '@/lib/dcc/culture'
+import { getStudioTourByArtistSlug } from '@/lib/dcc/studios'
 
 type ArtistDetailProps = {
   artist: DccArtist
@@ -25,6 +27,7 @@ export function ArtistDetail({ artist }: ArtistDetailProps) {
   const projects = getProjectsForArtist(artist)
   const editorial = getEditorialForArtist(artist)
   const hero = artist.heroImage ?? artist.portrait
+  const studioTour = getStudioTourByArtistSlug(artist.slug)
 
   return (
     <>
@@ -88,6 +91,15 @@ export function ArtistDetail({ artist }: ArtistDetailProps) {
             ) : null}
           </div>
         </div>
+
+        {studioTour ? (
+          <div className="mt-14">
+            <h2 className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500">
+              Studio
+            </h2>
+            <StudioTourEmbed tour={studioTour} tone="light" className="mt-4" />
+          </div>
+        ) : null}
 
         <div className="mt-14 grid gap-10 lg:grid-cols-3">
           <CultureRelatedList

@@ -1,6 +1,8 @@
 import { getCdcPageByPath, getProgramLeaves } from '@/lib/cdc/routes'
+import { DCC_STUDIO_TOURS } from '@/lib/dcc/studios'
 import {
   ARTISTS_INDEX_INTRO,
+  cultureMediaMotionEnabled,
   DCC_ARTISTS,
   DCC_CULTURAL_POSITION,
   DCC_EDITORIAL,
@@ -20,6 +22,7 @@ import {
   getProjectsForArtist,
   getPublishedArtistBySlug,
   isReservedArtistSlug,
+  listArtists,
   listCurrentOrUpcomingPrograms,
   listEditorial,
   listPrograms,
@@ -81,8 +84,12 @@ describe('dcc culture public seed', () => {
     expect(DCC_ARTISTS).toEqual([])
     expect(DCC_EDITORIAL).toEqual([])
     expect(DCC_PROJECTS).toEqual([])
+    expect(listArtists()).toEqual([])
     expect(listEditorial()).toEqual([])
     expect(listProjects()).toEqual([])
+    expect(
+      DCC_STUDIO_TOURS.every((tour) => !DCC_ARTISTS.some((artist) => artist.slug === tour.artistSlug))
+    ).toBe(true)
   })
 
   it('seeds Clandestine as the first upcoming art-fair program without invented facts', () => {
@@ -161,10 +168,26 @@ describe('dcc culture cross-links', () => {
 
   it('protects reserved artist slugs and UUID directory profiles', () => {
     expect(isReservedArtistSlug('claim')).toBe(true)
+    expect(isReservedArtistSlug('create')).toBe(true)
     expect(looksLikeUuid('550e8400-e29b-41d4-a716-446655440000')).toBe(true)
     expect(looksLikeUuid('clandestine-artist')).toBe(false)
     expect(
       assertArtistSlugsValid([{ ...fixtureArtist, slug: 'claim' }])
     ).toContain('artist slug "claim" is reserved')
+  })
+
+  it('keeps card motion off until a real image src exists', () => {
+    expect(cultureMediaMotionEnabled(undefined)).toBe(false)
+    expect(cultureMediaMotionEnabled('')).toBe(false)
+    expect(cultureMediaMotionEnabled('   ')).toBe(false)
+    expect(cultureMediaMotionEnabled('/dcc/culture/artists/example/hero.webp')).toBe(
+      true
+    )
+  })
+
+  it('keeps culture projects off civic /projects and does not invent a culture index', () => {
+    expect(DCC_PROJECTS).toEqual([])
+    expect(getCdcPageByPath('/projects')?.description).toMatch(/Infra24/)
+    expect(getCdcPageByPath('/projects')?.title).toBe('Projects')
   })
 })

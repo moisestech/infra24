@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { cultureMediaMotionEnabled } from '@/lib/dcc/culture'
 import { cn } from '@/lib/utils'
 
 type CultureMediaFrameProps = {
@@ -21,7 +22,7 @@ export function CultureMediaFrame({
   return (
     <div
       className={cn(
-        'relative overflow-hidden bg-neutral-200/80 dark:bg-neutral-800',
+        'group relative overflow-hidden bg-neutral-200/80 dark:bg-neutral-800',
         aspectClassName,
         className
       )}
@@ -33,7 +34,11 @@ export function CultureMediaFrame({
           fill
           priority={priority}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover"
+          className={cn(
+            'object-cover',
+            cultureMediaMotionEnabled(src) &&
+              'transition duration-300 group-hover:scale-[1.03]'
+          )}
         />
       ) : (
         <div
