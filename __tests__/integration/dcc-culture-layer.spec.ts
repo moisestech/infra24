@@ -50,6 +50,17 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(page.getByText(/DCC × ITS3D|ITS3D Miami/i)).toHaveCount(0)
   })
 
+  test('artists and workshops indexes stay public without Clerk sign-in', async ({
+    page,
+  }) => {
+    await page.goto('/artists')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(page.getByRole('heading', { name: 'Artists', exact: true })).toBeVisible()
+    await page.goto('/workshops')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(page.getByRole('heading', { name: /Workshop catalog/i })).toBeVisible()
+  })
+
   test('artists index lists published founders and not an invented Clandestine roster', async ({
     page,
   }) => {
