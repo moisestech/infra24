@@ -43,7 +43,7 @@ Reserved artist slugs: `claim`, `create`. Do not use a UUID.
 
 ## Images
 
-Prefer Cloudinary on the record (`portrait`, `heroImage`, alts).
+Prefer Cloudinary on the record (`portrait`, `heroImage`, alts). Shot list with types and alternates: [`docs/dcc/IMAGE_SHOT_LIST.md`](../../../docs/dcc/IMAGE_SHOT_LIST.md).
 
 ```
 dccmiami/artists/{slug}/

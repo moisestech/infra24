@@ -37,7 +37,7 @@ Still needed before the program page can feel finished:
 
 ## Images
 
-Empty image fields render an honest fallback. Do not generate fake portraits or installation photos.
+Empty image fields render an honest fallback. Do not generate fake portraits or installation photos. Production list (types, sizes, alternates): [`docs/dcc/IMAGE_SHOT_LIST.md`](../../../docs/dcc/IMAGE_SHOT_LIST.md).
 
 ## What this is not
 

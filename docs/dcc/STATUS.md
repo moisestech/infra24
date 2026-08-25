@@ -5,6 +5,7 @@
 - **Not this file:** [`docs/PROJECT_STATUS.md`](../PROJECT_STATUS.md) and [`docs/CURRENT_STATUS_SUMMARY.md`](../CURRENT_STATUS_SUMMARY.md) are Dec 2024 Infra24 SaaS snapshots (booking, tenant orgs). Do not treat them as DCC MIA cultural status.
 - **Record packet (one artist/program/journal change):** [`lib/dcc/culture/RECORD.md`](../../lib/dcc/culture/RECORD.md)
 - **Culture content gaps:** [`lib/dcc/culture/CONTENT.md`](../../lib/dcc/culture/CONTENT.md)
+- **Image production list (what to shoot, types, alternates):** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md)
 - **Fabricate image drop list:** [`public/dcc/fabrication/ASSETS.md`](../../public/dcc/fabrication/ASSETS.md)
 - **Resin teaching stills:** [`docs/workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md`](../workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md)
 
@@ -98,6 +99,8 @@ Moises Studio 43 + Fabiola 360s. Light `tone` on artist pages. Angelo: no tour â
 ---
 
 ## Image inventory
+
+Full production list (types, sizes, primary + alternate, make order): [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md).
 
 ### Culture â€” founder portraits; Clandestine still has no program images
 

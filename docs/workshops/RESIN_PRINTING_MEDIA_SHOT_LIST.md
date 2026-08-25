@@ -1,5 +1,7 @@
 # Resin printing workshop — media shot list
 
+Org-wide culture + fabricate + workshop image inventory (types, alternates, make order): [`docs/dcc/IMAGE_SHOT_LIST.md`](../dcc/IMAGE_SHOT_LIST.md).
+
 Production checklist for the Infra24 resin workshop engine. Documentary natural light. Prefer real DigiLab / Oolite gear. Do **not** present AI-generated imagery as documentary evidence. Shoot larger than minimum when easy.
 
 Canonical IDs below are wired into curriculum media placeholders (`lib/workshop-engine/resin-printing/media.ts`). UI placeholders show the same `assetId` values.
