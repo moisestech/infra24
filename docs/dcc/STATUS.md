@@ -22,7 +22,7 @@
 | Last culture commits | primitives → founder artists `0301f73` → offerings `1d7eb46` → public routes `09f96c0` |
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
 | Culture records published | 1 program (Clandestine 2026). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). 0 journal entries. 0 culture projects. |
-| Fabricate Phase 2 | Parked on sibling `feature/dcc-fabricate-phase2` (`1329ff1`). Hero still a placeholder. |
+| Fabricate Phase 2 | Merging onto `main`: Field Lab, estimate planner, `/fabricate/projects`. Hero is **conceptual** (not documentary). |
 | Images | **Filled vs not:** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md) § Filled vs not. Teaching stills are conceptual; documentary fabricate/Clandestine/Bakehouse/class shots are not filled. |
 
 ### Namespace commit rule
@@ -71,8 +71,10 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 | `/workshop/3d-printing-for-artists` | education | Conceptual stills (`PRINT` `CLEANUP` `FINISH` `MEASURE` `COMPARE`) | Editorial page; inquiry via newsletter | HTML labels; caption **Conceptual educational image** |
 | `/workshop/ai-3d-physical-object` | education | Conceptual stills (`MODEL` `IMAGINE` `PREPARE` `PRINT` `FINISH` `TEST` `OUTCOME`); PRINT reuses machine detail | Editorial page; inquiry via newsletter | Can land on PLA FDM or resin SLA |
 | `/workshop/resin-printing` | education | Cloudinary banners `00–08`, concepts `107–135`, boards `200–214` | Workshop-engine clients (session/TV) | SLA syllabus engine; linked from the 3D pages, not a fifth catalog card |
-| `/fabricate` | fabricate | Hero **placeholder**; conceptual stills for lanes/pricing/access/quote; Cloudinary finish ladder | Estimate/quote on `feature/dcc-fabricate-phase2` | Hero `01-fabricate-hero.webp` not ready; stills labeled conceptual |
-| `/fabricate/projects` | fabricate | Test-case pages | — | Three DCC tests on `feature/dcc-fabricate-phase2` |
+| `/fabricate` | fabricate | Conceptual Cloudinary hero; local conceptual stills for lanes/pricing/access/quote; Cloudinary finish ladder `300–305` | Estimate planner; quote handoff | Hero is labeled conceptual, not Studio 43 documentary |
+| `/fabricate/estimate` | fabricate | — | Calculator; $151 seed; “planning estimate, not an invoice” | Not a binding quote |
+| `/fabricate/field-lab` | fabricate | Conceptual overhead joint-testing still | Capability maturity + public field tests | Peer/vendor notes stay unpublished |
+| `/fabricate/projects` | fabricate | — | Three DCC test-case pages | Internal tests, not client commissions |
 | `/projects` | civic-projects | Marketing cards/gradients | CardGrid hover | Infra24 civic proof — **do not take over** |
 | `/knight#knight-founders-360` | studios | Posters + Momento360 | Click-to-enter 360 | Moises + Fabiola; no Angelo tour |
 | `/for-artists` | marketing | — | Redirect | → `/network/signup?pathway=index` (join the map, not curated `/artists`) |
@@ -91,9 +93,9 @@ Hover rule for culture media: [`cultureMediaMotionEnabled`](../../lib/dcc/cultur
 - Studio tours do **not** leak onto `/artists` until a matching published culture record exists (Moises + Fabiola now match; Angelo still has no tour)
 - Tests: `__tests__/lib/dcc-culture.test.ts`, `__tests__/integration/dcc-culture-layer.spec.ts`
 
-### Fabrication proof (`feature/dcc-fabricate-phase2`)
+### Fabrication proof (this branch)
 
-Field Lab, estimate planner ($151 seed), Learn→Test→Make flywheel, `/fabricate/projects` DCC tests, Scale Up evidence. Committed on the sibling fabricate branch. Hero still missing. Not merged to `main`.
+Field Lab, estimate planner ($151 seed — **planning estimate, not an invoice**), Learn→Test→Make flywheel, `/fabricate/projects` DCC tests, Scale Up evidence. Conceptual hero + field-lab stills wired and labeled. Documentary `01-fabricate-hero.webp` still missing.
 
 ### Studios (committed)
 
@@ -123,19 +125,20 @@ When new: `public/dcc/culture/artists/{slug}/` or Cloudinary `dccmiami/artists/{
 
 ### Fabricate — mixed
 
-- Missing documentary: hero `01-fabricate-hero.webp`
-- Conceptual local (caption: not a documentary photo): `02`, `03`, `05`, `06`
-- Conceptual Cloudinary: finish 300 + L0–L4 (`301–305`)
+- Missing documentary: `01-fabricate-hero.webp` (shop still)
+- Conceptual Cloudinary hero wired on `/fabricate` (caption: not a documentary photo)
+- Conceptual local: `02`, `03`, `05`, `06`
+- Conceptual Cloudinary: finish 300 + L0–L4 (`301–305`); field-lab overhead still on `/fabricate/field-lab`
 
 ### Workshops — teaching stills
 
-Eleven conceptual educational stills wired on `/workshop/3d-printing-for-artists` and `/workshop/ai-3d-physical-object` (registry: `lib/dcc/education/photo-stills.ts`). Resin banners / technique boards stay on the SLA syllabus hub. Fabricate hero + field-lab conceptuals are uploaded-hold only. Not Clandestine artist portraits. No prices in curriculum images.
+Eleven conceptual educational stills wired on `/workshop/3d-printing-for-artists` and `/workshop/ai-3d-physical-object` (registry: `lib/dcc/education/photo-stills.ts`). Resin banners / technique boards stay on the SLA syllabus hub. Fabricate hero + field-lab conceptuals are now wired on `/fabricate` (fabricate namespace). Not Clandestine artist portraits. No prices in curriculum images.
 
 ---
 
 ## Motion / interactivity vs still
 
-**Moves:** homepage hero rotation; collage/pathway hover; studio click-to-enter; fabricate estimate/quote (if present in tree); workshop catalog/engine; culture card hover **only with a real `src`**.
+**Moves:** homepage hero rotation; collage/pathway hover; studio click-to-enter; fabricate estimate/quote; workshop catalog/engine; culture card hover **only with a real `src`**.
 
 **Stays still:** Clandestine skeleton, journal empty conversations, culture related lists, empty image frames.
 
@@ -177,7 +180,7 @@ Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/re
 
 ## Leftovers (ops, not invented content)
 
-- Documentary `/fabricate` hero; Bakehouse room still; resin kit/class/video; physical evidence 314 — see IMAGE_SHOT_LIST § Filled vs not
+- Documentary `/fabricate` hero (`01-fabricate-hero.webp`); Bakehouse room still; resin kit/class/video; physical evidence 314 — see IMAGE_SHOT_LIST § Filled vs not
 - Scale Up culture-flywheel numbers (public only; no QuickBooks)
 - Newsletter: `/newsletter` exists; provider is `NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_ACTION` if set — no dedicated DCC list confirmed in-repo
 - Optional later: flatten journal to `/journal/[slug]` (today `/journal/[category]/[slug]`)

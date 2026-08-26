@@ -63,7 +63,14 @@ describe('dcc fabrication estimateQuote', () => {
   it('lists swap-ready section media slots for upcoming assets', () => {
     expect(Object.keys(FABRICATION_SECTION_MEDIA).length).toBeGreaterThanOrEqual(10)
     expect(FABRICATION_SECTION_MEDIA.hero.fileName).toBe('01-fabricate-hero.webp')
-    expect(FABRICATION_SECTION_MEDIA.hero.src).toBeUndefined()
+    expect(FABRICATION_SECTION_MEDIA.hero.src).toContain(
+      '01-fabricate-hero-conceptual-01'
+    )
+    expect(FABRICATION_SECTION_MEDIA.hero.kind).toBe('conceptual')
+    expect(getFabricationSectionMedia('fieldLab').src).toContain(
+      'field-lab-joint-testing-overhead-conceptual-01'
+    )
+    expect(getFabricationSectionMedia('fieldLab').kind).toBe('conceptual')
     expect(getFabricationSectionMedia('lanes').src).toContain('02-service-lanes')
     expect(getFabricationSectionMedia('pricing').src).toContain('03-pricing-transparency')
     expect(getFabricationSectionMedia('access').src).toContain('05-artist-access')

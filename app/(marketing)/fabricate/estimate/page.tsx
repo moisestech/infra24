@@ -27,8 +27,9 @@ export default function FabricateEstimatePage() {
           Planning estimate
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 md:text-base">
-          {FABRICATION_PROMISE} This calculator uses the published rate cards. It is not an
-          approved quote.
+          {FABRICATION_PROMISE} This calculator uses the published rate cards. It is a
+          planning estimate, not an invoice or an approved quote. DCC reviews the file
+          before any job.
         </p>
       </header>
 
