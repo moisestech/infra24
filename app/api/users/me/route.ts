@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
 
     // Get the user's membership info
     console.log('👤 Looking up user membership for userId:', userId);
-    const { data: userMemberships, error: membershipError } = await supabase
+
+    const membershipQuery = supabase
       .from('org_memberships')
       .select(`
         id,
@@ -49,11 +50,35 @@ export async function GET(request: NextRequest) {
       .eq('clerk_user_id', userId)
       .eq('is_active', true);
 
+    // Fail reasonably fast when Supabase/Docker is unhealthy; cold local starts can exceed 3s.
+    const timeoutMs = 12000;
+    const { data: userMemberships, error: membershipError } = await Promise.race([
+      membershipQuery,
+      new Promise<{ data: null; error: { message: string; code: string } }>((resolve) => {
+        setTimeout(() => {
+          resolve({
+            data: null,
+            error: { message: `Supabase membership query timed out after ${timeoutMs}ms`, code: 'TIMEOUT' },
+          });
+        }, timeoutMs);
+      }),
+    ]);
+
     console.log('👤 User membership lookup result:', { userMemberships, membershipError });
 
     if (membershipError || !userMemberships || userMemberships.length === 0) {
       console.log('❌ User membership not found in database:', membershipError);
-      return NextResponse.json({ error: 'User membership not found' }, { status: 404 });
+      const unreachable =
+        !!membershipError &&
+        (/fetch failed|timed out|TIMEOUT|ENOTFOUND|ECONNREFUSED/i.test(membershipError.message) ||
+          (membershipError as { code?: string }).code === 'TIMEOUT');
+      return NextResponse.json(
+        {
+          error: unreachable ? 'User membership lookup unavailable' : 'User membership not found',
+          detail: membershipError?.message ?? null,
+        },
+        { status: unreachable ? 503 : 404 }
+      );
     }
 
     // Get the primary membership (first one) and all organizations

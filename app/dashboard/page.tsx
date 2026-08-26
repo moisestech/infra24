@@ -90,7 +90,9 @@ function DashboardPageContent() {
         }
 
         // Load recent announcements
-        const announcementsResponse = await fetch('/api/announcements/recent')
+        const announcementsResponse = await fetch('/api/announcements/recent', {
+          signal: AbortSignal.timeout(3000),
+        })
         if (announcementsResponse.ok) {
           const announcementsData = await announcementsResponse.json()
           setRecentAnnouncements(announcementsData.announcements || [])
@@ -104,6 +106,8 @@ function DashboardPageContent() {
 
     if (isLoaded && user) {
       loadDashboardData()
+    } else if (isLoaded && !user) {
+      setLoading(false)
     }
   }, [user, isLoaded])
 

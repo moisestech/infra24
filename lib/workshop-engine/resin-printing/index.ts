@@ -36,6 +36,30 @@ export {
 } from '@/lib/workshop-engine/resin-printing/instructional-concepts'
 
 export {
+  RESIN_MODULE_TECHNIQUE_BOARDS,
+  TECHNIQUE_BOARD_SIZE,
+} from '@/lib/workshop-engine/resin-printing/technique-boards'
+
+export {
+  RESIN_BANNER_CDN,
+  RESIN_CONCEPT_CDN,
+  resinCloudinaryUrl,
+} from '@/lib/workshop-engine/resin-printing/cloudinary'
+
+export { RESIN_MODULE_VOCAB } from '@/lib/workshop-engine/resin-printing/vocab'
+
+export {
+  PHYSICAL_EVIDENCE_HERO,
+  PHYSICAL_EVIDENCE_STAGES,
+  PHYSICAL_EVIDENCE_BOOKLET_PAGES,
+  getPhysicalEvidenceStageIcon,
+} from '@/lib/workshop-engine/resin-printing/physical-evidence'
+export type {
+  PhysicalEvidenceStageId,
+  PhysicalEvidenceStageMeta,
+} from '@/lib/workshop-engine/resin-printing/physical-evidence'
+
+export {
   RESIN_BOOKLET_EDITION,
   RESIN_BOOKLET_ID,
   resinBookletRef,

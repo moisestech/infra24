@@ -62,19 +62,8 @@ function OoliteOrganizationPageContent() {
       const slug = 'oolite' // Hardcoded for this specific page
       console.log('🔄 Oolite page: Starting loadData', { user: !!user, slug })
       
-      // Load public data regardless of authentication status
-      
       try {
-        // Get user profile and role (only if authenticated)
-        if (user) {
-          const userResponse = await fetch('/api/users/me')
-          if (userResponse.ok) {
-            const userData = await userResponse.json()
-            setUserRole(userData.role || 'resident')
-          }
-        }
-
-        // Get organization details from tenant config (fallback when DB is not available)
+        // Tenant config is local/sync — paint the page immediately instead of waiting on Supabase.
         console.log('🔍 Oolite page: Using tenant config for organization details')
         const { getTenantConfig } = await import('@/lib/tenant')
         const tenantConfig = getTenantConfig(slug)
@@ -93,26 +82,39 @@ function OoliteOrganizationPageContent() {
           console.log('❌ Oolite page: No tenant config found for slug:', slug)
         }
 
-        // Get recent announcements (public endpoint)
+        console.log('🏁 Oolite page: Setting loading to false')
+        setLoading(false)
+
+        // Background enrichment — must not block first paint when Supabase is down/slow.
+        if (user) {
+          try {
+            const userResponse = await fetch('/api/users/me')
+            if (userResponse.ok) {
+              const userData = await userResponse.json()
+              setUserRole(userData.role || 'resident')
+            }
+          } catch (error) {
+            console.error('❌ Oolite page: Error fetching user role:', error)
+          }
+        }
+
         try {
-          const announcementsResponse = await fetch(`/api/organizations/by-slug/${slug}/announcements/public`)
+          const announcementsResponse = await fetch(
+            `/api/organizations/by-slug/${slug}/announcements/public`,
+            { signal: AbortSignal.timeout(3000) }
+          )
           if (announcementsResponse.ok) {
             const announcementsData = await announcementsResponse.json()
             setRecentAnnouncements(announcementsData.announcements || [])
           } else {
-            // Set default announcements when API fails
             setRecentAnnouncements([])
           }
         } catch (error) {
           console.error('❌ Oolite page: Error fetching announcements:', error)
           setRecentAnnouncements([])
         }
-
-
       } catch (error) {
         console.error('❌ Oolite page: Error loading organization data:', error)
-      } finally {
-        console.log('🏁 Oolite page: Setting loading to false')
         setLoading(false)
       }
     }

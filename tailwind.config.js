@@ -8,6 +8,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        /** Portrait digital signage (e.g. 1080×1920) — height-first type scale. */
+        'portrait-tv': {
+          raw: '(orientation: portrait) and (min-height: 1600px)',
+        },
+      },
       colors: {
         primary: {
           50: '#e0f7fa',

@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import {
   Bookmark,
+  BookOpenText,
   ClipboardList,
   Eye,
   FlaskConical,
@@ -21,6 +22,7 @@ export type TeachingSectionRole =
   | 'watch'
   | 'ideas'
   | 'tip'
+  | 'vocab'
   | 'activity'
   | 'discussion'
   | 'checkpoint'
@@ -78,6 +80,15 @@ export const TEACHING_SECTION_ROLES: Record<
     surface: 'bg-gradient-to-br from-amber-50 via-orange-50/50 to-white',
     border: 'border-amber-300',
     Icon: Bookmark,
+  },
+  vocab: {
+    label: 'Key vocab',
+    heading: 'text-rose-950',
+    iconWrap: 'bg-rose-700 text-white',
+    icon: 'text-rose-700',
+    surface: 'bg-gradient-to-br from-rose-50 via-pink-50/40 to-white',
+    border: 'border-rose-200',
+    Icon: BookOpenText,
   },
   activity: {
     label: 'Try it',

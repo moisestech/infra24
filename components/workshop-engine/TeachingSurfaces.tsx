@@ -119,6 +119,37 @@ export function TipCallout({ tips }: { tips: string[] }) {
   )
 }
 
+export function KeyVocab({
+  terms,
+  glossaryHref = '/workshop/resin-printing/resources#glossary',
+}: {
+  terms: { term: string; definition: string }[]
+  glossaryHref?: string
+}) {
+  if (!terms.length) return null
+  return (
+    <TeachingPanel role="vocab">
+      <dl className="space-y-3 md:space-y-3.5">
+        {terms.map((item) => (
+          <div key={item.term}>
+            <dt className={cn(weType.label, 'font-semibold text-rose-950')}>
+              {item.term}
+            </dt>
+            <dd className={cn(weType.body, 'mt-0.5 text-slate-800')}>
+              {item.definition}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <p className={cn(weType.meta, 'mt-3')}>
+        <a className="underline underline-offset-2" href={glossaryHref}>
+          See glossary
+        </a>
+      </p>
+    </TeachingPanel>
+  )
+}
+
 export function DiscussionPrompt({ prompt }: { prompt: string }) {
   return (
     <TeachingPanel role="discussion">

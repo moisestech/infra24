@@ -198,8 +198,76 @@ export type WorkshopMedia = {
     | 'list-checks'
     | 'sparkles'
     | 'search-check'
+    | 'workflow'
+    | 'image'
+    | 'box'
+    | 'printer'
+    | 'droplets'
+    | 'shield'
+    | 'file-stack'
+    | 'octagon-alert'
+    | 'scale'
+    | 'hammer'
   /** Enable zoom/fullscreen for comparison detail. */
   zoomable?: boolean
+  /** Draft teaching board vs verified documentary assets. */
+  productionStatus?:
+    | 'draft-teaching-board'
+    | 'verified-screenshot'
+    | 'verified-photo'
+  /** Longer accessible description (HTML may summarize). */
+  longDescription?: string
+  /** Percent-based callout regions on the board (0–100). */
+  regions?: TechniqueBoardRegion[]
+  /** Future verified screenshot/photo when ready. */
+  verifiedSrc?: string
+  /** Local do / avoid activity. */
+  doAvoid?: TechniqueBoardDoAvoid
+  /** Mobile guided panel crops — prefer these over shrinking the whole board. */
+  panelCrops?: TechniqueBoardPanelCrop[]
+}
+
+export type TechniqueBoardRegion = {
+  id: string
+  label: string
+  /** Percent of image width (0–100). */
+  x: number
+  y: number
+  w: number
+  h: number
+  note: string
+}
+
+export type TechniqueBoardDoAvoid = {
+  do: string[]
+  avoid: string[]
+}
+
+export type TechniqueBoardPanelCrop = {
+  id: string
+  label: string
+  objectPosition: string
+  prompt: string
+}
+
+export type TechniqueBoardLayout =
+  | 'primary'
+  | 'tabs'
+  | 'guided-sequence'
+  | 'pair'
+  | 'prep-next'
+
+/** Interactive technique board block for a module (supporting teaching layer). */
+export type ModuleTechniqueBoards = {
+  title: string
+  intro?: string
+  layout: TechniqueBoardLayout
+  /** Board panels — one for primary; multiple for tabs/sequence/pair. */
+  boards: WorkshopMedia[]
+  /** Pair layout labels (length 2). */
+  pairLabels?: [string, string]
+  /** Safety / readiness reminder shown under the board. */
+  safetyNote?: string
 }
 
 /** Conceptual teaching stills attached to a module (supporting layer). */
@@ -226,6 +294,11 @@ export type VenueAccentClasses = {
   heading: string
 }
 
+export type ModuleVocabTerm = {
+  term: string
+  definition: string
+}
+
 export type WorkshopModule = {
   id: string
   slug: string
@@ -239,6 +312,8 @@ export type WorkshopModule = {
   discussionPrompt?: string
   /** Short participant tips (displayed with tip icon + amber pairing). */
   tips?: string[]
+  /** Key vocabulary for the module (term + short definition). */
+  vocab?: ModuleVocabTerm[]
   physicalSample: string
   activity: Activity
   knowledgeCheck?: KnowledgeCheck
@@ -255,6 +330,8 @@ export type WorkshopModule = {
   mediaIds?: string[]
   /** Optional tutorial / demo video slot (placeholder until asset lands). */
   tutorialVideo?: ModuleTutorialVideo
+  /** Interactive technique boards (200-series teaching boards). */
+  techniqueBoards?: ModuleTechniqueBoards
   /** Conceptual teaching illustrations (supporting layer; not banners). */
   instructionalConcepts?: ModuleInstructionalConcepts
 }

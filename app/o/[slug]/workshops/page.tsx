@@ -32,6 +32,7 @@ import type { WorkshopRow } from '@/components/workshops/marketing/types'
 import { normalizeWorkshopForCatalog } from '@/lib/workshops/normalize-workshop-for-catalog'
 import { isAdultStudioWorkshop } from '@/lib/workshops/workshop-filters'
 import { IpAgeOfAiWorkshopsLandingTeaser } from '@/components/workshops/marketing/IpAgeOfAiWorkshopsLandingTeaser'
+import { ResinPrintingWorkshopsLandingTeaser } from '@/components/workshops/marketing/ResinPrintingWorkshopsLandingTeaser'
 import { IP_AGE_OF_AI_WORKSHOP_SLUG } from '@/lib/workshops/ip-age-of-ai-program'
 import { canonicalWorkshopMarketingSlug } from '@/lib/workshops/workshop-metadata-slug-aliases'
 
@@ -812,7 +813,10 @@ export default function WorkshopsPage({ slug: propSlug }: WorkshopsPageProps = {
               ) : null}
 
               {slug === 'oolite' ? (
-                <IpAgeOfAiWorkshopsLandingTeaser orgSlug={slug} isDark={isDark} />
+                <>
+                  <ResinPrintingWorkshopsLandingTeaser isDark={isDark} />
+                  <IpAgeOfAiWorkshopsLandingTeaser orgSlug={slug} isDark={isDark} />
+                </>
               ) : null}
 
               {/* Framing + audience + Digital Lab catalog CTA (directly after published workshop cards) */}

@@ -2,7 +2,7 @@
 
 Living org status: [`STATUS.md`](./STATUS.md). Culture packet: [`lib/dcc/culture/RECORD.md`](../../lib/dcc/culture/RECORD.md). Fabricate drop filenames: [`public/dcc/fabrication/ASSETS.md`](../../public/dcc/fabrication/ASSETS.md). Resin documentary IDs: [`docs/workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md`](../workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md).
 
-Live on **main** / [dcc.miami](https://www.dcc.miami) after [PR #3](https://github.com/moisestech/infra24/pull/3). Fabricate Phase 2 (estimate planner, `/fabricate/projects`) is still on sibling `feature/dcc-fabricate-phase2` and is **not** on production.
+Live on **main** / [dcc.miami](https://www.dcc.miami): culture ([PR #3](https://github.com/moisestech/infra24/pull/3)), `/workshops` empty-catalog fix ([PR #4](https://github.com/moisestech/infra24/pull/4)), resin Cloudinary + DCC offering stills ([PR #5](https://github.com/moisestech/infra24/pull/5)). Fabricate Phase 2 (estimate planner, `/fabricate/projects`) is still on sibling `feature/dcc-fabricate-phase2` and is **not** on production.
 
 **Hard rules for every frame:** no invented artist names; no prices, logos, or readable UI in fabricate/workshop stills; caption **conceptual** vs **documentary**; founders on `/artists` are **not** the Clandestine roster.
 
@@ -37,13 +37,57 @@ flowchart LR
 
 ### Education (live)
 
-- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, resin (8 people / 3 hr), Vibecoding & Net Art, IP in the Age of AI. **No prices.** No offering-card images yet. The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
+- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, resin (8 people / 3 hr), Vibecoding & Net Art, IP in the Age of AI. **No prices.** Offering cards reuse existing workshop banners (resin welcome banner is the same Oolite Digital Lab curriculum still). The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
 - Resin engine already has **conceptual** Cloudinary banners + technique boards (not shop photos).
 
 ### Fabricate (partially live)
 
 - On **main:** `/fabricate`, `/pricing`, `/finishes`, `/quote`. Section slots in [`lib/dcc/fabrication/section-media.ts`](../../lib/dcc/fabrication/section-media.ts) are **placeholders** except finishes hero falls back to resin instructional `113`.
 - On **phase-2 branch:** conceptual stills `02/03/05/06` marked ready; finish ladder `300–305` on Cloudinary; **hero `01` still missing.**
+
+---
+
+## Filled vs not (26 Aug 2026)
+
+What we can **deliver today** vs what is still empty. Conceptual teaching stills count as filled. Documentary room/class/shop photos do not, until they exist.
+
+### Filled (wired, ships with the resin/education work)
+
+| Slot | What is live | Kind |
+|---|---|---|
+| `/workshops#offerings` Saturday Lab | Cloudinary `01_start-here` | Existing lab banner |
+| `/workshops#offerings` resin | `RESIN_BANNER_CDN.welcome` (same Oolite Digital Lab curriculum still) | Conceptual |
+| `/workshops#offerings` vibe-coding | Handbook catalog still `vibe-coding-with-net-art` | Existing banner |
+| `/workshops#offerings` IP Age of AI | `IP_AGE_OF_AI_LANDSCAPE_BANNER_URL` | Existing banner |
+| Resin hub + 9 module banners | Cloudinary `00–08` | Conceptual ultra-wide |
+| Instructional concepts | Cloudinary `107–135` | Conceptual |
+| Technique boards | Cloudinary `200–214` | Conceptual |
+| Media shot list | Same banners/stills + local zone + workflow SVGs | Conceptual / diagram |
+| Oolite venue page | Conceptual M7 Max still `120` — **not** a Studio 106 room photo | Conceptual |
+| `/o/oolite/workshops` resin teaser | Same welcome banner | Conceptual |
+| Founder portraits | Knight / Edge Zones (Moises, Fabiola, Angelo) | Documentary (approved) |
+| Homepage collage | [`dcc-home-photography.ts`](../../lib/marketing/dcc-home-photography.ts) | Documentary |
+| Studio 360 | Moises + Fabiola only | Existing tours |
+| `/fabricate/finishes` hero | Local stand-in `113-post-processing-states` | Conceptual (resin instructional) |
+
+### Not filled (honest empty / placeholder — do not invent)
+
+| Slot | Why empty | Blocked on |
+|---|---|---|
+| `01-fabricate-hero.webp` | `/fabricate` hero is a color placeholder | Real desk still, or crop `120` as labeled conceptual |
+| Fabricate `02/03/05/06` + L0–L4 | `ready: false` on **main**; conceptuals live only on `feature/dcc-fabricate-phase2` | Phase-2 merge **or** drop files into `public/dcc/fabrication/` |
+| Bakehouse venue still | Room TBD; page stays placeholder | Confirmed DCC/Bakehouse room + shot |
+| `resin-hero-01` documentary, `resin-room-wide-01`, `resin-oolite-brand-01` | Hub uses welcome banner instead; no documentary room | DigiLab/Oolite stills with no readable UI |
+| Kit trays `resin-kit-00` … `08` | IDs listed, no files | One tray per module |
+| Physical evidence `310–315` | Metadata only; `314` marked `ready: false`; UI is text | Cloudinary sequence (314 first) |
+| Tutorial / class video loops | Placeholder slots, no `src` | Optional after a real class |
+| `resin-tv-break-01`, `resin-tv-join-01` | Not drawn | Diagrams, not photos |
+| Clandestine portraits / hang / program hero | Program 001 has **no** `heroImage`, **no** `artistIds` | Three participating names |
+| `angelo-hero`, Angelo 360 | Portrait only; **no tour** | One work image; do not fake 360 |
+| Journal / Conversations stills | Empty on purpose | First real guest |
+| `/` `#now` thumbs | Text-only | Optional; reuse program/artist heroes when they exist |
+
+**Deliverable this week without new photography:** public `/workshops` with four existing banners; full resin teaching engine (banners, 107–135, 200–214); Oolite venue as conceptual equipment; culture pages with three founder portraits. **Not deliverable as documentary:** fabricate shop hero, Bakehouse room, Clandestine fair, class/kit photos.
 
 ---
 
@@ -142,16 +186,16 @@ Day-of Open Studios (ops, not a program record): H2D hero **if the machine is in
 
 ## C. Education / resin — mostly shot as **conceptual**; replace with documentary when honest
 
-### C1. Offerings band (no images yet — optional)
+### C1. Offerings band (reuse existing banners)
 
-Four 16:9 or 4:5 cards on `/workshops#offerings`:
+Four 16:9 / 21:9 cards on `/workshops#offerings` now point at assets already in the engines. Polish with documentary stills later if needed.
 
-| ID | Session | Primary | Alternate |
+| ID | Session | In use now | Later documentary alternate |
 |---|---|---|---|
-| `offering-saturday-lab` | Saturday Lab | In-room website/vibe table, no accounts on screens | Existing Saturday Lab banner `01_start-here` |
-| `offering-resin` | Resin | Cured samples + printer silhouette | Module banner `welcome` |
-| `offering-vibe-coding` | Net art | Browser-as-medium still | Existing vibe banner set |
-| `offering-ip-ai` | IP Age of AI | Typographic / diagram card | Existing landscape banner in `ip-age-of-ai-video.ts` |
+| `offering-saturday-lab` | Saturday Lab | Banner `01_start-here` | In-room website/vibe table, no accounts on screens |
+| `offering-resin` | Resin | Module banner `welcome` (same Oolite Digital Lab curriculum still) | Cured samples + printer in a confirmed DCC/Bakehouse room |
+| `offering-vibe-coding` | Net art | Existing vibe catalog still | Browser-as-medium still |
+| `offering-ip-ai` | IP Age of AI | Landscape banner in `ip-age-of-ai-video.ts` | Typographic / diagram card |
 
 ### C2. Resin — already have conceptual Cloudinary (keep until documentary exists)
 
@@ -165,8 +209,8 @@ Four 16:9 or 4:5 cards on `/workshops#offerings`:
 
 Shoot **once**, natural light, DigiLab/Oolite gear. Prefer no people except class shots (releases). Full IDs live in the resin shot list.
 
-**Hub (16:10 / 16:9)**  
-`resin-hero-01`, `resin-room-wide-01`, `resin-oolite-brand-01`, `resin-bakehouse-brand-01` (Bakehouse: keep placeholder if the room isn’t ready).
+**Hub (16:10 / 16:9) — not filled (documentary)**  
+`resin-hero-01` (local PNG exists but hub/media use Cloudinary welcome instead), `resin-room-wide-01`, `resin-oolite-brand-01`, `resin-bakehouse-brand-01` (Bakehouse: keep placeholder until the room is confirmed).
 
 **Per-module stills**  
 welcome TVs+QR; why-resin macro pair; safety zones + PPE portrait; five-stage workflow; file good/bad; slicer UI + five step screenshots; stations wide + plate/vat; failure grid + five isolated specimens; readiness kit.
@@ -181,7 +225,7 @@ wide class, pair on slicer, facilitator demo, hands on **cured** print, outcome 
 5–12s: model, slice, print, wash, cure; 15–30s zone walk; 60–90s reel after a real class.
 
 **Diagrams (design, not photo)**  
-`resin-diagram-zones-01`, `resin-diagram-workflow-01`, `resin-tv-break-01`, `resin-tv-join-01` (QR stays live-generated).
+**Filled:** `resin-diagram-zones-01`, `resin-diagram-workflow-01` (local SVG, on the media page). **Not filled:** `resin-tv-break-01`, `resin-tv-join-01` (QR stays live-generated).
 
 ---
 

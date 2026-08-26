@@ -31,16 +31,20 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
   const [workshopCount, setWorkshopCount] = useState(0)
   const [artistDirectoryCount, setArtistDirectoryCount] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [dbReachable, setDbReachable] = useState(true)
 
   useEffect(() => {
     async function loadCounts() {
       const slug = organization.slug
       try {
         const [surveysRes, workshopsRes, artistsRes] = await Promise.all([
-          fetch(`/api/organizations/by-slug/${slug}/surveys/public`),
-          fetch(`/api/organizations/by-slug/${slug}/workshops/public`),
-          fetch(`/api/organizations/by-slug/${slug}/artists/public`),
+          fetch(`/api/organizations/by-slug/${slug}/surveys/public`, { signal: AbortSignal.timeout(3000) }),
+          fetch(`/api/organizations/by-slug/${slug}/workshops/public`, { signal: AbortSignal.timeout(3000) }),
+          fetch(`/api/organizations/by-slug/${slug}/artists/public`, { signal: AbortSignal.timeout(3000) }),
         ])
+
+        const anyOk = surveysRes.ok || workshopsRes.ok || artistsRes.ok
+        setDbReachable(anyOk)
 
         if (surveysRes.ok) {
           const surveysData = await surveysRes.json()
@@ -64,6 +68,7 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
         }
       } catch (error) {
         console.error('Error loading counts:', error)
+        setDbReachable(false)
       } finally {
         setLoading(false)
       }
@@ -72,11 +77,23 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
     loadCounts()
   }, [organization.slug])
 
+  const countLabel = (n: number, suffix: string) => {
+    if (loading) return '...'
+    if (!dbReachable) return 'DB offline'
+    return `${n} ${suffix}`
+  }
+
   return (
     <div className="mb-6 xl:mb-8 2xl:mb-10 3xl:mb-12">
       <h2 className="text-lg xl:text-xl 2xl:text-2xl 3xl:text-3xl font-semibold text-gray-900 dark:text-white mb-3 xl:mb-4 2xl:mb-5 3xl:mb-6">
         Quick Actions
       </h2>
+      {!loading && !dbReachable ? (
+        <p className="mb-3 text-sm text-amber-800 dark:text-amber-200">
+          Local Supabase/Docker is not reachable — counts show offline until you run{' '}
+          <code className="font-mono text-xs">npx supabase start</code>.
+        </p>
+      ) : null}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 xl:gap-4 2xl:gap-5 3xl:gap-6">
         {dashboardConfig?.showAnnouncements !== false && (
           <a
@@ -118,7 +135,7 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
               <div>
                 <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Artists</p>
                 <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-gray-500 dark:text-gray-400">
-                  {loading ? '...' : `${artistDirectoryCount} on directory`}
+                  {countLabel(artistDirectoryCount, 'on directory')}
                 </p>
               </div>
             </div>
@@ -149,7 +166,7 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
               <div>
                 <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Surveys</p>
                 <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-gray-500 dark:text-gray-400">
-                  {loading ? '...' : `${surveyCount} active`}
+                  {countLabel(surveyCount, 'active')}
                 </p>
               </div>
             </div>
@@ -181,7 +198,7 @@ export function QuickActions({ organization, recentAnnouncementsCount, userRole,
               <div>
                 <p className="font-medium text-gray-900 dark:text-white text-sm xl:text-base 2xl:text-lg 3xl:text-xl">Workshops</p>
                 <p className="text-xs xl:text-sm 2xl:text-base 3xl:text-lg text-gray-500 dark:text-gray-400">
-                  {loading ? '...' : `${workshopCount} published`}
+                  {countLabel(workshopCount, 'published')}
                 </p>
               </div>
             </div>
