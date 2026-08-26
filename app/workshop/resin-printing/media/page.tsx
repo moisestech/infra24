@@ -4,6 +4,7 @@ import {
   RESIN_HERO_MEDIA,
   RESIN_MODULE_PRIMARY_MEDIA,
   RESIN_MODULE_MEDIA_IDS,
+  RESIN_ASSET_PATHS,
 } from '@/lib/workshop-engine/resin-printing/media'
 import { RESIN_PRINTING_MODULES } from '@/lib/workshop-engine/resin-printing'
 import { WorkshopImagePlaceholder } from '@/components/workshop-engine/WorkshopVisuals'
@@ -45,6 +46,9 @@ export default function ResinMediaShotListPage() {
           aspect={RESIN_HERO_MEDIA.aspect}
           assetId={RESIN_HERO_MEDIA.assetId}
           minSize={RESIN_HERO_MEDIA.minSize}
+          src={RESIN_HERO_MEDIA.src}
+          caption={RESIN_HERO_MEDIA.caption}
+          kind={RESIN_HERO_MEDIA.kind}
         />
       </section>
 
@@ -72,10 +76,42 @@ export default function ResinMediaShotListPage() {
                 aspect={media.aspect}
                 assetId={media.assetId}
                 minSize={media.minSize}
+                src={media.src}
+                caption={media.caption}
+                kind={media.kind}
               />
             </div>
           )
         })}
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold">Diagrams already in the kit</h2>
+        <p className="max-w-2xl text-sm text-slate-600">
+          Local teaching diagrams from the Oolite session — not documentary photography.
+        </p>
+        <WorkshopImagePlaceholder
+          moduleId="safety-zones"
+          title="Zone diagram"
+          shot="Clean vs controlled zone graphic used in the Oolite Digital Lab session."
+          altIntent="Diagram of clean participant zone versus controlled resin zone."
+          aspect="diagram"
+          assetId="resin-diagram-zones-01"
+          src={RESIN_ASSET_PATHS.zonesDiagram}
+          caption="Teaching diagram"
+          kind="diagram"
+        />
+        <WorkshopImagePlaceholder
+          moduleId="complete-workflow"
+          title="Workflow diagram"
+          shot="Model → slice → print → wash → cure graphic from the same curriculum."
+          altIntent="Diagram of the five-stage resin printing workflow."
+          aspect="diagram"
+          assetId="resin-diagram-workflow-01"
+          src={RESIN_ASSET_PATHS.workflowDiagram}
+          caption="Teaching diagram"
+          kind="diagram"
+        />
       </section>
     </div>
   )

@@ -151,7 +151,7 @@ Resin banners / technique boards. Not Clandestine artist portraits. No prices in
 
 ### Education / money (do not build checkout this sprint)
 
-`/workshops` public catalog is the DCC sessions band (`lib/dcc/education/offerings.ts`: Saturday Lab, resin — 8 people / 3 hr, Vibecoding & Net Art, IP in the Age of AI). Capacity only where the engine already has it. **No prices in the offering records.** The optional filterable org grid (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG`, default `oolite`) is omitted when that org is missing or empty — the public page must not show operator env-var copy.
+`/workshops` public catalog is the DCC sessions band (`lib/dcc/education/offerings.ts`: Saturday Lab, resin — 8 people / 3 hr, Vibecoding & Net Art, IP in the Age of AI). Capacity only where the engine already has it. **No prices in the offering records.** Cards reuse existing workshop banners — resin is the same Oolite Digital Lab curriculum still (`RESIN_BANNER_CDN.welcome`). The optional filterable org grid (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG`, default `oolite`) is omitted when that org is missing or empty — the public page must not show operator env-var copy.
 
 **What is actually live for money**
 

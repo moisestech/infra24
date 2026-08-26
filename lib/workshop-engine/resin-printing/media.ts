@@ -2,7 +2,7 @@ import type {
   ModuleMediaPlaceholder,
   ModuleTutorialVideo,
 } from '@/lib/workshop-engine/types'
-import { RESIN_CONCEPT_CDN } from '@/lib/workshop-engine/resin-printing/cloudinary'
+import { RESIN_BANNER_CDN, RESIN_CONCEPT_CDN } from '@/lib/workshop-engine/resin-printing/cloudinary'
 
 export const RESIN_ASSET_PATHS = {
   hero: '/workshops/resin-printing/assets/resin-hero-01.png',
@@ -13,13 +13,13 @@ export const RESIN_ASSET_PATHS = {
 export const RESIN_HERO_MEDIA: ModuleMediaPlaceholder = {
   assetId: 'resin-hero-01',
   title: 'Workshop hero image',
-  shot: 'Illustrative placeholder: resin printer silhouette and cured samples on a clean workstation. Replace with a real Oolite shot.',
-  altIntent: 'Illustrative resin printer and finished artist samples in a workshop space.',
-  aspect: 'landscape 16:10',
-  minSize: '2400×1500',
-  src: RESIN_ASSET_PATHS.hero,
-  caption: 'Illustrative placeholder',
-  kind: 'illustrative',
+  shot: 'Same conceptual welcome banner used on the Oolite Digital Lab session and DCC.MIAMI /workshops. Documentary room shots come later.',
+  altIntent: 'Conceptual resin sculpture and cured sample on a workshop table.',
+  aspect: 'ultra-wide 21:9',
+  minSize: '1915×821',
+  src: RESIN_BANNER_CDN.welcome,
+  caption: 'Conceptual — not a documentary photo',
+  kind: 'illustration',
 }
 
 /** Primary teaching still per module (Cloudinary module stills 200–214). */

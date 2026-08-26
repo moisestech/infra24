@@ -19,6 +19,22 @@ describe('dcc education offerings', () => {
     expect(serialized).not.toMatch(/stripe/i)
   })
 
+  it('reuses existing workshop banners on DCC offerings instead of inventing photos', () => {
+    const resin = getWorkshopOfferingBySlug('resin-printing')
+    expect(resin?.image?.src).toContain('res.cloudinary.com/dck5rzi4h')
+    expect(resin?.image?.src).toContain('00-welcome-join-banner')
+    expect(resin?.image?.caption).toMatch(/Conceptual/)
+    expect(getWorkshopOfferingBySlug('saturday-lab')?.image?.src).toContain(
+      '01_start-here-two-paths'
+    )
+    expect(getWorkshopOfferingBySlug('vibe-coding-net-art')?.image?.src).toContain(
+      'vibe-coding-with-net-art'
+    )
+    expect(getWorkshopOfferingBySlug('ip-age-of-ai')?.image?.src).toContain(
+      'skills-age-of-ai_landscape-banner'
+    )
+  })
+
   it('publishes resin capacity from the workshop engine and keeps fabricate rates out', () => {
     const resin = getWorkshopOfferingBySlug('resin-printing')
     expect(resin?.capacity).toBe(8)

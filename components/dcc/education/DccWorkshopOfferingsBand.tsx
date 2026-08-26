@@ -50,6 +50,23 @@ export function DccWorkshopOfferingsBand() {
               key={offering.id}
               className="flex flex-col border-t border-neutral-200 pt-5 dark:border-neutral-800"
             >
+              {offering.image ? (
+                <figure className="mb-4">
+                  <div className="relative aspect-[21/9] overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-900">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={offering.image.src}
+                      alt={offering.image.alt}
+                      className="h-full w-full object-cover object-center"
+                    />
+                  </div>
+                  {offering.image.caption ? (
+                    <figcaption className="mt-2 text-[11px] uppercase tracking-[0.12em] text-neutral-500">
+                      {offering.image.caption}
+                    </figcaption>
+                  ) : null}
+                </figure>
+              ) : null}
               <p className="text-xs uppercase tracking-[0.16em] text-neutral-500">
                 {formatMeta(offering) || 'Workshop'}
               </p>

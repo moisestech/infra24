@@ -1,5 +1,4 @@
 import {
-  RESIN_ASSET_PATHS,
   RESIN_BANNER_SIZE,
   RESIN_BOOKLET_EDITION,
   RESIN_HERO_MEDIA,
@@ -247,7 +246,8 @@ describe('resin booklet V02 mapping', () => {
   })
 
   it('resolves hero and module primary media on Cloudinary', () => {
-    expect(RESIN_HERO_MEDIA.src).toBe(RESIN_ASSET_PATHS.hero)
+    expect(RESIN_HERO_MEDIA.src).toContain('00-welcome-join-banner')
+    expect(RESIN_HERO_MEDIA.src).toContain('res.cloudinary.com/dck5rzi4h')
     expect(RESIN_MODULE_PRIMARY_MEDIA['safety-zones']?.src).toContain(
       '202-m02-safety-zone-behaviors'
     )

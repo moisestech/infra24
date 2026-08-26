@@ -37,7 +37,7 @@ flowchart LR
 
 ### Education (live)
 
-- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, resin (8 people / 3 hr), Vibecoding & Net Art, IP in the Age of AI. **No prices.** No offering-card images yet. The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
+- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, resin (8 people / 3 hr), Vibecoding & Net Art, IP in the Age of AI. **No prices.** Offering cards reuse existing workshop banners (resin welcome banner is the same Oolite Digital Lab curriculum still). The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
 - Resin engine already has **conceptual** Cloudinary banners + technique boards (not shop photos).
 
 ### Fabricate (partially live)
@@ -142,16 +142,16 @@ Day-of Open Studios (ops, not a program record): H2D hero **if the machine is in
 
 ## C. Education / resin — mostly shot as **conceptual**; replace with documentary when honest
 
-### C1. Offerings band (no images yet — optional)
+### C1. Offerings band (reuse existing banners)
 
-Four 16:9 or 4:5 cards on `/workshops#offerings`:
+Four 16:9 / 21:9 cards on `/workshops#offerings` now point at assets already in the engines. Polish with documentary stills later if needed.
 
-| ID | Session | Primary | Alternate |
+| ID | Session | In use now | Later documentary alternate |
 |---|---|---|---|
-| `offering-saturday-lab` | Saturday Lab | In-room website/vibe table, no accounts on screens | Existing Saturday Lab banner `01_start-here` |
-| `offering-resin` | Resin | Cured samples + printer silhouette | Module banner `welcome` |
-| `offering-vibe-coding` | Net art | Browser-as-medium still | Existing vibe banner set |
-| `offering-ip-ai` | IP Age of AI | Typographic / diagram card | Existing landscape banner in `ip-age-of-ai-video.ts` |
+| `offering-saturday-lab` | Saturday Lab | Banner `01_start-here` | In-room website/vibe table, no accounts on screens |
+| `offering-resin` | Resin | Module banner `welcome` (same Oolite Digital Lab curriculum still) | Cured samples + printer in a confirmed DCC/Bakehouse room |
+| `offering-vibe-coding` | Net art | Existing vibe catalog still | Browser-as-medium still |
+| `offering-ip-ai` | IP Age of AI | Landscape banner in `ip-age-of-ai-video.ts` | Typographic / diagram card |
 
 ### C2. Resin — already have conceptual Cloudinary (keep until documentary exists)
 

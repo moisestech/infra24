@@ -12,6 +12,7 @@ import {
   SlidersHorizontal,
 } from 'lucide-react'
 import { getResinVenue } from '@/lib/workshop-engine/resin-printing'
+import { RESIN_CONCEPT_CDN } from '@/lib/workshop-engine/resin-printing/cloudinary'
 import { getVenueAccent } from '@/lib/workshop-engine/resin-printing/theme'
 import { WorkshopImagePlaceholder } from '@/components/workshop-engine/WorkshopVisuals'
 import { weSpace, weTouch, weType } from '@/components/workshop-engine/responsive'
@@ -84,16 +85,31 @@ export default async function ResinVenuePage({ params }: Props) {
       {config.brandMediaId ? (
         <WorkshopImagePlaceholder
           moduleId={config.id === 'oolite' ? 'file-readiness' : 'print-wash-cure'}
-          title={`${config.venueName} brand / room proof`}
+          title={`${config.venueName} equipment class`}
           shot={
             config.id === 'oolite'
-              ? 'Room corner with Oolite/DigiLab context; no private screens readable.'
-              : 'Bakehouse / DCC.MIAMI context when available — keep placeholder until shot.'
+              ? 'Conceptual portrait of the Photon Mono M7 Max class used in the Oolite Digital Lab session. Not a documentary room photo.'
+              : 'Bakehouse / DCC.MIAMI room shot when the space is confirmed — keep placeholder until then.'
           }
-          altIntent={`Venue proof image for ${config.organization}.`}
+          altIntent={
+            config.id === 'oolite'
+              ? 'Conceptual illustration of a resin printer in the Photon Mono M7 Max class.'
+              : `Venue proof image for ${config.organization} — not yet photographed.`
+          }
           aspect="landscape 16:9"
           assetId={config.brandMediaId}
           minSize="2400×1350"
+          src={
+            config.id === 'oolite'
+              ? RESIN_CONCEPT_CDN['120-m7-max-equipment-portrait']
+              : undefined
+          }
+          caption={
+            config.id === 'oolite'
+              ? 'Conceptual — equipment class, not a documentary room photo'
+              : undefined
+          }
+          kind={config.id === 'oolite' ? 'illustration' : 'placeholder'}
         />
       ) : null}
 

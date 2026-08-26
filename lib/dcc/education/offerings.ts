@@ -1,6 +1,13 @@
 import { vibeCodingNetArtOverview } from '@/content/workshop/vibe-coding-net-art-overview'
 import { ipAgeOfAiWorkshop } from '@/data/ipAgeOfAiWorkshop'
 import type { DccWorkshopOffering } from '@/lib/dcc/education/types'
+import { RESIN_BANNER_CDN } from '@/lib/workshop-engine/resin-printing/cloudinary'
+import { SATURDAY_LAB_BANNERS } from '@/lib/workshops/saturday-lab-media'
+import { IP_AGE_OF_AI_LANDSCAPE_BANNER_URL } from '@/lib/workshops/ip-age-of-ai-video'
+
+/** Existing vibe-coding catalog still (same asset as the handbook chapters). */
+const VIBE_CODING_OFFERING_IMAGE =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1776525117/dccmiami/workshops/vibe-coding-with-net-art_dtead3.png'
 
 /**
  * DCC MIA public workshop offerings — pages that already exist.
@@ -19,6 +26,11 @@ export const DCC_WORKSHOP_OFFERINGS: DccWorkshopOffering[] = [
     format: 'lab',
     enrollment: 'open-lab',
     featured: true,
+    image: {
+      src: SATURDAY_LAB_BANNERS.startHere,
+      alt: 'Saturday Lab start-here banner with two in-room paths: beginner website and vibe coding.',
+      caption: 'Existing Saturday Lab banner',
+    },
   },
   {
     id: 'resin-printing',
@@ -33,6 +45,11 @@ export const DCC_WORKSHOP_OFFERINGS: DccWorkshopOffering[] = [
     durationMinutes: 180,
     enrollment: 'inquiry',
     featured: true,
+    image: {
+      src: RESIN_BANNER_CDN.welcome,
+      alt: 'Conceptual resin sculpture and cured sample on a workshop table — same curriculum as the Oolite Digital Lab session.',
+      caption: 'Conceptual — not a documentary photo',
+    },
   },
   {
     id: 'vibe-coding-net-art',
@@ -43,6 +60,11 @@ export const DCC_WORKSHOP_OFFERINGS: DccWorkshopOffering[] = [
     syllabusHref: '/workshop/vibe-coding-net-art',
     format: 'self-paced',
     enrollment: 'self-serve-handbook',
+    image: {
+      src: VIBE_CODING_OFFERING_IMAGE,
+      alt: 'Vibecoding and Net Art handbook catalog still.',
+      caption: 'Existing handbook banner',
+    },
   },
   {
     id: 'ip-age-of-ai',
@@ -53,6 +75,11 @@ export const DCC_WORKSHOP_OFFERINGS: DccWorkshopOffering[] = [
     syllabusHref: '/workshops/ip-age-of-ai',
     format: 'hybrid',
     enrollment: 'inquiry',
+    image: {
+      src: IP_AGE_OF_AI_LANDSCAPE_BANNER_URL,
+      alt: 'Skills: Intellectual Property in the Age of AI landscape banner.',
+      caption: 'Existing session banner',
+    },
   },
 ]
 

@@ -7,6 +7,13 @@ export type DccWorkshopFormat = 'in-person' | 'lab' | 'hybrid' | 'self-paced'
 
 export type DccWorkshopEnrollment = 'inquiry' | 'open-lab' | 'self-serve-handbook'
 
+export type DccWorkshopOfferingImage = {
+  src: string
+  alt: string
+  /** Honest status — conceptual teaching/marketing still vs documentary. */
+  caption?: string
+}
+
 export type DccWorkshopOffering = {
   id: string
   slug: string
@@ -20,4 +27,6 @@ export type DccWorkshopOffering = {
   durationMinutes?: number
   enrollment: DccWorkshopEnrollment
   featured?: boolean
+  /** Existing workshop banner/still only — do not invent documentary photos. */
+  image?: DccWorkshopOfferingImage
 }
