@@ -13,7 +13,7 @@ export const DCC_MARKETING_WORKSHOPS_LANDING: WorkshopsLandingContent = {
   heroTitle: 'Workshop catalog',
   heroTitleAccent: 'for digital practice',
   heroLead:
-    'DCC sessions below have a syllabus and a real page. Seat checkout is not live yet — request a seat or use open lab.',
+    'Each DCC session below has a public page — a syllabus, a lab, or a handbook. Register interest or walk into Saturday Lab.',
   heroPrimaryCta: {
     label: 'See sessions',
     href: '#offerings',
@@ -78,9 +78,9 @@ export const DCC_MARKETING_WORKSHOPS_LANDING: WorkshopsLandingContent = {
   proofLine:
     'Digital Culture Center Miami builds public-facing digital culture infrastructure with artists and organizations — workshops are one entry point into that work.',
   comingSoonSection: {
-    title: 'Growing catalog',
+    title: 'In development at DCC',
     subcopy:
-      'Additional sessions and pathways are added as the Year 1 pilot expands — including advanced creative practice, publishing workflows, and artist-centered AI literacy.',
+      'These syllabi already exist in the workshop library. They are not live DCC pages yet. Registering interest helps DCC decide which one to publish next.',
   },
   footerCtaSection: {
     title: 'Workshop for your cohort, residency, or organization?',

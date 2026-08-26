@@ -14,6 +14,8 @@ describe('isPublicRoute', () => {
     expect(isPublicRoute('/workshops/ip-age-of-ai')).toBe(true)
     expect(isPublicRoute('/workshop/saturday-lab')).toBe(true)
     expect(isPublicRoute('/workshop/resin-printing')).toBe(true)
+    expect(isPublicRoute('/workshop/3d-printing-for-artists')).toBe(true)
+    expect(isPublicRoute('/workshop/ai-3d-physical-object')).toBe(true)
   })
 
   it('keeps DCC fabricate pages public, including the /fabrication alias', () => {

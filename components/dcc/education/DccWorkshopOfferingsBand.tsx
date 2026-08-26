@@ -1,109 +1,91 @@
-import Link from 'next/link'
-import { listWorkshopOfferings } from '@/lib/dcc/education'
+import {
+  DCC_IN_DEVELOPMENT_HEADING,
+  DCC_IN_DEVELOPMENT_LEAD,
+  DCC_SESSIONS_EYEBROW,
+  DCC_SESSIONS_HEADING,
+  DCC_SESSIONS_LEAD,
+  DCC_WORKSHOP_TRACK_LABEL,
+  listInDevelopmentWorkshopOfferings,
+  listWorkshopOfferings,
+} from '@/lib/dcc/education'
+import type { DccWorkshopTrackGroup } from '@/lib/dcc/education/types'
+import { DccWorkshopOfferingCard } from '@/components/dcc/education/DccWorkshopOfferingCard'
 
-const SESSION_LABEL: Record<string, string> = {
-  inquiry: 'View session',
-  'open-lab': 'Open the lab',
-  'self-serve-handbook': 'Open the handbook',
-}
-
-function formatMeta(offering: {
-  capacity?: number
-  durationMinutes?: number
-  format: string
-}): string {
-  const parts: string[] = []
-  if (offering.capacity) parts.push(`${offering.capacity} people per class`)
-  if (offering.durationMinutes) {
-    const hours = offering.durationMinutes / 60
-    parts.push(hours >= 1 && hours % 1 === 0 ? `${hours} hr` : `${offering.durationMinutes} min`)
-  }
-  if (offering.format === 'lab') parts.push('Open lab')
-  if (offering.format === 'self-paced') parts.push('Self-paced')
-  if (offering.format === 'in-person') parts.push('In person')
-  if (offering.format === 'hybrid') parts.push('Hybrid')
-  return parts.join(' · ')
-}
+const TRACK_ORDER: DccWorkshopTrackGroup[] = [
+  'presence',
+  'ai-literacy',
+  'practice-language',
+  'archives',
+]
 
 export function DccWorkshopOfferingsBand() {
-  const offerings = listWorkshopOfferings()
+  const live = listWorkshopOfferings()
+  const inDevelopment = listInDevelopmentWorkshopOfferings()
+  const grouped = TRACK_ORDER.map((track) => ({
+    track,
+    label: DCC_WORKSHOP_TRACK_LABEL[track],
+    offerings: inDevelopment.filter((offering) => offering.trackGroup === track),
+  })).filter((group) => group.offerings.length > 0)
 
   return (
-    <section
-      id="offerings"
-      className="scroll-mt-24 border-b border-[var(--cdc-border)] bg-white py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16"
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500">
-          DCC MIA sessions
-        </p>
-        <h2 className="mt-3 max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl">
-          Workshops with a syllabus, not a fake storefront
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-          These are DCC sessions that already have public pages. Seat checkout is not live —
-          request a seat or walk into open lab.
-        </p>
-        <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
-          {offerings.map((offering) => (
-            <li
-              key={offering.id}
-              className="flex flex-col border-t border-neutral-200 pt-5 dark:border-neutral-800"
-            >
-              {offering.image ? (
-                <figure className="mb-4">
-                  <div className="relative aspect-[21/9] overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-900">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={offering.image.src}
-                      alt={offering.image.alt}
-                      className="h-full w-full object-cover object-center"
-                    />
-                  </div>
-                  {offering.image.caption ? (
-                    <figcaption className="mt-2 text-[11px] uppercase tracking-[0.12em] text-neutral-500">
-                      {offering.image.caption}
-                    </figcaption>
-                  ) : null}
-                </figure>
-              ) : null}
-              <p className="text-xs uppercase tracking-[0.16em] text-neutral-500">
-                {formatMeta(offering) || 'Workshop'}
-              </p>
-              <h3 className="mt-2 text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-                {offering.title}
-              </h3>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-                {offering.shortDescription}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium">
-                <Link
-                  href={offering.href}
-                  className="text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
-                >
-                  {SESSION_LABEL[offering.enrollment] ?? 'View session'}
-                </Link>
-                {offering.syllabusHref && offering.syllabusHref !== offering.href ? (
-                  <Link
-                    href={offering.syllabusHref}
-                    className="text-neutral-600 underline-offset-4 hover:underline dark:text-neutral-300"
-                  >
-                    Syllabus
-                  </Link>
-                ) : null}
-                {offering.enrollment === 'inquiry' ? (
-                  <Link
-                    href="/newsletter?source=workshops"
-                    className="text-neutral-600 underline-offset-4 hover:underline dark:text-neutral-300"
-                  >
-                    Request a seat
-                  </Link>
-                ) : null}
+    <>
+      <section
+        id="offerings"
+        className="scroll-mt-24 border-b border-[var(--cdc-border)] bg-white py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500">
+            {DCC_SESSIONS_EYEBROW}
+          </p>
+          <h2 className="mt-3 max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl">
+            {DCC_SESSIONS_HEADING}
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            {DCC_SESSIONS_LEAD}
+          </p>
+          <ul className="mt-10 grid gap-6 sm:grid-cols-2">
+            {live.map((offering) => (
+              <li key={offering.id} className="min-h-0">
+                <DccWorkshopOfferingCard offering={offering} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section
+        id="in-development"
+        className="scroll-mt-24 border-b border-[var(--cdc-border)] bg-neutral-50 py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500">
+            Next syllabi
+          </p>
+          <h2 className="mt-3 max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl">
+            {DCC_IN_DEVELOPMENT_HEADING}
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            {DCC_IN_DEVELOPMENT_LEAD}
+          </p>
+
+          <div className="mt-10 space-y-12">
+            {grouped.map((group) => (
+              <div key={group.track}>
+                <h3 className="text-xs font-medium uppercase tracking-[0.16em] text-[var(--cdc-teal)]">
+                  {group.label}
+                </h3>
+                <ul className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.offerings.map((offering) => (
+                    <li key={offering.id} className="min-h-0">
+                      <DccWorkshopOfferingCard offering={offering} compact />
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   )
 }

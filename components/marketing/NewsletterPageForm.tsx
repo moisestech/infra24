@@ -8,12 +8,20 @@ import { cn } from '@/lib/utils';
 const { newsletter } = marketingHeroEngagement;
 
 type NewsletterPageFormProps = {
-  initialEmail?: string;
+  initialEmail?: string
+  /** Interest source from `?source=` — forwarded as a hidden field, not a waitlist table. */
+  source?: string
+  interestTitle?: string
   /** Merged onto the root form (e.g. `mt-0 max-w-none` when inside a card). */
-  className?: string;
-};
+  className?: string
+}
 
-export function NewsletterPageForm({ initialEmail = '', className }: NewsletterPageFormProps) {
+export function NewsletterPageForm({
+  initialEmail = '',
+  source = '',
+  interestTitle,
+  className,
+}: NewsletterPageFormProps) {
   const [email, setEmail] = useState(initialEmail);
   const [submitted, setSubmitted] = useState(false);
   const externalAction = newsletter.formAction?.trim() ?? '';
@@ -25,10 +33,21 @@ export function NewsletterPageForm({ initialEmail = '', className }: NewsletterP
     'flex items-center gap-2 text-sm font-medium text-neutral-800 dark:text-neutral-100';
 
   const submitClass = 'newsletter-submit-btn';
+  const trimmedSource = source.trim();
+
+  const interestNote = interestTitle
+    ? `Registering interest in ${interestTitle}.`
+    : trimmedSource
+      ? 'Registering workshop interest.'
+      : null;
 
   if (externalAction) {
     return (
       <form action={externalAction} method="post" className={cn('mt-8 max-w-md space-y-5', className)}>
+        {interestNote ? (
+          <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">{interestNote}</p>
+        ) : null}
+        {trimmedSource ? <input type="hidden" name="source" value={trimmedSource} /> : null}
         <div>
           <label htmlFor="newsletter-email-ext" className={labelClass}>
             <Mail className="h-4 w-4 shrink-0 text-[var(--cdc-teal)]" aria-hidden />
@@ -60,6 +79,10 @@ export function NewsletterPageForm({ initialEmail = '', className }: NewsletterP
         setSubmitted(true);
       }}
     >
+      {interestNote ? (
+        <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">{interestNote}</p>
+      ) : null}
+      {trimmedSource ? <input type="hidden" name="source" value={trimmedSource} /> : null}
       <div>
         <label htmlFor="newsletter-email" className={labelClass}>
           <Mail className="h-4 w-4 shrink-0 text-[var(--cdc-teal)]" aria-hidden />
@@ -93,7 +116,13 @@ export function NewsletterPageForm({ initialEmail = '', className }: NewsletterP
           className="rounded-lg border border-teal-500/25 bg-teal-50/90 px-3 py-2.5 text-sm font-medium text-teal-900 dark:border-teal-400/20 dark:bg-teal-950/40 dark:text-teal-100"
           role="status"
         >
-          Thanks—we&apos;ll use this address once the list is connected{email ? ` (${email})` : ''}.
+          {`Thanks—we'll use this address once the list is connected${email ? ` (${email})` : ''}${
+            interestTitle
+              ? `. Interest noted for ${interestTitle}`
+              : trimmedSource
+                ? '. Workshop interest noted'
+                : ''
+          }.`}
         </p>
       ) : null}
     </form>

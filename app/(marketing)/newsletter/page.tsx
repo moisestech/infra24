@@ -5,6 +5,7 @@ import { NewsletterPageForm } from '@/components/marketing/NewsletterPageForm';
 import { PartnersCardPaintRegister } from '@/components/marketing/PartnersCardPaintRegister';
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
+import { parseWorkshopInterestSource } from '@/lib/dcc/education';
 
 const path = '/newsletter';
 
@@ -13,7 +14,7 @@ export const metadata: Metadata = cdcPageMetadata(path);
 const SIGNAL_BAR_HEIGHTS = [38, 72, 48, 88, 56, 96, 44] as const;
 
 type Props = {
-  searchParams: { email?: string };
+  searchParams: { email?: string; source?: string };
 };
 
 function NewsletterHeroSignal() {
@@ -56,6 +57,8 @@ function NewsletterHeroSignal() {
 
 export default function NewsletterPage({ searchParams }: Props) {
   const initialEmail = typeof searchParams.email === 'string' ? searchParams.email : '';
+  const source = typeof searchParams.source === 'string' ? searchParams.source : '';
+  const interest = parseWorkshopInterestSource(source);
 
   return (
     <>
@@ -105,7 +108,12 @@ export default function NewsletterPage({ searchParams }: Props) {
 
               <div className="newsletter-form-shell partners-grid-card mt-8 max-w-xl">
                 <div className="newsletter-form-shell__inner">
-                  <NewsletterPageForm initialEmail={initialEmail} className="mt-0 max-w-none" />
+                  <NewsletterPageForm
+                    initialEmail={initialEmail}
+                    source={source}
+                    interestTitle={interest?.title}
+                    className="mt-0 max-w-none"
+                  />
                 </div>
               </div>
             </div>
