@@ -1,5 +1,7 @@
 # DCC Fabrication section images — drop + audit
 
+What to shoot, types, and alternates (culture + fabricate + workshops): [`docs/dcc/IMAGE_SHOT_LIST.md`](../../../docs/dcc/IMAGE_SHOT_LIST.md).
+
 Drop files into this folder using the exact filenames below. Until a file is wired (`ready: true` in `lib/dcc/fabrication/section-media.ts`), `/fabricate` shows a **color-coded placeholder** with the shot brief and filename.
 
 `public/` is gitignored — after drop, force-add:

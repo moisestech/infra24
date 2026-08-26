@@ -5,6 +5,7 @@
 - **Not this file:** [`docs/PROJECT_STATUS.md`](../PROJECT_STATUS.md) and [`docs/CURRENT_STATUS_SUMMARY.md`](../CURRENT_STATUS_SUMMARY.md) are Dec 2024 Infra24 SaaS snapshots (booking, tenant orgs). Do not treat them as DCC MIA cultural status.
 - **Record packet (one artist/program/journal change):** [`lib/dcc/culture/RECORD.md`](../../lib/dcc/culture/RECORD.md)
 - **Culture content gaps:** [`lib/dcc/culture/CONTENT.md`](../../lib/dcc/culture/CONTENT.md)
+- **Image production list (what to shoot, types, alternates):** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md)
 - **Fabricate image drop list:** [`public/dcc/fabrication/ASSETS.md`](../../public/dcc/fabrication/ASSETS.md)
 - **Resin teaching stills:** [`docs/workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md`](../workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md)
 
@@ -99,6 +100,8 @@ Moises Studio 43 + Fabiola 360s. Light `tone` on artist pages. Angelo: no tour �
 
 ## Image inventory
 
+Full production list (types, sizes, primary + alternate, make order): [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md).
+
 ### Culture — founder portraits; Clandestine still has no program images
 
 Published artists reuse Knight / Edge Zones / homepage Cloudinary URLs. `DCC_EDITORIAL = []`, `DCC_PROJECTS = []`. Clandestine has no `heroImage`.
@@ -148,9 +151,7 @@ Resin banners / technique boards. Not Clandestine artist portraits. No prices in
 
 ### Education / money (do not build checkout this sprint)
 
-`/workshops` on production currently defaults the **filterable list** to the Oolite org slug (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG` or `oolite`). Cards omit dates, seats, and price; default sort used to claim “most popular” while booking counts are often zero.
-
-DCC sessions with real pages now sit in `lib/dcc/education/offerings.ts` (Saturday Lab, resin — 8 people / 3 hr, Vibecoding & Net Art, IP in the Age of AI). Capacity only where the engine already has it. **No prices in the offering records.**
+`/workshops` public catalog is the DCC sessions band (`lib/dcc/education/offerings.ts`: Saturday Lab, resin — 8 people / 3 hr, Vibecoding & Net Art, IP in the Age of AI). Capacity only where the engine already has it. **No prices in the offering records.** The optional filterable org grid (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG`, default `oolite`) is omitted when that org is missing or empty — the public page must not show operator env-var copy.
 
 **What is actually live for money**
 

@@ -37,7 +37,6 @@ export function DccWorkshopsCatalogClient() {
   const slug = WORKSHOP_CATALOG_ORG_SLUG
   const [rows, setRows] = useState<WorkshopRow[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filters, setFilters] = useState<DccCatalogFilterState>(() => emptyDccCatalogFilterState())
   const [sortMode, setSortMode] = useState<DccCatalogSortMode>('popular')
@@ -50,20 +49,15 @@ export function DccWorkshopsCatalogClient() {
     let cancelled = false
     async function load() {
       setLoading(true)
-      setError(null)
       try {
         const res = await fetch(`/api/organizations/by-slug/${encodeURIComponent(slug)}/workshops/public`)
         if (cancelled) return
         if (!res.ok) {
-          const msg =
-            res.status === 404
-              ? `No organization found for slug “${slug}”. Set NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG to the Supabase organizations.slug that owns your published workshops.`
-              : 'Could not load the workshop catalog. Please try again later.'
-          setError(msg)
           setRows([])
           return
         }
         const pub = await res.json()
+        if (cancelled) return
         const o = pub.organization as {
           id: string
           name: string
@@ -72,7 +66,6 @@ export function DccWorkshopsCatalogClient() {
           created_at: string
         } | null
         if (!o?.id) {
-          setError('Catalog response was missing organization data.')
           setRows([])
           return
         }
@@ -82,10 +75,7 @@ export function DccWorkshopsCatalogClient() {
         )
         setRows(normalized as unknown as WorkshopRow[])
       } catch {
-        if (!cancelled) {
-          setError('Could not load the workshop catalog. Please try again later.')
-          setRows([])
-        }
+        if (!cancelled) setRows([])
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -144,44 +134,12 @@ export function DccWorkshopsCatalogClient() {
   const from = total === 0 ? 0 : pageStart + 1
   const to = total === 0 ? 0 : pageStart + pageSlice.length
 
-  if (loading) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <DccWorkshopOfferingsBand />
-        <div className="mx-auto h-10 max-w-md animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-800" />
-        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="aspect-[4/5] animate-pulse rounded-xl bg-neutral-200 dark:bg-neutral-800" />
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <DccWorkshopOfferingsBand />
-        <div className="mx-auto max-w-2xl text-center">
-          <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Workshop catalog unavailable</h1>
-          <p className="mt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{error}</p>
-          <p className="mt-6 text-sm text-neutral-500 dark:text-neutral-500">
-            <Link href="/contact" className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline">
-              Contact DCC
-            </Link>{' '}
-            if this persists.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   const catalogEmpty = digitalLabList.length === 0
-  const allPublishedFilteredOut = catalogEmpty && publishedRows.length > 0
+  const showOrgCatalog = !loading && !catalogEmpty
   const searchActive = searchTerm.trim().length > 0
-  const searchNoHits = searchActive && searchFiltered.length === 0 && !catalogEmpty
+  const searchNoHits = searchActive && searchFiltered.length === 0 && showOrgCatalog
   const filterNoHits =
-    !catalogEmpty &&
+    showOrgCatalog &&
     !searchNoHits &&
     accordionFiltered.length === 0 &&
     (searchActive || Object.values(filters).some((v) => v.length > 0))
@@ -246,48 +204,11 @@ export function DccWorkshopsCatalogClient() {
 
       <DccWorkshopOfferingsBand />
 
+      {showOrgCatalog ? (
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <section className="scroll-mt-24" id="catalog">
         {searchNoHits ? (
           <p className="mt-12 text-center text-sm text-neutral-500">No workshops match your search.</p>
-        ) : catalogEmpty ? (
-          <div className="mx-auto mt-12 max-w-xl text-center text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-            {allPublishedFilteredOut ? (
-              <>
-                <p>
-                  There are published workshops for this program org, but none are shown in the public DCC catalog
-                  right now (in-studio / member-only listings are filtered out).
-                </p>
-                <p className="mt-3">
-                  To surface a workshop here, set its category away from in-studio programs or add metadata such as{' '}
-                  <code className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs dark:bg-neutral-800">
-                    dcc_public_catalog: true
-                  </code>{' '}
-                  on the row if it is intentionally public on DCC.
-                </p>
-              </>
-            ) : (
-              <>
-                <p>No published workshops are in this catalog yet.</p>
-                <p className="mt-3">
-                  If you expect listings here, confirm in the database that workshops are{' '}
-                  <strong className="font-medium text-neutral-800 dark:text-neutral-200">published</strong> for the
-                  organization whose slug matches{' '}
-                  <code className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs dark:bg-neutral-800">{slug}</code>{' '}
-                  (set{' '}
-                  <code className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs dark:bg-neutral-800">
-                    NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG
-                  </code>{' '}
-                  in production).
-                </p>
-              </>
-            )}
-            <p className="mt-4">
-              <Link href="/contact" className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline">
-                Contact DCC
-              </Link>
-            </p>
-          </div>
         ) : (
           <div className="mt-10 flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(260px,300px)_1fr] lg:items-start lg:gap-10">
             <aside className="lg:sticky lg:top-24 lg:self-start">
@@ -394,6 +315,7 @@ export function DccWorkshopsCatalogClient() {
         )}
       </section>
       </div>
+      ) : null}
     </>
   )
 }

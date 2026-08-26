@@ -13,7 +13,7 @@ export const DCC_MARKETING_WORKSHOPS_LANDING: WorkshopsLandingContent = {
   heroTitle: 'Workshop catalog',
   heroTitleAccent: 'for digital practice',
   heroLead:
-    'DCC sessions below have a syllabus and a real page. Seat checkout is not live yet — request a seat or use open lab. The filterable list further down is the published org catalog.',
+    'DCC sessions below have a syllabus and a real page. Seat checkout is not live yet — request a seat or use open lab.',
   heroPrimaryCta: {
     label: 'See sessions',
     href: '#offerings',
