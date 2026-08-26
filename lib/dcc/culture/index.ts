@@ -1,6 +1,7 @@
 export * from '@/lib/dcc/culture/types'
 export * from '@/lib/dcc/culture/taxonomy'
 export * from '@/lib/dcc/culture/copy'
+export * from '@/lib/dcc/culture/now'
 export * from '@/lib/dcc/culture/artists'
 export * from '@/lib/dcc/culture/programs'
 export * from '@/lib/dcc/culture/editorial'

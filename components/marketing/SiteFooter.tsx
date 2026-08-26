@@ -18,6 +18,7 @@ const footerWork = [
 
 const footerOrganization = [
   { href: '/about', label: 'About' },
+  { href: '/now', label: 'Now' },
   { href: '/mission', label: 'Mission' },
   { href: '/who-we-work-with', label: 'Who We Work With' },
   { href: '/projects/public-interfaces', label: 'Public Interfaces' },

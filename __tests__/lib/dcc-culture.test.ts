@@ -2,10 +2,19 @@ import { getCdcPageByPath, getProgramLeaves } from '@/lib/cdc/routes'
 import { DCC_STUDIO_TOURS, getStudioTourByArtistSlug } from '@/lib/dcc/studios'
 import {
   ARTISTS_INDEX_INTRO,
+  CLANDESTINE_PLACEHOLDER,
   cultureMediaMotionEnabled,
   DCC_CULTURAL_POSITION,
   DCC_EDITORIAL,
   DCC_MIA_NAME,
+  DCC_NOW_FORTHCOMING,
+  DCC_NOW_LEAD,
+  DCC_NOW_LIVE_INTRO,
+  DCC_NOW_PARTICIPATE,
+  DCC_NOW_PATH,
+  DCC_NOW_PHOTOGRAPHY,
+  DCC_NOW_POSITION,
+  DCC_NOW_TITLE,
   DCC_PROGRAMS,
   DCC_PROJECTS,
   assertArtistSlugsValid,
@@ -36,6 +45,7 @@ import {
   type DccProgram,
   type DccProject,
 } from '@/lib/dcc/culture'
+import { listWorkshopOfferings } from '@/lib/dcc/education'
 
 const fixtureArtist: DccArtist = {
   id: 'artist-fixture-a',
@@ -119,6 +129,7 @@ describe('dcc culture public seed', () => {
       'DCC MIA at Clandestine Art Fair 2026'
     )
     expect(getCdcPageByPath('/artists')?.title).toBe('Artists')
+    expect(getCdcPageByPath('/now')?.title).toBe('Where DCC MIA is now')
     expect(getProgramLeaves('art-fairs').map((leaf) => leaf.slug)).toEqual([
       'clandestine-art-fair-2026',
     ])
@@ -130,6 +141,35 @@ describe('dcc culture public seed', () => {
     expect(assertEditorialSlugsValid()).toEqual([])
     expect(assertProjectSlugsValid()).toEqual([])
     expect(unresolvedRelationIds()).toEqual([])
+  })
+
+  it('publishes /now as a known-facts ledger without prices or a fake storefront', () => {
+    expect(DCC_NOW_PATH).toBe('/now')
+    expect(DCC_NOW_POSITION).toBe(DCC_CULTURAL_POSITION)
+    expect(DCC_NOW_FORTHCOMING[0]?.body).toBe(CLANDESTINE_PLACEHOLDER)
+    expect(DCC_NOW_PARTICIPATE.links?.map((link) => link.href)).toEqual([
+      '/workshops',
+      '/newsletter',
+      '/fabricate/quote',
+    ])
+    const ledger = [
+      DCC_NOW_TITLE,
+      DCC_NOW_LEAD,
+      DCC_NOW_LIVE_INTRO,
+      DCC_NOW_PHOTOGRAPHY.body,
+      DCC_NOW_PARTICIPATE.body,
+      ...DCC_NOW_FORTHCOMING.map((item) => `${item.title} ${item.body}`),
+    ].join('\n')
+    expect(ledger).not.toMatch(/\$/)
+    expect(ledger).not.toMatch(/stripe/i)
+    expect(ledger).not.toMatch(/fake storefront/i)
+    expect(listWorkshopOfferings().map((offering) => offering.title)).toEqual([
+      'Saturday Lab',
+      '3D Printing for Artists',
+      'AI → 3D Physical Object',
+      'Vibecoding & Net Art',
+      'Skills: Intellectual Property in the Age of AI',
+    ])
   })
 })
 

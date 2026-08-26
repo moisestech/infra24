@@ -46,6 +46,13 @@ const pages: CdcPageDef[] = [
     layout: 'default',
   }),
   p({
+    path: '/now',
+    title: 'Where DCC MIA is now',
+    description:
+      'A public snapshot of what is live at DCC MIA, what is empty on purpose, and how to take part. Names, dates, and prices appear only when confirmed.',
+    layout: 'default',
+  }),
+  p({
     path: '/why-miami',
     title: 'Why Miami',
     description:

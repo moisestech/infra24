@@ -21,6 +21,7 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(now.getByRole('heading', { name: 'Workshops' })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Fabricate' })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Journal' })).toBeVisible()
+    await expect(now.getByRole('link', { name: 'Full snapshot' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Artists', exact: true }).first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'Fabricate', exact: true }).first()).toBeVisible()
     await page.getByRole('link', { name: 'Meet the artist' }).click()
@@ -48,6 +49,29 @@ test.describe('dcc culture + fabricate smokes', () => {
     ).toBeVisible()
     await expect(page.getByText(/\b(10|15)\s*%/)).toHaveCount(0)
     await expect(page.getByText(/DCC × ITS3D|ITS3D Miami/i)).toHaveCount(0)
+  })
+
+  test('public /now is a known-facts ledger without fake storefront language', async ({
+    page,
+  }) => {
+    await page.goto('/now')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(page.getByRole('heading', { name: 'Where DCC MIA is now' })).toBeVisible()
+    await expect(page.getByText(DCC_CULTURAL_POSITION)).toBeVisible()
+    await expect(
+      page.getByText(
+        'Artist names, selected works, dates and venue details will be published when confirmed.'
+      )
+    ).toBeVisible()
+    await expect(
+      page.getByText(/Saturday Lab; 3D Printing for Artists; AI → 3D Physical Object/)
+    ).toBeVisible()
+    await expect(page.getByText('Vibecoding & Net Art')).toBeVisible()
+    await expect(page.getByText('Skills: Intellectual Property in the Age of AI')).toBeVisible()
+    await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Now' })).toBeVisible()
+    await expect(page.getByText(/fake storefront/i)).toHaveCount(0)
+    await expect(page.getByText(/stripe/i)).toHaveCount(0)
+    await expect(page.getByText(/\$/)).toHaveCount(0)
   })
 
   test('artists and workshops indexes stay public without Clerk sign-in', async ({
