@@ -1,17 +1,15 @@
 import type { ModuleBanner } from '@/lib/workshop-engine/types'
+import { RESIN_BANNER_CDN } from '@/lib/workshop-engine/resin-printing/cloudinary'
 
 export const RESIN_BANNER_SIZE = { width: 1915, height: 821 } as const
 
-const BASE = '/workshops/resin-printing/banners'
-
 function banner(
-  file: string,
+  moduleId: keyof typeof RESIN_BANNER_CDN,
   alt: string,
   accent: string
 ): ModuleBanner {
   return {
-    src: `${BASE}/${file}.webp`,
-    masterSrc: `${BASE}/png/${file}.png`,
+    src: RESIN_BANNER_CDN[moduleId],
     width: RESIN_BANNER_SIZE.width,
     height: RESIN_BANNER_SIZE.height,
     alt,
@@ -22,52 +20,52 @@ function banner(
 }
 
 /**
- * Ultra-wide (21:9) illustrative module banners.
+ * Ultra-wide (21:9) illustrative module banners from Cloudinary.
  * Titles/labels stay in HTML — never baked into the image.
  */
 export const RESIN_MODULE_BANNERS: Record<string, ModuleBanner> = {
   welcome: banner(
-    '00-welcome-join',
+    'welcome',
     'Illustrative translucent resin sculpture and cured sample arranged on a workshop table.',
     'cyan'
   ),
   'why-resin': banner(
-    '01-why-resin',
+    'why-resin',
     'Three illustrative resin studies showing fine organic detail, lattice structure, and smooth surface.',
     'ocean-cyan'
   ),
   'safety-zones': banner(
-    '02-safety-zones',
+    'safety-zones',
     'Illustrative clean and controlled work areas separated by an amber boundary.',
     'amber'
   ),
   'complete-workflow': banner(
-    '03-complete-workflow',
+    'complete-workflow',
     'One sculptural form shown as digital, supported, cleaned, and finished states.',
     'cyan-amber'
   ),
   'file-readiness': banner(
-    '04-file-printable',
+    'file-readiness',
     'Illustrative resin model under sectional and dimensional inspection.',
     'cyan'
   ),
   'slicer-lab': banner(
-    '05-slicer-lab',
+    'slicer-lab',
     'Supported resin model intersected by translucent slicing planes.',
     'cyan'
   ),
   'print-wash-cure': banner(
-    '06-print-wash-cure',
+    'print-wash-cure',
     'Illustrative supported print, sealed wash vessel, and curing stage.',
     'amber-coral'
   ),
   'failure-clinic': banner(
-    '07-failure-clinic',
+    'failure-clinic',
     'Cured resin specimens displaying separation, warping, cracking, and support scarring.',
     'coral-rose'
   ),
   'project-readiness': banner(
-    '08-project-readiness',
+    'project-readiness',
     'Finished resin project arranged with a closed project box and review materials.',
     'green'
   ),

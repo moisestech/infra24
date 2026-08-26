@@ -2,6 +2,7 @@
  * Shared responsive layout + type scale for workshop-engine surfaces.
  * Breakpoints (approx): mobile <640 → tablet 640–1023 → desktop 1024–1439 →
  * large desktop 1440–1919 → TV / XL 1920+.
+ * Portrait TV: `portrait-tv` = orientation portrait + min-height 1600px (1080×1920).
  */
 export const weShell = {
   /** Page container — expands on large screens without locking to max-w-3xl */
@@ -25,16 +26,29 @@ export const weType = {
     'font-semibold text-slate-950 text-[clamp(1rem,1.4vw,1.5rem)]',
   /** Body / promise — readable measure handled by weMeasure */
   body: 'leading-relaxed text-slate-700 text-[clamp(1rem,1.15vw,1.25rem)]',
-  /** TV prompt — room-scale */
+  /** TV prompt — room-scale (landscape XL + portrait signage) */
   tvPrompt:
-    'font-medium leading-snug text-neutral-50 text-[clamp(1.5rem,4.2vw,4rem)] min-[1920px]:text-[clamp(2.5rem,3.5vw,5rem)]',
+    'font-medium leading-snug text-neutral-50 text-[clamp(1.5rem,4.2vw,4rem)] min-[1920px]:text-[clamp(2.5rem,3.5vw,5rem)] portrait-tv:text-[clamp(1.75rem,4.5vh,3.25rem)]',
   /** TV title */
   tvTitle:
-    'font-semibold leading-tight text-white text-[clamp(2rem,5vw,8rem)] min-[1920px]:text-[clamp(3.5rem,6vw,8rem)]',
+    'font-semibold leading-tight text-white text-[clamp(2rem,5vw,8rem)] min-[1920px]:text-[clamp(3.5rem,6vw,8rem)] portrait-tv:text-[clamp(2.75rem,7vh,5.5rem)]',
+  /** TV secondary body (physical evidence, helpers) */
+  tvBody:
+    'leading-snug text-neutral-300 text-[clamp(1.125rem,2vw,2.5rem)] portrait-tv:text-[clamp(1.5rem,3.2vh,2.75rem)]',
+  /** TV meta / sync / module label */
+  tvMeta:
+    'uppercase tracking-[0.18em] text-neutral-400 text-sm sm:text-lg md:text-2xl md:tracking-[0.2em] 2xl:text-3xl portrait-tv:text-[clamp(1.25rem,2.4vh,2rem)]',
   /** Supporting / meta */
   meta: 'text-xs font-medium uppercase tracking-[0.12em] text-slate-500 md:text-[0.7rem] 2xl:text-xs 2xl:tracking-[0.14em]',
   /** Small UI labels */
   label: 'text-xs text-slate-600 md:text-sm 2xl:text-base',
+} as const
+
+/** Portrait TV spacing / QR bumps for 1080×1920 signage. */
+export const weTvPortrait = {
+  pad: 'portrait-tv:px-10 portrait-tv:pt-12 portrait-tv:pb-10',
+  gap: 'portrait-tv:gap-10',
+  qr: 'portrait-tv:scale-125',
 } as const
 
 export const weSpace = {

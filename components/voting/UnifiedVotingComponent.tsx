@@ -160,11 +160,19 @@ export default function UnifiedVotingComponent({
   const tenantPrimary = tenantConfig?.theme?.primaryColor || '#47abc4';
 
   useEffect(() => {
-    if (onFetchData) {
-      onFetchData();
+    let cancelled = false
+    ;(async () => {
+      if (onFetchData) {
+        await onFetchData()
+      }
+      if (!cancelled) setLoading(false)
+    })()
+    return () => {
+      cancelled = true
     }
-    setLoading(false);
-  }, [orgId, onFetchData]);
+    // Intentionally only orgId — parent must pass a stable onFetchData (useCallback).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId]);
 
   const handleVote = async (optionId: string, voteType: 'want' | 'need' | 'priority') => {
     if (!user || !onVote) return;

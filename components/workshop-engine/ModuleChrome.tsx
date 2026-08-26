@@ -23,12 +23,13 @@ import {
 } from '@/lib/workshop-engine/resin-printing/booklet'
 import {
   AlertTriangle,
-  BookOpen,
   CheckCircle2,
   ClipboardList,
+  GitBranch,
   Link2Off,
   ShieldAlert,
   Target,
+  type LucideIcon,
 } from 'lucide-react'
 
 export function ModuleHeader({
@@ -148,6 +149,43 @@ export function LearningPromise({ children }: { children: React.ReactNode }) {
   )
 }
 
+const BOOKLET_STATUS_UI: Record<
+  BookletReferenceStatus,
+  {
+    label: string
+    Icon: LucideIcon
+    card: string
+    pill: string
+    iconWrap: string
+    borderStyle: string
+  }
+> = {
+  verified: {
+    label: 'Verified',
+    Icon: CheckCircle2,
+    card: 'border-emerald-300 bg-gradient-to-br from-emerald-50 via-white to-white text-emerald-950',
+    pill: 'border-emerald-300 bg-emerald-100 text-emerald-950',
+    iconWrap: 'bg-emerald-700 text-white',
+    borderStyle: 'border-solid',
+  },
+  related: {
+    label: 'Related',
+    Icon: GitBranch,
+    card: 'border-indigo-300 bg-gradient-to-br from-indigo-50 via-violet-50/40 to-white text-indigo-950',
+    pill: 'border-indigo-300 bg-indigo-100 text-indigo-950',
+    iconWrap: 'bg-indigo-700 text-white',
+    borderStyle: 'border-solid',
+  },
+  missing: {
+    label: 'Unavailable',
+    Icon: AlertTriangle,
+    card: 'border-amber-300 bg-gradient-to-br from-amber-50 via-orange-50/30 to-white text-amber-950',
+    pill: 'border-amber-300 bg-amber-100 text-amber-950',
+    iconWrap: 'bg-amber-500 text-amber-950',
+    borderStyle: 'border-dashed',
+  },
+}
+
 export function BookletReference({
   sectionTitle,
   startPage,
@@ -157,6 +195,7 @@ export function BookletReference({
   note,
   pagePreviewHref,
   href,
+  moduleId,
 }: {
   sectionTitle: string
   startPage?: number
@@ -166,6 +205,8 @@ export function BookletReference({
   note?: string
   pagePreviewHref?: string
   href?: string
+  /** When set, left accent / module chip uses that module’s color token. */
+  moduleId?: string
 }) {
   const resolvedStatus: BookletReferenceStatus =
     status ?? (mappingPending || typeof startPage !== 'number' ? 'missing' : 'verified')
@@ -178,24 +219,16 @@ export function BookletReference({
     endPage,
     status: resolvedStatus,
   })
-  const statusLabel =
-    resolvedStatus === 'verified'
-      ? 'Verified'
-      : resolvedStatus === 'related'
-        ? 'Related'
-        : 'Unavailable'
-  const statusClass =
-    resolvedStatus === 'verified'
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
-      : resolvedStatus === 'related'
-        ? 'border-indigo-200 bg-indigo-50 text-indigo-900'
-        : 'border-amber-200 bg-amber-50 text-amber-950'
+  const ui = BOOKLET_STATUS_UI[resolvedStatus]
+  const StatusIcon = ui.Icon
+  const identity = moduleId ? getModuleIdentity(moduleId) : null
 
   const body = (
     <>
       <span
         className={cn(
-          'relative flex aspect-[4/3] w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-50 sm:w-28',
+          'relative flex aspect-[4/3] w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-white/80 sm:w-28 md:w-32 portrait-tv:w-36',
+          identity?.border ?? 'border-slate-200'
         )}
       >
         {pagePreviewHref && resolvedStatus !== 'missing' ? (
@@ -206,34 +239,53 @@ export function BookletReference({
             className="h-full w-full object-contain"
           />
         ) : (
-          <Link2Off aria-hidden className="h-5 w-5 text-slate-400" />
+          <Link2Off aria-hidden className="h-5 w-5 text-slate-400 md:h-6 md:w-6" />
         )}
         {pages ? (
-          <span className="absolute bottom-1 left-1 rounded bg-slate-950/80 px-1.5 py-0.5 text-[10px] font-medium text-white">
+          <span className="absolute bottom-1 left-1 rounded bg-slate-950/80 px-1.5 py-0.5 text-[10px] font-medium text-white md:text-xs portrait-tv:text-sm">
             {pages}
           </span>
         ) : null}
       </span>
-      <span className="min-w-0 flex-1">
+      <span className="min-w-0 flex-1 space-y-1.5">
         <span className="flex flex-wrap items-center gap-2">
-          <span className="font-semibold text-slate-950">{sectionTitle}</span>
           <span
             className={cn(
-              'inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide',
-              statusClass,
+              'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full md:h-8 md:w-8 portrait-tv:h-10 portrait-tv:w-10',
+              ui.iconWrap
             )}
           >
-            {statusLabel}
+            <StatusIcon aria-hidden className="h-3.5 w-3.5 md:h-4 md:w-4 portrait-tv:h-5 portrait-tv:w-5" />
+          </span>
+          <span
+            className={cn(
+              'font-semibold text-slate-950',
+              'text-base md:text-lg portrait-tv:text-2xl'
+            )}
+          >
+            {sectionTitle}
+          </span>
+          <span
+            className={cn(
+              'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide md:text-[11px] portrait-tv:px-3 portrait-tv:py-1 portrait-tv:text-sm',
+              ui.pill
+            )}
+          >
+            {ui.label}
           </span>
         </span>
         {pages ? (
-          <span className="mt-1 block text-slate-600">Booklet {pages}</span>
+          <span className="block text-sm text-slate-600 md:text-base portrait-tv:text-xl">
+            Booklet {pages}
+          </span>
         ) : null}
         {note ? (
-          <span className="mt-1 block text-xs text-slate-600 md:text-sm">{note}</span>
+          <span className="block text-xs text-slate-600 md:text-sm portrait-tv:text-lg">
+            {note}
+          </span>
         ) : null}
         {resolvedStatus === 'missing' ? (
-          <span className="mt-1 block text-xs text-amber-800 md:text-sm">
+          <span className="block text-xs text-amber-800 md:text-sm portrait-tv:text-lg">
             Page unavailable in this export
           </span>
         ) : null}
@@ -241,15 +293,25 @@ export function BookletReference({
     </>
   )
 
+  const shellClass = cn(
+    'relative flex h-auto w-full justify-start gap-3 overflow-hidden rounded-xl text-left transition',
+    weSpace.cardPad,
+    weType.body,
+    ui.borderStyle,
+    ui.card,
+    'border',
+    identity ? 'pl-4 md:pl-5' : null
+  )
+
+  const accent =
+    identity != null ? (
+      <span aria-hidden className={cn('absolute inset-y-0 left-0 w-1.5', identity.icon)} />
+    ) : null
+
   if (resolvedStatus === 'missing') {
     return (
-      <div
-        className={cn(
-          'flex gap-3 rounded-xl border border-dashed border-slate-300 bg-white text-slate-700',
-          weSpace.cardPad,
-          weType.body,
-        )}
-      >
+      <div className={shellClass} role="group" aria-label={aria}>
+        {accent}
         {body}
       </div>
     )
@@ -263,15 +325,11 @@ export function BookletReference({
       aria-label={aria}
       className={cn(
         weTouch.button,
-        'h-auto w-full justify-start gap-3 rounded-xl border border-dashed border-slate-300 bg-white text-left text-slate-700 transition hover:border-slate-500',
-        weSpace.cardPad,
-        weType.body,
+        shellClass,
+        'hover:brightness-[0.98] hover:shadow-sm'
       )}
     >
-      <BookOpen
-        aria-hidden
-        className="mt-0.5 hidden h-5 w-5 shrink-0 text-slate-600 sm:block md:h-6 md:w-6"
-      />
+      {accent}
       {body}
     </a>
   )

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import type { Activity, ReadinessResult } from '@/lib/workshop-engine/types'
 import { cn } from '@/lib/utils'
 import { weType } from '@/components/workshop-engine/responsive'
+import { TEACHING_SECTION_ROLES } from '@/lib/workshop-engine/section-roles'
 import {
   CheckCircle2,
   FlaskConical,
@@ -37,23 +38,40 @@ export function ModuleActivity({ activity }: { activity: Activity }) {
 const choiceBtn =
   'rounded-lg border px-3 py-2 text-sm transition md:px-4 md:py-2.5 md:text-base 2xl:px-5 2xl:py-3 2xl:text-lg'
 
+function StepChip({ n }: { n: number }) {
+  const section = TEACHING_SECTION_ROLES.activity
+  return (
+    <span
+      className={cn(
+        'inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold md:h-7 md:w-7 md:text-xs',
+        section.iconWrap
+      )}
+      aria-hidden
+    >
+      {n}
+    </span>
+  )
+}
+
 function ChoiceActivity({ prompt, items }: { prompt: string; items: string[] }) {
   const [picked, setPicked] = useState<string | null>(null)
   return (
     <ActivityShell title="Try it" Icon={Sparkles} prompt={prompt}>
       <div className="flex flex-wrap gap-2 md:gap-3">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <button
             key={item}
             type="button"
             onClick={() => setPicked(item)}
             className={cn(
               choiceBtn,
+              'inline-flex items-center gap-2',
               picked === item
-                ? 'border-cyan-900 bg-cyan-900 text-white'
+                ? 'border-violet-900 bg-violet-900 text-white'
                 : 'border-slate-300 bg-white text-slate-900 hover:border-slate-500'
             )}
           >
+            <StepChip n={index + 1} />
             {item}
           </button>
         ))}
@@ -71,7 +89,7 @@ function ChecklistActivity({ prompt, items }: { prompt: string; items: string[] 
   return (
     <ActivityShell title="Try it" Icon={ListChecks} prompt={prompt}>
       <ul className="space-y-2 md:space-y-3">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <li key={item}>
             <label
               className={cn(
@@ -79,9 +97,10 @@ function ChecklistActivity({ prompt, items }: { prompt: string; items: string[] 
                 weType.body
               )}
             >
+              <StepChip n={index + 1} />
               <input
                 type="checkbox"
-                className="mt-1 h-4 w-4 accent-emerald-700 md:h-5 md:w-5"
+                className="mt-1 h-4 w-4 accent-violet-700 md:h-5 md:w-5"
                 checked={Boolean(checked[item])}
                 onChange={(e) =>
                   setChecked((prev) => ({ ...prev, [item]: e.target.checked }))
@@ -118,23 +137,30 @@ function OrderActivity({ prompt, items }: { prompt: string; items: string[] }) {
   return (
     <ActivityShell title="Try it" Icon={GripVertical} prompt={prompt}>
       <div className="flex flex-wrap gap-2 md:gap-3">
-        {remaining.map((item) => (
-          <button
-            key={item}
-            type="button"
-            onClick={() => setOrder((prev) => [...prev, item])}
-            className={cn(
-              choiceBtn,
-              'border-slate-300 bg-white text-slate-900 hover:border-slate-500'
-            )}
-          >
-            {item}
-          </button>
-        ))}
+        {remaining.map((item) => {
+          const step = items.indexOf(item) + 1
+          return (
+            <button
+              key={item}
+              type="button"
+              onClick={() => setOrder((prev) => [...prev, item])}
+              className={cn(
+                choiceBtn,
+                'inline-flex items-center gap-2 border-slate-300 bg-white text-slate-900 hover:border-slate-500'
+              )}
+            >
+              <StepChip n={step} />
+              {item}
+            </button>
+          )
+        })}
       </div>
-      <ol className={cn('list-decimal space-y-1 pl-5 text-slate-800', weType.body)}>
-        {order.map((item) => (
-          <li key={item}>{item}</li>
+      <ol className={cn('space-y-2 text-slate-800', weType.body)}>
+        {order.map((item, index) => (
+          <li key={item} className="flex items-start gap-2.5">
+            <StepChip n={index + 1} />
+            <span>{item}</span>
+          </li>
         ))}
       </ol>
       <div className="flex flex-wrap items-center gap-3">
@@ -173,10 +199,18 @@ function ClassifyActivity({
   return (
     <ActivityShell title="Try it" Icon={FlaskConical} prompt={prompt}>
       <ul className="space-y-3 md:space-y-4">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <li key={item} className="space-y-2">
-            <p className={cn('font-medium text-slate-900', weType.body)}>{item}</p>
-            <div className="flex flex-wrap gap-2">
+            <p
+              className={cn(
+                'flex items-start gap-2.5 font-medium text-slate-900',
+                weType.body
+              )}
+            >
+              <StepChip n={index + 1} />
+              <span>{item}</span>
+            </p>
+            <div className="flex flex-wrap gap-2 pl-8 md:pl-9">
               {labels.map((label) => (
                 <button
                   key={label}
@@ -185,7 +219,7 @@ function ClassifyActivity({
                   className={cn(
                     'rounded-lg border px-2.5 py-1.5 text-xs md:px-3 md:py-2 md:text-sm 2xl:text-base',
                     map[item] === label
-                      ? 'border-indigo-900 bg-indigo-900 text-white'
+                      ? 'border-violet-900 bg-violet-900 text-white'
                       : 'border-slate-300 bg-white'
                   )}
                 >
@@ -216,7 +250,7 @@ function ReadinessActivity({ prompt, items }: { prompt: string; items: string[] 
   return (
     <ActivityShell title="Exit check" Icon={CheckCircle2} prompt={prompt}>
       <div className="grid gap-2 sm:grid-cols-3 md:gap-3">
-        {items.map((item) => {
+        {items.map((item, index) => {
           const key = map[item]
           return (
             <button
@@ -230,7 +264,10 @@ function ReadinessActivity({ prompt, items }: { prompt: string; items: string[] 
                   : 'border-slate-300 bg-white'
               )}
             >
-              {item}
+              <span className="mb-2 inline-flex">
+                <StepChip n={index + 1} />
+              </span>
+              <span className="mt-1 block">{item}</span>
             </button>
           )
         })}
@@ -256,14 +293,28 @@ function ActivityShell({
   children: React.ReactNode
   Icon?: typeof Sparkles
 }) {
+  const section = TEACHING_SECTION_ROLES.activity
   return (
     <div
       className={cn(
-        'space-y-3 rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50/80 via-white to-white p-4 md:space-y-4 md:p-5 2xl:p-6'
+        'space-y-3 rounded-xl border md:space-y-4 md:p-5 2xl:p-6',
+        section.border,
+        section.surface,
+        'p-4'
       )}
     >
-      <p className="inline-flex items-center gap-2 text-sm font-semibold text-violet-950 md:text-base 2xl:text-lg">
-        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-violet-700 text-white md:h-7 md:w-7">
+      <p
+        className={cn(
+          'inline-flex items-center gap-2 text-sm font-semibold md:text-base 2xl:text-lg',
+          section.heading
+        )}
+      >
+        <span
+          className={cn(
+            'inline-flex h-6 w-6 items-center justify-center rounded-full md:h-7 md:w-7',
+            section.iconWrap
+          )}
+        >
           <Icon aria-hidden className="h-3.5 w-3.5 md:h-4 md:w-4" />
         </span>
         {title}

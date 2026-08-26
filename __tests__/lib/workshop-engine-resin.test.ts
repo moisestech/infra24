@@ -48,8 +48,8 @@ describe('resin workshop curriculum', () => {
       expect(banner?.kind).toBe('illustration')
       expect(banner?.width).toBe(1915)
       expect(banner?.height).toBe(821)
-      expect(banner?.src).toMatch(/^\/workshops\/resin-printing\/banners\/.+\.webp$/)
-      expect(banner?.masterSrc).toMatch(/^\/workshops\/resin-printing\/banners\/png\/.+\.png$/)
+      expect(banner?.src).toContain('res.cloudinary.com/dck5rzi4h')
+      expect(banner?.src).toContain('resin-printing-for-artist')
       expect(banner?.alt.length).toBeGreaterThan(20)
       expect(banner?.objectPosition).toBe('center right')
       expect(RESIN_MODULE_BANNERS[m.id]?.src).toBe(banner?.src)
@@ -162,43 +162,82 @@ describe('resin booklet V02 mapping', () => {
 
   it('attaches conceptual instructional illustrations where mapped', () => {
     expect(INSTRUCTIONAL_CONCEPT_SIZE).toEqual({ width: 1672, height: 941 })
-    expect(SLICER_LAB_CONCEPTS).toHaveLength(4)
+    expect(SLICER_LAB_CONCEPTS).toHaveLength(5)
     expect(SLICER_LAB_CONCEPTS.map((c) => c.id)).toEqual([
       '107-slicer-orientation-compare',
       '108-slicer-support-patterns',
       '109-slicer-hollow-drain-logic',
       '110-slicer-layer-preview',
+      '119-photon-workshop-concept',
     ])
 
-    const mapped = [
+    const secondary = [
       'why-resin',
+      'safety-zones',
+      'complete-workflow',
       'file-readiness',
       'slicer-lab',
       'print-wash-cure',
       'failure-clinic',
       'project-readiness',
     ]
-    for (const slug of mapped) {
+    for (const slug of secondary) {
       const workshopModule = getResinModuleBySlug(slug)
       expect(workshopModule?.instructionalConcepts?.items.length).toBeGreaterThan(0)
       for (const item of workshopModule!.instructionalConcepts!.items) {
         expect(item.kind).toBe('illustration')
         expect(item.evidenceLevel).toBe('conceptual')
-        expect(item.src).toMatch(
-          /^\/workshops\/resin-printing\/instructional-concepts\/.+\.webp$/
-        )
+        expect(item.src).toContain('res.cloudinary.com/dck5rzi4h')
         expect(item.width).toBe(1672)
         expect(item.height).toBe(941)
         expect(item.alt.length).toBeGreaterThan(20)
       }
     }
     expect(getResinModuleBySlug('welcome')?.instructionalConcepts).toBeUndefined()
-    expect(getResinModuleBySlug('safety-zones')?.instructionalConcepts).toBeUndefined()
+  })
+
+  it('registers interactive technique boards 200–214 with layouts', () => {
+    const layoutBySlug: Record<string, string> = {
+      welcome: 'primary',
+      'why-resin': 'primary',
+      'safety-zones': 'primary',
+      'complete-workflow': 'primary',
+      'file-readiness': 'tabs',
+      'slicer-lab': 'guided-sequence',
+      'print-wash-cure': 'pair',
+      'failure-clinic': 'pair',
+      'project-readiness': 'prep-next',
+    }
+    for (const [slug, layout] of Object.entries(layoutBySlug)) {
+      const workshopModule = getResinModuleBySlug(slug)
+      expect(workshopModule?.techniqueBoards?.layout).toBe(layout)
+      expect(workshopModule?.techniqueBoards?.boards.length).toBeGreaterThan(0)
+      for (const board of workshopModule!.techniqueBoards!.boards) {
+        expect(board.kind).toBe('illustration')
+        expect(board.evidenceLevel).toBe('conceptual')
+        expect(board.productionStatus).toBe('draft-teaching-board')
+        expect(board.src).toContain('res.cloudinary.com/dck5rzi4h')
+      }
+    }
+    expect(getResinModuleBySlug('welcome')?.techniqueBoards?.boards[0]?.id).toBe(
+      '200-m00-participant-path'
+    )
+    expect(
+      getResinModuleBySlug('slicer-lab')?.techniqueBoards?.boards.map((b) => b.id)
+    ).toEqual([
+      '206-m05-orientation-tradeoffs',
+      '207-m05-hollow-drain-cutaway',
+      '208-m05-layers-and-islands',
+    ])
+    expect(
+      getResinModuleBySlug('project-readiness')?.techniqueBoards?.pairLabels
+    ).toEqual(['Preparation', 'Next step'])
   })
 
   it('keeps teaching section roles paired with icons and labels', () => {
     const roles = Object.values(TEACHING_SECTION_ROLES)
-    expect(roles.length).toBeGreaterThanOrEqual(10)
+    expect(roles.length).toBeGreaterThanOrEqual(11)
+    expect(TEACHING_SECTION_ROLES.vocab.label).toMatch(/vocab/i)
     for (const role of roles) {
       expect(role.label).toBeTruthy()
       expect(role.Icon).toBeTruthy()
@@ -207,13 +246,16 @@ describe('resin booklet V02 mapping', () => {
     }
   })
 
-  it('resolves hero and diagram asset paths in media metadata', () => {
+  it('resolves hero and module primary media on Cloudinary', () => {
     expect(RESIN_HERO_MEDIA.src).toBe(RESIN_ASSET_PATHS.hero)
-    expect(RESIN_MODULE_PRIMARY_MEDIA['safety-zones']?.src).toBe(
-      RESIN_ASSET_PATHS.zonesDiagram
+    expect(RESIN_MODULE_PRIMARY_MEDIA['safety-zones']?.src).toContain(
+      '202-m02-safety-zone-behaviors'
     )
-    expect(RESIN_MODULE_PRIMARY_MEDIA['complete-workflow']?.src).toBe(
-      RESIN_ASSET_PATHS.workflowDiagram
+    expect(RESIN_MODULE_PRIMARY_MEDIA['complete-workflow']?.src).toContain(
+      '203-m03-workflow-checkpoints'
     )
+    for (const m of RESIN_PRINTING_MODULES) {
+      expect(m.primaryMedia?.src).toContain('res.cloudinary.com/dck5rzi4h')
+    }
   })
 })

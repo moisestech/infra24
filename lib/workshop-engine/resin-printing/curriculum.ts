@@ -11,6 +11,8 @@ import {
 } from '@/lib/workshop-engine/resin-printing/media'
 import { RESIN_MODULE_BANNERS } from '@/lib/workshop-engine/resin-printing/banners'
 import { RESIN_MODULE_INSTRUCTIONAL_CONCEPTS } from '@/lib/workshop-engine/resin-printing/instructional-concepts'
+import { RESIN_MODULE_TECHNIQUE_BOARDS } from '@/lib/workshop-engine/resin-printing/technique-boards'
+import { RESIN_MODULE_VOCAB } from '@/lib/workshop-engine/resin-printing/vocab'
 import {
   DEFAULT_MODULE_VISUAL,
   RESIN_MODULE_VISUALS,
@@ -715,7 +717,9 @@ export const RESIN_PRINTING_MODULES: WorkshopModule[] = RESIN_PRINTING_MODULES_B
     banner: RESIN_MODULE_BANNERS[m.id],
     mediaIds: RESIN_MODULE_MEDIA_IDS[m.id],
     tutorialVideo: RESIN_MODULE_TUTORIAL_VIDEOS[m.id],
+    techniqueBoards: RESIN_MODULE_TECHNIQUE_BOARDS[m.id],
     instructionalConcepts: RESIN_MODULE_INSTRUCTIONAL_CONCEPTS[m.id],
+    vocab: RESIN_MODULE_VOCAB[m.id],
   })
 )
 

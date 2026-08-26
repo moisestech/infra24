@@ -17,6 +17,9 @@ export type {
   VenueConfig,
   WorkshopLiveSession,
   ParticipantProgress,
+  ModuleVocabTerm,
+  ModuleTechniqueBoards,
+  TechniqueBoardLayout,
 } from '@/lib/workshop-engine/types'
 
 export { generateJoinCode, normalizeJoinCode } from '@/lib/workshop-engine/join-code'

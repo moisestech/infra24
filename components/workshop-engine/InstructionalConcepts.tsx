@@ -3,16 +3,26 @@
 import { useEffect, useId, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import {
+  Box,
   CircleDashed,
+  Droplets,
+  FileStack,
+  Hammer,
+  Image as ImageIcon,
   Layers3,
   ListChecks,
-  Maximize2,
   Network,
+  OctagonAlert,
+  Printer,
   Rotate3d,
   Ruler,
+  Scale,
   SearchCheck,
+  Shield,
   Sparkles,
+  Workflow,
   X,
+  Maximize2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type {
@@ -30,6 +40,16 @@ const ICON_MAP: Record<NonNullable<WorkshopMedia['iconKey']>, LucideIcon> = {
   'list-checks': ListChecks,
   sparkles: Sparkles,
   'search-check': SearchCheck,
+  workflow: Workflow,
+  image: ImageIcon,
+  box: Box,
+  printer: Printer,
+  droplets: Droplets,
+  shield: Shield,
+  'file-stack': FileStack,
+  'octagon-alert': OctagonAlert,
+  scale: Scale,
+  hammer: Hammer,
 }
 
 function ConceptualLabel() {

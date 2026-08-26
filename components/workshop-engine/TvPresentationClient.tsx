@@ -15,7 +15,7 @@ import {
 } from "@/lib/workshop-engine/resin-printing";
 import type { WorkshopLiveSession } from "@/lib/workshop-engine/types";
 import { cn } from "@/lib/utils";
-import { weType } from "@/components/workshop-engine/responsive";
+import { weTvPortrait, weType } from "@/components/workshop-engine/responsive";
 
 async function fetchSession(code: string): Promise<WorkshopLiveSession | null> {
   const res = await fetch(
@@ -79,17 +79,23 @@ export function TvPresentationClient({
           style={{ width: `${progress}%` }}
         />
       </div>
-      <div className="pointer-events-none absolute inset-3 rounded-sm border border-white/10 sm:inset-4 md:inset-6 2xl:inset-8" />
-      <header className="flex flex-col gap-4 px-5 pt-6 sm:px-8 sm:pt-8 md:flex-row md:items-start md:justify-between md:gap-6 md:px-10 md:pt-10 lg:px-12 2xl:px-16 2xl:pt-12">
-        <div className="flex items-start gap-3 sm:gap-4 md:gap-6">
+      <div className="pointer-events-none absolute inset-3 rounded-sm border border-white/10 sm:inset-4 md:inset-6 2xl:inset-8 portrait-tv:inset-6" />
+      <header
+        className={cn(
+          'flex flex-col gap-4 px-5 pt-6 sm:px-8 sm:pt-8 md:flex-row md:items-start md:justify-between md:gap-6 md:px-10 md:pt-10 lg:px-12 2xl:px-16 2xl:pt-12',
+          weTvPortrait.pad,
+          weTvPortrait.gap
+        )}
+      >
+        <div className={cn('flex items-start gap-3 sm:gap-4 md:gap-6', weTvPortrait.gap)}>
           <ModuleIcon
             moduleId={liveModule.id}
-            className="h-14 w-14 ring-1 ring-white/20 sm:h-16 sm:w-16 md:h-20 md:w-20 2xl:h-24 2xl:w-24"
+            className="h-14 w-14 ring-1 ring-white/20 sm:h-16 sm:w-16 md:h-20 md:w-20 2xl:h-24 2xl:w-24 portrait-tv:h-28 portrait-tv:w-28"
           />
           <div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4">
               <ModulePhaseChip moduleId={liveModule.id} />
-              <p className="text-sm uppercase tracking-[0.18em] text-neutral-400 sm:text-lg md:text-2xl md:tracking-[0.2em] 2xl:text-3xl">
+              <p className={weType.tvMeta}>
                 Module {String(liveModule.order).padStart(2, '0')}
               </p>
             </div>
@@ -100,30 +106,44 @@ export function TvPresentationClient({
             </h1>
           </div>
         </div>
-        <div className="text-left text-xs text-neutral-400 sm:text-sm md:text-right md:text-sm 2xl:text-base">
+        <div
+          className={cn(
+            'text-left text-xs text-neutral-400 sm:text-sm md:text-right md:text-sm 2xl:text-base portrait-tv:text-xl'
+          )}
+        >
           <p className={cn(connected ? 'text-emerald-400' : 'text-amber-300')}>
             {connected ? 'Synced' : 'Reconnecting…'}
           </p>
-          <p className="mt-1 font-mono tracking-widest text-neutral-300">
+          <p className="mt-1 font-mono tracking-widest text-neutral-300 portrait-tv:text-2xl">
             {session.joinCode}
           </p>
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col justify-center px-5 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 2xl:px-16 2xl:py-12">
+      <main
+        className={cn(
+          'flex flex-1 flex-col justify-center px-5 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10 lg:px-12 2xl:px-16 2xl:py-12',
+          weTvPortrait.pad
+        )}
+      >
         {session.tvScreen === 'join' ? (
-          <div className="flex flex-col items-start gap-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-8 md:gap-12">
-            <div className="rounded-lg bg-white p-3 sm:p-4">
+          <div
+            className={cn(
+              'flex flex-col items-start gap-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-8 md:gap-12',
+              weTvPortrait.gap
+            )}
+          >
+            <div className={cn('rounded-lg bg-white p-3 sm:p-4', weTvPortrait.qr)}>
               <QRCode value={joinUrl} size={220} />
             </div>
             <div>
-              <p className="text-xl text-neutral-300 sm:text-2xl md:text-3xl 2xl:text-4xl">
+              <p className={cn(weType.tvBody, 'text-neutral-300')}>
                 Scan to join
               </p>
-              <p className="mt-3 font-mono text-4xl tracking-[0.2em] sm:text-5xl md:mt-4 md:text-7xl md:tracking-[0.25em] 2xl:text-8xl">
+              <p className="mt-3 font-mono text-4xl tracking-[0.2em] sm:text-5xl md:mt-4 md:text-7xl md:tracking-[0.25em] 2xl:text-8xl portrait-tv:text-[clamp(3.5rem,8vh,6rem)]">
                 {session.joinCode}
               </p>
-              <p className="mt-4 max-w-xl text-base text-neutral-400 sm:text-xl md:mt-6 md:text-2xl 2xl:text-3xl">
+              <p className={cn('mt-4 max-w-xl md:mt-6', weType.tvBody, 'text-neutral-400')}>
                 Choose Follow class or My pace. No account needed.
               </p>
             </div>
@@ -131,8 +151,8 @@ export function TvPresentationClient({
         ) : null}
 
         {session.tvScreen === 'break' ? (
-          <div className="space-y-6 md:space-y-8">
-            <p className="max-w-4xl text-2xl text-neutral-200 sm:text-3xl md:text-4xl 2xl:text-5xl">
+          <div className="space-y-6 md:space-y-8 portrait-tv:space-y-10">
+            <p className={cn('max-w-4xl', weType.tvPrompt)}>
               {RESIN_BREAK_MODULE.tvPrompt}
             </p>
             <RoomTimer
@@ -144,18 +164,23 @@ export function TvPresentationClient({
         ) : null}
 
         {session.tvScreen === 'resources' ? (
-          <div className="flex flex-col items-start gap-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-8 md:gap-12">
-            <div className="rounded-lg bg-white p-3 sm:p-4">
+          <div
+            className={cn(
+              'flex flex-col items-start gap-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-8 md:gap-12',
+              weTvPortrait.gap
+            )}
+          >
+            <div className={cn('rounded-lg bg-white p-3 sm:p-4', weTvPortrait.qr)}>
               <QRCode
                 value={`${origin}/workshop/resin-printing/resources`}
                 size={200}
               />
             </div>
             <div>
-              <p className="text-3xl font-semibold sm:text-4xl md:text-5xl 2xl:text-6xl">
+              <p className={cn(weType.tvTitle, 'font-semibold')}>
                 Resources
               </p>
-              <p className="mt-3 max-w-2xl text-xl text-neutral-300 sm:text-2xl md:mt-4 md:text-3xl 2xl:text-4xl">
+              <p className={cn('mt-3 max-w-2xl md:mt-4', weType.tvBody)}>
                 Booklet, checklist, glossary, and follow-up pathway.
               </p>
             </div>
@@ -163,11 +188,11 @@ export function TvPresentationClient({
         ) : null}
 
         {session.tvScreen === 'complete' ? (
-          <div className="space-y-4 md:space-y-6">
-            <p className="text-3xl font-semibold sm:text-4xl md:text-5xl 2xl:text-6xl">
+          <div className="space-y-4 md:space-y-6 portrait-tv:space-y-8">
+            <p className={cn(weType.tvTitle, 'font-semibold')}>
               Session complete
             </p>
-            <p className="max-w-3xl text-xl text-neutral-300 sm:text-2xl md:text-3xl 2xl:text-4xl">
+            <p className={cn('max-w-3xl', weType.tvBody)}>
               Ready · Repair · Consultation — then book a supervised print
               appointment.
             </p>
@@ -175,12 +200,17 @@ export function TvPresentationClient({
         ) : null}
 
         {session.tvScreen === 'module' ? (
-          <div className="grid items-center gap-6 md:gap-10 lg:grid-cols-[1fr_auto] lg:gap-12">
-            <div className="space-y-4 md:space-y-6 lg:space-y-8">
+          <div
+            className={cn(
+              'grid items-center gap-6 md:gap-10 lg:grid-cols-[1fr_auto] lg:gap-12',
+              weTvPortrait.gap
+            )}
+          >
+            <div className="space-y-4 md:space-y-6 lg:space-y-8 portrait-tv:space-y-10">
               <p className={cn("max-w-5xl", weType.tvPrompt)}>
                 {liveModule.tvPrompt}
               </p>
-              <p className="max-w-4xl text-[clamp(1.125rem,2vw,2.5rem)] text-neutral-300">
+              <p className={cn('max-w-4xl', weType.tvBody)}>
                 <span className="text-neutral-500">Physical evidence · </span>
                 {liveModule.physicalSample}
               </p>
@@ -196,7 +226,7 @@ export function TvPresentationClient({
         ) : null}
       </main>
 
-      <footer className="px-5 pb-6 text-sm text-neutral-500 sm:px-8 sm:text-base md:px-10 md:pb-10 md:text-xl lg:px-12 2xl:px-16 2xl:text-2xl">
+      <footer className="px-5 pb-6 text-sm text-neutral-500 sm:px-8 sm:text-base md:px-10 md:pb-10 md:text-xl lg:px-12 2xl:px-16 2xl:text-2xl portrait-tv:px-10 portrait-tv:pb-12 portrait-tv:text-2xl">
         Not certification · Instructor-led equipment · Infra24 workshop engine
       </footer>
     </div>

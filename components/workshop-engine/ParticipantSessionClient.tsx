@@ -27,9 +27,11 @@ import {
   LearningOutcome,
   PhysicalEvidence,
   TipCallout,
+  KeyVocab,
   WatchNotice,
 } from "@/components/workshop-engine/TeachingSurfaces";
 import { InstructionalConceptsBlock } from "@/components/workshop-engine/InstructionalConcepts";
+import { TechniqueBoard } from "@/components/workshop-engine/TechniqueBoard";
 import { useLiveSessionPolling } from "@/components/workshop-engine/TvPresentationClient";
 import {
   weShell,
@@ -218,10 +220,10 @@ export function ModuleView({
       ) : null}
 
       <ModuleVisualPlaceholder moduleId={workshopModule.id} />
-      {workshopModule.instructionalConcepts &&
-      (workshopModule.id === "file-readiness" ||
-        workshopModule.id === "print-wash-cure" ||
-        workshopModule.id === "failure-clinic") ? (
+      {workshopModule.techniqueBoards ? (
+        <TechniqueBoard block={workshopModule.techniqueBoards} />
+      ) : null}
+      {workshopModule.instructionalConcepts ? (
         <InstructionalConceptsBlock
           concepts={workshopModule.instructionalConcepts}
         />
@@ -232,13 +234,8 @@ export function ModuleView({
       {workshopModule.tips?.length ? (
         <TipCallout tips={workshopModule.tips} />
       ) : null}
-      {workshopModule.instructionalConcepts &&
-      (workshopModule.id === "why-resin" ||
-        workshopModule.id === "project-readiness" ||
-        workshopModule.id === "slicer-lab") ? (
-        <InstructionalConceptsBlock
-          concepts={workshopModule.instructionalConcepts}
-        />
+      {workshopModule.vocab?.length ? (
+        <KeyVocab terms={workshopModule.vocab} />
       ) : null}
       <ModuleRelatedMediaStrip moduleId={workshopModule.id} />
       <ModuleActivity activity={workshopModule.activity} />
@@ -271,6 +268,7 @@ export function ModuleView({
           startPage={ref.startPage}
           endPage={ref.endPage}
           mappingPending={ref.mappingPending}
+          moduleId={workshopModule.id}
           status={ref.status}
           note={ref.note}
           pagePreviewHref={ref.pagePreviewHref}

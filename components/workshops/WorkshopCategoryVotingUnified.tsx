@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Heart } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import UnifiedVotingComponent from '@/components/voting/UnifiedVotingComponent';
@@ -61,27 +61,34 @@ const WORKSHOP_CATEGORIES = [
   }
 ];
 
-export default function WorkshopCategoryVotingUnified({ organizationId, userId }: WorkshopCategoryVotingProps) {
+export default function WorkshopCategoryVotingUnified({ organizationId }: WorkshopCategoryVotingProps) {
   const { user } = useUser();
   const [votingResults, setVotingResults] = useState<any[]>([]);
   const [hasVoted, setHasVoted] = useState(false);
+  const [offline, setOffline] = useState(false);
+  const offlineRef = useRef(false);
 
-  const fetchVotingData = async () => {
+  const fetchVotingData = useCallback(async () => {
+    if (offlineRef.current) return;
     try {
-      // Fetch voting results
       const response = await fetch(`/api/organizations/${organizationId}/workshop-categories/votes`);
-      if (response.ok) {
-        const data = await response.json();
-        setVotingResults(data.categories || []);
-        setHasVoted(data.hasVoted || false);
+      if (!response.ok) return;
+      const data = await response.json();
+      if (data.offline) {
+        offlineRef.current = true;
+        setOffline(true);
+        setVotingResults([]);
+        return;
       }
+      setVotingResults(data.categories || []);
+      setHasVoted(data.hasVoted || false);
     } catch (error) {
       console.error('Error fetching workshop category voting data:', error);
     }
-  };
+  }, [organizationId]);
 
-  const handleVote = async (optionId: string, voteType: string) => {
-    if (!user) return;
+  const handleVote = useCallback(async (optionId: string, _voteType: string) => {
+    if (!user || offlineRef.current) return;
 
     try {
       const response = await fetch(`/api/organizations/${organizationId}/workshop-categories/vote`, {
@@ -97,18 +104,16 @@ export default function WorkshopCategoryVotingUnified({ organizationId, userId }
 
       if (response.ok) {
         setHasVoted(true);
-        // Refresh voting data
         await fetchVotingData();
       } else {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         console.error('Voting error:', errorData.error);
       }
     } catch (error) {
       console.error('Error voting for workshop category:', error);
     }
-  };
+  }, [user, organizationId, fetchVotingData]);
 
-  // Map workshop categories to voting results
   const optionsWithResults = WORKSHOP_CATEGORIES.map(category => {
     const result = votingResults.find(r => r.category === category.id);
     return {
@@ -122,6 +127,10 @@ export default function WorkshopCategoryVotingUnified({ organizationId, userId }
       hasVoted: hasVoted
     };
   });
+
+  if (offline) {
+    return null;
+  }
 
   return (
     <UnifiedVotingComponent
@@ -137,4 +146,3 @@ export default function WorkshopCategoryVotingUnified({ organizationId, userId }
     />
   );
 }
-

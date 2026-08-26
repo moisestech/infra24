@@ -18,8 +18,20 @@ export async function GET(
       .eq('organization_id', orgId);
 
     if (votesError) {
-      console.error('Error fetching votes:', votesError);
-      return NextResponse.json({ error: 'Failed to fetch votes' }, { status: 500 });
+      const missing =
+        votesError.code === '42P01' ||
+        votesError.code === 'PGRST205' ||
+        /does not exist|relation|schema cache|Could not find the table/i.test(
+          votesError.message || ''
+        );
+      if (!missing) {
+        console.error('Error fetching votes:', votesError);
+      }
+      return NextResponse.json({
+        categories: [],
+        hasVoted: false,
+        offline: true,
+      });
     }
 
     // Count votes by category

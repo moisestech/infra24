@@ -3,10 +3,7 @@ import {
   RESIN_BOOKLET_PDF_HREF,
   RESIN_PRINTING_MODULES,
 } from '@/lib/workshop-engine/resin-printing'
-import {
-  RESIN_BOOKLET_EDITION,
-  formatLogicalPageLabel,
-} from '@/lib/workshop-engine/resin-printing/booklet'
+import { RESIN_BOOKLET_EDITION } from '@/lib/workshop-engine/resin-printing/booklet'
 import { BookletReference } from '@/components/workshop-engine/ModuleChrome'
 import { weTouch, weType } from '@/components/workshop-engine/responsive'
 import { cn } from '@/lib/utils'
@@ -52,10 +49,6 @@ export default function ResinBookletPage() {
             <ul className="space-y-3">
               {workshopModule.bookletRefs.map((ref) => (
                 <li key={`${ref.sectionTitle}-${ref.startPage ?? 'x'}`}>
-                  <p className="mb-1 text-xs text-slate-500">
-                    {formatLogicalPageLabel(ref.startPage, ref.endPage) ?? 'No page'} ·{' '}
-                    {ref.status ?? 'unspecified'}
-                  </p>
                   <BookletReference
                     sectionTitle={ref.sectionTitle}
                     startPage={ref.startPage}
@@ -63,6 +56,7 @@ export default function ResinBookletPage() {
                     status={ref.status}
                     note={ref.note}
                     pagePreviewHref={ref.pagePreviewHref}
+                    moduleId={workshopModule.id}
                   />
                 </li>
               ))}

@@ -34,11 +34,13 @@ export {
   ConceptualIllustration,
   InstructionalConceptsBlock,
 } from "@/components/workshop-engine/InstructionalConcepts";
+export { TechniqueBoard } from "@/components/workshop-engine/TechniqueBoard";
 export {
   LearningOutcome,
   WatchNotice,
   KeyIdeas,
   TipCallout,
+  KeyVocab,
   DiscussionPrompt,
   PhysicalEvidence,
   FacilitatorCues,
