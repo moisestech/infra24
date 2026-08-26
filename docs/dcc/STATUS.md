@@ -18,11 +18,11 @@
 | Field | Value |
 |---|---|
 | Date | 26 August 2026 |
-| Branch | `main` after education PR #5 (resin Cloudinary, technique boards, DCC offering stills) |
-| Last culture commits | primitives → founder artists `0301f73` → offerings `1d7eb46` → public routes `09f96c0` |
+| Branch | `main` after education PR #6, fabricate Phase 2 (#7), and public `/now` |
+| Last culture commits | public `/now` known-facts ledger; founders + Clandestine skeleton already on main |
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
 | Culture records published | 1 program (Clandestine 2026). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). 0 journal entries. 0 culture projects. |
-| Fabricate Phase 2 | Merging onto `main`: Field Lab, estimate planner, `/fabricate/projects`. Hero is **conceptual** (not documentary). |
+| Fabricate Phase 2 | On `main`: Field Lab, estimate planner, `/fabricate/projects`. Hero is **conceptual** (not documentary). |
 | Images | **Filled vs not:** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md) § Filled vs not. Teaching stills are conceptual; documentary fabricate/Clandestine/Bakehouse/class shots are not filled. |
 
 ### Namespace commit rule
@@ -32,7 +32,7 @@ One namespace per commit: `culture` / `studios` / `fabricate` / `civic-projects`
 Paste this header on Cursor / ChatGPT handoffs:
 
 ```
-NAMESPACE: culture | fabricate | civic-projects | studios
+NAMESPACE: culture | education | fabricate | civic-projects | studios
 INTENT: add-record | update-copy | swap-image | ux-motion | do-not-touch
 RECORD: id / slug
 FACTS CONFIRMED:
@@ -59,7 +59,8 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 | Route | Namespace | Image | Motion / interactivity | Status |
 |---|---|---|---|---|
 | `/` hero, collage, pathways | marketing | Real Cloudinary photography | Rotating headlines (reduced-motion aware); card hover scale | Shipped |
-| `/` `#now` band | culture | None (text slots) | Links only | Shipped; Artist slot shows featured founder (Moises); Journal still hidden |
+| `/` `#now` band | culture | None (text slots) | Links only | Shipped; “Full snapshot” → `/now`; Artist slot shows featured founder (Moises); Journal still hidden |
+| `/now` | culture | None | Still | Public known-facts ledger; copy in `lib/dcc/culture/now.ts`; must agree with this file |
 | `/artists` | culture | Knight / Edge Zones portraits | Hover when `src` exists | Three founders published; not a Clandestine roster |
 | `/artists/[slug]` | culture | Portrait + hero where confirmed | Hover with `src`; 360 on Moises + Fabiola | Angelo has no tour |
 | `/programs` | culture + CDC | Clandestine card has fallback | CardGrid hover on taxonomy cards | Shipped; Current/Upcoming + existing service catalog |
@@ -87,13 +88,14 @@ Hover rule for culture media: [`cultureMediaMotionEnabled`](../../lib/dcc/cultur
 
 ### Culture (committed on this branch)
 
-- Data: `lib/dcc/culture/*` (artists, programs, editorial, projects, relations, taxonomy, media)
+- Data: `lib/dcc/culture/*` (artists, programs, editorial, projects, relations, taxonomy, media, **now**)
+- Public `/now` known-facts page (Clerk-public; homepage “Full snapshot”; footer Now)
 - Nav cluster: Programs, Artists, Workshops, Fabricate, Journal, About (Era / Network / Projects / Partners / Grants kept)
 - `/artists` is public (Clerk had been sending it to sign-in)
 - Studio tours do **not** leak onto `/artists` until a matching published culture record exists (Moises + Fabiola now match; Angelo still has no tour)
 - Tests: `__tests__/lib/dcc-culture.test.ts`, `__tests__/integration/dcc-culture-layer.spec.ts`
 
-### Fabrication proof (this branch)
+### Fabrication proof (on `main` via #7)
 
 Field Lab, estimate planner ($151 seed — **planning estimate, not an invoice**), Learn→Test→Make flywheel, `/fabricate/projects` DCC tests, Scale Up evidence. Conceptual hero + field-lab stills wired and labeled. Documentary `01-fabricate-hero.webp` still missing.
 
@@ -183,6 +185,7 @@ Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/re
 - Documentary `/fabricate` hero (`01-fabricate-hero.webp`); Bakehouse room still; resin kit/class/video; physical evidence 314 — see IMAGE_SHOT_LIST § Filled vs not
 - Scale Up culture-flywheel numbers (public only; no QuickBooks)
 - Newsletter: `/newsletter` exists; provider is `NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_ACTION` if set — no dedicated DCC list confirmed in-repo
+- Public snapshot for clients/teachers/institutions: `/now` (must agree with this file and IMAGE_SHOT_LIST)
 - Optional later: flatten journal to `/journal/[slug]` (today `/journal/[category]/[slug]`)
 
 **Non-goals:** podcast launch; Airtable culture schema; ITS3D lockup; merging `/projects` meanings; enabling Stripe checkout.
@@ -208,7 +211,7 @@ Local Next production build succeeded 24 Aug 2026 (`/artists` SSG for Moises, Fa
 
 Copy this after reading this file and the record packet:
 
-> Read `docs/dcc/STATUS.md` and `lib/dcc/culture/RECORD.md`. DCC MIA is a small cultural org whose website is the public memory. Culture architecture is live; Clandestine is Program 001 with no participating artists yet. Founders (Moises, Fabiola, Angelo) are published on `/artists` and are not attached to the fair. Do not invent names. Propose the next two-week sprint: Clandestine content ops vs conversations vs homepage evolution. Rank by Content Yield (downstream assets per hour), not Instagram likes.
+> Read `docs/dcc/STATUS.md`, `docs/dcc/IMAGE_SHOT_LIST.md`, and the public page `/now`. DCC MIA is a small cultural org whose website is the public memory. Culture architecture is live; Clandestine is Program 001 with no participating artists yet. Founders (Moises, Fabiola, Angelo) are published on `/artists` and are not attached to the fair. Two public 3D workshop pages exist; resin SLA is a syllabus hub, not a third catalog card. Fabricate Phase 2 is live with a conceptual (not documentary) hero and a planning estimate that is not an invoice. Do not invent names, dates, sales %, ITS3D, or documentary photos. The next content fork is one of: Clandestine names (culture), a newsletter provider ID (ops), physical evidence 314 (education), or a documentary fabricate hero (fabricate). Rank by Content Yield (downstream assets per hour), not Instagram likes.
 
 ---
 

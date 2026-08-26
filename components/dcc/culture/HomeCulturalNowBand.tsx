@@ -105,6 +105,14 @@ export function HomeCulturalNowBand() {
         <p className="mt-3 max-w-3xl text-lg font-medium leading-snug text-neutral-900 dark:text-neutral-50 sm:text-xl">
           {DCC_CULTURAL_POSITION}
         </p>
+        <p className="mt-4">
+          <Link
+            href="/now"
+            className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
+          >
+            Full snapshot
+          </Link>
+        </p>
         <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {slots.map((slot) => (
             <li

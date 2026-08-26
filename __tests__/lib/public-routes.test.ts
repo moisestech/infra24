@@ -37,6 +37,7 @@ describe('isPublicRoute', () => {
     expect(isPublicRoute('/journal')).toBe(true)
     expect(isPublicRoute('/journal/conversations')).toBe(true)
     expect(isPublicRoute('/newsletter')).toBe(true)
+    expect(isPublicRoute('/now')).toBe(true)
   })
   it('still requires sign-in for tenant workshop admin surfaces', () => {
     expect(isPublicRoute('/o/oolite/workshops')).toBe(false)

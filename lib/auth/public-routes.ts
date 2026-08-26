@@ -34,6 +34,7 @@ export function isPublicRoute(rawPathname: string): boolean {
     '/programs',
     '/journal',
     '/newsletter',
+    '/now',
   ]
   if (dccPublicMarketing.some((route) => matchesPrefix(pathname, route))) return true
 
