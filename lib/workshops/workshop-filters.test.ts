@@ -57,6 +57,16 @@ describe('isExcludedFromDccPublicCatalog', () => {
     ).toBe(false)
   })
 
+  it('excludes the Oolite Skills IP workshop from the DCC catalog', () => {
+    expect(
+      isExcludedFromDccPublicCatalog({
+        title: 'Skills: Intellectual Property in the Age of AI',
+        category: 'general',
+        metadata: null,
+      })
+    ).toBe(true)
+  })
+
   it('still excludes adult studio even with dcc_public_catalog true', () => {
     expect(
       isExcludedFromDccPublicCatalog({

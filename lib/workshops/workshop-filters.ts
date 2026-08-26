@@ -16,7 +16,8 @@ function normalizeCatalogTitle(title: string): string {
 /**
  * Oolite Arts in-studio / printshop offerings that share the same org catalog as
  * Digital Lab but must not appear on DCC.miami `/workshops` when category flags
- * are missing. Extend this list as needed.
+ * are missing. Skills: IP in the Age of AI is an Oolite Skills Series session,
+ * not a DCC offering. Extend this list as needed.
  */
 const OOLITE_STUDIO_ONLY_TITLE_SNIPPETS: readonly string[] = [
   'impressionist flower painting',
@@ -38,6 +39,7 @@ const OOLITE_STUDIO_ONLY_TITLE_SNIPPETS: readonly string[] = [
   'foundation of screen printing',
   'foundations of screen printing',
   'foundation sof screen printing',
+  'intellectual property in the age of ai',
 ]
 
 function matchesOoliteStudioOnlyTitle(title: string): boolean {

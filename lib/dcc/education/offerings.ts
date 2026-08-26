@@ -1,5 +1,4 @@
 import { vibeCodingNetArtOverview } from '@/content/workshop/vibe-coding-net-art-overview'
-import { ipAgeOfAiWorkshop } from '@/data/ipAgeOfAiWorkshop'
 import type { DccWorkshopOffering, DccWorkshopOfferingImage } from '@/lib/dcc/education/types'
 import { DCC_WORKSHOP_IN_DEVELOPMENT } from '@/lib/dcc/education/in-development'
 import {
@@ -12,7 +11,6 @@ import {
   SATURDAY_LAB_ICONS,
   SATURDAY_LAB_TOOL_SCREENSHOTS,
 } from '@/lib/workshops/saturday-lab-media'
-import { IP_AGE_OF_AI_LANDSCAPE_BANNER_URL } from '@/lib/workshops/ip-age-of-ai-video'
 
 /** Existing vibe-coding catalog still (same asset as the handbook chapters). */
 const VIBE_CODING_OFFERING_IMAGE =
@@ -42,7 +40,8 @@ function withCover(
  * DCC MIA public workshop offerings — pages that already exist.
  * Two 3D catalog workshops (physical process + AI→3D). Resin SLA syllabus
  * stays at `/workshop/resin-printing` and is linked from those pages — not a third catalog card.
- * Do not list Oolite tenant-catalog rows here. Do not invent prices or capacity.
+ * Skills: IP in the Age of AI is Oolite Arts only — do not list it here.
+ * Do not list other Oolite tenant-catalog rows. Do not invent prices or capacity.
  */
 export const DCC_WORKSHOP_OFFERINGS: DccWorkshopOffering[] = [
   withCover({
@@ -223,30 +222,6 @@ export const DCC_WORKSHOP_OFFERINGS: DccWorkshopOffering[] = [
         SATURDAY_LAB_TOOL_SCREENSHOTS.cursor,
         'Cursor editor screenshot used in the vibe coding workshop.',
         'Existing tool still'
-      ),
-    ],
-  }),
-  withCover({
-    id: 'ip-age-of-ai',
-    slug: ipAgeOfAiWorkshop.slug,
-    title: ipAgeOfAiWorkshop.title,
-    shortDescription: ipAgeOfAiWorkshop.description,
-    href: '/workshops/ip-age-of-ai',
-    syllabusHref: '/workshops/ip-age-of-ai',
-    format: 'hybrid',
-    status: 'live',
-    enrollment: 'inquiry',
-    hue: 210,
-    hueAccent: 165,
-    icon: {
-      src: SATURDAY_LAB_ICONS.cv,
-      alt: 'Document icon for the Intellectual Property in the Age of AI session.',
-    },
-    images: [
-      still(
-        IP_AGE_OF_AI_LANDSCAPE_BANNER_URL,
-        'Skills: Intellectual Property in the Age of AI landscape banner.',
-        'Existing session banner'
       ),
     ],
   }),

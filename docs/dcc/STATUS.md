@@ -68,7 +68,7 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 | `/journal` | culture + CDC | None for DCC Conversations | CardGrid hover on category tiles | Shipped; empty conversations copy; no podcast |
 | `/journal/conversations` | culture | None | Still | Empty on purpose |
 | `/journal/[category]/[slug]` | CDC scaffold + culture | Title-only CDC posts | Culture body when a record exists | CDC shells still say body TBD |
-| `/workshops` | education | Saturday Lab / vibe / IP banners plus two 3D catalog cards on conceptual educational stills | Live catalog client; org grid omitted when empty | Public 3D pair is 3D Printing for Artists + AI → 3D; resin is not a catalog card |
+| `/workshops` | education | Saturday Lab / vibe banners plus two 3D catalog cards on conceptual educational stills | Live catalog client; org grid omitted when empty | Public 3D pair is 3D Printing for Artists + AI → 3D; IP Age of AI is Oolite-only; resin is not a catalog card |
 | `/workshop/3d-printing-for-artists` | education | Conceptual stills (`PRINT` `CLEANUP` `FINISH` `MEASURE` `COMPARE`) | Editorial page; inquiry via newsletter | HTML labels; caption **Conceptual educational image** |
 | `/workshop/ai-3d-physical-object` | education | Conceptual stills (`MODEL` `IMAGINE` `PREPARE` `PRINT` `FINISH` `TEST` `OUTCOME`); PRINT reuses machine detail | Editorial page; inquiry via newsletter | Can land on PLA FDM or resin SLA |
 | `/workshop/resin-printing` | education | Cloudinary banners `00–08`, concepts `107–135`, boards `200–214` | Workshop-engine clients (session/TV) | SLA syllabus engine; linked from the 3D pages, not a fifth catalog card |
@@ -159,7 +159,7 @@ Eleven conceptual educational stills wired on `/workshop/3d-printing-for-artists
 
 ### Education / money (do not build checkout this sprint)
 
-`/workshops` public catalog is the DCC sessions band (`lib/dcc/education/offerings.ts`: Saturday Lab, 3D Printing for Artists, AI → 3D Physical Object, Vibecoding & Net Art, IP in the Age of AI). Resin SLA stays at `/workshop/resin-printing` and is linked from the 3D pages — not a third 3D catalog card. **No prices, no invented capacity** on the new offerings. Enrollment is inquiry (`/newsletter?source=workshop-3d-printing-for-artists` / `workshop-ai-3d-physical-object`). The optional filterable org grid (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG`, default `oolite`) is omitted when that org is missing or empty — the public page must not show operator env-var copy.
+`/workshops` public catalog is the DCC sessions band (`lib/dcc/education/offerings.ts`: Saturday Lab, 3D Printing for Artists, AI → 3D Physical Object, Vibecoding & Net Art). Skills: IP in the Age of AI is **Oolite Arts only** (`/o/oolite/workshops`) — not a DCC offering. Resin SLA stays at `/workshop/resin-printing` and is linked from the 3D pages — not a 3D catalog card. **No prices, no invented capacity** on the new offerings. Enrollment is inquiry (`/newsletter?source=workshop-3d-printing-for-artists` / `workshop-ai-3d-physical-object`). The optional filterable org grid (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG`, default `oolite`) is omitted when that org is missing or empty — the public page must not show operator env-var copy.
 
 **What is actually live for money**
 

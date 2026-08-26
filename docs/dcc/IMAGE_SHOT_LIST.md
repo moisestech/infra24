@@ -39,7 +39,7 @@ flowchart LR
 
 ### Education (live)
 
-- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, **3D Printing for Artists**, **AI → 3D Physical Object**, Vibecoding & Net Art, IP in the Age of AI. **No prices.** Resin SLA is a path inside 3D printing (`/workshop/resin-printing`) — not a fifth catalog card. The two 3D cards use conceptual educational stills from [`lib/dcc/education/photo-stills.ts`](../../lib/dcc/education/photo-stills.ts). The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
+- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, **3D Printing for Artists**, **AI → 3D Physical Object**, Vibecoding & Net Art. **No prices.** Skills: IP in the Age of AI stays on the Oolite catalog, not DCC. Resin SLA is a path inside 3D printing (`/workshop/resin-printing`) — not a catalog card. The two 3D cards use conceptual educational stills from [`lib/dcc/education/photo-stills.ts`](../../lib/dcc/education/photo-stills.ts). The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
 - Resin engine stays the SLA syllabus: **conceptual** Cloudinary banners `00–08`, instructional `107–135`, technique boards `200–214` (not shop photos, not catalog heroes).
 
 ### Fabricate (partially live)
@@ -63,7 +63,6 @@ What we can **deliver today** vs what is still empty. Conceptual teaching stills
 | `/workshop/3d-printing-for-artists` | Same 3D printing stills, HTML labels (`PRINT` `CLEANUP` `FINISH` `MEASURE` `COMPARE`) | Conceptual educational |
 | `/workshop/ai-3d-physical-object` | Same AI→3D stills, HTML labels (`MODEL` `IMAGINE` `PREPARE` `PRINT` `FINISH` `TEST` `OUTCOME`) | Conceptual educational |
 | `/workshops#offerings` vibe-coding | Handbook catalog still `vibe-coding-with-net-art` | Existing banner |
-| `/workshops#offerings` IP Age of AI | `IP_AGE_OF_AI_LANDSCAPE_BANNER_URL` | Existing banner |
 | Resin hub + 9 module banners | Cloudinary `00–08` — SLA syllabus engine, not a catalog card | Conceptual ultra-wide |
 | Instructional concepts | Cloudinary `107–135` | Conceptual |
 | Technique boards | Cloudinary `200–214` | Conceptual |
@@ -197,7 +196,7 @@ Day-of Open Studios (ops, not a program record): H2D hero **if the machine is in
 
 ### C1. Offerings band
 
-Five cards on `/workshops#offerings`. The 3D pair uses conceptual educational photography (caption: **Conceptual educational image**). Resin is not a catalog card.
+Four cards on `/workshops#offerings`. The 3D pair uses conceptual educational photography (caption: **Conceptual educational image**). Resin is not a catalog card. Skills: IP in the Age of AI is Oolite-only (`/o/oolite/workshops`).
 
 | ID | Session | In use now | Later documentary alternate |
 |---|---|---|---|
@@ -205,7 +204,6 @@ Five cards on `/workshops#offerings`. The 3D pair uses conceptual educational ph
 | `offering-3d-printing-for-artists` | 3D Printing for Artists | Cloudinary conceptual stills (`3d-printing-*-conceptual-01`) | Filament/material macro + confirmed room stills |
 | `offering-ai-3d-physical-object` | AI → 3D Physical Object | Cloudinary conceptual stills (`ai-3d-*-conceptual-01`); PRINT reuses machine detail | Real concept-to-object sequence after a class |
 | `offering-vibe-coding` | Net art | Existing vibe catalog still | Browser-as-medium still |
-| `offering-ip-ai` | IP Age of AI | Landscape banner in `ip-age-of-ai-video.ts` | Typographic / diagram card |
 
 ### C2. Resin — already have conceptual Cloudinary (keep until documentary exists)
 
