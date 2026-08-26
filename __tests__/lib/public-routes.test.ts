@@ -24,6 +24,8 @@ describe('isPublicRoute', () => {
     expect(isPublicRoute('/fabricate/quote')).toBe(true)
     expect(isPublicRoute('/fabricate/finishes')).toBe(true)
     expect(isPublicRoute('/fabricate/projects')).toBe(true)
+    expect(isPublicRoute('/fabricate/estimate')).toBe(true)
+    expect(isPublicRoute('/fabricate/field-lab')).toBe(true)
     expect(isPublicRoute('/fabrication')).toBe(true)
     expect(isPublicRoute('/fabrication/pricing')).toBe(true)
     expect(isPublicRoute('/make')).toBe(true)

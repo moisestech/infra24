@@ -44,8 +44,8 @@ flowchart LR
 
 ### Fabricate (partially live)
 
-- On **main:** `/fabricate`, `/pricing`, `/finishes`, `/quote`. Section slots in [`lib/dcc/fabrication/section-media.ts`](../../lib/dcc/fabrication/section-media.ts) are **placeholders** except finishes hero falls back to resin instructional `113`.
-- On **phase-2 branch:** conceptual stills `02/03/05/06` marked ready; finish ladder `300–305` on Cloudinary. A conceptual fabricate hero and field-lab still are uploaded to the resin Cloudinary folder (`DCC_EDUCATION_PHOTO_HOLDS`) but **not wired** this education pass. Documentary `01-fabricate-hero.webp` is still missing.
+- On **main (this pass):** `/fabricate`, `/pricing`, `/finishes`, `/quote`, `/estimate`, `/field-lab`, `/projects`. Conceptual hero + field-lab stills wired from Cloudinary (labeled not documentary). Local conceptual stills `02/03/05/06`. Finish ladder `300–305` on Cloudinary.
+- Documentary `01-fabricate-hero.webp` is still missing.
 
 ---
 
@@ -74,15 +74,16 @@ What we can **deliver today** vs what is still empty. Conceptual teaching stills
 | Founder portraits | Knight / Edge Zones (Moises, Fabiola, Angelo) | Documentary (approved) |
 | Homepage collage | [`dcc-home-photography.ts`](../../lib/marketing/dcc-home-photography.ts) | Documentary |
 | Studio 360 | Moises + Fabiola only | Existing tours |
-| `/fabricate/finishes` hero | Local stand-in `113-post-processing-states` | Conceptual (resin instructional) |
+| `/fabricate` hero | Cloudinary `01-fabricate-hero-conceptual-01` | Conceptual — not documentary |
+| `/fabricate/field-lab` | Cloudinary `field-lab-joint-testing-overhead-conceptual-01` | Conceptual |
+| `/fabricate` lanes/pricing/access/quote | Local `02/03/05/06` WebP | Conceptual |
+| `/fabricate/finishes` hero + L0–L4 | Cloudinary `300–305` | Conceptual |
 
 ### Not filled (honest empty / placeholder — do not invent)
 
 | Slot | Why empty | Blocked on |
 |---|---|---|
-| `01-fabricate-hero.webp` | `/fabricate` hero is a color placeholder. Conceptual `01-fabricate-hero-conceptual-01` is on CDN as **uploaded-hold** only — not a documentary replacement | Real desk still, or crop `120` as labeled conceptual |
-| Field-lab joint testing | Conceptual overhead still uploaded-hold (`field-lab-joint-testing-overhead-conceptual-01`); no `/fabricate/field-lab` route this pass | Fabricate Phase 2 / field-lab namespace |
-| Fabricate `02/03/05/06` + L0–L4 | `ready: false` on **main**; conceptuals live only on `feature/dcc-fabricate-phase2` | Phase-2 merge **or** drop files into `public/dcc/fabrication/` |
+| `01-fabricate-hero.webp` | Documentary shop hero still missing. Conceptual `01-fabricate-hero-conceptual-01` is **wired** on `/fabricate` and labeled conceptual | Real desk still with no people, no UI |
 | Bakehouse venue still | Room TBD; page stays placeholder | Confirmed DCC/Bakehouse room + shot |
 | `resin-hero-01` documentary, `resin-room-wide-01`, `resin-oolite-brand-01` | Hub uses welcome banner instead; no documentary room | DigiLab/Oolite stills with no readable UI |
 | Kit trays `resin-kit-00` … `08` | IDs listed, no files | One tray per module |

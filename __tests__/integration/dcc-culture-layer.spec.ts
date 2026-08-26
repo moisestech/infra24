@@ -131,4 +131,22 @@ test.describe('dcc culture + fabricate smokes', () => {
       page.getByRole('heading', { name: 'Transparent fabrication for artists' })
     ).toBeVisible()
   })
+
+  test('fabricate estimate, field lab, and projects stay public with honest labels', async ({
+    page,
+  }) => {
+    await page.goto('/fabricate/estimate')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(page.getByRole('heading', { name: 'Planning estimate' })).toBeVisible()
+    await expect(page.getByText(/planning estimate, not an invoice/i)).toBeVisible()
+
+    await page.goto('/fabricate/field-lab')
+    await expect(page.getByRole('heading', { name: 'Fabrication Field Lab' })).toBeVisible()
+    await expect(page.getByText(/Conceptual illustration — not a documentary photo/i).first()).toBeVisible()
+
+    await page.goto('/fabricate/projects')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(page.getByRole('heading', { name: 'Fabrication projects' })).toBeVisible()
+    await expect(page.getByText(/DCC tests — not client commissions/i)).toBeVisible()
+  })
 })
