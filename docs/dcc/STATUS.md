@@ -17,12 +17,13 @@
 
 | Field | Value |
 |---|---|
-| Date | 24 August 2026 |
-| Branch | `main` (merged `feature/dcc-culture-layer`, `eeaa965`) |
+| Date | 26 August 2026 |
+| Branch | `main` after education PR #5 (resin Cloudinary, technique boards, DCC offering stills) |
 | Last culture commits | primitives → founder artists `0301f73` → offerings `1d7eb46` → public routes `09f96c0` |
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
 | Culture records published | 1 program (Clandestine 2026). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). 0 journal entries. 0 culture projects. |
 | Fabricate Phase 2 | Parked on sibling `feature/dcc-fabricate-phase2` (`1329ff1`). Hero still a placeholder. |
+| Images | **Filled vs not:** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md) § Filled vs not. Teaching stills are conceptual; documentary fabricate/Clandestine/Bakehouse/class shots are not filled. |
 
 ### Namespace commit rule
 
@@ -66,8 +67,8 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 | `/journal` | culture + CDC | None for DCC Conversations | CardGrid hover on category tiles | Shipped; empty conversations copy; no podcast |
 | `/journal/conversations` | culture | None | Still | Empty on purpose |
 | `/journal/[category]/[slug]` | CDC scaffold + culture | Title-only CDC posts | Culture body when a record exists | CDC shells still say body TBD |
-| `/workshops` | education | Catalog + resin teaching stills | Live catalog client | Shipped separately; do not put fabricate prices in curriculum |
-| `/workshop/resin-printing` | education | Cloudinary banners + technique boards | Workshop-engine clients (session/TV) | Instructional stills, not artist portraits |
+| `/workshops` | education | Four existing workshop banners on the offerings band | Live catalog client; org grid omitted when empty | Shipped on PR #5; conceptual resin stills, not shop photos |
+| `/workshop/resin-printing` | education | Cloudinary banners `00–08`, concepts `107–135`, boards `200–214` | Workshop-engine clients (session/TV) | Same Oolite Digital Lab curriculum; Bakehouse venue still empty |
 | `/fabricate` | fabricate | Hero **placeholder**; conceptual stills for lanes/pricing/access/quote; Cloudinary finish ladder | Estimate/quote on `feature/dcc-fabricate-phase2` | Hero `01-fabricate-hero.webp` not ready; stills labeled conceptual |
 | `/fabricate/projects` | fabricate | Test-case pages | — | Three DCC tests on `feature/dcc-fabricate-phase2` |
 | `/projects` | civic-projects | Marketing cards/gradients | CardGrid hover | Infra24 civic proof — **do not take over** |
@@ -174,7 +175,7 @@ Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/re
 
 ## Leftovers (ops, not invented content)
 
-- Documentary `/fabricate` hero; replace conceptual stills when honest photos exist
+- Documentary `/fabricate` hero; Bakehouse room still; resin kit/class/video; physical evidence 314 — see IMAGE_SHOT_LIST § Filled vs not
 - Scale Up culture-flywheel numbers (public only; no QuickBooks)
 - Newsletter: `/newsletter` exists; provider is `NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_ACTION` if set — no dedicated DCC list confirmed in-repo
 - Optional later: flatten journal to `/journal/[slug]` (today `/journal/[category]/[slug]`)
