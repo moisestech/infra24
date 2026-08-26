@@ -1,2 +1,7 @@
 export * from '@/lib/dcc/education/types'
+export * from '@/lib/dcc/education/copy'
+export * from '@/lib/dcc/education/photo-stills'
+export * from '@/lib/dcc/education/editorial-workshops'
 export * from '@/lib/dcc/education/offerings'
+export * from '@/lib/dcc/education/in-development'
+export * from '@/lib/dcc/education/interest'

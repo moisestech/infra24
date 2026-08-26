@@ -59,10 +59,40 @@ test.describe('dcc culture + fabricate smokes', () => {
     await page.goto('/workshops')
     await expect(page).not.toHaveURL(/sign-in/)
     await expect(page.getByRole('heading', { name: /Workshop catalog/i })).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'DCC MIA sessions' })).toBeVisible()
+    await expect(page.getByText('DCC MIA sessions')).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Public syllabi for artists working through technology' })
+    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'In development at DCC' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Own Your Digital Presence' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '3D Printing for Artists' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'AI → 3D Physical Object' })).toBeVisible()
+    await expect(page.getByText(/fake storefront/i)).toHaveCount(0)
     await expect(page.getByText('Workshop catalog unavailable')).toHaveCount(0)
     await expect(page.getByText(/No organization found for slug/i)).toHaveCount(0)
     await expect(page.getByText(/NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG/)).toHaveCount(0)
+  })
+
+  test('editorial 3D workshop pages stay public with conceptual captions', async ({
+    page,
+  }) => {
+    await page.goto('/workshop/3d-printing-for-artists')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(
+      page.getByRole('heading', { name: '3D Printing for Artists' })
+    ).toBeVisible()
+    await expect(page.getByText('Conceptual educational image').first()).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Resin SLA syllabus' })).toBeVisible()
+    await expect(page.getByText(/fake storefront/i)).toHaveCount(0)
+
+    await page.goto('/workshop/ai-3d-physical-object')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(
+      page.getByRole('heading', { name: 'AI → 3D Physical Object' })
+    ).toBeVisible()
+    await expect(page.getByText('Conceptual educational image').first()).toBeVisible()
+    await expect(page.getByRole('link', { name: '3D Printing for Artists' })).toBeVisible()
+    await expect(page.getByText(/fake storefront/i)).toHaveCount(0)
   })
 
   test('artists index lists published founders and not an invented Clandestine roster', async ({

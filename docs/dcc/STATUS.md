@@ -67,8 +67,10 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 | `/journal` | culture + CDC | None for DCC Conversations | CardGrid hover on category tiles | Shipped; empty conversations copy; no podcast |
 | `/journal/conversations` | culture | None | Still | Empty on purpose |
 | `/journal/[category]/[slug]` | CDC scaffold + culture | Title-only CDC posts | Culture body when a record exists | CDC shells still say body TBD |
-| `/workshops` | education | Four existing workshop banners on the offerings band | Live catalog client; org grid omitted when empty | Shipped on PR #5; conceptual resin stills, not shop photos |
-| `/workshop/resin-printing` | education | Cloudinary banners `00–08`, concepts `107–135`, boards `200–214` | Workshop-engine clients (session/TV) | Same Oolite Digital Lab curriculum; Bakehouse venue still empty |
+| `/workshops` | education | Saturday Lab / vibe / IP banners plus two 3D catalog cards on conceptual educational stills | Live catalog client; org grid omitted when empty | Public 3D pair is 3D Printing for Artists + AI → 3D; resin is not a catalog card |
+| `/workshop/3d-printing-for-artists` | education | Conceptual stills (`PRINT` `CLEANUP` `FINISH` `MEASURE` `COMPARE`) | Editorial page; inquiry via newsletter | HTML labels; caption **Conceptual educational image** |
+| `/workshop/ai-3d-physical-object` | education | Conceptual stills (`MODEL` `IMAGINE` `PREPARE` `PRINT` `FINISH` `TEST` `OUTCOME`); PRINT reuses machine detail | Editorial page; inquiry via newsletter | Can land on PLA FDM or resin SLA |
+| `/workshop/resin-printing` | education | Cloudinary banners `00–08`, concepts `107–135`, boards `200–214` | Workshop-engine clients (session/TV) | SLA syllabus engine; linked from the 3D pages, not a fifth catalog card |
 | `/fabricate` | fabricate | Hero **placeholder**; conceptual stills for lanes/pricing/access/quote; Cloudinary finish ladder | Estimate/quote on `feature/dcc-fabricate-phase2` | Hero `01-fabricate-hero.webp` not ready; stills labeled conceptual |
 | `/fabricate/projects` | fabricate | Test-case pages | — | Three DCC tests on `feature/dcc-fabricate-phase2` |
 | `/projects` | civic-projects | Marketing cards/gradients | CardGrid hover | Infra24 civic proof — **do not take over** |
@@ -127,7 +129,7 @@ When new: `public/dcc/culture/artists/{slug}/` or Cloudinary `dccmiami/artists/{
 
 ### Workshops — teaching stills
 
-Resin banners / technique boards. Not Clandestine artist portraits. No prices in curriculum images.
+Eleven conceptual educational stills wired on `/workshop/3d-printing-for-artists` and `/workshop/ai-3d-physical-object` (registry: `lib/dcc/education/photo-stills.ts`). Resin banners / technique boards stay on the SLA syllabus hub. Fabricate hero + field-lab conceptuals are uploaded-hold only. Not Clandestine artist portraits. No prices in curriculum images.
 
 ---
 
@@ -152,7 +154,7 @@ Resin banners / technique boards. Not Clandestine artist portraits. No prices in
 
 ### Education / money (do not build checkout this sprint)
 
-`/workshops` public catalog is the DCC sessions band (`lib/dcc/education/offerings.ts`: Saturday Lab, resin — 8 people / 3 hr, Vibecoding & Net Art, IP in the Age of AI). Capacity only where the engine already has it. **No prices in the offering records.** Cards reuse existing workshop banners — resin is the same Oolite Digital Lab curriculum still (`RESIN_BANNER_CDN.welcome`). The optional filterable org grid (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG`, default `oolite`) is omitted when that org is missing or empty — the public page must not show operator env-var copy.
+`/workshops` public catalog is the DCC sessions band (`lib/dcc/education/offerings.ts`: Saturday Lab, 3D Printing for Artists, AI → 3D Physical Object, Vibecoding & Net Art, IP in the Age of AI). Resin SLA stays at `/workshop/resin-printing` and is linked from the 3D pages — not a third 3D catalog card. **No prices, no invented capacity** on the new offerings. Enrollment is inquiry (`/newsletter?source=workshop-3d-printing-for-artists` / `workshop-ai-3d-physical-object`). The optional filterable org grid (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG`, default `oolite`) is omitted when that org is missing or empty — the public page must not show operator env-var copy.
 
 **What is actually live for money**
 

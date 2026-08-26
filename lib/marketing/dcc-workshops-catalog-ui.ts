@@ -88,8 +88,8 @@ export const dccWorkshopsPromotedProgramSlides: DccPromotedProgramSlide[] = [
     title: 'AI literacy without losing your voice',
     description:
       'Practical workflows for documentation, experimentation, and accountable use of creative tools.',
-    learnMoreHref: '/programs/workshops/ai-literacy-for-artists',
-    viewProgramHref: '/programs',
+    learnMoreHref: '/workshops#in-development',
+    viewProgramHref: '/workshops#in-development',
   },
   {
     title: 'Partner with DCC on cohorts',

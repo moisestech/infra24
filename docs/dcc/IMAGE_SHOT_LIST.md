@@ -17,8 +17,10 @@ flowchart LR
   now --> journal["/journal"]
   artists --> artistPage["/artists/slug"]
   artistPage --> tour["360 tour if exists"]
-  workshops --> resin["/workshop/resin-printing"]
+  workshops --> threeD["/workshop/3d-printing-for-artists"]
+  workshops --> ai3d["/workshop/ai-3d-physical-object"]
   workshops --> satlab["/workshop/saturday-lab"]
+  threeD --> resin["/workshop/resin-printing"]
   fabricate --> quote["/fabricate/quote"]
 ```
 
@@ -37,13 +39,13 @@ flowchart LR
 
 ### Education (live)
 
-- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, resin (8 people / 3 hr), Vibecoding & Net Art, IP in the Age of AI. **No prices.** Offering cards reuse existing workshop banners (resin welcome banner is the same Oolite Digital Lab curriculum still). The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
-- Resin engine already has **conceptual** Cloudinary banners + technique boards (not shop photos).
+- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, **3D Printing for Artists**, **AI → 3D Physical Object**, Vibecoding & Net Art, IP in the Age of AI. **No prices.** Resin SLA is a path inside 3D printing (`/workshop/resin-printing`) — not a fifth catalog card. The two 3D cards use conceptual educational stills from [`lib/dcc/education/photo-stills.ts`](../../lib/dcc/education/photo-stills.ts). The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
+- Resin engine stays the SLA syllabus: **conceptual** Cloudinary banners `00–08`, instructional `107–135`, technique boards `200–214` (not shop photos, not catalog heroes).
 
 ### Fabricate (partially live)
 
 - On **main:** `/fabricate`, `/pricing`, `/finishes`, `/quote`. Section slots in [`lib/dcc/fabrication/section-media.ts`](../../lib/dcc/fabrication/section-media.ts) are **placeholders** except finishes hero falls back to resin instructional `113`.
-- On **phase-2 branch:** conceptual stills `02/03/05/06` marked ready; finish ladder `300–305` on Cloudinary; **hero `01` still missing.**
+- On **phase-2 branch:** conceptual stills `02/03/05/06` marked ready; finish ladder `300–305` on Cloudinary. A conceptual fabricate hero and field-lab still are uploaded to the resin Cloudinary folder (`DCC_EDUCATION_PHOTO_HOLDS`) but **not wired** this education pass. Documentary `01-fabricate-hero.webp` is still missing.
 
 ---
 
@@ -56,12 +58,16 @@ What we can **deliver today** vs what is still empty. Conceptual teaching stills
 | Slot | What is live | Kind |
 |---|---|---|
 | `/workshops#offerings` Saturday Lab | Cloudinary `01_start-here` | Existing lab banner |
-| `/workshops#offerings` resin | `RESIN_BANNER_CDN.welcome` (same Oolite Digital Lab curriculum still) | Conceptual |
+| `/workshops#offerings` 3D Printing for Artists | Cloudinary conceptual stills (`3d-printing-machine-detail` + series) | Conceptual educational |
+| `/workshops#offerings` AI → 3D Physical Object | Cloudinary conceptual stills (`ai-3d-model-review` + series; PRINT reuses machine detail) | Conceptual educational |
+| `/workshop/3d-printing-for-artists` | Same 3D printing stills, HTML labels (`PRINT` `CLEANUP` `FINISH` `MEASURE` `COMPARE`) | Conceptual educational |
+| `/workshop/ai-3d-physical-object` | Same AI→3D stills, HTML labels (`MODEL` `IMAGINE` `PREPARE` `PRINT` `FINISH` `TEST` `OUTCOME`) | Conceptual educational |
 | `/workshops#offerings` vibe-coding | Handbook catalog still `vibe-coding-with-net-art` | Existing banner |
 | `/workshops#offerings` IP Age of AI | `IP_AGE_OF_AI_LANDSCAPE_BANNER_URL` | Existing banner |
-| Resin hub + 9 module banners | Cloudinary `00–08` | Conceptual ultra-wide |
+| Resin hub + 9 module banners | Cloudinary `00–08` — SLA syllabus engine, not a catalog card | Conceptual ultra-wide |
 | Instructional concepts | Cloudinary `107–135` | Conceptual |
 | Technique boards | Cloudinary `200–214` | Conceptual |
+| `oolite-resin-workshop-m00`…`m08` PNGs | Duplicate teaching-board class (same job as `200–214`, denser/infographic) | Conceptual infographic — **do not swap photographic pages to these** |
 | Media shot list | Same banners/stills + local zone + workflow SVGs | Conceptual / diagram |
 | Oolite venue page | Conceptual M7 Max still `120` — **not** a Studio 106 room photo | Conceptual |
 | `/o/oolite/workshops` resin teaser | Same welcome banner | Conceptual |
@@ -74,20 +80,22 @@ What we can **deliver today** vs what is still empty. Conceptual teaching stills
 
 | Slot | Why empty | Blocked on |
 |---|---|---|
-| `01-fabricate-hero.webp` | `/fabricate` hero is a color placeholder | Real desk still, or crop `120` as labeled conceptual |
+| `01-fabricate-hero.webp` | `/fabricate` hero is a color placeholder. Conceptual `01-fabricate-hero-conceptual-01` is on CDN as **uploaded-hold** only — not a documentary replacement | Real desk still, or crop `120` as labeled conceptual |
+| Field-lab joint testing | Conceptual overhead still uploaded-hold (`field-lab-joint-testing-overhead-conceptual-01`); no `/fabricate/field-lab` route this pass | Fabricate Phase 2 / field-lab namespace |
 | Fabricate `02/03/05/06` + L0–L4 | `ready: false` on **main**; conceptuals live only on `feature/dcc-fabricate-phase2` | Phase-2 merge **or** drop files into `public/dcc/fabrication/` |
 | Bakehouse venue still | Room TBD; page stays placeholder | Confirmed DCC/Bakehouse room + shot |
 | `resin-hero-01` documentary, `resin-room-wide-01`, `resin-oolite-brand-01` | Hub uses welcome banner instead; no documentary room | DigiLab/Oolite stills with no readable UI |
 | Kit trays `resin-kit-00` … `08` | IDs listed, no files | One tray per module |
-| Physical evidence `310–315` | Metadata only; `314` marked `ready: false`; UI is text | Cloudinary sequence (314 first) |
+| Physical evidence `310–315` | `310–313` present on CDN; **`314` missing** so the resin evidence sequence stays blocked; `315` metadata is ready | Cloudinary `314` (washed/cured) |
 | Tutorial / class video loops | Placeholder slots, no `src` | Optional after a real class |
 | `resin-tv-break-01`, `resin-tv-join-01` | Not drawn | Diagrams, not photos |
 | Clandestine portraits / hang / program hero | Program 001 has **no** `heroImage`, **no** `artistIds` | Three participating names |
 | `angelo-hero`, Angelo 360 | Portrait only; **no tour** | One work image; do not fake 360 |
 | Journal / Conversations stills | Empty on purpose | First real guest |
 | `/` `#now` thumbs | Text-only | Optional; reuse program/artist heroes when they exist |
+| 3D Printing filament/material macro | Finish-comparison covers surface judgment; no dedicated filament still | Documentary or conceptual material close-up |
 
-**Deliverable this week without new photography:** public `/workshops` with four existing banners; full resin teaching engine (banners, 107–135, 200–214); Oolite venue as conceptual equipment; culture pages with three founder portraits. **Not deliverable as documentary:** fabricate shop hero, Bakehouse room, Clandestine fair, class/kit photos.
+**Deliverable this week without documentary photography:** public `/workshops` with Saturday Lab / vibe / IP banners plus two 3D catalog cards on conceptual educational stills; editorial `/workshop/3d-printing-for-artists` and `/workshop/ai-3d-physical-object`; full resin teaching engine (banners, 107–135, 200–214) at the hub URL. **Not deliverable as documentary:** fabricate shop hero, Bakehouse room, Clandestine fair, class/kit photos. Filament/material macro still missing (finish-comparison covers surface judgment).
 
 ---
 
@@ -186,14 +194,15 @@ Day-of Open Studios (ops, not a program record): H2D hero **if the machine is in
 
 ## C. Education / resin — mostly shot as **conceptual**; replace with documentary when honest
 
-### C1. Offerings band (reuse existing banners)
+### C1. Offerings band
 
-Four 16:9 / 21:9 cards on `/workshops#offerings` now point at assets already in the engines. Polish with documentary stills later if needed.
+Five cards on `/workshops#offerings`. The 3D pair uses conceptual educational photography (caption: **Conceptual educational image**). Resin is not a catalog card.
 
 | ID | Session | In use now | Later documentary alternate |
 |---|---|---|---|
 | `offering-saturday-lab` | Saturday Lab | Banner `01_start-here` | In-room website/vibe table, no accounts on screens |
-| `offering-resin` | Resin | Module banner `welcome` (same Oolite Digital Lab curriculum still) | Cured samples + printer in a confirmed DCC/Bakehouse room |
+| `offering-3d-printing-for-artists` | 3D Printing for Artists | Cloudinary conceptual stills (`3d-printing-*-conceptual-01`) | Filament/material macro + confirmed room stills |
+| `offering-ai-3d-physical-object` | AI → 3D Physical Object | Cloudinary conceptual stills (`ai-3d-*-conceptual-01`); PRINT reuses machine detail | Real concept-to-object sequence after a class |
 | `offering-vibe-coding` | Net art | Existing vibe catalog still | Browser-as-medium still |
 | `offering-ip-ai` | IP Age of AI | Landscape banner in `ip-age-of-ai-video.ts` | Typographic / diagram card |
 
@@ -201,7 +210,7 @@ Four 16:9 / 21:9 cards on `/workshops#offerings` now point at assets already in 
 
 **Ultra-wide banners (21:9, ~1915×821)** — HTML titles, never bake text: welcome, why-resin, safety-zones, complete-workflow, file-readiness, slicer-lab, print-wash-cure, failure-clinic, project-readiness.
 
-**Technique boards 200–214** (16:9 conceptual teaching boards). Alternate: documentary stills from the resin shot list A–B with the **same IDs**.
+**Technique boards 200–214** (16:9 conceptual teaching boards). Alternate: documentary stills from the resin shot list A–B with the **same IDs**. Folder also holds `oolite-resin-workshop-m00`…`m08` PNGs — denser infographic boards for the **same teaching job**. Leave the engine on `200–214`; do not promote those PNGs to catalog or editorial photography.
 
 **Instructional concepts 107–135** (slicer compare, PPE atlas, failure specimens, tool cards). Alternate: real slicer screenshots **without** private data for 119; real cured fails for 129–131.
 
