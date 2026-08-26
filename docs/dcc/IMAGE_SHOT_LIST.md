@@ -37,7 +37,7 @@ flowchart LR
 
 ### Education (live)
 
-- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, resin (8 people / 3 hr), Vibecoding & Net Art, IP in the Age of AI. **No prices.** No offering-card images yet.
+- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, resin (8 people / 3 hr), Vibecoding & Net Art, IP in the Age of AI. **No prices.** No offering-card images yet. The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
 - Resin engine already has **conceptual** Cloudinary banners + technique boards (not shop photos).
 
 ### Fabricate (partially live)
