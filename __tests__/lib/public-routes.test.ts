@@ -38,6 +38,8 @@ describe('isPublicRoute', () => {
     expect(isPublicRoute('/journal/conversations')).toBe(true)
     expect(isPublicRoute('/newsletter')).toBe(true)
     expect(isPublicRoute('/now')).toBe(true)
+    expect(isPublicRoute('/institutions')).toBe(true)
+    expect(isPublicRoute('/artist-infrastructure')).toBe(true)
   })
   it('still requires sign-in for tenant workshop admin surfaces', () => {
     expect(isPublicRoute('/o/oolite/workshops')).toBe(false)

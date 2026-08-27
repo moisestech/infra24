@@ -1,22 +1,31 @@
 import type { Metadata } from 'next';
 import { getCdcPageByPath } from './routes';
 
-export function cdcPageMetadata(path: string): Metadata {
+type CdcPageMetadataOptions = {
+  /** Bypass the layout `%s | Digital Culture Center Miami` template. */
+  absoluteTitle?: string;
+};
+
+export function cdcPageMetadata(path: string, options?: CdcPageMetadataOptions): Metadata {
   const d = getCdcPageByPath(path);
   if (!d) {
     return { title: 'Not found' };
   }
+  const title = options?.absoluteTitle
+    ? { absolute: options.absoluteTitle }
+    : d.title;
+  const ogTitle = options?.absoluteTitle ?? d.title;
   return {
-    title: d.title,
+    title,
     description: d.description,
     alternates: { canonical: path },
     openGraph: {
-      title: d.title,
+      title: ogTitle,
       description: d.description,
       url: path,
     },
     twitter: {
-      title: d.title,
+      title: ogTitle,
       description: d.description,
     },
   };

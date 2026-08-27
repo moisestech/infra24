@@ -4,6 +4,7 @@
 
 export const marketingHeaderSloganLines = [
   'For artists working with screens.',
+  'For artists who know what they want to make.',
   'For software, networks, and culture.',
   'For born-digital art in Miami.',
   'For the chronically online.',

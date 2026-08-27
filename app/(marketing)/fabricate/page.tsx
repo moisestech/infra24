@@ -16,6 +16,8 @@ import {
   FabricateCtaRow,
 } from '@/components/dcc/fabrication/FabricateChrome'
 import { FabricationFlywheel } from '@/components/dcc/fabrication/FabricationFlywheel'
+import { FabricateWhyAndProof } from '@/components/dcc/fabrication/FabricateWhyAndProof'
+import { MadeProcessStrip } from '@/components/dcc/fabrication/MadeProcessStrip'
 import {
   FabricateSectionHeading,
   FabricateSectionMedia,
@@ -32,6 +34,7 @@ import {
   getFabricationColor,
 } from '@/lib/dcc/fabrication'
 import { dccSiteMeta } from '@/lib/marketing/content'
+import { ARTIST_PRODUCTION_LANE_CTA } from '@/lib/marketing/artist-production-narrative'
 import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = {
@@ -64,10 +67,11 @@ export default function FabricateLandingPage() {
             DCC Fabrication
           </p>
           <h1 className="mt-2 text-[clamp(1.875rem,4.5vw,3.25rem)] font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
-            Transparent fabrication for artists
+            We help you figure out how to make it
           </h1>
           <p className="mt-3 text-base leading-relaxed text-neutral-600 dark:text-neutral-400 md:text-lg">
-            {FABRICATION_PROMISE}
+            You bring the idea — a sketch, a rough file, or a print-ready model. We help map the
+            path, then fabricate with transparent pricing. {FABRICATION_PROMISE}
           </p>
           <FabricateCtaRow className="mt-6" />
         </div>
@@ -81,6 +85,7 @@ export default function FabricateLandingPage() {
         {(
           [
             { href: '#lanes', label: 'Lanes', color: 'indigo' as const },
+            { href: '#made', label: 'Process', color: 'teal' as const },
             { href: '#pricing', label: 'Pricing', color: 'teal' as const },
             { href: '#finishes', label: 'Finishes', color: 'violet' as const },
             { href: '#access', label: 'Access', color: 'emerald' as const },
@@ -104,6 +109,8 @@ export default function FabricateLandingPage() {
           )
         })}
       </nav>
+
+      <MadeProcessStrip className="mb-10 md:mb-12" />
 
       <section id="lanes" className="mb-10 scroll-mt-24 md:mb-12 xl:mb-14">
         <FabricateSectionHeading
@@ -156,7 +163,7 @@ export default function FabricateLandingPage() {
                   href={`/fabricate/quote?lane=${lane.id}`}
                   className="mt-4 inline-flex min-h-11 items-center text-sm font-medium text-[var(--cdc-teal)] underline"
                 >
-                  Start this lane
+                  {ARTIST_PRODUCTION_LANE_CTA[lane.id]}
                 </Link>
               </article>
             )
@@ -300,6 +307,8 @@ export default function FabricateLandingPage() {
           colorTokenId="slate"
         />
       </section>
+
+      <FabricateWhyAndProof />
 
       <FabricationFlywheel className="mb-10 md:mb-12" />
 

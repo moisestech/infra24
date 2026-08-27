@@ -80,6 +80,8 @@ export function isPublicRoute(rawPathname: string): boolean {
     '/grants',
     '/projects',
     '/partners',
+    '/institutions',
+    '/artist-infrastructure',
     '/what-we-do',
     '/audit',
     '/pilots',

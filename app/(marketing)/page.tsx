@@ -28,6 +28,14 @@ const HomeHeroActionBand = dynamic(
   { ssr: true }
 );
 
+const ArtistProductionPromiseBand = dynamic(
+  () =>
+    import('@/components/marketing/ArtistProductionPromiseBand').then(
+      (m) => m.ArtistProductionPromiseBand
+    ),
+  { ssr: true }
+);
+
 const HomeBelowFoldHero = dynamic(
   () => import('@/components/marketing/HomeBelowFoldHero').then((m) => m.HomeBelowFoldHero),
   { ssr: true }
@@ -92,6 +100,7 @@ export default function MarketingHomePage() {
         <div className="mx-auto flex min-h-[min(92dvh,920px)] max-w-5xl flex-col justify-start px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <HomeHeroDigital layout="institutional" headline={dccHomeMissionHeadline} orgLine={dccHomeOrgLine}>
             <HomeHeroActionBand />
+            <ArtistProductionPromiseBand />
           </HomeHeroDigital>
         </div>
       </section>
