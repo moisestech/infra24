@@ -67,7 +67,7 @@ test.describe('dcc culture + fabricate smokes', () => {
       page.getByText(/Saturday Lab; 3D Printing for Artists; AI → 3D Physical Object/)
     ).toBeVisible()
     await expect(page.getByText('Vibecoding & Net Art')).toBeVisible()
-    await expect(page.getByText('Skills: Intellectual Property in the Age of AI')).toBeVisible()
+    await expect(page.getByText('Skills: Intellectual Property in the Age of AI')).toHaveCount(0)
     await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Now' })).toBeVisible()
     await expect(page.getByText(/fake storefront/i)).toHaveCount(0)
     await expect(page.getByText(/stripe/i)).toHaveCount(0)
@@ -91,6 +91,9 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(page.getByRole('heading', { name: 'Own Your Digital Presence' })).toBeVisible()
     await expect(page.getByRole('heading', { name: '3D Printing for Artists' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'AI → 3D Physical Object' })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Skills: Intellectual Property in the Age of AI' })
+    ).toHaveCount(0)
     await expect(page.getByText(/fake storefront/i)).toHaveCount(0)
     await expect(page.getByText('Workshop catalog unavailable')).toHaveCount(0)
     await expect(page.getByText(/No organization found for slug/i)).toHaveCount(0)

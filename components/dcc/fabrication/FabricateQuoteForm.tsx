@@ -15,6 +15,7 @@ import {
   type QueueTierId,
   type ServiceLaneId,
 } from '@/lib/dcc/fabrication'
+import { ARTIST_PRODUCTION_DISCOVERY } from '@/lib/marketing/artist-production-narrative'
 
 const PROCESSES = ['FDM', 'Large FDM', 'Resin', 'Scan', 'File prep', 'Consult'] as const
 
@@ -80,6 +81,8 @@ export function FabricateQuoteForm() {
   const [description, setDescription] = useState(planningNote ?? '')
   const [dimensions, setDimensions] = useState('')
   const [deadline, setDeadline] = useState('')
+  const [blocking, setBlocking] = useState('')
+  const [successLooksLike, setSuccessLooksLike] = useState('')
   const [isAccessMember, setIsAccessMember] = useState(
     tierParam === 'artist_access'
   )
@@ -109,6 +112,8 @@ export function FabricateQuoteForm() {
         `[Finish: ${finishLabel}]`,
         fileLink ? `[File: ${fileLink}]` : null,
         description,
+        blocking ? `[Blocking: ${blocking}]` : null,
+        successLooksLike ? `[Success: ${successLooksLike}]` : null,
       ]
         .filter(Boolean)
         .join('\n')
@@ -249,18 +254,53 @@ export function FabricateQuoteForm() {
           value={fileLink}
           onChange={(e) => setFileLink(e.target.value)}
         />
+        <span className="mt-1 block text-xs text-neutral-500">
+          {serviceLane === 'print-my-file'
+            ? 'Paste a share link for your STL / 3MF / OBJ. There is no file uploader yet.'
+            : 'Optional. A sketch photo or file link helps — not required to start.'}
+        </span>
       </label>
 
       <label className="block text-sm">
-        <span className="font-medium text-neutral-900 dark:text-neutral-100">Project notes</span>
+        <span className="font-medium text-neutral-900 dark:text-neutral-100">
+          {ARTIST_PRODUCTION_DISCOVERY.making.label}
+        </span>
         <textarea
           required
           minLength={10}
-          rows={5}
+          rows={4}
           className={field}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="What are you making? Scale, material preference, deadline context…"
+          placeholder={ARTIST_PRODUCTION_DISCOVERY.making.hint}
+        />
+      </label>
+
+      <label className="block text-sm">
+        <span className="font-medium text-neutral-900 dark:text-neutral-100">
+          {ARTIST_PRODUCTION_DISCOVERY.blocking.label}{' '}
+          <span className="font-normal text-neutral-500">(optional)</span>
+        </span>
+        <textarea
+          rows={2}
+          className={field}
+          value={blocking}
+          onChange={(e) => setBlocking(e.target.value)}
+          placeholder={ARTIST_PRODUCTION_DISCOVERY.blocking.hint}
+        />
+      </label>
+
+      <label className="block text-sm">
+        <span className="font-medium text-neutral-900 dark:text-neutral-100">
+          {ARTIST_PRODUCTION_DISCOVERY.success.label}{' '}
+          <span className="font-normal text-neutral-500">(optional)</span>
+        </span>
+        <textarea
+          rows={2}
+          className={field}
+          value={successLooksLike}
+          onChange={(e) => setSuccessLooksLike(e.target.value)}
+          placeholder={ARTIST_PRODUCTION_DISCOVERY.success.hint}
         />
       </label>
 
@@ -283,6 +323,7 @@ export function FabricateQuoteForm() {
             className={field}
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
+            placeholder={ARTIST_PRODUCTION_DISCOVERY.deadline.hint}
           />
         </label>
       </div>

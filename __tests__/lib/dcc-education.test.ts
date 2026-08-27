@@ -25,8 +25,10 @@ describe('dcc education offerings', () => {
       '3d-printing-for-artists',
       'ai-3d-physical-object',
       'vibe-coding-net-art',
-      'ip-age-of-ai',
     ])
+    expect(listWorkshopOfferings().map((offering) => offering.slug)).not.toContain(
+      'ip-age-of-ai'
+    )
     expect(listWorkshopOfferings().map((offering) => offering.slug)).not.toContain(
       'resin-printing'
     )
@@ -72,10 +74,7 @@ describe('dcc education offerings', () => {
     expect(getWorkshopOfferingBySlug('vibe-coding-net-art')?.image?.src).toContain(
       'vibe-coding-with-net-art'
     )
-    expect(getWorkshopOfferingBySlug('ip-age-of-ai')?.image?.src).toContain(
-      'skills-age-of-ai_landscape-banner'
-    )
-    expect(getWorkshopOfferingBySlug('ip-age-of-ai')?.images).toHaveLength(1)
+    expect(getWorkshopOfferingBySlug('ip-age-of-ai')).toBeUndefined()
   })
 
   it('treats Saturday Lab as open lab without a fake headcount', () => {

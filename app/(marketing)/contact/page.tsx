@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { PageHero, Section, CardGrid } from '@/components/marketing/cdc';
+import { OfferingDoorsBand } from '@/components/marketing/institutions/OfferingDoorsBand';
 import { getCdcBreadcrumbs, getContactAudienceSlugs } from '@/lib/cdc/routes';
 import { getCdcPageByPath } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
@@ -25,6 +26,7 @@ export default function ContactHubPage() {
         description="Routing intake by audience keeps grantmaker, press, and artist conversations clear—and helps us respond faster."
         breadcrumbs={getCdcBreadcrumbs(path)}
       />
+      <OfferingDoorsBand variant="contact" />
       <Section className="bg-[#fafafa] pb-16">
         <CardGrid items={items} columnsClassName="sm:grid-cols-2" />
       </Section>

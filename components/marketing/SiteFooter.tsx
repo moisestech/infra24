@@ -21,6 +21,8 @@ const footerOrganization = [
   { href: '/now', label: 'Now' },
   { href: '/mission', label: 'Mission' },
   { href: '/who-we-work-with', label: 'Who We Work With' },
+  { href: '/institutions', label: 'Institutions' },
+  { href: '/artist-infrastructure', label: 'Artist infrastructure' },
   { href: '/projects/public-interfaces', label: 'Public Interfaces' },
   { href: '/newsletter', label: 'Newsletter' },
   { href: '/contact', label: 'Contact' },

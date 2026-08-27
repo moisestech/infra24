@@ -168,7 +168,6 @@ describe('dcc culture public seed', () => {
       '3D Printing for Artists',
       'AI → 3D Physical Object',
       'Vibecoding & Net Art',
-      'Skills: Intellectual Property in the Age of AI',
     ])
   })
 })

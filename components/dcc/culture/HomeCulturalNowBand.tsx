@@ -54,7 +54,7 @@ export function HomeCulturalNowBand() {
   slots.push({
     eyebrow: 'Learn',
     title: 'Workshops',
-    description: 'Hands-on sessions for artists working with contemporary tools and processes.',
+    description: 'Build the skills to understand and use the tools — then make work with them.',
     href: '/workshops',
     label: 'Browse workshops',
   })
@@ -62,14 +62,14 @@ export function HomeCulturalNowBand() {
   slots.push({
     eyebrow: 'Make',
     title: 'Fabricate',
-    description: 'Production for artists and cultural projects — estimate, finishes, and quote.',
+    description: 'You bring the idea. We help you figure out how to make it — no print-ready file required.',
     href: '/fabricate',
-    label: 'View fabrication',
+    label: 'See how it works',
   })
 
   if (journal) {
     slots.push({
-      eyebrow: 'Journal',
+      eyebrow: 'Show',
       title: journal.title,
       description: journal.dek ?? journal.excerpt ?? 'Latest from DCC MIA.',
       href: getEditorialPublicPath(journal),
@@ -77,7 +77,7 @@ export function HomeCulturalNowBand() {
     })
   } else {
     slots.push({
-      eyebrow: 'Journal',
+      eyebrow: 'Show',
       title: 'Journal',
       description: 'Conversations and field notes, published as they are recorded.',
       href: '/journal',

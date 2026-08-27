@@ -515,6 +515,8 @@ export const navItems = [
   { href: '/network', label: 'Network' },
   { href: '/projects', label: 'Projects' },
   { href: '/partners', label: 'Partners' },
+  { href: '/institutions', label: 'Institutions' },
+  { href: '/artist-infrastructure', label: 'Artist infrastructure' },
   { href: '/grants', label: 'Grants' },
   { href: '/journal', label: 'Journal' },
   { href: '/contact', label: 'Contact' },
@@ -526,6 +528,10 @@ export const marketingNavSheetGroups = [
   {
     title: 'DCC MIA',
     hrefs: ['/programs', '/artists', '/workshops', '/fabricate', '/journal', '/about'] as const,
+  },
+  {
+    title: 'For institutions',
+    hrefs: ['/institutions', '/artist-infrastructure'] as const,
   },
   {
     title: 'Explore',

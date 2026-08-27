@@ -26,6 +26,7 @@ import {
 import { DccWorkshopsCatalogFilters } from '@/components/marketing/DccWorkshopsCatalogFilters'
 import { DccWorkshopsPromotedCarousel } from '@/components/marketing/DccWorkshopsPromotedCarousel'
 import { DccWorkshopOfferingsBand } from '@/components/dcc/education/DccWorkshopOfferingsBand'
+import { OfferingDoorsBand } from '@/components/marketing/institutions/OfferingDoorsBand'
 import { PartnersCardPaintRegister } from '@/components/marketing/PartnersCardPaintRegister'
 
 function sortFeaturedFirst(a: WorkshopRow, b: WorkshopRow) {
@@ -201,6 +202,8 @@ export function DccWorkshopsCatalogClient() {
           </div>
         </div>
       </section>
+
+      <OfferingDoorsBand variant="workshops" />
 
       <DccWorkshopOfferingsBand />
 

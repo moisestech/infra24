@@ -112,6 +112,27 @@ const pages: CdcPageDef[] = [
     layout: 'default',
   }),
   p({
+    path: '/institutions',
+    title: 'Digital Systems for Arts Institutions',
+    description:
+      'Digital Culture Center Miami builds web, Salesforce, automation, livestreaming, and digital-lab systems for museums, arts organizations, and artist-facing programs.',
+    layout: 'default',
+  }),
+  p({
+    path: '/artist-infrastructure',
+    title: 'Creative Infrastructure for Artists',
+    description:
+      'Workshops, tools, and operational systems from Digital Culture Center Miami that help artists move from idea to working prototype—across AI, vibe coding, digital fabrication, and studio automation.',
+    layout: 'default',
+  }),
+  p({
+    path: '/workshops',
+    title: 'Workshops',
+    description:
+      'Digital Culture Center Miami public workshop catalog — artist-centered sessions on websites, discoverability, documentation, AI literacy, and creative digital practice.',
+    layout: 'default',
+  }),
+  p({
     path: '/grants',
     title: 'Grants',
     description:

@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { PageHero, Section, CardGrid, type CardGridItem, type PartnerCardAmbient } from '@/components/marketing/cdc';
+import { OfferingDoorsBand } from '@/components/marketing/institutions/OfferingDoorsBand';
 import { getCdcBreadcrumbs, getCdcPageByPath, getPartnerSegmentSlugs } from '@/lib/cdc/routes';
 import type { MarketingGradientId } from '@/lib/marketing/marketing-gradients';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
@@ -121,6 +122,7 @@ export default function PartnersIndexPage() {
           breadcrumbs={getCdcBreadcrumbs(path)}
         />
       </section>
+      <OfferingDoorsBand variant="partners" />
       <Section className="border-b border-[var(--cdc-border)] bg-[#fafafa] pb-16 dark:border-neutral-800 dark:bg-neutral-950">
         <CardGrid items={items} variant="partners" />
       </Section>

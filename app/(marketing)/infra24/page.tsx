@@ -5,6 +5,7 @@ import { Balancer } from 'react-wrap-balancer';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { MarketingSection } from '@/components/marketing/MarketingSection';
 import { CtaBand } from '@/components/marketing/CtaBand';
+import { OfferingDoorsBand } from '@/components/marketing/institutions/OfferingDoorsBand';
 import { OfferLadder } from '@/components/marketing/OfferLadder';
 import { BentoSystemsGrid } from '@/components/marketing/BentoSystemsGrid';
 import { ProofStrip } from '@/components/marketing/ProofStrip';
@@ -116,6 +117,8 @@ export default function Infra24ProductPage() {
           </p>
         </div>
       </section>
+
+      <OfferingDoorsBand variant="infra24" />
 
       <MarketingSection id="problem" className="scroll-mt-14 bg-[#fafafa]">
         <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900">
