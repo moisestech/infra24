@@ -1,5 +1,8 @@
 import type { WorkshopsLandingContent } from '@/lib/orgs/oolite/workshops-landing-content';
 
+/** Honest bit-labels for the /workshops hero — what the lead already names. */
+export const DCC_WORKSHOPS_HERO_SYSTEM_LABELS = ['Syllabus', 'Lab', 'Handbook'] as const
+
 /** Open Graph / Twitter card image for `/workshops` and public workshop detail SEO. */
 export const DCC_WORKSHOPS_SEO_BANNER_IMAGE_URL =
   'https://res.cloudinary.com/dkod1at3i/image/upload/v1776544585/seo-workshop-banner_np2vhf.png' as const

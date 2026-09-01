@@ -83,6 +83,9 @@ test.describe('dcc culture + fabricate smokes', () => {
     await page.goto('/workshops')
     await expect(page).not.toHaveURL(/sign-in/)
     await expect(page.getByRole('heading', { name: /Workshop catalog/i })).toBeVisible()
+    await expect(page.locator('.dcc-workshops-hero-band').getByText('Syllabus', { exact: true })).toBeVisible()
+    await expect(page.locator('.dcc-workshops-hero-band').getByText('Lab', { exact: true })).toBeVisible()
+    await expect(page.locator('.dcc-workshops-hero-band').getByText('Handbook', { exact: true })).toBeVisible()
     await expect(page.getByText('DCC MIA sessions')).toBeVisible()
     await expect(
       page.getByRole('heading', { name: 'Public syllabi for artists working through technology' })

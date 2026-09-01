@@ -1,3 +1,4 @@
+import { DCC_WORKSHOPS_HERO_SYSTEM_LABELS } from '@/lib/marketing/dcc-workshops-landing-content'
 import {
   AI_3D_PHYSICAL_OBJECT,
   CONCEPTUAL_EDUCATIONAL_CAPTION,
@@ -166,5 +167,11 @@ describe('dcc editorial workshop pages', () => {
     ])
     expect(serialized).not.toMatch(/\$\d/)
     expect(serialized).not.toMatch(/stripe/i)
+  })
+})
+
+describe('dcc workshops hero system labels', () => {
+  it('names the three public session kinds already in the lead', () => {
+    expect(DCC_WORKSHOPS_HERO_SYSTEM_LABELS).toEqual(['Syllabus', 'Lab', 'Handbook'])
   })
 })
