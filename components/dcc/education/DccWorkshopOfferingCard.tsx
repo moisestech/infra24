@@ -78,7 +78,7 @@ export function DccWorkshopOfferingCard({
   return (
     <article
       className={cn(
-        'dcc-offering-card partners-grid-card group relative flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200/90 bg-gradient-to-br from-white via-teal-50/35 to-violet-50/45 shadow-[0_1px_0_rgba(45,212,191,0.08),0_18px_48px_-28px_rgba(15,23,42,0.12)] dark:border-neutral-700/80 dark:from-neutral-950 dark:via-neutral-900 dark:to-slate-950',
+        'dcc-offering-card cdc-webcore-path-card partners-grid-card group relative flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200/90 bg-gradient-to-br from-white via-teal-50/35 to-violet-50/45 shadow-[0_1px_0_rgba(45,212,191,0.08),0_18px_48px_-28px_rgba(15,23,42,0.12)] dark:border-neutral-700/80 dark:from-neutral-950 dark:via-neutral-900 dark:to-slate-950',
         compact ? 'p-4' : 'p-5 sm:p-6'
       )}
       style={hueStyle}

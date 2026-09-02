@@ -8,7 +8,15 @@ import { WorkshopCard } from '@/components/workshops/marketing/WorkshopCard'
 import type { WorkshopRow } from '@/components/workshops/marketing/types'
 import { normalizeWorkshopForCatalog } from '@/lib/workshops/normalize-workshop-for-catalog'
 import { isExcludedFromDccPublicCatalog } from '@/lib/workshops/workshop-filters'
-import { getDccMarketingWorkshopsLandingContent } from '@/lib/marketing/dcc-workshops-landing-content'
+import {
+  DCC_WORKSHOPS_HERO_SYSTEM_LABELS,
+  getDccMarketingWorkshopsLandingContent,
+} from '@/lib/marketing/dcc-workshops-landing-content'
+import { GlitchWords } from '@/components/marketing/GlitchWords'
+import {
+  CdcWebcoreSectionMark,
+  CdcWebcoreSystemLabels,
+} from '@/components/marketing/cdc'
 import { WORKSHOP_CATALOG_ORG_SLUG } from '@/lib/marketing/workshops-catalog-org'
 import {
   DCC_CATALOG_PAGE_SIZE,
@@ -152,7 +160,7 @@ export function DccWorkshopsCatalogClient() {
     <>
       <PartnersCardPaintRegister />
       <section
-        className="dcc-workshops-hero-band relative left-1/2 w-screen -translate-x-1/2 overflow-hidden border-b border-[var(--cdc-border)] cdc-mesh-hero-bg scroll-mt-14"
+        className="dcc-workshops-hero-band cdc-mesh-hero-bg cdc-webcore-hero-shell relative left-1/2 w-screen -translate-x-1/2 overflow-hidden border-b border-[var(--cdc-border)] scroll-mt-14"
         aria-labelledby="dcc-workshops-hero-heading"
       >
         <span
@@ -168,34 +176,44 @@ export function DccWorkshopsCatalogClient() {
         />
         <div className="relative z-[2] mx-auto flex max-w-7xl flex-col gap-10 px-4 py-14 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-14 lg:py-16">
           <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--cdc-teal)]">
-              {landingCopy.heroEyebrow}
-            </p>
+            <CdcWebcoreSectionMark
+              eyebrow={landingCopy.heroEyebrow}
+              brackets={false}
+              className="text-[var(--cdc-teal)]"
+            />
+            <CdcWebcoreSystemLabels
+              labels={DCC_WORKSHOPS_HERO_SYSTEM_LABELS}
+              className="mt-3"
+            />
             <h1
               id="dcc-workshops-hero-heading"
               className="mt-4 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-4xl lg:text-5xl"
             >
-              <span className="block">{landingCopy.heroTitle}</span>
+              <span className="block">
+                <GlitchWords text={landingCopy.heroTitle} />
+              </span>
               {showAccent ? (
-                <span className="mt-2 block text-[var(--cdc-teal)]">{landingCopy.heroTitleAccent}</span>
+                <span className="mt-2 block text-[var(--cdc-teal)]">
+                  <GlitchWords text={landingCopy.heroTitleAccent} />
+                </span>
               ) : null}
             </h1>
             {heroLead ? (
               <p className="mt-5 max-w-xl text-base leading-relaxed text-neutral-700 dark:text-neutral-300 sm:text-lg">
-                {landingCopy.heroLead}
+                {heroLead}
               </p>
             ) : null}
           </div>
           <div className="flex w-full shrink-0 flex-col gap-3 sm:flex-row sm:flex-wrap lg:w-auto lg:justify-end">
             <Link
               href={landingCopy.heroPrimaryCta.href}
-              className="inline-flex min-h-[3rem] items-center justify-center rounded-full border border-neutral-900 bg-neutral-900 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-900/10 transition hover:opacity-95 dark:border-teal-300/30 dark:bg-teal-400 dark:text-neutral-950 dark:shadow-teal-500/20 dark:hover:bg-teal-300"
+              className="inline-flex min-h-[3.25rem] items-center justify-center rounded-lg border-2 border-teal-500/35 bg-slate-900 px-7 py-3 text-center text-sm font-bold tracking-wide text-white shadow-sm transition hover:opacity-95 sm:min-w-[10.5rem] sm:text-base"
             >
               {landingCopy.heroPrimaryCta.label}
             </Link>
             <Link
               href={landingCopy.heroSecondaryCta.href}
-              className="inline-flex min-h-[3rem] items-center justify-center rounded-full border border-neutral-300/90 bg-white/90 px-7 py-3 text-sm font-semibold text-neutral-900 shadow-md backdrop-blur-sm transition hover:bg-white dark:border-neutral-500 dark:bg-neutral-900/80 dark:text-neutral-100 dark:hover:bg-neutral-800"
+              className="cdc-arcade-secondary-btn inline-flex min-h-[3.25rem] items-center justify-center px-7 py-3 text-center text-sm font-bold tracking-wide text-neutral-900 no-underline sm:min-w-[10.5rem] sm:text-base dark:text-neutral-100"
             >
               {landingCopy.heroSecondaryCta.label}
             </Link>

@@ -1,5 +1,6 @@
 export { CdcMiamiLogo } from './CdcMiamiLogo';
 export { CdcHeroVisual } from './CdcHeroVisual';
+export { CdcWebcoreSectionMark, CdcWebcoreSystemLabels } from './CdcWebcoreSectionMark';
 export { Breadcrumbs } from './Breadcrumbs';
 export { PageHero } from './PageHero';
 export { Section } from './Section';

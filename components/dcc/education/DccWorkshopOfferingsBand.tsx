@@ -10,6 +10,7 @@ import {
 } from '@/lib/dcc/education'
 import type { DccWorkshopTrackGroup } from '@/lib/dcc/education/types'
 import { DccWorkshopOfferingCard } from '@/components/dcc/education/DccWorkshopOfferingCard'
+import { CdcWebcoreSectionMark } from '@/components/marketing/cdc'
 
 const TRACK_ORDER: DccWorkshopTrackGroup[] = [
   'presence',
@@ -34,9 +35,7 @@ export function DccWorkshopOfferingsBand() {
         className="scroll-mt-24 border-b border-[var(--cdc-border)] bg-white py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500">
-            {DCC_SESSIONS_EYEBROW}
-          </p>
+          <CdcWebcoreSectionMark eyebrow={DCC_SESSIONS_EYEBROW} />
           <h2 className="mt-3 max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl">
             {DCC_SESSIONS_HEADING}
           </h2>
@@ -58,9 +57,7 @@ export function DccWorkshopOfferingsBand() {
         className="scroll-mt-24 border-b border-[var(--cdc-border)] bg-neutral-50 py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500">
-            Next syllabi
-          </p>
+          <CdcWebcoreSectionMark eyebrow="Next syllabi" />
           <h2 className="mt-3 max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl">
             {DCC_IN_DEVELOPMENT_HEADING}
           </h2>
