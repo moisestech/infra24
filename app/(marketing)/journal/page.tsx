@@ -7,8 +7,8 @@ import { getCdcPageByPath } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 import {
   EDITORIAL_TYPE_LABEL,
-  JOURNAL_EMPTY_CONVERSATIONS,
-  JOURNAL_INTRO,
+  JOURNAL_HERO_DESCRIPTION,
+  JOURNAL_INDEX_EMPTY,
   formatCultureDate,
   getEditorialPublicPath,
   listEditorial,
@@ -38,7 +38,7 @@ export default function JournalIndexPage() {
       <PageHero
         eyebrow="Journal"
         title="Journal"
-        description={JOURNAL_INTRO}
+        description={JOURNAL_HERO_DESCRIPTION}
         breadcrumbs={getCdcBreadcrumbs(path)}
       />
       <Section className="bg-white">
@@ -60,7 +60,7 @@ export default function JournalIndexPage() {
           </ul>
         ) : (
           <p className="max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-            {JOURNAL_EMPTY_CONVERSATIONS}
+            {JOURNAL_INDEX_EMPTY}
           </p>
         )}
       </Section>

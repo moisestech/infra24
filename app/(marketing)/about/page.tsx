@@ -4,6 +4,7 @@ import { PageHero, Section, CtaBlock } from '@/components/marketing/cdc';
 import { WebcoreIcon, type WebcoreIconName } from '@/components/marketing/webcore-lucide';
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes';
 import { dccNarrativeStack, dccSiteMeta } from '@/lib/marketing/content';
+import { DCC_BELIEFS_HEADLINE, DCC_BELIEFS_PARAGRAPHS } from '@/lib/dcc/culture';
 import { marketingGradientSurfaceClass } from '@/lib/marketing/marketing-gradients';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 import { cn } from '@/lib/utils';
@@ -66,6 +67,17 @@ export default function AboutPage() {
           lightweight civic-cultural prototypes—always with an eye toward what neighbors and artists
           actually experience, not only what appears in a strategy deck.
         </p>
+      </Section>
+
+      <Section className={sectionSolid} id="what-we-believe">
+        <h2 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
+          {DCC_BELIEFS_HEADLINE}
+        </h2>
+        <div className="mt-4 max-w-2xl space-y-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
+          {DCC_BELIEFS_PARAGRAPHS.map((paragraph) => (
+            <p key={paragraph.slice(0, 48)}>{paragraph}</p>
+          ))}
+        </div>
       </Section>
 
       <Section className={sectionSolid}>

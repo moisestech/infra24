@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import {
   DCC_CULTURAL_POSITION,
+  JOURNAL_DESCRIPTOR,
   getEditorialPublicPath,
   getProgramPublicPath,
   listCurrentOrUpcomingPrograms,
   listEditorial,
   listFeaturedArtists,
+  listFeaturedEditorial,
 } from '@/lib/dcc/culture'
 
 type HomeSlot = {
@@ -19,7 +21,7 @@ type HomeSlot = {
 export function HomeCulturalNowBand() {
   const now = listCurrentOrUpcomingPrograms()[0]
   const artist = listFeaturedArtists()[0]
-  const journal = listEditorial()[0]
+  const journal = listFeaturedEditorial()[0] ?? listEditorial()[0]
 
   const slots: HomeSlot[] = []
 
@@ -79,7 +81,7 @@ export function HomeCulturalNowBand() {
     slots.push({
       eyebrow: 'Show',
       title: 'Journal',
-      description: 'Conversations and field notes, published as they are recorded.',
+      description: JOURNAL_DESCRIPTOR,
       href: '/journal',
       label: 'Open journal',
     })

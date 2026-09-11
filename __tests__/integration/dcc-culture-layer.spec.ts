@@ -20,7 +20,9 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(now.getByRole('heading', { name: 'Moises Sanabria' })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Workshops' })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Fabricate' })).toBeVisible()
-    await expect(now.getByRole('heading', { name: 'Journal' })).toBeVisible()
+    await expect(
+      now.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
+    ).toBeVisible()
     await expect(now.getByRole('link', { name: 'Full snapshot' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Artists', exact: true }).first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'Fabricate', exact: true }).first()).toBeVisible()
@@ -67,6 +69,10 @@ test.describe('dcc culture + fabricate smokes', () => {
       page.getByText(/Saturday Lab; 3D Printing for Artists; AI → 3D Physical Object/)
     ).toBeVisible()
     await expect(page.getByText('Vibecoding & Net Art')).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
+    ).toBeVisible()
+    await expect(page.getByText(/The journal itself is live/)).toBeVisible()
     await expect(page.getByText('Skills: Intellectual Property in the Age of AI')).toHaveCount(0)
     await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Now' })).toBeVisible()
     await expect(page.getByText(/fake storefront/i)).toHaveCount(0)
@@ -142,6 +148,32 @@ test.describe('dcc culture + fabricate smokes', () => {
     await page.goto('/journal/conversations')
     await expect(page.getByRole('heading', { name: 'Conversations' })).toBeVisible()
     await expect(page.getByText(JOURNAL_EMPTY_CONVERSATIONS)).toBeVisible()
+  })
+
+  test('first journal essay is public with author and section headings', async ({
+    page,
+  }) => {
+    await page.goto('/journal')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(
+      page.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
+    ).toBeVisible()
+
+    await page.goto('/journal/essays')
+    await expect(
+      page.getByRole('link', { name: /A Digital Lab Is Not a Room Full of Equipment/ })
+    ).toBeVisible()
+
+    await page.goto('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(
+      page.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
+    ).toBeVisible()
+    await expect(page.getByText('Moises Sanabria')).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Acquisition is not access' })
+    ).toBeVisible()
+    await expect(page.getByText(/Full article body will live here/)).toHaveCount(0)
   })
 
   test('fabricate landing stays public and /fabrication aliases to it', async ({

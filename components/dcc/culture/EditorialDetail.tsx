@@ -24,7 +24,7 @@ export function EditorialDetail({ entry }: EditorialDetailProps) {
   const artists = getArtistsForEditorial(entry)
   const programs = getProgramsForEditorial(entry)
   const projects = getProjectsForEditorial(entry)
-  const paragraphs = (entry.body ?? '').split('\n\n').filter(Boolean)
+  const blocks = (entry.body ?? '').split('\n\n').filter(Boolean)
 
   return (
     <>
@@ -77,16 +77,27 @@ export function EditorialDetail({ entry }: EditorialDetailProps) {
           </div>
         ) : null}
 
-        {paragraphs.length > 0 ? (
+        {blocks.length > 0 ? (
           <div className="mt-10 max-w-2xl space-y-5 text-base leading-relaxed text-neutral-700 dark:text-neutral-300">
-            {paragraphs.map((para) => (
-              <p key={para.slice(0, 48)}>{para}</p>
-            ))}
+            {blocks.map((block, index) => {
+              if (block.startsWith('## ')) {
+                return (
+                  <h2
+                    key={`h-${index}`}
+                    className="pt-4 text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-50"
+                  >
+                    {block.slice(3)}
+                  </h2>
+                )
+              }
+              return <p key={`p-${index}`}>{block}</p>
+            })}
           </div>
         ) : (
           <p className="mt-10 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-            The full conversation will be published here once it has been recorded and edited.
-            Audio may later become a podcast episode; the website interview is the primary format.
+            {entry.type === 'conversation' || entry.type === 'interview'
+              ? 'The full conversation will be published here once it has been recorded and edited. A podcast feed is not launching in this phase.'
+              : 'The full essay will be published here once it has been edited.'}
           </p>
         )}
 

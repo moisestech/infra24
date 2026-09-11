@@ -1,4 +1,4 @@
-import { getCdcPageByPath, getProgramLeaves } from '@/lib/cdc/routes'
+import { getAllCdcPaths, getCdcPageByPath, getProgramLeaves } from '@/lib/cdc/routes'
 import { DCC_STUDIO_TOURS, getStudioTourByArtistSlug } from '@/lib/dcc/studios'
 import {
   ARTISTS_INDEX_INTRO,
@@ -24,6 +24,7 @@ import {
   editorialJournalCategory,
   getArtistsForProgram,
   getEditorialForArtist,
+  getEditorialPublicPath,
   getListedProgramBySlug,
   getProgramPublicPath,
   getProgramsForArtist,
@@ -34,6 +35,7 @@ import {
   listCurrentOrUpcomingPrograms,
   listEditorial,
   listFeaturedArtists,
+  listFeaturedEditorial,
   listPrograms,
   listProjects,
   looksLikeUuid,
@@ -98,9 +100,7 @@ describe('dcc culture public seed', () => {
     ])
     expect(listArtists().every((artist) => !artist.programIds?.length)).toBe(true)
     expect(listFeaturedArtists().map((artist) => artist.slug)).toEqual(['moises-sanabria'])
-    expect(DCC_EDITORIAL).toEqual([])
     expect(DCC_PROJECTS).toEqual([])
-    expect(listEditorial()).toEqual([])
     expect(listProjects()).toEqual([])
     expect(getStudioTourByArtistSlug('moises-sanabria')?.artistSlug).toBe('moises-sanabria')
     expect(getStudioTourByArtistSlug('fabiola-larios')?.artistSlug).toBe('fabiola-larios')
@@ -135,6 +135,36 @@ describe('dcc culture public seed', () => {
     ])
   })
 
+  it('publishes the first journal essay without placeholder shells or invented relations', () => {
+    expect(DCC_EDITORIAL).toHaveLength(1)
+    const essay = listEditorial()[0]
+    expect(essay?.slug).toBe('a-digital-lab-is-not-a-room-full-of-equipment')
+    expect(essay?.type).toBe('essay')
+    expect(essay?.author).toBe('Moises Sanabria')
+    expect(essay?.status).toBe('published')
+    expect(essay?.featured).toBe(true)
+    expect(essay?.heroImage).toBeUndefined()
+    expect(essay?.artistIds).toBeUndefined()
+    expect(essay?.programIds).toBeUndefined()
+    expect(essay?.projectIds).toBeUndefined()
+    expect(essay?.body).toMatch(/## Acquisition is not access/)
+    expect(listFeaturedEditorial().map((entry) => entry.slug)).toEqual([essay?.slug])
+    expect(getEditorialPublicPath(essay!)).toBe(
+      '/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment'
+    )
+    expect(getCdcPageByPath('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')?.title).toBe(
+      essay?.title
+    )
+    const paths = getAllCdcPaths()
+    expect(paths).toContain('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')
+    expect(paths).not.toContain('/journal/essays/why-miami-needs-digital-culture-infrastructure')
+    expect(paths).not.toContain('/journal/essays/what-is-artist-centered-digital-infrastructure')
+    expect(paths).not.toContain('/journal/field-notes/notes-from-a-public-interface-pilot')
+    expect(paths).not.toContain('/journal/project-updates/building-smart-signs-for-cultural-organizations')
+    expect(paths).not.toContain('/journal/workshop-notes/lessons-from-workshop-design-in-2026')
+    expect(paths).not.toContain('/journal/miami/why-digital-presence-is-cultural-infrastructure')
+  })
+
   it('keeps unique slugs and resolved public relations', () => {
     expect(assertArtistSlugsValid()).toEqual([])
     expect(assertProgramSlugsValid()).toEqual([])
@@ -147,6 +177,8 @@ describe('dcc culture public seed', () => {
     expect(DCC_NOW_PATH).toBe('/now')
     expect(DCC_NOW_POSITION).toBe(DCC_CULTURAL_POSITION)
     expect(DCC_NOW_FORTHCOMING[0]?.body).toBe(CLANDESTINE_PLACEHOLDER)
+    expect(DCC_NOW_FORTHCOMING[1]?.title).toBe('DCC Conversations')
+    expect(DCC_NOW_FORTHCOMING[1]?.body).toMatch(/journal itself is live/)
     expect(DCC_NOW_PARTICIPATE.links?.map((link) => link.href)).toEqual([
       '/workshops',
       '/newsletter',

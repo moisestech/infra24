@@ -14,7 +14,13 @@ import {
   DCC_NOW_TITLE,
   type DccNowItem,
 } from '@/lib/dcc/culture/now'
-import { getProgramPublicPath, listArtists, listCurrentOrUpcomingPrograms } from '@/lib/dcc/culture'
+import {
+  getEditorialPublicPath,
+  getProgramPublicPath,
+  listArtists,
+  listCurrentOrUpcomingPrograms,
+  listEditorial,
+} from '@/lib/dcc/culture'
 import { listWorkshopOfferings } from '@/lib/dcc/education'
 import { dccSiteMeta } from '@/lib/marketing/content'
 
@@ -66,6 +72,7 @@ export default function DccNowPage() {
   const artists = listArtists()
   const program = listCurrentOrUpcomingPrograms()[0]
   const workshops = listWorkshopOfferings()
+  const journal = listEditorial()[0]
 
   return (
     <>
@@ -141,6 +148,18 @@ export default function DccNowPage() {
               }}
             />
           </li>
+          {journal ? (
+            <li>
+              <NowItem
+                item={{
+                  kicker: 'Journal',
+                  title: journal.title,
+                  body: journal.dek ?? journal.excerpt ?? 'Latest published field note.',
+                  links: [{ href: getEditorialPublicPath(journal), label: 'Read' }],
+                }}
+              />
+            </li>
+          ) : null}
         </ul>
       </Section>
 
