@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { PageHero, Section } from '@/components/marketing/cdc'
 import { CultureMediaFrame } from '@/components/dcc/culture/CultureMediaFrame'
+import { EditorialMarkdown } from '@/components/dcc/culture/EditorialMarkdown'
 import { CultureRelatedList } from '@/components/dcc/culture/CultureRelatedList'
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes'
 import {
@@ -14,17 +15,22 @@ import {
   getProjectsForEditorial,
   type DccEditorial,
 } from '@/lib/dcc/culture'
+import {
+  renderEditorialMarkdown,
+  resolveEditorialMarkdown,
+} from '@/lib/dcc/culture/editorial-body'
 
 type EditorialDetailProps = {
   entry: DccEditorial
 }
 
-export function EditorialDetail({ entry }: EditorialDetailProps) {
+export async function EditorialDetail({ entry }: EditorialDetailProps) {
   const path = getEditorialPublicPath(entry)
   const artists = getArtistsForEditorial(entry)
   const programs = getProgramsForEditorial(entry)
   const projects = getProjectsForEditorial(entry)
-  const blocks = (entry.body ?? '').split('\n\n').filter(Boolean)
+  const markdown = resolveEditorialMarkdown(entry)
+  const html = markdown ? await renderEditorialMarkdown(markdown) : ''
 
   return (
     <>
@@ -77,22 +83,8 @@ export function EditorialDetail({ entry }: EditorialDetailProps) {
           </div>
         ) : null}
 
-        {blocks.length > 0 ? (
-          <div className="mt-10 max-w-2xl space-y-5 text-base leading-relaxed text-neutral-700 dark:text-neutral-300">
-            {blocks.map((block, index) => {
-              if (block.startsWith('## ')) {
-                return (
-                  <h2
-                    key={`h-${index}`}
-                    className="pt-4 text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-50"
-                  >
-                    {block.slice(3)}
-                  </h2>
-                )
-              }
-              return <p key={`p-${index}`}>{block}</p>
-            })}
-          </div>
+        {html ? (
+          <EditorialMarkdown html={html} />
         ) : (
           <p className="mt-10 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
             {entry.type === 'conversation' || entry.type === 'interview'

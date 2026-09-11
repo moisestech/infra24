@@ -52,6 +52,7 @@
     "verify:career": "npm run secret-scan && npm run lint && npm run test && npm run build:career",
     "build:career": "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_ci CLERK_SECRET_KEY=clerk_ci_placeholder NEXT_PUBLIC_SUPABASE_URL=https://ci-placeholder.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=ci-placeholder-anon-key SUPABASE_SERVICE_ROLE_KEY=ci-placeholder-service-key RESEND_API_KEY=re_ci_placeholder npm run build",
     "network-builder:schema-gap": "npx tsx scripts/tools/network-builder-schema-gap-report.ts",
+    "dcc-os:scaffold-v1": "npx tsx scripts/tools/scaffold-dcc-os-v1-fields.ts",
     "life-os:discover": "npx tsx scripts/tools/life-os-tasks.ts discover",
     "life-os:list": "npx tsx scripts/tools/life-os-tasks.ts list",
     "life-os:tasks": "npx tsx scripts/tools/life-os-tasks.ts"

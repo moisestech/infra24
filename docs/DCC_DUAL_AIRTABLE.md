@@ -16,5 +16,7 @@ Do **not** treat DCC Jobs as the coding backlog.
 ## Docs
 
 - [LIFE OS Tasks schema](../life-os/TASKS_SCHEMA.md)
+- [DCC operating model v0.1](./dcc/OPERATING-MODEL.md)
+- [DCC OS v1 Airtable checklist](./dcc/AIRTABLE-CHECKLIST.md)
 - DCC product surfaces: `/machines`, `/pricing`, `/make`, `/scale-up`, `/dashboard/ceo`
 - Signage feed: `GET /api/signage`

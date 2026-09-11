@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return cdcPageMetadata(path);
 }
 
-export default function JournalPostPage({ params }: Props) {
+export default async function JournalPostPage({ params }: Props) {
   const cultureEntry = getPublishedEditorialBySlug(params.slug);
   if (cultureEntry) {
     return <EditorialDetail entry={cultureEntry} />;

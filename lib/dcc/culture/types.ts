@@ -141,7 +141,7 @@ export type DccEditorial = {
   videoUrl?: string
   audioUrl?: string
   body?: string
-  /** Optional disk path under content/journal/ for longer MD/MDX bodies. */
+  /** Server-only markdown under `content/journal/`. Resolved in editorial-body.ts — not a generic filesystem path. */
   bodyPath?: string
   excerpt?: string
   pullQuote?: string
