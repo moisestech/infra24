@@ -8,6 +8,8 @@
 - **Image production list (what to shoot, types, alternates):** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md)
 - **Fabricate image drop list:** [`public/dcc/fabrication/ASSETS.md`](../../public/dcc/fabrication/ASSETS.md)
 - **Resin teaching stills:** [`docs/workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md`](../workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md)
+- **Operating model (v0.1 freeze):** [`OPERATING-MODEL.md`](./OPERATING-MODEL.md), [`JOB-LIFECYCLE.md`](./JOB-LIFECYCLE.md), [`PERMISSIONS.md`](./PERMISSIONS.md), [`MONEY-FLOW.md`](./MONEY-FLOW.md)
+- **Airtable v1 checklist:** [`AIRTABLE-CHECKLIST.md`](./AIRTABLE-CHECKLIST.md)
 
 **Do not invent:** artist names, bios, quotations, dates, venue, sales %, ITS3D partnership, documentary photos that do not exist.
 

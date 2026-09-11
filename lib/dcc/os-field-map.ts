@@ -50,6 +50,9 @@ export const DCC_SERVICE_FIELDS = {
   unit: 'Unit',
   active: 'Active',
   notes: 'Notes',
+  serviceKind: 'Service Kind',
+  paymentPolicy: 'Payment Policy',
+  fulfillmentNotes: 'Fulfillment Notes',
 } as const
 
 export const DCC_JOB_FIELDS = {
@@ -65,6 +68,33 @@ export const DCC_JOB_FIELDS = {
   materialCost: 'Material Cost',
   laborCost: 'Labor Cost',
   machineReserve: 'Machine Reserve',
+  commercialStatus: 'Commercial Status',
+  paymentStatus: 'Payment Status',
+  fulfillmentStatus: 'Fulfillment Status',
+  paymentPolicy: 'Payment Policy',
+  quoteVersion: 'Quote Version',
+  quoteSnapshot: 'Quote Snapshot',
+  quoteSentAt: 'Quote Sent At',
+  quoteAcceptedAt: 'Quote Accepted At',
+  quoteAcceptedBy: 'Quote Accepted By',
+  clientPortalToken: 'Client Portal Token',
+  clientPortalTokenIssuedAt: 'Client Portal Token Issued At',
+  depositAmount: 'Deposit Amount',
+  depositReceivedAt: 'Deposit Received At',
+  depositPaymentProvider: 'Deposit Payment Provider',
+  depositInvoiceId: 'Deposit Invoice / Payment ID',
+  depositPaymentUrl: 'Deposit Payment URL',
+  balanceAmount: 'Balance Amount',
+  balanceReceivedAt: 'Balance Received At',
+  balancePaymentProvider: 'Balance Payment Provider',
+  balanceInvoiceId: 'Balance Invoice / Payment ID',
+  balancePaymentUrl: 'Balance Payment URL',
+  completionApprovedAt: 'Completion Approved At',
+  completionApprovedBy: 'Completion Approved By',
+  adjustmentRequest: 'Adjustment Request',
+  reviewAssets: 'Review Assets',
+  externalCost: 'External Cost',
+  internalNotes: 'Internal Notes',
 } as const
 
 export const DCC_JOB_STAGES = {
@@ -95,7 +125,49 @@ export const DCC_TRANSACTION_FIELDS = {
   date: 'Date',
   job: 'Job',
   notes: 'Notes',
+  kind: 'Kind',
+  person: 'Person',
+  assignment: 'Assignment',
 } as const
+
+/** Staff/operator identity on People — not DCC Signup Status. */
+export const DCC_PERSON_OPS_FIELDS = {
+  accountStatus: 'Account Status',
+  clerkUserId: 'Clerk User ID',
+  dccAppRoles: 'DCC App Roles',
+  operatorActive: 'Operator Active',
+  firstSeenAt: 'First Seen At',
+  firstSeenSource: 'First Seen Source',
+} as const
+
+export const DCC_ASSIGNMENT_FIELDS = {
+  name: 'Name',
+  job: 'Job',
+  person: 'Person',
+  role: 'Role',
+  status: 'Status',
+  estimatedHours: 'Estimated Hours',
+  hourlyRate: 'Hourly Rate',
+  estimatedCompensation: 'Estimated Compensation',
+  actualHours: 'Actual Hours',
+  approvedCompensation: 'Approved Compensation',
+  offeredAt: 'Offered At',
+  acceptedAt: 'Accepted At',
+  completedAt: 'Completed At',
+  cancelledAt: 'Cancelled At',
+  declinedReason: 'Declined Reason',
+  notes: 'Notes',
+} as const
+
+export const DCC_ASSIGNMENTS_TABLE_NAME = 'Assignments' as const
+
+export const DCC_INTERACTION_NOTES_FIELD = 'Notes' as const
+
+export const DCC_INTERACTION_TYPE_ADDITIONS = [
+  'Workshop Attendance',
+  'Studio Visit',
+  'Consultation',
+] as const
 
 export const DCC_CREDIT_FIELDS = {
   name: 'Name',
