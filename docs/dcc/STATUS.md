@@ -17,11 +17,11 @@
 
 | Field | Value |
 |---|---|
-| Date | 26 August 2026 |
-| Branch | `main` after education PR #6, fabricate Phase 2 (#7), and public `/now` |
-| Last culture commits | public `/now` known-facts ledger; founders + Clandestine skeleton already on main |
+| Date | 11 September 2026 |
+| Branch | `main` after CP-01 journal activation |
+| Last culture commits | first published journal essay; CDC title-only journal shells removed |
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
-| Culture records published | 1 program (Clandestine 2026). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). 0 journal entries. 0 culture projects. |
+| Culture records published | 1 program (Clandestine 2026). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). **1 journal essay** (`a-digital-lab-is-not-a-room-full-of-equipment`). 0 culture projects. |
 | Fabricate Phase 2 | On `main`: Field Lab, estimate planner, `/fabricate/projects`. Hero is **conceptual** (not documentary). |
 | Images | **Filled vs not:** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md) § Filled vs not. Teaching stills are conceptual; documentary fabricate/Clandestine/Bakehouse/class shots are not filled. |
 
@@ -59,15 +59,15 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 | Route | Namespace | Image | Motion / interactivity | Status |
 |---|---|---|---|---|
 | `/` hero, collage, pathways | marketing | Real Cloudinary photography | Rotating headlines (reduced-motion aware); card hover scale | Shipped |
-| `/` `#now` band | culture | None (text slots) | Links only | Shipped; “Full snapshot” → `/now`; Artist slot shows featured founder (Moises); Journal still hidden |
-| `/now` | culture | None | Still | Public known-facts ledger; copy in `lib/dcc/culture/now.ts`; must agree with this file |
+| `/` `#now` band | culture | None (text slots) | Links only | Shipped; “Full snapshot” → `/now`; Artist slot shows featured founder (Moises); Journal slot shows featured essay |
+| `/now` | culture | None | Still | Public known-facts ledger; copy in `lib/dcc/culture/now.ts`; must agree with this file; live column includes published essay; Conversations still forthcoming |
 | `/artists` | culture | Knight / Edge Zones portraits | Hover when `src` exists | Three founders published; not a Clandestine roster |
 | `/artists/[slug]` | culture | Portrait + hero where confirmed | Hover with `src`; 360 on Moises + Fabiola | Angelo has no tour |
 | `/programs` | culture + CDC | Clandestine card has fallback | CardGrid hover on taxonomy cards | Shipped; Current/Upcoming + existing service catalog |
 | `/programs/art-fairs/clandestine-art-fair-2026` | culture | No hero | Still; no fake gallery/testimonials | Program 001; known facts only |
-| `/journal` | culture + CDC | None for DCC Conversations | CardGrid hover on category tiles | Shipped; empty conversations copy; no podcast |
+| `/journal` | culture + CDC | Honest fallback until hero exists | CardGrid hover on category tiles | 1 published essay; conversations empty; no podcast |
 | `/journal/conversations` | culture | None | Still | Empty on purpose |
-| `/journal/[category]/[slug]` | CDC scaffold + culture | Title-only CDC posts | Culture body when a record exists | CDC shells still say body TBD |
+| `/journal/[category]/[slug]` | culture | No hero on first essay | Culture body via `DccEditorial.body` (`## ` headings) | CDC title-only shells removed |
 | `/workshops` | education | Saturday Lab / vibe banners plus two 3D catalog cards on conceptual educational stills | Live catalog client; org grid omitted when empty | Public 3D pair is 3D Printing for Artists + AI → 3D; IP Age of AI is Oolite-only; resin is not a catalog card |
 | `/workshop/3d-printing-for-artists` | education | Conceptual stills (`PRINT` `CLEANUP` `FINISH` `MEASURE` `COMPARE`) | Editorial page; inquiry via newsletter | HTML labels; caption **Conceptual educational image** |
 | `/workshop/ai-3d-physical-object` | education | Conceptual stills (`MODEL` `IMAGINE` `PREPARE` `PRINT` `FINISH` `TEST` `OUTCOME`); PRINT reuses machine detail | Editorial page; inquiry via newsletter | Can land on PLA FDM or resin SLA |

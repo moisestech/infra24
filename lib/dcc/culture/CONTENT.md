@@ -28,12 +28,11 @@ Still needed before the program page can feel finished:
 - whether DCC transacts sales or takes any commission (do not encode until disclosed)
 - `artistIds` on the program + `programIds: ['clandestine-2026']` on each participating artist — only when the packet is real
 
-## First Journal / Conversations
+## Journal
 
-- guest names
-- recording + transcript
-- optional video/audio URLs
-- newsletter excerpt URL once a provider/workflow is confirmed
+**Published:** `a-digital-lab-is-not-a-room-full-of-equipment` — essay, Moises Sanabria, 11 September 2026. No hero image (honest fallback). No `artistIds` / `programIds` / `projectIds`.
+
+**Still empty (on purpose):** DCC Conversations — guest names, recording + transcript, optional video/audio. A podcast feed is not launching in this phase.
 
 ## Images
 

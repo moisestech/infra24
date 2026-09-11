@@ -10,6 +10,7 @@ import {
   editorialJournalCategory,
   getEditorialPublicPath,
   getProgramPublicPath,
+  JOURNAL_HERO_DESCRIPTION,
   listArtists,
   listEditorial,
   listPrograms,
@@ -142,8 +143,7 @@ const pages: CdcPageDef[] = [
   p({
     path: '/journal',
     title: 'Journal',
-    description:
-      'Conversations, field research, artist practices and observations from DCC MIA.',
+    description: JOURNAL_HERO_DESCRIPTION,
     layout: 'default',
   }),
   p({
@@ -843,39 +843,9 @@ const JOURNAL_CATEGORIES = [
   { slug: 'miami', title: 'Miami' },
 ] as const;
 
+/** Real journal articles come from `DCC_EDITORIAL`. Keep this empty — do not reintroduce title-only shells. */
 const JOURNAL_POSTS: { category: (typeof JOURNAL_CATEGORIES)[number]['slug']; slug: string; title: string }[] =
-  [
-    {
-      category: 'essays',
-      slug: 'why-miami-needs-digital-culture-infrastructure',
-      title: 'Why Miami needs digital culture infrastructure',
-    },
-    {
-      category: 'essays',
-      slug: 'what-is-artist-centered-digital-infrastructure',
-      title: 'What is artist-centered digital infrastructure?',
-    },
-    {
-      category: 'field-notes',
-      slug: 'notes-from-a-public-interface-pilot',
-      title: 'Notes from a public interface pilot',
-    },
-    {
-      category: 'project-updates',
-      slug: 'building-smart-signs-for-cultural-organizations',
-      title: 'Building smart signs for cultural organizations',
-    },
-    {
-      category: 'workshop-notes',
-      slug: 'lessons-from-workshop-design-in-2026',
-      title: 'Lessons from workshop design in 2026',
-    },
-    {
-      category: 'miami',
-      slug: 'why-digital-presence-is-cultural-infrastructure',
-      title: 'Why digital presence is cultural infrastructure',
-    },
-  ];
+  [];
 
 for (const cat of JOURNAL_CATEGORIES) {
   pages.push(
@@ -968,7 +938,7 @@ for (const entry of listEditorial()) {
     pages.push(
       p({
         path,
-        title: entry.seoTitle ?? entry.title,
+        title: entry.title,
         description: entry.seoDescription ?? entry.dek ?? entry.excerpt ?? entry.title,
         parent: `/journal/${category}`,
         layout: 'default',

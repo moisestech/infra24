@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { MarketingSection } from '@/components/marketing/MarketingSection';
 import { marketingHomeMeta } from '@/lib/marketing/content';
-import { dccHomeMissionHeadline, dccHomeOrgLine } from '@/lib/marketing/dcc-pilot-home-content';
+import { dccHomeMissionHeadline, dccHomeOrgLine, dccHomePositioning } from '@/lib/marketing/dcc-pilot-home-content';
 
 const CdcHeroVisual = dynamic(
   () =>
@@ -120,6 +120,20 @@ export default function MarketingHomePage() {
           <CdcHeroVisual />
         </div>
       </section>
+
+      <MarketingSection
+        id="positioning"
+        className="scroll-mt-14 border-b border-[var(--cdc-border)] bg-white dark:border-neutral-800 dark:bg-neutral-900"
+      >
+        <h2 className="max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl">
+          {dccHomePositioning.headline}
+        </h2>
+        <div className="mt-6 max-w-2xl space-y-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300 sm:text-base">
+          {dccHomePositioning.paragraphs.map((paragraph) => (
+            <p key={paragraph.slice(0, 48)}>{paragraph}</p>
+          ))}
+        </div>
+      </MarketingSection>
 
       <HomeCulturalNowBand />
 

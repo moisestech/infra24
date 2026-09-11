@@ -4,7 +4,11 @@ import { EditorialDetail } from '@/components/dcc/culture/EditorialDetail';
 import { PageHero, Section } from '@/components/marketing/cdc';
 import { getAllJournalPosts, getCdcBreadcrumbs, getCdcPageByPath } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
-import { getPublishedEditorialBySlug } from '@/lib/dcc/culture';
+import {
+  culturePageMetadata,
+  getEditorialPublicPath,
+  getPublishedEditorialBySlug,
+} from '@/lib/dcc/culture';
 
 type Props = { params: { category: string; slug: string } };
 
@@ -13,6 +17,26 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const cultureEntry = getPublishedEditorialBySlug(params.slug);
+  if (cultureEntry) {
+    const path = getEditorialPublicPath(cultureEntry);
+    const description =
+      cultureEntry.seoDescription ??
+      cultureEntry.dek ??
+      cultureEntry.excerpt ??
+      cultureEntry.title;
+    const seoTitle = cultureEntry.seoTitle ?? cultureEntry.title;
+    return {
+      ...culturePageMetadata({
+        title: seoTitle,
+        description,
+        path,
+        image: cultureEntry.heroImage,
+      }),
+      title: { absolute: seoTitle },
+    };
+  }
+
   const path = `/journal/${params.category}/${params.slug}`;
   return cdcPageMetadata(path);
 }
