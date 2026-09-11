@@ -5,10 +5,31 @@ import type { DccEditorial } from '@/lib/dcc/culture/types'
  * Journal records. Medium-agnostic: written, video, audio, or a combination.
  * Do not invent conversations, quotations, or guests.
  *
- * Body uses `\n\n` paragraph breaks. `## Heading` lines render as h2 in EditorialDetail.
- * Do not invent guests for conversations; a podcast feed is not launching in this phase.
+ * Longform is `body` (inline markdown) or `bodyPath` under `content/journal/`
+ * (server-only; see editorial-body.ts). Do not invent guests for conversations;
+ * a podcast feed is not launching in this phase.
  */
 export const DCC_EDITORIAL: DccEditorial[] = [
+  {
+    id: 'you-cant-buy-digital-culture',
+    slug: 'you-cant-buy-digital-culture',
+    title: 'You Can’t Buy Digital Culture',
+    dek: 'Equipment can expand capacity. It cannot create culture on its own.',
+    type: 'essay',
+    publishedAt: '2026-09-11',
+    author: 'DCC Miami',
+    status: 'published',
+    seoTitle: 'You Can’t Buy Digital Culture — DCC Miami',
+    seoDescription:
+      'Buying equipment is not the same as building digital culture. DCC Miami looks at how artists, operators, knowledge, and shared infrastructure turn tools into lasting cultural capacity.',
+    excerpt:
+      'Arts organizations often treat digital investment as a purchasing problem. But machines do not create digital culture on their own. The real infrastructure is the network of people, knowledge, maintenance, teaching, and projects that forms around them.',
+    bodyPath: 'content/journal/you-cant-buy-digital-culture.md',
+    heroImage: '/dcc/culture/editorial/you-cant-buy-digital-culture/hero.png',
+    heroImageAlt:
+      'Artists and creative technologists collaborating around fabrication tools, prototypes, VR equipment, and shared project documentation.',
+    pullQuote: 'Every project should leave something behind.',
+  },
   {
     id: 'a-digital-lab-is-not-a-room-full-of-equipment',
     slug: 'a-digital-lab-is-not-a-room-full-of-equipment',

@@ -57,7 +57,8 @@ Local drop (force-add; `public/` is gitignored):
 public/dcc/culture/artists/{slug}/portrait.webp
 public/dcc/culture/artists/{slug}/hero.webp
 public/dcc/culture/programs/{slug}/hero.webp
-public/dcc/culture/editorial/{slug}/hero.webp
+public/dcc/culture/editorial/{slug}/hero.png
+public/dcc/culture/editorial/{slug}/*.png
 ```
 
 Empty image → honest fallback. No fake portraits. Hover / scale motion runs **only** when `heroImage` / `portrait` is set.
@@ -115,7 +116,9 @@ Reuse `/newsletter`. Optional provider: `NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_A
 
 - `id`, `slug`, `title`, `type`, `status`
 - Optional: `dek`, `publishedAt`, `author`, `body` or `bodyPath`, `heroImage`, `videoUrl`, `audioUrl`, `artistIds`, `programIds`
+- `bodyPath` is server-only and must resolve under `content/journal/`. Do not point it at arbitrary filesystem locations.
 - No podcast product in this phase.
+- Editorial evidence linking between Culture records and operational Fabricate/Workshop records remains intentionally unresolved. Do not create cross-namespace relations until that relationship has an explicit model.
 
 ## Motion
 

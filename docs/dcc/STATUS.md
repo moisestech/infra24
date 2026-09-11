@@ -21,9 +21,9 @@
 |---|---|
 | Date | 11 September 2026 |
 | Branch | `main` after CP-01 journal activation |
-| Last culture commits | first published journal essay; CDC title-only journal shells removed |
+| Last culture commits | second journal essay via `bodyPath`; first essay still featured on `#now` |
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
-| Culture records published | 1 program (Clandestine 2026). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). **1 journal essay** (`a-digital-lab-is-not-a-room-full-of-equipment`). 0 culture projects. |
+| Culture records published | 1 program (Clandestine 2026). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). **2 journal essays** (`you-cant-buy-digital-culture` via `bodyPath`; `a-digital-lab-is-not-a-room-full-of-equipment` featured). 0 culture projects. |
 | Fabricate Phase 2 | On `main`: Field Lab, estimate planner, `/fabricate/projects`. Hero is **conceptual** (not documentary). |
 | Images | **Filled vs not:** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md) § Filled vs not. Teaching stills are conceptual; documentary fabricate/Clandestine/Bakehouse/class shots are not filled. |
 
@@ -67,9 +67,9 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 | `/artists/[slug]` | culture | Portrait + hero where confirmed | Hover with `src`; 360 on Moises + Fabiola | Angelo has no tour |
 | `/programs` | culture + CDC | Clandestine card has fallback | CardGrid hover on taxonomy cards | Shipped; Current/Upcoming + existing service catalog |
 | `/programs/art-fairs/clandestine-art-fair-2026` | culture | No hero | Still; no fake gallery/testimonials | Program 001; known facts only |
-| `/journal` | culture + CDC | Honest fallback until hero exists | CardGrid hover on category tiles | 1 published essay; conversations empty; no podcast |
+| `/journal` | culture + CDC | Second essay has a hero PNG (drop still required if missing) | CardGrid hover on category tiles | 2 published essays; conversations empty; no podcast |
 | `/journal/conversations` | culture | None | Still | Empty on purpose |
-| `/journal/[category]/[slug]` | culture | No hero on first essay | Culture body via `DccEditorial.body` (`## ` headings) | CDC title-only shells removed |
+| `/journal/[category]/[slug]` | culture | Hero on `you-cant-buy-digital-culture`; none on first essay | Longform via `body` or server-only `bodyPath` under `content/journal/` | CDC title-only shells removed |
 | `/workshops` | education | Saturday Lab / vibe banners plus two 3D catalog cards on conceptual educational stills | Live catalog client; org grid omitted when empty | Public 3D pair is 3D Printing for Artists + AI → 3D; IP Age of AI is Oolite-only; resin is not a catalog card |
 | `/workshop/3d-printing-for-artists` | education | Conceptual stills (`PRINT` `CLEANUP` `FINISH` `MEASURE` `COMPARE`) | Editorial page; inquiry via newsletter | HTML labels; caption **Conceptual educational image** |
 | `/workshop/ai-3d-physical-object` | education | Conceptual stills (`MODEL` `IMAGINE` `PREPARE` `PRINT` `FINISH` `TEST` `OUTCOME`); PRINT reuses machine detail | Editorial page; inquiry via newsletter | Can land on PLA FDM or resin SLA |
@@ -113,7 +113,7 @@ Full production list (types, sizes, primary + alternate, make order): [`IMAGE_SH
 
 ### Culture — founder portraits; Clandestine still has no program images
 
-Published artists reuse Knight / Edge Zones / homepage Cloudinary URLs. `DCC_EDITORIAL = []`, `DCC_PROJECTS = []`. Clandestine has no `heroImage`.
+Published artists reuse Knight / Edge Zones / homepage Cloudinary URLs. Two journal essays published; `DCC_PROJECTS = []`. Clandestine has no `heroImage`. Editorial PNGs: `public/dcc/culture/editorial/you-cant-buy-digital-culture/`.
 
 When new: `public/dcc/culture/artists/{slug}/` or Cloudinary `dccmiami/artists/{slug}/`.
 
@@ -178,7 +178,9 @@ Eleven conceptual educational stills wired on `/workshop/3d-printing-for-artists
 2. A DCC-owned paid SKU only if QGiv is not the system of record (do not duplicate Oolite checkout).
 3. Then: Stripe Checkout → Mercury → QuickBooks as books of record. Do not invent tax mapping in code until the entity is confirmed.
 
-Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/relations.ts`. Journal long form: `body` or `bodyPath` under `content/journal/<slug>.md`.
+Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/relations.ts`. Journal long form: `body` or server-only `bodyPath` under `content/journal/<slug>.md` (loader rejects paths outside that root).
+
+Editorial evidence linking between Culture records and operational Fabricate/Workshop records remains intentionally unresolved. Do not create cross-namespace relations until that relationship has an explicit model.
 
 ---
 

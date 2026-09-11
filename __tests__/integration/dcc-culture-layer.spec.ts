@@ -158,10 +158,16 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(
       page.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
     ).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'You Can’t Buy Digital Culture' })
+    ).toBeVisible()
 
     await page.goto('/journal/essays')
     await expect(
       page.getByRole('link', { name: /A Digital Lab Is Not a Room Full of Equipment/ })
+    ).toBeVisible()
+    await expect(
+      page.getByRole('link', { name: /You Can’t Buy Digital Culture/ })
     ).toBeVisible()
 
     await page.goto('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')
@@ -172,6 +178,17 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(page.getByText('Moises Sanabria')).toBeVisible()
     await expect(
       page.getByRole('heading', { name: 'Acquisition is not access' })
+    ).toBeVisible()
+    await expect(page.getByText(/Full article body will live here/)).toHaveCount(0)
+
+    await page.goto('/journal/essays/you-cant-buy-digital-culture')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(
+      page.getByRole('heading', { name: 'You Can’t Buy Digital Culture' })
+    ).toBeVisible()
+    await expect(page.getByText('DCC Miami').first()).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Every project should leave something behind' })
     ).toBeVisible()
     await expect(page.getByText(/Full article body will live here/)).toHaveCount(0)
   })

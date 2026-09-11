@@ -33,7 +33,6 @@ import {
   isReservedArtistSlug,
   listArtists,
   listCurrentOrUpcomingPrograms,
-  listEditorial,
   listFeaturedArtists,
   listFeaturedEditorial,
   listPrograms,
@@ -135,28 +134,51 @@ describe('dcc culture public seed', () => {
     ])
   })
 
-  it('publishes the first journal essay without placeholder shells or invented relations', () => {
-    expect(DCC_EDITORIAL).toHaveLength(1)
-    const essay = listEditorial()[0]
-    expect(essay?.slug).toBe('a-digital-lab-is-not-a-room-full-of-equipment')
-    expect(essay?.type).toBe('essay')
-    expect(essay?.author).toBe('Moises Sanabria')
-    expect(essay?.status).toBe('published')
-    expect(essay?.featured).toBe(true)
-    expect(essay?.heroImage).toBeUndefined()
-    expect(essay?.artistIds).toBeUndefined()
-    expect(essay?.programIds).toBeUndefined()
-    expect(essay?.projectIds).toBeUndefined()
-    expect(essay?.body).toMatch(/## Acquisition is not access/)
-    expect(listFeaturedEditorial().map((entry) => entry.slug)).toEqual([essay?.slug])
-    expect(getEditorialPublicPath(essay!)).toBe(
+  it('publishes journal essays without placeholder shells or invented relations', () => {
+    expect(DCC_EDITORIAL).toHaveLength(2)
+    const firstEssay = DCC_EDITORIAL.find(
+      (entry) => entry.slug === 'a-digital-lab-is-not-a-room-full-of-equipment'
+    )
+    const longform = DCC_EDITORIAL.find((entry) => entry.slug === 'you-cant-buy-digital-culture')
+    expect(firstEssay?.type).toBe('essay')
+    expect(firstEssay?.author).toBe('Moises Sanabria')
+    expect(firstEssay?.status).toBe('published')
+    expect(firstEssay?.featured).toBe(true)
+    expect(firstEssay?.heroImage).toBeUndefined()
+    expect(firstEssay?.artistIds).toBeUndefined()
+    expect(firstEssay?.programIds).toBeUndefined()
+    expect(firstEssay?.projectIds).toBeUndefined()
+    expect(firstEssay?.body).toMatch(/## Acquisition is not access/)
+    expect(firstEssay?.bodyPath).toBeUndefined()
+    expect(longform?.type).toBe('essay')
+    expect(longform?.author).toBe('DCC Miami')
+    expect(longform?.status).toBe('published')
+    expect(longform?.featured).toBeUndefined()
+    expect(longform?.body).toBeUndefined()
+    expect(longform?.bodyPath).toBe('content/journal/you-cant-buy-digital-culture.md')
+    expect(longform?.heroImage).toBe(
+      '/dcc/culture/editorial/you-cant-buy-digital-culture/hero.png'
+    )
+    expect(longform?.pullQuote).toBe('Every project should leave something behind.')
+    expect(longform?.artistIds).toBeUndefined()
+    expect(longform?.programIds).toBeUndefined()
+    expect(longform?.projectIds).toBeUndefined()
+    expect(listFeaturedEditorial().map((entry) => entry.slug)).toEqual([firstEssay?.slug])
+    expect(getEditorialPublicPath(firstEssay!)).toBe(
       '/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment'
     )
+    expect(getEditorialPublicPath(longform!)).toBe(
+      '/journal/essays/you-cant-buy-digital-culture'
+    )
     expect(getCdcPageByPath('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')?.title).toBe(
-      essay?.title
+      firstEssay?.title
+    )
+    expect(getCdcPageByPath('/journal/essays/you-cant-buy-digital-culture')?.title).toBe(
+      longform?.title
     )
     const paths = getAllCdcPaths()
     expect(paths).toContain('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')
+    expect(paths).toContain('/journal/essays/you-cant-buy-digital-culture')
     expect(paths).not.toContain('/journal/essays/why-miami-needs-digital-culture-infrastructure')
     expect(paths).not.toContain('/journal/essays/what-is-artist-centered-digital-infrastructure')
     expect(paths).not.toContain('/journal/field-notes/notes-from-a-public-interface-pilot')

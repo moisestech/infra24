@@ -30,7 +30,10 @@ Still needed before the program page can feel finished:
 
 ## Journal
 
-**Published:** `a-digital-lab-is-not-a-room-full-of-equipment` — essay, Moises Sanabria, 11 September 2026. No hero image (honest fallback). No `artistIds` / `programIds` / `projectIds`.
+**Published:**
+
+- `you-cant-buy-digital-culture` — essay, DCC Miami, 11 September 2026. `bodyPath` under `content/journal/`. Hero + inline PNGs under `public/dcc/culture/editorial/you-cant-buy-digital-culture/`. Not featured. No `artistIds` / `programIds` / `projectIds`.
+- `a-digital-lab-is-not-a-room-full-of-equipment` — essay, Moises Sanabria, 11 September 2026. Inline `body`. No hero image (honest fallback). Featured on homepage `#now`. No `artistIds` / `programIds` / `projectIds`.
 
 **Still empty (on purpose):** DCC Conversations — guest names, recording + transcript, optional video/audio. A podcast feed is not launching in this phase.
 
