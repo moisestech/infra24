@@ -120,6 +120,7 @@ describe('dcc culture public seed', () => {
     expect(clandestine?.startDate).toBeUndefined()
     expect(clandestine?.endDate).toBeUndefined()
     expect(clandestine?.locationName).toBeUndefined()
+    expect(clandestine?.description).toMatch(/when those facts are confirmed/)
     expect(clandestine?.description).not.toMatch(/\b(10|15)\s*%/)
     expect(getProgramPublicPath(clandestine!)).toBe(
       '/programs/art-fairs/clandestine-art-fair-2026'

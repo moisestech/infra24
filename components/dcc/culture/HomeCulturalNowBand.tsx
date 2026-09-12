@@ -26,12 +26,13 @@ export function HomeCulturalNowBand() {
   const slots: HomeSlot[] = []
 
   if (now) {
+    const forthcoming = !now.startDate && !(now.artistIds && now.artistIds.length > 0)
     slots.push({
       eyebrow: 'Now',
       title: now.title,
       description: now.shortDescription ?? 'Current DCC MIA program.',
       href: getProgramPublicPath(now),
-      label: 'View program',
+      label: forthcoming ? 'Coming soon' : 'View program',
     })
   }
 

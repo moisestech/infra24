@@ -17,7 +17,7 @@ export const DCC_PROGRAMS: DccProgram[] = [
     shortDescription:
       'DCC MIA will present three artists at Clandestine Art Fair. This page is the lasting program record — before, during and after Art Week.',
     description:
-      'DCC MIA will have its own presentation at Clandestine Art Fair and plans to present three artists. The artists are already investing in their fair participation; this program is first about presentation, context, documentation and audience.\n\nArtist names, selected works, exact dates and location will be published here when confirmed. After the fair, this page will hold documentation, a recap and related DCC Conversations.\n\nDCC is not listing a gallery commission or sales structure on this page. Sales, if any, will be described only when the terms are real and disclosed in advance.',
+      'DCC MIA will present three artists at Clandestine Art Fair. This page will hold the program record — artists, dates, venue, and documentation — when those facts are confirmed.',
     artistIds: [],
     projectIds: [],
     editorialIds: [],

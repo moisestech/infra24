@@ -23,6 +23,7 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(
       now.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
     ).toBeVisible()
+    await expect(now.getByRole('link', { name: 'Coming soon' })).toBeVisible()
     await expect(now.getByRole('link', { name: 'Full snapshot' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Artists', exact: true }).first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'Fabricate', exact: true }).first()).toBeVisible()
@@ -41,14 +42,19 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(page.getByText(/\b(10|15)\s*%/)).toHaveCount(0)
   })
 
-  test('Clandestine detail stays a known-facts skeleton', async ({ page }) => {
+  test('Clandestine detail is a coming-soon page without invented facts', async ({
+    page,
+  }) => {
     await page.goto('/programs/art-fairs/clandestine-art-fair-2026')
     await expect(
       page.getByRole('heading', { name: 'DCC MIA at Clandestine Art Fair 2026' })
     ).toBeVisible()
+    await expect(page.getByText('Coming soon').first()).toBeVisible()
     await expect(
       page.getByText(/published when confirmed/i).first()
     ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Artists' })).toHaveCount(0)
+    await expect(page.getByText('Dates to be announced')).toHaveCount(0)
     await expect(page.getByText(/\b(10|15)\s*%/)).toHaveCount(0)
     await expect(page.getByText(/DCC × ITS3D|ITS3D Miami/i)).toHaveCount(0)
   })
