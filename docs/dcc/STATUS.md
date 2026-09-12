@@ -2,6 +2,7 @@
 
 **Update this file every sprint.** It is the public-memory dashboard for ChatGPT, Cursor, and humans.
 
+- **Operating loop scoreboard (pilot / payments / operators / gates):** [`OPERATING-PROGRESS.md`](./OPERATING-PROGRESS.md). Update letters there when a capability actually ships. This file stays the public-memory dashboard for routes and records.
 - **Not this file:** [`docs/PROJECT_STATUS.md`](../PROJECT_STATUS.md) and [`docs/CURRENT_STATUS_SUMMARY.md`](../CURRENT_STATUS_SUMMARY.md) are Dec 2024 Infra24 SaaS snapshots (booking, tenant orgs). Do not treat them as DCC MIA cultural status.
 - **Record packet (one artist/program/journal change):** [`lib/dcc/culture/RECORD.md`](../../lib/dcc/culture/RECORD.md)
 - **Culture content gaps:** [`lib/dcc/culture/CONTENT.md`](../../lib/dcc/culture/CONTENT.md)

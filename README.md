@@ -6,9 +6,10 @@ Multi-tenant platform for workshops, digital labs, artist profiles, bookings —
 
 1. **Install:** `npm ci` (npm is canonical; see `package-lock.json`).
 2. **Dev:** copy `.env.example` → `.env.local`, then `npm run dev`.
-3. **Career / demo truth:** read [`docs/career-evidence/REPO_TRUTH_AUDIT.md`](./docs/career-evidence/REPO_TRUTH_AUDIT.md) before claiming RAG/eval status.
-4. **Demo paths:** `/memory-agent` (→ DCC Memory Agent), `/applied-ai` (hub, noindex), `/network/agent` (approval-gated).
-5. **Verify without prod secrets:** `npm run verify:career`.
+3. **DCC operating truth:** [`docs/dcc/OPERATING-PROGRESS.md`](./docs/dcc/OPERATING-PROGRESS.md) — Built / Partly / Not scoreboard for the client + workshop loop. Update it when a capability actually ships. Public site memory: [`docs/dcc/STATUS.md`](./docs/dcc/STATUS.md).
+4. **Career / demo truth:** read [`docs/career-evidence/REPO_TRUTH_AUDIT.md`](./docs/career-evidence/REPO_TRUTH_AUDIT.md) before claiming RAG/eval status.
+5. **Demo paths:** `/memory-agent` (→ DCC Memory Agent), `/applied-ai` (hub, noindex), `/network/agent` (approval-gated).
+6. **Verify without prod secrets:** `npm run verify:career`.
 
 **Status labels (honest):** Memory Agent hybrid retrieval = shipped in app code. pgvector indexed RAG = code present, live claim only after migration + sync + eval. Eval harness = present; green scoreboard = not claimed.
 
@@ -75,6 +76,9 @@ npm run dev
 - **Booking System**: Calendar integration with ICS files
 
 ### Key Documentation
+- [DCC operating progress](./docs/dcc/OPERATING-PROGRESS.md) — scoreboard for the paid client/workshop loop (B / P / N / U)
+- [DCC public status](./docs/dcc/STATUS.md) — what is on the site right now
+- [Culture record packet](./lib/dcc/culture/RECORD.md) — how to publish an artist / program / journal record
 - [Booking System Documentation](./docs/BOOKING_SYSTEM_INDEX.md) - Complete booking system guide
 - [Database Testing Guide](./docs/DATABASE_TESTING_GUIDE.md) - Database testing procedures
 - [Scripts Reference](./docs/SCRIPTS_REFERENCE.md) - All available scripts
@@ -121,7 +125,13 @@ node scripts/database-sync.js
 
 ## 📊 Current Status
 
-### ✅ Completed
+### DCC Miami (operating loop)
+
+Track progress in [`docs/dcc/OPERATING-PROGRESS.md`](./docs/dcc/OPERATING-PROGRESS.md). Short version: public journal, workshops, and fabricate *surfaces* are live; paid quote → operator → books → case study is **not**. Stripe checkout is disabled. Do not claim a complete pilot from README checkmarks.
+
+### Infra24 platform (SaaS)
+
+#### Completed
 - Core booking system with calendar integration
 - Workshop learning system with MDX content
 - Digital lab equipment management

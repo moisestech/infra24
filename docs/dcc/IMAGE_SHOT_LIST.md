@@ -155,7 +155,26 @@ Program page today: **no image** — honest fallback. That is correct until the 
 
 Homepage collage **already has** real photography in [`lib/marketing/dcc-home-photography.ts`](../../lib/marketing/dcc-home-photography.ts). Do not reshoot unless you want a cultural-center H1. `/` `#now` is **text-only** — optional later: 4:5 thumbs for Clandestine / featured artist / journal (same files as program/artist/editorial heroes).
 
-### A3. Journal / Conversations (empty on purpose)
+### A3. Journal essays 02–03 — placeholders live; finals pending
+
+Slots render in-article via `EditorialImageSlot`. Status is **PLACEHOLDER** until a real file is dropped. Visual grammar: Studio 43 as it is — industrial, dense, equipment-heavy, shelves, screens, cables. No plants, giant windows, palm-tree campus, or luxury lab fiction. Do not invent partner names on the Miami map.
+
+| Article | Slot ID | Role | Aspect | Where | Visual brief | Status |
+|---|---|---|---|---|---|---|
+| Artist Doesn't Need Everything | `02-hero` | hero | 16:9 | Article header | Artist + specialist + unfinished idea | PLACEHOLDER |
+| | `artist-too-many-jobs` | editorial-photo | 4:3 | After “too many jobs assigned to one person” | Burden of self-sufficiency | PLACEHOLDER |
+| | `capability-network` | diagram | 16:9 | After “Access to capabilities.” | DCC capability diagram | PLACEHOLDER |
+| | `different-kinds-of-labor` | diagram | 16:9 | After “Those are different kinds of labor.” | Share → teach → collaborate → consult → produce | PLACEHOLDER |
+| | `knowing-who-to-call` | editorial-photo | 4:3 | Before final two paragraphs | People around unfinished work | PLACEHOLDER |
+| Miami Infrastructure | `03-hero` | hero | 16:9 | Article header | Existing resources, fragmented | PLACEHOLDER |
+| | `distributed-cultural-network` | diagram | 16:9 | After “It is a production system.” | Distributed cultural system | PLACEHOLDER |
+| | `idea-to-realization-distance` | diagram | 16:9 | After “Infrastructure reduces that distance.” | Idea → resource → test → work | PLACEHOLDER |
+| | `paid-cultural-labor` | editorial-photo | 4:3 | After burnout sentence | Technical labor as cultural labor | PLACEHOLDER |
+| | `miami-distributed-studio` | map | 16:9 | After “The infrastructure exists across the city.” | Miami as distributed studio; no unconfirmed partners | PLACEHOLDER |
+
+Four of these are diagrams. Do not fill the Journal with fake cinematic maker-space photos.
+
+### A4. Journal / Conversations (empty on purpose)
 
 When the first guest is real:
 

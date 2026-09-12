@@ -1,0 +1,19 @@
+---
+description: Read DCC operating progress before claiming or building ops/payment/operator features.
+globs:
+  - docs/dcc/**
+  - lib/dcc/**
+  - app/(marketing)/fabricate/**
+  - app/(marketing)/journal/**
+  - app/(marketing)/workshops/**
+---
+
+# DCC operating progress
+
+Before adding fabricate, workshop checkout, Airtable, operator, or “pilot” features, read [`docs/dcc/OPERATING-PROGRESS.md`](docs/dcc/OPERATING-PROGRESS.md).
+
+- That file is the Built / Partly / Not / Unknown scoreboard for the client + workshop loop.
+- [`docs/dcc/STATUS.md`](docs/dcc/STATUS.md) is public-memory for routes and records — do not duplicate it.
+- Do not mark a capability Built without a live route, record, payment, or demonstrated behavior.
+- Do not invent paid jobs, operator commitments, entity/money decisions, or enable Stripe until OPERATING-PROGRESS says a DCC SKU and entity exist.
+- After a real ship: update the checklist letter, add evidence, append a dated Progress log row.

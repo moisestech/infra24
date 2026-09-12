@@ -1,6 +1,7 @@
 # Culture record packet
 
-Org status (living report): [`docs/dcc/STATUS.md`](../../../docs/dcc/STATUS.md).
+Org status (living report): [`docs/dcc/STATUS.md`](../../../docs/dcc/STATUS.md).  
+Operating loop scoreboard: [`docs/dcc/OPERATING-PROGRESS.md`](../../../docs/dcc/OPERATING-PROGRESS.md).
 
 One page for ChatGPT, humans, and Cursor. Fill a packet, then edit **one** registry file. Do not invent blank fields.
 
