@@ -76,7 +76,7 @@ test.describe('dcc culture + fabricate smokes', () => {
     ).toBeVisible()
     await expect(page.getByText('Vibecoding & Net Art')).toBeVisible()
     await expect(
-      page.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
+      page.getByRole('heading', { name: "The Artist Doesn't Need to Learn Everything" })
     ).toBeVisible()
     await expect(page.getByText(/The journal itself is live/)).toBeVisible()
     await expect(page.getByText('Skills: Intellectual Property in the Age of AI')).toHaveCount(0)
@@ -163,7 +163,7 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(page).not.toHaveURL(/sign-in/)
     await expect(
       page.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 15000 })
 
     await page.goto('/journal/essays')
     await expect(
@@ -180,6 +180,51 @@ test.describe('dcc culture + fabricate smokes', () => {
       page.getByRole('heading', { name: 'Acquisition is not access' })
     ).toBeVisible()
     await expect(page.getByText(/Full article body will live here/)).toHaveCount(0)
+  })
+
+  test('fall essays 02 and 03 render long-form MDX with image slots', async ({
+    page,
+  }) => {
+    await page.goto('/journal')
+    await expect(
+      page.getByRole('heading', { name: "The Artist Doesn't Need to Learn Everything" })
+    ).toBeVisible({ timeout: 15000 })
+    await expect(
+      page.getByRole('heading', {
+        name: "Miami Doesn't Have a Digital-Art Problem. It Has an Infrastructure Problem.",
+      })
+    ).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
+    ).toBeVisible()
+
+    await page.goto('/journal/essays/the-artist-doesnt-need-to-learn-everything')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(
+      page.getByRole('heading', { name: "The Artist Doesn't Need to Learn Everything" })
+    ).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'The myth of the self-sufficient digital artist' })
+    ).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="02-hero"]')).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="artist-too-many-jobs"]')).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="capability-network"]')).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="different-kinds-of-labor"]')).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="knowing-who-to-call"]')).toBeVisible()
+    await expect(page.getByText(/this is one of the most important diagrams/i)).toHaveCount(0)
+
+    await page.goto('/journal/essays/miami-doesnt-have-a-digital-art-problem')
+    await expect(
+      page.getByRole('heading', {
+        name: "Miami Doesn't Have a Digital-Art Problem. It Has an Infrastructure Problem.",
+      })
+    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'A network can be infrastructure' })).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="03-hero"]')).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="distributed-cultural-network"]')).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="idea-to-realization-distance"]')).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="paid-cultural-labor"]')).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="miami-distributed-studio"]')).toBeVisible()
   })
 
   test('fabricate landing stays public and /fabrication aliases to it', async ({

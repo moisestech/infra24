@@ -9,6 +9,7 @@ import {
   getEditorialPublicPath,
   getPublishedEditorialBySlug,
 } from '@/lib/dcc/culture';
+import { compileEditorialBody } from '@/lib/dcc/culture/load-editorial-body';
 
 type Props = { params: { category: string; slug: string } };
 
@@ -41,10 +42,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return cdcPageMetadata(path);
 }
 
-export default function JournalPostPage({ params }: Props) {
+export default async function JournalPostPage({ params }: Props) {
   const cultureEntry = getPublishedEditorialBySlug(params.slug);
   if (cultureEntry) {
-    return <EditorialDetail entry={cultureEntry} />;
+    const mdx = await compileEditorialBody(cultureEntry);
+    return <EditorialDetail entry={cultureEntry} mdx={mdx} />;
   }
 
   const path = `/journal/${params.category}/${params.slug}`;

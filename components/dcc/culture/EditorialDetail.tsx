@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { PageHero, Section } from '@/components/marketing/cdc'
 import { CultureMediaFrame } from '@/components/dcc/culture/CultureMediaFrame'
 import { CultureRelatedList } from '@/components/dcc/culture/CultureRelatedList'
+import { EditorialImageSlot } from '@/components/dcc/culture/EditorialImageSlot'
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes'
 import {
   artistHref,
@@ -17,14 +19,17 @@ import {
 
 type EditorialDetailProps = {
   entry: DccEditorial
+  mdx?: ReactNode | null
 }
 
-export function EditorialDetail({ entry }: EditorialDetailProps) {
+export function EditorialDetail({ entry, mdx }: EditorialDetailProps) {
   const path = getEditorialPublicPath(entry)
   const artists = getArtistsForEditorial(entry)
   const programs = getProgramsForEditorial(entry)
   const projects = getProjectsForEditorial(entry)
   const blocks = (entry.body ?? '').split('\n\n').filter(Boolean)
+  const hasMdx = Boolean(mdx)
+  const hasInlineBody = !hasMdx && blocks.length > 0
 
   return (
     <>
@@ -48,6 +53,10 @@ export function EditorialDetail({ entry }: EditorialDetailProps) {
               aspectClassName="aspect-[16/9]"
               priority
             />
+          </div>
+        ) : entry.heroSlot ? (
+          <div className="mt-8 max-w-3xl">
+            <EditorialImageSlot {...entry.heroSlot} />
           </div>
         ) : null}
 
@@ -77,7 +86,9 @@ export function EditorialDetail({ entry }: EditorialDetailProps) {
           </div>
         ) : null}
 
-        {blocks.length > 0 ? (
+        {hasMdx ? (
+          <div className="editorial-prose mt-10">{mdx}</div>
+        ) : hasInlineBody ? (
           <div className="mt-10 max-w-2xl space-y-5 text-base leading-relaxed text-neutral-700 dark:text-neutral-300">
             {blocks.map((block, index) => {
               if (block.startsWith('## ')) {

@@ -124,6 +124,18 @@ export type DccProgram = {
   distribution?: DccDistribution
 }
 
+export type DccEditorialImageRatio = '16:9' | '4:3'
+
+export type DccEditorialImageRole = 'hero' | 'diagram' | 'editorial-photo' | 'map'
+
+export type DccEditorialImageSlot = {
+  id: string
+  ratio: DccEditorialImageRatio
+  role: DccEditorialImageRole
+  title: string
+  brief?: string
+}
+
 export type DccEditorial = {
   id: string
   slug: string
@@ -137,6 +149,8 @@ export type DccEditorial = {
   projectIds?: string[]
   heroImage?: string
   heroImageAlt?: string
+  /** Planning placeholder when no heroImage exists yet. Not documentary evidence. */
+  heroSlot?: DccEditorialImageSlot
   images?: string[]
   videoUrl?: string
   audioUrl?: string

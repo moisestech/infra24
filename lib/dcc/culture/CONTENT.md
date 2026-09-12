@@ -30,7 +30,11 @@ Still needed before the program page can feel finished:
 
 ## Journal
 
-**Published:** `a-digital-lab-is-not-a-room-full-of-equipment` — essay, Moises Sanabria, 11 September 2026. No hero image (honest fallback). No `artistIds` / `programIds` / `projectIds`.
+**Published:**
+
+- `a-digital-lab-is-not-a-room-full-of-equipment` — essay, Moises Sanabria, 11 September 2026. Inline `body`. No hero. No relations.
+- `the-artist-doesnt-need-to-learn-everything` — essay, 12 September 2026 (working date). `bodyPath` MDX. Hero + inline `EditorialImageSlot` placeholders. No relations.
+- `miami-doesnt-have-a-digital-art-problem` — essay, 12 September 2026 (working date). `bodyPath` MDX. Hero + inline slots. No relations.
 
 **Still empty (on purpose):** DCC Conversations — guest names, recording + transcript, optional video/audio. A podcast feed is not launching in this phase.
 

@@ -5,7 +5,9 @@ import type { DccEditorial } from '@/lib/dcc/culture/types'
  * Journal records. Medium-agnostic: written, video, audio, or a combination.
  * Do not invent conversations, quotations, or guests.
  *
- * Body uses `\n\n` paragraph breaks. `## Heading` lines render as h2 in EditorialDetail.
+ * Body uses `\n\n` paragraph breaks for short inline records. `## Heading` lines
+ * render as h2 in EditorialDetail. Longer essays use `bodyPath` MDX under
+ * `content/journal/`. `bodyPath` takes precedence when present.
  * Do not invent guests for conversations; a podcast feed is not launching in this phase.
  */
 export const DCC_EDITORIAL: DccEditorial[] = [
@@ -193,16 +195,77 @@ What can someone actually accomplish here—and what systems exist to help them 
 
 That is the infrastructure I want DCC Miami to keep building.`,
   },
+  {
+    id: 'the-artist-doesnt-need-to-learn-everything',
+    slug: 'the-artist-doesnt-need-to-learn-everything',
+    title: "The Artist Doesn't Need to Learn Everything",
+    dek: 'Digital culture has taught artists to become their own technicians, producers, fabricators, installers, and troubleshooters. Sometimes learning the tool is the answer. Sometimes the better answer is finding the person who already knows it.',
+    type: 'essay',
+    publishedAt: '2026-09-12',
+    author: 'Moises Sanabria',
+    featured: false,
+    status: 'published',
+    seoTitle: "The Artist Doesn't Need to Learn Everything | DCC Miami",
+    seoDescription:
+      'Artists do not need to master every technical tool themselves. DCC Miami explores expertise, collaboration, technical literacy, and why access to the right person can matter as much as access to equipment.',
+    excerpt:
+      'Digital culture has taught artists to become their own technicians, producers, fabricators, installers, and troubleshooters. Sometimes learning the tool is the answer. Sometimes the better answer is finding the person who already knows it.',
+    pullQuote:
+      'Does the artist need to learn this skill, or does the project need access to this skill?',
+    bodyPath: 'content/journal/the-artist-doesnt-need-to-learn-everything.mdx',
+    heroSlot: {
+      id: '02-hero',
+      ratio: '16:9',
+      role: 'hero',
+      title: 'An unfinished idea meets specialized knowledge',
+      brief:
+        'A grounded DCC-scale workspace. An artist and technical collaborator reviewing an unfinished prototype, model, sketch, or fabrication problem together — work that exists between people, not between a lone artist and a machine.',
+    },
+  },
+  {
+    id: 'miami-doesnt-have-a-digital-art-problem',
+    slug: 'miami-doesnt-have-a-digital-art-problem',
+    title: "Miami Doesn't Have a Digital-Art Problem. It Has an Infrastructure Problem.",
+    dek: 'Miami already has artists working with software, 3D tools, AI, immersive media, fabrication, moving image, and networked culture. What often feels missing is not talent or technology, but the connective infrastructure that helps those ideas move from experiment to production, exhibition, and sustained public life.',
+    type: 'essay',
+    publishedAt: '2026-09-12',
+    author: 'Moises Sanabria',
+    featured: false,
+    status: 'published',
+    seoTitle:
+      "Miami Doesn't Have a Digital-Art Problem. It Has an Infrastructure Problem. | DCC Miami",
+    seoDescription:
+      'DCC Miami explores why the future of digital culture in Miami depends less on acquiring more technology and more on connecting artists, expertise, fabrication, education, institutions, and opportunity.',
+    excerpt:
+      'Miami already has artists working with software, 3D tools, AI, immersive media, fabrication, moving image, and networked culture. What often feels missing is not talent or technology, but the connective infrastructure that helps those ideas move from experiment to production, exhibition, and sustained public life.',
+    pullQuote: 'Uncoordinated capacity can feel a lot like scarcity.',
+    bodyPath: 'content/journal/miami-doesnt-have-a-digital-art-problem.mdx',
+    heroSlot: {
+      id: '03-hero',
+      ratio: '16:9',
+      role: 'hero',
+      title: 'The pieces already exist',
+      brief:
+        'A grounded collage of real cultural capacity: an artist workstation, fabrication equipment, workshop or education, installation or exhibition, and a small Miami-specific environmental fragment. Artists, equipment, expertise, education, and institutions exist. The connections are the problem.',
+    },
+  },
 ]
 
 export function isPublishedEditorial(entry: DccEditorial): boolean {
   return (entry.status ?? 'published') === 'published'
 }
 
+function compareEditorialDateDesc(a: DccEditorial, b: DccEditorial): number {
+  const da = a.publishedAt ?? ''
+  const db = b.publishedAt ?? ''
+  if (da === db) return 0
+  return db.localeCompare(da)
+}
+
 export function listEditorial(
   editorial: readonly DccEditorial[] = DCC_EDITORIAL
 ): DccEditorial[] {
-  return editorial.filter(isPublishedEditorial)
+  return editorial.filter(isPublishedEditorial).slice().sort(compareEditorialDateDesc)
 }
 
 export function listFeaturedEditorial(

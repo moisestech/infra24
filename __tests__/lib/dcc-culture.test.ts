@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { getAllCdcPaths, getCdcPageByPath, getProgramLeaves } from '@/lib/cdc/routes'
 import { DCC_STUDIO_TOURS, getStudioTourByArtistSlug } from '@/lib/dcc/studios'
 import {
@@ -136,28 +138,64 @@ describe('dcc culture public seed', () => {
     ])
   })
 
-  it('publishes the first journal essay without placeholder shells or invented relations', () => {
-    expect(DCC_EDITORIAL).toHaveLength(1)
-    const essay = listEditorial()[0]
-    expect(essay?.slug).toBe('a-digital-lab-is-not-a-room-full-of-equipment')
-    expect(essay?.type).toBe('essay')
-    expect(essay?.author).toBe('Moises Sanabria')
-    expect(essay?.status).toBe('published')
-    expect(essay?.featured).toBe(true)
-    expect(essay?.heroImage).toBeUndefined()
-    expect(essay?.artistIds).toBeUndefined()
-    expect(essay?.programIds).toBeUndefined()
-    expect(essay?.projectIds).toBeUndefined()
-    expect(essay?.body).toMatch(/## Acquisition is not access/)
-    expect(listFeaturedEditorial().map((entry) => entry.slug)).toEqual([essay?.slug])
-    expect(getEditorialPublicPath(essay!)).toBe(
+  it('publishes three journal essays without placeholder shells or invented relations', () => {
+    expect(DCC_EDITORIAL).toHaveLength(3)
+    expect(listEditorial().map((entry) => entry.slug)).toEqual([
+      'the-artist-doesnt-need-to-learn-everything',
+      'miami-doesnt-have-a-digital-art-problem',
+      'a-digital-lab-is-not-a-room-full-of-equipment',
+    ])
+
+    const essay01 = DCC_EDITORIAL.find(
+      (entry) => entry.slug === 'a-digital-lab-is-not-a-room-full-of-equipment'
+    )
+    expect(essay01?.type).toBe('essay')
+    expect(essay01?.author).toBe('Moises Sanabria')
+    expect(essay01?.status).toBe('published')
+    expect(essay01?.featured).toBe(true)
+    expect(essay01?.heroImage).toBeUndefined()
+    expect(essay01?.heroSlot).toBeUndefined()
+    expect(essay01?.bodyPath).toBeUndefined()
+    expect(essay01?.artistIds).toBeUndefined()
+    expect(essay01?.programIds).toBeUndefined()
+    expect(essay01?.projectIds).toBeUndefined()
+    expect(essay01?.body).toMatch(/## Acquisition is not access/)
+    expect(listFeaturedEditorial().map((entry) => entry.slug)).toEqual([essay01?.slug])
+    expect(getEditorialPublicPath(essay01!)).toBe(
       '/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment'
     )
-    expect(getCdcPageByPath('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')?.title).toBe(
-      essay?.title
+    expect(
+      getCdcPageByPath('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')?.title
+    ).toBe(essay01?.title)
+
+    const essay02 = DCC_EDITORIAL.find(
+      (entry) => entry.slug === 'the-artist-doesnt-need-to-learn-everything'
     )
+    const essay03 = DCC_EDITORIAL.find(
+      (entry) => entry.slug === 'miami-doesnt-have-a-digital-art-problem'
+    )
+    expect(essay02?.status).toBe('published')
+    expect(essay02?.featured).toBe(false)
+    expect(essay02?.body).toBeUndefined()
+    expect(essay02?.bodyPath).toBe(
+      'content/journal/the-artist-doesnt-need-to-learn-everything.mdx'
+    )
+    expect(essay02?.artistIds).toBeUndefined()
+    expect(essay02?.programIds).toBeUndefined()
+    expect(essay02?.projectIds).toBeUndefined()
+    expect(essay02?.heroImage).toBeUndefined()
+    expect(essay02?.heroSlot?.id).toBe('02-hero')
+    expect(essay03?.bodyPath).toBe('content/journal/miami-doesnt-have-a-digital-art-problem.mdx')
+    expect(essay03?.artistIds).toBeUndefined()
+    expect(essay03?.programIds).toBeUndefined()
+    expect(essay03?.projectIds).toBeUndefined()
+    expect(existsSync(join(process.cwd(), essay02!.bodyPath!))).toBe(true)
+    expect(existsSync(join(process.cwd(), essay03!.bodyPath!))).toBe(true)
+
     const paths = getAllCdcPaths()
     expect(paths).toContain('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')
+    expect(paths).toContain('/journal/essays/the-artist-doesnt-need-to-learn-everything')
+    expect(paths).toContain('/journal/essays/miami-doesnt-have-a-digital-art-problem')
     expect(paths).not.toContain('/journal/essays/why-miami-needs-digital-culture-infrastructure')
     expect(paths).not.toContain('/journal/essays/what-is-artist-centered-digital-infrastructure')
     expect(paths).not.toContain('/journal/field-notes/notes-from-a-public-interface-pilot')

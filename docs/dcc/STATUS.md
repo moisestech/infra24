@@ -19,9 +19,9 @@
 |---|---|
 | Date | 12 September 2026 |
 | Branch | `main` |
-| Last culture commits | Clandestine Program 001 is a coming-soon page (roster/dates/venue still unknown); first published journal essay |
+| Last culture commits | Journal essays 02–03 via `bodyPath` MDX; Clandestine Program 001 is a coming-soon page |
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
-| Culture records published | 1 program (Clandestine 2026, coming soon). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). **1 journal essay** (`a-digital-lab-is-not-a-room-full-of-equipment`). 0 culture projects. |
+| Culture records published | 1 program (Clandestine 2026, coming soon). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). **3 journal essays** (01 inline `body`; 02–03 `bodyPath` MDX). 0 culture projects. |
 | Fabricate Phase 2 | On `main`: Field Lab, estimate planner, `/fabricate/projects`. Hero is **conceptual** (not documentary). |
 | Images | **Filled vs not:** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md) § Filled vs not. Teaching stills are conceptual; documentary fabricate/Clandestine/Bakehouse/class shots are not filled. |
 
@@ -60,14 +60,14 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 |---|---|---|---|---|
 | `/` hero, collage, pathways | marketing | Real Cloudinary photography | Rotating headlines (reduced-motion aware); card hover scale | Shipped |
 | `/` `#now` band | culture | None (text slots) | Links only | Shipped; Clandestine CTA is “Coming soon”; “Full snapshot” → `/now`; Artist slot shows featured founder (Moises); Journal slot shows featured essay |
-| `/now` | culture | None | Still | Public known-facts ledger; copy in `lib/dcc/culture/now.ts`; must agree with this file; live column includes published essay; Conversations still forthcoming |
+| `/now` | culture | None | Still | Public known-facts ledger; live journal slot is latest by `publishedAt` (essay 02); Conversations still forthcoming |
 | `/artists` | culture | Knight / Edge Zones portraits | Hover when `src` exists | Three founders published; not a Clandestine roster |
 | `/artists/[slug]` | culture | Portrait + hero where confirmed | Hover with `src`; 360 on Moises + Fabiola | Angelo has no tour |
 | `/programs` | culture + CDC | Clandestine card has fallback | CardGrid hover on taxonomy cards | Shipped; Current/Upcoming + existing service catalog |
 | `/programs/art-fairs/clandestine-art-fair-2026` | culture | No hero | Still; no fake gallery/testimonials | Program 001 coming-soon page; roster/dates/venue unpublished |
-| `/journal` | culture + CDC | Honest fallback until hero exists | CardGrid hover on category tiles | 1 published essay; conversations empty; no podcast |
+| `/journal` | culture + CDC | Honest fallback / image slots until heroes exist | CardGrid hover on category tiles | 3 published essays; conversations empty; no podcast; no CMS; newsletter/RSS still pending |
 | `/journal/conversations` | culture | None | Still | Empty on purpose |
-| `/journal/[category]/[slug]` | culture | No hero on first essay | Culture body via `DccEditorial.body` (`## ` headings) | CDC title-only shells removed |
+| `/journal/[category]/[slug]` | culture | Essay 01: no hero. Essays 02–03: `EditorialImageSlot` hero + inline slots | Culture body via `body` or `bodyPath` MDX (`compileMDX` / `next-mdx-remote/rsc`) | Essay 01 preserved inline; 02–03 at `content/journal/<slug>.mdx`. Working dates for 02–03: **2026-09-12** (update before a later merge if publication day changes). |
 | `/workshops` | education | Saturday Lab / vibe banners plus two 3D catalog cards on conceptual educational stills | Live catalog client; org grid omitted when empty | Public 3D pair is 3D Printing for Artists + AI → 3D; IP Age of AI is Oolite-only; resin is not a catalog card |
 | `/workshop/3d-printing-for-artists` | education | Conceptual stills (`PRINT` `CLEANUP` `FINISH` `MEASURE` `COMPARE`) | Editorial page; inquiry via newsletter | HTML labels; caption **Conceptual educational image** |
 | `/workshop/ai-3d-physical-object` | education | Conceptual stills (`MODEL` `IMAGINE` `PREPARE` `PRINT` `FINISH` `TEST` `OUTCOME`); PRINT reuses machine detail | Editorial page; inquiry via newsletter | Can land on PLA FDM or resin SLA |
@@ -109,9 +109,11 @@ Moises Studio 43 + Fabiola 360s. Light `tone` on artist pages. Angelo: no tour �
 
 Full production list (types, sizes, primary + alternate, make order): [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md).
 
-### Culture — founder portraits; Clandestine still has no program images
+### Culture — founder portraits; journal image slots pending; Clandestine still has no program images
 
-Published artists reuse Knight / Edge Zones / homepage Cloudinary URLs. `DCC_EDITORIAL = []`, `DCC_PROJECTS = []`. Clandestine has no `heroImage`.
+Published artists reuse Knight / Edge Zones / homepage Cloudinary URLs. Three journal essays are published; 02–03 use `EditorialImageSlot` placeholders (not documentary). `DCC_PROJECTS = []`. Clandestine has no `heroImage`.
+
+Journal image production grammar: Studio 43 as it actually is — industrial, dense, equipment-heavy, shelves, screens, cables. No plants, giant windows, palm-tree campus, or luxury lab fiction. Do not generate or import finals in this checkpoint.
 
 When new: `public/dcc/culture/artists/{slug}/` or Cloudinary `dccmiami/artists/{slug}/`.
 
@@ -142,7 +144,7 @@ Eleven conceptual educational stills wired on `/workshop/3d-printing-for-artists
 
 **Moves:** homepage hero rotation; collage/pathway hover; studio click-to-enter; fabricate estimate/quote; workshop catalog/engine; culture card hover **only with a real `src`**.
 
-**Stays still:** Clandestine coming-soon page, journal empty conversations, culture related lists, empty image frames.
+**Stays still:** Clandestine coming-soon page, journal empty conversations, editorial image slots, culture related lists, empty image frames.
 
 **Do not build this phase:** Instagram generation, podcast product, live slicer/machine status, gallery checkout, Airtable culture sync.
 
@@ -176,7 +178,7 @@ Eleven conceptual educational stills wired on `/workshop/3d-printing-for-artists
 2. A DCC-owned paid SKU only if QGiv is not the system of record (do not duplicate Oolite checkout).
 3. Then: Stripe Checkout → Mercury → QuickBooks as books of record. Do not invent tax mapping in code until the entity is confirmed.
 
-Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/relations.ts`. Journal long form: `body` or `bodyPath` under `content/journal/<slug>.md`.
+Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/relations.ts`. Journal long form: short records use `body`; longer essays use `bodyPath` MDX under `content/journal/<slug>.mdx` compiled with `next-mdx-remote/rsc`. Editorial image slots exist; final images still pending. Newsletter/RSS still pending. No CMS.
 
 ---
 
