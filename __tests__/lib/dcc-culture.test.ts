@@ -153,7 +153,9 @@ describe('dcc culture public seed', () => {
     expect(essay01?.author).toBe('Moises Sanabria')
     expect(essay01?.status).toBe('published')
     expect(essay01?.featured).toBe(true)
-    expect(essay01?.heroImage).toBeUndefined()
+    expect(essay01?.heroImage).toContain(
+      'dccmiami/journal/a-digital-lab-is-not-a-room-full-of-equipment_rqhmks'
+    )
     expect(essay01?.heroSlot).toBeUndefined()
     expect(essay01?.bodyPath).toBeUndefined()
     expect(essay01?.artistIds).toBeUndefined()
@@ -183,7 +185,12 @@ describe('dcc culture public seed', () => {
     expect(essay02?.artistIds).toBeUndefined()
     expect(essay02?.programIds).toBeUndefined()
     expect(essay02?.projectIds).toBeUndefined()
-    expect(essay02?.heroImage).toBeUndefined()
+    expect(essay02?.heroImage).toContain(
+      'dccmiami/journal/artist-doesnt-need-to-learn-everything_oz7ipo'
+    )
+    expect(essay03?.heroImage).toContain(
+      'dccmiami/journal/miami-doesnt-have-a-digital-art-problem-it-has-an-infrastructure-problem_kz4qjt'
+    )
     expect(essay02?.heroSlot?.id).toBe('02-hero')
     expect(essay03?.bodyPath).toBe('content/journal/miami-doesnt-have-a-digital-art-problem.mdx')
     expect(essay03?.artistIds).toBeUndefined()

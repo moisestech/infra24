@@ -21,6 +21,9 @@ export const DCC_EDITORIAL: DccEditorial[] = [
     author: 'Moises Sanabria',
     featured: true,
     status: 'published',
+    heroImage:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1789319099/dccmiami/journal/a-digital-lab-is-not-a-room-full-of-equipment_rqhmks.png',
+    heroImageAlt: 'Graphic cover for A Digital Lab Is Not a Room Full of Equipment',
     seoTitle: 'A Digital Lab Is Not a Room Full of Equipment | DCC Miami',
     seoDescription:
       'Digital access requires more than buying technology. It requires maintenance, knowledge, people, documentation, and continuity.',
@@ -213,6 +216,9 @@ That is the infrastructure I want DCC Miami to keep building.`,
     pullQuote:
       'Does the artist need to learn this skill, or does the project need access to this skill?',
     bodyPath: 'content/journal/the-artist-doesnt-need-to-learn-everything.mdx',
+    heroImage:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1789319100/dccmiami/journal/artist-doesnt-need-to-learn-everything_oz7ipo.png',
+    heroImageAlt: "Graphic cover for The Artist Doesn't Need to Learn Everything",
     heroSlot: {
       id: '02-hero',
       ratio: '16:9',
@@ -240,6 +246,10 @@ That is the infrastructure I want DCC Miami to keep building.`,
       'Miami already has artists working with software, 3D tools, AI, immersive media, fabrication, moving image, and networked culture. What often feels missing is not talent or technology, but the connective infrastructure that helps those ideas move from experiment to production, exhibition, and sustained public life.',
     pullQuote: 'Uncoordinated capacity can feel a lot like scarcity.',
     bodyPath: 'content/journal/miami-doesnt-have-a-digital-art-problem.mdx',
+    heroImage:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto/f_auto/v1789319098/dccmiami/journal/miami-doesnt-have-a-digital-art-problem-it-has-an-infrastructure-problem_kz4qjt.png',
+    heroImageAlt:
+      "Graphic cover for Miami Doesn't Have a Digital-Art Problem. It Has an Infrastructure Problem.",
     heroSlot: {
       id: '03-hero',
       ratio: '16:9',
