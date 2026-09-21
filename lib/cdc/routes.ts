@@ -11,6 +11,7 @@ import {
   getEditorialPublicPath,
   getProgramPublicPath,
   JOURNAL_HERO_DESCRIPTION,
+  JOURNAL_INDEX_SECTION_DESCRIPTION,
   listArtists,
   listEditorial,
   listPrograms,
@@ -852,7 +853,9 @@ for (const cat of JOURNAL_CATEGORIES) {
     p({
       path: `/journal/${cat.slug}`,
       title: cat.title,
-      description: `${cat.title} from Digital Culture Center Miami.`,
+      description:
+        JOURNAL_INDEX_SECTION_DESCRIPTION[cat.slug] ??
+        `${cat.title} from Digital Culture Center Miami.`,
       parent: '/journal',
       layout: 'default',
     })

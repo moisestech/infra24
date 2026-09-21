@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { cultureMediaMotionEnabled } from '@/lib/dcc/culture'
+import { marketingGradientSurfaceClass } from '@/lib/marketing/marketing-gradients'
 import { cn } from '@/lib/utils'
 
 type CultureMediaFrameProps = {
@@ -22,8 +23,11 @@ export function CultureMediaFrame({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden bg-neutral-200/80 dark:bg-neutral-800',
+        'group relative overflow-hidden',
         aspectClassName,
+        src
+          ? 'bg-neutral-200/80 dark:bg-neutral-800'
+          : marketingGradientSurfaceClass('meshSlate'),
         className
       )}
     >
@@ -46,7 +50,7 @@ export function CultureMediaFrame({
           role="img"
           aria-label={alt || fallbackLabel}
         >
-          <p className="text-xs uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-400">
+          <p className="text-xs uppercase tracking-[0.16em] text-neutral-400">
             {fallbackLabel}
           </p>
         </div>

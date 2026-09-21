@@ -15,6 +15,8 @@ export const metadata: Metadata = {
     'Updateable public communication systems for nonprofits and cultural organizations—plus a multi-tenant platform for cultural orgs.',
 }
 
+const themeInitScript = `(function(){try{var stored=localStorage.getItem('theme');var theme=stored==='light'||stored==='dark'||stored==='system'?stored:'system';var resolved=theme==='system'?(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):theme;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);root.style.colorScheme=resolved;}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: {
@@ -23,6 +25,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        </head>
         <body className={inter.className}>
           <ThemeProvider>
             <TenantProvider>

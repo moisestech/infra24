@@ -91,11 +91,12 @@ export function SiteHeader() {
           <MarketingHeaderCenterLogo
             size="topBar"
             priority
-            className="pointer-events-auto w-[min(15rem,calc(100vw-9rem))] sm:w-[min(15rem,calc(100vw-10rem))]"
+            className="pointer-events-auto w-[min(15rem,calc(100vw-12rem))] sm:w-[min(15rem,calc(100vw-13rem))]"
           />
         </div>
 
         <div className="relative z-20 ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
+          <MarketingThemeToggle className="h-11 w-11 sm:h-12 sm:w-12" />
           <Sheet>
             <SheetTrigger asChild>
               <button type="button" className={menuButtonClass} aria-label="Open menu" aria-haspopup="dialog">

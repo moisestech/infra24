@@ -155,24 +155,48 @@ Program page today: **no image** — honest fallback. That is correct until the 
 
 Homepage collage **already has** real photography in [`lib/marketing/dcc-home-photography.ts`](../../lib/marketing/dcc-home-photography.ts). Do not reshoot unless you want a cultural-center H1. `/` `#now` is **text-only** — optional later: 4:5 thumbs for Clandestine / featured artist / journal (same files as program/artist/editorial heroes).
 
-### A3. Journal essays 02–03 — placeholders live; finals pending
+### A3. Journal essays 02–03 — diagrams live; photo slots pending
 
 Slots render in-article via `EditorialImageSlot`. Status is **PLACEHOLDER** until a real file is dropped. Visual grammar: Studio 43 as it is — industrial, dense, equipment-heavy, shelves, screens, cables. No plants, giant windows, palm-tree campus, or luxury lab fiction. Do not invent partner names on the Miami map.
 
 | Article | Slot ID | Role | Aspect | Where | Visual brief | Status |
 |---|---|---|---|---|---|---|
-| Artist Doesn't Need Everything | `02-hero` | hero | 16:9 | Article header | Artist + specialist + unfinished idea | PLACEHOLDER |
+| Artist Doesn't Need Everything | `02-hero` | hero | 16:9 | Stored on record; **not rendered** while `heroImage` is set (`EditorialDetail` prefers the Cloudinary cover) | Artist + specialist + unfinished idea | COVERED BY `heroImage` — do not expect `[data-editorial-image-slot="02-hero"]` |
 | | `artist-too-many-jobs` | editorial-photo | 4:3 | After “too many jobs assigned to one person” | Burden of self-sufficiency | PLACEHOLDER |
-| | `capability-network` | diagram | 16:9 | After “Access to capabilities.” | DCC capability diagram | PLACEHOLDER |
-| | `different-kinds-of-labor` | diagram | 16:9 | After “Those are different kinds of labor.” | Share → teach → collaborate → consult → produce | PLACEHOLDER |
+| | `capability-network` | diagram | 16:9 | After “Access to capabilities.” | DCC capability diagram | LIVE — `public/dcc/culture/editorial/the-artist-doesnt-need-to-learn-everything/capability-network.svg` |
+| | `different-kinds-of-labor` | diagram | 16:9 | After “Those are different kinds of labor.” | Share → teach → collaborate → consult → produce | LIVE — `public/dcc/culture/editorial/the-artist-doesnt-need-to-learn-everything/different-kinds-of-labor.svg` |
 | | `knowing-who-to-call` | editorial-photo | 4:3 | Before final two paragraphs | People around unfinished work | PLACEHOLDER |
-| Miami Infrastructure | `03-hero` | hero | 16:9 | Article header | Existing resources, fragmented | PLACEHOLDER |
-| | `distributed-cultural-network` | diagram | 16:9 | After “It is a production system.” | Distributed cultural system | PLACEHOLDER |
-| | `idea-to-realization-distance` | diagram | 16:9 | After “Infrastructure reduces that distance.” | Idea → resource → test → work | PLACEHOLDER |
+| Miami Infrastructure | `03-hero` | hero | 16:9 | Stored on record; **not rendered** while `heroImage` is set | Existing resources, fragmented | COVERED BY `heroImage` — do not expect `[data-editorial-image-slot="03-hero"]` |
+| | `distributed-cultural-network` | diagram | 16:9 | After “It is a production system.” | Distributed cultural system | LIVE — `public/dcc/culture/editorial/miami-doesnt-have-a-digital-art-problem/distributed-cultural-network.svg` |
+| | `idea-to-realization-distance` | diagram | 16:9 | After “Infrastructure reduces that distance.” | Idea → resource → test → work | LIVE — `public/dcc/culture/editorial/miami-doesnt-have-a-digital-art-problem/idea-to-realization-distance.svg` |
 | | `paid-cultural-labor` | editorial-photo | 4:3 | After burnout sentence | Technical labor as cultural labor | PLACEHOLDER |
 | | `miami-distributed-studio` | map | 16:9 | After “The infrastructure exists across the city.” | Miami as distributed studio; no unconfirmed partners | PLACEHOLDER |
 
-Four of these are diagrams. Do not fill the Journal with fake cinematic maker-space photos.
+Four diagrams are live as editorial SVG (16:9). Cover images use Cloudinary `heroImage`, so unused `heroSlot` IDs are not rendered. Do not fill remaining photo/map slots with fake cinematic maker-space photos.
+
+### A3b. Cost essay — native diagrams live; cover pending
+
+`what-does-it-cost-to-run-digital-culture` is the Journal reference article. Diagrams are HTML in `components/dcc/culture/editorial/diagrams/`, not generated images. Do not add fake dashboards, progress rings, or dollar figures.
+
+| Article | Slot ID | Role | Aspect | Where | Visual brief | Status |
+|---|---|---|---|---|---|---|
+| What Does It Cost to Run Digital Culture? | `cost-hero` | hero | 16:9 | Record `heroSlot` until a cover exists | Working surface / receipt before dashboard. No fake metrics on screen. | PLACEHOLDER |
+| | capacity chain | diagram | wide HTML | After “Saving money is not the same as building capacity” | Literacy → agency → operations → human capacity → cultural impact | LIVE — native component |
+| | operating loop | diagram | wide HTML | After “Automate coordination. Keep judgment human.” | Inquiry through archive; coordination vs judgment | LIVE — native component |
+| | founder dependency | diagram | wide HTML | After “Founder dependency” | Four-stage conceptual progression; no percentages | LIVE — native component |
+
+### A3c. Public Art essay — figures pending; native diagrams live
+
+`when-public-art-becomes-infrastructure` is the second Journal reference. Do not generate historical photographs or AI decay. Use licensed images or keep the honest `EditorialFigure` empty state.
+
+| Article | Slot ID | Role | Aspect | Where | Visual brief | Status |
+|---|---|---|---|---|---|---|
+| When Public Art Becomes Infrastructure | `public-art-hero` | hero | 16:9 | Record `heroSlot` | Outdoor work with enclosure/power/access panel; civic, not spectacle | PLACEHOLDER |
+| | Messages to the Public | editorial-photo | wide | After *Messages to the Public* | Licensed historical Spectacolor / Times Square image | PLACEHOLDER — `EditorialFigure` |
+| | Bay Lights | editorial-photo | wide | After Bay Lights case study | Licensed Bay Bridge installation image | PLACEHOLDER — `EditorialFigure` |
+| | years later | editorial-photo | 4:3 | Closing | Maintenance access years after install; not generated ruin | PLACEHOLDER — `EditorialFigure` |
+| | responsibility stack | diagram | wide HTML | After “The city is the client” | Artwork → hardware → … → conservation, with civic actors | LIVE — native component |
+| | capital / operating | diagram | wide HTML | After “Capital budget, operating life” | Two-phase list; no dollar amounts | LIVE — native component |
 
 ### A4. Journal / Conversations (empty on purpose)
 

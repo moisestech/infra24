@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { forwardRef } from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
 import {
   DCC_MIAMI_LOGO_ALT,
   DCC_MIAMI_LOGO_URL_LIGHT,
@@ -30,7 +29,8 @@ const sizesAttr: Record<keyof typeof sizeClass, string> = {
 
 /**
  * Header wordmark: horizontally centered box, `object-contain` + `object-center`
- * (theme-aware Cloudinary assets). `ref` forwards to the home `Link` for sheet/drawer close.
+ * (theme-aware Cloudinary assets via `dark:` so the mark tracks `html.dark` without a flash).
+ * `ref` forwards to the home `Link` for sheet/drawer close.
  */
 export const MarketingHeaderCenterLogo = forwardRef<
   HTMLAnchorElement,
@@ -40,9 +40,6 @@ export const MarketingHeaderCenterLogo = forwardRef<
     priority?: boolean;
   }
 >(function MarketingHeaderCenterLogo({ size = 'header', className, priority = true }, ref) {
-  const { resolvedTheme } = useTheme();
-  const src = resolvedTheme === 'dark' ? DCC_MIAMI_LOGO_URL_WHITE : DCC_MIAMI_LOGO_URL_LIGHT;
-
   return (
     <Link
       ref={ref}
@@ -55,14 +52,25 @@ export const MarketingHeaderCenterLogo = forwardRef<
       aria-label={`${dccSiteMeta.organizationName} — home`}
     >
       <Image
-        src={src}
+        src={DCC_MIAMI_LOGO_URL_LIGHT}
         alt={DCC_MIAMI_LOGO_ALT}
         fill
         sizes={sizesAttr[size]}
-        className="object-contain object-center"
+        className="object-contain object-center dark:hidden"
         priority={priority}
         fetchPriority={priority ? 'high' : undefined}
         unoptimized
+      />
+      <Image
+        src={DCC_MIAMI_LOGO_URL_WHITE}
+        alt=""
+        fill
+        sizes={sizesAttr[size]}
+        className="hidden object-contain object-center dark:block"
+        priority={priority}
+        fetchPriority={priority ? 'high' : undefined}
+        unoptimized
+        aria-hidden
       />
     </Link>
   );

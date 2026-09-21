@@ -30,11 +30,15 @@ Still needed before the program page can feel finished:
 
 ## Journal
 
+**Position:** `/journal` is a thesis-driven index (artist → institution → city), not a blog stack. Opening sequence: Digital Lab, Cost, Public Art. Topics are six labels describing the published record, not a filter.
+
 **Published:**
 
-- `a-digital-lab-is-not-a-room-full-of-equipment` — essay, Moises Sanabria, 11 September 2026. Inline `body`. Graphic cover on Cloudinary. No relations.
-- `the-artist-doesnt-need-to-learn-everything` — essay, 12 September 2026 (working date). `bodyPath` MDX. Graphic cover on Cloudinary; remaining inline photo slots still placeholders. No relations.
-- `miami-doesnt-have-a-digital-art-problem` — essay, 12 September 2026 (working date). `bodyPath` MDX. Graphic cover on Cloudinary; remaining photo/map slots still placeholders. No relations.
+- `a-digital-lab-is-not-a-room-full-of-equipment` — essay, Moises Sanabria, 11 September 2026. `bodyPath` MDX. Graphic cover on Cloudinary. Topics: Infrastructure, Fabrication, Digital Literacy. No relations.
+- `the-artist-doesnt-need-to-learn-everything` — essay, 12 September 2026 (working date). `bodyPath` MDX. Graphic cover on Cloudinary; remaining inline photo slots still placeholders. Topics: Art & Technology, Digital Literacy, Fabrication. No relations.
+- `miami-doesnt-have-a-digital-art-problem` — essay, 12 September 2026 (working date). `bodyPath` MDX. Graphic cover on Cloudinary; remaining photo/map slots still placeholders. Topics: Infrastructure, Institutions, Public Space. No relations.
+- `what-does-it-cost-to-run-digital-culture` — living essay, 21 September 2026. `bodyPath` MDX. No cover image yet (`heroSlot` placeholder). Native diagrams + frameworks; sources on the record (`needsResearch` flagged, not fabricated). Related to the three earlier essays plus the public-art essay. Topics: Institutions, Digital Literacy, Infrastructure. **No operating values.**
+- `when-public-art-becomes-infrastructure` — essay, 21 September 2026. `bodyPath` MDX. No cover. `EditorialFigure` slots without photographs. Technical Rider as `EditorialFramework`. Related to Cost, Miami infrastructure, and Digital Lab. Topics: Public Space, Infrastructure, Institutions. Digital-specific Miami-Dade maintenance protocol marked `needsResearch`.
 
 **Still empty (on purpose):** DCC Conversations — guest names, recording + transcript, optional video/audio. A podcast feed is not launching in this phase.
 

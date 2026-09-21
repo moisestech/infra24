@@ -18,11 +18,11 @@
 
 | Field | Value |
 |---|---|
-| Date | 12 September 2026 |
+| Date | 21 September 2026 |
 | Branch | `main` |
-| Last culture commits | Journal essays 02–03 via `bodyPath` MDX; Clandestine Program 001 is a coming-soon page |
+| Last culture commits | Journal Phase 3: Public Art essay is the second reference MDX article (figures, citations, Technical Rider). Cost essay remains the first reference. No CMS. |
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
-| Culture records published | 1 program (Clandestine 2026, coming soon). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). **3 journal essays** (01 inline `body`; 02–03 `bodyPath` MDX). 0 culture projects. |
+| Culture records published | 1 program (Clandestine 2026, coming soon). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). **5 journal essays** (all `bodyPath` MDX). 0 culture projects. |
 | Fabricate Phase 2 | On `main`: Field Lab, estimate planner, `/fabricate/projects`. Hero is **conceptual** (not documentary). |
 | Images | **Filled vs not:** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md) § Filled vs not. Teaching stills are conceptual; documentary fabricate/Clandestine/Bakehouse/class shots are not filled. |
 
@@ -60,15 +60,15 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 | Route | Namespace | Image | Motion / interactivity | Status |
 |---|---|---|---|---|
 | `/` hero, collage, pathways | marketing | Real Cloudinary photography | Rotating headlines (reduced-motion aware); card hover scale | Shipped |
-| `/` `#now` band | culture | None (text slots) | Links only | Shipped; Clandestine CTA is “Coming soon”; “Full snapshot” → `/now`; Artist slot shows featured founder (Moises); Journal slot shows featured essay |
-| `/now` | culture | None | Still | Public known-facts ledger; live journal slot is latest by `publishedAt` (essay 02); Conversations still forthcoming |
+| `/` `#now` band | culture | None (text + Era effects) | Pathway cards share Era hover/effects | Snapshot (program, artist, journal) lives inside the same 9-pathway grid as workshops, fabricate, newsletter, network, events, open lab. “Full snapshot” → `/now`. Clinics / public interfaces stay on `/era`. |
+| `/now` | culture | None | Still | Public known-facts ledger; live journal slot is latest by `publishedAt` (Cost essay); Conversations still forthcoming |
 | `/artists` | culture | Knight / Edge Zones portraits | Hover when `src` exists | Three founders published; not a Clandestine roster |
 | `/artists/[slug]` | culture | Portrait + hero where confirmed | Hover with `src`; 360 on Moises + Fabiola | Angelo has no tour |
 | `/programs` | culture + CDC | Clandestine card has fallback | CardGrid hover on taxonomy cards | Shipped; Current/Upcoming + existing service catalog |
 | `/programs/art-fairs/clandestine-art-fair-2026` | culture | No hero | Still; no fake gallery/testimonials | Program 001 coming-soon page; roster/dates/venue unpublished |
-| `/journal` | culture + CDC | Honest fallback / image slots until heroes exist | CardGrid hover on category tiles | 3 published essays; conversations empty; no podcast; no CMS; newsletter/RSS still pending |
+| `/journal` | culture + CDC | Graphic covers on Cloudinary (`dccmiami/journal/…`); Cost and Public Art essays have no covers yet | Card hover when `src` exists | Thesis-driven index: opening sequence (Lab → Cost → Public Art) plus essay archive, Conversations empty state, six topic labels. Empty CDC shells not advertised. No podcast; no CMS; newsletter/RSS still pending |
 | `/journal/conversations` | culture | None | Still | Empty on purpose |
-| `/journal/[category]/[slug]` | culture | Essay 01: no hero. Essays 02–03: `EditorialImageSlot` hero + inline slots | Culture body via `body` or `bodyPath` MDX (`compileMDX` / `next-mdx-remote/rsc`) | Essay 01 preserved inline; 02–03 at `content/journal/<slug>.mdx`. Working dates for 02–03: **2026-09-12** (update before a later merge if publication day changes). |
+| `/journal/[category]/[slug]` | culture | Graphic covers as `heroImage` (takes precedence over unused `heroSlot`); Cost and Public Art essays use `heroSlot` until a cover exists; older essays 02–03 still have inline photo/map slots | Culture body via `bodyPath` MDX (`compileMDX` / `next-mdx-remote/rsc`) | Five essays at `content/journal/<slug>.mdx`. Cost essay is the first reference (living metadata, diagrams, frameworks). Public Art essay is the second (figures, citations, Technical Rider). No invented operating numbers. |
 | `/workshops` | education | Saturday Lab / vibe banners plus two 3D catalog cards on conceptual educational stills | Live catalog client; org grid omitted when empty | Public 3D pair is 3D Printing for Artists + AI → 3D; IP Age of AI is Oolite-only; resin is not a catalog card |
 | `/workshop/3d-printing-for-artists` | education | Conceptual stills (`PRINT` `CLEANUP` `FINISH` `MEASURE` `COMPARE`) | Editorial page; inquiry via newsletter | HTML labels; caption **Conceptual educational image** |
 | `/workshop/ai-3d-physical-object` | education | Conceptual stills (`MODEL` `IMAGINE` `PREPARE` `PRINT` `FINISH` `TEST` `OUTCOME`); PRINT reuses machine detail | Editorial page; inquiry via newsletter | Can land on PLA FDM or resin SLA |
@@ -110,11 +110,11 @@ Moises Studio 43 + Fabiola 360s. Light `tone` on artist pages. Angelo: no tour �
 
 Full production list (types, sizes, primary + alternate, make order): [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md).
 
-### Culture — founder portraits; journal image slots pending; Clandestine still has no program images
+### Culture — founder portraits; four journal diagrams live; photo/hero slots pending; Clandestine still has no program images
 
-Published artists reuse Knight / Edge Zones / homepage Cloudinary URLs. Three journal essays are published; 02–03 use `EditorialImageSlot` placeholders (not documentary). `DCC_PROJECTS = []`. Clandestine has no `heroImage`.
+Published artists reuse Knight / Edge Zones / homepage Cloudinary URLs. Five journal essays are published. Three have graphic covers at `dccmiami/journal/…`. Cost and Public Art essays have no covers yet. Cost uses native HTML diagrams; Public Art uses a responsibility stack plus capital/operating compare, with `EditorialFigure` slots empty until licensed images exist. Remaining photo/map slots stay PLACEHOLDER (not documentary). `DCC_PROJECTS = []`. Clandestine has no `heroImage`.
 
-Journal image production grammar: Studio 43 as it actually is — industrial, dense, equipment-heavy, shelves, screens, cables. No plants, giant windows, palm-tree campus, or luxury lab fiction. Do not generate or import finals in this checkpoint.
+Journal image production grammar: Studio 43 as it actually is — industrial, dense, equipment-heavy, shelves, screens, cables. No plants, giant windows, palm-tree campus, or luxury lab fiction. Do not generate photography for remaining slots.
 
 When new: `public/dcc/culture/artists/{slug}/` or Cloudinary `dccmiami/artists/{slug}/`.
 
@@ -179,7 +179,7 @@ Eleven conceptual educational stills wired on `/workshop/3d-printing-for-artists
 2. A DCC-owned paid SKU only if QGiv is not the system of record (do not duplicate Oolite checkout).
 3. Then: Stripe Checkout → Mercury → QuickBooks as books of record. Do not invent tax mapping in code until the entity is confirmed.
 
-Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/relations.ts`. Journal long form: short records use `body`; longer essays use `bodyPath` MDX under `content/journal/<slug>.mdx` compiled with `next-mdx-remote/rsc`. Editorial image slots exist; final images still pending. Newsletter/RSS still pending. No CMS.
+Architecture is ready: set IDs on records; pages resolve via `lib/dcc/culture/relations.ts`. Journal long form uses `bodyPath` MDX under `content/journal/<slug>.mdx` compiled with `next-mdx-remote/rsc` (`heroImage` takes precedence over unused `heroSlot`). Journal MDX allowlist includes pull quotes, figures, diagrams, frameworks, citations, and methodology tables. Cost essay and Public Art essay are the two reference implementations. Newsletter/RSS still pending. No CMS.
 
 ---
 

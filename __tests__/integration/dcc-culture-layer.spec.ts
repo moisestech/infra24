@@ -5,7 +5,7 @@ const DCC_CULTURAL_POSITION =
 const ARTISTS_EMPTY =
   'Artist profiles will appear here as DCC presents and documents work. Names, images and bios are published only when confirmed.'
 const JOURNAL_EMPTY_CONVERSATIONS =
-  'DCC Conversations will be published here as recorded interviews and studio visits are edited. A podcast feed is not launching in this phase.'
+  'Conversations are coming. DCC will speak with artists, fabricators, technologists, educators, institutional leaders, and others building the infrastructure of digital culture. A podcast feed is not launching in this phase.'
 
 test.describe('dcc culture + fabricate smokes', () => {
   test('home shows the cultural position and Clandestine as Now', async ({
@@ -25,6 +25,9 @@ test.describe('dcc culture + fabricate smokes', () => {
     ).toBeVisible()
     await expect(now.getByRole('link', { name: 'Coming soon' })).toBeVisible()
     await expect(now.getByRole('link', { name: 'Full snapshot' })).toBeVisible()
+    await expect(now.locator('[data-home-pathway]')).toHaveCount(9)
+    await expect(now.getByRole('heading', { name: 'Living Network' })).toBeVisible()
+    await expect(now.getByRole('heading', { name: 'Open Lab' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Artists', exact: true }).first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'Fabricate', exact: true }).first()).toBeVisible()
     await page.getByRole('link', { name: 'Meet the artist' }).click()
@@ -76,7 +79,7 @@ test.describe('dcc culture + fabricate smokes', () => {
     ).toBeVisible()
     await expect(page.getByText('Vibecoding & Net Art')).toBeVisible()
     await expect(
-      page.getByRole('heading', { name: "The Artist Doesn't Need to Learn Everything" })
+      page.getByRole('heading', { name: 'What Does It Cost to Run Digital Culture?' })
     ).toBeVisible()
     await expect(page.getByText(/The journal itself is live/)).toBeVisible()
     await expect(page.getByText('Skills: Intellectual Property in the Age of AI')).toHaveCount(0)
@@ -164,10 +167,20 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(
       page.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
     ).toBeVisible({ timeout: 15000 })
+    await expect(page.getByRole('link', { name: /^Essays/ })).toBeVisible()
+    await expect(page.getByRole('link', { name: /^Conversations/ })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Project updates/ })).toHaveCount(0)
+    await expect(page.getByRole('link', { name: /Public letters/ })).toHaveCount(0)
+    await expect(page.getByRole('link', { name: /Workshop notes/ })).toHaveCount(0)
+    await expect(page.getByRole('link', { name: /Field notes/ })).toHaveCount(0)
+    await expect(page.getByRole('link', { name: /Program recaps/ })).toHaveCount(0)
 
     await page.goto('/journal/essays')
     await expect(
       page.getByRole('link', { name: /A Digital Lab Is Not a Room Full of Equipment/ })
+    ).toBeVisible()
+    await expect(
+      page.getByText(/Buying technology is easy to see. Building access around it is much harder./)
     ).toBeVisible()
 
     await page.goto('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')
@@ -177,9 +190,21 @@ test.describe('dcc culture + fabricate smokes', () => {
     ).toBeVisible()
     await expect(page.getByText('Moises Sanabria')).toBeVisible()
     await expect(
+      page.getByRole('img', { name: /Graphic cover for A Digital Lab Is Not a Room Full of Equipment/ })
+    ).toBeVisible()
+    await expect(
       page.getByRole('heading', { name: 'Acquisition is not access' })
     ).toBeVisible()
     await expect(page.getByText(/Full article body will live here/)).toHaveCount(0)
+    await expect(page.getByText('Opening sequence')).toBeVisible()
+    await expect(page.getByText(/01\s*·\s*Artist/)).toBeVisible()
+    await expect(page.locator('[data-journal-hero-band]')).toHaveCount(0)
+    await expect(page.getByRole('navigation', { name: 'Essay sequence' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'All essays' })).toBeVisible()
+    await expect(
+      page.getByRole('link', { name: /Next[\s\S]*What Does It Cost to Run Digital Culture/ })
+    ).toBeVisible()
+    await expect(page.getByRole('link', { name: /^Previous/ })).toHaveCount(0)
   })
 
   test('fall essays 02 and 03 render long-form MDX with image slots', async ({
@@ -206,10 +231,19 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(
       page.getByRole('heading', { name: 'The myth of the self-sufficient digital artist' })
     ).toBeVisible()
-    await expect(page.locator('[data-editorial-image-slot="02-hero"]')).toBeVisible()
+    await expect(
+      page.getByRole('img', { name: /Graphic cover for The Artist Doesn't Need to Learn Everything/ })
+    ).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="02-hero"]')).toHaveCount(0)
     await expect(page.locator('[data-editorial-image-slot="artist-too-many-jobs"]')).toBeVisible()
     await expect(page.locator('[data-editorial-image-slot="capability-network"]')).toBeVisible()
+    await expect(
+      page.locator('[data-editorial-image-slot="capability-network"] img[src$="capability-network.svg"]')
+    ).toBeVisible()
     await expect(page.locator('[data-editorial-image-slot="different-kinds-of-labor"]')).toBeVisible()
+    await expect(
+      page.locator('[data-editorial-image-slot="different-kinds-of-labor"] img[src$="different-kinds-of-labor.svg"]')
+    ).toBeVisible()
     await expect(page.locator('[data-editorial-image-slot="knowing-who-to-call"]')).toBeVisible()
     await expect(page.getByText(/this is one of the most important diagrams/i)).toHaveCount(0)
 
@@ -220,11 +254,90 @@ test.describe('dcc culture + fabricate smokes', () => {
       })
     ).toBeVisible()
     await expect(page.getByRole('heading', { name: 'A network can be infrastructure' })).toBeVisible()
-    await expect(page.locator('[data-editorial-image-slot="03-hero"]')).toBeVisible()
+    await expect(
+      page.getByRole('img', {
+        name: /Graphic cover for Miami Doesn't Have a Digital-Art Problem/,
+      })
+    ).toBeVisible()
+    await expect(page.locator('[data-editorial-image-slot="03-hero"]')).toHaveCount(0)
     await expect(page.locator('[data-editorial-image-slot="distributed-cultural-network"]')).toBeVisible()
+    await expect(
+      page.locator(
+        '[data-editorial-image-slot="distributed-cultural-network"] img[src$="distributed-cultural-network.svg"]'
+      )
+    ).toBeVisible()
     await expect(page.locator('[data-editorial-image-slot="idea-to-realization-distance"]')).toBeVisible()
+    await expect(
+      page.locator(
+        '[data-editorial-image-slot="idea-to-realization-distance"] img[src$="idea-to-realization-distance.svg"]'
+      )
+    ).toBeVisible()
     await expect(page.locator('[data-editorial-image-slot="paid-cultural-labor"]')).toBeVisible()
     await expect(page.locator('[data-editorial-image-slot="miami-distributed-studio"]')).toBeVisible()
+  })
+
+  test('cost essay is the journal reference article with living metadata and primitives', async ({
+    page,
+  }) => {
+    await page.goto('/journal/essays/what-does-it-cost-to-run-digital-culture')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(
+      page.getByRole('heading', { name: 'What Does It Cost to Run Digital Culture?' })
+    ).toBeVisible()
+    await expect(page.getByText('Living essay — this article will be updated as DCC collects operating data.')).toBeVisible()
+    await expect(page.getByText('Moises Sanabria')).toBeVisible()
+    await expect(page.locator('[data-editorial-pullquote]').first()).toBeVisible()
+    await expect(page.locator('[data-editorial-diagram]')).toHaveCount(3)
+    await expect(page.locator('[data-editorial-framework]')).toHaveCount(2)
+    await expect(page.locator('[data-editorial-method-table]')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Five Artist Infrastructure Metrics' })).toBeVisible()
+    await expect(page.getByText('Measurement begins with the DCC pilot.').first()).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Sources' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Museum Computer Network' })).toBeVisible()
+    await expect(page.getByText(/Research needed/)).toBeVisible()
+    await expect(page.getByText(/\$\d/)).toHaveCount(0)
+    await expect(page.locator('[data-journal-hero-band]')).toHaveCount(1)
+    await expect(page.locator('[data-journal-hero-effect="particle-dispatch"]')).toBeVisible()
+    await expect(page.getByText('Opening sequence')).toBeVisible()
+    await expect(
+      page.getByRole('link', {
+        name: /Previous[\s\S]*A Digital Lab Is Not a Room Full of Equipment/,
+      })
+    ).toBeVisible()
+    await expect(
+      page.getByRole('link', {
+        name: /Next[\s\S]*When Public Art Becomes Infrastructure/,
+      })
+    ).toBeVisible()
+  })
+
+  test('public art essay uses existing primitives for rider, citations, and figures', async ({
+    page,
+  }) => {
+    await page.goto('/journal/essays/when-public-art-becomes-infrastructure')
+    await expect(page).not.toHaveURL(/sign-in/)
+    await expect(
+      page.getByRole('heading', { name: 'When Public Art Becomes Infrastructure' })
+    ).toBeVisible()
+    await expect(page.getByText('Moises Sanabria')).toBeVisible()
+    await expect(page.locator('[data-editorial-pullquote]').first()).toBeVisible()
+    await expect(page.locator('[data-editorial-figure]')).toHaveCount(3)
+    await expect(page.locator('[data-editorial-diagram]')).toHaveCount(2)
+    await expect(page.locator('[data-editorial-framework]')).toHaveCount(1)
+    await expect(
+      page.getByRole('heading', { name: 'Digital Public Art Technical Rider' })
+    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Sources' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Art in Public Places' }).first()).toBeVisible()
+    await expect(page.getByText(/Research needed/)).toBeVisible()
+    await expect(page.getByText(/\$\d/)).toHaveCount(0)
+    await expect(page.locator('[data-journal-hero-band]')).toHaveCount(1)
+    await expect(page.locator('[data-journal-hero-effect="city-scan"]')).toBeVisible()
+    await expect(
+      page.getByRole('link', {
+        name: /Next[\s\S]*The Artist Doesn't Need to Learn Everything/,
+      })
+    ).toBeVisible()
   })
 
   test('fabricate landing stays public and /fabrication aliases to it', async ({

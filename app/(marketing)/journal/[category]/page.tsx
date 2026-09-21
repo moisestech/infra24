@@ -1,14 +1,20 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { PageHero, Section, CardGrid } from '@/components/marketing/cdc';
+import { PageHero, Section, cdcSectionMuted, cdcSectionPaper } from '@/components/marketing/cdc';
+import { CultureRecordCard } from '@/components/dcc/culture/CultureRecordCard';
 import {
   getCdcBreadcrumbs,
   getCdcPageByPath,
   getJournalCategorySlugs,
-  getJournalPostsForCategory,
 } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
-import { JOURNAL_EMPTY_CONVERSATIONS } from '@/lib/dcc/culture';
+import {
+  EDITORIAL_TYPE_LABEL,
+  JOURNAL_EMPTY_CONVERSATIONS,
+  formatCultureDate,
+  getEditorialPublicPath,
+  listEditorialForJournalCategory,
+} from '@/lib/dcc/culture';
 
 type Props = { params: { category: string } };
 
@@ -26,12 +32,7 @@ export default function JournalCategoryPage({ params }: Props) {
   const def = getCdcPageByPath(path);
   if (!def) notFound();
 
-  const posts = getJournalPostsForCategory(params.category);
-  const items = posts.map((post) => ({
-    href: `/journal/${post.category}/${post.slug}`,
-    title: post.title,
-    description: 'Field note or essay from Digital Culture Center Miami.',
-  }));
+  const published = listEditorialForJournalCategory(params.category);
 
   return (
     <>
@@ -41,9 +42,25 @@ export default function JournalCategoryPage({ params }: Props) {
         description={def.description}
         breadcrumbs={getCdcBreadcrumbs(path)}
       />
-      <Section className="bg-[#fafafa] pb-16">
-        {items.length > 0 ? (
-          <CardGrid items={items} columnsClassName="sm:grid-cols-2" />
+      <Section
+        className={`${published.length > 0 ? cdcSectionPaper : cdcSectionMuted} border-t border-neutral-200 pb-16 dark:border-neutral-800`}
+      >
+        {published.length > 0 ? (
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {published.map((entry) => (
+              <CultureRecordCard
+                key={entry.id}
+                href={getEditorialPublicPath(entry)}
+                title={entry.title}
+                eyebrow={EDITORIAL_TYPE_LABEL[entry.type]}
+                meta={entry.publishedAt ? formatCultureDate(entry.publishedAt) : undefined}
+                description={entry.dek ?? entry.excerpt}
+                image={entry.heroImage}
+                imageAlt={entry.heroImageAlt ?? entry.title}
+                fallbackLabel="Image forthcoming"
+              />
+            ))}
+          </ul>
         ) : (
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {params.category === 'conversations'

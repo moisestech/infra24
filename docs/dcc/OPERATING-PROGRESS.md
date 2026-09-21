@@ -40,7 +40,7 @@ Related: [`STATUS.md`](./STATUS.md) (what’s on the site) · [`RECORD.md`](../.
 
 ### On `main` today
 
-- Culture: 3 artists, Clandestine coming-soon, **3 journal essays**, `DCC_PROJECTS = []`
+- Culture: 3 artists, Clandestine coming-soon, **5 journal essays**, `DCC_PROJECTS = []`
 - Education: public workshop pages; enrollment = inquiry / free RSVP
 - Fabricate: Field Lab, estimate ($151 seed, **not an invoice**), quote intake, internal test projects
 - Money: Stripe checkout **disabled**; Oolite paid classes on QGiv; Mercury/QBO **not in repo**
@@ -48,7 +48,7 @@ Related: [`STATUS.md`](./STATUS.md) (what’s on the site) · [`RECORD.md`](../.
 ### Still on PR #11 (open, not merged)
 
 - *You Can’t Buy Digital Culture*
-- Constrained markdown `bodyPath` loader (`editorial-body.ts`)
+- Constrained markdown `bodyPath` loader (`load-editorial-body.ts`)
 - OS v0.1: `OPERATING-MODEL.md`, `JOB-LIFECYCLE.md`, `MONEY-FLOW.md`, `PERMISSIONS.md`, `AIRTABLE-CHECKLIST.md`, `os-v1-schema.ts`
 
 ---
@@ -131,7 +131,7 @@ A **B** needs a working route, record, payment, automation, or live demo — not
 | # | Capability | Status | Evidence / next |
 |---|---|---|---|
 | 21 | QuickBooks + payment accounting | **N** | QBO/Mercury not in repo. Airtable Transactions = read for CEO scorecard. |
-| 22 | Journal infrastructure | **B** | `/journal` — 3 published essays |
+| 22 | Journal infrastructure | **B** | `/journal` — thesis-driven index; 5 published essays; Cost + Public Art are the two reference MDX articles; Essays + Conversations only |
 | 23 | Journal publishing workflow | **P** | Code records + `content/journal/*.mdx`. No CMS. Newsletter/RSS pending. |
 | 24 | Events / program calendar | **P** | `/events` hardcoded; Clandestine coming soon |
 | 25 | Studio visit booking | **P** | Infra24 booking exists; DCC OS bookings are read helpers. 360 tours: Moises + Fabiola. |
@@ -209,6 +209,9 @@ Append; do not rewrite history.
 
 | Date | What changed | Scoreboard effect |
 |---|---|---|
+| 2026-09-21 | Public Art essay published as second Journal reference (figures, heavier citations, Technical Rider). No municipal APIs or fake costs. | Checklist #22 still **B**; #23 still **P**. |
+| 2026-09-21 | Cost essay published as Journal reference article (living metadata, citations, native diagrams, frameworks). No fake operating values. | Checklist #22 still **B**; #23 still **P**. |
+| 2026-09-12 | Four journal diagrams live as SVG (`capability-network`, `different-kinds-of-labor`, `distributed-cultural-network`, `idea-to-realization-distance`). Heroes/photos stay PLACEHOLDER. | Checklist #22 still **B**; no scoreboard letter change. |
 | 2026-09-12 | Scored `main` against the Operating Alignment Report. PR #11 still unmerged. | This file created. Loop = not complete. |
 | 2026-09-12 | Journal essays 02–03 on `main` via MDX `bodyPath`. | Checklist #22 **B**; #23 still **P**. |
 | 2026-09-12 | Clandestine kept as coming-soon. | Programs stay **P**. |

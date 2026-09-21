@@ -20,17 +20,50 @@ export const ARTISTS_EMPTY =
 export const PROGRAMS_CULTURAL_INTRO =
   'Current and upcoming presentations sit alongside DCC’s ongoing workshop, public-program and institutional offerings.'
 
-export const JOURNAL_DESCRIPTOR =
-  'Field notes on the infrastructure behind digital culture.'
+export const JOURNAL_DESCRIPTOR = 'The infrastructure behind digital culture.'
 
 export const JOURNAL_INTRO =
-  'Essays, conversations, and working observations from what we make, teach, maintain, and learn in Miami. We publish when there is something worth sharing—not to fill a content calendar.'
+  'Essays, conversations, experiments, and shared knowledge about how artists, institutions, technologies, and cities build capacity together.'
+
+export const JOURNAL_SECONDARY =
+  'Digital culture needs infrastructure. We are interested in how that infrastructure gets built, who maintains it, who benefits from it, and what happens when it fails.'
+
+export const JOURNAL_THESIS =
+  'DCC Journal examines the infrastructure behind digital culture—from the capabilities artists need, to the systems institutions build, to the technologies cities inherit.'
+
+export const JOURNAL_SCALE_LABELS = [
+  'Artist',
+  'Studio',
+  'Institution',
+  'Network',
+  'City',
+] as const
+
+export const JOURNAL_SCALE_QUESTION =
+  'We study what digital culture requires at each scale.'
+
+/** Topic vocabulary for the publication we actually have. Not a filter, not a CMS. */
+export const JOURNAL_TOPICS = [
+  'Infrastructure',
+  'Art & Technology',
+  'Institutions',
+  'Fabrication',
+  'Public Space',
+  'Digital Literacy',
+] as const
+
+export const JOURNAL_INDEX_SECTION_DESCRIPTION: Record<string, string> = {
+  essays:
+    'Longform arguments on infrastructure, access, and how digital culture actually gets made.',
+  conversations:
+    'People whose practices complicate or expand the Journal’s arguments. Published when they have been edited. A podcast feed is not launching in this phase.',
+}
 
 /** Single-paragraph hero / SEO description (PageHero is one `<p>`). */
 export const JOURNAL_HERO_DESCRIPTION = `${JOURNAL_DESCRIPTOR} ${JOURNAL_INTRO}`
 
 export const JOURNAL_EMPTY_CONVERSATIONS =
-  'DCC Conversations will be published here as recorded interviews and studio visits are edited. A podcast feed is not launching in this phase.'
+  'Conversations are coming. DCC will speak with artists, fabricators, technologists, educators, institutional leaders, and others building the infrastructure of digital culture. A podcast feed is not launching in this phase.'
 
 export const JOURNAL_INDEX_EMPTY =
   'Published essays and field notes will appear here when they are ready.'

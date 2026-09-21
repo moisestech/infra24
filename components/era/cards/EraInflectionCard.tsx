@@ -7,18 +7,27 @@ import { BorderBeam } from '@/components/ui/border-beam';
 import { AnimatedGridPattern } from '@/components/magicui/animated-grid-pattern';
 import { cn } from '@/lib/utils';
 import { EraKpiLadder } from '@/components/era/EraKpiLadder';
-import {
-  bornDigitalEra,
-  type BornDigitalEraChannel,
-} from '@/lib/marketing/content';
-import {
-  eraAccentForChannel,
-  type EraChannelId,
-} from '@/lib/era/tokens';
+import { bornDigitalEra } from '@/lib/marketing/content';
 import type { EraMetricLadder } from '@/lib/era/metrics';
 
+export type EraInflectionChannel = {
+  id: string;
+  title: string;
+  shortLabel: string;
+  group: string;
+  description: string;
+  siteHref: string;
+  eraHref?: string;
+  converge: string;
+};
+
 export type EraInflectionCardProps = {
-  channel: BornDigitalEraChannel;
+  channel: EraInflectionChannel;
+  accent: string;
+  /** Overrides the Born-Digital Era eyebrow (homepage snapshot kickers). */
+  kicker?: string;
+  /** Primary CTA label when no KPI ladder join action is present. */
+  joinLabel?: string;
   ladder?: EraMetricLadder;
   /**
    * The bespoke effect rendered behind the card content (three.js, p5,
@@ -34,23 +43,15 @@ export type EraInflectionCardProps = {
   className?: string;
 };
 
-const channelToEraId: Record<BornDigitalEraChannel['id'], EraChannelId> = {
-  network: 'network',
-  'irl-events': 'irl-events',
-  workshops: 'workshops',
-  clinics: 'clinics',
-  'open-lab': 'open-lab',
-  'public-corridor': 'public-corridor',
-  newsletter: 'newsletter',
-};
-
 /**
- * Shared shell for every Born-Digital Era channel card. Composes the bespoke
- * effect, an ASCII-style status row, the KPI ladder, and the join CTA. Used on
- * the homepage band, on `/era`, and as the hero of `/era/[channel]`.
+ * Shared shell for pathway / Era channel cards. Composes the bespoke
+ * effect, an ASCII-style status row, the KPI ladder, and the join CTA.
  */
 export function EraInflectionCard({
   channel,
+  accent,
+  kicker,
+  joinLabel,
   ladder,
   effect,
   secondaryCta,
@@ -58,7 +59,7 @@ export function EraInflectionCard({
   className,
 }: EraInflectionCardProps) {
   const reduceMotion = useReducedMotion();
-  const accent = eraAccentForChannel(channelToEraId[channel.id]);
+  const eyebrow = kicker ?? bornDigitalEra.eyebrow;
 
   return (
     <article
@@ -107,7 +108,7 @@ export function EraInflectionCard({
             className="font-mono text-[10px] font-semibold uppercase tracking-[0.22em]"
             style={{ color: accent }}
           >
-            {bornDigitalEra.eyebrow} · {channel.shortLabel}
+            {eyebrow} · {channel.shortLabel}
           </span>
           <span
             className="font-mono text-[10px] uppercase tracking-[0.18em] opacity-60"
@@ -150,7 +151,11 @@ export function EraInflectionCard({
           </p>
           <div className="flex flex-wrap items-center gap-2">
             {(() => {
-              const joinHref = ladder?.joinAction.href ?? channel.siteHref;
+              const joinHref = joinLabel
+                ? channel.siteHref
+                : (ladder?.joinAction.href ?? channel.siteHref);
+              const joinText =
+                joinLabel ?? ladder?.joinAction.label ?? `Open ${channel.shortLabel}`;
               const isExternalJoin = /^https?:\/\//.test(joinHref);
               return (
                 <Link
@@ -161,18 +166,20 @@ export function EraInflectionCard({
                   className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold tracking-tight text-neutral-50 transition-opacity duration-200 hover:opacity-90 dark:text-neutral-900"
                   style={{ backgroundColor: accent }}
                 >
-                  {ladder?.joinAction.label ?? `Open ${channel.shortLabel}`}
+                  {joinText}
                   <span aria-hidden>→</span>
                 </Link>
               );
             })()}
-            <Link
-              href={channel.eraHref}
-              className="inline-flex items-center gap-1 rounded-full border border-current px-3 py-1.5 text-[11px] font-medium opacity-70 transition hover:opacity-100"
-            >
-              Learn more
-              <span aria-hidden>→</span>
-            </Link>
+            {channel.eraHref ? (
+              <Link
+                href={channel.eraHref}
+                className="inline-flex items-center gap-1 rounded-full border border-current px-3 py-1.5 text-[11px] font-medium opacity-70 transition hover:opacity-100"
+              >
+                Learn more
+                <span aria-hidden>→</span>
+              </Link>
+            ) : null}
             {secondaryCta ? (
               <Link
                 href={secondaryCta.href}

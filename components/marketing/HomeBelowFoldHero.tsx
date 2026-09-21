@@ -57,22 +57,18 @@ export function HomeBelowFoldHero() {
   return (
     <div className="space-y-14">
       <div
-        className={cn(pilotBandClass, 'relative isolate overflow-visible')}
+        className={cn(pilotBandClass, 'relative isolate overflow-hidden')}
         onMouseLeave={() => {
           if (usePointerHover) setPilotPreviewIndex(null);
         }}
       >
         {showPilotBackdrop && pilotPreviewTerm ? (
           <>
-            <div className="pointer-events-none absolute inset-y-0 right-[-0.75rem] z-0 hidden w-[min(82%,44rem)] overflow-hidden rounded-l-2xl sm:right-[-1rem] lg:block xl:w-[min(78%,52rem)]">
+            <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-2xl">
               <PreviewFigure segment={pilotPreviewTerm} layout="backdrop" />
             </div>
             <div
-              className="pointer-events-none absolute inset-y-0 left-0 right-0 z-[1] hidden bg-gradient-to-r from-white from-[18%] via-white/97 via-[46%] to-transparent to-[88%] dark:from-neutral-900 dark:from-[14%] dark:via-neutral-900/[0.96] dark:via-[50%] dark:to-transparent dark:to-[90%] lg:block"
-              aria-hidden
-            />
-            <div
-              className="pointer-events-none absolute bottom-0 right-[-0.75rem] z-[1] hidden h-[min(52%,20rem)] w-[min(82%,44rem)] bg-gradient-to-t from-neutral-50/95 via-neutral-50/35 to-transparent sm:right-[-1rem] dark:from-neutral-950/95 dark:via-neutral-950/30 lg:block xl:w-[min(78%,52rem)]"
+              className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-black/70 via-black/45 to-black/30"
               aria-hidden
             />
           </>
@@ -111,10 +107,20 @@ export function HomeBelowFoldHero() {
           </div>
 
           <div className="mt-10 hidden border-t border-[var(--cdc-border)] pt-10 dark:border-neutral-700 lg:block">
-            <h3 className="text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 xl:text-4xl">
+            <h3
+              className={cn(
+                'text-3xl font-semibold tracking-tight xl:text-4xl',
+                showPilotBackdrop ? 'text-white' : 'text-neutral-950 dark:text-neutral-50'
+              )}
+            >
               Digital culture, in plain language
             </h3>
-            <p className="mt-3 max-w-3xl text-base font-medium leading-relaxed text-neutral-800 dark:text-neutral-200 xl:text-lg">
+            <p
+              className={cn(
+                'mt-3 max-w-3xl text-base font-medium leading-relaxed xl:text-lg',
+                showPilotBackdrop ? 'text-white/85' : 'text-neutral-800 dark:text-neutral-200'
+              )}
+            >
               Explore the terms that shape DCC&apos;s work.
             </p>
             <HeroSubheadKeyTerms
@@ -125,7 +131,12 @@ export function HomeBelowFoldHero() {
               previewIndex={pilotPreviewIndex}
               onPreviewIndexChange={setPilotPreviewIndex}
               className="mt-6"
-              paragraphClassName="text-xl font-medium leading-relaxed text-neutral-950 dark:text-neutral-50 sm:text-2xl md:text-[1.75rem] md:leading-relaxed lg:text-[1.85rem] lg:leading-[1.45] xl:text-[2rem] xl:leading-[1.42]"
+              paragraphClassName={cn(
+                'text-xl font-medium leading-relaxed sm:text-2xl md:text-[1.75rem] md:leading-relaxed lg:text-[1.85rem] lg:leading-[1.45] xl:text-[2rem] xl:leading-[1.42]',
+                showPilotBackdrop
+                  ? 'text-white'
+                  : 'text-neutral-950 dark:text-neutral-50'
+              )}
             />
           </div>
         </div>

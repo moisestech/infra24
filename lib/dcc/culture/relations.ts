@@ -177,6 +177,9 @@ export function unresolvedRelationIds(
     check('editorial', entry.id, 'projectIds', entry.projectIds, (id) =>
       getProjectById(id, registry.projects)
     )
+    check('editorial', entry.id, 'relatedEditorialIds', entry.relatedEditorialIds, (id) =>
+      getEditorialById(id, registry.editorial)
+    )
   }
 
   for (const project of registry.projects) {

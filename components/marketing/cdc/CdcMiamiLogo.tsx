@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { useTheme } from '@/contexts/ThemeContext';
 import {
   DCC_MIAMI_LOGO_ALT,
   DCC_MIAMI_LOGO_URL_LIGHT,
@@ -29,9 +28,6 @@ export function CdcMiamiLogo({
   priority?: boolean;
   objectAlign?: 'left' | 'center';
 }) {
-  const { resolvedTheme } = useTheme();
-  const src = resolvedTheme === 'dark' ? DCC_MIAMI_LOGO_URL_WHITE : DCC_MIAMI_LOGO_URL_LIGHT;
-
   const sizesAttr =
     size === 'sm'
       ? '120px'
@@ -40,17 +36,31 @@ export function CdcMiamiLogo({
         : size === 'lg'
           ? '208px'
           : '240px';
+  const objectClass = cn(
+    'object-contain',
+    objectAlign === 'center' ? 'object-center' : 'object-left'
+  );
 
   return (
     <span className={cn('relative inline-block shrink-0', sizeBox[size], className)}>
       <Image
-        src={src}
+        src={DCC_MIAMI_LOGO_URL_LIGHT}
         alt={DCC_MIAMI_LOGO_ALT}
         fill
         sizes={sizesAttr}
-        className={cn('object-contain', objectAlign === 'center' ? 'object-center' : 'object-left')}
+        className={cn(objectClass, 'dark:hidden')}
         priority={priority}
         unoptimized
+      />
+      <Image
+        src={DCC_MIAMI_LOGO_URL_WHITE}
+        alt=""
+        fill
+        sizes={sizesAttr}
+        className={cn(objectClass, 'hidden dark:block')}
+        priority={priority}
+        unoptimized
+        aria-hidden
       />
     </span>
   );

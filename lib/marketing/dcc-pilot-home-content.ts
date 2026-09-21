@@ -15,7 +15,7 @@ export const dccHomeMissionHeadline =
 
 export const dccHomeOrgLine = 'Digital Culture Center Miami' as const;
 
-/** Quiet positioning band between collage and `#now` — not a hero rewrite. */
+/** Quiet positioning band between collage and `#now` pathways — not a hero rewrite. */
 export const dccHomePositioning = {
   headline: 'DCC Miami builds the infrastructure behind digital culture.',
   paragraphs: [

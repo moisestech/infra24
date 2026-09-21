@@ -1,112 +1,33 @@
 import Link from 'next/link'
-import {
-  DCC_CULTURAL_POSITION,
-  JOURNAL_DESCRIPTOR,
-  getEditorialPublicPath,
-  getProgramPublicPath,
-  listCurrentOrUpcomingPrograms,
-  listEditorial,
-  listFeaturedArtists,
-  listFeaturedEditorial,
-} from '@/lib/dcc/culture'
-
-type HomeSlot = {
-  eyebrow: string
-  title: string
-  description: string
-  href: string
-  label: string
-}
+import { HomePathwaysGrid } from '@/components/dcc/culture/HomePathwaysGrid'
+import { DCC_CULTURAL_POSITION } from '@/lib/dcc/culture/copy'
+import { listHomePathways } from '@/lib/dcc/culture/home-pathways'
 
 export function HomeCulturalNowBand() {
-  const now = listCurrentOrUpcomingPrograms()[0]
-  const artist = listFeaturedArtists()[0]
-  const journal = listFeaturedEditorial()[0] ?? listEditorial()[0]
-
-  const slots: HomeSlot[] = []
-
-  if (now) {
-    const forthcoming = !now.startDate && !(now.artistIds && now.artistIds.length > 0)
-    slots.push({
-      eyebrow: 'Now',
-      title: now.title,
-      description: now.shortDescription ?? 'Current DCC MIA program.',
-      href: getProgramPublicPath(now),
-      label: forthcoming ? 'Coming soon' : 'View program',
-    })
-  }
-
-  if (artist) {
-    slots.push({
-      eyebrow: 'Artist',
-      title: artist.name,
-      description: artist.shortBio ?? artist.location ?? 'Featured DCC artist.',
-      href: `/artists/${artist.slug}`,
-      label: 'Meet the artist',
-    })
-  } else {
-    slots.push({
-      eyebrow: 'Artists',
-      title: 'Artists',
-      description: 'A curated record of artists DCC presents and works with.',
-      href: '/artists',
-      label: 'View artists',
-    })
-  }
-
-  slots.push({
-    eyebrow: 'Learn',
-    title: 'Workshops',
-    description: 'Build the skills to understand and use the tools — then make work with them.',
-    href: '/workshops',
-    label: 'Browse workshops',
-  })
-
-  slots.push({
-    eyebrow: 'Make',
-    title: 'Fabricate',
-    description: 'You bring the idea. We help you figure out how to make it — no print-ready file required.',
-    href: '/fabricate',
-    label: 'See how it works',
-  })
-
-  if (journal) {
-    slots.push({
-      eyebrow: 'Show',
-      title: journal.title,
-      description: journal.dek ?? journal.excerpt ?? 'Latest from DCC MIA.',
-      href: getEditorialPublicPath(journal),
-      label: 'Read',
-    })
-  } else {
-    slots.push({
-      eyebrow: 'Show',
-      title: 'Journal',
-      description: JOURNAL_DESCRIPTOR,
-      href: '/journal',
-      label: 'Open journal',
-    })
-  }
-
-  slots.push({
-    eyebrow: 'Join',
-    title: 'Newsletter',
-    description: 'Programs, conversations and workshop dates — owned audience, not only Instagram.',
-    href: '/newsletter',
-    label: 'Subscribe',
-  })
+  const pathways = listHomePathways()
 
   return (
     <section
       id="now"
-      className="scroll-mt-14 border-b border-[var(--cdc-border)] bg-white py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16 lg:py-20"
+      className="scroll-mt-14 border-b border-[var(--cdc-border)] bg-[#fafafa] py-14 dark:border-neutral-800 dark:bg-neutral-950 sm:py-16 lg:py-20"
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div id="era-band" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500">
           DCC MIA
         </p>
+        <h2
+          id="now-pathways-heading"
+          className="mt-3 max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl"
+        >
+          Pathways into DCC Miami
+        </h2>
         <p className="mt-3 max-w-3xl text-lg font-medium leading-snug text-neutral-900 dark:text-neutral-50 sm:text-xl">
           {DCC_CULTURAL_POSITION}
+        </p>
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+          Each pathway is a way in — a program, a person, a workshop, a fabrication
+          request, a text, a list, a map, a room. Together they are one cultural
+          network, not nine separate products.
         </p>
         <p className="mt-4">
           <Link
@@ -116,28 +37,17 @@ export function HomeCulturalNowBand() {
             Full snapshot
           </Link>
         </p>
-        <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {slots.map((slot) => (
-            <li
-              key={slot.eyebrow}
-              className="flex flex-col border-t border-neutral-200 pt-5 dark:border-neutral-800"
-            >
-              <p className="text-xs uppercase tracking-[0.16em] text-neutral-500">{slot.eyebrow}</p>
-              <h2 className="mt-2 text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-                {slot.title}
-              </h2>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-                {slot.description}
-              </p>
-              <Link
-                href={slot.href}
-                className="mt-4 text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
-              >
-                {slot.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-10">
+          <HomePathwaysGrid pathways={pathways} />
+        </div>
+        <p className="mt-8 text-sm text-neutral-600 dark:text-neutral-400">
+          <Link
+            href="/era"
+            className="font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
+          >
+            Born-Digital Era — seven-channel frame
+          </Link>
+        </p>
       </div>
     </section>
   )

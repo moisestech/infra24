@@ -101,7 +101,7 @@ export function PreviewFigure({
               alt={segment.preview.alt}
               fill
               sizes={sizes}
-              className={cn('object-cover', backdrop && 'object-[75%_center]')}
+              className={cn('object-cover', backdrop && 'object-cover object-center')}
             />
             <div
               className={cn(
@@ -222,12 +222,12 @@ export function HeroSubheadKeyTerms({
               if (usePointerHover) setActiveIndex(i);
             }}
             onClick={() => {
-              setActiveIndex((prev) => (prev === i ? null : i));
+              setActiveIndex(activeIndex === i ? null : i);
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                setActiveIndex((prev) => (prev === i ? null : i));
+                setActiveIndex(activeIndex === i ? null : i);
               }
             }}
           >
@@ -250,16 +250,11 @@ export function HeroSubheadKeyTerms({
       >
         {showPreview && activeTerm && !parentBackdrop ? (
           <>
-            <div className="pointer-events-none absolute bottom-0 right-[-0.75rem] top-0 z-0 hidden min-h-[11rem] w-[min(82%,44rem)] overflow-hidden rounded-l-2xl sm:right-[-1rem] lg:block xl:w-[min(78%,52rem)]">
+            <div className="pointer-events-none absolute inset-0 z-0 hidden overflow-hidden rounded-xl lg:block">
               <PreviewFigure segment={activeTerm} layout="backdrop" />
             </div>
-            {/* Match pilot card bg so the photo dissolves into the band, not a hard edge */}
             <div
-              className="pointer-events-none absolute inset-y-0 left-0 right-0 z-[1] hidden bg-gradient-to-r from-white from-[18%] via-white/97 via-[46%] to-transparent to-[88%] dark:from-neutral-900 dark:from-[14%] dark:via-neutral-900/[0.96] dark:via-[50%] dark:to-transparent dark:to-[90%] lg:block"
-              aria-hidden
-            />
-            <div
-              className="pointer-events-none absolute bottom-0 right-[-0.75rem] z-[1] hidden h-[min(52%,20rem)] w-[min(82%,44rem)] bg-gradient-to-t from-neutral-50/95 via-neutral-50/35 to-transparent sm:right-[-1rem] dark:from-neutral-950/95 dark:via-neutral-950/30 lg:block xl:w-[min(78%,52rem)]"
+              className="pointer-events-none absolute inset-0 z-[1] hidden bg-gradient-to-r from-white/90 via-white/60 to-white/25 dark:from-neutral-950/90 dark:via-neutral-950/55 dark:to-neutral-950/20 lg:block"
               aria-hidden
             />
           </>
@@ -270,13 +265,20 @@ export function HeroSubheadKeyTerms({
           role="region"
           aria-label="Term preview"
           className={cn(
-            'relative z-[2] min-w-0 rounded-xl border border-neutral-200/90 bg-white px-4 py-5 shadow-sm',
-            'dark:border-neutral-700 dark:bg-neutral-950'
+            'relative z-[2] min-w-0 rounded-xl px-4 py-5',
+            parentBackdrop && showPreview
+              ? 'border border-white/20 bg-white/10 shadow-none backdrop-blur-[2px] dark:border-white/15 dark:bg-black/20'
+              : 'border border-neutral-200/90 bg-white shadow-sm dark:border-neutral-700 dark:bg-neutral-950'
           )}
         >
           {termButtons}
           {showPreview && activeTerm?.caption ? (
-            <p className="mt-4 max-w-2xl text-xs font-medium leading-snug text-neutral-700 dark:text-neutral-300">
+            <p
+              className={cn(
+                'mt-4 max-w-2xl text-xs font-medium leading-snug',
+                parentBackdrop ? 'text-white/80' : 'text-neutral-700 dark:text-neutral-300'
+              )}
+            >
               {activeTerm.caption}
             </p>
           ) : !showPreview ? (

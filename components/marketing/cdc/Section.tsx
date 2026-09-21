@@ -1,5 +1,9 @@
 import { cn } from '@/lib/utils';
 
+/** Paper / cream bands used across CDC marketing pages. */
+export const cdcSectionPaper = 'bg-white dark:bg-neutral-950';
+export const cdcSectionMuted = 'bg-[#fafafa] dark:bg-neutral-900/40';
+
 type SectionProps = {
   id?: string;
   className?: string;
