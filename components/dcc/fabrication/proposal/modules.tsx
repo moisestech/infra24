@@ -28,7 +28,7 @@ export function ProposalSection({
   children: React.ReactNode
 }) {
   return (
-    <section id={id} className="mt-14 scroll-mt-8">
+    <section id={id} className="mt-14 scroll-mt-32 lg:scroll-mt-24">
       {kicker ? (
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-500">
           {kicker}

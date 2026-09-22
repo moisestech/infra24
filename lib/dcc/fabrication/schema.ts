@@ -258,12 +258,22 @@ export type QuoteEconomics = {
   belowFounderThreshold: boolean
 }
 
+/** In-page jump links — ids must match ProposalSection `id` on the page. */
+export type ProposalNavItem = {
+  id: string
+  label: string
+  /** Shorter label for the mobile jump rail. */
+  shortLabel?: string
+}
+
 export type ClientProposal = {
   slug: string
   job: FabricationJob
   heroKicker: string
   heroTitle: string
   heroDek: string
+  /** Sticky nav sections for this proposal page. */
+  sections: ProposalNavItem[]
   media: ProposalMediaSlot[]
   pricing?: ProposalPricing
   /** Client-visible line items when quoted. Filter with clientVisible. */

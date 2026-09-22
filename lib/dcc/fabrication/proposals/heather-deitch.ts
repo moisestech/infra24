@@ -50,6 +50,20 @@ export const HEATHER_PROPOSAL: ClientProposal = {
     createdAt: '2026-09-21',
     updatedAt: '2026-09-21',
   },
+  sections: [
+    { id: 'project-goal', label: 'Project goal', shortLabel: 'Goal' },
+    { id: 'current-file', label: 'Current file', shortLabel: 'File' },
+    { id: 'material-light', label: 'Material + light', shortLabel: 'Material' },
+    { id: 'lighting-hardware', label: 'Lighting hardware', shortLabel: 'Hardware' },
+    { id: 'production-workflow', label: 'Production workflow', shortLabel: 'Workflow' },
+    { id: 'finishing', label: 'Finishing checkpoint', shortLabel: 'Finishing' },
+    { id: 'scope', label: 'Scope', shortLabel: 'Scope' },
+    { id: 'manufacturer-handoff', label: 'Manufacturer handoff', shortLabel: 'Handoff' },
+    { id: 'prototype-2', label: 'Prototype 2', shortLabel: 'Proto 2' },
+    { id: 'price', label: 'Price + payment', shortLabel: 'Price' },
+    { id: 'required-inputs', label: 'Required inputs', shortLabel: 'Inputs' },
+    { id: 'approval', label: 'Approval / next step', shortLabel: 'Next step' },
+  ],
   media: [
     {
       id: 'H_RENDER_001',

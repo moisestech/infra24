@@ -298,6 +298,13 @@ describe('fabricate studio system', () => {
     expect(clientJson).not.toContain(String(HEATHER_PROPOSAL.costLineItems?.[0]?.internalRate))
   })
 
+  it('defines in-page nav sections aligned with proposal section ids', () => {
+    expect(HEATHER_PROPOSAL.sections.length).toBeGreaterThanOrEqual(10)
+    expect(CAROL_PROPOSAL.sections.length).toBeGreaterThanOrEqual(10)
+    expect(HEATHER_PROPOSAL.sections.some((s) => s.id === 'price')).toBe(true)
+    expect(CAROL_PROPOSAL.sections.some((s) => s.id === 'approval')).toBe(true)
+  })
+
   it('serves Heather proposal images from Cloudinary', () => {
     for (const slot of HEATHER_PROPOSAL.media) {
       expect(slot.src).toMatch(/^https:\/\/res\.cloudinary\.com\/dck5rzi4h\//)

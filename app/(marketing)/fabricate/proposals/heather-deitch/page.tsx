@@ -49,7 +49,7 @@ export default function HeatherDeitchProposalPage() {
   const pricing = HEATHER_PROPOSAL.pricing
 
   return (
-    <ProposalChrome job={job}>
+    <ProposalChrome job={job} sections={HEATHER_PROPOSAL.sections}>
       <ProposalHero
         kicker={HEATHER_PROPOSAL.heroKicker}
         title={HEATHER_PROPOSAL.heroTitle}

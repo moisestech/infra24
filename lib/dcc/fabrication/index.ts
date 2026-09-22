@@ -167,6 +167,7 @@ export type {
   DocumentationRights,
   PrototypeFindings,
   ProposalMediaSlot,
+  ProposalNavItem,
   ProposalPricing,
   QuoteEconomics,
   QuoteLineItem,

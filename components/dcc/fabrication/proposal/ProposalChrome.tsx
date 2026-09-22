@@ -1,25 +1,22 @@
-import { existsSync } from 'node:fs'
 import Link from 'next/link'
-import { resolveProposalMediaFile } from '@/lib/dcc/fabrication/proposal-media'
+import { ProposalNav } from '@/components/dcc/fabrication/proposal/ProposalNav'
 import { publicOperatorName } from '@/lib/dcc/fabrication/operators'
-import type { FabricationJob } from '@/lib/dcc/fabrication/schema'
-
-export function proposalMediaExists(slug: string, filename: string): boolean {
-  const file = resolveProposalMediaFile(slug, filename)
-  return Boolean(file && existsSync(file))
-}
+import type { FabricationJob, ProposalNavItem } from '@/lib/dcc/fabrication/schema'
 
 export function ProposalChrome({
   children,
   job,
+  sections = [],
 }: {
   children: React.ReactNode
   job?: FabricationJob
+  sections?: ProposalNavItem[]
 }) {
   const lead = publicOperatorName(job?.projectLeadId)
+  const hasNav = sections.length > 0
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
       <p className="text-sm">
         <Link
           href="/fabricate"
@@ -36,7 +33,25 @@ export function ProposalChrome({
           Project lead: {lead}
         </p>
       ) : null}
-      {children}
+
+      {hasNav ? (
+        <div className="mt-6 lg:hidden">
+          <ProposalNav sections={sections} layout="horizontal" />
+        </div>
+      ) : null}
+
+      <div
+        className={
+          hasNav
+            ? 'mt-6 lg:mt-8 lg:grid lg:grid-cols-[minmax(0,11rem)_minmax(0,1fr)] lg:items-start lg:gap-10 xl:grid-cols-[minmax(0,12.5rem)_minmax(0,1fr)] xl:gap-12'
+            : 'mt-8 max-w-3xl'
+        }
+      >
+        {hasNav ? (
+          <ProposalNav sections={sections} layout="sidebar" className="hidden lg:block" />
+        ) : null}
+        <div className={hasNav ? 'min-w-0 max-w-3xl' : undefined}>{children}</div>
+      </div>
     </div>
   )
 }

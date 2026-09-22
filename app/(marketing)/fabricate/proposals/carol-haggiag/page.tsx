@@ -28,7 +28,7 @@ export default function CarolHaggiagProposalPage() {
   const pricing = CAROL_PROPOSAL.pricing
 
   return (
-    <ProposalChrome job={job}>
+    <ProposalChrome job={job} sections={CAROL_PROPOSAL.sections}>
       <ProposalHero
         kicker={CAROL_PROPOSAL.heroKicker}
         title={CAROL_PROPOSAL.heroTitle}
