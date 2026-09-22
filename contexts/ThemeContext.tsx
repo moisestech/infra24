@@ -4,6 +4,9 @@
  * App theme: `theme` is the stored user preference (light | dark | system).
  * For UI styling (colors, gradients), use `resolvedTheme` so "system" matches `document.documentElement` / Tailwind `dark:`.
  * Use `theme` only when reflecting the explicit choice (e.g. highlighting "System" in settings).
+ *
+ * A matching blocking script in `app/layout.tsx` paints `html.light` / `html.dark` before React
+ * hydrates so marketing pages do not flash the wrong surface.
  */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
@@ -17,44 +20,56 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+function readStoredTheme(): Theme {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light' || saved === 'dark' || saved === 'system') return saved;
+  return 'system';
+}
+
+function resolveTheme(theme: Theme): 'light' | 'dark' {
+  if (theme === 'system') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return theme;
+}
+
+function applyResolvedToDocument(resolved: 'light' | 'dark') {
+  const root = document.documentElement;
+  root.classList.remove('light', 'dark');
+  root.classList.add(resolved);
+  root.style.colorScheme = resolved;
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('system');
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    }
+    const initial = readStoredTheme();
+    const resolved = resolveTheme(initial);
+    setTheme(initial);
+    setResolvedTheme(resolved);
+    applyResolvedToDocument(resolved);
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      setResolvedTheme(systemTheme);
-      root.classList.remove('light', 'dark');
-      root.classList.add(systemTheme);
-    } else {
-      setResolvedTheme(theme);
-      root.classList.remove('light', 'dark');
-      root.classList.add(theme);
-    }
-    
+    if (!hydrated) return;
+    const resolved = resolveTheme(theme);
+    setResolvedTheme(resolved);
+    applyResolvedToDocument(resolved);
     localStorage.setItem('theme', theme);
-  }, [theme]);
+  }, [theme, hydrated]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     const handleChange = () => {
-      if (theme === 'system') {
-        const systemTheme = mediaQuery.matches ? 'dark' : 'light';
-        setResolvedTheme(systemTheme);
-        document.documentElement.classList.remove('light', 'dark');
-        document.documentElement.classList.add(systemTheme);
-      }
+      if (theme !== 'system') return;
+      const resolved = mediaQuery.matches ? 'dark' : 'light';
+      setResolvedTheme(resolved);
+      applyResolvedToDocument(resolved);
     };
 
     mediaQuery.addEventListener('change', handleChange);
@@ -75,4 +90,3 @@ export function useTheme() {
   }
   return context;
 }
-

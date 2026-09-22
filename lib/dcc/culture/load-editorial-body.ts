@@ -6,8 +6,8 @@ import type { ReactNode } from 'react'
 import { compileMDX } from 'next-mdx-remote/rsc'
 import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
-import { EditorialImageSlot } from '@/components/dcc/culture/EditorialImageSlot'
 import type { DccEditorial } from '@/lib/dcc/culture/types'
+import { journalMdxComponents } from '@/lib/dcc/culture/journal-mdx'
 
 const JOURNAL_DIR = 'content/journal'
 
@@ -32,7 +32,7 @@ export async function compileEditorialBody(
   const source = await fs.readFile(filePath, 'utf8')
   const { content } = await compileMDX({
     source,
-    components: { EditorialImageSlot },
+    components: journalMdxComponents(entry),
     options: {
       mdxOptions: {
         remarkPlugins: [remarkGfm],

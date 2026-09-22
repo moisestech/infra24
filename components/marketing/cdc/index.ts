@@ -3,7 +3,7 @@ export { CdcHeroVisual } from './CdcHeroVisual';
 export { CdcWebcoreSectionMark, CdcWebcoreSystemLabels } from './CdcWebcoreSectionMark';
 export { Breadcrumbs } from './Breadcrumbs';
 export { PageHero } from './PageHero';
-export { Section } from './Section';
+export { Section, cdcSectionMuted, cdcSectionPaper } from './Section';
 export { CtaBlock } from './CtaBlock';
 export { CardGrid, type CardGridItem, type PartnerCardAmbient } from './CardGrid';
 export { ProgramLayout } from './ProgramLayout';

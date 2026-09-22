@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { getAllCdcPaths, getCdcPageByPath, getProgramLeaves } from '@/lib/cdc/routes'
 import { DCC_STUDIO_TOURS, getStudioTourByArtistSlug } from '@/lib/dcc/studios'
@@ -33,11 +33,21 @@ import {
   getProjectsForArtist,
   getPublishedArtistBySlug,
   isReservedArtistSlug,
+  journalHeroEffectForEntry,
+  JOURNAL_READING_ORDER,
+  JOURNAL_SCALE_LABELS,
+  JOURNAL_THESIS,
+  JOURNAL_TOPICS,
   listArtists,
   listCurrentOrUpcomingPrograms,
   listEditorial,
   listFeaturedArtists,
   listFeaturedEditorial,
+  listJournalAdjacent,
+  listJournalArchive,
+  listJournalIndexSectionSlugs,
+  listJournalOpeningSequence,
+  listJournalReadingOrder,
   listPrograms,
   listProjects,
   looksLikeUuid,
@@ -138,9 +148,11 @@ describe('dcc culture public seed', () => {
     ])
   })
 
-  it('publishes three journal essays without placeholder shells or invented relations', () => {
-    expect(DCC_EDITORIAL).toHaveLength(3)
+  it('publishes five journal essays without placeholder shells or invented relations', () => {
+    expect(DCC_EDITORIAL).toHaveLength(5)
     expect(listEditorial().map((entry) => entry.slug)).toEqual([
+      'what-does-it-cost-to-run-digital-culture',
+      'when-public-art-becomes-infrastructure',
       'the-artist-doesnt-need-to-learn-everything',
       'miami-doesnt-have-a-digital-art-problem',
       'a-digital-lab-is-not-a-room-full-of-equipment',
@@ -157,11 +169,106 @@ describe('dcc culture public seed', () => {
       'dccmiami/journal/a-digital-lab-is-not-a-room-full-of-equipment_rqhmks'
     )
     expect(essay01?.heroSlot).toBeUndefined()
-    expect(essay01?.bodyPath).toBeUndefined()
+    expect(essay01?.body).toBeUndefined()
+    expect(essay01?.bodyPath).toBe(
+      'content/journal/a-digital-lab-is-not-a-room-full-of-equipment.mdx'
+    )
     expect(essay01?.artistIds).toBeUndefined()
     expect(essay01?.programIds).toBeUndefined()
     expect(essay01?.projectIds).toBeUndefined()
-    expect(essay01?.body).toMatch(/## Acquisition is not access/)
+    expect(existsSync(join(process.cwd(), essay01!.bodyPath!))).toBe(true)
+    expect(readFileSync(join(process.cwd(), essay01!.bodyPath!), 'utf8')).toMatch(
+      /## Acquisition is not access/
+    )
+    expect(listJournalIndexSectionSlugs()).toEqual(['essays', 'conversations'])
+    expect(JOURNAL_THESIS).toMatch(/artist/)
+    expect(JOURNAL_THESIS).toMatch(/institution/)
+    expect(JOURNAL_THESIS).toMatch(/cities inherit/)
+    expect([...JOURNAL_TOPICS]).toEqual([
+      'Infrastructure',
+      'Art & Technology',
+      'Institutions',
+      'Fabrication',
+      'Public Space',
+      'Digital Literacy',
+    ])
+    expect([...JOURNAL_SCALE_LABELS]).toEqual([
+      'Artist',
+      'Studio',
+      'Institution',
+      'Network',
+      'City',
+    ])
+    expect(listJournalOpeningSequence().map((item) => item.entry.slug)).toEqual([
+      'a-digital-lab-is-not-a-room-full-of-equipment',
+      'what-does-it-cost-to-run-digital-culture',
+      'when-public-art-becomes-infrastructure',
+    ])
+    expect(listJournalOpeningSequence().find((item) => item.lead)?.entry.slug).toBe(
+      'what-does-it-cost-to-run-digital-culture'
+    )
+    expect(listJournalArchive().map((entry) => entry.slug)).toEqual([
+      'the-artist-doesnt-need-to-learn-everything',
+      'miami-doesnt-have-a-digital-art-problem',
+    ])
+    expect([...JOURNAL_READING_ORDER]).toEqual([
+      'a-digital-lab-is-not-a-room-full-of-equipment',
+      'what-does-it-cost-to-run-digital-culture',
+      'when-public-art-becomes-infrastructure',
+      'the-artist-doesnt-need-to-learn-everything',
+      'miami-doesnt-have-a-digital-art-problem',
+    ])
+    expect(listJournalReadingOrder().map((entry) => entry.slug)).toEqual([
+      ...JOURNAL_READING_ORDER,
+    ])
+    const lab = DCC_EDITORIAL.find(
+      (entry) => entry.slug === 'a-digital-lab-is-not-a-room-full-of-equipment'
+    )!
+    const cost = DCC_EDITORIAL.find(
+      (entry) => entry.slug === 'what-does-it-cost-to-run-digital-culture'
+    )!
+    const publicArtEssay = DCC_EDITORIAL.find(
+      (entry) => entry.slug === 'when-public-art-becomes-infrastructure'
+    )!
+    const miami = DCC_EDITORIAL.find(
+      (entry) => entry.slug === 'miami-doesnt-have-a-digital-art-problem'
+    )!
+    expect(listJournalAdjacent(lab)).toEqual({
+      prev: null,
+      next: expect.objectContaining({ slug: 'what-does-it-cost-to-run-digital-culture' }),
+      sequenceItem: expect.objectContaining({ n: '01', scale: 'Artist' }),
+    })
+    expect(listJournalAdjacent(cost).prev?.slug).toBe(
+      'a-digital-lab-is-not-a-room-full-of-equipment'
+    )
+    expect(listJournalAdjacent(cost).next?.slug).toBe(
+      'when-public-art-becomes-infrastructure'
+    )
+    expect(listJournalAdjacent(cost).sequenceItem?.scale).toBe('Institution')
+    expect(listJournalAdjacent(miami).next).toBeNull()
+    expect(listJournalAdjacent(miami).prev?.slug).toBe(
+      'the-artist-doesnt-need-to-learn-everything'
+    )
+    expect(listJournalAdjacent(miami).sequenceItem).toBeNull()
+    expect(journalHeroEffectForEntry(lab)).toBeNull()
+    expect(journalHeroEffectForEntry(cost)).toBe('particle-dispatch')
+    expect(journalHeroEffectForEntry(publicArtEssay)).toBe('city-scan')
+    expect(
+      journalHeroEffectForEntry(
+        DCC_EDITORIAL.find(
+          (entry) => entry.slug === 'the-artist-doesnt-need-to-learn-everything'
+        )!
+      )
+    ).toBeNull()
+    for (const entry of listEditorial()) {
+      expect(entry.topics?.length).toBeGreaterThan(0)
+      for (const topic of entry.topics ?? []) {
+        expect(JOURNAL_TOPICS).toContain(topic)
+      }
+    }
+    expect(getCdcPageByPath('/journal')?.description).toMatch(
+      /The infrastructure behind digital culture/
+    )
     expect(listFeaturedEditorial().map((entry) => entry.slug)).toEqual([essay01?.slug])
     expect(getEditorialPublicPath(essay01!)).toBe(
       '/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment'
@@ -199,10 +306,79 @@ describe('dcc culture public seed', () => {
     expect(existsSync(join(process.cwd(), essay02!.bodyPath!))).toBe(true)
     expect(existsSync(join(process.cwd(), essay03!.bodyPath!))).toBe(true)
 
+    const costEssay = DCC_EDITORIAL.find(
+      (entry) => entry.slug === 'what-does-it-cost-to-run-digital-culture'
+    )
+    expect(costEssay?.type).toBe('essay')
+    expect(costEssay?.status).toBe('published')
+    expect(costEssay?.featured).toBe(false)
+    expect(costEssay?.living).toBe(true)
+    expect(costEssay?.version).toBe('0.1')
+    expect(costEssay?.heroImage).toBeUndefined()
+    expect(costEssay?.heroSlot?.id).toBe('cost-hero')
+    expect(costEssay?.bodyPath).toBe(
+      'content/journal/what-does-it-cost-to-run-digital-culture.mdx'
+    )
+    expect(costEssay?.relatedEditorialIds).toEqual([
+      'a-digital-lab-is-not-a-room-full-of-equipment',
+      'the-artist-doesnt-need-to-learn-everything',
+      'miami-doesnt-have-a-digital-art-problem',
+      'when-public-art-becomes-infrastructure',
+    ])
+    expect(costEssay?.sources?.some((source) => source.id === 'mcn' && source.href)).toBe(true)
+    expect(costEssay?.sources?.some((source) => source.needsResearch)).toBe(true)
+    expect(existsSync(join(process.cwd(), costEssay!.bodyPath!))).toBe(true)
+    const costBody = readFileSync(join(process.cwd(), costEssay!.bodyPath!), 'utf8')
+    expect(costBody).toMatch(/<EditorialPullQuote>/)
+    expect(costBody).toMatch(/<CapacityChainDiagram/)
+    expect(costBody).toMatch(/<OperatingLoopDiagram/)
+    expect(costBody).toMatch(/<FounderDependencyDiagram/)
+    expect(costBody).toMatch(/<EditorialFramework/)
+    expect(costBody).toMatch(/<PublishTheReceiptTable/)
+    expect(costBody).toMatch(/Measurement begins with the DCC pilot/)
+    expect(costBody).not.toMatch(/\$\d/)
+    expect(getEditorialPublicPath(costEssay!)).toBe(
+      '/journal/essays/what-does-it-cost-to-run-digital-culture'
+    )
+    expect(
+      getCdcPageByPath('/journal/essays/what-does-it-cost-to-run-digital-culture')?.title
+    ).toBe(costEssay?.title)
+
+    const publicArt = DCC_EDITORIAL.find(
+      (entry) => entry.slug === 'when-public-art-becomes-infrastructure'
+    )
+    expect(publicArt?.type).toBe('essay')
+    expect(publicArt?.status).toBe('published')
+    expect(publicArt?.living).toBeUndefined()
+    expect(publicArt?.heroImage).toBeUndefined()
+    expect(publicArt?.heroSlot?.id).toBe('public-art-hero')
+    expect(publicArt?.bodyPath).toBe(
+      'content/journal/when-public-art-becomes-infrastructure.mdx'
+    )
+    expect(publicArt?.sources?.some((source) => source.id === 'mdc-app' && source.href)).toBe(
+      true
+    )
+    expect(publicArt?.sources?.some((source) => source.needsResearch)).toBe(true)
+    expect(existsSync(join(process.cwd(), publicArt!.bodyPath!))).toBe(true)
+    const publicArtBody = readFileSync(join(process.cwd(), publicArt!.bodyPath!), 'utf8')
+    expect(publicArtBody).toMatch(/<EditorialFigure/)
+    expect(publicArtBody).toMatch(/<ResponsibilityStackDiagram/)
+    expect(publicArtBody).toMatch(/<BudgetPhaseCompare/)
+    expect(publicArtBody).toMatch(/Digital Public Art Technical Rider/)
+    expect(publicArtBody).not.toMatch(/\$\d/)
+    expect(getEditorialPublicPath(publicArt!)).toBe(
+      '/journal/essays/when-public-art-becomes-infrastructure'
+    )
+    expect(
+      getCdcPageByPath('/journal/essays/when-public-art-becomes-infrastructure')?.title
+    ).toBe(publicArt?.title)
+
     const paths = getAllCdcPaths()
     expect(paths).toContain('/journal/essays/a-digital-lab-is-not-a-room-full-of-equipment')
     expect(paths).toContain('/journal/essays/the-artist-doesnt-need-to-learn-everything')
     expect(paths).toContain('/journal/essays/miami-doesnt-have-a-digital-art-problem')
+    expect(paths).toContain('/journal/essays/what-does-it-cost-to-run-digital-culture')
+    expect(paths).toContain('/journal/essays/when-public-art-becomes-infrastructure')
     expect(paths).not.toContain('/journal/essays/why-miami-needs-digital-culture-infrastructure')
     expect(paths).not.toContain('/journal/essays/what-is-artist-centered-digital-infrastructure')
     expect(paths).not.toContain('/journal/field-notes/notes-from-a-public-interface-pilot')

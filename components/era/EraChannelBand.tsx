@@ -1,7 +1,6 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import { type ReactNode, useMemo } from 'react';
+import { EraChannelEffect } from '@/components/era/EraChannelEffect';
 import { EraInflectionCard } from '@/components/era/cards/EraInflectionCard';
 import {
   bornDigitalEra,
@@ -9,59 +8,9 @@ import {
   type BornDigitalEraChannel,
 } from '@/lib/marketing/content';
 import { eraMetricLadders } from '@/lib/era/metrics';
+import { eraAccentForChannel } from '@/lib/era/tokens';
 import { cn } from '@/lib/utils';
-
-const MeshField = dynamic(
-  () => import('@/components/era/effects/MeshField').then((m) => m.MeshField),
-  { ssr: false }
-);
-const VenueNode3D = dynamic(
-  () => import('@/components/era/effects/VenueNode3D').then((m) => m.VenueNode3D),
-  { ssr: false }
-);
-const KnowledgeLattice = dynamic(
-  () =>
-    import('@/components/era/effects/KnowledgeLattice').then((m) => m.KnowledgeLattice),
-  { ssr: false }
-);
-const SignalPulse = dynamic(
-  () => import('@/components/era/effects/SignalPulse').then((m) => m.SignalPulse),
-  { ssr: false }
-);
-const LiveLoop = dynamic(
-  () => import('@/components/era/effects/LiveLoop').then((m) => m.LiveLoop),
-  { ssr: false }
-);
-const CityScan = dynamic(
-  () => import('@/components/era/effects/CityScan').then((m) => m.CityScan),
-  { ssr: false }
-);
-const ParticleDispatch = dynamic(
-  () =>
-    import('@/components/era/effects/ParticleDispatch').then((m) => m.ParticleDispatch),
-  { ssr: false }
-);
-
-function effectFor(channel: BornDigitalEraChannel): ReactNode {
-  switch (channel.cardEffect) {
-    case 'mesh-field':
-      return <MeshField channelId={channel.id} />;
-    case 'venue-node':
-      return <VenueNode3D />;
-    case 'knowledge-lattice':
-      return <KnowledgeLattice />;
-    case 'signal-pulse':
-      return <SignalPulse />;
-    case 'live-loop':
-      return <LiveLoop />;
-    case 'city-scan':
-      return <CityScan />;
-    case 'particle-dispatch':
-      return <ParticleDispatch />;
-    default:
-      return null;
-  }
-}
+import { useMemo } from 'react';
 
 type EraChannelBandProps = {
   /** Drop the section heading + lede when used inside `/era` (page already has its own hero). */
@@ -107,23 +56,19 @@ export function EraChannelBand({ hideHeading = false, id, className }: EraChanne
         ) : null}
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {bornDigitalEraChannels.map((channel, idx) => {
+          {bornDigitalEraChannels.map((channel) => {
             const ladder = ladderById.get(channel.id);
-            // Network gets a wide tile on lg+ to anchor the spine visually.
             const wide = channel.id === 'network';
             return (
               <div
                 key={channel.id}
-                className={cn(
-                  'min-h-[22rem]',
-                  wide ? 'lg:col-span-2' : '',
-                  idx === 0 ? 'lg:row-span-1' : ''
-                )}
+                className={cn('min-h-[22rem]', wide ? 'lg:col-span-2' : '')}
               >
                 <EraInflectionCard
                   channel={channel}
+                  accent={eraAccentForChannel(channel.id)}
                   ladder={ladder}
-                  effect={effectFor(channel)}
+                  effect={<EraChannelEffect name={channel.cardEffect} channelId={channel.id} />}
                   className="h-full"
                 />
               </div>
@@ -134,3 +79,6 @@ export function EraChannelBand({ hideHeading = false, id, className }: EraChanne
     </section>
   );
 }
+
+/** Kept so `/era/[channel]` and tests can still name the channel type locally if needed. */
+export type { BornDigitalEraChannel };

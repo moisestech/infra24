@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { EditorialDetail } from '@/components/dcc/culture/EditorialDetail';
-import { PageHero, Section } from '@/components/marketing/cdc';
+import { PageHero, Section, cdcSectionMuted, cdcSectionPaper } from '@/components/marketing/cdc';
 import { getAllJournalPosts, getCdcBreadcrumbs, getCdcPageByPath } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 import {
@@ -61,16 +61,16 @@ export default async function JournalPostPage({ params }: Props) {
         description={def.description}
         breadcrumbs={getCdcBreadcrumbs(path)}
       />
-      <Section className="bg-[#fafafa]">
-        <p className="max-w-2xl text-sm leading-relaxed text-neutral-600">
+      <Section className={cdcSectionMuted}>
+        <p className="max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
           Full article body will live here (MDX or CMS). This route is scaffolded for SEO, grants,
           and editorial workflow.
         </p>
       </Section>
-      <Section className="bg-white pb-16">
+      <Section className={`${cdcSectionPaper} pb-16`}>
         <a
           href="/journal"
-          className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline"
+          className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
         >
           ← Journal home
         </a>

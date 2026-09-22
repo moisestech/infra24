@@ -60,19 +60,6 @@ const HomeCulturalNowBand = dynamic(
   { ssr: true }
 );
 
-const EraChannelBand = dynamic(
-  () => import('@/components/era/EraChannelBand').then((m) => m.EraChannelBand),
-  {
-    ssr: true,
-    loading: () => (
-      <div
-        className="min-h-[400px] border-y border-[var(--cdc-border)] bg-[#fafafa] dark:bg-neutral-950"
-        aria-hidden
-      />
-    ),
-  }
-);
-
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: marketingHomeMeta.title,
@@ -138,8 +125,6 @@ export default function MarketingHomePage() {
       <HomeCulturalNowBand />
 
       <HomeLivingNetworkTeaser />
-
-      <EraChannelBand id="era-band" />
 
     </>
   );

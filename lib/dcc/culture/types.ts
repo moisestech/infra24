@@ -136,6 +136,19 @@ export type DccEditorialImageSlot = {
   brief?: string
 }
 
+export type DccEditorialSource = {
+  id: string
+  title: string
+  author?: string
+  publisher?: string
+  href?: string
+  published?: string
+  accessed?: string
+  note?: string
+  /** Placeholder for a claim that still needs a verified citation. Do not treat as proof. */
+  needsResearch?: boolean
+}
+
 export type DccEditorial = {
   id: string
   slug: string
@@ -143,10 +156,16 @@ export type DccEditorial = {
   dek?: string
   type: DccEditorialType
   publishedAt?: string
+  updatedAt?: string
   author?: string
+  topics?: string[]
+  version?: string
+  /** Visible “living essay” note. Not an archive of prior versions. */
+  living?: boolean
   artistIds?: string[]
   programIds?: string[]
   projectIds?: string[]
+  relatedEditorialIds?: string[]
   heroImage?: string
   heroImageAlt?: string
   /** Planning placeholder when no heroImage exists yet. Not documentary evidence. */
@@ -159,6 +178,7 @@ export type DccEditorial = {
   bodyPath?: string
   excerpt?: string
   pullQuote?: string
+  sources?: DccEditorialSource[]
   featured?: boolean
   status?: DccPublishStatus
   seoTitle?: string

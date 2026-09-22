@@ -38,7 +38,7 @@ export const DCC_NOW_FORTHCOMING: DccNowItem[] = [
   {
     kicker: 'Journal',
     title: 'DCC Conversations',
-    body: 'Conversations will be published as recorded interviews and studio visits are edited. A podcast feed is not launching in this phase. The journal itself is live.',
+    body: 'Conversations are coming. DCC will speak with artists, fabricators, technologists, educators, institutional leaders, and others building the infrastructure of digital culture. A podcast feed is not launching in this phase. The journal itself is live.',
     links: [{ href: '/journal/conversations', label: 'Conversations' }],
   },
   {

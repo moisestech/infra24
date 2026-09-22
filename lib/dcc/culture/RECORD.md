@@ -115,7 +115,9 @@ Reuse `/newsletter`. Optional provider: `NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_A
 ## Journal (minimum)
 
 - `id`, `slug`, `title`, `type`, `status`
-- Optional: `dek`, `publishedAt`, `author`, `body` or `bodyPath`, `heroImage`, `videoUrl`, `audioUrl`, `artistIds`, `programIds`
+- Optional: `dek`, `publishedAt`, `updatedAt`, `author`, `topics`, `version`, `living`, `body` or `bodyPath` (longform essays use `bodyPath` MDX under `content/journal/`), `heroImage`, `heroSlot`, `sources`, `relatedEditorialIds`, `videoUrl`, `audioUrl`, `artistIds`, `programIds`
+- Living essays show a public note. Do not invent version archives or operating numbers.
+- Sources may set `needsResearch: true` instead of fabricating a citation.
 - No podcast product in this phase.
 
 ## Motion
