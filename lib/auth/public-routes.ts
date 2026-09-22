@@ -121,6 +121,7 @@ export function isPublicRoute(rawPathname: string): boolean {
     '/scale-up',
     '/dashboard/ceo',
     '/api/dcc/make',
+    '/api/dcc/fabricate',
     '/api/scale-up',
     '/api/signage',
   ]
