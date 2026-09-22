@@ -213,6 +213,7 @@ export {
   CLIENT_PROPOSALS,
   getClientProposal,
   listProposalSlugs,
+  proposalGreetingName,
   HEATHER_PROPOSAL,
   HEATHER_BASELINE_SLICE,
   HEATHER_LIGHTING_HARDWARE,

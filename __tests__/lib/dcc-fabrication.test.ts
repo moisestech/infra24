@@ -24,6 +24,7 @@ import {
   DEFAULT_DOCUMENTATION_RIGHTS,
   HEATHER_PROPOSAL,
   CAROL_PROPOSAL,
+  proposalGreetingName,
   HEATHER_BASELINE_SLICE,
   HEATHER_QUOTE_LINE_ITEMS,
   HEATHER_QUOTE_TOTAL_USD,
@@ -295,6 +296,13 @@ describe('fabricate studio system', () => {
     expect(clientPricingViewLeaksInternal(HEATHER_PROPOSAL)).toBe(false)
     expect(clientJson).not.toMatch(/internalRate|costLineItems|hourlyRate|directCost/i)
     expect(clientJson).not.toContain(String(HEATHER_PROPOSAL.costLineItems?.[0]?.internalRate))
+  })
+
+  it('greets clients by first name on the proposal unlock screen', () => {
+    expect(proposalGreetingName('heather-deitch')).toBe('Heather')
+    expect(proposalGreetingName('carol-haggiag')).toBe('Carol')
+    expect(proposalGreetingName('heather-deitch', 'Heather Deitch')).toBe('Heather')
+    expect(proposalGreetingName(undefined, 'Carol')).toBe('Carol')
   })
 
   it('keeps Carol as an unquoted Prepare + Fabricate shell', () => {

@@ -27,3 +27,17 @@ export function getClientProposal(slug: string): ClientProposal | undefined {
 export function listProposalSlugs(): string[] {
   return CLIENT_PROPOSALS.map((p) => p.slug)
 }
+
+/** First name for unlock greeting — from ?hello= or proposal record. */
+export function proposalGreetingName(
+  slug: string | undefined,
+  helloParam?: string | null
+): string | undefined {
+  const fromQuery = helloParam?.trim()
+  if (fromQuery) return fromQuery.split(/\s+/)[0]
+
+  if (!slug) return undefined
+  const clientName = getClientProposal(slug)?.job.clientName?.trim()
+  if (!clientName) return undefined
+  return clientName.split(/\s+/)[0]
+}
