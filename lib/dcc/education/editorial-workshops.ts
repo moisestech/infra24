@@ -97,6 +97,7 @@ export const THREE_D_PRINTING_FOR_ARTISTS: EditorialWorkshopPageContent = {
   furtherLinks: [
     { href: '/workshop/resin-printing', label: 'Resin SLA syllabus' },
     { href: '/workshop/ai-3d-physical-object', label: 'AI → 3D Physical Object' },
+    { href: '/workshop/3d-school', label: 'DCC 3D School' },
     { href: workshopInterestHref('3d-printing-for-artists'), label: 'Register interest' },
   ],
 }
@@ -181,6 +182,7 @@ export const AI_3D_PHYSICAL_OBJECT: EditorialWorkshopPageContent = {
   furtherLinks: [
     { href: '/workshop/3d-printing-for-artists', label: '3D Printing for Artists' },
     { href: '/workshop/resin-printing', label: 'Resin SLA syllabus' },
+    { href: '/workshop/3d-school', label: 'DCC 3D School' },
     { href: workshopInterestHref('ai-3d-physical-object'), label: 'Register interest' },
   ],
 }

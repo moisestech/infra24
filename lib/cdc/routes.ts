@@ -135,6 +135,70 @@ const pages: CdcPageDef[] = [
     layout: 'default',
   }),
   p({
+    path: '/workshop/3d-school',
+    title: 'DCC 3D School',
+    description:
+      'Learn how digital objects become physical. DCC teaches mesh, solid CAD, and precision modeling as different ways of making — then prepares files for fabrication.',
+    parent: '/workshops',
+    layout: 'default',
+  }),
+  p({
+    path: '/workshop/3d-school/from-file-to-physical-object',
+    title: 'From File to Physical Object',
+    description:
+      'How 3D objects actually work: mesh vs solid, file formats, watertight geometry, scale, and why a beautiful model may still fail to print.',
+    parent: '/workshop/3d-school',
+    layout: 'default',
+  }),
+  p({
+    path: '/workshop/3d-school/blender-for-artists',
+    title: 'Blender for Artists',
+    description:
+      'Make a sculpture and make it printable. Blender as an artist’s general-purpose 3D environment — not a comprehensive software course.',
+    parent: '/workshop/3d-school',
+    layout: 'default',
+  }),
+  p({
+    path: '/workshop/3d-school/plasticity-for-artists',
+    title: 'Plasticity for Artists',
+    description:
+      'CAD without the CAD headache. Direct solid and surface modeling for precise, fabricatable studio objects.',
+    parent: '/workshop/3d-school',
+    layout: 'default',
+  }),
+  p({
+    path: '/workshop/3d-school/rhino-for-artists',
+    title: 'Rhino for Artists & Fabricators',
+    description:
+      'Precision modeling with curves, NURBS, and fabrication-aware geometry. Coming — instructor not yet listed.',
+    parent: '/workshop/3d-school',
+    layout: 'default',
+  }),
+  p({
+    path: '/workshop/3d-school/fix-my-3d-file',
+    title: 'Fix My 3D File',
+    description:
+      'You already have a model. Diagnose and repair it until it can be fabricated — or hand it to DCC Prepare + Fabricate.',
+    parent: '/workshop/3d-school',
+    layout: 'default',
+  }),
+  p({
+    path: '/workshop/3d-school/grasshopper-computational-objects',
+    title: 'Grasshopper / Computational Objects',
+    description:
+      'Rules, systems, and editions. Advanced computational fabrication — in development.',
+    parent: '/workshop/3d-school',
+    layout: 'default',
+  }),
+  p({
+    path: '/workshop/3d-school/parametric-cad-functional-objects',
+    title: 'Parametric CAD for Functional Objects',
+    description:
+      'Constraints, dimensions, and assemblies for mechanical and functional objects. Software TBD. In development.',
+    parent: '/workshop/3d-school',
+    layout: 'default',
+  }),
+  p({
     path: '/grants',
     title: 'Grants',
     description:

@@ -23,6 +23,7 @@ describe('dcc education offerings', () => {
     expect(assertWorkshopOfferingSlugsValid()).toEqual([])
     expect(listWorkshopOfferings().map((offering) => offering.slug)).toEqual([
       'saturday-lab',
+      '3d-school',
       '3d-printing-for-artists',
       'ai-3d-physical-object',
       'vibe-coding-net-art',
@@ -78,6 +79,15 @@ describe('dcc education offerings', () => {
     expect(getWorkshopOfferingBySlug('ip-age-of-ai')).toBeUndefined()
   })
 
+  it('points the 3D School catalog card at the curriculum hub without prices', () => {
+    const school = getWorkshopOfferingBySlug('3d-school')
+    expect(school?.status).toBe('live')
+    expect(school?.href).toBe('/workshop/3d-school')
+    expect(school?.enrollment).toBe('inquiry')
+    expect(school?.capacity).toBeUndefined()
+    expect(school?.images).toEqual([])
+  })
+
   it('treats Saturday Lab as open lab without a fake headcount', () => {
     const lab = getWorkshopOfferingBySlug('saturday-lab')
     expect(lab?.enrollment).toBe('open-lab')
@@ -130,6 +140,10 @@ describe('dcc education offerings', () => {
     )
     expect(parseWorkshopInterestSource('workshop-own-your-digital-presence')?.title).toBe(
       'Own Your Digital Presence'
+    )
+    expect(parseWorkshopInterestSource('workshop-3d-school')?.title).toBe('DCC 3D School')
+    expect(parseWorkshopInterestSource('workshop-blender-for-artists')?.title).toBe(
+      'Blender for Artists'
     )
     expect(parseWorkshopInterestSource('workshop-resin-printing')).toBeUndefined()
     expect(parseWorkshopInterestSource('workshops')).toBeUndefined()

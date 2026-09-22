@@ -8,6 +8,7 @@
 - **Culture content gaps:** [`lib/dcc/culture/CONTENT.md`](../../lib/dcc/culture/CONTENT.md)
 - **Image production list (what to shoot, types, alternates):** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md)
 - **Fabricate image drop list:** [`public/dcc/fabrication/ASSETS.md`](../../public/dcc/fabrication/ASSETS.md)
+- **3D School curriculum assets:** [`3d-curriculum-assets.md`](./3d-curriculum-assets.md)
 - **Resin teaching stills:** [`docs/workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md`](../workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md)
 
 **Do not invent:** artist names, bios, quotations, dates, venue, sales %, ITS3D partnership, documentary photos that do not exist.
@@ -69,7 +70,10 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 | `/journal` | culture + CDC | Graphic covers on Cloudinary (`dccmiami/journal/…`); Cost and Public Art essays have no covers yet | Card hover when `src` exists | Thesis-driven index: opening sequence (Lab → Cost → Public Art) plus essay archive, Conversations empty state, six topic labels. Empty CDC shells not advertised. No podcast; no CMS; newsletter/RSS still pending |
 | `/journal/conversations` | culture | None | Still | Empty on purpose |
 | `/journal/[category]/[slug]` | culture | Graphic covers as `heroImage` (takes precedence over unused `heroSlot`); Cost and Public Art essays use `heroSlot` until a cover exists; older essays 02–03 still have inline photo/map slots | Culture body via `bodyPath` MDX (`compileMDX` / `next-mdx-remote/rsc`) | Five essays at `content/journal/<slug>.mdx`. Cost essay is the first reference (living metadata, diagrams, frameworks). Public Art essay is the second (figures, citations, Technical Rider). No invented operating numbers. |
-| `/workshops` | education | Saturday Lab / vibe banners plus two 3D catalog cards on conceptual educational stills | Live catalog client; org grid omitted when empty | Public 3D pair is 3D Printing for Artists + AI → 3D; IP Age of AI is Oolite-only; resin is not a catalog card |
+| `/workshops` | education | Saturday Lab / vibe banners plus two 3D catalog cards on conceptual educational stills; 3D School hub card uses gradient until curriculum assets land | Live catalog client; org grid omitted when empty | Public 3D pair is 3D Printing for Artists + AI → 3D; **DCC 3D School** hub at `/workshop/3d-school`; IP Age of AI is Oolite-only; resin is not a catalog card |
+| `/workshop/3d-school` | education | Labeled placeholders (`3D-HERO-001` and family) | Curriculum map, intent cards, learning path | Mental-model school — not software-branded landing pages. Pilot: File→Physical, Blender, Plasticity. No dates, instructors, or checkout. Asset checklist: [`docs/dcc/3d-curriculum-assets.md`](./3d-curriculum-assets.md) |
+| `/workshop/3d-school/[slug]` | education | Per-workshop placeholders | Shared detail template | Seven records; coming/in-development clearly labeled |
+| `/workshop/3d-school/display` | education | None (type-led 9:16 deck) | SmartSign preview | `noindex`; same curriculum data |
 | `/workshop/3d-printing-for-artists` | education | Conceptual stills (`PRINT` `CLEANUP` `FINISH` `MEASURE` `COMPARE`) | Editorial page; inquiry via newsletter | HTML labels; caption **Conceptual educational image** |
 | `/workshop/ai-3d-physical-object` | education | Conceptual stills (`MODEL` `IMAGINE` `PREPARE` `PRINT` `FINISH` `TEST` `OUTCOME`); PRINT reuses machine detail | Editorial page; inquiry via newsletter | Can land on PLA FDM or resin SLA |
 | `/workshop/resin-printing` | education | Cloudinary banners `00–08`, concepts `107–135`, boards `200–214` | Workshop-engine clients (session/TV) | SLA syllabus engine; linked from the 3D pages, not a fifth catalog card |
@@ -86,6 +90,10 @@ Hover rule for culture media: [`cultureMediaMotionEnabled`](../../lib/dcc/cultur
 ---
 
 ## What shipped in this conversation
+
+### Education (3D School)
+
+Curriculum system at `/workshop/3d-school` — seven mental-model records, shared detail template, labeled placeholders, SmartSign 9:16 preview (`noindex`). Catalog hub card on `/workshops`. Inquiry via newsletter. No dates, instructors, checkout, or documentary photos. Asset checklist: [`3d-curriculum-assets.md`](./3d-curriculum-assets.md).
 
 ### Culture (committed on this branch)
 
@@ -162,7 +170,7 @@ Eleven conceptual educational stills wired on `/workshop/3d-printing-for-artists
 
 ### Education / money (do not build checkout this sprint)
 
-`/workshops` public catalog is the DCC sessions band (`lib/dcc/education/offerings.ts`: Saturday Lab, 3D Printing for Artists, AI → 3D Physical Object, Vibecoding & Net Art). Skills: IP in the Age of AI is **Oolite Arts only** (`/o/oolite/workshops`) — not a DCC offering. Resin SLA stays at `/workshop/resin-printing` and is linked from the 3D pages — not a 3D catalog card. **No prices, no invented capacity** on the new offerings. Enrollment is inquiry (`/newsletter?source=workshop-3d-printing-for-artists` / `workshop-ai-3d-physical-object`). The optional filterable org grid (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG`, default `oolite`) is omitted when that org is missing or empty — the public page must not show operator env-var copy.
+`/workshops` public catalog is the DCC sessions band (`lib/dcc/education/offerings.ts`: Saturday Lab, **DCC 3D School**, 3D Printing for Artists, AI → 3D Physical Object, Vibecoding & Net Art). Skills: IP in the Age of AI is **Oolite Arts only** (`/o/oolite/workshops`) — not a DCC offering. Resin SLA stays at `/workshop/resin-printing` and is linked from the 3D pages — not a 3D catalog card. 3D School curricula live at `/workshop/3d-school` and `/workshop/3d-school/[slug]` (inquiry via newsletter). **No prices, no invented capacity** on the new offerings. Enrollment is inquiry (`/newsletter?source=workshop-3d-printing-for-artists` / `workshop-ai-3d-physical-object` / `workshop-3d-school`). The optional filterable org grid (`NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG`, default `oolite`) is omitted when that org is missing or empty — the public page must not show operator env-var copy.
 
 **What is actually live for money**
 

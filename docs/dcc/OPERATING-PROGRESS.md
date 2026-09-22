@@ -106,7 +106,7 @@ A **B** needs a working route, record, payment, automation, or live demo — not
 
 | # | Capability | Status | Evidence / next |
 |---|---|---|---|
-| 7 | Workshop pages | **B** | `/workshops`, `/workshop/3d-printing-for-artists`, `/workshop/ai-3d-physical-object`, `/workshop/resin-printing` |
+| 7 | Workshop pages | **B** | `/workshops`, `/workshop/3d-school`, `/workshop/3d-printing-for-artists`, `/workshop/ai-3d-physical-object`, `/workshop/resin-printing` |
 | 8 | Workshop registration | **P** | Newsletter interest + `/api/workshop-registrations` RSVP. No DCC paid SKU. |
 | 9 | Workshop payment | **N** | Stripe routes `.disabled`. Oolite Digital Lab = QGiv (not DCC). |
 | 10 | Paid attendee materials | **N** | |
@@ -209,6 +209,7 @@ Append; do not rewrite history.
 
 | Date | What changed | Scoreboard effect |
 |---|---|---|
+| 2026-09-21 | DCC 3D School curriculum hub at `/workshop/3d-school` (seven mental-model records, labeled asset placeholders, inquiry CTAs). No dates, instructors, or checkout. | Checklist #7 still **B** with hub evidence. |
 | 2026-09-21 | Public Art essay published as second Journal reference (figures, heavier citations, Technical Rider). No municipal APIs or fake costs. | Checklist #22 still **B**; #23 still **P**. |
 | 2026-09-21 | Cost essay published as Journal reference article (living metadata, citations, native diagrams, frameworks). No fake operating values. | Checklist #22 still **B**; #23 still **P**. |
 | 2026-09-12 | Four journal diagrams live as SVG (`capability-network`, `different-kinds-of-labor`, `distributed-cultural-network`, `idea-to-realization-distance`). Heroes/photos stay PLACEHOLDER. | Checklist #22 still **B**; no scoreboard letter change. |
