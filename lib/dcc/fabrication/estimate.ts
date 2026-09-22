@@ -114,5 +114,5 @@ export function buildQuoteHandoffHref(input: {
     labor: String(input.laborHours),
     queue: input.queue,
   })
-  return `/fabricate/quote?${params.toString()}`
+  return `/fabricate/start?${params.toString()}`
 }

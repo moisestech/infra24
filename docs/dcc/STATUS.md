@@ -9,6 +9,7 @@
 - **Image production list (what to shoot, types, alternates):** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md)
 - **Fabricate image drop list:** [`public/dcc/fabrication/ASSETS.md`](../../public/dcc/fabrication/ASSETS.md)
 - **3D School curriculum assets:** [`3d-curriculum-assets.md`](./3d-curriculum-assets.md)
+- **Fabricate studio Phase 1 (services, start, private proposals):** [`FABRICATE.md`](./FABRICATE.md)
 - **Resin teaching stills:** [`docs/workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md`](../workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md)
 
 **Do not invent:** artist names, bios, quotations, dates, venue, sales %, ITS3D partnership, documentary photos that do not exist.
@@ -25,6 +26,7 @@
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
 | Culture records published | 1 program (Clandestine 2026, coming soon). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). **5 journal essays** (all `bodyPath` MDX). 0 culture projects. |
 | Fabricate Phase 2 | On `main`: Field Lab, estimate planner, `/fabricate/projects`. Hero is **conceptual** (not documentary). |
+| Fabricate Phase 1 studio | `/fabricate/services/*`, `/fabricate/start`, password-gated proposals. See [`FABRICATE.md`](./FABRICATE.md). |
 | Images | **Filled vs not:** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md) § Filled vs not. Teaching stills are conceptual; documentary fabricate/Clandestine/Bakehouse/class shots are not filled. |
 
 ### Namespace commit rule

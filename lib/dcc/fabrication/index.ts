@@ -130,3 +130,104 @@ export {
   FABRICATION_WHAT_WE_TEST,
   getFabricationPublicMetrics,
 } from '@/lib/dcc/fabrication/metrics'
+
+export {
+  STUDIO_SERVICES,
+  PROJECT_STAGES,
+  getStudioService,
+  getStudioServiceBySlug,
+  suggestStudioService,
+  projectStageFromLaneParam,
+} from '@/lib/dcc/fabrication/studio-services'
+export type {
+  StudioService,
+  StudioServiceId,
+  ProjectStageId,
+} from '@/lib/dcc/fabrication/studio-services'
+
+export {
+  FABRICATION_JOB_STATUSES,
+  FABRICATION_JOB_STATUS_LABELS,
+  clientFacingJobStatus,
+} from '@/lib/dcc/fabrication/job-status'
+export type { FabricationJobStatus } from '@/lib/dcc/fabrication/job-status'
+
+export {
+  DEFAULT_DOCUMENTATION_RIGHTS,
+  DEFAULT_CLIENT_OWNERSHIP,
+  PRICE_REFERENCE_DISCLAIMER,
+} from '@/lib/dcc/fabrication/schema'
+export type {
+  Material,
+  Machine,
+  Operator,
+  FabricationJob,
+  ClientProposal,
+  CostLineItem,
+  DocumentationRights,
+  PrototypeFindings,
+  ProposalMediaSlot,
+  ProposalPricing,
+  QuoteEconomics,
+  QuoteLineItem,
+} from '@/lib/dcc/fabrication/schema'
+
+export {
+  MACHINE_HOURLY_USD,
+  OPERATOR_HOURLY_USD,
+  FOUNDER_MARGIN_WARNING_USD,
+} from '@/lib/dcc/fabrication/economics-defaults'
+
+export {
+  calculateQuoteEconomics,
+  estimatePaymentFee,
+  sumCostLineItems,
+  sumQuoteLineAmounts,
+} from '@/lib/dcc/fabrication/quote-economics'
+
+export {
+  clientPricingViewLeaksInternal,
+  getClientVisibleQuoteLines,
+  serializeClientPricingView,
+} from '@/lib/dcc/fabrication/client-quote-view'
+
+export {
+  FABRICATION_MATERIALS,
+  getMaterial,
+  materialPriceLabel,
+} from '@/lib/dcc/fabrication/materials'
+
+export {
+  FABRICATION_MACHINES,
+  getMachineCatalogEntry,
+  machineAccessLabel,
+} from '@/lib/dcc/fabrication/machines-catalog'
+
+export {
+  FABRICATION_OPERATORS,
+  getOperator,
+  publicOperatorName,
+} from '@/lib/dcc/fabrication/operators'
+
+export {
+  CLIENT_PROPOSALS,
+  getClientProposal,
+  listProposalSlugs,
+  HEATHER_PROPOSAL,
+  HEATHER_BASELINE_SLICE,
+  HEATHER_LIGHTING_HARDWARE,
+  HEATHER_CLIENT_MATERIAL_OUTLAY_USD,
+  HEATHER_COST_LINE_ITEMS,
+  HEATHER_DEFAULT_COST_INPUTS,
+  HEATHER_DEFAULT_FOUNDER_HOURS,
+  HEATHER_QUOTE_LINE_ITEMS,
+  HEATHER_QUOTE_TOTAL_USD,
+  buildHeatherCostLineItems,
+  CAROL_PROPOSAL,
+} from '@/lib/dcc/fabrication/proposals'
+
+export {
+  fabricateStartRequestSchema,
+  FABRICATE_START_NOTES_PREFIX,
+} from '@/lib/dcc/fabrication/start-schema'
+export type { FabricateStartRequest, ObjectIntent } from '@/lib/dcc/fabrication/start-schema'

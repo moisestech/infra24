@@ -70,6 +70,10 @@ export type CreateInquiryJobInput = {
   dueDate?: string
   notesBody: string
   estimateShown?: string
+  /** Defaults to [web:/make]. Fabricate start uses [web:/fabricate/start]. */
+  notesPrefix?: string
+  actor?: string
+  source?: string
 }
 
 /** Public /make write path — Inquiry only. Never sets quote/costs/machine. */
@@ -78,7 +82,8 @@ export async function createInquiryJob(
   conn?: DccOsConnection
 ): Promise<DccJob> {
   const c = conn ?? requireDccOsConnection()
-  const notes = `${MAKE_NOTES_PREFIX}\n${input.notesBody}${
+  const prefix = input.notesPrefix ?? MAKE_NOTES_PREFIX
+  const notes = `${prefix}\n${input.notesBody}${
     input.estimateShown ? `\nEstimate shown: ${input.estimateShown}` : ''
   }`
 
@@ -102,9 +107,9 @@ export async function createInquiryJob(
       entity: 'Job',
       entityId: created.id,
       action: 'createInquiry',
-      actor: 'web:/make',
+      actor: input.actor ?? 'web:/make',
       details: input.jobName,
-      source: 'web:/make',
+      source: input.source ?? 'web:/make',
     },
     c
   )
