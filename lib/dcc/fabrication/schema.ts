@@ -185,6 +185,8 @@ export type ProposalMediaSlot = {
   alt: string
   caption?: string
   aspect: '16/9' | '21/9' | '4/5' | '1/1'
+  /** Hosted asset (e.g. Cloudinary). When set, used instead of git-private media. */
+  src?: string
 }
 
 export type ProposalPricing = {

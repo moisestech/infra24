@@ -1,7 +1,9 @@
-import { proposalMediaSrc } from '@/lib/dcc/fabrication/proposal-media'
+import {
+  proposalMediaAvailable,
+  resolveProposalMediaUrl,
+} from '@/lib/dcc/fabrication/proposal-media'
 import type { ProposalMediaSlot } from '@/lib/dcc/fabrication/schema'
 import { cn } from '@/lib/utils'
-import { proposalMediaExists } from '@/components/dcc/fabrication/proposal/ProposalChrome'
 
 const ASPECT_CLASS: Record<ProposalMediaSlot['aspect'], string> = {
   '16/9': 'aspect-[16/9]',
@@ -19,8 +21,8 @@ export function ProposalMediaFigure({
   slot: ProposalMediaSlot
   className?: string
 }) {
-  const exists = proposalMediaExists(slug, slot.filename)
-  const src = proposalMediaSrc(slug, slot.filename)
+  const exists = proposalMediaAvailable(slug, slot)
+  const src = resolveProposalMediaUrl(slug, slot)
 
   if (exists) {
     return (

@@ -298,6 +298,13 @@ describe('fabricate studio system', () => {
     expect(clientJson).not.toContain(String(HEATHER_PROPOSAL.costLineItems?.[0]?.internalRate))
   })
 
+  it('serves Heather proposal images from Cloudinary', () => {
+    for (const slot of HEATHER_PROPOSAL.media) {
+      expect(slot.src).toMatch(/^https:\/\/res\.cloudinary\.com\/dck5rzi4h\//)
+    }
+    expect(HEATHER_PROPOSAL.media).toHaveLength(7)
+  })
+
   it('greets clients by first name on the proposal unlock screen', () => {
     expect(proposalGreetingName('heather-deitch')).toBe('Heather')
     expect(proposalGreetingName('carol-haggiag')).toBe('Carol')

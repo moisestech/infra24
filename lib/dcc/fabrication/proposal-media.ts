@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 import { listProposalSlugs } from '@/lib/dcc/fabrication/proposals'
@@ -31,6 +32,23 @@ export function resolveProposalMediaFile(
 
 export function proposalMediaSrc(slug: string, filename: string): string {
   return `/api/dcc/fabricate/media/${encodeURIComponent(slug)}/${encodeURIComponent(filename)}`
+}
+
+export function resolveProposalMediaUrl(
+  slug: string,
+  slot: { filename: string; src?: string }
+): string {
+  if (slot.src) return slot.src
+  return proposalMediaSrc(slug, slot.filename)
+}
+
+export function proposalMediaAvailable(
+  slug: string,
+  slot: { filename: string; src?: string }
+): boolean {
+  if (slot.src) return true
+  const file = resolveProposalMediaFile(slug, slot.filename)
+  return Boolean(file && existsSync(file))
 }
 
 export function mimeForProposalFilename(filename: string): string {

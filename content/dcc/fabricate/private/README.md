@@ -16,6 +16,8 @@ Expected Heather filenames:
 - `H_DIAG_003_finishing_checkpoint.png`
 - `H_SRC_003_slicer_preview.png`
 
-Served only through `/api/dcc/fabricate/media/...` after the shared proposal password cookie.
+Served through `/api/dcc/fabricate/media/...` after the shared proposal password cookie, or via Cloudinary `src` on the proposal record (Heather uses Cloudinary).
+
+Cloudinary folder: `dccmiami/proposals/heather-deitch/`
 
 Never place CAD / source files (`.pm7m`, `.stl`, `.3mf`, `.obj`, `.zip`) in this folder. Those stay off the website.

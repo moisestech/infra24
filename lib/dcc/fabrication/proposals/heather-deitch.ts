@@ -3,6 +3,7 @@ import {
   DEFAULT_DOCUMENTATION_RIGHTS,
   type ClientProposal,
 } from '@/lib/dcc/fabrication/schema'
+import { HEATHER_PROPOSAL_MEDIA_SRC } from '@/lib/dcc/fabrication/proposals/heather-deitch-media'
 import {
   HEATHER_CLIENT_MATERIAL_OUTLAY_USD,
   HEATHER_COST_LINE_ITEMS,
@@ -53,24 +54,28 @@ export const HEATHER_PROPOSAL: ClientProposal = {
     {
       id: 'H_RENDER_001',
       filename: 'H_RENDER_001_hero_translucent_prototype.png',
+      src: HEATHER_PROPOSAL_MEDIA_SRC.H_RENDER_001,
       alt: 'Hero render of the translucent lighting prototype.',
       aspect: '21/9',
     },
     {
       id: 'H_RENDER_002',
       filename: 'H_RENDER_002_multiview_translucent_prototype.png',
+      src: HEATHER_PROPOSAL_MEDIA_SRC.H_RENDER_002,
       alt: 'Multiview render of the translucent lighting prototype.',
       aspect: '16/9',
     },
     {
       id: 'H_RENDER_003',
       filename: 'H_RENDER_003_supported_production_state.png',
+      src: HEATHER_PROPOSAL_MEDIA_SRC.H_RENDER_003,
       alt: 'Supported production-state preview of the current file.',
       aspect: '16/9',
     },
     {
       id: 'H_DIAG_001',
       filename: 'H_DIAG_001_translucency_spectrum.png',
+      src: HEATHER_PROPOSAL_MEDIA_SRC.H_DIAG_001,
       alt: 'Diagram of translucency considerations for the lighting part.',
       aspect: '16/9',
     },
@@ -78,17 +83,20 @@ export const HEATHER_PROPOSAL: ClientProposal = {
       id: 'H_DIAG_002',
       filename: 'H_DIAG_002_fabrication_workflow.png',
       alt: 'Fabrication workflow for Prototype 1.',
+      src: HEATHER_PROPOSAL_MEDIA_SRC.H_DIAG_002,
       aspect: '16/9',
     },
     {
       id: 'H_DIAG_003',
       filename: 'H_DIAG_003_finishing_checkpoint.png',
+      src: HEATHER_PROPOSAL_MEDIA_SRC.H_DIAG_003,
       alt: 'Finishing checkpoint for support removal and surface review.',
       aspect: '16/9',
     },
     {
       id: 'H_SRC_003',
       filename: 'H_SRC_003_slicer_preview.png',
+      src: HEATHER_PROPOSAL_MEDIA_SRC.H_SRC_003,
       alt: 'Baseline slicer preview. Not a final production approval.',
       caption:
         'Baseline slice only. Final material profile and production estimate will be confirmed after resin approval.',
