@@ -108,9 +108,11 @@ Types already include `OPEN_FOR_FABRICATION` → `CLAIMED` → `PRODUCTION`. MVP
 ## Environment
 
 ```
-DCC_FABRICATE_PROPOSALS_PASSWORD=
+DCC_FABRICATE_PROPOSALS_PASSWORD=dccmiami
 ```
+
+If unset, code falls back to `dccmiami` (`DEFAULT_FABRICATE_PROPOSALS_PASSWORD`). Override in production env when rotating.
 
 Reuse: `INFRA24_CONTROL_SERVICE_TOKEN` (HMAC), `RESEND_*`, `MARKETING_CONTACT_TO`, `AIRTABLE_DCC_OS_*`.
 
-Production without the proposal password returns 503 on unlock. Locally, an unset password allows access (same pattern as `/scale-up`).
+Locally, an unset env var skips the unlock screen in dev only. Production always requires the password (env or fallback).

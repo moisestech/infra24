@@ -3,12 +3,18 @@ import { createHmac, timingSafeEqual } from 'node:crypto'
 
 export const FABRICATE_PROPOSALS_COOKIE = 'dcc_fabricate_proposals'
 
-function password(): string | undefined {
-  return process.env.DCC_FABRICATE_PROPOSALS_PASSWORD?.trim() || undefined
+/** Pilot default until a dedicated env var is set in production. */
+export const DEFAULT_FABRICATE_PROPOSALS_PASSWORD = 'dccmiami'
+
+function password(): string {
+  return (
+    process.env.DCC_FABRICATE_PROPOSALS_PASSWORD?.trim() ||
+    DEFAULT_FABRICATE_PROPOSALS_PASSWORD
+  )
 }
 
 export function isFabricateProposalsPasswordConfigured(): boolean {
-  return Boolean(password())
+  return Boolean(process.env.DCC_FABRICATE_PROPOSALS_PASSWORD?.trim())
 }
 
 function tokenForPassword(pw: string): string {
@@ -36,8 +42,12 @@ export function fabricateProposalsCookieValue(): string {
 }
 
 export async function hasFabricateProposalsAccess(): Promise<boolean> {
-  if (!isFabricateProposalsPasswordConfigured()) {
-    return process.env.NODE_ENV !== 'production'
+  // Dev only: skip unlock when no env override and not production.
+  if (
+    !isFabricateProposalsPasswordConfigured() &&
+    process.env.NODE_ENV !== 'production'
+  ) {
+    return true
   }
   const jar = await cookies()
   const cookie = jar.get(FABRICATE_PROPOSALS_COOKIE)?.value
