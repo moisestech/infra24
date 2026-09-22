@@ -16,12 +16,17 @@ describe('isPublicRoute', () => {
     expect(isPublicRoute('/workshop/resin-printing')).toBe(true)
     expect(isPublicRoute('/workshop/3d-printing-for-artists')).toBe(true)
     expect(isPublicRoute('/workshop/ai-3d-physical-object')).toBe(true)
+    expect(isPublicRoute('/workshop/3d-school')).toBe(true)
+    expect(isPublicRoute('/workshop/3d-school/blender-for-artists')).toBe(true)
   })
 
   it('keeps DCC fabricate pages public, including the /fabrication alias', () => {
     expect(isPublicRoute('/fabricate')).toBe(true)
     expect(isPublicRoute('/fabricate/pricing')).toBe(true)
     expect(isPublicRoute('/fabricate/quote')).toBe(true)
+    expect(isPublicRoute('/fabricate/start')).toBe(true)
+    expect(isPublicRoute('/fabricate/services/fabricate-my-file')).toBe(true)
+    expect(isPublicRoute('/fabricate/proposals/heather-deitch')).toBe(true)
     expect(isPublicRoute('/fabricate/finishes')).toBe(true)
     expect(isPublicRoute('/fabricate/projects')).toBe(true)
     expect(isPublicRoute('/fabricate/estimate')).toBe(true)

@@ -18,7 +18,30 @@ import {
   listPublicProjects,
   projectEconomics,
   rushPercentageForQueue,
+  STUDIO_SERVICES,
+  suggestStudioService,
+  projectStageFromLaneParam,
+  DEFAULT_DOCUMENTATION_RIGHTS,
+  HEATHER_PROPOSAL,
+  CAROL_PROPOSAL,
+  HEATHER_BASELINE_SLICE,
+  HEATHER_QUOTE_LINE_ITEMS,
+  HEATHER_QUOTE_TOTAL_USD,
+  HEATHER_DEFAULT_FOUNDER_HOURS,
+  HEATHER_COST_LINE_ITEMS,
+  calculateQuoteEconomics,
+  sumQuoteLineAmounts,
+  clientPricingViewLeaksInternal,
+  serializeClientPricingView,
+  PRICE_REFERENCE_DISCLAIMER,
+  FOUNDER_MARGIN_WARNING_USD,
+  clientFacingJobStatus,
+  getMaterial,
+  getMachineCatalogEntry,
+  fabricateStartRequestSchema,
 } from '@/lib/dcc/fabrication'
+import { isSafeProposalMediaPath } from '@/lib/dcc/fabrication/proposal-media'
+import { formatFabricateStartNotes } from '@/lib/dcc/fabrication/start-notes'
 import { RESIN_RESOURCES } from '@/lib/workshop-engine/resin-printing'
 
 describe('dcc fabrication estimateQuote', () => {
@@ -158,7 +181,7 @@ describe('fabrication estimate planner', () => {
     expect(b.total).toBe(181.2)
   })
 
-  it('builds a quote handoff that stays on the existing intake', () => {
+  it('builds a quote handoff that lands on /fabricate/start', () => {
     expect(
       buildQuoteHandoffHref({
         tier: 'full_service_artist',
@@ -167,7 +190,7 @@ describe('fabrication estimate planner', () => {
         laborHours: 1,
         queue: 'standard',
       })
-    ).toBe('/fabricate/quote?tier=full_service_artist&hours=8&grams=250&labor=1&queue=standard')
+    ).toBe('/fabricate/start?tier=full_service_artist&hours=8&grams=250&labor=1&queue=standard')
   })
 })
 
@@ -200,3 +223,124 @@ describe('fabrication metrics', () => {
     expect(metrics.publicCapabilityCount).toBeLessThan(FABRICATION_CAPABILITIES.length)
   })
 })
+
+describe('fabricate studio system', () => {
+  it('exposes two related studio services with distinct workflows', () => {
+    expect(STUDIO_SERVICES.map((s) => s.id)).toEqual([
+      'FABRICATE_MY_FILE',
+      'PREPARE_PLUS_FABRICATE',
+    ])
+    expect(STUDIO_SERVICES[0]?.href).toBe('/fabricate/services/fabricate-my-file')
+    expect(STUDIO_SERVICES[1]?.href).toBe('/fabricate/services/prepare-and-fabricate')
+    expect(suggestStudioService('finished_3d_file')?.id).toBe('FABRICATE_MY_FILE')
+    expect(suggestStudioService('sketch_reference')?.id).toBe('PREPARE_PLUS_FABRICATE')
+    expect(suggestStudioService('unsure')).toBeNull()
+    expect(projectStageFromLaneParam('print-my-file')).toBe('finished_3d_file')
+  })
+
+  it('defaults public documentation permissions off', () => {
+    expect(DEFAULT_DOCUMENTATION_RIGHTS.publicClientName).toBe(false)
+    expect(DEFAULT_DOCUMENTATION_RIGHTS.publicCADImages).toBe(false)
+    expect(DEFAULT_DOCUMENTATION_RIGHTS.publicProcessImages).toBe(false)
+    expect(DEFAULT_DOCUMENTATION_RIGHTS.publicFinishedObject).toBe(false)
+    expect(DEFAULT_DOCUMENTATION_RIGHTS.publicProjectEconomics).toBe(false)
+    expect(DEFAULT_DOCUMENTATION_RIGHTS.publicCaseStudy).toBe(false)
+  })
+
+  it('keeps Heather private, quoted, with five client lines summing to $625', () => {
+    expect(HEATHER_PROPOSAL.job.jobNumber).toBe('DCC-JOB-001')
+    expect(HEATHER_PROPOSAL.job.serviceType).toBe('FABRICATE_MY_FILE')
+    expect(HEATHER_PROPOSAL.pricing?.amountUsd).toBe(625)
+    expect(HEATHER_QUOTE_TOTAL_USD).toBe(625)
+    expect(sumQuoteLineAmounts(HEATHER_QUOTE_LINE_ITEMS, { clientVisibleOnly: true })).toBe(
+      625
+    )
+    expect(clientFacingJobStatus(HEATHER_PROPOSAL.job.status)).toBe(
+      'Material confirmation'
+    )
+    expect(HEATHER_PROPOSAL.job.documentationRights.publicCaseStudy).toBe(false)
+    expect(HEATHER_BASELINE_SLICE.caveat).toMatch(/resin approval/)
+    const material = getMaterial(HEATHER_PROPOSAL.materialIds[0] ?? '')
+    expect(material?.id).toBe('resin-high-clear-anycubic')
+    expect(material?.pendingConfirmation).toBe(true)
+    expect(material?.currentPrice).toBe(42.47)
+    expect(material?.productUrl).toMatch(/high-clear-resin/)
+    expect(PRICE_REFERENCE_DISCLAIMER).toMatch(/verified before purchase/)
+    const machine = getMachineCatalogEntry('anycubic-photon-mono-m7-max')
+    expect(machine?.accessStatus).toBe('unconfirmed')
+    expect(machine?.internalHourlyRate).toBe(15)
+  })
+
+  it('pressure-tests Heather economics and hides internal fields from client view', () => {
+    const atDefault = calculateQuoteEconomics({
+      quoteTotal: HEATHER_QUOTE_TOTAL_USD,
+      costLineItems: HEATHER_COST_LINE_ITEMS,
+      founderHours: HEATHER_DEFAULT_FOUNDER_HOURS,
+    })
+    expect(atDefault.directCost).toBeCloseTo(278.43, 2)
+    expect(atDefault.contribution).toBeCloseTo(346.57, 2)
+    expect(atDefault.founderMarginPerHour).toBeCloseTo(138.63, 1)
+    expect(atDefault.belowFounderThreshold).toBe(false)
+
+    const atThreeHours = calculateQuoteEconomics({
+      quoteTotal: HEATHER_QUOTE_TOTAL_USD,
+      costLineItems: HEATHER_COST_LINE_ITEMS,
+      founderHours: 3,
+    })
+    expect(atThreeHours.founderMarginPerHour).toBeCloseTo(115.52, 1)
+    expect(atThreeHours.belowFounderThreshold).toBe(true)
+    expect(FOUNDER_MARGIN_WARNING_USD).toBe(125)
+
+    const clientJson = serializeClientPricingView(HEATHER_PROPOSAL)
+    expect(clientPricingViewLeaksInternal(HEATHER_PROPOSAL)).toBe(false)
+    expect(clientJson).not.toMatch(/internalRate|costLineItems|hourlyRate|directCost/i)
+    expect(clientJson).not.toContain(String(HEATHER_PROPOSAL.costLineItems?.[0]?.internalRate))
+  })
+
+  it('keeps Carol as an unquoted Prepare + Fabricate shell', () => {
+    expect(CAROL_PROPOSAL.job.jobNumber).toBe('DCC-JOB-002')
+    expect(CAROL_PROPOSAL.job.serviceType).toBe('PREPARE_PLUS_FABRICATE')
+    expect(CAROL_PROPOSAL.pricing?.amountStatus).toBe('pending')
+    expect(CAROL_PROPOSAL.pricing?.amountUsd).toBeUndefined()
+    expect(CAROL_PROPOSAL.job.paymentStatus).toBe('not_quoted')
+  })
+
+  it('refuses CAD and path traversal for private proposal media', () => {
+    expect(
+      isSafeProposalMediaPath(
+        'heather-deitch',
+        'H_RENDER_001_hero_translucent_prototype.png'
+      )
+    ).toBe(true)
+    expect(isSafeProposalMediaPath('heather-deitch', 'source.pm7m')).toBe(false)
+    expect(isSafeProposalMediaPath('heather-deitch', '../secret.png')).toBe(false)
+    expect(isSafeProposalMediaPath('unknown-client', 'a.png')).toBe(false)
+  })
+
+  it('requires prototype-learning on fabricate start intake', () => {
+    const parsed = fabricateStartRequestSchema.safeParse({
+      name: 'Test',
+      email: 'test@example.com',
+      projectTitle: 'Lighting study',
+      projectStage: 'finished_3d_file',
+      description: 'A usable lighting file ready for review.',
+      prototypeLearning: 'Whether the part transmits light evenly.',
+    })
+    expect(parsed.success).toBe(true)
+    if (parsed.success) {
+      const notes = formatFabricateStartNotes(parsed.data)
+      expect(notes).toMatch(/What do you need to learn from this prototype/)
+      expect(notes).toMatch(/Suggested service \(not assigned\): FABRICATE_MY_FILE/)
+    }
+    expect(
+      fabricateStartRequestSchema.safeParse({
+        name: 'Test',
+        email: 'test@example.com',
+        projectTitle: 'Lighting study',
+        projectStage: 'finished_3d_file',
+        description: 'A usable lighting file ready for review.',
+      }).success
+    ).toBe(false)
+  })
+})
+

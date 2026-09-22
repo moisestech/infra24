@@ -106,7 +106,7 @@ A **B** needs a working route, record, payment, automation, or live demo — not
 
 | # | Capability | Status | Evidence / next |
 |---|---|---|---|
-| 7 | Workshop pages | **B** | `/workshops`, `/workshop/3d-printing-for-artists`, `/workshop/ai-3d-physical-object`, `/workshop/resin-printing` |
+| 7 | Workshop pages | **B** | `/workshops`, `/workshop/3d-school`, `/workshop/3d-printing-for-artists`, `/workshop/ai-3d-physical-object`, `/workshop/resin-printing` |
 | 8 | Workshop registration | **P** | Newsletter interest + `/api/workshop-registrations` RSVP. No DCC paid SKU. |
 | 9 | Workshop payment | **N** | Stripe routes `.disabled`. Oolite Digital Lab = QGiv (not DCC). |
 | 10 | Paid attendee materials | **N** | |
@@ -116,12 +116,12 @@ A **B** needs a working route, record, payment, automation, or live demo — not
 
 | # | Capability | Status | Evidence / next |
 |---|---|---|---|
-| 12 | Intake form | **B** | `/fabricate/quote`, `/make` → `POST /api/dcc/make` (Inquiry job if OS configured) |
+| 12 | Intake form | **B** | `/fabricate/start` (redirect from `/fabricate/quote`), `/make` → `POST /api/dcc/fabricate/start` and `/api/dcc/make` (Inquiry job if OS configured; email if Resend configured) |
 | 13 | Automated estimator | **B** | `/fabricate/estimate` — $151 seed; **planning estimate, not an invoice** |
-| 14 | Human-created quote | **P** | Staff/Airtable stage helpers; no client quote-delivery UI |
+| 14 | Human-created quote | **P** | Password-gated `/fabricate/proposals/heather-deitch` ($625 Prototype 1) + Carol shell. Not a live quote system. |
 | 15 | Client quote acceptance | **N** | |
 | 16 | Client invoice payment | **N** | |
-| 17 | Project status pipeline | **P** | Stage enum in `os-field-map.ts`; create = Inquiry |
+| 17 | Project status pipeline | **P** | Rich enum in `lib/dcc/fabrication/job-status.ts` on git proposals; Airtable create = Inquiry. Not live. |
 | 18 | Operator project claim | **N** | |
 | 19 | Open for Fabrication queue | **N** | `/fabricate` queue copy is pricing labels, not a job board |
 | 20 | Operator compensation | **N** | |
@@ -209,6 +209,9 @@ Append; do not rewrite history.
 
 | Date | What changed | Scoreboard effect |
 |---|---|---|
+| 2026-09-21 | DCC 3D School curriculum hub at `/workshop/3d-school` (seven mental-model records, labeled asset placeholders, inquiry CTAs). No dates, instructors, or checkout. | Checklist #7 still **B** with hub evidence. |
+| 2026-09-21 | Heather pricing layer: five-line $625 client breakdown, resin reference (~$42.47, client-supplied), staff `/fabricate/internal/heather-deitch` economics ($15/$35 machine/operator, $125/hr founder warning). No Stripe. | Checklist #12 still **B**; #14 **P**; payments still **N**. |
+| 2026-09-21 | Fabricate Phase 1 studio surfaces: `/fabricate/services/*`, `/fabricate/start`, password-gated Heather + Carol proposals. No Stripe. See [`FABRICATE.md`](./FABRICATE.md). | Checklist #12 still **B**; #14 **P** with private proposal evidence; #15/#16 still **N**. |
 | 2026-09-21 | Public Art essay published as second Journal reference (figures, heavier citations, Technical Rider). No municipal APIs or fake costs. | Checklist #22 still **B**; #23 still **P**. |
 | 2026-09-21 | Cost essay published as Journal reference article (living metadata, citations, native diagrams, frameworks). No fake operating values. | Checklist #22 still **B**; #23 still **P**. |
 | 2026-09-12 | Four journal diagrams live as SVG (`capability-network`, `different-kinds-of-labor`, `distributed-cultural-network`, `idea-to-realization-distance`). Heroes/photos stay PLACEHOLDER. | Checklist #22 still **B**; no scoreboard letter change. |

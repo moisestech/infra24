@@ -38,8 +38,8 @@ function withCover(
 
 /**
  * DCC MIA public workshop offerings — pages that already exist.
- * Two 3D catalog workshops (physical process + AI→3D). Resin SLA syllabus
- * stays at `/workshop/resin-printing` and is linked from those pages — not a third catalog card.
+ * Two 3D catalog workshops (physical process + AI→3D) plus the DCC 3D School hub.
+ * Resin SLA syllabus stays at `/workshop/resin-printing` and is linked from those pages — not a catalog card.
  * Skills: IP in the Age of AI is Oolite Arts only — do not list it here.
  * Do not list other Oolite tenant-catalog rows. Do not invent prices or capacity.
  */
@@ -89,6 +89,22 @@ export const DCC_WORKSHOP_OFFERINGS: DccWorkshopOffering[] = [
         'Existing Saturday Lab banner'
       ),
     ],
+  }),
+  withCover({
+    id: '3d-school',
+    slug: '3d-school',
+    title: 'DCC 3D School',
+    shortDescription:
+      'Learn how digital objects become physical. Mesh, solid CAD, and precision modeling share one fabrication pipeline.',
+    href: '/workshop/3d-school',
+    syllabusHref: '/workshop/3d-school',
+    format: 'in-person',
+    status: 'live',
+    enrollment: 'inquiry',
+    featured: true,
+    hue: 168,
+    hueAccent: 145,
+    images: [],
   }),
   withCover({
     id: '3d-printing-for-artists',

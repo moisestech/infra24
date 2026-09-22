@@ -2,7 +2,7 @@
 
 Living org status: [`STATUS.md`](./STATUS.md). Culture packet: [`lib/dcc/culture/RECORD.md`](../../lib/dcc/culture/RECORD.md). Fabricate drop filenames: [`public/dcc/fabrication/ASSETS.md`](../../public/dcc/fabrication/ASSETS.md). Resin documentary IDs: [`docs/workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md`](../workshops/RESIN_PRINTING_MEDIA_SHOT_LIST.md).
 
-Live on **main** / [dcc.miami](https://www.dcc.miami): culture ([PR #3](https://github.com/moisestech/infra24/pull/3)), `/workshops` empty-catalog fix ([PR #4](https://github.com/moisestech/infra24/pull/4)), resin Cloudinary + DCC offering stills ([PR #5](https://github.com/moisestech/infra24/pull/5)). Fabricate Phase 2 (estimate planner, `/fabricate/projects`) is still on sibling `feature/dcc-fabricate-phase2` and is **not** on production.
+Live on **main** / [dcc.miami](https://www.dcc.miami): culture ([PR #3](https://github.com/moisestech/infra24/pull/3)), `/workshops` empty-catalog fix ([PR #4](https://github.com/moisestech/infra24/pull/4)), resin Cloudinary + DCC offering stills ([PR #5](https://github.com/moisestech/infra24/pull/5)). Fabricate Phase 2 (estimate planner, `/fabricate/projects`) is still on sibling `feature/dcc-fabricate-phase2` and is **not** on production. 3D School curriculum placeholders: [`docs/dcc/3d-curriculum-assets.md`](./3d-curriculum-assets.md).
 
 **Hard rules for every frame:** no invented artist names; no prices, logos, or readable UI in fabricate/workshop stills; caption **conceptual** vs **documentary**; founders on `/artists` are **not** the Clandestine roster.
 
@@ -19,6 +19,7 @@ flowchart LR
   artistPage --> tour["360 tour if exists"]
   workshops --> threeD["/workshop/3d-printing-for-artists"]
   workshops --> ai3d["/workshop/ai-3d-physical-object"]
+  workshops --> school["/workshop/3d-school"]
   workshops --> satlab["/workshop/saturday-lab"]
   threeD --> resin["/workshop/resin-printing"]
   fabricate --> quote["/fabricate/quote"]
@@ -39,7 +40,7 @@ flowchart LR
 
 ### Education (live)
 
-- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, **3D Printing for Artists**, **AI → 3D Physical Object**, Vibecoding & Net Art. **No prices.** Skills: IP in the Age of AI stays on the Oolite catalog, not DCC. Resin SLA is a path inside 3D printing (`/workshop/resin-printing`) — not a catalog card. The two 3D cards use conceptual educational stills from [`lib/dcc/education/photo-stills.ts`](../../lib/dcc/education/photo-stills.ts). The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
+- DCC sessions band on `/workshops` from [`lib/dcc/education/offerings.ts`](../../lib/dcc/education/offerings.ts): Saturday Lab, **DCC 3D School**, **3D Printing for Artists**, **AI → 3D Physical Object**, Vibecoding & Net Art. **No prices.** Skills: IP in the Age of AI stays on the Oolite catalog, not DCC. Resin SLA is a path inside 3D printing (`/workshop/resin-printing`) — not a catalog card. The two 3D process cards use conceptual educational stills from [`lib/dcc/education/photo-stills.ts`](../../lib/dcc/education/photo-stills.ts). 3D School uses labeled placeholders until [`docs/dcc/3d-curriculum-assets.md`](./3d-curriculum-assets.md) assets land. The optional org-catalog grid is omitted when that slug is missing — the page must not show operator env-var copy.
 - Resin engine stays the SLA syllabus: **conceptual** Cloudinary banners `00–08`, instructional `107–135`, technique boards `200–214` (not shop photos, not catalog heroes).
 
 ### Fabricate (partially live)

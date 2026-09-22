@@ -6,6 +6,7 @@ import {
   FlaskConical,
   FolderKanban,
   Layers,
+  Route,
   Sparkles,
   type LucideIcon,
 } from 'lucide-react'
@@ -17,11 +18,13 @@ import {
 
 export type FabricateNavId =
   | 'home'
+  | 'services'
   | 'pricing'
   | 'finishes'
   | 'field-lab'
   | 'estimate'
   | 'projects'
+  | 'start'
   | 'quote'
 
 const NAV: {
@@ -39,6 +42,14 @@ const NAV: {
     short: 'Home',
     Icon: Sparkles,
     colorTokenId: 'cyan',
+  },
+  {
+    id: 'services',
+    href: '/fabricate/services',
+    label: 'Services',
+    short: 'Services',
+    Icon: Route,
+    colorTokenId: 'indigo',
   },
   {
     id: 'pricing',
@@ -81,10 +92,10 @@ const NAV: {
     colorTokenId: 'slate',
   },
   {
-    id: 'quote',
-    href: '/fabricate/quote',
-    label: 'Request quote',
-    short: 'Quote',
+    id: 'start',
+    href: '/fabricate/start',
+    label: 'Start a project',
+    short: 'Start',
     Icon: ClipboardList,
     colorTokenId: 'sky',
   },
@@ -106,7 +117,8 @@ export function FabricateChrome({
         <div className="flex gap-1.5 overflow-x-auto py-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:flex-wrap md:gap-2 md:overflow-visible">
           {NAV.map((link) => {
             const Icon = link.Icon
-            const active = current === link.id
+            const active =
+              current === link.id || (link.id === 'start' && current === 'quote')
             const color = getFabricationColor(link.colorTokenId)
             return (
               <Link
@@ -149,10 +161,16 @@ export function FabricateCtaRow({ className }: { className?: string }) {
       )}
     >
       <Link
-        href="/fabricate/quote"
+        href="/fabricate/start"
         className="inline-flex min-h-11 items-center justify-center rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900"
       >
-        Request a quote
+        Start a project
+      </Link>
+      <Link
+        href="/fabricate/services"
+        className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--cdc-border)] px-4 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-50 dark:text-neutral-100 dark:hover:bg-neutral-800"
+      >
+        Explore services
       </Link>
       <Link
         href="/fabricate/estimate"
