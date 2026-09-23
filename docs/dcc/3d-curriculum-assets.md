@@ -1,58 +1,73 @@
 # DCC 3D School — asset production checklist
 
-Drop files into [`public/dcc/education/3d-curriculum/`](../../public/dcc/education/3d-curriculum/) using the exact filename, then set `src` on the matching record in [`lib/dcc/education/3d-curriculum/assets.ts`](../../lib/dcc/education/3d-curriculum/assets.ts).
+Manifest source of truth: [`lib/dcc/education/3d-curriculum/assets.ts`](../../lib/dcc/education/3d-curriculum/assets.ts).
 
-Until `src` is set, the UI shows a labeled placeholder (title, purpose, filename, ratio). Do not use Unsplash, documentary Studio 43 photography, or generic AI stock.
+**Swap contract:** update `src` and `productionStatus` in the manifest only. Presentation components read the manifest — do not hard-code image paths in JSX.
 
-No prices, logos, readable software UI, or invented instructor portraits.
+**Branding in images:** generated art must not contain DCC logos, workshop titles, software names, captions, or illegible UI text. Typography and labels belong to the website layer.
 
-Manifest source of truth: `lib/dcc/education/3d-curriculum/assets.ts`.
+**Delivery:** prefer Cloudinary URLs under `dccmiami/workshops/` (see `THREE_D_CURRICULUM_CDN` in the manifest). Local drops to `public/dcc/education/3d-curriculum/` are optional when gitignore allows.
 
-| ID | Asset | Ratio | Page | Status |
-|---|---|---|---|---|
-| 3D-HERO-001 | Main 3D School hero | 16:9 | 3D School | TODO |
-| 3D-MAP-001 | 3D modeling mental models (future illustration; v1 is HTML) | 16:9 | 3D School | TODO |
-| 3D-PIPELINE-001 | Digital-to-physical pipeline | 21:9 | 3D School + Foundation | TODO |
-| 3D-FOUNDATION-HERO-001 | From File to Physical Object hero | 16:9 | Foundation | TODO |
-| 3D-FOUNDATION-FORMATS-001 | STL / OBJ / STEP / 3MF comparison | 4:3 | Foundation | TODO |
-| 3D-FOUNDATION-PRINTABILITY-001 | Printability problems | 4:3 | Foundation | TODO |
-| 3D-BLENDER-HERO-001 | Blender for Artists hero | 16:9 | Blender | TODO |
-| 3D-BLENDER-STAGES-001 | Primitive → printed | 21:9 | Blender | TODO |
-| 3D-BLENDER-OBJECT-001 | Student-scale sculptural object | 4:5 | Blender | TODO |
-| 3D-PLASTICITY-HERO-001 | Plasticity for Artists hero | 16:9 | Plasticity | TODO |
-| 3D-PLASTICITY-BOOLEAN-001 | Boolean cut / join | 4:3 | Plasticity | TODO |
-| 3D-PLASTICITY-STUDIO-OBJECTS-001 | Studio object set | 21:9 | Plasticity | TODO |
-| 3D-PLASTICITY-BRIDGE-001 | Plasticity → Blender → slicer → print | 16:9 | Plasticity | TODO |
-| 3D-RHINO-HERO-001 | Rhino for Artists hero | 16:9 | Rhino | TODO |
-| 3D-RHINO-JEWELRY-001 | Precision wearable | 4:3 | Rhino | TODO |
-| 3D-FIX-HERO-001 | Fix My 3D File hero | 16:9 | Fix My File | TODO |
-| 3D-FIX-DIAGNOSIS-001 | Diagnosis examples | 21:9 | Fix My File | TODO |
-| 3D-GRASSHOPPER-HERO-001 | Grasshopper hero | 16:9 | Grasshopper | TODO |
-| 3D-PARAMETRIC-HERO-001 | Parametric CAD hero | 16:9 | Parametric CAD | TODO |
-| 3D-OPERATOR-PATH-001 | Learn → future operator pathway | 21:9 | 3D School path | TODO |
+**Visual QA (development):** `/workshop/3d-school/visual-test` — full heroes, card crops, production status badges.
 
-## Visual purpose (short)
+---
 
-- **3D-HERO-001** — Three modeling languages converging into one printed object. No baked-in text.
-- **3D-MAP-001** — Mesh / solid / NURBS / parametric converging toward fabrication. Optional later; the live map is HTML/CSS.
-- **3D-PIPELINE-001** — Idea → Model → Prepare → Slice → Fabricate → Review → Document.
-- **3D-FOUNDATION-HERO-001** — Digital model through inspection and slicing into a small print.
-- **3D-FOUNDATION-FORMATS-001** — STL, OBJ, STEP, 3MF as distinct objects. No captions inside the frame.
-- **3D-FOUNDATION-PRINTABILITY-001** — Thin wall, floating geometry, bad orientation, unsupported overhang.
-- **3D-BLENDER-HERO-001** — Primitive evolving into a strange printable sculpture. Not generic Blender tutorial chrome.
-- **3D-BLENDER-STAGES-001** — Primitive → modified → sculpted → repaired → printed.
-- **3D-BLENDER-OBJECT-001** — Workshop-scale sculptural object.
-- **3D-PLASTICITY-HERO-001** — Precise but playful functional object: solids, cuts, fillets.
-- **3D-PLASTICITY-BOOLEAN-001** — A solid being cut or joined.
-- **3D-PLASTICITY-STUDIO-OBJECTS-001** — Phone stand, bracket, lamp part, enclosure, pedestal connector. Artist-made, not catalog gloss.
-- **3D-PLASTICITY-BRIDGE-001** — Plasticity → Blender → Bambu Studio → print.
-- **3D-RHINO-HERO-001** — Jewelry-like / precision curved object. Avoid architecture wireframe clichés.
-- **3D-RHINO-JEWELRY-001** — Curves → surface → fabricated wearable prototype.
-- **3D-FIX-HERO-001** — Broken mesh becoming clean printable geometry.
-- **3D-FIX-DIAGNOSIS-001** — Open mesh, non-manifold, thin wall, intersections, wrong scale.
-- **3D-GRASSHOPPER-HERO-001** — One base form proliferating into a family. Not a node-graph screenshot.
-- **3D-PARAMETRIC-HERO-001** — Functional object visibly driven by dimensions.
-- **3D-OPERATOR-PATH-001** — Learn → practice → fabricate → assist → document → future verified operator.
+## PRIMARY — HERO FAMILY
+
+| ID | Filename | Ratio | Workshop | Visual verb | Status | Source | Focal | Notes |
+|---|---|---|---|---|---|---|---|---|
+| 3D-HERO-001 | dcc-3d-hero-001.webp | 16:9 | Hub | compare | placeholder | — | 50% 45% | **Next to generate.** Triptych: mesh / solid / precision + optional foreground print. |
+| 3D-FOUNDATION-HERO-001 | dcc-3d-foundation-hero-001.webp | 16:9 | From File to Physical Object | translate | generated-candidate | Cloudinary | 50% 50% | Wireframe → slice → print. Only workshop using slice progression as primary motif. |
+| 3D-BLENDER-HERO-001 | dcc-3d-blender-hero-001.webp | 16:9 | Blender for Artists | sculpt-mutate | needs-regeneration | Cloudinary | 50% 50% | Regenerate: primitives → mesh mutation, not slice layers. |
+| 3D-PLASTICITY-HERO-001 | dcc-3d-plasticity-hero-001.webp | 16:9 | Plasticity for Artists | cut-join-fillet | generated-candidate | Cloudinary | 50% 50% | Harder, more controlled than Blender. |
+| 3D-RHINO-HERO-001 | dcc-3d-rhino-hero-001.webp | 16:9 | Rhino for Artists | curve-surface | generated-candidate | Cloudinary | 50% 50% | Sparse curves → continuous surface. |
+| 3D-FIX-HERO-001 | dcc-3d-fix-hero-001.webp | 16:9 | Fix My 3D File | diagnose-repair | generated-candidate | Cloudinary | 50% 50% | Broken → clean printable geometry. |
+| 3D-GRASSHOPPER-HERO-001 | dcc-3d-grasshopper-hero-001.webp | 16:9 | Grasshopper / Computational Objects | vary-proliferate | generated-candidate | Cloudinary | 50% 50% | One rule → family of outcomes. |
+| 3D-PARAMETRIC-HERO-001 | dcc-3d-parametric-hero-001.webp | 16:9 | Parametric CAD | constrain-assemble | generated-candidate | Cloudinary | 50% 50% | Relationships / constraints, not direct solids. |
+
+Do not mark `approved` merely because a file exists on CDN.
+
+---
+
+## SECONDARY — INSTRUCTIONAL
+
+Generate only after the primary hero family is visually approved.
+
+| ID | Filename | Ratio | Workshop | Status | Phase |
+|---|---|---|---|---|---|
+| 3D-FOUNDATION-FORMATS-001 | dcc-3d-foundation-formats-001.webp | 4:3 | Foundation | placeholder | A |
+| 3D-FOUNDATION-PRINTABILITY-001 | dcc-3d-foundation-printability-001.webp | 4:3 | Foundation | placeholder | A |
+| 3D-BLENDER-STAGES-001 | dcc-3d-blender-stages-001.webp | 21:9 | Blender | placeholder | D |
+| 3D-BLENDER-OBJECT-001 | dcc-3d-blender-object-001.webp | 4:5 | Blender | placeholder | B |
+| 3D-PLASTICITY-BOOLEAN-001 | dcc-3d-plasticity-boolean-001.webp | 4:3 | Plasticity | placeholder | A |
+| 3D-PLASTICITY-STUDIO-OBJECTS-001 | dcc-3d-plasticity-studio-objects-001.webp | 21:9 | Plasticity | placeholder | D |
+| 3D-PLASTICITY-BRIDGE-001 | dcc-3d-plasticity-bridge-001.webp | 16:9 | Plasticity | placeholder | C |
+| 3D-RHINO-JEWELRY-001 | dcc-3d-rhino-jewelry-001.webp | 4:3 | Rhino | placeholder | A |
+| 3D-FIX-DIAGNOSIS-001 | dcc-3d-fix-diagnosis-001.webp | 21:9 | Fix My File | placeholder | D |
+
+---
+
+## NATIVE / DEFERRED
+
+These raster slots stay **deferred**. The live site uses responsive HTML/CSS instead:
+
+| ID | Live representation |
+|---|---|
+| 3D-MAP-001 | [`CurriculumMap`](../../components/dcc/education/3d-curriculum/CurriculumMap.tsx) on the hub |
+| 3D-PIPELINE-001 | [`WorkflowStrip`](../../components/dcc/education/3d-curriculum/WorkflowStrip.tsx) on workshop detail pages |
+| 3D-OPERATOR-PATH-001 | [`LearningPath`](../../components/dcc/education/3d-curriculum/LearningPath.tsx) staged list on the hub |
+
+Raster versions may be added later for editorial or social use only.
+
+---
+
+## Alt-text rule
+
+Describe informational content. Avoid “DCC-style image” or “workshop banner.”
+
+Example: *An organic mesh sculpture progresses from simple polygon primitives into a smooth printable form.*
+
+---
 
 ## Custom icons (not this pass)
 

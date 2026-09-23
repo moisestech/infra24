@@ -50,11 +50,24 @@ export type ThreeDCurriculumAssetId =
 
 export type ThreeDCurriculumAspectRatio = '16/9' | '21/9' | '4/3' | '4/5' | '1/1'
 
-export type ThreeDCurriculumAssetStatus = 'placeholder' | 'ready'
+export type AssetProductionStatus =
+  | 'placeholder'
+  | 'generated-candidate'
+  | 'approved'
+  | 'needs-regeneration'
+  | 'deferred'
+
+/** @deprecated Use AssetProductionStatus */
+export type ThreeDCurriculumAssetStatus = AssetProductionStatus
+
+export type ThreeDCurriculumAssetFocalPoint = {
+  x: number
+  y: number
+}
 
 export type ThreeDCurriculumAsset = {
   id: ThreeDCurriculumAssetId
-  status: ThreeDCurriculumAssetStatus
+  productionStatus: AssetProductionStatus
   filename: string
   aspectRatio: ThreeDCurriculumAspectRatio
   width: number
@@ -65,6 +78,11 @@ export type ThreeDCurriculumAsset = {
   usedOn: string[]
   /** Public path or CDN URL when delivered. Leave undefined for placeholder UI. */
   src?: string
+  workshopSlug?: string
+  visualVerb?: string
+  focalPoint?: ThreeDCurriculumAssetFocalPoint
+  objectPosition?: string
+  notes?: string
 }
 
 export type ThreeDRelatedPage = {

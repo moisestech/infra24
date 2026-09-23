@@ -1,4 +1,5 @@
 import {
+  PRIMARY_HERO_ASSET_IDS,
   THREE_D_CURRICULUM_ASSET_IDS,
   THREE_D_CURRICULUM_ASSETS,
   THREE_D_CURRICULUM_INTENTS,
@@ -7,7 +8,9 @@ import {
   THREE_D_SMARTSIGN_SCREENS,
   assertCurriculumValid,
   curriculumWorkshopPath,
+  getCurriculumAsset,
   getCurriculumWorkshopBySlug,
+  isCurriculumAssetRenderable,
   listCurriculumWorkshopSlugs,
   listPilotWorkshops,
 } from '@/lib/dcc/education/3d-curriculum'
@@ -35,6 +38,8 @@ const REQUIRED_ASSET_IDS = [
   '3D-OPERATOR-PATH-001',
 ] as const
 
+const DEFERRED_ASSET_IDS = ['3D-MAP-001', '3D-PIPELINE-001', '3D-OPERATOR-PATH-001'] as const
+
 describe('dcc 3d curriculum', () => {
   it('keeps unique records without invented instructors, prices, or checkout', () => {
     expect(assertCurriculumValid()).toEqual([])
@@ -48,6 +53,7 @@ describe('dcc 3d curriculum', () => {
       'parametric-cad-functional-objects',
     ])
     expect(listCurriculumWorkshopSlugs()).not.toContain('display')
+    expect(listCurriculumWorkshopSlugs()).not.toContain('visual-test')
     expect(listPilotWorkshops().map((workshop) => workshop.slug)).toEqual([
       'from-file-to-physical-object',
       'blender-for-artists',
@@ -67,15 +73,43 @@ describe('dcc 3d curriculum', () => {
     }
   })
 
-  it('includes every required asset id as a placeholder', () => {
+  it('includes every required asset id with production metadata', () => {
     expect(THREE_D_CURRICULUM_ASSET_IDS).toEqual([...REQUIRED_ASSET_IDS])
     for (const id of REQUIRED_ASSET_IDS) {
       const asset = THREE_D_CURRICULUM_ASSETS[id]
       expect(asset.id).toBe(id)
-      expect(asset.status).toBe('placeholder')
-      expect(asset.src).toBeUndefined()
+      expect(asset.productionStatus).toBeDefined()
       expect(asset.filename).toMatch(/\.webp$/)
       expect(asset.usedOn.length).toBeGreaterThan(0)
+      expect(asset.alt).not.toMatch(/DCC-style|workshop banner/i)
+    }
+  })
+
+  it('wires primary hero production statuses and Cloudinary sources', () => {
+    expect(PRIMARY_HERO_ASSET_IDS).toHaveLength(8)
+
+    const hub = getCurriculumAsset('3D-HERO-001')
+    expect(hub.productionStatus).toBe('placeholder')
+    expect(hub.src).toBeUndefined()
+    expect(isCurriculumAssetRenderable(hub)).toBe(false)
+
+    const foundation = getCurriculumAsset('3D-FOUNDATION-HERO-001')
+    expect(foundation.productionStatus).toBe('generated-candidate')
+    expect(foundation.src).toMatch(/cloudinary\.com/)
+    expect(isCurriculumAssetRenderable(foundation)).toBe(true)
+
+    const blender = getCurriculumAsset('3D-BLENDER-HERO-001')
+    expect(blender.productionStatus).toBe('needs-regeneration')
+    expect(blender.src).toMatch(/cloudinary\.com/)
+    expect(isCurriculumAssetRenderable(blender)).toBe(true)
+  })
+
+  it('defers native diagram raster slots', () => {
+    for (const id of DEFERRED_ASSET_IDS) {
+      const asset = getCurriculumAsset(id)
+      expect(asset.productionStatus).toBe('deferred')
+      expect(asset.src).toBeUndefined()
+      expect(isCurriculumAssetRenderable(asset)).toBe(false)
     }
   })
 

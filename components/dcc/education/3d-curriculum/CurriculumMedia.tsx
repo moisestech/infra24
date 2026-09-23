@@ -1,7 +1,10 @@
 import { Image as ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
+  ASSET_PRODUCTION_STATUS_LABEL,
+  curriculumAssetObjectPosition,
   getCurriculumAsset,
+  isCurriculumAssetRenderable,
   type ThreeDCurriculumAsset,
   type ThreeDCurriculumAssetId,
   type ThreeDCurriculumAspectRatio,
@@ -19,30 +22,57 @@ const ASPECT_CLASS: Record<ThreeDCurriculumAspectRatio, string> = {
   '1/1': 'aspect-square',
 }
 
+function ConceptualChip() {
+  return (
+    <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-neutral-500">
+      Conceptual educational image
+    </p>
+  )
+}
+
 export function CurriculumMedia({
   assetId,
   colorTokenId = 'slate',
   className,
   priority = false,
+  variant = 'default',
+  showCaption = false,
 }: {
   assetId: ThreeDCurriculumAssetId
   colorTokenId?: FabricationColorTokenId
   className?: string
   priority?: boolean
+  variant?: 'default' | 'card' | 'qa'
+  /** Show production figcaption on detail pages when true. QA variant always shows metadata. */
+  showCaption?: boolean
 }) {
   const media = getCurriculumAsset(assetId)
   const color = getFabricationColor(colorTokenId)
 
-  if (media.src) {
+  if (isCurriculumAssetRenderable(media)) {
+    const objectPosition = curriculumAssetObjectPosition(media)
+    const showMeta = variant === 'qa' || showCaption
+
     return (
       <figure
         className={cn(
           'overflow-hidden rounded-2xl border bg-white dark:bg-neutral-950',
           color.border,
+          variant === 'card' && 'rounded-b-none border-b-0',
           className
         )}
       >
-        <div className={cn('relative w-full min-w-0 bg-neutral-100', ASPECT_CLASS[media.aspectRatio])}>
+        <div
+          className={cn(
+            'relative w-full min-w-0 bg-neutral-100',
+            ASPECT_CLASS[media.aspectRatio]
+          )}
+        >
+          {variant === 'qa' ? (
+            <span className="absolute left-2 top-2 z-10 rounded-full bg-neutral-950/80 px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-white">
+              {ASSET_PRODUCTION_STATUS_LABEL[media.productionStatus]}
+            </span>
+          ) : null}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={media.src}
@@ -52,26 +82,45 @@ export function CurriculumMedia({
             loading={priority ? 'eager' : 'lazy'}
             decoding="async"
             className="absolute inset-0 h-full w-full object-cover"
+            style={objectPosition ? { objectPosition } : undefined}
           />
         </div>
-        <figcaption className="border-t border-[var(--cdc-border)] px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-neutral-500">
-          {media.id} · {media.aspectRatio}
-        </figcaption>
+        {showMeta ? (
+          <figcaption className="border-t border-[var(--cdc-border)] px-3 py-2 dark:bg-neutral-950">
+            {variant === 'qa' ? (
+              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-neutral-500">
+                {media.id} · {media.aspectRatio}
+                {media.visualVerb ? ` · ${media.visualVerb}` : ''}
+              </p>
+            ) : (
+              <ConceptualChip />
+            )}
+          </figcaption>
+        ) : null}
       </figure>
     )
   }
 
-  return <CurriculumAssetPlaceholder media={media} colorTokenId={colorTokenId} className={className} />
+  return (
+    <CurriculumAssetPlaceholder
+      media={media}
+      colorTokenId={colorTokenId}
+      className={cn(variant === 'card' && 'rounded-b-none border-b-0', className)}
+      variant={variant}
+    />
+  )
 }
 
 export function CurriculumAssetPlaceholder({
   media,
   colorTokenId = 'slate',
   className,
+  variant = 'default',
 }: {
   media: ThreeDCurriculumAsset
   colorTokenId?: FabricationColorTokenId
   className?: string
+  variant?: 'default' | 'card' | 'qa'
 }) {
   const color = getFabricationColor(colorTokenId)
 
@@ -88,6 +137,11 @@ export function CurriculumAssetPlaceholder({
           color.gradient
         )}
       >
+        {variant === 'qa' ? (
+          <span className="absolute left-2 top-2 z-10 rounded-full bg-neutral-950/80 px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-white">
+            {ASSET_PRODUCTION_STATUS_LABEL[media.productionStatus]}
+          </span>
+        ) : null}
         <div
           className="absolute inset-0 opacity-40"
           style={{
@@ -121,7 +175,11 @@ export function CurriculumAssetPlaceholder({
         </div>
       </div>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--cdc-border)] bg-white px-3 py-2 text-[11px] uppercase tracking-[0.12em] text-neutral-500 dark:bg-neutral-950">
-        <span>Image needed · drop in public/dcc/education/3d-curriculum/</span>
+        {variant === 'qa' ? (
+          <span>{ASSET_PRODUCTION_STATUS_LABEL[media.productionStatus]}</span>
+        ) : (
+          <span>Image needed · update assets.ts</span>
+        )}
         <span>{media.aspectRatio}</span>
       </figcaption>
     </figure>

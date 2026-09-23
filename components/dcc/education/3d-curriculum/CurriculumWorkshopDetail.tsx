@@ -9,7 +9,9 @@ import {
   THREE_D_SCHOOL_PATH,
   THREE_D_SCHOOL_STATUS_LABEL,
   curriculumWorkshopPath,
+  getCurriculumAsset,
   getCurriculumWorkshopById,
+  isCurriculumAssetRenderable,
   type ThreeDCurriculumWorkshop,
 } from '@/lib/dcc/education/3d-curriculum'
 import { workshopInterestHref } from '@/lib/dcc/education/copy'
@@ -45,6 +47,12 @@ export function CurriculumWorkshopDetail({
     .map((id) => getCurriculumWorkshopById(id))
     .filter((row): row is ThreeDCurriculumWorkshop => Boolean(row))
   const services = workshop.relatedServiceIds.map((id) => getStudioService(id))
+  const renderableGalleryIds = workshop.galleryAssetIds.filter((assetId) =>
+    isCurriculumAssetRenderable(getCurriculumAsset(assetId))
+  )
+  const renderableDiagramIds = workshop.diagramAssetIds.filter((assetId) =>
+    isCurriculumAssetRenderable(getCurriculumAsset(assetId))
+  )
 
   return (
     <article>
@@ -126,10 +134,10 @@ export function CurriculumWorkshopDetail({
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
           {workshop.projectPrompt ?? workshop.whatYouMake}
         </p>
-        {workshop.galleryAssetIds[0] ? (
+        {renderableGalleryIds[0] ? (
           <div className="mt-6 max-w-xl">
             <CurriculumMedia
-              assetId={workshop.galleryAssetIds[0]}
+              assetId={renderableGalleryIds[0]}
               colorTokenId={workshop.colorTokenId}
             />
           </div>
@@ -164,7 +172,7 @@ export function CurriculumWorkshopDetail({
         <div className="mt-6">
           <WorkflowStrip steps={workshop.pipeline} />
         </div>
-        {workshop.diagramAssetIds.map((assetId) => (
+        {renderableDiagramIds.map((assetId) => (
           <div key={assetId} className="mt-6">
             <CurriculumMedia assetId={assetId} colorTokenId={workshop.colorTokenId} />
           </div>

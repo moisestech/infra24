@@ -2,7 +2,7 @@ import { THREE_D_CURRICULUM_ASSETS } from '@/lib/dcc/education/3d-curriculum/ass
 import { THREE_D_CURRICULUM_WORKSHOPS } from '@/lib/dcc/education/3d-curriculum/workshops'
 import type { ThreeDCurriculumAssetId } from '@/lib/dcc/education/3d-curriculum/types'
 
-const RESERVED_SLUGS = new Set(['display'])
+const RESERVED_SLUGS = new Set(['display', 'visual-test'])
 
 export function assertCurriculumValid(): string[] {
   const errors: string[] = []

@@ -6,7 +6,6 @@ import {
   curriculumWorkshopPath,
   getCurriculumWorkshopById,
 } from '@/lib/dcc/education/3d-curriculum'
-import { CurriculumMedia } from '@/components/dcc/education/3d-curriculum/CurriculumMedia'
 
 export function LearningPath({ className }: { className?: string }) {
   return (
@@ -71,10 +70,6 @@ export function LearningPath({ className }: { className?: string }) {
           </li>
         ))}
       </ol>
-
-      <div className="mt-8">
-        <CurriculumMedia assetId="3D-OPERATOR-PATH-001" colorTokenId="slate" />
-      </div>
     </section>
   )
 }
