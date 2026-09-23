@@ -1,17 +1,17 @@
 import type { QuoteLineItem } from '@/lib/dcc/fabrication/schema'
 
-/** Scope layers for Carol — amounts pending until source review. */
+/** Scope layers for Carol — amounts pending until physical object review. */
 export const CAROL_QUOTE_LAYERS: QuoteLineItem[] = [
   {
     id: 'source-digital',
-    label: 'Source review + digital preparation',
+    label: 'Object review + digital source preparation',
     shortLabel: 'SOURCE',
     description:
-      'Determine starting input (file, object, or images) and prepare study geometry to agreed fidelity.',
+      'In-person inspection of Carol’s brass pieces; measure, weigh, and determine the simplest digital capture or preparation route.',
     clientReceives: [
-      'Source pathway decision with Carol',
-      'Geometry inspection or reconstruction scope',
-      'Study-model prep — not production-ready jewelry CAD',
+      'Physical object review at Studio 43',
+      'Dimensions, weight, and surface documentation',
+      'Digital source method decision — not production-ready jewelry CAD yet',
     ],
     category: 'preflight',
     clientVisible: true,
@@ -19,15 +19,31 @@ export const CAROL_QUOTE_LAYERS: QuoteLineItem[] = [
     source: 'DCC-JOB-002 Phase 1 packaging',
   },
   {
-    id: 'physical-study',
-    label: 'Physical study (FDM + resin)',
+    id: 'geometry-study',
+    label: 'Geometry / scale / mirror preparation',
     shortLabel: 'STUDY',
     description:
-      'Optional FDM for scale/silhouette; one high-detail neutral resin test on M7 Max when geometry is ready.',
+      'Build or clean study geometry, confirm mirrored pair logic, and prepare for a focused prototype run.',
     clientReceives: [
-      'FDM iteration only if it answers scale or silhouette',
-      'One high-detail resin test print path',
-      'Wash / cure / basic cleanup to review checkpoint',
+      'Mirrored study geometry at agreed scale',
+      'Scale confirmation against ~2.5 in target (once confirmed)',
+      'Study-model prep — not final production CAD',
+    ],
+    category: 'preflight',
+    clientVisible: true,
+    amountStatus: 'pending',
+    source: 'DCC-JOB-002 Phase 1 packaging',
+  },
+  {
+    id: 'fabrication',
+    label: 'Lightweight prototype fabrication',
+    shortLabel: 'FABRICATION',
+    description:
+      'One focused prototype using the best candidate material for weight, texture fidelity, and practical cost.',
+    clientReceives: [
+      'One lightweight prototype form test',
+      'Machine + post-processing to review checkpoint',
+      'Material choice documented — resin only if it is the best candidate',
     ],
     category: 'fabrication',
     clientVisible: true,
@@ -36,14 +52,14 @@ export const CAROL_QUOTE_LAYERS: QuoteLineItem[] = [
   },
   {
     id: 'wearability',
-    label: 'Wearability + attachment review',
+    label: 'Weight + attachment + wearability evaluation',
     shortLabel: 'WEAR',
     description:
-      'Test scale, weight, loop strength, and preliminary hardware against the body.',
+      'Compare prototype weight, texture, and wearability against Carol’s brass reference and comfort goals.',
     clientReceives: [
-      'Wearability notes against Carol’s scale intent',
-      'Attachment option comparison (not a final hardware approval)',
-      'Weight and movement observations',
+      'Weight comparison notes',
+      'Attachment option review (not final hardware approval)',
+      'Wearability observations against the body',
     ],
     category: 'qa',
     clientVisible: true,
@@ -52,14 +68,14 @@ export const CAROL_QUOTE_LAYERS: QuoteLineItem[] = [
   },
   {
     id: 'review',
-    label: 'Carol review + findings',
+    label: 'Review with Carol',
     shortLabel: 'REVIEW',
     description:
-      'Structured review of the physical result and documented findings for next decisions.',
+      'Structured review of Prototype 1 findings and recommendation for next steps.',
     clientReceives: [
       'In-person or scheduled review checkpoint',
       'Findings record — what worked, what to adjust',
-      'Recommendation for one defined revision or second study',
+      'Clear recommendation before any second study',
     ],
     category: 'handoff',
     clientVisible: true,
@@ -68,10 +84,10 @@ export const CAROL_QUOTE_LAYERS: QuoteLineItem[] = [
   },
   {
     id: 'revision',
-    label: 'One defined revision',
-    shortLabel: 'REVISE',
+    label: 'Optional revision',
+    shortLabel: 'OPTIONAL',
     description:
-      'One agreed geometry or scale adjustment after the first physical review — not open-ended iteration.',
+      'Only if Prototype 1 indicates it is worthwhile — one scoped adjustment, not open-ended iteration.',
     clientReceives: [
       'Single scoped revision after review sign-off',
       'Updated study geometry if required',
@@ -79,22 +95,6 @@ export const CAROL_QUOTE_LAYERS: QuoteLineItem[] = [
     ],
     prevents: 'Unlimited redesign or production attempts without separate approval.',
     category: 'postprocess',
-    clientVisible: true,
-    amountStatus: 'pending',
-    source: 'DCC-JOB-002 Phase 1 packaging',
-  },
-  {
-    id: 'output',
-    label: 'Prototype output + handoff',
-    shortLabel: 'OUTPUT',
-    description:
-      'Refined prototype pair or second study object depending on first test results.',
-    clientReceives: [
-      'Physical prototype output per agreed scope',
-      'Handoff summary for Carol’s next decisions',
-      'Documentation rights per project agreement',
-    ],
-    category: 'handoff',
     clientVisible: true,
     amountStatus: 'pending',
     source: 'DCC-JOB-002 Phase 1 packaging',

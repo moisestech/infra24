@@ -324,16 +324,25 @@ describe('fabricate studio system', () => {
     expect(CAROL_PROPOSAL.job.serviceType).toBe('PREPARE_PLUS_FABRICATE')
     expect(CAROL_PROPOSAL.job.status).toBe('PROTOTYPE_SCOPING')
     expect(clientFacingJobStatus(CAROL_PROPOSAL.job.status)).toBe('Prototype scoping')
-    expect(CAROL_PROPOSAL.heroTitle).toBe('Hand Earring Prototype Study')
+    expect(CAROL_PROPOSAL.heroTitle).toBe('Lightweight Earring Prototype Study')
     expect(CAROL_PROPOSAL.pricing?.amountStatus).toBe('pending')
     expect(CAROL_PROPOSAL.pricing?.amountUsd).toBeUndefined()
     expect(CAROL_PROPOSAL.job.paymentStatus).toBe('not_quoted')
-    expect(CAROL_PROPOSAL.media).toHaveLength(6)
+    expect(CAROL_PROPOSAL.job.clientSuppliedMaterial).toBe(true)
+    expect(CAROL_PROPOSAL.media).toHaveLength(7)
+    expect(CAROL_PROPOSAL.media[0]?.badge).toBe('Visual inspiration')
+    expect(CAROL_PROPOSAL.media.find((m) => m.id === 'C_METAL_CAST')?.src).toMatch(
+      /chicken-fingers-bronze-reference/
+    )
     expect(CAROL_PROPOSAL.media[0]?.src).toMatch(/carol-haggiag/)
     expect(CAROL_PROPOSAL.quoteLineItems?.every((l) => l.amountStatus === 'pending')).toBe(
       true
     )
+    expect(CAROL_PROPOSAL.sections.some((s) => s.id === 'prior-material-study')).toBe(true)
     expect(JSON.stringify(CAROL_PROPOSAL)).not.toContain('Chicken Fingers')
+    expect(JSON.stringify(CAROL_PROPOSAL)).not.toMatch(/Carol's original|Carol designed/i)
+    expect(JSON.stringify(CAROL_PROPOSAL)).toMatch(/mirrored/i)
+    expect(JSON.stringify(CAROL_PROPOSAL)).toMatch(/2\.5 in/)
   })
 
   it('refuses CAD and path traversal for private proposal media', () => {

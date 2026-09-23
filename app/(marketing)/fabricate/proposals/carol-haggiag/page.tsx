@@ -24,26 +24,30 @@ import { getMachineCatalogEntry } from '@/lib/dcc/fabrication'
 import {
   CAROL_ATTACHMENT_OPTIONS,
   CAROL_CLIENT_QUESTIONS,
+  CAROL_CONFIRMED_INPUTS,
   CAROL_CREDITS,
   CAROL_DOCUMENTATION_STAGES,
-  CAROL_ESSENTIAL_QUESTION,
   CAROL_FUTURE_SCOPE_EXCLUDED,
   CAROL_MATERIAL_DIRECTIONS,
+  CAROL_METAL_CASTING_NOTE,
   CAROL_OBJECT_ANALYSIS,
   CAROL_PHASE_1_STEPS,
+  CAROL_PRIOR_METAL_STUDY,
   CAROL_PRODUCTION_NETWORK,
   CAROL_PROPOSAL,
   CAROL_PROJECT_SUMMARY,
+  CAROL_PROJECT_THESIS,
   CAROL_QUOTE_LAYERS,
   CAROL_SOURCE_PATHWAYS,
   CAROL_SOURCE_PATHWAY_NOTE,
+  CAROL_STATUS_SUBLABEL,
   CAROL_TESTING_FOCUS,
 } from '@/lib/dcc/fabrication/proposals/carol-haggiag'
 
 export const metadata: Metadata = {
-  title: 'Carol Haggiag — Hand Earring Prototype Study',
+  title: 'Carol Haggiag — Lightweight Earring Prototype Study',
   description:
-    'A prototype development study exploring digital geometry, resin fabrication, scale and wearability for Carol Haggiag’s sculptural hand earrings.',
+    'A focused lightweight earring prototype study — preserving texture from Carol’s brass casts while solving for weight, mirrored pair geometry, and wearability.',
   robots: { index: false, follow: false },
 }
 
@@ -67,7 +71,7 @@ export default function CarolHaggiagProposalPage() {
         title={CAROL_PROPOSAL.heroTitle}
         dek={CAROL_PROPOSAL.heroDek}
       >
-        <ProjectStatus status={job.status} />
+        <ProjectStatus status={job.status} substatus={CAROL_STATUS_SUBLABEL} />
         <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
           Project lead: Moises Sanabria · Creative technology + fabrication advisor
         </p>
@@ -79,9 +83,12 @@ export default function CarolHaggiagProposalPage() {
 
       <ProposalSection id="object" kicker="02 · The object" title="The object">
         <ProjectGoal>
-          <p>{CAROL_PROJECT_SUMMARY}</p>
+          <p className="text-base font-medium text-neutral-900 dark:text-neutral-100">
+            {CAROL_PROJECT_THESIS}
+          </p>
+          <p className="mt-3">{CAROL_PROJECT_SUMMARY}</p>
           <p className="text-neutral-600 dark:text-neutral-400">
-            Carol Haggiag · jewelry / sculptural object · prototype development
+            Carol Haggiag · jewelry / sculptural object · lightweight prototype study
           </p>
         </ProjectGoal>
         <dl className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -102,13 +109,41 @@ export default function CarolHaggiagProposalPage() {
       </ProposalSection>
 
       <ProposalSection
+        id="prior-material-study"
+        kicker="03 · Prior material study"
+        title={CAROL_PRIOR_METAL_STUDY.heading}
+      >
+        <p>{CAROL_PRIOR_METAL_STUDY.intro}</p>
+        <p className="mt-3 text-sm font-medium text-neutral-800 dark:text-neutral-200">
+          {CAROL_PRIOR_METAL_STUDY.shift}
+        </p>
+        <ul className="mt-6 grid gap-3 sm:grid-cols-3">
+          {CAROL_PRIOR_METAL_STUDY.criteria.map((item) => (
+            <li
+              key={item.label}
+              className="rounded-xl border border-[var(--cdc-border)] px-4 py-3"
+            >
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
+                {item.label}
+              </p>
+              <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">
+                {item.note}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-6 max-w-xl">{media('C_METAL_CAST')}</div>
+      </ProposalSection>
+
+      <ProposalSection
         id="testing"
-        kicker="03 · What we’re testing"
+        kicker="04 · What we’re testing"
         title="What we’re testing"
       >
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Phase 1 should answer whether the hand imagery can become wearable earrings
-          while preserving organic surface, elongated fingers, and sculptural character.
+          Prototype 1 should answer whether the form can become wearable earrings
+          while preserving texture and sculptural character — with substantially
+          less weight than the brass reference.
         </p>
         <ul className="mt-4 list-disc space-y-2 pl-5">
           {CAROL_TESTING_FOCUS.map((item) => (
@@ -119,29 +154,39 @@ export default function CarolHaggiagProposalPage() {
 
       <ProposalSection
         id="material-directions"
-        kicker="04 · Material directions"
+        kicker="05 · Material directions"
         title="Material directions"
       >
-        <MaterialDirectionsList items={CAROL_MATERIAL_DIRECTIONS} />
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          Resin is one candidate prototype material — not the predetermined solution.
+          The first fabrication method will be chosen based on low weight, texture
+          fidelity, structural durability, wearability, and practical prototyping cost.
+        </p>
+        <div className="mt-4">
+          <MaterialDirectionsList items={CAROL_MATERIAL_DIRECTIONS} />
+        </div>
+        <p className="mt-4 rounded-xl border border-[var(--cdc-border)] px-4 py-3 text-sm text-neutral-700 dark:text-neutral-300">
+          {CAROL_METAL_CASTING_NOTE}
+        </p>
         {media('C_MATERIAL_DIRECTION')}
       </ProposalSection>
 
-      <ProposalSection id="on-the-body" kicker="05 · On the body" title="On the body">
+      <ProposalSection id="on-the-body" kicker="06 · On the body" title="On the body">
         <p>
           Wearability is not only silhouette. Scale, weight, movement, and how the
           earrings relate to the body must be tested — with fingers pointing{' '}
           <strong>down</strong>, as in the reference study below.
         </p>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Restrained, statement, and oversized modes in the image are conceptual scale
-          studies — not literal approved dimensions.
+        <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
+          Target scale: approximately <strong>~2.5 in / ~63.5 mm</strong> — to
+          confirm in person. The pair should be <strong>mirrored</strong>.
         </p>
         {media('C_WEARABILITY')}
       </ProposalSection>
 
-      <ProposalSection id="connection" kicker="06 · Connection" title="Connection">
+      <ProposalSection id="connection" kicker="07 · Connection" title="Connection">
         <p>
-          A small attachment loop appears at the wrist in Carol’s references. Strength,
+          A small attachment loop appears at the wrist in the references. Strength,
           orientation, and hardware must be tested — no option is approved yet.
         </p>
         <ul className="mt-4 space-y-3">
@@ -165,8 +210,8 @@ export default function CarolHaggiagProposalPage() {
 
       <ProposalSection
         id="image-to-object"
-        kicker="07 · From image to object"
-        title="From image to object"
+        kicker="08 · From object to prototype"
+        title="From object to prototype"
       >
         <SourcePathwaysGrid
           pathways={CAROL_SOURCE_PATHWAYS}
@@ -176,36 +221,43 @@ export default function CarolHaggiagProposalPage() {
 
       <ProposalSection
         id="first-study"
-        kicker="08 · Proposed first study"
-        title="Phase 1 · Prototype Development Study"
+        kicker="09 · Proposed first study"
+        title="Phase 1 · Lightweight Earring Prototype Study"
       >
-        <NumberedPhaseSteps steps={CAROL_PHASE_1_STEPS} />
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          A small, bounded first engagement — not a broad development program.
+          Prototype 1 is intended to answer the material and wearability question
+          before committing to a finished pair.
+        </p>
+        <div className="mt-4">
+          <NumberedPhaseSteps steps={CAROL_PHASE_1_STEPS} />
+        </div>
       </ProposalSection>
 
       <ProposalSection
         id="questions"
-        kicker="09 · Questions for Carol"
-        title="Questions for Carol"
+        kicker="10 · Open questions"
+        title="Open questions"
       >
         <ClientQuestionnaire
           projectLabel={CAROL_PROPOSAL.job.jobNumber}
+          confirmedItems={CAROL_CONFIRMED_INPUTS}
           questions={CAROL_CLIENT_QUESTIONS}
-          highlightQuestion={CAROL_ESSENTIAL_QUESTION}
         />
       </ProposalSection>
 
       <ProposalSection
         id="environment"
-        kicker="10 · Prototype environment"
+        kicker="11 · Prototype environment"
         title="Prototype environment"
       >
         <p>
-          Goal: develop a documented resin workflow that can be safely and repeatably
-          operated — prototype infrastructure, not a mature production line.
+          Goal: produce one focused lightweight prototype using appropriate
+          equipment at Bakehouse — method and material chosen after object review.
         </p>
         <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
-          Potential sequence: validate printer/profile → geometry coupon → one-hand test
-          → evaluate → pair.
+          Resin workflow below is illustrative of one possible path — not a
+          predetermined production line.
         </p>
         {machine ? <MachineNote machine={machine} /> : null}
         {media('C_RESIN_WORKFLOW')}
@@ -214,30 +266,29 @@ export default function CarolHaggiagProposalPage() {
             FDM (conditional)
           </p>
           <p className="mt-2 text-neutral-700 dark:text-neutral-300">
-            Potential FDM node at Bakehouse (Augusto) — printer, material, operator,
-            and economics remain to be confirmed. Used for physical scale, silhouette,
-            and connection position — not final surface detail.
+            Potential FDM node at Bakehouse — used for physical scale, silhouette,
+            and lightweight study when it answers a specific question.
           </p>
         </div>
       </ProposalSection>
 
       <ProposalSection
         id="whats-next"
-        kicker="11 · What could come next"
+        kicker="12 · What could come next"
         title="What could come next"
       >
-        <ProcessFlow steps={CAROL_PROPOSAL.processSteps} current="Carol’s vision" />
+        <ProcessFlow steps={CAROL_PROPOSAL.processSteps} current="Carol’s physical cast" />
         <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
-          Future branch: final resin, or casting master → specialist caster → metal.
-          Metal casting is not a current DCC capability.
+          Only if Prototype 1 proves worthwhile — a second refinement or additional
+          material study. Metal casting is not the current direction.
         </p>
         <div className="mt-6">
           <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
             Production network
           </p>
           <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-            The project uses appropriate expertise at each stage — not one person
-            performing every discipline.
+            Appropriate expertise at each stage — kept small and focused for this
+            first study.
           </p>
           <div className="mt-4">
             <ProductionNetworkFlow nodes={CAROL_PRODUCTION_NETWORK} />
@@ -247,7 +298,7 @@ export default function CarolHaggiagProposalPage() {
 
       <ProposalSection
         id="documentation"
-        kicker="12 · Documentation"
+        kicker="13 · Documentation"
         title="Documentation / project status"
       >
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
@@ -257,7 +308,7 @@ export default function CarolHaggiagProposalPage() {
         <ProjectCredits credits={CAROL_CREDITS} />
       </ProposalSection>
 
-      <ProposalSection id="price" kicker="13 · Price structure" title="Price structure">
+      <ProposalSection id="price" kicker="14 · Price structure" title="Price structure">
         {pricing ? (
           <>
             <PendingQuoteLayers layers={CAROL_QUOTE_LAYERS} intro={pricing.terms} />
@@ -270,14 +321,14 @@ export default function CarolHaggiagProposalPage() {
         ) : null}
       </ProposalSection>
 
-      <ProposalSection id="scope" kicker="14 · Scope" title="Scope">
+      <ProposalSection id="scope" kicker="15 · Scope" title="Scope">
         <ScopeList
           included={CAROL_PROPOSAL.scopeIncluded}
           excluded={[...CAROL_FUTURE_SCOPE_EXCLUDED]}
         />
       </ProposalSection>
 
-      <ProposalSection id="approval" kicker="15 · Next step" title="Next step">
+      <ProposalSection id="approval" kicker="16 · Next step" title="Next step">
         <ApprovalBlock nextStep={CAROL_PROPOSAL.approvalNextStep} />
       </ProposalSection>
     </ProposalChrome>

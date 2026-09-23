@@ -75,11 +75,24 @@ export function ProjectGoal({ children }: { children: React.ReactNode }) {
   return <div className="space-y-3">{children}</div>
 }
 
-export function ProjectStatus({ status }: { status: FabricationJobStatus }) {
+export function ProjectStatus({
+  status,
+  substatus,
+}: {
+  status: FabricationJobStatus
+  substatus?: string
+}) {
   return (
-    <p className="inline-flex items-center rounded-full border border-[var(--cdc-border)] bg-neutral-50 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-200">
-      Status · {clientFacingJobStatus(status)}
-    </p>
+    <div className="space-y-2">
+      <p className="inline-flex items-center rounded-full border border-[var(--cdc-border)] bg-neutral-50 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-200">
+        Status · {clientFacingJobStatus(status)}
+      </p>
+      {substatus ? (
+        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
+          {substatus}
+        </p>
+      ) : null}
+    </div>
   )
 }
 
@@ -717,7 +730,13 @@ export function SourcePathwaysGrid({
   pathways,
   note,
 }: {
-  pathways: readonly { id: string; title: string; steps: readonly string[] }[]
+  pathways: readonly {
+    id: string
+    title: string
+    steps: readonly string[]
+    badge?: string
+    emphasis?: 'primary' | 'default'
+  }[]
   note?: string
 }) {
   return (
@@ -726,12 +745,44 @@ export function SourcePathwaysGrid({
         {pathways.map((path) => (
           <article
             key={path.id}
-            className="rounded-2xl border border-[var(--cdc-border)] bg-neutral-50 p-4 dark:bg-neutral-900/40"
+            className={cn(
+              'rounded-2xl border p-4',
+              path.emphasis === 'primary'
+                ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900'
+                : 'border-[var(--cdc-border)] bg-neutral-50 dark:bg-neutral-900/40'
+            )}
           >
-            <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+            {path.badge ? (
+              <p
+                className={cn(
+                  'font-mono text-[10px] uppercase tracking-[0.14em]',
+                  path.emphasis === 'primary'
+                    ? 'text-neutral-300 dark:text-neutral-600'
+                    : 'text-neutral-500'
+                )}
+              >
+                {path.badge}
+              </p>
+            ) : null}
+            <h3
+              className={cn(
+                'text-sm font-semibold',
+                path.emphasis === 'primary'
+                  ? 'text-white dark:text-neutral-900'
+                  : 'text-neutral-900 dark:text-neutral-100',
+                path.badge ? 'mt-2' : undefined
+              )}
+            >
               {path.title}
             </h3>
-            <p className="mt-2 font-mono text-[10px] leading-relaxed text-neutral-600 dark:text-neutral-400">
+            <p
+              className={cn(
+                'mt-2 font-mono text-[10px] leading-relaxed',
+                path.emphasis === 'primary'
+                  ? 'text-neutral-300 dark:text-neutral-600'
+                  : 'text-neutral-600 dark:text-neutral-400'
+              )}
+            >
               {path.steps.join(' → ')}
             </p>
           </article>
@@ -749,18 +800,35 @@ export function SourcePathwaysGrid({
 export function MaterialDirectionsList({
   items,
 }: {
-  items: readonly { id: string; title: string; purpose: string }[]
+  items: readonly {
+    id: string
+    title: string
+    purpose: string
+    status?: string
+  }[]
 }) {
   return (
     <ul className="grid gap-3 sm:grid-cols-2">
       {items.map((item) => (
         <li
           key={item.id}
-          className="rounded-2xl border border-[var(--cdc-border)] p-4"
+          className={cn(
+            'rounded-2xl border p-4',
+            item.status === 'Deprioritized'
+              ? 'border-neutral-200 bg-neutral-50 opacity-75 dark:border-neutral-800 dark:bg-neutral-900/30'
+              : 'border-[var(--cdc-border)]'
+          )}
         >
-          <p className="font-semibold text-neutral-900 dark:text-neutral-100">
-            {item.title}
-          </p>
+          <div className="flex items-start justify-between gap-2">
+            <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+              {item.title}
+            </p>
+            {item.status ? (
+              <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                {item.status}
+              </span>
+            ) : null}
+          </div>
           <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
             {item.purpose}
           </p>
