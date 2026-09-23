@@ -184,7 +184,7 @@ export type ProposalMediaSlot = {
   filename: string
   alt: string
   caption?: string
-  aspect: '16/9' | '21/9' | '4/5' | '1/1'
+  aspect: '16/9' | '21/9' | '4/5' | '4/3' | '1/1'
   /** Hosted asset (e.g. Cloudinary). When set, used instead of git-private media. */
   src?: string
   /** Editorial label — Concept Study, Material Direction, etc. */

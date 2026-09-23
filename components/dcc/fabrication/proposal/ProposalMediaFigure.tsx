@@ -9,6 +9,7 @@ const ASPECT_CLASS: Record<ProposalMediaSlot['aspect'], string> = {
   '16/9': 'aspect-[16/9]',
   '21/9': 'aspect-[21/9]',
   '4/5': 'aspect-[4/5]',
+  '4/3': 'aspect-[4/3]',
   '1/1': 'aspect-[1/1]',
 }
 

@@ -79,6 +79,7 @@ export default function CarolHaggiagProposalPage() {
           {media('C_SOURCE_FRONT')}
           {media('C_SOURCE_BACK')}
         </div>
+        <div className="mt-4 max-w-2xl">{media('C_METAL_CAST')}</div>
       </ProposalHero>
 
       <ProposalSection id="object" kicker="02 · The object" title="The object">
