@@ -294,6 +294,11 @@ function formatUsd(amount: number): string {
   return `$${amount.toFixed(amount % 1 === 0 ? 0 : 2)}`
 }
 
+function formatLineAmount(line: QuoteLineItem): string {
+  if (line.amountStatus === 'pending' || line.amount == null) return 'To be quoted'
+  return formatUsd(line.amount)
+}
+
 export function ClientQuoteBreakdown({
   proposal,
   material,
@@ -371,7 +376,7 @@ export function ClientQuoteBreakdown({
                   {line.label}
                 </td>
                 <td className="px-4 py-3 text-right font-mono text-neutral-900 dark:text-neutral-100">
-                  {formatUsd(line.amount)}
+                  {formatLineAmount(line)}
                 </td>
               </tr>
             ))}
@@ -456,7 +461,7 @@ function QuoteLineDetails({ line }: { line: QuoteLineItem }) {
             </p>
           </div>
           <span className="shrink-0 font-mono text-sm text-neutral-800 dark:text-neutral-200">
-            {formatUsd(line.amount)}
+            {formatLineAmount(line)}
           </span>
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--cdc-teal)] group-open:hidden">
@@ -612,5 +617,234 @@ export function OwnershipNote({ ownership }: { ownership: OwnershipSplit }) {
         </p>
       ) : null}
     </div>
+  )
+}
+
+export function PendingQuoteLayers({
+  layers,
+  intro,
+}: {
+  layers: QuoteLineItem[]
+  intro?: string
+}) {
+  const visible = layers.filter((l) => l.clientVisible !== false)
+  if (visible.length === 0) return null
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
+          What a quote will include
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+          {intro ??
+            'Scope and fixed price are confirmed after reviewing the available digital source and agreeing on the first prototype goal. These layers show how a future quote will be structured — not a final invoice.'}
+        </p>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-[var(--cdc-border)]">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-[var(--cdc-border)] bg-neutral-50 dark:bg-neutral-900/40">
+            <tr>
+              <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
+                Layer
+              </th>
+              <th className="px-4 py-3 text-right font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
+                Status
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--cdc-border)]">
+            {visible.map((line) => (
+              <tr key={line.id}>
+                <td className="px-4 py-3 text-neutral-800 dark:text-neutral-200">
+                  {line.label}
+                </td>
+                <td className="px-4 py-3 text-right font-mono text-xs text-neutral-500">
+                  To be quoted
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="space-y-3">
+        {visible.map((line) => (
+          <QuoteLineDetails key={line.id} line={line} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export function DocumentationStages({
+  stages,
+}: {
+  stages: {
+    id: string
+    label: string
+    status: 'complete' | 'pending' | 'conditional'
+  }[]
+}) {
+  return (
+    <ul className="grid gap-2 sm:grid-cols-2">
+      {stages.map((stage) => (
+        <li
+          key={stage.id}
+          className="flex items-center justify-between rounded-xl border border-[var(--cdc-border)] px-3 py-2 text-sm"
+        >
+          <span className="text-neutral-800 dark:text-neutral-200">{stage.label}</span>
+          <span
+            className={cn(
+              'font-mono text-[10px] uppercase tracking-[0.12em]',
+              stage.status === 'complete'
+                ? 'text-emerald-700 dark:text-emerald-400'
+                : stage.status === 'conditional'
+                  ? 'text-amber-700 dark:text-amber-400'
+                  : 'text-neutral-500'
+            )}
+          >
+            {stage.status}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+export function SourcePathwaysGrid({
+  pathways,
+  note,
+}: {
+  pathways: readonly { id: string; title: string; steps: readonly string[] }[]
+  note?: string
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-3">
+        {pathways.map((path) => (
+          <article
+            key={path.id}
+            className="rounded-2xl border border-[var(--cdc-border)] bg-neutral-50 p-4 dark:bg-neutral-900/40"
+          >
+            <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+              {path.title}
+            </h3>
+            <p className="mt-2 font-mono text-[10px] leading-relaxed text-neutral-600 dark:text-neutral-400">
+              {path.steps.join(' → ')}
+            </p>
+          </article>
+        ))}
+      </div>
+      {note ? (
+        <p className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">
+          {note}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+export function MaterialDirectionsList({
+  items,
+}: {
+  items: readonly { id: string; title: string; purpose: string }[]
+}) {
+  return (
+    <ul className="grid gap-3 sm:grid-cols-2">
+      {items.map((item) => (
+        <li
+          key={item.id}
+          className="rounded-2xl border border-[var(--cdc-border)] p-4"
+        >
+          <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+            {item.title}
+          </p>
+          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+            {item.purpose}
+          </p>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+export function NumberedPhaseSteps({
+  steps,
+}: {
+  steps: readonly { number: string; title: string; body: string }[]
+}) {
+  return (
+    <ol className="space-y-4">
+      {steps.map((step) => (
+        <li
+          key={step.number}
+          className="grid gap-2 border-l-2 border-[var(--cdc-border)] pl-4 sm:grid-cols-[3rem_1fr]"
+        >
+          <span className="font-mono text-xs font-semibold text-neutral-500">
+            {step.number}
+          </span>
+          <div>
+            <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+              {step.title}
+            </p>
+            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+              {step.body}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+export function ProductionNetworkFlow({
+  nodes,
+}: {
+  nodes: readonly { role: string; note: string }[]
+}) {
+  return (
+    <div className="space-y-0">
+      {nodes.map((node, index) => (
+        <div key={node.role} className="flex flex-col items-start">
+          <div className="rounded-xl border border-[var(--cdc-border)] bg-neutral-50 px-4 py-3 dark:bg-neutral-900/40">
+            <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+              {node.role}
+            </p>
+            <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+              {node.note}
+            </p>
+          </div>
+          {index < nodes.length - 1 ? (
+            <span
+              aria-hidden
+              className="my-1 ml-6 font-mono text-xs text-neutral-400"
+            >
+              ↓
+            </span>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export function ProjectCredits({
+  credits,
+}: {
+  credits: readonly { name: string; role: string }[]
+}) {
+  return (
+    <ul className="space-y-3 text-sm">
+      {credits.map((credit) => (
+        <li key={credit.name}>
+          <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+            {credit.name}
+          </p>
+          <p className="text-neutral-600 dark:text-neutral-400">{credit.role}</p>
+        </li>
+      ))}
+    </ul>
   )
 }

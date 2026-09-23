@@ -2,7 +2,11 @@ import { CAROL_PROPOSAL } from '@/lib/dcc/fabrication/proposals/carol-haggiag'
 import { HEATHER_PROPOSAL } from '@/lib/dcc/fabrication/proposals/heather-deitch'
 import type { ClientProposal } from '@/lib/dcc/fabrication/schema'
 
-export { CAROL_PROPOSAL } from '@/lib/dcc/fabrication/proposals/carol-haggiag'
+export {
+  CAROL_PROPOSAL,
+  CAROL_QUOTE_LAYERS,
+} from '@/lib/dcc/fabrication/proposals/carol-haggiag'
+export { CAROL_PROPOSAL_MEDIA_SRC } from '@/lib/dcc/fabrication/proposals/carol-haggiag-media'
 export {
   HEATHER_BASELINE_SLICE,
   HEATHER_LIGHTING_HARDWARE,

@@ -39,11 +39,14 @@ export function calculateQuoteEconomics(input: {
 }
 
 export function sumQuoteLineAmounts(
-  lines: { amount: number; clientVisible?: boolean }[],
+  lines: { amount?: number; amountStatus?: 'quoted' | 'pending'; clientVisible?: boolean }[],
   options?: { clientVisibleOnly?: boolean }
 ): number {
   const filtered = options?.clientVisibleOnly
     ? lines.filter((line) => line.clientVisible !== false)
     : lines
-  return filtered.reduce((sum, line) => sum + line.amount, 0)
+  return filtered.reduce((sum, line) => {
+    if (line.amountStatus === 'pending' || line.amount == null) return sum
+    return sum + line.amount
+  }, 0)
 }

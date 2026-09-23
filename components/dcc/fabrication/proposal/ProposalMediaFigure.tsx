@@ -33,6 +33,11 @@ export function ProposalMediaFigure({
         )}
       >
         <div className={cn('relative w-full min-w-0 bg-neutral-100', ASPECT_CLASS[slot.aspect])}>
+          {slot.badge ? (
+            <span className="absolute left-3 top-3 z-10 rounded-full border border-neutral-200/80 bg-white/90 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-700 shadow-sm backdrop-blur dark:border-neutral-700 dark:bg-neutral-950/85 dark:text-neutral-200">
+              {slot.badge}
+            </span>
+          ) : null}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={src}

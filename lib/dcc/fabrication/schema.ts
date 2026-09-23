@@ -187,6 +187,8 @@ export type ProposalMediaSlot = {
   aspect: '16/9' | '21/9' | '4/5' | '1/1'
   /** Hosted asset (e.g. Cloudinary). When set, used instead of git-private media. */
   src?: string
+  /** Editorial label — Concept Study, Material Direction, etc. */
+  badge?: string
 }
 
 export type ProposalPricing = {
@@ -220,7 +222,9 @@ export type QuoteLineItem = {
   quantity?: number
   unit?: string
   rate?: number
-  amount: number
+  amount?: number
+  /** When pending, amount is omitted until scope is fixed. */
+  amountStatus?: 'quoted' | 'pending'
   source?: string
 }
 

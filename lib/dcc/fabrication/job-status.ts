@@ -4,6 +4,7 @@ export const FABRICATION_JOB_STATUSES = [
   'TECHNICAL_REVIEW',
   'MATERIAL_CONFIRMATION',
   'SCOPED',
+  'PROTOTYPE_SCOPING',
   'QUOTED',
   'ACCEPTED_PAID',
   'OPEN_FOR_FABRICATION',
@@ -30,6 +31,10 @@ export const FABRICATION_JOB_STATUS_LABELS: Record<
     client: 'Material confirmation',
   },
   SCOPED: { internal: 'Scoped', client: 'Scope in review' },
+  PROTOTYPE_SCOPING: {
+    internal: 'Prototype scoping',
+    client: 'Prototype scoping',
+  },
   QUOTED: { internal: 'Quoted', client: 'Quote ready' },
   ACCEPTED_PAID: { internal: 'Accepted / paid', client: 'Accepted' },
   OPEN_FOR_FABRICATION: {

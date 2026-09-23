@@ -319,12 +319,21 @@ describe('fabricate studio system', () => {
     expect(proposalGreetingName(undefined, 'Carol')).toBe('Carol')
   })
 
-  it('keeps Carol as an unquoted Prepare + Fabricate shell', () => {
+  it('keeps Carol in prototype scoping with pending quote layers and Cloudinary media', () => {
     expect(CAROL_PROPOSAL.job.jobNumber).toBe('DCC-JOB-002')
     expect(CAROL_PROPOSAL.job.serviceType).toBe('PREPARE_PLUS_FABRICATE')
+    expect(CAROL_PROPOSAL.job.status).toBe('PROTOTYPE_SCOPING')
+    expect(clientFacingJobStatus(CAROL_PROPOSAL.job.status)).toBe('Prototype scoping')
+    expect(CAROL_PROPOSAL.heroTitle).toBe('Hand Earring Prototype Study')
     expect(CAROL_PROPOSAL.pricing?.amountStatus).toBe('pending')
     expect(CAROL_PROPOSAL.pricing?.amountUsd).toBeUndefined()
     expect(CAROL_PROPOSAL.job.paymentStatus).toBe('not_quoted')
+    expect(CAROL_PROPOSAL.media).toHaveLength(6)
+    expect(CAROL_PROPOSAL.media[0]?.src).toMatch(/carol-haggiag/)
+    expect(CAROL_PROPOSAL.quoteLineItems?.every((l) => l.amountStatus === 'pending')).toBe(
+      true
+    )
+    expect(JSON.stringify(CAROL_PROPOSAL)).not.toContain('Chicken Fingers')
   })
 
   it('refuses CAD and path traversal for private proposal media', () => {
