@@ -5,6 +5,13 @@ import type {
 
 const BASE = '/dcc/education/3d-curriculum'
 
+const THREE_D_CURRICULUM_CDN =
+  'https://res.cloudinary.com/dck5rzi4h/image/upload/q_auto,f_auto'
+
+function cdn(path: string): string {
+  return `${THREE_D_CURRICULUM_CDN}${path}`
+}
+
 function slot(
   asset: Omit<ThreeDCurriculumAsset, 'src' | 'status'> & {
     src?: string
@@ -16,6 +23,17 @@ function slot(
     src: asset.src,
   }
 }
+
+export const PRIMARY_HERO_ASSET_IDS = [
+  '3D-HERO-001',
+  '3D-FOUNDATION-HERO-001',
+  '3D-BLENDER-HERO-001',
+  '3D-PLASTICITY-HERO-001',
+  '3D-RHINO-HERO-001',
+  '3D-FIX-HERO-001',
+  '3D-GRASSHOPPER-HERO-001',
+  '3D-PARAMETRIC-HERO-001',
+] as const satisfies readonly ThreeDCurriculumAssetId[]
 
 /**
  * Swap-ready 3D School media.
@@ -37,6 +55,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Three forms or modeling languages converging into one physical printed object. No text baked into the image.',
     usedOn: ['/workshop/3d-school'],
+    src: cdn('/v1790040791/dccmiami/workshops/dcc-3d-hero-001_l3l3ps.webp'),
   }),
   '3D-MAP-001': slot({
     id: '3D-MAP-001',
@@ -73,6 +92,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'A digital model passing through inspection, slicing and becoming a small physical print.',
     usedOn: ['/workshop/3d-school/from-file-to-physical-object'],
+    src: cdn('/v1790040788/dccmiami/workshops/dcc-3d-foundation-hero-001_x0k9k5.webp'),
   }),
   '3D-FOUNDATION-FORMATS-001': slot({
     id: '3D-FOUNDATION-FORMATS-001',
@@ -109,6 +129,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Simple sculptural object evolving from primitive geometry into a strange but printable form. Artistic, not generic Blender tutorial imagery.',
     usedOn: ['/workshop/3d-school/blender-for-artists'],
+    src: cdn('/v1790040785/dccmiami/workshops/dcc-3d-blender-hero-001_sk65ak.webp'),
   }),
   '3D-BLENDER-STAGES-001': slot({
     id: '3D-BLENDER-STAGES-001',
@@ -144,6 +165,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Precise but playful functional object composed through solids, cuts, fillets and smooth surfaces.',
     usedOn: ['/workshop/3d-school/plasticity-for-artists'],
+    src: cdn('/v1790040794/dccmiami/workshops/dcc-3d-plasticity-hero-001_k1qvhf.webp'),
   }),
   '3D-PLASTICITY-BOOLEAN-001': slot({
     id: '3D-PLASTICITY-BOOLEAN-001',
@@ -192,6 +214,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Precision curved object / jewelry-like geometry / surface construction. Avoid architecture-wireframe clichés.',
     usedOn: ['/workshop/3d-school/rhino-for-artists'],
+    src: cdn('/v1790040796/dccmiami/workshops/dcc-3d-rhino-hero-001_ufyvtt.webp'),
   }),
   '3D-RHINO-JEWELRY-001': slot({
     id: '3D-RHINO-JEWELRY-001',
@@ -216,6 +239,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Broken/glitched digital mesh on one side becoming clean printable geometry on the other.',
     usedOn: ['/workshop/3d-school/fix-my-3d-file'],
+    src: cdn('/v1790040786/dccmiami/workshops/dcc-3d-fix-hero-001_shqf2x.webp'),
   }),
   '3D-FIX-DIAGNOSIS-001': slot({
     id: '3D-FIX-DIAGNOSIS-001',
@@ -240,6 +264,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'A simple base geometry proliferating into a rule-driven family of forms. Do not rely on screenshots of node graphs as the hero.',
     usedOn: ['/workshop/3d-school/grasshopper-computational-objects'],
+    src: cdn('/v1790040789/dccmiami/workshops/dcc-3d-grasshopper-hero-001_vmcv6q.webp'),
   }),
   '3D-PARAMETRIC-HERO-001': slot({
     id: '3D-PARAMETRIC-HERO-001',
@@ -252,6 +277,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Functional object whose geometry visibly responds to dimensions and constraints.',
     usedOn: ['/workshop/3d-school/parametric-cad-functional-objects'],
+    src: cdn('/v1790040793/dccmiami/workshops/dcc-3d-parametric-hero-001_urvc3c.webp'),
   }),
   '3D-OPERATOR-PATH-001': slot({
     id: '3D-OPERATOR-PATH-001',
@@ -279,6 +305,12 @@ export function getCurriculumAsset(
 
 export function listCurriculumAssets(): ThreeDCurriculumAsset[] {
   return THREE_D_CURRICULUM_ASSET_IDS.map((id) => THREE_D_CURRICULUM_ASSETS[id])
+}
+
+export function listCurriculumHeroAssets(): ThreeDCurriculumAsset[] {
+  return PRIMARY_HERO_ASSET_IDS.map((id) => THREE_D_CURRICULUM_ASSETS[id]).filter(
+    (asset) => Boolean(asset.src?.trim())
+  )
 }
 
 export function curriculumAssetPublicPath(filename: string): string {

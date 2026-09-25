@@ -33,6 +33,7 @@ import {
 } from '@/lib/marketing/dcc-workshops-catalog-ui'
 import { DccWorkshopsCatalogFilters } from '@/components/marketing/DccWorkshopsCatalogFilters'
 import { DccWorkshopsPromotedCarousel } from '@/components/marketing/DccWorkshopsPromotedCarousel'
+import { DccWorkshopHeroStrip } from '@/components/dcc/education/DccWorkshopHeroStrip'
 import { DccWorkshopOfferingsBand } from '@/components/dcc/education/DccWorkshopOfferingsBand'
 import { OfferingDoorsBand } from '@/components/marketing/institutions/OfferingDoorsBand'
 import { PartnersCardPaintRegister } from '@/components/marketing/PartnersCardPaintRegister'
@@ -174,8 +175,8 @@ export function DccWorkshopsCatalogClient() {
           }
           aria-hidden
         />
-        <div className="relative z-[2] mx-auto flex max-w-7xl flex-col gap-10 px-4 py-14 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-14 lg:py-16">
-          <div className="max-w-2xl">
+        <div className="relative z-[2] mx-auto flex max-w-7xl flex-col gap-10 px-4 py-16 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:gap-14 lg:py-20">
+          <div className="max-w-3xl">
             <CdcWebcoreSectionMark
               eyebrow={landingCopy.heroEyebrow}
               brackets={false}
@@ -187,7 +188,7 @@ export function DccWorkshopsCatalogClient() {
             />
             <h1
               id="dcc-workshops-hero-heading"
-              className="mt-4 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-4xl lg:text-5xl"
+              className="cdc-font-display mt-5 text-[clamp(2.15rem,5vw+1.1rem,4.5rem)] font-extrabold leading-[1.02] tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-6xl lg:text-7xl"
             >
               <span className="block">
                 <GlitchWords text={landingCopy.heroTitle} />
@@ -199,7 +200,7 @@ export function DccWorkshopsCatalogClient() {
               ) : null}
             </h1>
             {heroLead ? (
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-neutral-700 dark:text-neutral-300 sm:text-lg">
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-neutral-700 dark:text-neutral-300 sm:text-lg">
                 {heroLead}
               </p>
             ) : null}
@@ -220,6 +221,8 @@ export function DccWorkshopsCatalogClient() {
           </div>
         </div>
       </section>
+
+      <DccWorkshopHeroStrip />
 
       <OfferingDoorsBand variant="workshops" />
 

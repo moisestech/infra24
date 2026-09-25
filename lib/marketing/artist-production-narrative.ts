@@ -55,6 +55,10 @@ export const ARTIST_PRODUCTION_CTA = {
     label: 'Print my file',
     href: '/fabricate/quote?lane=print-my-file',
   },
+  browseWorkshops: {
+    label: 'Browse workshops',
+    href: '/workshops',
+  },
 } as const
 
 /** Lane card CTA labels. Lane titles stay; CTAs map the two-lane sales model onto three products. */

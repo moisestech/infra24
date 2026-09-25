@@ -13,10 +13,10 @@ export const DCC_WORKSHOPS_SEO_BANNER_IMAGE_URL =
  */
 export const DCC_MARKETING_WORKSHOPS_LANDING: WorkshopsLandingContent = {
   heroEyebrow: 'Digital Culture Center Miami',
-  heroTitle: 'Workshop catalog',
-  heroTitleAccent: 'for digital practice',
+  heroTitle: 'Learn the tools.',
+  heroTitleAccent: 'Then make the work.',
   heroLead:
-    'Each DCC session below has a public page — a syllabus, a lab, or a handbook. Register interest or walk into Saturday Lab.',
+    'Public syllabi, an open Saturday Lab, and a 3D School that leads toward fabrication. Open a session, walk in, or register interest so DCC knows what to publish next.',
   heroPrimaryCta: {
     label: 'See sessions',
     href: '#offerings',

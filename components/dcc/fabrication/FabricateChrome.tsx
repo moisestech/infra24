@@ -5,6 +5,7 @@ import {
   ClipboardList,
   FlaskConical,
   FolderKanban,
+  GraduationCap,
   Layers,
   Route,
   Sparkles,
@@ -26,6 +27,7 @@ export type FabricateNavId =
   | 'projects'
   | 'start'
   | 'quote'
+  | 'workshops'
 
 const NAV: {
   id: FabricateNavId
@@ -98,6 +100,14 @@ const NAV: {
     short: 'Start',
     Icon: ClipboardList,
     colorTokenId: 'sky',
+  },
+  {
+    id: 'workshops',
+    href: '/workshops',
+    label: 'Workshops',
+    short: 'Learn',
+    Icon: GraduationCap,
+    colorTokenId: 'teal',
   },
 ]
 
@@ -189,6 +199,12 @@ export function FabricateCtaRow({ className }: { className?: string }) {
         className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--cdc-border)] px-4 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-50 dark:text-neutral-100 dark:hover:bg-neutral-800"
       >
         See finish levels
+      </Link>
+      <Link
+        href="/workshops"
+        className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--cdc-border)] px-4 py-2.5 text-sm font-medium text-neutral-900 hover:bg-neutral-50 dark:text-neutral-100 dark:hover:bg-neutral-800"
+      >
+        Learn in a workshop
       </Link>
     </div>
   )

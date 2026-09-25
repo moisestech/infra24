@@ -78,7 +78,7 @@ export function DccWorkshopOfferingCard({
   return (
     <article
       className={cn(
-        'dcc-offering-card cdc-webcore-path-card partners-grid-card group relative flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200/90 bg-gradient-to-br from-white via-teal-50/35 to-violet-50/45 shadow-[0_1px_0_rgba(45,212,191,0.08),0_18px_48px_-28px_rgba(15,23,42,0.12)] dark:border-neutral-700/80 dark:from-neutral-950 dark:via-neutral-900 dark:to-slate-950',
+        'dcc-offering-card cdc-webcore-path-card group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--cdc-border)] bg-white shadow-[0_18px_48px_-28px_rgba(15,23,42,0.16)] dark:bg-neutral-950',
         compact ? 'p-4' : 'p-5 sm:p-6'
       )}
       style={hueStyle}
@@ -92,7 +92,7 @@ export function DccWorkshopOfferingCard({
       }}
     >
       <span
-        className="partners-card-pixel-overlay pointer-events-none absolute inset-0 z-[1] opacity-[0.42] transition-opacity duration-300 group-hover:opacity-[0.62] group-focus-within:opacity-[0.62] dark:opacity-[0.32] dark:group-hover:opacity-[0.5]"
+        className="partners-card-pixel-overlay pointer-events-none absolute inset-0 z-[1] opacity-[0.22] transition-opacity duration-300 group-hover:opacity-[0.38] group-focus-within:opacity-[0.38] dark:opacity-[0.18] dark:group-hover:opacity-[0.3]"
         aria-hidden
       />
       <span
@@ -116,7 +116,7 @@ export function DccWorkshopOfferingCard({
         <div className="relative overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-900">
           {cover ? (
             <figure className="relative">
-              <div className={cn('relative overflow-hidden', compact ? 'aspect-[16/9]' : 'aspect-[21/9]')}>
+              <div className={cn('relative overflow-hidden', compact ? 'aspect-[16/9]' : 'aspect-[16/9]')}>
                 {images.map((img, i) => (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -161,8 +161,8 @@ export function DccWorkshopOfferingCard({
           ) : (
             <div
               className={cn(
-                'flex items-center justify-center bg-gradient-to-br from-teal-50/80 via-white to-violet-50/80 dark:from-teal-950/40 dark:via-neutral-900 dark:to-violet-950/40',
-                compact ? 'aspect-[16/9]' : 'aspect-[21/9]'
+                'flex flex-col items-center justify-center gap-2 border border-dashed border-neutral-300 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-900',
+                compact ? 'aspect-[16/9]' : 'aspect-[16/9]'
               )}
             >
               {offering.icon ? (
@@ -170,9 +170,12 @@ export function DccWorkshopOfferingCard({
                 <img
                   src={offering.icon.src}
                   alt=""
-                  className="h-16 w-16 object-contain opacity-90 sm:h-20 sm:w-20"
+                  className="h-12 w-12 object-contain opacity-80 sm:h-14 sm:w-14"
                 />
               ) : null}
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
+                Image forthcoming
+              </p>
             </div>
           )}
         </div>

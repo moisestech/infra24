@@ -1,4 +1,8 @@
-import { DCC_WORKSHOPS_HERO_SYSTEM_LABELS } from '@/lib/marketing/dcc-workshops-landing-content'
+import {
+  DCC_WORKSHOPS_HERO_SYSTEM_LABELS,
+  DCC_WORKSHOPS_SEO_BANNER_IMAGE_URL,
+} from '@/lib/marketing/dcc-workshops-landing-content'
+import { getCurriculumAsset } from '@/lib/dcc/education/3d-curriculum/assets'
 import {
   AI_3D_PHYSICAL_OBJECT,
   CONCEPTUAL_EDUCATIONAL_CAPTION,
@@ -85,7 +89,14 @@ describe('dcc education offerings', () => {
     expect(school?.href).toBe('/workshop/3d-school')
     expect(school?.enrollment).toBe('inquiry')
     expect(school?.capacity).toBeUndefined()
-    expect(school?.images).toEqual([])
+    expect(school?.image?.src).toBe(getCurriculumAsset('3D-HERO-001').src)
+    expect(school?.images).toHaveLength(1)
+  })
+
+  it('reuses the SEO OG banner as a temporary in-development cover', () => {
+    const seo = DCC_WORKSHOP_IN_DEVELOPMENT.find((offering) => offering.slug === 'seo-workshop')
+    expect(seo?.image?.src).toBe(DCC_WORKSHOPS_SEO_BANNER_IMAGE_URL)
+    expect(seo?.images[0]?.caption).toMatch(/Placeholder reuse/)
   })
 
   it('treats Saturday Lab as open lab without a fake headcount', () => {

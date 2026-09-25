@@ -1,4 +1,5 @@
 import type { DccWorkshopOffering, DccWorkshopOfferingImage } from '@/lib/dcc/education/types'
+import { DCC_WORKSHOPS_SEO_BANNER_IMAGE_URL } from '@/lib/marketing/dcc-workshops-landing-content'
 import { SATURDAY_LAB_ICONS } from '@/lib/workshops/saturday-lab-media'
 
 const CURRICULUM_CAPTION = 'Curriculum still — DCC page in development'
@@ -67,7 +68,13 @@ export const DCC_WORKSHOP_IN_DEVELOPMENT: DccWorkshopOffering[] = [
       src: SATURDAY_LAB_ICONS.sitemap,
       alt: 'Sitemap icon for artist SEO.',
     },
-    images: [],
+    images: [
+      still(
+        DCC_WORKSHOPS_SEO_BANNER_IMAGE_URL,
+        'Existing SEO workshop banner used as a temporary catalog cover.',
+        'Placeholder reuse — not a dedicated catalog still'
+      ),
+    ],
   }),
   withCover({
     id: 'learn-ai-without-losing-yourself',

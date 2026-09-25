@@ -37,6 +37,12 @@ export function ArtistProductionPromiseBand() {
         >
           {ARTIST_PRODUCTION_CTA.printMyFile.label}
         </Link>
+        <Link
+          href={ARTIST_PRODUCTION_CTA.browseWorkshops.href}
+          className="inline-flex justify-center text-sm font-medium text-neutral-700 underline-offset-4 hover:underline dark:text-neutral-300"
+        >
+          {ARTIST_PRODUCTION_CTA.browseWorkshops.label}
+        </Link>
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import {
+  PRIMARY_HERO_ASSET_IDS,
   THREE_D_CURRICULUM_ASSET_IDS,
   THREE_D_CURRICULUM_ASSETS,
   THREE_D_CURRICULUM_INTENTS,
@@ -8,6 +9,7 @@ import {
   assertCurriculumValid,
   curriculumWorkshopPath,
   getCurriculumWorkshopBySlug,
+  listCurriculumHeroAssets,
   listCurriculumWorkshopSlugs,
   listPilotWorkshops,
 } from '@/lib/dcc/education/3d-curriculum'
@@ -67,15 +69,23 @@ describe('dcc 3d curriculum', () => {
     }
   })
 
-  it('includes every required asset id as a placeholder', () => {
+  it('wires Cloudinary heroes and keeps supporting assets as placeholders', () => {
     expect(THREE_D_CURRICULUM_ASSET_IDS).toEqual([...REQUIRED_ASSET_IDS])
+    expect(listCurriculumHeroAssets()).toHaveLength(PRIMARY_HERO_ASSET_IDS.length)
+    for (const id of PRIMARY_HERO_ASSET_IDS) {
+      const asset = THREE_D_CURRICULUM_ASSETS[id]
+      expect(asset.status).toBe('ready')
+      expect(asset.src).toMatch(/^https:\/\/res\.cloudinary\.com\/dck5rzi4h\//)
+      expect(asset.src).toMatch(/dccmiami\/workshops\//)
+    }
     for (const id of REQUIRED_ASSET_IDS) {
       const asset = THREE_D_CURRICULUM_ASSETS[id]
       expect(asset.id).toBe(id)
-      expect(asset.status).toBe('placeholder')
-      expect(asset.src).toBeUndefined()
       expect(asset.filename).toMatch(/\.webp$/)
       expect(asset.usedOn.length).toBeGreaterThan(0)
+      if ((PRIMARY_HERO_ASSET_IDS as readonly string[]).includes(id)) continue
+      expect(asset.status).toBe('placeholder')
+      expect(asset.src).toBeUndefined()
     }
   })
 

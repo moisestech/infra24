@@ -42,6 +42,8 @@ describe('Artist production narrative', () => {
     expect(ARTIST_PRODUCTION_CTA.printMyFile.href).toBe(
       '/fabricate/quote?lane=print-my-file'
     )
+    expect(ARTIST_PRODUCTION_CTA.browseWorkshops.href).toBe('/workshops')
+    expect(ARTIST_PRODUCTION_CTA.browseWorkshops.label).toBe('Browse workshops')
     expect(ARTIST_PRODUCTION_LANE_CTA['make-it-with-me']).toBe('Start a project')
     expect(ARTIST_PRODUCTION_LANE_CTA['print-my-file']).toBe('Print my file')
     expect(FABRICATION_SERVICE_LANES.map((lane) => lane.id)).toEqual([

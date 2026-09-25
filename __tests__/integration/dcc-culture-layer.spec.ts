@@ -97,7 +97,7 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(page.getByRole('heading', { name: 'Artists', exact: true })).toBeVisible()
     await page.goto('/workshops')
     await expect(page).not.toHaveURL(/sign-in/)
-    await expect(page.getByRole('heading', { name: /Workshop catalog/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Learn the tools/i })).toBeVisible()
     await expect(page.locator('.dcc-workshops-hero-band').getByText('Syllabus', { exact: true })).toBeVisible()
     await expect(page.locator('.dcc-workshops-hero-band').getByText('Lab', { exact: true })).toBeVisible()
     await expect(page.locator('.dcc-workshops-hero-band').getByText('Handbook', { exact: true })).toBeVisible()

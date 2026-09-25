@@ -36,7 +36,7 @@ export function DccWorkshopOfferingsBand() {
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <CdcWebcoreSectionMark eyebrow={DCC_SESSIONS_EYEBROW} />
-          <h2 className="mt-3 max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl">
+          <h2 className="cdc-font-display mt-3 max-w-3xl text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-4xl">
             {DCC_SESSIONS_HEADING}
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
@@ -58,7 +58,7 @@ export function DccWorkshopOfferingsBand() {
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <CdcWebcoreSectionMark eyebrow="Next syllabi" />
-          <h2 className="mt-3 max-w-3xl text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl">
+          <h2 className="cdc-font-display mt-3 max-w-3xl text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-4xl">
             {DCC_IN_DEVELOPMENT_HEADING}
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">

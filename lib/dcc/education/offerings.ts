@@ -1,6 +1,7 @@
 import { vibeCodingNetArtOverview } from '@/content/workshop/vibe-coding-net-art-overview'
 import type { DccWorkshopOffering, DccWorkshopOfferingImage } from '@/lib/dcc/education/types'
 import { DCC_WORKSHOP_IN_DEVELOPMENT } from '@/lib/dcc/education/in-development'
+import { getCurriculumAsset } from '@/lib/dcc/education/3d-curriculum/assets'
 import {
   CONCEPTUAL_EDUCATIONAL_CAPTION,
   DCC_EDUCATION_PHOTO_STILLS,
@@ -34,6 +35,12 @@ function withCover(
     ...offering,
     image: offering.images[0],
   }
+}
+
+function schoolHeroCover(): DccWorkshopOfferingImage[] {
+  const hero = getCurriculumAsset('3D-HERO-001')
+  if (!hero.src) return []
+  return [still(hero.src, hero.alt, 'DCC 3D School hero')]
 }
 
 /**
@@ -104,7 +111,7 @@ export const DCC_WORKSHOP_OFFERINGS: DccWorkshopOffering[] = [
     featured: true,
     hue: 168,
     hueAccent: 145,
-    images: [],
+    images: schoolHeroCover(),
   }),
   withCover({
     id: '3d-printing-for-artists',
