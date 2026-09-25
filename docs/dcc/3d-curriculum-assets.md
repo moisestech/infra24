@@ -11,25 +11,26 @@ Manifest source of truth: `lib/dcc/education/3d-curriculum/assets.ts`.
 | ID | Asset | Ratio | Page | Status |
 |---|---|---|---|---|
 | 3D-HERO-001 | Main 3D School hero | 16:9 | 3D School | Cloudinary wired |
-| 3D-MAP-001 | 3D modeling mental models (future illustration; v1 is HTML) | 16:9 | 3D School | TODO |
-| 3D-PIPELINE-001 | Digital-to-physical pipeline | 21:9 | 3D School + Foundation | TODO |
+| 3D-MAP-001 | 3D modeling mental models (HTML map remains primary) | 16:9 | 3D School | Cloudinary wired |
+| 3D-PIPELINE-001 | Digital-to-physical pipeline | 21:9 | 3D School + Foundation | Cloudinary wired |
 | 3D-FOUNDATION-HERO-001 | From File to Physical Object hero | 16:9 | Foundation | Cloudinary wired |
-| 3D-FOUNDATION-FORMATS-001 | STL / OBJ / STEP / 3MF comparison | 4:3 | Foundation | TODO |
-| 3D-FOUNDATION-PRINTABILITY-001 | Printability problems | 4:3 | Foundation | TODO |
+| 3D-FOUNDATION-FORMATS-001 | STL / OBJ / STEP / 3MF comparison | 4:3 | Foundation | Cloudinary wired |
+| 3D-FOUNDATION-PRINTABILITY-001 | Printability problems | 4:3 | Foundation | Cloudinary wired |
 | 3D-BLENDER-HERO-001 | Blender for Artists hero | 16:9 | Blender | Cloudinary wired |
 | 3D-BLENDER-STAGES-001 | Primitive → printed | 21:9 | Blender | TODO |
 | 3D-BLENDER-OBJECT-001 | Student-scale sculptural object | 4:5 | Blender | TODO |
 | 3D-PLASTICITY-HERO-001 | Plasticity for Artists hero | 16:9 | Plasticity | Cloudinary wired |
 | 3D-PLASTICITY-BOOLEAN-001 | Boolean cut / join | 4:3 | Plasticity | TODO |
-| 3D-PLASTICITY-STUDIO-OBJECTS-001 | Studio object set | 21:9 | Plasticity | TODO |
-| 3D-PLASTICITY-BRIDGE-001 | Plasticity → Blender → slicer → print | 16:9 | Plasticity | TODO |
+| 3D-PLASTICITY-STUDIO-OBJECTS-001 | Studio object set | 21:9 | Plasticity | Cloudinary wired |
+| 3D-PLASTICITY-BRIDGE-001 | Plasticity → Blender → slicer → print | 16:9 | Plasticity | TODO (candidate is 21:9 — do not wire) |
 | 3D-RHINO-HERO-001 | Rhino for Artists hero | 16:9 | Rhino | Cloudinary wired |
-| 3D-RHINO-JEWELRY-001 | Precision wearable | 4:3 | Rhino | TODO |
+| 3D-RHINO-JEWELRY-001 | Precision wearable | 4:3 | Rhino | TODO (candidate is 16:9 — do not wire) |
 | 3D-FIX-HERO-001 | Fix My 3D File hero | 16:9 | Fix My File | Cloudinary wired |
 | 3D-FIX-DIAGNOSIS-001 | Diagnosis examples | 21:9 | Fix My File | TODO |
 | 3D-GRASSHOPPER-HERO-001 | Grasshopper hero | 16:9 | Grasshopper | Cloudinary wired |
 | 3D-PARAMETRIC-HERO-001 | Parametric CAD hero | 16:9 | Parametric CAD | Cloudinary wired |
 | 3D-OPERATOR-PATH-001 | Learn → future operator pathway | 21:9 | 3D School path | TODO |
+| 3D-SCHOOL-OVERALL-LANDSCAPE-001 | Overall 3D School landscape | 16:9 | 3D School | Cloudinary wired |
 
 ## Visual purpose (short)
 
@@ -53,6 +54,7 @@ Manifest source of truth: `lib/dcc/education/3d-curriculum/assets.ts`.
 - **3D-GRASSHOPPER-HERO-001** — One base form proliferating into a family. Not a node-graph screenshot.
 - **3D-PARAMETRIC-HERO-001** — Functional object visibly driven by dimensions.
 - **3D-OPERATOR-PATH-001** — Learn → practice → fabricate → assist → document → future verified operator.
+- **3D-SCHOOL-OVERALL-LANDSCAPE-001** — Editorial studio landscape of mesh, solid, and surface forms. Not a /workshops hero-strip tile.
 
 ## Custom icons (not this pass)
 

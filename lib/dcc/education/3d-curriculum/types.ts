@@ -47,6 +47,7 @@ export type ThreeDCurriculumAssetId =
   | '3D-GRASSHOPPER-HERO-001'
   | '3D-PARAMETRIC-HERO-001'
   | '3D-OPERATOR-PATH-001'
+  | '3D-SCHOOL-OVERALL-LANDSCAPE-001'
 
 export type ThreeDCurriculumAspectRatio = '16/9' | '21/9' | '4/3' | '4/5' | '1/1'
 

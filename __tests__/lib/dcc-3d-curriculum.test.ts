@@ -1,5 +1,6 @@
 import {
   PRIMARY_HERO_ASSET_IDS,
+  SUPPORTING_READY_ASSET_IDS,
   THREE_D_CURRICULUM_ASSET_IDS,
   THREE_D_CURRICULUM_ASSETS,
   THREE_D_CURRICULUM_INTENTS,
@@ -35,6 +36,7 @@ const REQUIRED_ASSET_IDS = [
   '3D-GRASSHOPPER-HERO-001',
   '3D-PARAMETRIC-HERO-001',
   '3D-OPERATOR-PATH-001',
+  '3D-SCHOOL-OVERALL-LANDSCAPE-001',
 ] as const
 
 describe('dcc 3d curriculum', () => {
@@ -69,21 +71,39 @@ describe('dcc 3d curriculum', () => {
     }
   })
 
-  it('wires Cloudinary heroes and keeps supporting assets as placeholders', () => {
+  it('wires Cloudinary heroes and later-pack supporting stills; leftover IDs stay placeholders', () => {
     expect(THREE_D_CURRICULUM_ASSET_IDS).toEqual([...REQUIRED_ASSET_IDS])
     expect(listCurriculumHeroAssets()).toHaveLength(PRIMARY_HERO_ASSET_IDS.length)
-    for (const id of PRIMARY_HERO_ASSET_IDS) {
-      const asset = THREE_D_CURRICULUM_ASSETS[id]
+    const readyIds = new Set<string>([
+      ...PRIMARY_HERO_ASSET_IDS,
+      ...SUPPORTING_READY_ASSET_IDS,
+    ])
+    for (const id of readyIds) {
+      const asset = THREE_D_CURRICULUM_ASSETS[id as keyof typeof THREE_D_CURRICULUM_ASSETS]
       expect(asset.status).toBe('ready')
       expect(asset.src).toMatch(/^https:\/\/res\.cloudinary\.com\/dck5rzi4h\//)
       expect(asset.src).toMatch(/dccmiami\/workshops\//)
     }
+    expect(THREE_D_CURRICULUM_ASSETS['3D-MAP-001'].src).toMatch(/slnkul/)
+    expect(THREE_D_CURRICULUM_ASSETS['3D-PIPELINE-001'].src).toMatch(/gox1wg/)
+    expect(THREE_D_CURRICULUM_ASSETS['3D-FOUNDATION-FORMATS-001'].src).toMatch(
+      /lpdp9k/
+    )
+    expect(THREE_D_CURRICULUM_ASSETS['3D-FOUNDATION-PRINTABILITY-001'].src).toMatch(
+      /g5ugtd/
+    )
+    expect(THREE_D_CURRICULUM_ASSETS['3D-PLASTICITY-STUDIO-OBJECTS-001'].src).toMatch(
+      /c4ktms/
+    )
+    expect(THREE_D_CURRICULUM_ASSETS['3D-SCHOOL-OVERALL-LANDSCAPE-001'].src).toMatch(
+      /jcimkg/
+    )
     for (const id of REQUIRED_ASSET_IDS) {
       const asset = THREE_D_CURRICULUM_ASSETS[id]
       expect(asset.id).toBe(id)
       expect(asset.filename).toMatch(/\.webp$/)
       expect(asset.usedOn.length).toBeGreaterThan(0)
-      if ((PRIMARY_HERO_ASSET_IDS as readonly string[]).includes(id)) continue
+      if (readyIds.has(id)) continue
       expect(asset.status).toBe('placeholder')
       expect(asset.src).toBeUndefined()
     }

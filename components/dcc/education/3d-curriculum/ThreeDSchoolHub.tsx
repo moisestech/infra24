@@ -51,8 +51,18 @@ export function ThreeDSchoolHub() {
         <CurriculumMedia assetId="3D-HERO-001" colorTokenId="teal" priority />
       </header>
 
+      <div className="mt-10">
+        <CurriculumMedia
+          assetId="3D-SCHOOL-OVERALL-LANDSCAPE-001"
+          colorTokenId="teal"
+        />
+      </div>
+
       <div className="mt-16">
         <CurriculumMap />
+        <div className="mt-8">
+          <CurriculumMedia assetId="3D-MAP-001" colorTokenId="slate" />
+        </div>
       </div>
 
       <div className="mt-16">

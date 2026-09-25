@@ -35,6 +35,15 @@ export const PRIMARY_HERO_ASSET_IDS = [
   '3D-PARAMETRIC-HERO-001',
 ] as const satisfies readonly ThreeDCurriculumAssetId[]
 
+export const SUPPORTING_READY_ASSET_IDS = [
+  '3D-MAP-001',
+  '3D-PIPELINE-001',
+  '3D-FOUNDATION-FORMATS-001',
+  '3D-FOUNDATION-PRINTABILITY-001',
+  '3D-PLASTICITY-STUDIO-OBJECTS-001',
+  '3D-SCHOOL-OVERALL-LANDSCAPE-001',
+] as const satisfies readonly ThreeDCurriculumAssetId[]
+
 /**
  * Swap-ready 3D School media.
  * Drop files into `public/dcc/education/3d-curriculum/` using `filename`,
@@ -68,6 +77,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Represent mesh, solid, NURBS / precision, and parametric approaches converging toward fabrication. Future illustration — v1 of the map is native HTML.',
     usedOn: ['/workshop/3d-school#curriculum-map'],
+    src: cdn('/v1790377947/dccmiami/workshops/dcc-3d-map-001_slnkul.webp'),
   }),
   '3D-PIPELINE-001': slot({
     id: '3D-PIPELINE-001',
@@ -80,6 +90,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Idea → Model → Prepare → Slice → Fabricate → Review → Document as a wide landscape pipeline.',
     usedOn: ['/workshop/3d-school', '/workshop/3d-school/from-file-to-physical-object'],
+    src: cdn('/v1790377950/dccmiami/workshops/dcc-3d-pipeline-001_gox1wg.webp'),
   }),
   '3D-FOUNDATION-HERO-001': slot({
     id: '3D-FOUNDATION-HERO-001',
@@ -105,6 +116,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Visual comparison of STL, OBJ, STEP, and 3MF. No small explanatory text inside the image.',
     usedOn: ['/workshop/3d-school/from-file-to-physical-object'],
+    src: cdn('/v1790377940/dccmiami/workshops/dcc-3d-foundation-formats-001_lpdp9k.webp'),
   }),
   '3D-FOUNDATION-PRINTABILITY-001': slot({
     id: '3D-FOUNDATION-PRINTABILITY-001',
@@ -117,6 +129,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'One object showing common printability problems: thin wall, floating geometry, bad orientation, unsupported overhang.',
     usedOn: ['/workshop/3d-school/from-file-to-physical-object'],
+    src: cdn('/v1790377942/dccmiami/workshops/dcc-3d-foundation-printability-001_g5ugtd.webp'),
   }),
   '3D-BLENDER-HERO-001': slot({
     id: '3D-BLENDER-HERO-001',
@@ -190,6 +203,7 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Small collection of potential student projects: phone stand, bracket, lamp component, electronics enclosure, pedestal connector. Experimental and artist-made, not a glossy product catalog.',
     usedOn: ['/workshop/3d-school/plasticity-for-artists'],
+    src: cdn('/v1790377945/dccmiami/workshops/dcc-3d-plasticity-studio-objects-001_c4ktms.webp'),
   }),
   '3D-PLASTICITY-BRIDGE-001': slot({
     id: '3D-PLASTICITY-BRIDGE-001',
@@ -290,6 +304,21 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
     promptPurpose:
       'Learn → Practice → Fabricate → Assist → Document → Verified Operator, with Verified Operator clearly labeled as a future pathway.',
     usedOn: ['/workshop/3d-school#path'],
+  }),
+  '3D-SCHOOL-OVERALL-LANDSCAPE-001': slot({
+    id: '3D-SCHOOL-OVERALL-LANDSCAPE-001',
+    filename: 'dcc-3d-school-overall-landscape-001.webp',
+    aspectRatio: '16/9',
+    width: 1920,
+    height: 1080,
+    title: '3D School overall landscape',
+    alt: 'Mesh, solid, and surface forms together in a studio landscape — an editorial view of DCC 3D School.',
+    promptPurpose:
+      'Overall 3D School landscape: mesh, solid, and surface forms together. No baked-in text.',
+    usedOn: ['/workshop/3d-school'],
+    src: cdn(
+      '/v1790377952/dccmiami/workshops/dcc-3d-school-overall-landscape-001_jcimkg.webp'
+    ),
   }),
 }
 
