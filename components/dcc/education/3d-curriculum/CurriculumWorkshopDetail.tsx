@@ -126,14 +126,14 @@ export function CurriculumWorkshopDetail({
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
           {workshop.projectPrompt ?? workshop.whatYouMake}
         </p>
-        {workshop.galleryAssetIds[0] ? (
-          <div className="mt-6 max-w-xl">
+        {workshop.galleryAssetIds.map((assetId) => (
+          <div key={assetId} className="mt-6 max-w-xl">
             <CurriculumMedia
-              assetId={workshop.galleryAssetIds[0]}
+              assetId={assetId}
               colorTokenId={workshop.colorTokenId}
             />
           </div>
-        ) : null}
+        ))}
       </section>
 
       <section className="mt-14 border-t border-[var(--cdc-border)] pt-10">
