@@ -117,6 +117,20 @@ function upsertEdge(
   }
 }
 
+function personDisplayName(fields: Record<string, unknown>): string | undefined {
+  return asString(fields[F.people.name]) ?? asString(fields.Name) ?? asString(fields['People Name'])
+}
+
+function personRole(fields: Record<string, unknown>): string | undefined {
+  const titled =
+    asString(fields[F.people.titleRole]) ??
+    asString(fields['Role / Title']) ??
+    asString(fields['Title / Role'])
+  if (titled) return titled
+  if (asString(fields['Operator Stage'])) return 'Fabricator'
+  return undefined
+}
+
 function personEligibleForPublicGraph(fields: Record<string, unknown>): boolean {
   const consent = asString(fields[F.people.publicProfileConsent])
   const layer = asString(fields[F.people.graphLayer])
@@ -149,8 +163,9 @@ function buildPersonNodeData(
   visibility: DccGraphVisibility,
   seedContext?: Partial<DccGraphNodeData>
 ): DccGraphNodeData {
-  const name = asString(r.fields[F.people.name]) ?? 'Person'
-  const constituentLabel = seedContext?.constituentLabel
+  const name = personDisplayName(r.fields) ?? 'Person'
+  const role = personRole(r.fields)
+  const constituentLabel = seedContext?.constituentLabel ?? role
   const publicNodeSummary = asString(r.fields[F.people.publicNodeSummary]) ?? seedContext?.publicNodeSummary
   const nodePriority = seedContext?.nodePriority
   const practiceTags = asStringArray(r.fields[F.people.practiceTags])
@@ -162,7 +177,7 @@ function buildPersonNodeData(
     provenance: 'people',
     label: name,
     displayLabel: name,
-    contactCategory: asString(r.fields[F.people.contactCategory]),
+    contactCategory: asString(r.fields[F.people.contactCategory]) ?? role,
     warmth: asString(r.fields[F.people.warmth]),
     miami: asBoolean(r.fields[F.people.miami]),
     city: asString(r.fields[F.people.city]),
@@ -171,7 +186,10 @@ function buildPersonNodeData(
     imageUrl: asString(r.fields[F.people.imagePortraitUrl]) ?? seedContext?.imageUrl,
     practiceTags: mergedTags,
     interestTags: asStringArray(r.fields[F.people.interestTags]),
-    website: asString(r.fields[F.people.website]),
+    website:
+      visibility === 'public'
+        ? undefined
+        : asString(r.fields[F.people.website]) ?? asString(r.fields.Website),
     graphLayer: asString(r.fields[F.people.graphLayer]),
     dccSignupStatus: asString(r.fields[F.people.dccSignupStatus]),
     publicProfileConsent: asString(r.fields[F.people.publicProfileConsent]),
@@ -270,7 +288,7 @@ export function buildCrmGraphElements(
 
   const peopleByName = new Map<string, AirtableRecord>()
   for (const r of tables.people) {
-    const n = normalizeGraphName(asString(r.fields[F.people.name]))
+    const n = normalizeGraphName(personDisplayName(r.fields))
     if (n) peopleByName.set(n, r)
   }
 
@@ -330,7 +348,7 @@ export function buildCrmGraphElements(
 
     for (const r of tables.people) {
       if (!personPassesActiveFilter(r.fields, mode, visibility)) continue
-      const nameKey = normalizeGraphName(asString(r.fields[F.people.name]))
+      const nameKey = normalizeGraphName(personDisplayName(r.fields))
       const seedCtx = nameKey ? seedContextByPersonName.get(nameKey) : undefined
       nodes.set(nodeId('person', r.id), buildPersonNodeData(r, visibility, seedCtx))
       const instLinks = linkedIds(r.fields[F.people.institution])

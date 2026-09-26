@@ -74,8 +74,15 @@ export type ThreeDRelatedPage = {
 }
 
 export type ThreeDCurriculumSession = {
+  slug: string
   title: string
   body: string
+}
+
+export type ThreeDPipelineStep = {
+  label: string
+  /** Curriculum session this stage opens. Omitted when the stage is only a name. */
+  sessionSlug?: string
 }
 
 export type ThreeDCurriculumInstructor = {
@@ -103,7 +110,7 @@ export type ThreeDCurriculumWorkshop = {
   outcomes: string[]
   topics: string[]
   applications: string[]
-  pipeline: string[]
+  pipeline: ThreeDPipelineStep[]
   projectPrompt?: string
   whatYouMake: string
   skillNext: string[]

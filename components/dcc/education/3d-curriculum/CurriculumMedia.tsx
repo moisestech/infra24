@@ -51,7 +51,7 @@ export function CurriculumMedia({
             height={media.height}
             loading={priority ? 'eager' : 'lazy'}
             decoding="async"
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover transition duration-500 motion-safe:hover:scale-[1.03]"
           />
         </div>
         <figcaption className="border-t border-[var(--cdc-border)] px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-neutral-500">

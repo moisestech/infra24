@@ -9,7 +9,9 @@ import {
   THREE_D_SCHOOL_PATH,
   THREE_D_SMARTSIGN_SCREENS,
   assertCurriculumValid,
+  curriculumSessionPath,
   curriculumWorkshopPath,
+  getCurriculumSession,
   getCurriculumWorkshopBySlug,
   listCurriculumHeroAssets,
   listCurriculumWorkshopSlugs,
@@ -125,6 +127,17 @@ describe('dcc 3d curriculum', () => {
     expect(getCurriculumWorkshopBySlug('plasticity-for-artists')?.subtitle).toBe(
       'CAD Without the CAD Headache'
     )
+    const blender = getCurriculumWorkshopBySlug('blender-for-artists')
+    expect(blender?.pipeline.find((step) => step.label === 'Primitive')?.sessionSlug).toBe(
+      'building-and-transforming-geometry'
+    )
+    expect(
+      curriculumSessionPath('blender-for-artists', 'navigating-3d-space')
+    ).toBe('/workshop/3d-school/blender-for-artists/navigating-3d-space')
+    expect(getCurriculumSession('blender-for-artists', 'navigating-3d-space')?.sessionIndex).toBe(
+      0
+    )
+    expect(getCurriculumSession('rhino-for-artists', 'navigating-3d-space')).toBeUndefined()
   })
 
   it('exposes an ordered hub section index for navigation', () => {

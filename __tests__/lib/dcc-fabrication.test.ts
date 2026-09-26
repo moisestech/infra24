@@ -268,7 +268,8 @@ describe('fabricate studio system', () => {
     expect(material?.productUrl).toMatch(/high-clear-resin/)
     expect(PRICE_REFERENCE_DISCLAIMER).toMatch(/verified before purchase/)
     const machine = getMachineCatalogEntry('anycubic-photon-mono-m7-max')
-    expect(machine?.accessStatus).toBe('unconfirmed')
+    expect(machine?.accessStatus).toBe('operator_owned')
+    expect(machine?.owner).toBe('Leo')
     expect(machine?.internalHourlyRate).toBe(15)
   })
 

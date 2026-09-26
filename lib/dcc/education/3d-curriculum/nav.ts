@@ -1,5 +1,6 @@
 import type { FabricationColorTokenId } from '@/lib/dcc/fabrication/theme'
 import type { CurriculumIconKey } from '@/lib/dcc/education/3d-curriculum/icons'
+import type { ThreeDCurriculumAssetId } from '@/lib/dcc/education/3d-curriculum/types'
 import { THREE_D_SCHOOL_PATH } from '@/lib/dcc/education/3d-curriculum/types'
 
 export type ThreeDSchoolSectionId =
@@ -21,6 +22,7 @@ export type ThreeDSchoolSectionDef = {
   summary: string
   colorTokenId: FabricationColorTokenId
   icon: CurriculumIconKey
+  imageAssetId: ThreeDCurriculumAssetId
 }
 
 export const THREE_D_SCHOOL_SECTIONS: readonly ThreeDSchoolSectionDef[] = [
@@ -33,6 +35,7 @@ export const THREE_D_SCHOOL_SECTIONS: readonly ThreeDSchoolSectionDef[] = [
     summary: 'What 3D School is, and why the goal is choosing a tool — not learning every program.',
     colorTokenId: 'teal',
     icon: 'literacy',
+    imageAssetId: '3D-SCHOOL-OVERALL-LANDSCAPE-001',
   },
   {
     id: 'curriculum-map',
@@ -43,6 +46,7 @@ export const THREE_D_SCHOOL_SECTIONS: readonly ThreeDSchoolSectionDef[] = [
     summary: 'Mesh, solid, and precision paths share one pipeline: prepare, slice, print.',
     colorTokenId: 'slate',
     icon: 'print',
+    imageAssetId: '3D-MAP-001',
   },
   {
     id: 'intent',
@@ -53,6 +57,7 @@ export const THREE_D_SCHOOL_SECTIONS: readonly ThreeDSchoolSectionDef[] = [
     summary: 'Pick the object first. The recommended workshop follows from that.',
     colorTokenId: 'violet',
     icon: 'mesh',
+    imageAssetId: '3D-HERO-001',
   },
   {
     id: 'curriculum',
@@ -63,6 +68,7 @@ export const THREE_D_SCHOOL_SECTIONS: readonly ThreeDSchoolSectionDef[] = [
     summary: 'Three published curricula you can register interest in now.',
     colorTokenId: 'teal',
     icon: 'solid',
+    imageAssetId: '3D-BLENDER-HERO-001',
   },
   {
     id: 'upcoming',
@@ -73,6 +79,7 @@ export const THREE_D_SCHOOL_SECTIONS: readonly ThreeDSchoolSectionDef[] = [
     summary: 'Records for later workshops — not confirmed offerings yet.',
     colorTokenId: 'amber',
     icon: 'nurbs',
+    imageAssetId: '3D-GRASSHOPPER-HERO-001',
   },
   {
     id: 'path',
@@ -83,6 +90,7 @@ export const THREE_D_SCHOOL_SECTIONS: readonly ThreeDSchoolSectionDef[] = [
     summary: 'Literacy → a modeling direction → fabrication → a future operator pathway.',
     colorTokenId: 'indigo',
     icon: 'systems',
+    imageAssetId: '3D-PIPELINE-001',
   },
   {
     id: 'flywheel',
@@ -93,6 +101,7 @@ export const THREE_D_SCHOOL_SECTIONS: readonly ThreeDSchoolSectionDef[] = [
     summary: 'Workshops feed the studio: better files, more capable makers, documented work.',
     colorTokenId: 'emerald',
     icon: 'repair',
+    imageAssetId: '3D-PLASTICITY-STUDIO-OBJECTS-001',
   },
   {
     id: 'fabricate',
@@ -103,6 +112,7 @@ export const THREE_D_SCHOOL_SECTIONS: readonly ThreeDSchoolSectionDef[] = [
     summary: 'If you already have geometry, DCC fabrication sits next to this school.',
     colorTokenId: 'orange',
     icon: 'print',
+    imageAssetId: '3D-FOUNDATION-HERO-001',
   },
 ] as const
 

@@ -1,4 +1,5 @@
 import { Map, Lightbulb, Box, CheckCircle2 } from 'lucide-react'
+import { getFabricationColor, type FabricationColorTokenId } from '@/lib/dcc/fabrication/theme'
 import {
   ARTIST_PRODUCTION_MADE_STEPS,
   ARTIST_PRODUCTION_MADE_TAGLINE,
@@ -7,6 +8,7 @@ import {
 import { cn } from '@/lib/utils'
 
 const STEP_ICONS = [Map, Lightbulb, Box, CheckCircle2] as const
+const STEP_COLORS: FabricationColorTokenId[] = ['cyan', 'indigo', 'amber', 'emerald']
 
 /**
  * How a paid production job moves. Distinct from FabricationFlywheel
@@ -17,7 +19,7 @@ export function MadeProcessStrip({ className }: { className?: string }) {
     <section
       id="made"
       className={cn(
-        'scroll-mt-24 rounded-2xl border border-[var(--cdc-border)] p-4 sm:p-5',
+        'scroll-mt-40 rounded-2xl border border-[var(--cdc-border)] bg-gradient-to-br from-white via-teal-50/40 to-cyan-50/50 p-4 dark:from-neutral-950 dark:via-teal-950/30 dark:to-cyan-950/20 sm:p-5',
         className
       )}
     >
@@ -33,10 +35,17 @@ export function MadeProcessStrip({ className }: { className?: string }) {
       <ol className="mt-4 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-stretch">
         {ARTIST_PRODUCTION_MADE_STEPS.map((step, i) => {
           const Icon = STEP_ICONS[i]
+          const color = getFabricationColor(STEP_COLORS[i] ?? 'teal')
           return (
             <li key={step.id} className="flex min-w-0 flex-1 items-stretch">
-              <div className="flex min-h-16 flex-1 flex-col justify-center rounded-xl border border-[var(--cdc-border)] bg-neutral-50 px-3 py-2 dark:bg-neutral-900/40">
-                <span className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
+              <div
+                className={cn(
+                  'flex min-h-16 flex-1 flex-col justify-center rounded-xl border px-3 py-2 transition duration-300 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md',
+                  color.border,
+                  color.surface
+                )}
+              >
+                <span className={cn('inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em]', color.heading)}>
                   <Icon aria-hidden className="h-3.5 w-3.5" />
                   {step.letter}
                 </span>

@@ -39,9 +39,25 @@ const cytoscapeStylesheet: Stylesheet[] = [
   {
     selector: 'node[kind = "person"]',
     style: {
-      'background-color': '#2dd4bf',
+      'background-color': '#818cf8',
       shape: 'ellipse',
       'border-width': 2,
+      'border-color': '#4338ca',
+      'text-valign': 'bottom',
+      'text-margin-y': 8,
+    },
+  },
+  {
+    selector: 'node[contactCategory = "Client"]',
+    style: {
+      'background-color': '#22d3ee',
+      'border-color': '#0e7490',
+    },
+  },
+  {
+    selector: 'node[contactCategory = "Fabricator"]',
+    style: {
+      'background-color': '#2dd4bf',
       'border-color': '#0f766e',
     },
   },
@@ -177,6 +193,15 @@ export function GraphExplorer({
   )
 
   const runLayout = useCallback((cy: Core) => {
+    if (cy.edges().length === 0) {
+      cy.layout({
+        name: 'circle',
+        padding: 48,
+        avoidOverlap: true,
+        spacingFactor: 1.4,
+      }).run()
+      return
+    }
     cy.layout({
       name: 'cose',
       animate: true,
@@ -283,7 +308,7 @@ export function GraphExplorer({
 
       {payload ? (
         <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-          {payload.meta.source === 'fixture' ? 'Sample data' : 'Live CRM'} · {payload.meta.mode} ·{' '}
+          {payload.meta.source === 'fixture' ? 'Sample data' : 'Live DCC CRM'} · {payload.meta.mode} ·{' '}
           {payload.meta.nodeCount} nodes · {payload.meta.edgeCount} links
         </p>
       ) : null}

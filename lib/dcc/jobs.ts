@@ -21,6 +21,16 @@ export type DccJob = {
   dueDate?: string
   notes?: string
   quoteAmount: number | null
+  contactName?: string
+  email?: string
+  requestSource?: string
+  description?: string
+  fileLink?: string
+  material?: string
+  quantity?: number
+  budgetRange?: string
+  blocker?: string
+  depositRequired?: number | null
 }
 
 function str(fields: Record<string, unknown>, key: string): string | undefined {
@@ -44,15 +54,25 @@ function money(fields: Record<string, unknown>, key: string): number | null {
 function mapJob(rec: AirtableRecord): DccJob {
   return {
     id: rec.id,
-    jobName: str(rec.fields, F.jobName) ?? '(unnamed job)',
-    stage: str(rec.fields, F.stage) ?? DCC_JOB_STAGES.inquiry,
+    jobName: str(rec.fields, 'Job / Quote') ?? str(rec.fields, F.jobName) ?? '(unnamed job)',
+    stage: str(rec.fields, 'Status') ?? str(rec.fields, F.stage) ?? DCC_JOB_STAGES.inquiry,
     customerIds: links(rec.fields, F.customer),
     tier: str(rec.fields, F.tier),
     serviceIds: links(rec.fields, F.service),
     machineIds: links(rec.fields, F.machine),
-    dueDate: str(rec.fields, F.dueDate),
+    dueDate: str(rec.fields, 'Needed By') ?? str(rec.fields, F.dueDate),
     notes: str(rec.fields, F.notes),
     quoteAmount: money(rec.fields, F.quoteAmount),
+    contactName: str(rec.fields, 'Contact Name'),
+    email: str(rec.fields, 'Email'),
+    requestSource: str(rec.fields, 'Request Source'),
+    description: str(rec.fields, 'Project Description'),
+    fileLink: str(rec.fields, 'File Link'),
+    material: str(rec.fields, 'Material'),
+    quantity: typeof rec.fields['Quantity'] === 'number' ? rec.fields['Quantity'] : undefined,
+    budgetRange: str(rec.fields, 'Budget Range'),
+    blocker: str(rec.fields, 'Current Blocker'),
+    depositRequired: money(rec.fields, 'Deposit Required'),
   }
 }
 

@@ -121,10 +121,10 @@ export function FabricateChrome({
   return (
     <div className="mx-auto w-full min-w-0 max-w-5xl px-4 py-8 sm:px-6 md:py-10 lg:max-w-6xl lg:px-8 xl:max-w-7xl xl:py-12 2xl:max-w-[90rem]">
       <nav
-        className="sticky top-0 z-30 -mx-4 mb-8 border-b border-[var(--cdc-border)] bg-[var(--cdc-bg,white)]/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-white/80 dark:bg-neutral-950/90 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8"
+        className="sticky top-[77px] z-40 -mx-4 mb-8 border-b border-[var(--cdc-border)] bg-[#fafafa]/95 px-4 shadow-sm backdrop-blur dark:bg-neutral-950/95 sm:-mx-6 sm:top-[85px] sm:px-6 lg:-mx-8 lg:px-8"
         aria-label="Fabrication"
       >
-        <div className="flex gap-1.5 overflow-x-auto py-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:flex-wrap md:gap-2 md:overflow-visible">
+        <div className="flex touch-pan-x gap-1.5 overflow-x-auto overscroll-x-contain py-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:flex-wrap lg:gap-2 lg:overflow-visible">
           {NAV.map((link) => {
             const Icon = link.Icon
             const active =
@@ -135,10 +135,10 @@ export function FabricateChrome({
                 key={link.id}
                 href={link.href}
                 className={cn(
-                  'inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition md:px-4',
+                  'inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition duration-200 motion-safe:hover:-translate-y-0.5 md:px-4',
                   active
-                    ? cn(color.border, color.surface, color.heading)
-                    : 'border-transparent text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800'
+                    ? cn(color.border, color.surface, color.heading, 'shadow-sm')
+                    : 'border-transparent text-neutral-600 hover:border-[var(--cdc-border)] hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800'
                 )}
                 aria-current={active ? 'page' : undefined}
               >

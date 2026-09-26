@@ -34,8 +34,8 @@ export default function DccNetworkPage() {
           Cultural network explorer
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-          Search the map of artists, organizations, programs, and opportunities shaping Miami&rsquo;s
-          digital culture field. Open the{' '}
+          People from DCC CRM. Names and roles only — emails stay on the staff list. Cyan is a client,
+          teal is a fabricator, indigo is the wider network. Open the{' '}
           <Link
             href="/network/living"
             className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline dark:text-teal-300"

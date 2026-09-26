@@ -10,6 +10,7 @@ import {
   THREE_D_SCHOOL_MAP_HEADING,
   THREE_D_SCHOOL_MAP_LEAD,
   getCurriculumWorkshopById,
+  toolLogoForMapNode,
   type ThreeDCurriculumMapNode,
 } from '@/lib/dcc/education/3d-curriculum'
 import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
@@ -42,11 +43,18 @@ function MapNode({
               ? CURRICULUM_ICONS.literacy
               : CURRICULUM_ICONS.print
 
+  const logo = toolLogoForMapNode(node.id)
   const inner = (
     <>
-      <span className={curriculumIconBadge(color)}>
-        <Icon aria-hidden className="h-6 w-6" />
-      </span>
+      {logo ? (
+        <span className="mb-1 flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-white">
+          <img src={logo.src} alt="" className="h-full w-full object-contain p-1.5" />
+        </span>
+      ) : (
+        <span className={curriculumIconBadge(color)}>
+          <Icon aria-hidden className="h-6 w-6" />
+        </span>
+      )}
       <span className="mt-2 block text-sm font-semibold text-neutral-900 dark:text-neutral-50">
         {node.label}
       </span>

@@ -76,6 +76,57 @@ describe('graph modes', () => {
     expect(person.publicNodeSummary).toBe('Seed summary context')
   })
 
+  it('reads live DCC people fields Name and Role / Title without a graph layer', () => {
+    const tables = {
+      people: [
+        {
+          id: 'recLive',
+          fields: {
+            Name: 'Heather Deitch',
+            'Role / Title': 'Client',
+            Email: 'hidden@example.com',
+            Website: 'https://example.com',
+          },
+        },
+      ],
+      seedCandidates: [],
+      institutions: [],
+      opportunities: [],
+      interactions: [],
+      campaigns: [],
+    }
+    const els = buildCrmGraphElements(tables, { surface: 'explorer', mode: 'active', visibility: 'public' })
+    const person = els.find(
+      (e) => 'kind' in e.data && (e.data as DccGraphNodeData).kind === 'person'
+    )?.data as DccGraphNodeData
+    expect(person?.label).toBe('Heather Deitch')
+    expect(person?.contactCategory).toBe('Client')
+    expect(person?.website).toBeUndefined()
+    expect(JSON.stringify(person)).not.toContain('hidden@example.com')
+  })
+
+  it('treats an operator stage as a fabricator without publishing the stage', () => {
+    const tables = {
+      people: [
+        {
+          id: 'recOp',
+          fields: { Name: 'Miguel Gonzales', 'Operator Stage': 'Potential' },
+        },
+      ],
+      seedCandidates: [],
+      institutions: [],
+      opportunities: [],
+      interactions: [],
+      campaigns: [],
+    }
+    const els = buildCrmGraphElements(tables, { surface: 'explorer', mode: 'active', visibility: 'public' })
+    const person = els.find(
+      (e) => 'kind' in e.data && (e.data as DccGraphNodeData).kind === 'person'
+    )?.data as DccGraphNodeData
+    expect(person?.contactCategory).toBe('Fabricator')
+    expect(JSON.stringify(person)).not.toContain('Potential')
+  })
+
   it('excludes Do Not Show demo readiness', () => {
     const tables = getSampleCrmTables()
     tables.seedCandidates.push({

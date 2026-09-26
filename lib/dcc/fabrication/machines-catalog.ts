@@ -8,7 +8,8 @@ export const FABRICATION_MACHINES: Machine[] = [
     model: 'Photon Mono M7 Max',
     process: 'SLA / MSLA',
     location: 'Studio 43 / Bakehouse Art Complex',
-    accessStatus: 'unconfirmed',
+    owner: 'Leo',
+    accessStatus: 'operator_owned',
     compatibleMaterials: ['resin-high-clear-anycubic', 'resin-translucent-pending'],
     /** Internal only. Never render on client pages. */
     internalHourlyRate: 15,

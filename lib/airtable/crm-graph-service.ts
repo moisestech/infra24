@@ -1,5 +1,6 @@
 import { fetchAllRecords, isAirtableConnectionConfigured } from '@/lib/airtable/client'
 import { buildCrmGraphElements } from '@/lib/airtable/crm-graph-transform'
+import { getDccOsConnection } from '@/lib/dcc/os-config'
 import { filterGraphForHome, HOME_GRAPH_MAX_TOTAL_NODES } from '@/lib/airtable/crm-graph-home-filter'
 import { getSampleGraphPayload } from '@/lib/marketing/fixtures/dcc-crm-graph-sample'
 import type {
@@ -13,12 +14,20 @@ function env(name: string): string | undefined {
   return process.env[name]?.trim() || undefined
 }
 
+function graphConnection(): { apiKey: string; baseId: string; tablePeople: string } | null {
+  const legacyKey = env('AIRTABLE_DCC_CRM_API_KEY')
+  const legacyBase = env('AIRTABLE_DCC_CRM_BASE_ID')
+  const legacyPeople = env('AIRTABLE_DCC_CRM_TABLE_PEOPLE')
+  if (isAirtableConnectionConfigured({ apiKey: legacyKey, baseId: legacyBase, tableId: legacyPeople })) {
+    return { apiKey: legacyKey!, baseId: legacyBase!, tablePeople: legacyPeople! }
+  }
+  const os = getDccOsConnection()
+  if (!os?.tables.people) return null
+  return { apiKey: os.apiKey, baseId: os.baseId, tablePeople: os.tables.people }
+}
+
 export function isDccCrmGraphConfigured(): boolean {
-  return isAirtableConnectionConfigured({
-    apiKey: env('AIRTABLE_DCC_CRM_API_KEY'),
-    baseId: env('AIRTABLE_DCC_CRM_BASE_ID'),
-    tableId: env('AIRTABLE_DCC_CRM_TABLE_PEOPLE'),
-  })
+  return graphConnection() !== null
 }
 
 function peopleListOptions(): { viewId?: string } | undefined {
@@ -46,18 +55,18 @@ export async function fetchDccCrmGraphPayload(
   const mode = options.mode ?? 'active'
   const visibility = options.visibility ?? 'public'
 
-  const apiKey = env('AIRTABLE_DCC_CRM_API_KEY')
-  const baseId = env('AIRTABLE_DCC_CRM_BASE_ID')
-  const tablePeople = env('AIRTABLE_DCC_CRM_TABLE_PEOPLE')
+  const connection = graphConnection()
   const tableSeedCandidates = env('AIRTABLE_DCC_CRM_TABLE_SEED_CANDIDATES')
   const tableInstitutions = env('AIRTABLE_DCC_CRM_TABLE_INSTITUTIONS')
   const tableOpportunities = env('AIRTABLE_DCC_CRM_TABLE_OPPORTUNITIES')
   const tableInteractions = env('AIRTABLE_DCC_CRM_TABLE_INTERACTIONS')
   const tableCampaigns = env('AIRTABLE_DCC_CRM_TABLE_CAMPAIGNS')
 
-  if (!isAirtableConnectionConfigured({ apiKey, baseId, tableId: tablePeople })) {
+  if (!connection) {
     return getSampleGraphPayload({ surface, mode, visibility })
   }
+
+  const { apiKey, baseId, tablePeople } = connection
 
   const peopleOpts = peopleListOptions()
   const [people, seedCandidates, institutions, opportunities, interactions, campaigns] = await Promise.all([
