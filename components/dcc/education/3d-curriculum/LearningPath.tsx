@@ -7,30 +7,28 @@ import {
   getCurriculumWorkshopById,
 } from '@/lib/dcc/education/3d-curriculum'
 import { CurriculumMedia } from '@/components/dcc/education/3d-curriculum/CurriculumMedia'
+import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
+import { curriculumCardInteractive } from '@/components/dcc/education/3d-curriculum/interactive'
 
-export function LearningPath({ className }: { className?: string }) {
-  return (
-    <section
-      id="path"
-      className={cn('scroll-mt-24', className)}
-      aria-labelledby="path-heading"
-    >
-      <h2
-        id="path-heading"
-        className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl"
-      >
-        A path beyond taking a class
-      </h2>
-      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 sm:text-base">
-        Start with literacy. Choose a modeling direction. Specialize later. Fabrication is the shared competency. Operator verification is a future pathway, not a certificate DCC issues today.
-      </p>
+export function LearningPath({
+  className,
+  embedded = false,
+}: {
+  className?: string
+  embedded?: boolean
+}) {
+  const indigo = getFabricationColor('indigo')
+  const amber = getFabricationColor('amber')
 
-      <ol className="mt-8 space-y-3">
+  const body = (
+    <>
+      <ol className={cn(!embedded && 'mt-8', 'space-y-3')}>
         {THREE_D_LEARNING_PATH.map((stage, index) => (
           <li key={stage.id}>
             <div
               className={cn(
-                'rounded-2xl border border-[var(--cdc-border)] bg-white p-4 dark:bg-neutral-950 sm:p-5',
+                'rounded-2xl border p-4 sm:p-5',
+                curriculumCardInteractive(stage.future ? amber : indigo),
                 stage.future && 'border-dashed'
               )}
             >
@@ -53,7 +51,7 @@ export function LearningPath({ className }: { className?: string }) {
                       <li key={id}>
                         <Link
                           href={curriculumWorkshopPath(workshop.slug)}
-                          className="inline-flex min-h-10 items-center rounded-full border border-[var(--cdc-border)] bg-neutral-50 px-3 py-1.5 text-xs font-medium text-neutral-800 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
+                          className="inline-flex min-h-10 items-center rounded-full border border-[var(--cdc-border)] bg-white/80 px-3 py-1.5 text-xs font-medium text-neutral-800 transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
                         >
                           {workshop.title}
                         </Link>
@@ -65,7 +63,7 @@ export function LearningPath({ className }: { className?: string }) {
             </div>
             {index < THREE_D_LEARNING_PATH.length - 1 ? (
               <div className="flex justify-center py-1" aria-hidden>
-                <ArrowDown className="h-4 w-4 text-neutral-400" />
+                <ArrowDown className="h-5 w-5 text-neutral-400" />
               </div>
             ) : null}
           </li>
@@ -75,6 +73,27 @@ export function LearningPath({ className }: { className?: string }) {
       <div className="mt-8">
         <CurriculumMedia assetId="3D-OPERATOR-PATH-001" colorTokenId="slate" />
       </div>
+    </>
+  )
+
+  if (embedded) return body
+
+  return (
+    <section
+      id="path"
+      className={cn('scroll-mt-24', className)}
+      aria-labelledby="path-heading"
+    >
+      <h2
+        id="path-heading"
+        className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl"
+      >
+        A path beyond taking a class
+      </h2>
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 sm:text-base">
+        Start with literacy. Choose a modeling direction. Specialize later. Fabrication is the shared competency. Operator verification is a future pathway, not a certificate DCC issues today.
+      </p>
+      {body}
     </section>
   )
 }

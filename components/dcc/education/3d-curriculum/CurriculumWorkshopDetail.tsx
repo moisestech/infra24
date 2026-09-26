@@ -146,8 +146,8 @@ export function CurriculumWorkshopDetail({
               key={outcome}
               className="rounded-2xl border border-[var(--cdc-border)] bg-white p-4 dark:bg-neutral-950"
             >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900">
-                <Icon aria-hidden className="h-4 w-4" />
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 via-cyan-600 to-violet-600 text-white shadow-sm">
+                <Icon aria-hidden className="h-6 w-6" />
               </span>
               <p className="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
                 {outcome}
@@ -332,7 +332,7 @@ export function CurriculumWorkshopDetail({
                 <Link
                   href={curriculumWorkshopPath(row.slug)}
                   className={cn(
-                    'flex h-full flex-col rounded-2xl border border-[var(--cdc-border)] p-4 hover:bg-neutral-50 dark:hover:bg-neutral-900'
+                    'flex h-full flex-col rounded-2xl border border-[var(--cdc-border)] bg-gradient-to-br from-white via-teal-50/40 to-violet-50/40 p-4 transition-all duration-300 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-lg dark:from-neutral-950 dark:via-teal-950/20 dark:to-violet-950/20'
                   )}
                 >
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">

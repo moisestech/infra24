@@ -13,6 +13,10 @@ import {
   type ThreeDCurriculumMapNode,
 } from '@/lib/dcc/education/3d-curriculum'
 import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
+import {
+  curriculumCardInteractive,
+  curriculumIconBadge,
+} from '@/components/dcc/education/3d-curriculum/interactive'
 
 function MapNode({
   node,
@@ -40,13 +44,8 @@ function MapNode({
 
   const inner = (
     <>
-      <span
-        className={cn(
-          'inline-flex h-8 w-8 items-center justify-center rounded-full',
-          color.icon
-        )}
-      >
-        <Icon aria-hidden className="h-4 w-4" />
+      <span className={curriculumIconBadge(color)}>
+        <Icon aria-hidden className="h-6 w-6" />
       </span>
       <span className="mt-2 block text-sm font-semibold text-neutral-900 dark:text-neutral-50">
         {node.label}
@@ -65,10 +64,9 @@ function MapNode({
   )
 
   const className = cn(
-    'flex min-h-[7.5rem] flex-col items-center justify-center rounded-2xl border px-3 py-4 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
-    color.border,
-    color.surface,
-    emphasized && 'min-h-[5.5rem]'
+    'group flex min-h-[8.5rem] flex-col items-center justify-center rounded-2xl border px-3 py-4 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
+    curriculumCardInteractive(color),
+    emphasized && 'min-h-[6.25rem]'
   )
 
   if (node.href) {
@@ -85,29 +83,20 @@ function MapNode({
 function FlowArrow() {
   return (
     <div className="flex justify-center py-1" aria-hidden>
-      <ArrowDown className="h-4 w-4 text-neutral-400" />
+      <ArrowDown className="h-5 w-5 text-neutral-400" />
     </div>
   )
 }
 
-export function CurriculumMap({ className }: { className?: string }) {
-  return (
-    <section
-      id="curriculum-map"
-      className={cn('scroll-mt-24', className)}
-      aria-labelledby="curriculum-map-heading"
-    >
-      <h2
-        id="curriculum-map-heading"
-        className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl"
-      >
-        {THREE_D_SCHOOL_MAP_HEADING}
-      </h2>
-      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 sm:text-base">
-        {THREE_D_SCHOOL_MAP_LEAD}
-      </p>
-
-      <div className="mt-8 rounded-2xl border border-[var(--cdc-border)] bg-white p-4 dark:bg-neutral-950 sm:p-6">
+export function CurriculumMap({
+  className,
+  embedded = false,
+}: {
+  className?: string
+  embedded?: boolean
+}) {
+  const body = (
+      <div className={cn(!embedded && 'mt-8', 'rounded-2xl border border-[var(--cdc-border)] bg-white/70 p-4 dark:bg-neutral-950/70 sm:p-6')}>
         <MapNode node={CURRICULUM_MAP_SOURCE} emphasized />
         <FlowArrow />
         <ul className="grid gap-3 md:grid-cols-3">
@@ -128,6 +117,26 @@ export function CurriculumMap({ className }: { className?: string }) {
         <FlowArrow />
         <MapNode node={CURRICULUM_MAP_OUTPUT} emphasized />
       </div>
+  )
+
+  if (embedded) return body
+
+  return (
+    <section
+      id="curriculum-map"
+      className={cn('scroll-mt-24', className)}
+      aria-labelledby="curriculum-map-heading"
+    >
+      <h2
+        id="curriculum-map-heading"
+        className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-3xl"
+      >
+        {THREE_D_SCHOOL_MAP_HEADING}
+      </h2>
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 sm:text-base">
+        {THREE_D_SCHOOL_MAP_LEAD}
+      </p>
+      {body}
     </section>
   )
 }

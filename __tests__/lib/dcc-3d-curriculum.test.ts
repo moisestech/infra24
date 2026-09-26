@@ -1,6 +1,7 @@
 import {
   PRIMARY_HERO_ASSET_IDS,
   SUPPORTING_READY_ASSET_IDS,
+  THREE_D_SCHOOL_SECTIONS,
   THREE_D_CURRICULUM_ASSET_IDS,
   THREE_D_CURRICULUM_ASSETS,
   THREE_D_CURRICULUM_INTENTS,
@@ -124,5 +125,23 @@ describe('dcc 3d curriculum', () => {
     expect(getCurriculumWorkshopBySlug('plasticity-for-artists')?.subtitle).toBe(
       'CAD Without the CAD Headache'
     )
+  })
+
+  it('exposes an ordered hub section index for navigation', () => {
+    expect(THREE_D_SCHOOL_SECTIONS.map((section) => section.id)).toEqual([
+      'overview',
+      'curriculum-map',
+      'intent',
+      'curriculum',
+      'upcoming',
+      'path',
+      'flywheel',
+      'fabricate',
+    ])
+    for (const section of THREE_D_SCHOOL_SECTIONS) {
+      expect(section.kicker).toMatch(/^\d{2}$/)
+      expect(section.summary.length).toBeGreaterThan(20)
+      expect(section.title.length).toBeGreaterThan(4)
+    }
   })
 })

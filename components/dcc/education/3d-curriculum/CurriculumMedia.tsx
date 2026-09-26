@@ -100,11 +100,11 @@ export function CurriculumAssetPlaceholder({
         <div className="relative max-w-md text-center">
           <span
             className={cn(
-              'mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full shadow-sm',
+              'mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl shadow-sm',
               color.icon
             )}
           >
-            <ImageIcon aria-hidden className="h-5 w-5" />
+            <ImageIcon aria-hidden className="h-7 w-7" />
           </span>
           <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-500">
             {media.id}

@@ -9,6 +9,10 @@ import {
   type ThreeDCurriculumWorkshop,
 } from '@/lib/dcc/education/3d-curriculum'
 import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
+import {
+  curriculumCardInteractive,
+  curriculumIconBadge,
+} from '@/components/dcc/education/3d-curriculum/interactive'
 
 export function CurriculumWorkshopCard({
   workshop,
@@ -23,13 +27,15 @@ export function CurriculumWorkshopCard({
   return (
     <article
       className={cn(
-        'flex h-full flex-col rounded-2xl border p-5',
-        color.border,
-        color.surface,
+        'group flex h-full flex-col rounded-2xl border p-5',
+        curriculumCardInteractive(color),
         className
       )}
     >
-      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
+      <span className={curriculumIconBadge(color)}>
+        <Icon aria-hidden className="h-6 w-6" />
+      </span>
+      <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
         {String(workshop.order).padStart(2, '0')} · {THREE_D_SCHOOL_STATUS_LABEL[workshop.status]} ·{' '}
         {THREE_D_SCHOOL_LEVEL_LABEL[workshop.level]}
       </p>
@@ -50,8 +56,7 @@ export function CurriculumWorkshopCard({
         {workshop.mentalModelLabel}
         {workshop.software.length ? ` · ${workshop.software.join(', ')}` : ''}
       </p>
-      <p className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-neutral-900 dark:text-neutral-100">
-        <Icon aria-hidden className="h-4 w-4" />
+      <p className="mt-4 text-sm font-medium text-neutral-900 dark:text-neutral-100">
         {workshop.duration}
       </p>
       <Link
@@ -59,7 +64,10 @@ export function CurriculumWorkshopCard({
         className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
       >
         Open the workshop
-        <ArrowRight aria-hidden className="h-4 w-4" />
+        <ArrowRight
+          aria-hidden
+          className="h-5 w-5 transition-transform duration-300 motion-safe:group-hover:translate-x-1"
+        />
       </Link>
     </article>
   )
