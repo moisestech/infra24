@@ -119,6 +119,8 @@ export function isPublicRoute(rawPathname: string): boolean {
     '/make',
     '/fabricate',
     '/scale-up',
+    '/backoffice',
+    '/fabricators',
     '/dashboard/ceo',
     '/api/dcc/make',
     '/api/dcc/fabricate',

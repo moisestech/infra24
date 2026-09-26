@@ -1,14 +1,21 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import { getFabricationColor, type FabricationColorTokenId } from '@/lib/dcc/fabrication/theme'
 import { cn } from '@/lib/utils'
 
-const STEPS = [
-  { id: 'learn', label: 'Learn', detail: 'Workshop', href: '/workshops' },
-  { id: 'test', label: 'Test', detail: 'Small object', href: '/fabricate/field-lab' },
-  { id: 'make', label: 'Make', detail: 'Fabrication service', href: '/fabricate' },
-  { id: 'finish', label: 'Finish', detail: 'Presentation-ready object', href: '/fabricate/finishes' },
-  { id: 'return', label: 'Return', detail: 'Next project / advanced workshop', href: '/fabricate/quote' },
-] as const
+const STEPS: {
+  id: string
+  label: string
+  detail: string
+  href: string
+  color: FabricationColorTokenId
+}[] = [
+  { id: 'learn', label: 'Learn', detail: 'Workshop', href: '/workshops', color: 'teal' },
+  { id: 'test', label: 'Test', detail: 'Small object', href: '/fabricate/field-lab', color: 'amber' },
+  { id: 'make', label: 'Make', detail: 'Fabrication service', href: '/fabricate', color: 'indigo' },
+  { id: 'finish', label: 'Finish', detail: 'Presentation-ready object', href: '/fabricate/finishes', color: 'violet' },
+  { id: 'return', label: 'Return', detail: 'Next project / advanced workshop', href: '/fabricate/quote', color: 'sky' },
+]
 
 export function FabricationFlywheel({
   className,
@@ -27,11 +34,17 @@ export function FabricationFlywheel({
         project.
       </p>
       <ol className="mt-4 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-stretch">
-        {STEPS.map((step, i) => (
+        {STEPS.map((step, i) => {
+          const color = getFabricationColor(step.color)
+          return (
           <li key={step.id} className="flex min-w-0 flex-1 items-stretch gap-3">
             <Link
               href={step.href}
-              className="flex min-h-16 flex-1 flex-col justify-center rounded-xl border border-[var(--cdc-border)] bg-neutral-50 px-3 py-2 dark:bg-neutral-900/40"
+              className={cn(
+                'flex min-h-16 flex-1 flex-col justify-center rounded-xl border bg-gradient-to-br px-3 py-2 transition duration-300 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md',
+                color.border,
+                color.gradient
+              )}
             >
               <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
                 {String(i + 1).padStart(2, '0')}
@@ -48,7 +61,8 @@ export function FabricationFlywheel({
               />
             ) : null}
           </li>
-        ))}
+          )
+        })}
       </ol>
     </section>
   )

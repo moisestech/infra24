@@ -38,7 +38,7 @@ export default function ThreeDSchoolWorkshopPage({ params }: Props) {
   if (!workshop) notFound()
 
   return (
-    <ThreeDSchoolChrome>
+    <ThreeDSchoolChrome organizedOpen={false}>
       <CurriculumWorkshopDetail workshop={workshop} />
     </ThreeDSchoolChrome>
   )

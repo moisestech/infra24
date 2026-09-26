@@ -63,6 +63,7 @@ export async function fetchAllRecords(
     if (offset) url.searchParams.set('offset', offset);
 
     const res = await fetch(url.toString(), {
+      cache: 'no-store',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',

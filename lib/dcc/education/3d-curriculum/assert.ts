@@ -42,6 +42,23 @@ export function assertCurriculumValid(): string[] {
         errors.push(`workshop ${workshop.id} relatedWorkshopId ${relatedId} does not exist`)
       }
     }
+
+    const sessionSlugs = new Set<string>()
+    for (const session of workshop.curriculumSessions ?? []) {
+      if (!session.slug) errors.push(`workshop ${workshop.id} session missing slug`)
+      if (sessionSlugs.has(session.slug)) {
+        errors.push(`workshop ${workshop.id} duplicate session slug ${session.slug}`)
+      }
+      sessionSlugs.add(session.slug)
+    }
+    for (const step of workshop.pipeline) {
+      if (!step.label) errors.push(`workshop ${workshop.id} pipeline step missing label`)
+      if (step.sessionSlug && !sessionSlugs.has(step.sessionSlug)) {
+        errors.push(
+          `workshop ${workshop.id} pipeline step ${step.label} points at missing session ${step.sessionSlug}`
+        )
+      }
+    }
   }
 
   return errors

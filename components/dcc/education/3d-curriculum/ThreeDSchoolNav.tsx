@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import {
   CURRICULUM_ICONS,
   THREE_D_SCHOOL_SECTIONS,
+  getCurriculumAsset,
   schoolSectionHref,
   type ThreeDSchoolSectionId,
 } from '@/lib/dcc/education/3d-curriculum'
@@ -17,6 +18,16 @@ import {
 } from '@/components/dcc/education/3d-curriculum/interactive'
 
 const STICKY_TOP = '5.5rem'
+
+function SectionThumb({ assetId, alt }: { assetId: Parameters<typeof getCurriculumAsset>[0]; alt: string }) {
+  const media = getCurriculumAsset(assetId)
+  if (!media.src) return null
+  return (
+    <span className="relative w-20 shrink-0 self-stretch overflow-hidden bg-neutral-100 sm:w-24 dark:bg-neutral-900">
+      <img src={media.src} alt={alt} className="absolute inset-0 h-full w-full object-cover" />
+    </span>
+  )
+}
 
 function useActiveSchoolSection(
   fallback?: ThreeDSchoolSectionId
@@ -55,14 +66,17 @@ function useActiveSchoolSection(
 
 export function ThreeDSchoolNav({
   current,
+  organizedOpen = true,
 }: {
   current?: ThreeDSchoolSectionId
+  organizedOpen?: boolean
 }) {
   const activeId = useActiveSchoolSection(current)
-  const [indexOpen, setIndexOpen] = useState(true)
+  const [indexOpen, setIndexOpen] = useState(organizedOpen)
 
   return (
-    <div className="mb-8">
+    <>
+    <div className="mb-3">
       <details
         open={indexOpen}
         onToggle={(event) => setIndexOpen(event.currentTarget.open)}
@@ -95,13 +109,15 @@ export function ThreeDSchoolNav({
               <li key={section.id}>
                 <Link
                   href={schoolSectionHref(section.id)}
+                  onClick={() => setIndexOpen(false)}
                   className={cn(
-                    'group flex h-full flex-col rounded-2xl border p-4',
+                    'group flex h-full items-stretch overflow-hidden rounded-2xl border',
                     curriculumCardInteractive(color),
                     active &&
                       'ring-2 ring-teal-400/70 ring-offset-2 ring-offset-white dark:ring-offset-neutral-950'
                   )}
                 >
+                  <span className="flex min-w-0 flex-1 flex-col p-4">
                   <span className={curriculumIconBadge(color)}>
                     <Icon aria-hidden className="h-6 w-6" />
                   </span>
@@ -114,17 +130,20 @@ export function ThreeDSchoolNav({
                   <p className="mt-1 text-xs leading-relaxed text-neutral-600 dark:text-neutral-400">
                     {section.summary}
                   </p>
+                  </span>
+                  <SectionThumb assetId={section.imageAssetId} alt="" />
                 </Link>
               </li>
             )
           })}
         </ul>
       </details>
+    </div>
 
       <nav
         aria-label="DCC 3D School sections"
         style={{ top: STICKY_TOP }}
-        className="sticky z-40 mt-3 overflow-x-auto rounded-2xl border border-[var(--cdc-border)] bg-white/90 p-1.5 shadow-[0_12px_32px_-20px_rgba(15,23,42,0.45)] backdrop-blur-md dark:bg-neutral-950/90"
+        className="sticky z-40 mb-3 overflow-x-auto rounded-2xl border border-[var(--cdc-border)] bg-white/90 p-1.5 shadow-[0_12px_32px_-20px_rgba(15,23,42,0.45)] backdrop-blur-md dark:bg-neutral-950/90"
       >
         <div className="flex min-w-max gap-1">
           {THREE_D_SCHOOL_SECTIONS.map((section) => {
@@ -135,6 +154,7 @@ export function ThreeDSchoolNav({
               <Link
                 key={section.id}
                 href={schoolSectionHref(section.id)}
+                onClick={() => setIndexOpen(false)}
                 className={cn(
                   'group inline-flex min-h-12 items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-all duration-300',
                   active
@@ -159,6 +179,6 @@ export function ThreeDSchoolNav({
           })}
         </div>
       </nav>
-    </div>
+    </>
   )
 }

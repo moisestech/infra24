@@ -5,6 +5,10 @@ export function curriculumWorkshopPath(slug: string): string {
   return `${THREE_D_SCHOOL_PATH}/${slug}`
 }
 
+export function curriculumSessionPath(workshopSlug: string, sessionSlug: string): string {
+  return `${curriculumWorkshopPath(workshopSlug)}/${sessionSlug}`
+}
+
 const FROM_FILE: ThreeDCurriculumWorkshop = {
   id: 'from-file-to-physical-object',
   slug: 'from-file-to-physical-object',
@@ -44,7 +48,13 @@ const FROM_FILE: ThreeDCurriculumWorkshop = {
     'First print in the studio',
     'Talking to a fabricator about a file',
   ],
-  pipeline: ['File', 'Inspect', 'Prepare', 'Slice', 'Print'],
+  pipeline: [
+    { label: 'File', sessionSlug: 'how-digital-objects-become-physical' },
+    { label: 'Inspect', sessionSlug: 'how-digital-objects-become-physical' },
+    { label: 'Prepare', sessionSlug: 'how-digital-objects-become-physical' },
+    { label: 'Slice', sessionSlug: 'how-digital-objects-become-physical' },
+    { label: 'Print', sessionSlug: 'how-digital-objects-become-physical' },
+  ],
   projectPrompt:
     'Take an existing object or file through inspection, preparation, slicing, and a physical print.',
   whatYouMake:
@@ -59,6 +69,7 @@ const FROM_FILE: ThreeDCurriculumWorkshop = {
   participantFiles: ['A small starter object', 'A short printability checklist'],
   curriculumSessions: [
     {
+      slug: 'how-digital-objects-become-physical',
       title: 'How digital objects become physical',
       body: 'Mesh vs solid, common formats, scale, watertight geometry, wall thickness, overhangs, supports, FDM vs resin, and why a file can look finished and still fail on the machine.',
     },
@@ -129,13 +140,13 @@ const BLENDER: ThreeDCurriculumWorkshop = {
     '3D printing',
   ],
   pipeline: [
-    'Primitive',
-    'Mesh',
-    'Modify',
-    'Sculpt',
-    'Repair',
-    'Export',
-    'Print',
+    { label: 'Primitive', sessionSlug: 'building-and-transforming-geometry' },
+    { label: 'Mesh', sessionSlug: 'building-and-transforming-geometry' },
+    { label: 'Modify', sessionSlug: 'modifiers-booleans-and-sculptural-mutations' },
+    { label: 'Sculpt', sessionSlug: 'modifiers-booleans-and-sculptural-mutations' },
+    { label: 'Repair', sessionSlug: 'preparing-an-object-for-physical-fabrication' },
+    { label: 'Export', sessionSlug: 'preparing-an-object-for-physical-fabrication' },
+    { label: 'Print', sessionSlug: 'preparing-an-object-for-physical-fabrication' },
   ],
   projectPrompt:
     'Make a small sculptural object, modify it, repair it, and print it.',
@@ -153,18 +164,22 @@ const BLENDER: ThreeDCurriculumWorkshop = {
   participantFiles: ['Starter .blend', 'Export checklist'],
   curriculumSessions: [
     {
+      slug: 'navigating-3d-space',
       title: 'Navigating 3D space',
       body: 'Move, orbit, scale. Learn enough of the viewport to stop fighting the camera.',
     },
     {
+      slug: 'building-and-transforming-geometry',
       title: 'Building and transforming geometry',
       body: 'Primitives, Edit Mode, and the first decisions that make a form, not a default cube.',
     },
     {
+      slug: 'modifiers-booleans-and-sculptural-mutations',
       title: 'Modifiers, booleans, and sculptural mutations',
       body: 'Change the object without starting over. Boolean cuts, modifiers, and sculpting as artistic tools.',
     },
     {
+      slug: 'preparing-an-object-for-physical-fabrication',
       title: 'Preparing an object for physical fabrication',
       body: 'Cleanup, export, slice, print. The same exit ramp as every other DCC 3D path.',
     },
@@ -236,14 +251,14 @@ const PLASTICITY: ThreeDCurriculumWorkshop = {
     'Studio accessories',
   ],
   pipeline: [
-    'Idea',
-    'Primitive',
-    'Solid',
-    'Boolean',
-    'Detail',
-    'Export',
-    'Slice',
-    'Print',
+    { label: 'Idea', sessionSlug: 'direct-cad-without-the-engineering-stack' },
+    { label: 'Primitive', sessionSlug: 'direct-cad-without-the-engineering-stack' },
+    { label: 'Solid', sessionSlug: 'cuts-joins-and-fillets' },
+    { label: 'Boolean', sessionSlug: 'cuts-joins-and-fillets' },
+    { label: 'Detail', sessionSlug: 'cuts-joins-and-fillets' },
+    { label: 'Export', sessionSlug: 'export-interoperability-print' },
+    { label: 'Slice', sessionSlug: 'export-interoperability-print' },
+    { label: 'Print', sessionSlug: 'export-interoperability-print' },
   ],
   projectPrompt:
     'Design something useful for the studio: a phone stand, bracket, enclosure, lamp component, pedestal connector, tool holder, or a strange functional sculpture.',
@@ -260,14 +275,17 @@ const PLASTICITY: ThreeDCurriculumWorkshop = {
   participantFiles: ['Starter solid', 'STEP export notes'],
   curriculumSessions: [
     {
+      slug: 'direct-cad-without-the-engineering-stack',
       title: 'Direct CAD without the engineering stack',
       body: 'Solids, surfaces, and the difference between this workflow and mesh modeling in Blender.',
     },
     {
+      slug: 'cuts-joins-and-fillets',
       title: 'Cuts, joins, and fillets',
       body: 'Booleans, holes, shelling, and the details that make an object feel made rather than defaulted.',
     },
     {
+      slug: 'export-interoperability-print',
       title: 'Export, interoperability, print',
       body: 'STEP and mesh export. Optional pass through Blender. Slicer. Physical object.',
     },
@@ -329,7 +347,12 @@ const RHINO: ThreeDCurriculumWorkshop = {
     'Product forms',
     'Precision fabrication',
   ],
-  pipeline: ['Curves', 'Surfaces', 'Precision', 'Fabrication'],
+  pipeline: [
+    { label: 'Curves' },
+    { label: 'Surfaces' },
+    { label: 'Precision' },
+    { label: 'Fabrication' },
+  ],
   projectPrompt:
     'A precision object or jewelry-scale component — dimensional control, complex curvature, manufacturable geometry.',
   whatYouMake:
@@ -400,7 +423,13 @@ const FIX_FILE: ThreeDCurriculumWorkshop = {
     'Someone else’s model',
     'Prepare + Fabricate handoff',
   ],
-  pipeline: ['Arrive with a file', 'Diagnose', 'Repair', 'Validate', 'Slice'],
+  pipeline: [
+    { label: 'Arrive with a file' },
+    { label: 'Diagnose' },
+    { label: 'Repair' },
+    { label: 'Validate' },
+    { label: 'Slice' },
+  ],
   projectPrompt:
     'Can we make this thing manufacturable?',
   whatYouMake:
@@ -470,7 +499,12 @@ const GRASSHOPPER: ThreeDCurriculumWorkshop = {
     'Installations',
     'Editions',
   ],
-  pipeline: ['Rule', 'System', 'Family of forms', 'Fabrication'],
+  pipeline: [
+    { label: 'Rule' },
+    { label: 'System' },
+    { label: 'Family of forms' },
+    { label: 'Fabrication' },
+  ],
   whatYouMake:
     'A rule-driven family of forms, not a one-off mesh.',
   skillNext: [
@@ -526,7 +560,12 @@ const PARAMETRIC: ThreeDCurriculumWorkshop = {
     'Assemblies',
     'Replacement parts',
   ],
-  pipeline: ['Constraint', 'Dimension', 'Assemble', 'Fabricate'],
+  pipeline: [
+    { label: 'Constraint' },
+    { label: 'Dimension' },
+    { label: 'Assemble' },
+    { label: 'Fabricate' },
+  ],
   whatYouMake:
     'A functional object whose geometry is driven by dimensions and constraints.',
   skillNext: [
@@ -586,4 +625,25 @@ export function getCurriculumWorkshopById(
 
 export function listCurriculumWorkshopSlugs(): string[] {
   return listCurriculumWorkshops().map((workshop) => workshop.slug)
+}
+
+export function getCurriculumSession(
+  workshopSlug: string,
+  sessionSlug: string
+): { workshop: ThreeDCurriculumWorkshop; sessionIndex: number } | undefined {
+  const workshop = getCurriculumWorkshopBySlug(workshopSlug)
+  const sessionIndex = workshop?.curriculumSessions?.findIndex(
+    (session) => session.slug === sessionSlug
+  )
+  if (!workshop || sessionIndex === undefined || sessionIndex < 0) return undefined
+  return { workshop, sessionIndex }
+}
+
+export function listCurriculumSessionParams(): { slug: string; session: string }[] {
+  return THREE_D_CURRICULUM_WORKSHOPS.flatMap((workshop) =>
+    (workshop.curriculumSessions ?? []).map((session) => ({
+      slug: workshop.slug,
+      session: session.slug,
+    }))
+  )
 }

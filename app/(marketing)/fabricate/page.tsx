@@ -79,7 +79,7 @@ export default function FabricateLandingPage() {
       </header>
 
       <nav
-        className="mb-8 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap"
+        className="mb-8 flex touch-pan-x gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:flex-wrap"
         aria-label="On this page"
       >
         {(
@@ -100,7 +100,7 @@ export default function FabricateLandingPage() {
               key={item.href}
               href={item.href}
               className={cn(
-                'inline-flex min-h-10 shrink-0 items-center rounded-full border px-3 text-xs font-medium sm:text-sm',
+                'inline-flex min-h-10 shrink-0 items-center rounded-full border px-3 text-xs font-medium transition duration-200 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md sm:text-sm',
                 color.chip
               )}
             >
@@ -112,7 +112,7 @@ export default function FabricateLandingPage() {
 
       <MadeProcessStrip className="mb-10 md:mb-12" />
 
-      <section id="lanes" className="mb-10 scroll-mt-24 md:mb-12 xl:mb-14">
+      <section id="lanes" className="mb-10 scroll-mt-40 md:mb-12 xl:mb-14">
         <FabricateSectionHeading
           title="Service lanes"
           description="Pick the lane that matches how finished your file already is."
@@ -132,14 +132,21 @@ export default function FabricateLandingPage() {
               <article
                 key={lane.id}
                 className={cn(
-                  'flex min-h-[11rem] flex-col rounded-2xl border p-4 sm:p-5',
+                  'group relative flex min-h-[11rem] flex-col overflow-hidden rounded-2xl border p-4 transition duration-300 motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-lg sm:p-5',
                   color.border,
                   color.surface
                 )}
               >
+                <div
+                  aria-hidden
+                  className={cn(
+                    'pointer-events-none absolute inset-0 bg-gradient-to-br opacity-0 transition duration-300 group-hover:opacity-100',
+                    color.gradient
+                  )}
+                />
                 <h3
                   className={cn(
-                    'inline-flex items-center gap-2 font-semibold',
+                    'relative inline-flex items-center gap-2 font-semibold',
                     color.heading
                   )}
                 >
@@ -153,15 +160,15 @@ export default function FabricateLandingPage() {
                   </span>
                   {lane.label}
                 </h3>
-                <p className="mt-2 flex-1 text-sm text-neutral-600 dark:text-neutral-400">
+                <p className="relative mt-2 flex-1 text-sm text-neutral-600 dark:text-neutral-400">
                   {lane.summary}
                 </p>
-                <p className="mt-3 font-mono text-xs text-neutral-500">
+                <p className="relative mt-3 font-mono text-xs text-neutral-500">
                   {lane.typicalTicket}
                 </p>
                 <Link
                   href={`/fabricate/quote?lane=${lane.id}`}
-                  className="mt-4 inline-flex min-h-11 items-center text-sm font-medium text-[var(--cdc-teal)] underline"
+                  className="relative mt-4 inline-flex min-h-11 items-center text-sm font-medium text-[var(--cdc-teal)] underline"
                 >
                   {ARTIST_PRODUCTION_LANE_CTA[lane.id]}
                 </Link>
@@ -171,7 +178,7 @@ export default function FabricateLandingPage() {
         </div>
       </section>
 
-      <section id="pricing" className="mb-10 scroll-mt-24 md:mb-12 xl:mb-14">
+      <section id="pricing" className="mb-10 scroll-mt-40 md:mb-12 xl:mb-14">
         <FabricateSectionHeading
           title="Pricing at a glance"
           description="Artists see setup, machine time, material, and labor before we print."
@@ -199,7 +206,13 @@ export default function FabricateLandingPage() {
                 const Icon = RATE_ICONS[card.iconKey]
                 const color = getFabricationColor(card.colorTokenId)
                 return (
-                  <tr key={card.id} className="border-b border-[var(--cdc-border)]">
+                  <tr
+                    key={card.id}
+                    className={cn(
+                      'border-b border-l-4 border-[var(--cdc-border)] transition-colors duration-200 hover:bg-neutral-50 dark:hover:bg-white/5',
+                      color.border
+                    )}
+                  >
                     <td className="px-3 py-3 pr-3 font-medium text-neutral-900 dark:text-neutral-100 sm:px-4">
                       <span className="inline-flex items-center gap-2">
                         <span
@@ -242,7 +255,7 @@ export default function FabricateLandingPage() {
         </Link>
       </section>
 
-      <section id="finishes" className="mb-10 scroll-mt-24 md:mb-12 xl:mb-14">
+      <section id="finishes" className="mb-10 scroll-mt-40 md:mb-12 xl:mb-14">
         <FabricateSectionHeading
           title="Finish levels"
           description="Levels 0–2 start in-house. Levels 3–4 are custom quote until finishing capacity grows."
@@ -255,12 +268,23 @@ export default function FabricateLandingPage() {
             return (
               <li
                 key={f.id}
-                className={cn('rounded-xl border px-4 py-3 text-sm', color.border, color.surface)}
+                className={cn(
+                  'group relative overflow-hidden rounded-xl border px-4 py-3 text-sm transition duration-300 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md',
+                  color.border,
+                  color.surface
+                )}
               >
-                <span className={cn('font-medium', color.heading)}>
+                <div
+                  aria-hidden
+                  className={cn(
+                    'pointer-events-none absolute inset-0 bg-gradient-to-br opacity-0 transition duration-300 group-hover:opacity-100',
+                    color.gradient
+                  )}
+                />
+                <span className={cn('relative font-medium', color.heading)}>
                   L{f.level} — {f.label}
                 </span>
-                <span className="mt-1 block text-neutral-600 dark:text-neutral-400">
+                <span className="relative mt-1 block text-neutral-600 dark:text-neutral-400">
                   {f.summary}
                 </span>
               </li>
@@ -277,7 +301,7 @@ export default function FabricateLandingPage() {
 
       <section
         id="access"
-        className="mb-10 grid min-w-0 scroll-mt-24 gap-5 md:mb-12 md:grid-cols-2 md:items-center xl:mb-14"
+        className="mb-10 grid min-w-0 scroll-mt-40 gap-5 md:mb-12 md:grid-cols-2 md:items-center xl:mb-14"
       >
         <div>
           <FabricateSectionHeading
@@ -312,37 +336,37 @@ export default function FabricateLandingPage() {
 
       <FabricationFlywheel className="mb-10 md:mb-12" />
 
-      <section id="faq" className="mb-4 scroll-mt-24">
+      <section id="faq" className="mb-4 scroll-mt-40">
         <FabricateSectionHeading
           title="FAQ"
           Icon={HelpCircle}
           colorTokenId="sky"
         />
-        <dl className="mt-2 space-y-4 text-sm md:columns-2 md:gap-8 md:space-y-0 md:[&>div]:mb-4 xl:columns-3">
-          <div>
-            <dt className="font-medium text-neutral-900 dark:text-neutral-100">
-              Can I set my own price?
-            </dt>
-            <dd className="mt-1 text-neutral-600 dark:text-neutral-400">
-              No. Staff send a transparent estimate after review. You approve before we print.
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-neutral-900 dark:text-neutral-100">
-              Does the workshop certify me to run machines alone?
-            </dt>
-            <dd className="mt-1 text-neutral-600 dark:text-neutral-400">
-              No. Workshops prepare you for supervised appointments and Artist Access pathways.
-            </dd>
-          </div>
-          <div>
-            <dt className="font-medium text-neutral-900 dark:text-neutral-100">
-              Who pays for machine failures?
-            </dt>
-            <dd className="mt-1 text-neutral-600 dark:text-neutral-400">
-              DCC machine failures are on us. Risky artist files are flagged before printing.
-            </dd>
-          </div>
+        <dl className="mt-2 grid gap-3 text-sm md:grid-cols-2 xl:grid-cols-3">
+          {(
+            [
+              [
+                'Can I set my own price?',
+                'No. Staff send a transparent estimate after review. You approve before we print.',
+              ],
+              [
+                'Does the workshop certify me to run machines alone?',
+                'No. Workshops prepare you for supervised appointments and Artist Access pathways.',
+              ],
+              [
+                'Who pays for machine failures?',
+                'DCC machine failures are on us. Risky artist files are flagged before printing.',
+              ],
+            ] as const
+          ).map(([question, answer]) => (
+            <div
+              key={question}
+              className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-cyan-50 p-4 transition duration-300 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md dark:border-sky-800 dark:from-sky-950 dark:via-neutral-950 dark:to-cyan-950"
+            >
+              <dt className="font-medium text-sky-950 dark:text-sky-100">{question}</dt>
+              <dd className="mt-1 text-neutral-700 dark:text-neutral-300">{answer}</dd>
+            </div>
+          ))}
         </dl>
       </section>
     </FabricateChrome>

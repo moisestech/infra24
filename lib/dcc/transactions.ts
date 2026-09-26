@@ -8,6 +8,8 @@ export type DccTransaction = {
   amount: number
   type?: string
   date?: string
+  direction?: string
+  paymentStatus?: string
   notes?: string
 }
 
@@ -17,12 +19,16 @@ function mapTx(rec: AirtableRecord): DccTransaction {
   return {
     id: rec.id,
     name:
-      typeof rec.fields[F.name] === 'string'
-        ? (rec.fields[F.name] as string)
-        : '(tx)',
+      typeof rec.fields['Transaction'] === 'string'
+        ? (rec.fields['Transaction'] as string)
+        : typeof rec.fields[F.name] === 'string'
+          ? (rec.fields[F.name] as string)
+          : '(tx)',
     amount,
     type: typeof rec.fields[F.type] === 'string' ? (rec.fields[F.type] as string) : undefined,
     date: typeof rec.fields[F.date] === 'string' ? (rec.fields[F.date] as string) : undefined,
+    direction: typeof rec.fields['Direction'] === 'string' ? (rec.fields['Direction'] as string) : undefined,
+    paymentStatus: typeof rec.fields['Status'] === 'string' ? (rec.fields['Status'] as string) : undefined,
     notes:
       typeof rec.fields[F.notes] === 'string' ? (rec.fields[F.notes] as string) : undefined,
   }

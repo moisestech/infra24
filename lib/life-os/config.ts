@@ -26,7 +26,9 @@ export function getLifeOsConnection(): LifeOsConnection | null {
   const apiKey =
     readEnv('AIRTABLE_LIFE_OS_API_KEY') || readEnv('AIRTABLE_API_KEY')
   const baseId =
-    readEnv('AIRTABLE_LIFE_OS_BASE_ID') || LIFE_OS_BASE_ID_DEFAULT
+    readEnv('AIRTABLE_LIFE_OS_BASE_ID') ||
+    readEnv('AIRTABLE_BASE_ID_LIFE_OS') ||
+    LIFE_OS_BASE_ID_DEFAULT
   const tasksTableId = readEnv('AIRTABLE_LIFE_OS_TABLE_TASKS')
 
   if (

@@ -35,7 +35,7 @@ function mapMachine(rec: AirtableRecord): DccMachine {
   const status = str(rec.fields, F.status) ?? DCC_MACHINE_STATUS.planned
   return {
     id: rec.id,
-    name: str(rec.fields, F.name) ?? '(unnamed machine)',
+    name: str(rec.fields, 'Machine Name') ?? str(rec.fields, F.name) ?? '(unnamed machine)',
     type: str(rec.fields, F.type),
     status,
     publicStatus: publicMachineStatusLabel(status),

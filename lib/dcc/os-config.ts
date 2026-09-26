@@ -7,6 +7,22 @@ import { isAirtableConnectionConfigured } from '@/lib/airtable/client'
 
 export const DCC_OS_BASE_ID_DEFAULT = 'appWoYBRdklcz2RJH'
 
+/** Live DCC CRM the current PAT can read. Column names differ from the older OS base. */
+export const DCC_CRM_LIVE_BASE_ID = 'appWj8TFiOqUyQUfM'
+
+export const DCC_CRM_LIVE_TABLES = {
+  machines: 'tblrkNPRc7McsTZGS',
+  services: 'tblN3uI1BuKXPgPtz',
+  jobs: 'tbl91E7hFdhjwaj72',
+  bookings: '',
+  transactions: 'tblr0d9yvDU9fPY6h',
+  credits: 'tbl10CS56DrZnQyqg',
+  mbos: '',
+  changeLog: '',
+  people: 'tblXiOeZ9VerQrXji',
+  programming: '',
+} as const
+
 export const DCC_OS_TABLE_DEFAULTS = {
   machines: 'tblVtaUYHwgf1rRR8',
   services: 'tblP0tlOOVQE2gQBG',
@@ -60,60 +76,34 @@ export function getDccOsConnection(): DccOsConnection | null {
   const baseId =
     env('AIRTABLE_DCC_OS_BASE_ID') ||
     env('AIRTABLE_DCC_CRM_BASE_ID') ||
+    env('AIRTABLE_BASE_ID_DCC_CRM') ||
     DCC_OS_BASE_ID_DEFAULT
 
   if (!apiKey?.trim() || !baseId?.trim()) return null
 
+  const defaults = baseId === DCC_CRM_LIVE_BASE_ID ? DCC_CRM_LIVE_TABLES : DCC_OS_TABLE_DEFAULTS
   const tables: DccOsTables = {
-    machines: tableId(
-      'AIRTABLE_DCC_OS_TABLE_MACHINES',
-      undefined,
-      DCC_OS_TABLE_DEFAULTS.machines
-    ),
-    services: tableId(
-      'AIRTABLE_DCC_OS_TABLE_SERVICES',
-      undefined,
-      DCC_OS_TABLE_DEFAULTS.services
-    ),
-    jobs: tableId(
-      'AIRTABLE_DCC_OS_TABLE_JOBS',
-      undefined,
-      DCC_OS_TABLE_DEFAULTS.jobs
-    ),
-    bookings: tableId(
-      'AIRTABLE_DCC_OS_TABLE_BOOKINGS',
-      undefined,
-      DCC_OS_TABLE_DEFAULTS.bookings
-    ),
+    machines: tableId('AIRTABLE_DCC_OS_TABLE_MACHINES', undefined, defaults.machines),
+    services: tableId('AIRTABLE_DCC_OS_TABLE_SERVICES', undefined, defaults.services),
+    jobs: tableId('AIRTABLE_DCC_OS_TABLE_JOBS', undefined, defaults.jobs),
+    bookings: tableId('AIRTABLE_DCC_OS_TABLE_BOOKINGS', undefined, defaults.bookings),
     transactions: tableId(
       'AIRTABLE_DCC_OS_TABLE_TRANSACTIONS',
       undefined,
-      DCC_OS_TABLE_DEFAULTS.transactions
+      defaults.transactions
     ),
-    credits: tableId(
-      'AIRTABLE_DCC_OS_TABLE_CREDITS',
-      undefined,
-      DCC_OS_TABLE_DEFAULTS.credits
-    ),
-    mbos: tableId(
-      'AIRTABLE_DCC_OS_TABLE_MBOS',
-      undefined,
-      DCC_OS_TABLE_DEFAULTS.mbos
-    ),
-    changeLog: tableId(
-      'AIRTABLE_DCC_OS_TABLE_CHANGE_LOG',
-      undefined,
-      DCC_OS_TABLE_DEFAULTS.changeLog
-    ),
+    credits: tableId('AIRTABLE_DCC_OS_TABLE_CREDITS', undefined, defaults.credits),
+    mbos: tableId('AIRTABLE_DCC_OS_TABLE_MBOS', undefined, defaults.mbos),
+    changeLog: tableId('AIRTABLE_DCC_OS_TABLE_CHANGE_LOG', undefined, defaults.changeLog),
     people: tableId(
       'AIRTABLE_DCC_OS_TABLE_PEOPLE',
       'AIRTABLE_DCC_CRM_TABLE_PEOPLE',
-      DCC_OS_TABLE_DEFAULTS.people
+      defaults.people
     ),
     programming: tableId(
       'AIRTABLE_DCC_OS_TABLE_PROGRAMMING',
-      'AIRTABLE_OOLITE_PROGRAMMING_TABLE_ID',
-      DCC_OS_TABLE_DEFAULTS.programming
+      baseId === DCC_CRM_LIVE_BASE_ID ? undefined : 'AIRTABLE_OOLITE_PROGRAMMING_TABLE_ID',
+      defaults.programming
     ),
   }
 
