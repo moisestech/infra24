@@ -209,6 +209,7 @@ Append; do not rewrite history.
 
 | Date | What changed | Scoreboard effect |
 |---|---|---|
+| 2026-09-26 | Fabrication OS schema proposed in [`FABRICATION-OS.md`](./FABRICATION-OS.md) and [`FABRICATION-OS-SCHEMA.md`](./FABRICATION-OS-SCHEMA.md). Domain types in `lib/dcc/fabrication-os`. No Airtable writes, no queue UI, no Stripe, no QuickBooks. | Checklist #17 still **P**; #19, #20, #21 still **N**; #36 still **P**. Schema is proposed, not built. |
 | 2026-09-21 | DCC 3D School curriculum hub at `/workshop/3d-school` (seven mental-model records, labeled asset placeholders, inquiry CTAs). No dates, instructors, or checkout. | Checklist #7 still **B** with hub evidence. |
 | 2026-09-21 | Heather pricing layer: five-line $625 client breakdown, resin reference (~$42.47, client-supplied), staff `/fabricate/internal/heather-deitch` economics ($15/$35 machine/operator, $125/hr founder warning). No Stripe. | Checklist #12 still **B**; #14 **P**; payments still **N**. |
 | 2026-09-21 | Fabricate Phase 1 studio surfaces: `/fabricate/services/*`, `/fabricate/start`, password-gated Heather + Carol proposals. No Stripe. See [`FABRICATE.md`](./FABRICATE.md). | Checklist #12 still **B**; #14 **P** with private proposal evidence; #15/#16 still **N**. |
