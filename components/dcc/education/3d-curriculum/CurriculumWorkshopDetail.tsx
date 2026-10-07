@@ -22,6 +22,14 @@ import { cn } from '@/lib/utils'
 import { CurriculumMedia } from '@/components/dcc/education/3d-curriculum/CurriculumMedia'
 import { WorkflowStrip } from '@/components/dcc/education/3d-curriculum/WorkflowStrip'
 
+function softwareSiteLabel(href: string) {
+  try {
+    return new URL(href).hostname.replace(/^www\./, '')
+  } catch {
+    return href
+  }
+}
+
 function MetaChip({
   label,
   value,
@@ -299,6 +307,19 @@ export function CurriculumWorkshopDetail({
             </dt>
             <dd className="mt-2 text-sm text-neutral-700 dark:text-neutral-300">
               {workshop.softwareRequirements.join(', ') || 'To be confirmed'}
+              {workshop.softwareHref ? (
+                <>
+                  {' '}
+                  <a
+                    href={workshop.softwareHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-[var(--cdc-teal)] underline-offset-4 hover:underline"
+                  >
+                    {softwareSiteLabel(workshop.softwareHref)}
+                  </a>
+                </>
+              ) : null}
             </dd>
           </div>
           <div>

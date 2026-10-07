@@ -159,9 +159,11 @@ export default function CarolHaggiagProposalPage() {
         title="Material directions"
       >
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Resin is one candidate prototype material — not the predetermined solution.
-          The first fabrication method will be chosen based on low weight, texture
-          fidelity, structural durability, wearability, and practical prototyping cost.
+          Carol asked for two transparent colorways: fuchsia and high-visibility
+          green. Both are tinted clear resin. The wearable study is a thin hollow
+          shell with a drain, so the print is not a solid copy of the brass
+          volume. Gray and black resin, and an FDM silhouette, stay optional
+          checks — they are not the colors she asked for.
         </p>
         <div className="mt-4">
           <MaterialDirectionsList items={CAROL_MATERIAL_DIRECTIONS} />
@@ -179,8 +181,8 @@ export default function CarolHaggiagProposalPage() {
           <strong>down</strong>, as in the reference study below.
         </p>
         <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
-          Target scale: approximately <strong>~2.5 in / ~63.5 mm</strong> — to
-          confirm in person. The pair should be <strong>mirrored</strong>.
+          Target scale: <strong>about 2 inches</strong> — exact length still
+          coming. The pair should be <strong>mirrored</strong>.
         </p>
         {media('C_WEARABILITY')}
       </ProposalSection>
@@ -253,12 +255,12 @@ export default function CarolHaggiagProposalPage() {
         title="Prototype environment"
       >
         <p>
-          Goal: produce one focused lightweight prototype using appropriate
-          equipment at Bakehouse — method and material chosen after object review.
+          Goal: one thin hollow resin shell at Bakehouse, then the fuchsia and
+          high-visibility green transparent colorways.
         </p>
         <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
-          Resin workflow below is illustrative of one possible path — not a
-          predetermined production line.
+          The resin workflow below shows the print path for those transparent
+          studies. FDM is only a silhouette check.
         </p>
         {machine ? <MachineNote machine={machine} /> : null}
         {media('C_RESIN_WORKFLOW')}

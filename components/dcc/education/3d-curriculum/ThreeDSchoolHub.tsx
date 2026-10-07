@@ -61,7 +61,7 @@ export function ThreeDSchoolHub() {
         </div>
       </section>
 
-      <div className="mt-8">
+      <div className="mt-16 sm:mt-20">
         <ThreeDSchoolSection id="curriculum-map">
           <CurriculumMap embedded />
           <div className="mt-8">
@@ -70,13 +70,13 @@ export function ThreeDSchoolHub() {
         </ThreeDSchoolSection>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-16 sm:mt-20">
         <ThreeDSchoolSection id="intent">
           <IntentSelector embedded />
         </ThreeDSchoolSection>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-16 sm:mt-20">
         <ThreeDSchoolSection id="curriculum">
           <p className="max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 sm:text-base">
             Three published curricula. Register interest — session dates are not listed until they are scheduled.
@@ -91,7 +91,7 @@ export function ThreeDSchoolHub() {
         </ThreeDSchoolSection>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-16 sm:mt-20">
         <ThreeDSchoolSection id="upcoming">
           <p className="max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 sm:text-base">
             These records exist so the school can grow without a redesign. They are not confirmed offerings.
@@ -106,19 +106,19 @@ export function ThreeDSchoolHub() {
         </ThreeDSchoolSection>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-16 sm:mt-20">
         <ThreeDSchoolSection id="path">
           <LearningPath embedded />
         </ThreeDSchoolSection>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-16 sm:mt-20">
         <ThreeDSchoolSection id="flywheel">
           <CurriculumFlywheel embedded />
         </ThreeDSchoolSection>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-16 sm:mt-20">
         <ThreeDSchoolSection id="fabricate">
           <p className="max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
             If you already have geometry — or an idea that needs modeling — DCC fabrication is the service path that sits next to this school.

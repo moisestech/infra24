@@ -7,13 +7,16 @@ import {
   THREE_D_SCHOOL_INTENT_HEADING,
   THREE_D_SCHOOL_STATUS_LABEL,
   curriculumWorkshopPath,
+  getCurriculumAsset,
   getCurriculumWorkshopById,
+  toolLogosForSoftware,
 } from '@/lib/dcc/education/3d-curriculum'
 import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
 import {
   curriculumCardInteractive,
   curriculumIconBadge,
 } from '@/components/dcc/education/3d-curriculum/interactive'
+import { ToolMarks } from '@/components/dcc/education/3d-curriculum/ToolMark'
 
 export function IntentSelector({
   className,
@@ -29,39 +32,56 @@ export function IntentSelector({
         if (!workshop) return null
         const color = getFabricationColor(workshop.colorTokenId)
         const Icon = CURRICULUM_ICONS[workshop.mentalModel]
+        const logos = toolLogosForSoftware(workshop.software)
+        const still = getCurriculumAsset(workshop.heroAssetId)
         return (
           <li key={intent.id}>
             <Link
               href={curriculumWorkshopPath(workshop.slug)}
               className={cn(
-                'group flex h-full min-h-[12rem] flex-col rounded-2xl border p-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
+                'group flex h-full flex-col overflow-hidden rounded-2xl border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
                 curriculumCardInteractive(color)
               )}
             >
-              <span className={curriculumIconBadge(color)}>
-                <Icon aria-hidden className="h-6 w-6" />
-              </span>
-              <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
-                {THREE_D_SCHOOL_STATUS_LABEL[workshop.status]}
-              </p>
-              <h3 className="mt-2 text-lg font-semibold text-neutral-900 dark:text-neutral-50">
-                {intent.label}
-              </h3>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-                {intent.summary}
-              </p>
-              <p
-                className={cn(
-                  'mt-4 inline-flex items-center gap-2 text-sm font-medium',
-                  color.heading
+              {still.src ? (
+                <span className="relative aspect-[16/10] w-full overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+                  <img
+                    src={still.src}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover transition duration-500 motion-safe:group-hover:scale-105"
+                  />
+                </span>
+              ) : null}
+              <span className="flex min-w-0 flex-1 flex-col p-5">
+                {logos.length ? (
+                  <ToolMarks software={workshop.software} markClassName="h-11 w-11" />
+                ) : (
+                  <span className={curriculumIconBadge(color)}>
+                    <Icon aria-hidden className="h-6 w-6" />
+                  </span>
                 )}
-              >
-                Recommended: {workshop.title}
-                <ArrowRight
-                  aria-hidden
-                  className="h-5 w-5 transition-transform duration-300 motion-safe:group-hover:translate-x-1"
-                />
-              </p>
+                <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
+                  {THREE_D_SCHOOL_STATUS_LABEL[workshop.status]}
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-neutral-900 dark:text-neutral-50">
+                  {intent.label}
+                </h3>
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                  {intent.summary}
+                </p>
+                <p
+                  className={cn(
+                    'mt-4 inline-flex items-center gap-2 text-sm font-medium',
+                    color.heading
+                  )}
+                >
+                  Recommended: {workshop.title}
+                  <ArrowRight
+                    aria-hidden
+                    className="h-5 w-5 transition-transform duration-300 motion-safe:group-hover:translate-x-1"
+                  />
+                </p>
+              </span>
             </Link>
           </li>
         )

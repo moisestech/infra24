@@ -343,7 +343,9 @@ describe('fabricate studio system', () => {
     expect(JSON.stringify(CAROL_PROPOSAL)).not.toContain('Chicken Fingers')
     expect(JSON.stringify(CAROL_PROPOSAL)).not.toMatch(/Carol's original|Carol designed/i)
     expect(JSON.stringify(CAROL_PROPOSAL)).toMatch(/mirrored/i)
-    expect(JSON.stringify(CAROL_PROPOSAL)).toMatch(/2\.5 in/)
+    expect(JSON.stringify(CAROL_PROPOSAL)).toMatch(/about 2 inches/i)
+    expect(JSON.stringify(CAROL_PROPOSAL)).toMatch(/fuchsia/i)
+    expect(JSON.stringify(CAROL_PROPOSAL)).not.toMatch(/2\.5 in/)
   })
 
   it('refuses CAD and path traversal for private proposal media', () => {

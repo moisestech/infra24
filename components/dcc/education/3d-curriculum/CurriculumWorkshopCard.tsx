@@ -6,6 +6,7 @@ import {
   THREE_D_SCHOOL_LEVEL_LABEL,
   THREE_D_SCHOOL_STATUS_LABEL,
   curriculumWorkshopPath,
+  toolLogosForSoftware,
   type ThreeDCurriculumWorkshop,
 } from '@/lib/dcc/education/3d-curriculum'
 import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
@@ -13,6 +14,7 @@ import {
   curriculumCardInteractive,
   curriculumIconBadge,
 } from '@/components/dcc/education/3d-curriculum/interactive'
+import { ToolMarks } from '@/components/dcc/education/3d-curriculum/ToolMark'
 
 export function CurriculumWorkshopCard({
   workshop,
@@ -23,6 +25,7 @@ export function CurriculumWorkshopCard({
 }) {
   const color = getFabricationColor(workshop.colorTokenId)
   const Icon = CURRICULUM_ICONS[workshop.mentalModel]
+  const logos = toolLogosForSoftware(workshop.software)
 
   return (
     <article
@@ -32,9 +35,13 @@ export function CurriculumWorkshopCard({
         className
       )}
     >
-      <span className={curriculumIconBadge(color)}>
-        <Icon aria-hidden className="h-6 w-6" />
-      </span>
+      {logos.length ? (
+        <ToolMarks software={workshop.software} markClassName="h-12 w-12 rounded-2xl" />
+      ) : (
+        <span className={curriculumIconBadge(color)}>
+          <Icon aria-hidden className="h-6 w-6" />
+        </span>
+      )}
       <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
         {String(workshop.order).padStart(2, '0')} · {THREE_D_SCHOOL_STATUS_LABEL[workshop.status]} ·{' '}
         {THREE_D_SCHOOL_LEVEL_LABEL[workshop.level]}

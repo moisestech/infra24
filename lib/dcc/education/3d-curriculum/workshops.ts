@@ -272,6 +272,7 @@ const PLASTICITY: ThreeDCurriculumWorkshop = {
   ],
   equipment: ['Computer with Plasticity', 'FDM or resin printer'],
   softwareRequirements: ['Plasticity'],
+  softwareHref: 'https://www.plasticity.xyz/',
   participantFiles: ['Starter solid', 'STEP export notes'],
   curriculumSessions: [
     {

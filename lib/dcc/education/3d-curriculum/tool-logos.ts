@@ -37,3 +37,15 @@ export function toolLogoForName(name: string): (typeof THREE_D_TOOL_LOGOS)[Three
 export function toolLogoForMapNode(nodeId: string) {
   return toolLogoForName(nodeId)
 }
+
+export function toolLogosForSoftware(software: readonly string[]) {
+  const seen = new Set<string>()
+  const logos: (typeof THREE_D_TOOL_LOGOS)[ThreeDToolLogoId][] = []
+  for (const name of software) {
+    const logo = toolLogoForName(name)
+    if (!logo || seen.has(logo.src)) continue
+    seen.add(logo.src)
+    logos.push(logo)
+  }
+  return logos
+}

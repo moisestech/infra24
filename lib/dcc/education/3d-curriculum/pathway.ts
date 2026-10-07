@@ -10,6 +10,7 @@ export const THREE_D_LEARNING_PATH: ThreeDLearningPathStage[] = [
     title: 'From File to Physical Object',
     body: 'The common foundation. How digital objects become physical — before anyone asks you to learn a modeling program.',
     workshopIds: ['from-file-to-physical-object'],
+    imageAssetId: '3D-FOUNDATION-HERO-001',
   },
   {
     id: 'direction',
@@ -21,6 +22,7 @@ export const THREE_D_LEARNING_PATH: ThreeDLearningPathStage[] = [
       'plasticity-for-artists',
       'rhino-for-artists',
     ],
+    imageAssetId: '3D-BLENDER-HERO-001',
   },
   {
     id: 'specialize',
@@ -31,6 +33,7 @@ export const THREE_D_LEARNING_PATH: ThreeDLearningPathStage[] = [
       'grasshopper-computational-objects',
       'parametric-cad-functional-objects',
     ],
+    imageAssetId: '3D-GRASSHOPPER-HERO-001',
   },
   {
     id: 'fabrication',
@@ -38,6 +41,7 @@ export const THREE_D_LEARNING_PATH: ThreeDLearningPathStage[] = [
     title: 'Fix My 3D File, print preparation, machine operation',
     body: 'Diagnosis, slicing, and the studio floor — the shared exit ramp of every modeling path.',
     workshopIds: ['fix-my-3d-file', 'from-file-to-physical-object'],
+    imageAssetId: '3D-FIX-HERO-001',
   },
   {
     id: 'operator',
@@ -49,14 +53,54 @@ export const THREE_D_LEARNING_PATH: ThreeDLearningPathStage[] = [
 ]
 
 export const THREE_D_FLYWHEEL_STEPS: ThreeDFlywheelStep[] = [
-  { id: 'workshop', label: 'Workshop', detail: 'Learn a way of making' },
-  { id: 'practice', label: 'Practice', detail: 'Make your own file' },
-  { id: 'supervised', label: 'Supervised project', detail: 'Work with the studio' },
-  { id: 'experience', label: 'Fabrication experience', detail: 'Print, finish, check' },
-  { id: 'capacity', label: 'Operator capacity', detail: 'Help someone else' },
-  { id: 'client', label: 'Client project', detail: 'Paid DCC work, when it exists' },
-  { id: 'documentation', label: 'Documentation', detail: 'Case study, reusable example' },
-  { id: 'next', label: 'New workshop', detail: 'The next cohort' },
+  {
+    id: 'workshop',
+    label: 'Workshop',
+    detail: 'Learn a way of making',
+    imageAssetId: '3D-BLENDER-HERO-001',
+  },
+  {
+    id: 'practice',
+    label: 'Practice',
+    detail: 'Make your own file',
+    imageAssetId: '3D-PLASTICITY-STUDIO-OBJECTS-001',
+  },
+  {
+    id: 'supervised',
+    label: 'Supervised project',
+    detail: 'Work with the studio',
+    imageAssetId: '3D-FOUNDATION-HERO-001',
+  },
+  {
+    id: 'experience',
+    label: 'Fabrication experience',
+    detail: 'Print, finish, check',
+    imageAssetId: '3D-PIPELINE-001',
+  },
+  {
+    id: 'capacity',
+    label: 'Operator capacity',
+    detail: 'Help someone else',
+    imageAssetId: '3D-FIX-HERO-001',
+  },
+  {
+    id: 'client',
+    label: 'Client project',
+    detail: 'Paid DCC work, when it exists',
+    imageAssetId: '3D-PLASTICITY-HERO-001',
+  },
+  {
+    id: 'documentation',
+    label: 'Documentation',
+    detail: 'Case study, reusable example',
+    imageAssetId: '3D-FOUNDATION-FORMATS-001',
+  },
+  {
+    id: 'next',
+    label: 'New workshop',
+    detail: 'The next cohort',
+    imageAssetId: '3D-HERO-001',
+  },
 ]
 
 export const THREE_D_FLYWHEEL_LEAD =

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function ThreeDSchoolPage() {
   return (
-    <ThreeDSchoolChrome current="overview">
+    <ThreeDSchoolChrome current="overview" organizedOpen={false}>
       <ThreeDSchoolHub />
     </ThreeDSchoolChrome>
   )

@@ -26,7 +26,7 @@ export const CAROL_QUOTE_LAYERS: QuoteLineItem[] = [
       'Build or clean study geometry, confirm mirrored pair logic, and prepare for a focused prototype run.',
     clientReceives: [
       'Mirrored study geometry at agreed scale',
-      'Scale confirmation against ~2.5 in target (once confirmed)',
+      'Scale confirmation against about 2 inches — exact length still coming',
       'Study-model prep — not final production CAD',
     ],
     category: 'preflight',
@@ -39,11 +39,11 @@ export const CAROL_QUOTE_LAYERS: QuoteLineItem[] = [
     label: 'Lightweight prototype fabrication',
     shortLabel: 'FABRICATION',
     description:
-      'One focused prototype using the best candidate material for weight, texture fidelity, and practical cost.',
+      'One thin hollow resin shell, then transparent fuchsia and high-visibility green.',
     clientReceives: [
-      'One lightweight prototype form test',
+      'One hollow resin shell',
+      'Fuchsia and high-visibility green transparent colorways',
       'Machine + post-processing to review checkpoint',
-      'Material choice documented — resin only if it is the best candidate',
     ],
     category: 'fabrication',
     clientVisible: true,

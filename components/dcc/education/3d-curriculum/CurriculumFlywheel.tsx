@@ -1,8 +1,11 @@
-import { ArrowRight } from 'lucide-react'
+'use client'
+
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import {
   THREE_D_FLYWHEEL_LEAD,
   THREE_D_FLYWHEEL_STEPS,
+  getCurriculumAsset,
 } from '@/lib/dcc/education/3d-curriculum'
 import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
 import { curriculumCardInteractive } from '@/components/dcc/education/3d-curriculum/interactive'
@@ -25,43 +28,71 @@ export function CurriculumFlywheel({
   className?: string
   embedded?: boolean
 }) {
+  const [activeId, setActiveId] = useState(THREE_D_FLYWHEEL_STEPS[0]?.id)
+  const active =
+    THREE_D_FLYWHEEL_STEPS.find((step) => step.id === activeId) ??
+    THREE_D_FLYWHEEL_STEPS[0]
+  const still = active ? getCurriculumAsset(active.imageAssetId) : undefined
+
   const body = (
-    <ol
-      className={cn(
-        !embedded && 'mt-8',
-        'flex flex-col gap-3 md:flex-row md:flex-wrap md:items-stretch'
-      )}
-    >
-      {THREE_D_FLYWHEEL_STEPS.map((step, i) => {
-        const color = getFabricationColor(FLYWHEEL_COLORS[i] ?? 'slate')
-        return (
-          <li key={step.id} className="flex min-w-0 flex-1 items-stretch gap-3">
-            <div
-              className={cn(
-                'flex min-h-20 flex-1 flex-col justify-center rounded-xl border px-3 py-3',
-                curriculumCardInteractive(color)
-              )}
-            >
-              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-neutral-500">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">
-                {step.label}
-              </span>
-              <span className="text-xs text-neutral-600 dark:text-neutral-400">
-                {step.detail}
-              </span>
-            </div>
-            {i < THREE_D_FLYWHEEL_STEPS.length - 1 ? (
-              <ArrowRight
-                aria-hidden
-                className="mt-7 hidden h-5 w-5 shrink-0 text-neutral-400 md:block"
-              />
-            ) : null}
-          </li>
-        )
-      })}
-    </ol>
+    <div className={cn(!embedded && 'mt-8', 'grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,22rem)]')}>
+      {still?.src && active ? (
+        <figure className="overflow-hidden rounded-2xl border border-[var(--cdc-border)] bg-neutral-100 lg:sticky lg:top-40 lg:col-start-2 lg:row-start-1 dark:bg-neutral-900">
+          <div className="relative aspect-[4/3]">
+            <img
+              key={active.id}
+              src={still.src}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </div>
+          <figcaption className="px-4 py-3">
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
+              {String(
+                THREE_D_FLYWHEEL_STEPS.findIndex((step) => step.id === active.id) + 1
+              ).padStart(2, '0')}
+            </p>
+            <p className="mt-1 text-sm font-semibold text-neutral-900 dark:text-neutral-50">
+              {active.label}
+            </p>
+            <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">{active.detail}</p>
+          </figcaption>
+        </figure>
+      ) : null}
+      <ol className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-start-1 lg:row-start-1">
+        {THREE_D_FLYWHEEL_STEPS.map((step, i) => {
+          const color = getFabricationColor(FLYWHEEL_COLORS[i] ?? 'slate')
+          const selected = step.id === active?.id
+          return (
+            <li key={step.id} className="min-w-0">
+              <button
+                type="button"
+                aria-pressed={selected}
+                onMouseEnter={() => setActiveId(step.id)}
+                onFocus={() => setActiveId(step.id)}
+                onClick={() => setActiveId(step.id)}
+                className={cn(
+                  'flex h-full min-h-28 w-full flex-col justify-center rounded-xl border px-4 py-4 text-left',
+                  curriculumCardInteractive(color),
+                  selected &&
+                    'ring-2 ring-teal-400/80 ring-offset-2 ring-offset-white dark:ring-offset-neutral-950'
+                )}
+              >
+                <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-neutral-500">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span className="mt-1 text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                  {step.label}
+                </span>
+                <span className="mt-1 text-xs text-neutral-600 dark:text-neutral-400">
+                  {step.detail}
+                </span>
+              </button>
+            </li>
+          )
+        })}
+      </ol>
+    </div>
   )
 
   if (embedded) return body

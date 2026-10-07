@@ -14,10 +14,7 @@ import {
   type ThreeDCurriculumMapNode,
 } from '@/lib/dcc/education/3d-curriculum'
 import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
-import {
-  curriculumCardInteractive,
-  curriculumIconBadge,
-} from '@/components/dcc/education/3d-curriculum/interactive'
+import { curriculumCardInteractive } from '@/components/dcc/education/3d-curriculum/interactive'
 
 function MapNode({
   node,
@@ -47,34 +44,49 @@ function MapNode({
   const inner = (
     <>
       {logo ? (
-        <span className="mb-1 flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-white">
-          <img src={logo.src} alt="" className="h-full w-full object-contain p-1.5" />
+        <span
+          className={cn(
+            'flex shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white',
+            emphasized ? 'h-20 w-20' : 'h-28 w-28'
+          )}
+        >
+          <img src={logo.src} alt="" className="h-full w-full object-contain p-2" />
         </span>
       ) : (
-        <span className={curriculumIconBadge(color)}>
-          <Icon aria-hidden className="h-6 w-6" />
+        <span
+          className={cn(
+            'inline-flex shrink-0 items-center justify-center rounded-2xl shadow-sm',
+            emphasized ? 'h-20 w-20' : 'h-24 w-24',
+            color.icon
+          )}
+        >
+          <Icon aria-hidden className={emphasized ? 'h-10 w-10' : 'h-12 w-12'} />
         </span>
       )}
-      <span className="mt-2 block text-sm font-semibold text-neutral-900 dark:text-neutral-50">
-        {node.label}
+      <span className={cn('min-w-0', emphasized ? 'text-left' : 'text-center')}>
+        <span className={cn('block text-lg font-semibold leading-snug text-neutral-900 dark:text-neutral-50 sm:text-xl', !emphasized && 'mt-3')}>
+          {node.label}
+        </span>
+        {node.sublabel ? (
+          <span className="mt-1 block text-sm leading-relaxed text-neutral-700 dark:text-neutral-300 sm:text-base">
+            {node.sublabel}
+          </span>
+        ) : null}
+        {workshop ? (
+          <span className="mt-2 block text-xs font-medium uppercase tracking-[0.14em] text-neutral-600 dark:text-neutral-400">
+            {workshop.status === 'pilot' ? 'Open the workshop' : 'Coming / in development'}
+          </span>
+        ) : null}
       </span>
-      {node.sublabel ? (
-        <span className="mt-0.5 block text-xs text-neutral-600 dark:text-neutral-400">
-          {node.sublabel}
-        </span>
-      ) : null}
-      {workshop ? (
-        <span className="mt-2 block font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
-          {workshop.status === 'pilot' ? 'Open the workshop' : 'Coming / in development'}
-        </span>
-      ) : null}
     </>
   )
 
   const className = cn(
-    'group flex min-h-[8.5rem] flex-col items-center justify-center rounded-2xl border px-3 py-4 text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
+    'group flex rounded-2xl border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
     curriculumCardInteractive(color),
-    emphasized && 'min-h-[6.25rem]'
+    emphasized
+      ? 'min-h-28 flex-row items-center gap-5 px-5 py-4 text-left'
+      : 'min-h-[14rem] flex-col items-center justify-center gap-1 px-4 py-6 text-center'
   )
 
   if (node.href) {

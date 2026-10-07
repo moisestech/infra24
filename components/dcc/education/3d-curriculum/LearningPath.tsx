@@ -4,11 +4,13 @@ import { cn } from '@/lib/utils'
 import {
   THREE_D_LEARNING_PATH,
   curriculumWorkshopPath,
+  getCurriculumAsset,
   getCurriculumWorkshopById,
 } from '@/lib/dcc/education/3d-curriculum'
 import { CurriculumMedia } from '@/components/dcc/education/3d-curriculum/CurriculumMedia'
 import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
 import { curriculumCardInteractive } from '@/components/dcc/education/3d-curriculum/interactive'
+import { ToolMarks } from '@/components/dcc/education/3d-curriculum/ToolMark'
 
 export function LearningPath({
   className,
@@ -23,15 +25,18 @@ export function LearningPath({
   const body = (
     <>
       <ol className={cn(!embedded && 'mt-8', 'space-y-3')}>
-        {THREE_D_LEARNING_PATH.map((stage, index) => (
+        {THREE_D_LEARNING_PATH.map((stage, index) => {
+          const still = stage.imageAssetId ? getCurriculumAsset(stage.imageAssetId) : undefined
+          return (
           <li key={stage.id}>
             <div
               className={cn(
-                'rounded-2xl border p-4 sm:p-5',
+                'flex items-stretch overflow-hidden rounded-2xl border',
                 curriculumCardInteractive(stage.future ? amber : indigo),
                 stage.future && 'border-dashed'
               )}
             >
+              <div className="min-w-0 flex-1 p-4 sm:p-5">
               <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
                 {String(index + 1).padStart(2, '0')} · {stage.kicker}
                 {stage.future ? ' · Future' : ''}
@@ -51,14 +56,28 @@ export function LearningPath({
                       <li key={id}>
                         <Link
                           href={curriculumWorkshopPath(workshop.slug)}
-                          className="inline-flex min-h-10 items-center rounded-full border border-[var(--cdc-border)] bg-white/80 px-3 py-1.5 text-xs font-medium text-neutral-800 transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
+                          className="inline-flex min-h-10 items-center gap-2 rounded-full border border-[var(--cdc-border)] bg-white/80 px-3 py-1.5 text-xs font-medium text-neutral-800 transition-all duration-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:bg-neutral-900 dark:text-neutral-100"
                         >
+                          <ToolMarks
+                            software={workshop.software}
+                            markClassName="h-6 w-6 rounded-md"
+                          />
                           {workshop.title}
                         </Link>
                       </li>
                     )
                   })}
                 </ul>
+              ) : null}
+              </div>
+              {still?.src ? (
+                <span className="relative w-20 shrink-0 self-stretch overflow-hidden bg-neutral-100 sm:w-36 dark:bg-neutral-900">
+                  <img
+                    src={still.src}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                </span>
               ) : null}
             </div>
             {index < THREE_D_LEARNING_PATH.length - 1 ? (
@@ -67,7 +86,8 @@ export function LearningPath({
               </div>
             ) : null}
           </li>
-        ))}
+          )
+        })}
       </ol>
 
       <div className="mt-8">

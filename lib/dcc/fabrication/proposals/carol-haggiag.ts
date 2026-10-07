@@ -42,7 +42,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
     serviceType: 'PREPARE_PLUS_FABRICATE',
     status: 'PROTOTYPE_SCOPING',
     prototypeGoal:
-      'Preserve texture and character while making a mirrored ~2.5-inch earring form light enough to wear comfortably.',
+      'Preserve texture and character while making a mirrored earring, about 2 inches long, light enough to wear — a thin hollow shell in transparent fuchsia and high-visibility green.',
     prototypeDesignation: 'Phase 1 · Lightweight Earring Prototype Study',
     intendedUse: 'Wearable earring prototype / jewelry study',
     clientSuppliedMaterial: true,
@@ -53,7 +53,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
     documentationRights: { ...DEFAULT_DOCUMENTATION_RIGHTS },
     ownership: { ...DEFAULT_CLIENT_OWNERSHIP },
     createdAt: '2026-09-21',
-    updatedAt: '2026-09-23',
+    updatedAt: '2026-10-01',
   },
   sections: [
     { id: 'object', label: 'The object', shortLabel: 'Object' },
@@ -116,7 +116,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
       alt: 'Concept wearability scale study with fingers pointing down.',
       badge: 'Concept study',
       caption:
-        'Conceptual scale only — fingers point down. Target ~2.5 in / ~63.5 mm to confirm in person.',
+        'Conceptual scale only — fingers point down. About 2 inches long; exact length still coming.',
       aspect: '16/9',
     },
     {
@@ -141,7 +141,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
     serviceLabel: 'Phase 1 · Lightweight Earring Prototype Study',
     amountStatus: 'pending',
     materialNote:
-      'Prototype material is chosen after object review — resin is one candidate, not a predetermined solution.',
+      'Transparent resin: fuchsia and high-visibility green, as a thin hollow shell. Exact length is still coming. Price stays pending until object review.',
     terms:
       'Scope and fixed price are confirmed after inspecting Carol’s physical brass pieces in person. No fabrication begins before Carol approves a small, clear scope and price.',
     includedAttempts:
@@ -155,15 +155,15 @@ export const CAROL_PROPOSAL: ClientProposal = {
     'Measure, weigh, and document physical reference',
     'Digital capture or preparation — method chosen at object review',
     'Mirrored study geometry at agreed scale',
-    'One focused lightweight prototype test',
-    'Weight, texture, and wearability evaluation',
+    'One thin hollow resin shell, then fuchsia and high-visibility green transparent colorways',
+    'Weight, transparency, and wear evaluation',
     'Carol review with findings record',
     'Optional scoped revision only if Prototype 1 warrants it',
   ],
   scopeExcluded: CAROL_FUTURE_SCOPE_EXCLUDED,
   requiredInputs: CAROL_CLIENT_QUESTIONS.map((q) => q.text),
   approvalNextStep:
-    'Bring the existing metal chicken-foot pieces to Studio 43 for an in-person object review. At the meeting we will inspect, measure, weigh, confirm target scale (~2.5 in), evaluate attachment orientation, and determine the simplest digital capture route. Moises will send a small fixed scope and price before any fabrication begins. This page does not collect payment.',
+    'Bring the existing metal chicken-foot pieces to Studio 43 for an in-person object review. At the meeting we will inspect, measure, weigh, record the exact length (working note: about 2 inches), evaluate attachment orientation, and determine the simplest digital capture route. Moises will send a small fixed scope and price before any fabrication begins. This page does not collect payment.',
   modules: [
     'HERO',
     'OBJECT',

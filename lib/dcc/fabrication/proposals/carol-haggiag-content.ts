@@ -3,7 +3,7 @@ export const CAROL_INTERNAL_WORKING_TITLE = 'Chicken Fingers'
 export const CAROL_STATUS_SUBLABEL = 'Source + priorities clarified'
 
 export const CAROL_PROJECT_THESIS =
-  'Can Carol’s chicken-foot form become a mirrored pair of approximately 2.5-inch earrings that retain the texture and sculptural character of the source while becoming light enough to wear comfortably?'
+  'Can Carol’s chicken-foot form become a mirrored pair of earrings, about 2 inches long, that retain the texture and sculptural character of the source while becoming light enough to wear comfortably?'
 
 export const CAROL_PROJECT_SUMMARY =
   'A focused lightweight earring prototype study — starting from Carol’s existing metal casts and an internet reference image, with the first goal of preserving texture and character while solving for weight and wearability.'
@@ -13,20 +13,19 @@ export const CAROL_TESTING_FOCUS = [
   'Texture — preserve sculptural surface character at earring scale',
   'Wearability — test real relationship to the ear and body',
   'Mirrored pair geometry',
-  'Target scale ~2.5 in / ~63.5 mm — to confirm in person',
+  'Target scale about 2 inches — exact length still coming',
   'Attachment orientation and comfortable finished weight',
 ]
 
 export const CAROL_OBJECT_ANALYSIS = {
   source:
     'Internet reference image supplied by Carol (visual inspiration — not her original design). Carol’s own brass casts are the stronger physical source.',
-  scale:
-    'Approximately ~2.5 in / ~63.5 mm long — written as “2, 5 inches” in email; confirm at object review.',
+  scale: 'About 2 inches long — exact length still coming. Do not lock millimeters until Carol sends the measurement.',
   pair: 'Mirrored pair — confirmed.',
   weight:
-    'Brass casts are too heavy for earrings. Previous metal experiments established weight as the primary constraint.',
+    'Brass casts are too heavy for earrings. A solid reprint of that volume will still be too heavy. The prototype is a thin hollow resin shell.',
   material:
-    'Resin and other lightweight methods remain under evaluation — not predetermined.',
+    'Transparent resin in two colorways: fuchsia and high-visibility green. Clear resin is the family those colors belong to.',
 } as const
 
 export const CAROL_PRIOR_METAL_STUDY = {
@@ -82,24 +81,43 @@ export const CAROL_SOURCE_PATHWAY_NOTE =
 
 export const CAROL_MATERIAL_DIRECTIONS = [
   {
+    id: 'fuchsia-transparent',
+    title: 'Fuchsia, transparent',
+    purpose:
+      'Current colorway. Tinted clear resin so the earring stays see-through.',
+    status: 'Current',
+  },
+  {
+    id: 'high-viz-green',
+    title: 'High-visibility green, transparent',
+    purpose:
+      'Current colorway. Tinted clear resin, matched as the second wearable study.',
+    status: 'Current',
+  },
+  {
+    id: 'clear-resin',
+    title: 'Clear resin',
+    purpose:
+      'The material family for both colorways. Print a thin hollow shell with a drain so uncured resin can leave.',
+  },
+  {
     id: 'fdm',
     title: 'FDM form study',
-    purpose: 'Low-cost scale / silhouette / lightweight study',
+    purpose:
+      'Optional silhouette check only. It will not read as transparent fuchsia or high-visibility green.',
+    status: 'Optional',
   },
   {
     id: 'gray-resin',
     title: 'Gray resin',
-    purpose: 'High-detail geometry / texture evaluation — candidate prototype material',
+    purpose: 'Optional detail check for texture — not the color Carol asked for.',
+    status: 'Optional',
   },
   {
     id: 'black-resin',
     title: 'Black resin',
-    purpose: 'Visual direction close to the internet reference — candidate prototype material',
-  },
-  {
-    id: 'clear-resin',
-    title: 'Clear / translucent',
-    purpose: 'Optional material exploration',
+    purpose: 'Optional detail check — not the color Carol asked for.',
+    status: 'Optional',
   },
   {
     id: 'metallic',
@@ -158,12 +176,12 @@ export const CAROL_PHASE_1_STEPS = [
   {
     number: '05',
     title: 'Lightweight prototype',
-    body: 'Produce one focused material/form test — method chosen for low weight, texture fidelity, and practical prototyping cost.',
+    body: 'Print one thin hollow resin shell, then the two transparent colorways — fuchsia and high-visibility green. Judge weight, transparency, and wear.',
   },
   {
     number: '06',
     title: 'Evaluate',
-    body: 'Compare weight, texture, wearability, and attachment possibilities.',
+    body: 'Compare weight, transparency, texture, wearability, and attachment possibilities.',
   },
   {
     number: '07',
@@ -209,7 +227,7 @@ export const CAROL_CONFIRMED_INPUTS = [
   {
     id: 'scale',
     label: 'Target scale',
-    answer: 'Approximately ~2.5 in / ~63.5 mm — to confirm in person.',
+    answer: 'About 2 inches — exact length still coming.',
   },
   {
     id: 'priorities',
@@ -224,14 +242,15 @@ export const CAROL_CONFIRMED_INPUTS = [
   {
     id: 'resin',
     label: 'Material direction',
-    answer: 'Resin is one candidate prototype material — not yet selected.',
+    answer:
+      'Transparent resin: fuchsia and high-visibility green. A thin hollow shell, not a solid cast.',
   },
 ] as const
 
 export const CAROL_CLIENT_QUESTIONS = [
   {
     id: 'q1',
-    text: 'Can you confirm approximately 2.5 inches long for each earring?',
+    text: 'What is the exact length for each earring? The working note is about 2 inches.',
   },
   {
     id: 'q2',

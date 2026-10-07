@@ -116,6 +116,8 @@ export type ThreeDCurriculumWorkshop = {
   skillNext: string[]
   equipment: string[]
   softwareRequirements: string[]
+  /** Public site for the primary tool, shown next to the software requirement. */
+  softwareHref?: string
   participantFiles: string[]
   curriculumSessions?: ThreeDCurriculumSession[]
   relatedWorkshopIds: string[]
@@ -160,12 +162,14 @@ export type ThreeDLearningPathStage = {
   body: string
   workshopIds?: string[]
   future?: boolean
+  imageAssetId?: ThreeDCurriculumAssetId
 }
 
 export type ThreeDFlywheelStep = {
   id: string
   label: string
   detail: string
+  imageAssetId: ThreeDCurriculumAssetId
 }
 
 export type ThreeDSmartSignScreen = {
