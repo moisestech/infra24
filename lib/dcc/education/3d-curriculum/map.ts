@@ -61,6 +61,14 @@ export const CURRICULUM_MAP_PROCESS: ThreeDCurriculumMapNode[] = [
     kind: 'process',
     href: '/fabricate',
   },
+  {
+    id: 'finish',
+    label: 'Finishing',
+    sublabel: 'Surface and material decisions',
+    kind: 'process',
+    workshopId: 'from-print-to-finished-object',
+    href: curriculumWorkshopPath('from-print-to-finished-object'),
+  },
 ]
 
 export const CURRICULUM_MAP_OUTPUT: ThreeDCurriculumMapNode = {

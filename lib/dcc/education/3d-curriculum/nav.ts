@@ -43,7 +43,7 @@ export const THREE_D_SCHOOL_SECTIONS: readonly ThreeDSchoolSectionDef[] = [
     label: 'Curriculum map',
     title: 'One pipeline. Three ways in.',
     short: 'Map',
-    summary: 'Mesh, solid, and precision paths share one pipeline: prepare, slice, print.',
+    summary: 'Mesh, solid, and precision paths share one pipeline: prepare, slice, print, finish.',
     colorTokenId: 'slate',
     icon: 'print',
     imageAssetId: '3D-MAP-001',

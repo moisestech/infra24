@@ -3,6 +3,7 @@ import {
   Clock,
   Cuboid,
   Layers,
+  Paintbrush,
   Printer,
   Ruler,
   Scissors,
@@ -43,6 +44,8 @@ export const CURRICULUM_ICONS: Record<CurriculumIconKey, LucideIcon> = {
   literacy: Layers,
   // ASSET_TODO: custom DCC repair icon
   repair: Wrench,
+  // ASSET_TODO: custom DCC surface / material-craft icon
+  surface: Paintbrush,
   // ASSET_TODO: custom DCC print icon
   print: Printer,
   // ASSET_TODO: custom DCC slice icon

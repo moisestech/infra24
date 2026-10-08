@@ -40,6 +40,15 @@ const REQUIRED_ASSET_IDS = [
   '3D-PARAMETRIC-HERO-001',
   '3D-OPERATOR-PATH-001',
   '3D-SCHOOL-OVERALL-LANDSCAPE-001',
+  '3D-FINISH-HERO-001',
+  '3D-FINISH-RAKING-001',
+  '3D-FINISH-SAND-001',
+  '3D-FINISH-FILE-001',
+  '3D-FINISH-FILL-001',
+  '3D-FINISH-INSPECT-001',
+  '3D-FINISH-MATERIAL-001',
+  '3D-FINISH-FINAL-001',
+  '3D-FINISH-TOOLS-001',
 ] as const
 
 describe('dcc 3d curriculum', () => {
@@ -47,6 +56,7 @@ describe('dcc 3d curriculum', () => {
     expect(assertCurriculumValid()).toEqual([])
     expect(listCurriculumWorkshopSlugs()).toEqual([
       'from-file-to-physical-object',
+      'from-print-to-finished-object',
       'blender-for-artists',
       'plasticity-for-artists',
       'rhino-for-artists',
@@ -107,6 +117,13 @@ describe('dcc 3d curriculum', () => {
       expect(asset.filename).toMatch(/\.webp$/)
       expect(asset.usedOn.length).toBeGreaterThan(0)
       if (readyIds.has(id)) continue
+      if (id.startsWith('3D-FINISH-')) {
+        expect(asset.status).toBe('ready')
+        expect(asset.src).toMatch(
+          /dccmiami\/workshops\/from-print-to-finished-object\//
+        )
+        continue
+      }
       expect(asset.status).toBe('placeholder')
       expect(asset.src).toBeUndefined()
     }
@@ -138,6 +155,26 @@ describe('dcc 3d curriculum', () => {
       0
     )
     expect(getCurriculumSession('rhino-for-artists', 'navigating-3d-space')).toBeUndefined()
+
+    const finishing = getCurriculumWorkshopBySlug('from-print-to-finished-object')
+    expect(finishing?.status).toBe('in-development')
+    expect(finishing?.mentalModel).toBe('surface')
+    expect(finishing?.pipeline.map((step) => step.label)).toEqual([
+      'See',
+      'Decide',
+      'Remove',
+      'Add',
+      'Reveal',
+      'Correct',
+      'Translate',
+      'Resolve',
+    ])
+    expect(finishing?.curriculumSessions).toHaveLength(9)
+    expect(THREE_D_CURRICULUM_ASSETS['3D-FINISH-HERO-001'].status).toBe('ready')
+    expect(THREE_D_CURRICULUM_ASSETS['3D-FINISH-HERO-001'].src).toMatch(
+      /v1791417572\/dccmiami\/workshops\/from-print-to-finished-object\/00-core\/hero-raw-vs-resolved\.webp$/
+    )
+    expect(JSON.stringify(finishing)).not.toMatch(/gianni case 001 results|verified fabricator|\$\d/i)
   })
 
   it('exposes an ordered hub section index for navigation', () => {

@@ -38,7 +38,9 @@ function MapNode({
             ? CURRICULUM_ICONS.repair
             : workshop?.mentalModel === 'literacy'
               ? CURRICULUM_ICONS.literacy
-              : CURRICULUM_ICONS.print
+              : workshop?.mentalModel === 'surface'
+                ? CURRICULUM_ICONS.surface
+                : CURRICULUM_ICONS.print
 
   const logo = toolLogoForMapNode(node.id)
   const inner = (

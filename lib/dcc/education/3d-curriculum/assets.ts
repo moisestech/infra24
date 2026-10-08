@@ -320,6 +320,141 @@ export const THREE_D_CURRICULUM_ASSETS: Record<
       '/v1790377952/dccmiami/workshops/dcc-3d-school-overall-landscape-001_jcimkg.webp'
     ),
   }),
+  '3D-FINISH-HERO-001': slot({
+    id: '3D-FINISH-HERO-001',
+    filename: 'hero-raw-vs-resolved.webp',
+    aspectRatio: '3/2',
+    width: 1536,
+    height: 1024,
+    title: 'Raw print beside a resolved surface',
+    alt: 'Instructional comparison of a raw 3D print beside the same form after surface work. Generated curriculum image, not a photograph from a class.',
+    promptPurpose:
+      'Canonical hero. Uploaded to dccmiami/workshops/from-print-to-finished-object/00-core/hero-raw-vs-resolved.',
+    usedOn: ['/workshop/3d-school/from-print-to-finished-object'],
+    src: cdn(
+      '/v1791417572/dccmiami/workshops/from-print-to-finished-object/00-core/hero-raw-vs-resolved.webp'
+    ),
+  }),
+  '3D-FINISH-RAKING-001': slot({
+    id: '3D-FINISH-RAKING-001',
+    filename: 'raking-light-comparison.webp',
+    aspectRatio: '2/3',
+    width: 1024,
+    height: 1536,
+    title: 'Raking light comparison',
+    alt: 'Instructional comparison of a surface in ordinary light and in low raking light, so defects stay visible without relying on color alone. Generated curriculum image, not a class photograph.',
+    promptPurpose:
+      'Reveal step. Uploaded to dccmiami/workshops/from-print-to-finished-object/05-reveal/raking-light-comparison.',
+    usedOn: ['/workshop/3d-school/from-print-to-finished-object'],
+    src: cdn(
+      '/v1791417573/dccmiami/workshops/from-print-to-finished-object/05-reveal/raking-light-comparison.webp'
+    ),
+  }),
+  '3D-FINISH-SAND-001': slot({
+    id: '3D-FINISH-SAND-001',
+    filename: 'sanding-convex-dome.webp',
+    aspectRatio: '2/3',
+    width: 1024,
+    height: 1536,
+    title: 'Sanding a convex dome',
+    alt: 'Instructional view of controlled sanding on a convex printed dome, keeping the curve instead of flattening it. Generated curriculum image, not a class photograph.',
+    promptPurpose:
+      'Remove step. Uploaded to dccmiami/workshops/from-print-to-finished-object/03-remove/sanding-convex-dome.',
+    usedOn: ['/workshop/3d-school/from-print-to-finished-object'],
+    src: cdn(
+      '/v1791417573/dccmiami/workshops/from-print-to-finished-object/03-remove/sanding-convex-dome.webp'
+    ),
+  }),
+  '3D-FINISH-FILE-001': slot({
+    id: '3D-FINISH-FILE-001',
+    filename: 'file-raised-defect.webp',
+    aspectRatio: '2/3',
+    width: 1024,
+    height: 1536,
+    title: 'Filing a raised defect',
+    alt: 'Instructional view of a file taking down a raised print defect while the surrounding form stays intact. Generated curriculum image, not a class photograph.',
+    promptPurpose:
+      'Remove step. Uploaded to dccmiami/workshops/from-print-to-finished-object/03-remove/file-raised-defect.',
+    usedOn: ['/workshop/3d-school/from-print-to-finished-object'],
+    src: cdn(
+      '/v1791417574/dccmiami/workshops/from-print-to-finished-object/03-remove/file-raised-defect.webp'
+    ),
+  }),
+  '3D-FINISH-FILL-001': slot({
+    id: '3D-FINISH-FILL-001',
+    filename: 'fill-recessed-seam.webp',
+    aspectRatio: '2/3',
+    width: 1024,
+    height: 1536,
+    title: 'Filling a recessed seam',
+    alt: 'Instructional view of filler placed only in a recessed seam, not spread across the whole object. Generated curriculum image, not a class photograph.',
+    promptPurpose:
+      'Add step. Uploaded to dccmiami/workshops/from-print-to-finished-object/04-add/fill-recessed-seam.',
+    usedOn: ['/workshop/3d-school/from-print-to-finished-object'],
+    src: cdn(
+      '/v1791417575/dccmiami/workshops/from-print-to-finished-object/04-add/fill-recessed-seam.webp'
+    ),
+  }),
+  '3D-FINISH-INSPECT-001': slot({
+    id: '3D-FINISH-INSPECT-001',
+    filename: 'inspection-station.webp',
+    aspectRatio: '2/3',
+    width: 1024,
+    height: 1536,
+    title: 'Inspection station',
+    alt: 'Instructional bench arranged for looking at a surface before the next correction. Generated curriculum image, not a class photograph.',
+    promptPurpose:
+      'Reveal step. Uploaded to dccmiami/workshops/from-print-to-finished-object/05-reveal/inspection-station.',
+    usedOn: ['/workshop/3d-school/from-print-to-finished-object'],
+    src: cdn(
+      '/v1791417575/dccmiami/workshops/from-print-to-finished-object/05-reveal/inspection-station.webp'
+    ),
+  }),
+  '3D-FINISH-MATERIAL-001': slot({
+    id: '3D-FINISH-MATERIAL-001',
+    filename: 'material-finish-comparison.webp',
+    aspectRatio: '2/3',
+    width: 1024,
+    height: 1536,
+    title: 'Material finish comparison',
+    alt: 'Instructional comparison of matte, satin, and gloss surfaces on the same kind of form, distinguished by sheen and edge highlight rather than color alone. Generated curriculum image, not a class photograph.',
+    promptPurpose:
+      'Translate step. Uploaded to dccmiami/workshops/from-print-to-finished-object/07-translate/material-finish-comparison.',
+    usedOn: ['/workshop/3d-school/from-print-to-finished-object'],
+    src: cdn(
+      '/v1791417576/dccmiami/workshops/from-print-to-finished-object/07-translate/material-finish-comparison.webp'
+    ),
+  }),
+  '3D-FINISH-FINAL-001': slot({
+    id: '3D-FINISH-FINAL-001',
+    filename: 'final-resolved-instructor-master.webp',
+    aspectRatio: '2/3',
+    width: 1024,
+    height: 1536,
+    title: 'Resolved instructor reference',
+    alt: 'Instructional view of a printed form carried through to a resolved surface. Generated curriculum image, not a finished student object and not a class photograph.',
+    promptPurpose:
+      'Resolve step. Uploaded to dccmiami/workshops/from-print-to-finished-object/08-resolve/final-resolved-instructor-master.',
+    usedOn: ['/workshop/3d-school/from-print-to-finished-object'],
+    src: cdn(
+      '/v1791417576/dccmiami/workshops/from-print-to-finished-object/08-resolve/final-resolved-instructor-master.webp'
+    ),
+  }),
+  '3D-FINISH-TOOLS-001': slot({
+    id: '3D-FINISH-TOOLS-001',
+    filename: 'complete-workstation.webp',
+    aspectRatio: '3/2',
+    width: 1536,
+    height: 1024,
+    title: 'Finishing workstation',
+    alt: 'Instructional overview of a bench laid out for seeing, removing, filling, and inspecting a print. Generated curriculum image, not a class photograph. Brands and safety products are not specified.',
+    promptPurpose:
+      'Tools reference. Uploaded to dccmiami/workshops/from-print-to-finished-object/09-tools-materials/complete-workstation.',
+    usedOn: ['/workshop/3d-school/from-print-to-finished-object'],
+    src: cdn(
+      '/v1791417577/dccmiami/workshops/from-print-to-finished-object/09-tools-materials/complete-workstation.webp'
+    ),
+  }),
 }
 
 export const THREE_D_CURRICULUM_ASSET_IDS = Object.keys(

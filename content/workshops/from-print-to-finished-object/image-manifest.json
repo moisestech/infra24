@@ -1,0 +1,552 @@
+{
+  "workshop": "from-print-to-finished-object",
+  "generatedAssetCount": 39,
+  "documentaryPolicy": "Generated images are instructional/conceptual only. Gianni Case 001 documentary evidence must use real photography.",
+  "sourceOfTruth": "This manifest controls target names and Cloudinary organization until uploaded URLs are written into the 3D School asset registry.",
+  "assets": [
+    {
+      "index": 0,
+      "source": "a_clean_cinematic_high_detail_split_comparison_p.png",
+      "targetFilename": "raking-light-comparison.webp",
+      "status": "canonical",
+      "section": "05-reveal",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/05-reveal",
+        "publicId": "raking-light-comparison",
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/05-reveal/raking-light-comparison",
+        "version": 1791417573,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417573/dccmiami/workshops/from-print-to-finished-object/05-reveal/raking-light-comparison.webp"
+      }
+    },
+    {
+      "index": 1,
+      "source": "a_clean_high_resolution_infographic_desk_top_phot.png",
+      "targetFilename": "materials-system-infographic.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "materials-system-infographic",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 2,
+      "source": "a_clean_highly_detailed_studio_workbench_style_p.png",
+      "targetFilename": "tools-materials-reference-board.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "tools-materials-reference-board",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 3,
+      "source": "a_clean_modern_studio_infographic_portfolio_layou.png",
+      "targetFilename": "instructor-master-form-exploration-a.webp",
+      "status": "exploration",
+      "section": "90-drafts-archive/exploration",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/exploration",
+        "publicId": "instructor-master-form-exploration-a",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 4,
+      "source": "a_clean_studio_lit_high_resolution_photographic.png",
+      "targetFilename": "process-stage-board-a.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "process-stage-board-a",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 5,
+      "source": "a_clean_studio_lit_infographic_style_collage_pho.png",
+      "targetFilename": "process-stage-board-b.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "process-stage-board-b",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 6,
+      "source": "a_clean_studio_lit_product_portfolio_style_collag.png",
+      "targetFilename": "instructor-master-form-exploration-b.webp",
+      "status": "exploration",
+      "section": "90-drafts-archive/exploration",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/exploration",
+        "publicId": "instructor-master-form-exploration-b",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 7,
+      "source": "a_clean_studio_product_photography_portfolio_style.png",
+      "targetFilename": "instructor-master-form-exploration-c.webp",
+      "status": "exploration",
+      "section": "90-drafts-archive/exploration",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/exploration",
+        "publicId": "instructor-master-form-exploration-c",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 8,
+      "source": "a_clean_studio_style_multi_panel_instructional_ph.png",
+      "targetFilename": "instructional-process-grid-a.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "instructional-process-grid-a",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 9,
+      "source": "a_close_up_cinematic_highly_detailed_macro_photo.png",
+      "targetFilename": "process-four-stage-collage.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "process-four-stage-collage",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 10,
+      "source": "a_close_up_cinematic_photorealistic_workshop_des.png",
+      "targetFilename": "paint-application-black-dome.webp",
+      "status": "canonical",
+      "section": "07-translate",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/07-translate",
+        "publicId": "paint-application-black-dome",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 11,
+      "source": "a_close_up_cinematic_shallow_depth_of_field_stil.png",
+      "targetFilename": "finishing-station-and-samples.webp",
+      "status": "canonical",
+      "section": "09-tools-materials",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials",
+        "publicId": "finishing-station-and-samples",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 12,
+      "source": "a_close_up_cinematic_shallow_depth_of_field_stud.png",
+      "targetFilename": "wrong-object-painting-character.webp",
+      "status": "rejected",
+      "section": "90-drafts-archive/rejected",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/rejected",
+        "publicId": "wrong-object-painting-character",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 13,
+      "source": "a_close_up_cinematic_shallow_depth_of_field_work.png",
+      "targetFilename": "primer-spray-unsafe-reference.webp",
+      "status": "rejected",
+      "section": "90-drafts-archive/rejected",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/rejected",
+        "publicId": "primer-spray-unsafe-reference",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 14,
+      "source": "a_close_up_detailed_realistic_studio_workbench_s.png",
+      "targetFilename": "final-resolved-instructor-master.webp",
+      "status": "canonical",
+      "section": "08-resolve",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/08-resolve",
+        "publicId": "final-resolved-instructor-master",
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/08-resolve/final-resolved-instructor-master",
+        "version": 1791417576,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417576/dccmiami/workshops/from-print-to-finished-object/08-resolve/final-resolved-instructor-master.webp"
+      }
+    },
+    {
+      "index": 15,
+      "source": "a_close_up_detailed_studio_workbench_scene_shot_i.png",
+      "targetFilename": "sanding-convex-dome.webp",
+      "status": "canonical",
+      "section": "03-remove",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/03-remove",
+        "publicId": "sanding-convex-dome",
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/03-remove/sanding-convex-dome",
+        "version": 1791417573,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417573/dccmiami/workshops/from-print-to-finished-object/03-remove/sanding-convex-dome.webp"
+      }
+    },
+    {
+      "index": 16,
+      "source": "a_close_up_high_detail_studio_workbench_scene_a.png",
+      "targetFilename": "material-finish-comparison.webp",
+      "status": "canonical",
+      "section": "07-translate",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/07-translate",
+        "publicId": "material-finish-comparison",
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/07-translate/material-finish-comparison",
+        "version": 1791417576,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417576/dccmiami/workshops/from-print-to-finished-object/07-translate/material-finish-comparison.webp"
+      }
+    },
+    {
+      "index": 17,
+      "source": "a_close_up_highly_detailed_macro_workshop_desktop.png",
+      "targetFilename": "filler-application-branded.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "filler-application-branded",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 18,
+      "source": "a_close_up_realistic_high_detail_tabletop_still.png",
+      "targetFilename": "remove-toolkit.webp",
+      "status": "canonical",
+      "section": "09-tools-materials",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials",
+        "publicId": "remove-toolkit",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 19,
+      "source": "a_close_up_realistic_high_detail_workshop_diy_ta.png",
+      "targetFilename": "add-materials.webp",
+      "status": "canonical",
+      "section": "09-tools-materials",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials",
+        "publicId": "add-materials",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 20,
+      "source": "a_close_up_shallow_depth_of_field_macro_workshop.png",
+      "targetFilename": "sanding-convex-dome-alt.webp",
+      "status": "supporting",
+      "section": "03-remove",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/03-remove",
+        "publicId": "sanding-convex-dome-alt",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 21,
+      "source": "a_close_up_studio_workbench_still_life_photograph.png",
+      "targetFilename": "inspection-station.webp",
+      "status": "canonical",
+      "section": "05-reveal",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/05-reveal",
+        "publicId": "inspection-station",
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/05-reveal/inspection-station",
+        "version": 1791417575,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417575/dccmiami/workshops/from-print-to-finished-object/05-reveal/inspection-station.webp"
+      }
+    },
+    {
+      "index": 22,
+      "source": "a_close_up_well_lit_workshop_bench_scene_with_a_s.png",
+      "targetFilename": "reprint-comparison-alt.webp",
+      "status": "supporting",
+      "section": "02-decide",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/02-decide",
+        "publicId": "reprint-comparison-alt",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 23,
+      "source": "a_detailed_realistic_high_resolution_overhead_wo.png",
+      "targetFilename": "complete-workstation-overhead.webp",
+      "status": "canonical",
+      "section": "09-tools-materials",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials",
+        "publicId": "complete-workstation-overhead",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 24,
+      "source": "a_detailed_realistic_well_lit_workshop_tabletop.png",
+      "targetFilename": "complete-workstation-detail.webp",
+      "status": "supporting",
+      "section": "09-tools-materials",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials",
+        "publicId": "complete-workstation-detail",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 25,
+      "source": "a_detailed_well_lit_workshop_desktop_reference_co.png",
+      "targetFilename": "painting-reference-board-red.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "painting-reference-board-red",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 26,
+      "source": "a_high_resolution_realistic_workshop_bench_top_ph.png",
+      "targetFilename": "reprint-failed-vs-clean.webp",
+      "status": "canonical",
+      "section": "02-decide",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/02-decide",
+        "publicId": "reprint-failed-vs-clean",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 27,
+      "source": "a_high_resolution_studio_like_workshop_tabletop.png",
+      "targetFilename": "abrasive-file-progression.webp",
+      "status": "canonical",
+      "section": "09-tools-materials",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials",
+        "publicId": "abrasive-file-progression",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 28,
+      "source": "a_high_resolution_studio_lit_photographic_collage.png",
+      "targetFilename": "process-stage-board-c.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "process-stage-board-c",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 29,
+      "source": "a_highly_detailed_realistic_studio_workbench_stil.png",
+      "targetFilename": "raw-vs-finished-color-drift.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "raw-vs-finished-color-drift",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 30,
+      "source": "a_hyper_detailed_close_up_workshop_maker_scene_a.png",
+      "targetFilename": "fill-recessed-seam.webp",
+      "status": "canonical",
+      "section": "04-add",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/04-add",
+        "publicId": "fill-recessed-seam",
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/04-add/fill-recessed-seam",
+        "version": 1791417575,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417575/dccmiami/workshops/from-print-to-finished-object/04-add/fill-recessed-seam.webp"
+      }
+    },
+    {
+      "index": 31,
+      "source": "a_realistic_high_detail_well_lit_workshop_tablet.png",
+      "targetFilename": "add-materials-process-collage.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "add-materials-process-collage",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 32,
+      "source": "a_realistic_high_resolution_studio_bench_top_sti.png",
+      "targetFilename": "hero-raw-vs-resolved.webp",
+      "status": "canonical",
+      "section": "00-core",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/00-core",
+        "publicId": "hero-raw-vs-resolved",
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/00-core/hero-raw-vs-resolved",
+        "version": 1791417572,
+        "format": "webp",
+        "width": 1536,
+        "height": 1024,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417572/dccmiami/workshops/from-print-to-finished-object/00-core/hero-raw-vs-resolved.webp"
+      }
+    },
+    {
+      "index": 33,
+      "source": "a_sharp_high_resolution_cinematic_tabletop_still.png",
+      "targetFilename": "complete-workstation.webp",
+      "status": "canonical",
+      "section": "09-tools-materials",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials",
+        "publicId": "complete-workstation",
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials/complete-workstation",
+        "version": 1791417577,
+        "format": "webp",
+        "width": 1536,
+        "height": 1024,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417577/dccmiami/workshops/from-print-to-finished-object/09-tools-materials/complete-workstation.webp"
+      }
+    },
+    {
+      "index": 34,
+      "source": "a_wide_high_resolution_clean_studio_infographic.png",
+      "targetFilename": "full-process-infographic.webp",
+      "status": "reference",
+      "section": "90-drafts-archive/reference",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/90-drafts-archive/reference",
+        "publicId": "full-process-infographic",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 35,
+      "source": "close_up_highly_detailed_macro_workshop_scene_a.png",
+      "targetFilename": "file-raised-defect.webp",
+      "status": "canonical",
+      "section": "03-remove",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/03-remove",
+        "publicId": "file-raised-defect",
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/03-remove/file-raised-defect",
+        "version": 1791417574,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417574/dccmiami/workshops/from-print-to-finished-object/03-remove/file-raised-defect.webp"
+      }
+    },
+    {
+      "index": 36,
+      "source": "close_up_studio_workbench_scene_of_a_small_scale_m.png",
+      "targetFilename": "surface-cleanup-brush.webp",
+      "status": "canonical",
+      "section": "05-reveal",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/05-reveal",
+        "publicId": "surface-cleanup-brush",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 37,
+      "source": "close_up_well_lit_still_life_of_a_painting_workbe.png",
+      "targetFilename": "paint-finish-station.webp",
+      "status": "canonical",
+      "section": "09-tools-materials",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials",
+        "publicId": "paint-finish-station",
+        "uploadStatus": "pending"
+      }
+    },
+    {
+      "index": 38,
+      "source": "close_up_workshop_desktop_scene_with_a_realistic.png",
+      "targetFilename": "knife-trim-cleanup.webp",
+      "status": "canonical",
+      "section": "03-remove",
+      "cloudinary": {
+        "assetFolder": "dccmiami/workshops/from-print-to-finished-object/03-remove",
+        "publicId": "knife-trim-cleanup",
+        "uploadStatus": "pending"
+      }
+    }
+  ],
+  "holds": [
+    {
+      "source": "IMG_9636.jpeg",
+      "target": "10-case-studies/gianni-001/reference/digital-intention-physical-print",
+      "status": "hold",
+      "reason": "User-supplied real Gianni reference; keep separate from generated evidence and confirm public-use context before publishing."
+    }
+  ],
+  "missingPlannedAssets": [
+    "accept-minor-artifact",
+    "correct-vs-oversanded-edge",
+    "detail-preserved-vs-lost",
+    "controlled-vs-excessive-filler",
+    "better-print-less-finishing-seam-placement",
+    "macro-raw-pla",
+    "macro-sanding-scratches",
+    "macro-filler-interface",
+    "macro-primer-unification",
+    "minimal-home-finishing-kit",
+    "personal-object-diagnosis",
+    "finish-plan"
+  ]
+}
