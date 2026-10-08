@@ -27,20 +27,12 @@ The 39 generated source images have been audited and assigned canonical target n
 
 A local web-ready package has also been prepared with renamed WEBP copies following this hierarchy.
 
-## Pending
+## Uploaded
 
-The Cloudinary connector in the current ChatGPT run does not resolve the model's local `/mnt/data` or `sandbox:` paths as upload sources. Direct upload attempts were rejected as unsupported source URLs.
+Nine canonical images were uploaded from the local gitignored package at `assets/dcc-from-print-to-finished-object-assets-renamed/`. Returned URLs are in `image-manifest.json` and `lib/dcc/education/3d-curriculum/assets.ts`.
 
-Therefore:
-- Cloudinary folders are ready;
-- canonical public IDs are reserved by the manifest;
-- image uploads/secure URLs are still pending;
-- `lib/dcc/education/3d-curriculum/assets.ts` should not invent CDN URLs.
+The source WEBPs stay on disk and out of git. Reference, exploration, and rejected files in that package were not uploaded.
 
-When the files are uploaded from a context Cloudinary can access (for example Cursor/local code using the existing Cloudinary credentials or an accepted remote source), preserve the manifest's:
-- asset folder;
-- public ID;
-- canonical filename;
-- status.
+## Still local only
 
-After upload, write the returned Cloudinary URLs/versions back into the manifest and then into the typed 3D School asset registry.
+The rest of the 39-image set remains `uploadStatus: pending`. Do not invent URLs for those.

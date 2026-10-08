@@ -20,7 +20,9 @@ import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
 import { getStudioService } from '@/lib/dcc/fabrication/studio-services'
 import { cn } from '@/lib/utils'
 import { CurriculumMedia } from '@/components/dcc/education/3d-curriculum/CurriculumMedia'
+import { curriculumCardInteractive } from '@/components/dcc/education/3d-curriculum/interactive'
 import { WorkflowStrip } from '@/components/dcc/education/3d-curriculum/WorkflowStrip'
+import { WorkshopMark } from '@/components/dcc/education/3d-curriculum/WorkshopMark'
 
 function softwareSiteLabel(href: string) {
   try {
@@ -139,7 +141,10 @@ export function CurriculumWorkshopDetail({
             {workshop.software.length ? (
               <MetaChip label="Software" value={workshop.software.join(', ')} />
             ) : (
-              <MetaChip label="Software" value="Tool TBD" />
+              <MetaChip
+                label="Software"
+                value={workshop.softwareRequirements[0] ?? 'Tool TBD'}
+              />
             )}
           </div>
 
@@ -427,29 +432,38 @@ export function CurriculumWorkshopDetail({
           <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
             Related workshops
           </h2>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((row) => (
-              <li key={row.id}>
-                <Link
-                  href={curriculumWorkshopPath(row.slug)}
-                  className="group flex h-full flex-col rounded-2xl border border-[var(--cdc-border)] bg-gradient-to-br from-white via-teal-50/40 to-violet-50/40 p-4 transition-all duration-300 motion-safe:hover:-translate-y-1 motion-safe:hover:shadow-lg dark:from-neutral-950 dark:via-teal-950/20 dark:to-violet-950/20"
-                >
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
-                    {THREE_D_SCHOOL_STATUS_LABEL[row.status]}
-                  </span>
-                  <span className="mt-2 font-semibold text-neutral-900 dark:text-neutral-50">
-                    {row.title}
-                  </span>
-                  <span className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                    {row.mentalModelLabel}
-                  </span>
-                  <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-teal-800 dark:text-teal-200">
-                    Open workshop
-                    <ArrowRight aria-hidden className="h-4 w-4 transition-transform duration-300 motion-safe:group-hover:translate-x-1" />
-                  </span>
-                </Link>
-              </li>
-            ))}
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            {related.map((row) => {
+              const rowColor = getFabricationColor(row.colorTokenId)
+              return (
+                <li key={row.id}>
+                  <Link
+                    href={curriculumWorkshopPath(row.slug)}
+                    className={cn(
+                      'group flex h-full items-center gap-4 rounded-2xl border p-4',
+                      curriculumCardInteractive(rowColor)
+                    )}
+                  >
+                    <span className="min-w-0 flex-1">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
+                        {THREE_D_SCHOOL_STATUS_LABEL[row.status]}
+                      </span>
+                      <span className="mt-2 block font-semibold text-neutral-900 dark:text-neutral-50">
+                        {row.title}
+                      </span>
+                      <span className="mt-1 block text-sm text-neutral-600 dark:text-neutral-400">
+                        {row.mentalModelLabel}
+                      </span>
+                      <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                        Open workshop
+                        <ArrowRight aria-hidden className="h-4 w-4 transition-transform duration-300 motion-safe:group-hover:translate-x-1" />
+                      </span>
+                    </span>
+                    <WorkshopMark workshop={row} />
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </section>
       ) : null}

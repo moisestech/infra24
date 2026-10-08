@@ -25,6 +25,7 @@ export type ThreeDMentalModelId =
   | 'systems'
   | 'constraints'
   | 'repair'
+  | 'surface'
 
 export type ThreeDCurriculumAssetId =
   | '3D-HERO-001'
@@ -48,8 +49,17 @@ export type ThreeDCurriculumAssetId =
   | '3D-PARAMETRIC-HERO-001'
   | '3D-OPERATOR-PATH-001'
   | '3D-SCHOOL-OVERALL-LANDSCAPE-001'
+  | '3D-FINISH-HERO-001'
+  | '3D-FINISH-RAKING-001'
+  | '3D-FINISH-SAND-001'
+  | '3D-FINISH-FILE-001'
+  | '3D-FINISH-FILL-001'
+  | '3D-FINISH-INSPECT-001'
+  | '3D-FINISH-MATERIAL-001'
+  | '3D-FINISH-FINAL-001'
+  | '3D-FINISH-TOOLS-001'
 
-export type ThreeDCurriculumAspectRatio = '16/9' | '21/9' | '4/3' | '4/5' | '1/1'
+export type ThreeDCurriculumAspectRatio = '16/9' | '21/9' | '3/2' | '4/3' | '4/5' | '2/3' | '1/1'
 
 export type ThreeDCurriculumAssetStatus = 'placeholder' | 'ready'
 

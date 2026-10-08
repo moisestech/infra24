@@ -13,6 +13,14 @@ export const THREE_D_LEARNING_PATH: ThreeDLearningPathStage[] = [
     imageAssetId: '3D-FOUNDATION-HERO-001',
   },
   {
+    id: 'finish',
+    kicker: 'Finish the object',
+    title: 'From Print to Finished Object',
+    body: 'After a print exists, decide what the surface needs: accept, remove, add, or reprint. This layer is in development. The practice object and the first real case study are still being validated.',
+    workshopIds: ['from-print-to-finished-object'],
+    imageAssetId: '3D-FINISH-HERO-001',
+  },
+  {
     id: 'direction',
     kicker: 'Choose a modeling direction',
     title: 'Blender, Plasticity, or Rhino',

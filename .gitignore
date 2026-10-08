@@ -87,6 +87,10 @@ dist
 
 # Gatsby files
 .cache/
+
+# Local workshop source binaries. Delivery URLs live in the curriculum registry.
+assets/
+
 public
 !public/docs/
 !public/docs/**

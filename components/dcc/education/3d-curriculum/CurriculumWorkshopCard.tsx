@@ -15,13 +15,17 @@ import {
   curriculumIconBadge,
 } from '@/components/dcc/education/3d-curriculum/interactive'
 import { ToolMarks } from '@/components/dcc/education/3d-curriculum/ToolMark'
+import { WorkshopMark } from '@/components/dcc/education/3d-curriculum/WorkshopMark'
 
 export function CurriculumWorkshopCard({
   workshop,
   className,
+  markAside = false,
 }: {
   workshop: ThreeDCurriculumWorkshop
   className?: string
+  /** Large logo or icon on the right, with a hover glow. */
+  markAside?: boolean
 }) {
   const color = getFabricationColor(workshop.colorTokenId)
   const Icon = CURRICULUM_ICONS[workshop.mentalModel]
@@ -30,19 +34,21 @@ export function CurriculumWorkshopCard({
   return (
     <article
       className={cn(
-        'group flex h-full flex-col rounded-2xl border p-5',
+        'group flex h-full rounded-2xl border p-5',
+        markAside ? 'flex-row items-center gap-4' : 'flex-col',
         curriculumCardInteractive(color),
         className
       )}
     >
-      {logos.length ? (
+      <div className={cn('min-w-0', markAside ? 'flex-1' : 'contents')}>
+      {markAside ? null : logos.length ? (
         <ToolMarks software={workshop.software} markClassName="h-12 w-12 rounded-2xl" />
       ) : (
         <span className={curriculumIconBadge(color)}>
           <Icon aria-hidden className="h-6 w-6" />
         </span>
       )}
-      <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500">
+      <p className={cn('font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-500', markAside ? '' : 'mt-3')}>
         {String(workshop.order).padStart(2, '0')} · {THREE_D_SCHOOL_STATUS_LABEL[workshop.status]} ·{' '}
         {THREE_D_SCHOOL_LEVEL_LABEL[workshop.level]}
       </p>
@@ -76,6 +82,8 @@ export function CurriculumWorkshopCard({
           className="h-5 w-5 transition-transform duration-300 motion-safe:group-hover:translate-x-1"
         />
       </Link>
+      </div>
+      {markAside ? <WorkshopMark workshop={workshop} /> : null}
     </article>
   )
 }

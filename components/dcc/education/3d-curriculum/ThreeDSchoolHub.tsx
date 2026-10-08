@@ -99,7 +99,7 @@ export function ThreeDSchoolHub() {
           <ul className="mt-8 grid gap-4 sm:grid-cols-2">
             {upcoming.map((workshop) => (
               <li key={workshop.id}>
-                <CurriculumWorkshopCard workshop={workshop} />
+                <CurriculumWorkshopCard workshop={workshop} markAside />
               </li>
             ))}
           </ul>

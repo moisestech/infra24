@@ -13,7 +13,13 @@
       "cloudinary": {
         "assetFolder": "dccmiami/workshops/from-print-to-finished-object/05-reveal",
         "publicId": "raking-light-comparison",
-        "uploadStatus": "pending"
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/05-reveal/raking-light-comparison",
+        "version": 1791417573,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417573/dccmiami/workshops/from-print-to-finished-object/05-reveal/raking-light-comparison.webp"
       }
     },
     {
@@ -181,7 +187,13 @@
       "cloudinary": {
         "assetFolder": "dccmiami/workshops/from-print-to-finished-object/08-resolve",
         "publicId": "final-resolved-instructor-master",
-        "uploadStatus": "pending"
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/08-resolve/final-resolved-instructor-master",
+        "version": 1791417576,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417576/dccmiami/workshops/from-print-to-finished-object/08-resolve/final-resolved-instructor-master.webp"
       }
     },
     {
@@ -193,7 +205,13 @@
       "cloudinary": {
         "assetFolder": "dccmiami/workshops/from-print-to-finished-object/03-remove",
         "publicId": "sanding-convex-dome",
-        "uploadStatus": "pending"
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/03-remove/sanding-convex-dome",
+        "version": 1791417573,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417573/dccmiami/workshops/from-print-to-finished-object/03-remove/sanding-convex-dome.webp"
       }
     },
     {
@@ -205,7 +223,13 @@
       "cloudinary": {
         "assetFolder": "dccmiami/workshops/from-print-to-finished-object/07-translate",
         "publicId": "material-finish-comparison",
-        "uploadStatus": "pending"
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/07-translate/material-finish-comparison",
+        "version": 1791417576,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417576/dccmiami/workshops/from-print-to-finished-object/07-translate/material-finish-comparison.webp"
       }
     },
     {
@@ -265,7 +289,13 @@
       "cloudinary": {
         "assetFolder": "dccmiami/workshops/from-print-to-finished-object/05-reveal",
         "publicId": "inspection-station",
-        "uploadStatus": "pending"
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/05-reveal/inspection-station",
+        "version": 1791417575,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417575/dccmiami/workshops/from-print-to-finished-object/05-reveal/inspection-station.webp"
       }
     },
     {
@@ -373,7 +403,13 @@
       "cloudinary": {
         "assetFolder": "dccmiami/workshops/from-print-to-finished-object/04-add",
         "publicId": "fill-recessed-seam",
-        "uploadStatus": "pending"
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/04-add/fill-recessed-seam",
+        "version": 1791417575,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417575/dccmiami/workshops/from-print-to-finished-object/04-add/fill-recessed-seam.webp"
       }
     },
     {
@@ -397,7 +433,13 @@
       "cloudinary": {
         "assetFolder": "dccmiami/workshops/from-print-to-finished-object/00-core",
         "publicId": "hero-raw-vs-resolved",
-        "uploadStatus": "pending"
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/00-core/hero-raw-vs-resolved",
+        "version": 1791417572,
+        "format": "webp",
+        "width": 1536,
+        "height": 1024,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417572/dccmiami/workshops/from-print-to-finished-object/00-core/hero-raw-vs-resolved.webp"
       }
     },
     {
@@ -409,7 +451,13 @@
       "cloudinary": {
         "assetFolder": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials",
         "publicId": "complete-workstation",
-        "uploadStatus": "pending"
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/09-tools-materials/complete-workstation",
+        "version": 1791417577,
+        "format": "webp",
+        "width": 1536,
+        "height": 1024,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417577/dccmiami/workshops/from-print-to-finished-object/09-tools-materials/complete-workstation.webp"
       }
     },
     {
@@ -433,7 +481,13 @@
       "cloudinary": {
         "assetFolder": "dccmiami/workshops/from-print-to-finished-object/03-remove",
         "publicId": "file-raised-defect",
-        "uploadStatus": "pending"
+        "uploadStatus": "uploaded",
+        "deliveryPublicId": "dccmiami/workshops/from-print-to-finished-object/03-remove/file-raised-defect",
+        "version": 1791417574,
+        "format": "webp",
+        "width": 1024,
+        "height": 1536,
+        "secureUrl": "https://res.cloudinary.com/dck5rzi4h/image/upload/v1791417574/dccmiami/workshops/from-print-to-finished-object/03-remove/file-raised-defect.webp"
       }
     },
     {

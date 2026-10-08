@@ -17,7 +17,7 @@ export const THREE_D_SCHOOL_INTENT_HEADING = 'What are you trying to make?'
 export const THREE_D_SCHOOL_MAP_HEADING = 'One pipeline. Three ways in.'
 
 export const THREE_D_SCHOOL_MAP_LEAD =
-  'Blender, Plasticity, and Rhino are different mental models of an object — not competing software brands. Every path shares file preparation, slicing, and a physical object.'
+  'Blender, Plasticity, and Rhino are different mental models of an object — not competing software brands. Every path shares file preparation, slicing, a physical print, and a finish.'
 
 export const THREE_D_SCHOOL_STATUS_LABEL: Record<
   'pilot' | 'coming' | 'in-development',

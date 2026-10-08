@@ -14,8 +14,10 @@ import {
 const ASPECT_CLASS: Record<ThreeDCurriculumAspectRatio, string> = {
   '16/9': 'aspect-video',
   '21/9': 'aspect-[21/9]',
+  '3/2': 'aspect-[3/2]',
   '4/3': 'aspect-[4/3]',
   '4/5': 'aspect-[4/5]',
+  '2/3': 'aspect-[2/3]',
   '1/1': 'aspect-square',
 }
 
@@ -38,6 +40,7 @@ export function CurriculumMedia({
       <figure
         className={cn(
           'overflow-hidden rounded-2xl border bg-white dark:bg-neutral-950',
+          (media.aspectRatio === '2/3' || media.aspectRatio === '4/5') && 'max-w-xl',
           color.border,
           className
         )}
