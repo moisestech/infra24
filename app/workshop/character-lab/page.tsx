@@ -14,6 +14,18 @@ export const metadata: Metadata = {
     title: 'Character Lab | DCC Miami',
     description: 'Create a virtual self-portrait. Perform inside a digital world. Make a film together. Course concept in development.',
     url: '/workshop/character-lab',
+    images: [{
+      url: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1791916137/blue-jazz-avatar.jpg',
+      width: 1920,
+      height: 1080,
+      alt: 'VRChat cinematic avatar artwork supplied by Alec Jerome Kreisberg',
+    }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Character Lab | DCC Miami',
+    description: 'Virtual self-portraits, performance and collective filmmaking. An emerging DCC learning experience — express interest.',
+    images: ['https://res.cloudinary.com/dck5rzi4h/image/upload/v1791916137/blue-jazz-avatar.jpg'],
   },
   // Keep private to preview reviewers while the proposed instructor and host are unconfirmed.
   robots: { index: false, follow: false },
