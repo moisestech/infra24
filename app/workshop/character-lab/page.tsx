@@ -73,29 +73,26 @@ export default function CharacterLabConceptPage({ searchParams }: Props) {
           <div className="relative mx-auto grid max-w-6xl gap-12 px-4 py-12 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-end lg:gap-16 lg:px-8">
             <div className="max-w-3xl">
               <Link href="/workshops" className="text-xs font-medium uppercase tracking-[0.18em] text-teal-300 underline-offset-4 hover:underline">← DCC Miami workshops</Link>
-              <p className="mt-12 text-[11px] font-bold uppercase tracking-[0.22em] text-teal-300">DCC Miami · Course concept in development</p>
-              <h1 className="mt-4 text-[clamp(3.2rem,8vw,7.5rem)] font-black leading-[0.91] tracking-[-0.065em]">CHARACTER<br />LAB<span className="text-teal-300">.</span></h1>
+              <p className="mt-8 sm:mt-12 text-[11px] font-bold uppercase tracking-[0.22em] text-teal-300">DCC Miami · Course concept in development</p>
+              <h1 className="mt-4 text-[clamp(2.6rem,10.5vw,7.5rem)] font-black leading-[0.91] tracking-[-0.065em]">CHARACTER<br />LAB<span className="text-teal-300">.</span></h1>
               <p className="mt-7 max-w-xl text-xl font-medium leading-snug text-neutral-100 sm:text-2xl">Virtual self-portraits, performance, and collective filmmaking.</p>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-neutral-300">Who do you become when your body becomes an avatar? An emerging creative-learning experience where artists explore virtual identities, perform inside digital worlds, and imagine a film they can make together.</p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <a href="#interest" className="inline-flex min-h-12 items-center justify-center rounded-lg bg-teal-300 px-6 py-3 text-sm font-semibold text-neutral-950 transition hover:bg-teal-200">Help shape the first cohort ↗</a>
-                <a href="#pathway" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-teal-300">Explore the concept</a>
+              <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                <a href="#interest" className="inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-teal-300 sm:w-auto px-6 py-3 text-sm font-semibold text-neutral-950 transition hover:bg-teal-200">Help shape the first cohort ↗</a>
+                <a href="#pathway" className="inline-flex min-h-12 w-full items-center justify-center rounded-lg border border-white/30 sm:w-auto px-6 py-3 text-sm font-semibold text-white transition hover:border-teal-300">Explore the concept</a>
               </div>
               <p className="mt-6 text-xs leading-relaxed text-neutral-400">Not an open registration. Instructor participation, host venue, cohort size, dates, price, and full syllabus are still under discussion.</p>
             </div>
-            <div className="relative aspect-[5/4] overflow-hidden rounded-2xl border border-teal-300/25 bg-[radial-gradient(circle_at_62%_22%,rgba(45,212,191,0.26),transparent_45%),linear-gradient(150deg,#10282d,#0c1118_72%)] p-5 shadow-2xl sm:aspect-square">
-              <div className="flex items-center justify-between border-b border-white/15 pb-3 font-mono text-[10px] uppercase tracking-widest text-teal-200/85">
-                <span>CHARACTER / CAMERA / RECORD</span><span>CONCEPT 001</span>
+            <figure className="group relative min-w-0 overflow-hidden rounded-2xl border border-teal-300/25 bg-neutral-900 shadow-2xl">
+              <div className="relative aspect-[4/3] min-h-[260px] overflow-hidden sm:aspect-[5/4] lg:aspect-[4/5]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="https://res.cloudinary.com/dck5rzi4h/image/upload/v1791916137/blue-jazz-avatar.jpg" width={1920} height={1080} alt="Glowing blue, humanlike VR character in a theatrical virtual environment, artwork shared by Alec Jerome Kreisberg" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover object-[57%_50%] transition-transform duration-500 group-hover:scale-[1.02]" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent p-4 pt-20 sm:p-6 sm:pt-24">
+                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-teal-200">Avatar / Camera / Performance</p>
+                  <p className="mt-1 text-xs leading-relaxed text-neutral-200">Workshop imagery supplied by Alec Jerome Kreisberg · not documentation of a DCC cohort</p>
+                </div>
               </div>
-              <div className="relative my-6 flex h-[68%] items-center justify-center overflow-hidden rounded-lg border border-white/15">
-                <div className="absolute inset-0" style={{backgroundImage:'radial-gradient(circle at center, transparent 0, rgba(0,0,0,0.5) 85%)'}} />
-                <div className="absolute h-[68%] w-[56%] rounded-[46%_46%_35%_35%] border border-teal-200/60 bg-gradient-to-b from-teal-200/25 via-sky-500/10 to-transparent shadow-[0_0_75px_rgba(20,184,166,0.18)]" />
-                <div className="absolute top-[18%] h-[19%] w-[22%] rounded-full border border-teal-200/80 bg-teal-300/15" />
-                <div className="absolute inset-x-5 top-5 flex justify-between font-mono text-[9px] tracking-widest text-white/60"><span>SELF_001</span><span>LIVE VIEW</span></div>
-                <div className="absolute inset-x-5 bottom-5 flex justify-between font-mono text-[9px] tracking-widest text-white/60"><span>IDENTITY / PERFORMANCE</span><span>◉ REC</span></div>
-              </div>
-              <p className="font-mono text-[10px] leading-relaxed tracking-wider text-teal-100/70">SPECULATIVE FRAME · GRAPHIC REPRESENTATION, NOT WORKSHOP DOCUMENTATION</p>
-            </div>
+            </figure>
           </div>
         </section>
 
@@ -116,9 +113,9 @@ export default function CharacterLabConceptPage({ searchParams }: Props) {
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-300">Learning pathway · proposed</p>
             <h2 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">Prepare online. Create together. Keep making afterward.</h2>
             <p className="mt-5 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 sm:text-base">Rather than losing the studio session to software installations, we are exploring a lightweight learning pathway that helps each participant arrive ready to create. The final format will be co-developed with the instructor and shaped by early interest.</p>
-            <div className="mt-10 grid gap-4 md:grid-cols-2">
+            <div className="mt-10 grid min-w-0 gap-4 md:grid-cols-2">
               {pathway.map((step) => (
-                <article key={step.index} className="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900/60">
+                <article key={step.index} className="min-w-0 rounded-xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 sm:p-6 dark:bg-neutral-900/60">
                   <div className="flex items-center justify-between gap-3">
                     <span className="font-mono text-xs font-bold text-teal-700 dark:text-teal-300">{step.index} / {step.stage}</span>
                     <span className="text-xs text-neutral-500 dark:text-neutral-400">{step.detail}</span>
@@ -141,6 +138,50 @@ export default function CharacterLabConceptPage({ searchParams }: Props) {
               <p>Use a virtual character to express a version of yourself, a fictional persona, or an alternate identity. Explore movement, staging, camera language, and the feeling of performing inside a world that is not physical.</p>
               <p>Blender, Unity, VRChat, and OBS are being considered as tools in the workflow, not a guarantee that every participant must master all four. Prepared assets and desktop-mode alternatives would help artists at different technical levels participate.</p>
               <p className="text-sm font-medium">DCC is developing this concept in conversation with Miami artist and creative technologist Alec Jerome. His role and the final course structure remain subject to agreement.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-[var(--cdc-border)] bg-neutral-950 text-white" aria-labelledby="character-work-heading">
+          <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-300">World-building / Source material</p>
+                <h2 id="character-work-heading" className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">From an avatar to a scene.</h2>
+              </div>
+              <p className="max-w-sm text-sm leading-relaxed text-neutral-300">These images from Alec&apos;s earlier workshop materials help visualize the possibilities. They are not results from a DCC class.</p>
+            </div>
+            <div className="mt-8 grid min-w-0 gap-4 sm:grid-cols-2">
+              <figure className="min-w-0 overflow-hidden rounded-xl border border-white/15 bg-neutral-900">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="https://res.cloudinary.com/dck5rzi4h/image/upload/v1791916079/mirror-shot-dudu.jpg" alt="VRChat digital character framed in a mirror-style cinematic scene" width={1920} height={1080} loading="lazy" className="aspect-[16/10] w-full object-cover sm:aspect-[16/11]" />
+                <figcaption className="px-4 py-3 text-xs text-neutral-300">Mirror Shot Dudu · Virtual performance still · Supplied by Alec Jerome Kreisberg</figcaption>
+              </figure>
+              <figure className="min-w-0 overflow-hidden rounded-xl border border-white/15 bg-neutral-900">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="https://res.cloudinary.com/dck5rzi4h/image/upload/v1791916083/jazz-vrchat.jpg" alt="VRChat performance scene with digital character in an immersive virtual setting" width={1920} height={1080} loading="lazy" className="aspect-[16/10] w-full object-cover sm:aspect-[16/11]" />
+                <figcaption className="px-4 py-3 text-xs text-neutral-300">Jazz VRC · Virtual filmmaking still · Supplied by Alec Jerome Kreisberg</figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
+
+        <section id="collaborator" className="border-b border-[var(--cdc-border)]">
+          <div className="mx-auto grid max-w-6xl min-w-0 gap-8 px-4 py-14 sm:px-6 sm:py-20 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:items-center md:gap-12 lg:px-8">
+            <figure className="min-w-0 overflow-hidden rounded-xl bg-neutral-200 dark:bg-neutral-900">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="https://res.cloudinary.com/dck5rzi4h/image/upload/v1791916073/alec-vr-headset-portrait.jpg" alt="Alec Jerome Kreisberg wearing a virtual reality headset during an art presentation" width={1600} height={1067} loading="lazy" className="aspect-[4/3] w-full object-cover object-center sm:aspect-[5/4]" />
+              <figcaption className="px-3 py-2 text-xs text-neutral-500 dark:text-neutral-400">Alec wearing a VR headset · Photo supplied for earlier workshop promotion</figcaption>
+            </figure>
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-300">Creative conversation / Proposed instructor</p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Meet Alec Jerome Kreisberg.</h2>
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-neutral-700 dark:text-neutral-300">A Miami-based multidisciplinary artist and 3D animator working across virtual production, character design, real-time environments, filmmaking, and live performance. His original VRChat character-to-camera workshop provides a starting point for this proposed DCC course.</p>
+              <p className="mt-4 max-w-xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">DCC is exploring how Alec&apos;s expertise could support an artist-led lab that combines virtual self-portraiture with a collectively authored film. This page describes a proposal, not a confirmed teaching engagement.</p>
+              <div className="mt-6 flex flex-wrap gap-3 text-sm font-semibold">
+                <a href="https://www.twine.net/alecjerome" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-neutral-300 px-4 py-2.5 underline-offset-4 hover:border-teal-600 hover:underline dark:border-neutral-700">Alec&apos;s portfolio ↗</a>
+                <a href="https://www.miamidesigndistrict.com/blog/entries/curious-conversations-alec-kreisberg/" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-neutral-300 px-4 py-2.5 underline-offset-4 hover:border-teal-600 hover:underline dark:border-neutral-700">Artist interview ↗</a>
+              </div>
             </div>
           </div>
         </section>
