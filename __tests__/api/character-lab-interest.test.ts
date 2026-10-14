@@ -1,14 +1,14 @@
 /**
  * Unit coverage for Character Lab's lead-delivery decision boundary.
- * Mocks providers so tests cannot send mail or write to the real CRM.
+ * Mocks providers so tests cannot mockSend mail or write to the real CRM.
  */
 import { POST } from '@/app/api/dcc/character-lab-interest/route'
 import { createAirtableRecords, fetchAllRecords } from '@/lib/airtable/client'
 
-const send = jest.fn()
+const mockSend = jest.fn()
 jest.mock('resend', () => ({
   Resend: jest.fn().mockImplementation(() => ({
-    emails: { send: (...args: unknown[]) => send(...args) },
+    emails: { send: (...args: unknown[]) => mockSend(...args) },
   })),
 }))
 jest.mock('next/server', () => ({
@@ -68,26 +68,26 @@ describe('Character Lab inquiry delivery', () => {
   it('does not accept missing permission', async () => {
     const r = await result({ ...input, consent: false })
     expect(r.status).toBe(400)
-    expect(send).not.toHaveBeenCalled()
+    expect(mockSend).not.toHaveBeenCalled()
     expect(createAirtableRecords).not.toHaveBeenCalled()
   })
 
   it('does not pretend email was accepted when the provider fails', async () => {
     process.env.RESEND_API_KEY = 're_test_placeholder'
-    send.mockResolvedValue({ data: null, error: { message: 'sender not verified' } })
+    mockSend.mockResolvedValue({ data: null, error: { message: 'sender not verified' } })
     const r = await result(input)
     expect(r.status).toBe(503)
     expect(r.body).toMatchObject({ fallback: true })
-    expect(send).toHaveBeenCalledTimes(1)
+    expect(mockSend).toHaveBeenCalledTimes(1)
   })
 
   it('delivers to the DCC inbox only when Resend acknowledges it', async () => {
     process.env.RESEND_API_KEY = 're_test_placeholder'
-    send.mockResolvedValue({ data: { id: 'test_msg_123' }, error: null })
+    mockSend.mockResolvedValue({ data: { id: 'test_msg_123' }, error: null })
     const r = await result(input)
     expect(r.status).toBe(200)
     expect(r.body).toMatchObject({ ok: true, delivery: 'email' })
-    expect(send).toHaveBeenCalledWith(
+    expect(mockSend).toHaveBeenCalledWith(
       expect.objectContaining({
         to: ['m@moises.tech'],
         text: expect.stringContaining('Course Test Person'),
@@ -112,7 +112,7 @@ describe('Character Lab inquiry delivery', () => {
         expect.objectContaining({ fields: expect.objectContaining({ Visibility: 'Private' }) }),
       ])
     )
-    expect(send).not.toHaveBeenCalled()
+    expect(mockSend).not.toHaveBeenCalled()
   })
 
   it('fails closed when neither an email provider nor CRM is configured', async () => {
