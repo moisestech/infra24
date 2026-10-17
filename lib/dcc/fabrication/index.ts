@@ -227,6 +227,8 @@ export {
   buildHeatherCostLineItems,
   CAROL_PROPOSAL,
   OSCAR_PROPOSAL,
+  SANDRA_PROPOSAL,
+  FRANKIE_PROPOSAL,
 } from '@/lib/dcc/fabrication/proposals'
 
 export {
