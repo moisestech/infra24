@@ -31,7 +31,7 @@ describe('DCC pilot quote planning pages', () => {
     }
   })
 
-  it('preserves Carol's two requested colors while limiting the first planning test', () => {
+  it("preserves Carol's two requested colors while limiting the first planning test", () => {
     expect(CAROL_PROPOSAL.job.prototypeGoal).toContain('approximately 2-inch')
     expect(CAROL_PILOT_ESTIMATE.includes.join(' ')).toMatch(/one initial hollow-shell/i)
     expect(CAROL_PILOT_ESTIMATE.exclusions.join(' ')).toMatch(/second requested colorway/i)

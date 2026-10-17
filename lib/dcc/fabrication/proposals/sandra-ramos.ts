@@ -15,7 +15,7 @@ export const SANDRA_PROPOSAL: ClientProposal = {
   heroDek:
     'A first step toward a fabrication plan for Sandra Ramos. We will determine what needs to be made, what digital source exists, and whether the job requires modeling or direct printing.',
   job: {
-    id: 'dcc-crm-recMxJ2kWFsvreTnq',
+    id: 'recMxJ2kWFsvreTnq',
     jobNumber: 'SANDRA · SCOPE PENDING',
     slug: 'sandra-ramos',
     clientName: 'Sandra Ramos',

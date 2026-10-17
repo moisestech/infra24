@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { InternalQuoteEstimator } from '@/components/dcc/fabrication/internal/InternalQuoteEstimator'
+import { SprintEstimatePanel } from '@/components/dcc/fabrication/internal/SprintEstimatePanel'
 import { getClientProposal } from '@/lib/dcc/fabrication'
+import { getQuoteSprintEntry } from '@/lib/dcc/fabrication/sprint/quote-sprint'
 import { hasScaleUpAccess } from '@/lib/dcc/scale-up-auth'
 
 type PageProps = {
@@ -11,7 +13,8 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const proposal = getClientProposal(slug)
-  if (!proposal?.quoteLineItems?.length) {
+  const sprint = proposal ? getQuoteSprintEntry(proposal.slug) : undefined
+  if (!proposal || (!sprint && !proposal.quoteLineItems?.length)) {
     return { title: 'Internal quote', robots: { index: false, follow: false } }
   }
   return {
@@ -23,8 +26,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function FabricateInternalQuotePage({ params }: PageProps) {
   const { slug } = await params
   const proposal = getClientProposal(slug)
+  const sprint = proposal ? getQuoteSprintEntry(proposal.slug) : undefined
+  const hasFirmCostStack = Boolean(
+    proposal?.quoteLineItems?.length && proposal.costLineItems?.length
+  )
 
-  if (!proposal?.quoteLineItems?.length || !proposal.costLineItems?.length) {
+  if (!proposal || (!sprint && !hasFirmCostStack)) {
     notFound()
   }
 
@@ -46,7 +53,7 @@ export default async function FabricateInternalQuotePage({ params }: PageProps) 
         {proposal.job.clientName} · {proposal.job.serviceType.replace(/_/g, ' ')}
       </p>
       <div className="mt-8">
-        <InternalQuoteEstimator proposal={proposal} />
+        {sprint ? <SprintEstimatePanel entry={sprint} /> : <InternalQuoteEstimator proposal={proposal} />}
       </div>
     </div>
   )

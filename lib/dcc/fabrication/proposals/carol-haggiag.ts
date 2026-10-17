@@ -34,7 +34,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
   heroDek:
     'A focused first prototype — preserving texture and sculptural character from Carol’s existing brass casts while solving for lightness, mirrored pair geometry, and wearability.',
   job: {
-    id: 'dcc-job-002',
+    id: 'recSejBYq324jEpoq',
     jobNumber: 'DCC-JOB-002',
     slug: 'carol-haggiag',
     clientName: 'Carol Haggiag',
@@ -42,7 +42,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
     serviceType: 'PREPARE_PLUS_FABRICATE',
     status: 'PROTOTYPE_SCOPING',
     prototypeGoal:
-      'Preserve texture and character while developing an approximately 2-inch mirrored wearable form. First material test is one hollow shell; transparent fuchsia and high-visibility green are separately requested color directions.'
+      'Preserve texture and character while developing an approximately 2-inch mirrored wearable form. First material test is one hollow shell; transparent fuchsia and high-visibility green are separately requested color directions.',
     prototypeDesignation: 'Phase 1 · Lightweight Earring Prototype Study',
     intendedUse: 'Wearable earring prototype / jewelry study',
     clientSuppliedMaterial: true,
@@ -141,9 +141,9 @@ export const CAROL_PROPOSAL: ClientProposal = {
     serviceLabel: 'Phase 1 · Lightweight Earring Prototype Study',
     amountStatus: 'pending',
     materialNote:
-      'Transparent fuchsia and high-visibility green are requested directions. The provisional $225 allowance is for one initial hollow-shell material study in one tint, not both colors or a finished pair. Final price is pending physical review.'
+      'Transparent fuchsia and high-visibility green are requested directions. The provisional $225 allowance is for one initial hollow-shell material study in one tint, not both colors or a finished pair. Final price is pending physical review.',
     terms:
-      'A $225 limited first-test planning allowance is shown for discussion. The full multi-color wearable development scope remains unquoted until in-person cast review, material approval and machine access confirmation. No work starts without a separately approved fixed quote.'
+      'A $225 limited first-test planning allowance is shown for discussion. The full multi-color wearable development scope remains unquoted until in-person cast review, material approval and machine access confirmation. No work starts without a separately approved fixed quote.',
     includedAttempts:
       'Optional revision only if Prototype 1 indicates it is worthwhile — not unlimited iteration.',
     reprintNote: 'Additional studies or production paths are separately approved.',

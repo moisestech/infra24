@@ -15,7 +15,7 @@ export const FRANKIE_PROPOSAL: ClientProposal = {
   heroDek:
     'Two possible directions: understand a previous warped resin mold before repeating it, and investigate enlarging a coral-texture source for sculptural work. Each can become a separate bounded paid phase after reviewing the source files.',
   job: {
-    id: 'dcc-crm-recgNYcTAfSkE8Cwb',
+    id: 'recgNYcTAfSkE8Cwb',
     jobNumber: 'FRANKIE · SCOPE PENDING',
     slug: 'frankie-hsu',
     clientName: 'Frankie Hsu',

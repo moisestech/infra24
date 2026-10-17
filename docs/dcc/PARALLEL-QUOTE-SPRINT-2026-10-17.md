@@ -63,6 +63,30 @@ For each client:
 
 **Locust Projects**: $3,000 SmartSigns institutional display proposal is a separate institutional track, currently unsent draft; keep out of the 3D print count.
 
+## Airtable read (2026-10-17)
+
+Read-only check of Jobs & Quotes on `appWj8TFiOqUyQUfM` / `tbl91E7hFdhjwaj72`. No records were created or patched.
+
+Confirmed rows:
+
+- Oscar `recNEiD7GmiUXgaiV` — Status Needs Info. No Assigned Operator.
+- Carol `recSejBYq324jEpoq` — Status Scoping. No Assigned Operator.
+- Frankie `recgNYcTAfSkE8Cwb` — Status Needs Info. No Assigned Operator.
+- Sandra `recMxJ2kWFsvreTnq` — Status Needs Info. No Assigned Operator.
+
+People schema: the People field **Jobs & Quotes** is the inverse of Jobs **Assigned Operator**. Jobs has no Client, Requester, or Customer link. Client identity is text (`Contact Name`, `Email`). Do not write the People Jobs & Quotes link to attach a client.
+
+Proposed migration, not done in this change: add a **Client / Requester** link from Jobs to People, with its own inverse (for example Client jobs), separate from Assigned Operator.
+
+There is no Git Proposal Slug field. Notes already holds sprint context, and replacing it would wipe that history. The git `job.id` on each proposal is the link. An Airtable write waits until the Client / Requester field exists.
+
+Other live jobs worth watching, without new proposal pages:
+
+- Heather `rec7kiWSEqEINpcNG` is Closed / Lost at the old $625 prototype. Leave it closed.
+- Heather `rec3P0h2VA234UGRq` is a separate lighting and glass scoping row. Wait for a new concrete request.
+- Locust Projects SmartSigns stays an institutional track, outside the 3D print count.
+- No other open job currently has both a fabrication file link and a fabrication budget.
+
 ## Release gate
 
 GitHub reported failed Vercel status for the previous draft head. The connected Vercel team could not access \`moises-sanabrias-projects/infra24\`, so build logs were inaccessible. Identify the correct Vercel scope, inspect CI and run TS typecheck and Jest, verify authentication and source privacy, then obtain review. No production release or shareable client links before these pass.

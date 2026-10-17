@@ -15,7 +15,7 @@ export const OSCAR_PROPOSAL: ClientProposal = {
   heroDek:
     'A provisional image-to-object study based on Oscar’s balcony reference photographs. Final dimensions and use must be confirmed before any fixed production quote.',
   job: {
-    id: 'dcc-oscar-scope-pending',
+    id: 'recNEiD7GmiUXgaiV',
     jobNumber: 'OSCAR · SCOPE PENDING',
     slug: 'oscar-rieveling',
     clientName: 'Oscar Rieveling',
