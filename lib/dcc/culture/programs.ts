@@ -2,32 +2,14 @@ import { programCategoryForType, programHref } from '@/lib/dcc/culture/taxonomy'
 import type { DccProgram } from '@/lib/dcc/culture/types'
 
 /**
- * Public cultural programs. Clandestine is Program 001.
+ * Public cultural programs.
+ *
+ * DCC MIA is not participating in Clandestine Art Fair 2026. Do not republish that
+ * program, roster, or dates. The public cultural record that is live is the journal.
  *
  * Known facts only. Do not invent dates, venue, artist names, artworks, or sales terms.
  */
-export const DCC_PROGRAMS: DccProgram[] = [
-  {
-    id: 'clandestine-2026',
-    slug: 'clandestine-art-fair-2026',
-    title: 'DCC MIA at Clandestine Art Fair 2026',
-    subtitle: 'Program 001',
-    type: 'art-fair',
-    node: 'DCC MIA',
-    shortDescription:
-      'DCC MIA will present three artists at Clandestine Art Fair. This page is the lasting program record — before, during and after Art Week.',
-    description:
-      'DCC MIA will present three artists at Clandestine Art Fair. This page will hold the program record — artists, dates, venue, and documentation — when those facts are confirmed.',
-    artistIds: [],
-    projectIds: [],
-    editorialIds: [],
-    status: 'upcoming',
-    featured: true,
-    seoTitle: 'DCC MIA at Clandestine Art Fair 2026',
-    seoDescription:
-      'DCC MIA presents three artists at Clandestine Art Fair 2026. Artist names, dates and location will be published when confirmed.',
-  },
-]
+export const DCC_PROGRAMS: DccProgram[] = []
 
 export function isListedProgram(program: DccProgram): boolean {
   return program.status !== 'draft'

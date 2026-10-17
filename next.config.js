@@ -114,7 +114,11 @@ const nextConfig = {
 
   async redirects() {
     return [
-      { source: '/support', destination: '/grants', permanent: true },
+      {
+        source: '/programs/art-fairs/clandestine-art-fair-2026',
+        destination: '/journal',
+        permanent: true,
+      },
       {
         source: '/fabrication',
         destination: '/fabricate',

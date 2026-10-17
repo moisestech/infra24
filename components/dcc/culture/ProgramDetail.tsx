@@ -7,7 +7,6 @@ import { getCdcBreadcrumbs } from '@/lib/cdc/routes'
 import { cn } from '@/lib/utils'
 import {
   artistHref,
-  CLANDESTINE_PLACEHOLDER,
   EDITORIAL_TYPE_LABEL,
   formatCultureDateRange,
   getArtistsForProgram,
@@ -63,9 +62,7 @@ export function ProgramDetail({ program }: ProgramDetailProps) {
             ) : null}
             {isForthcoming ? (
               <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-                {program.id === 'clandestine-2026'
-                  ? CLANDESTINE_PLACEHOLDER
-                  : 'Participating artists, dates and venue details will be published when confirmed.'}
+                Participating artists, dates and venue details will be published when confirmed.
               </p>
             ) : (
               <>

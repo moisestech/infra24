@@ -8,22 +8,20 @@ const JOURNAL_EMPTY_CONVERSATIONS =
   'Conversations are coming. DCC will speak with artists, fabricators, technologists, educators, institutional leaders, and others building the infrastructure of digital culture. A podcast feed is not launching in this phase.'
 
 test.describe('dcc culture + fabricate smokes', () => {
-  test('home shows the cultural position and Clandestine as Now', async ({
+  test('home shows the cultural position and the journal as Now', async ({
     page,
   }) => {
     await page.goto('/')
     await expect(page.getByText(DCC_CULTURAL_POSITION)).toBeVisible()
     const now = page.locator('#now')
-    await expect(
-      now.getByRole('heading', { name: 'DCC MIA at Clandestine Art Fair 2026' })
-    ).toBeVisible()
+    await expect(now.getByRole('heading', { name: 'Journal', exact: true })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Moises Sanabria' })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Workshops' })).toBeVisible()
     await expect(now.getByRole('heading', { name: 'Fabricate' })).toBeVisible()
     await expect(
       now.getByRole('heading', { name: 'A Digital Lab Is Not a Room Full of Equipment' })
     ).toBeVisible()
-    await expect(now.getByRole('link', { name: 'Coming soon' })).toBeVisible()
+    await expect(now.getByRole('link', { name: 'Read the journal' })).toBeVisible()
     await expect(now.getByRole('link', { name: 'Full snapshot' })).toBeVisible()
     await expect(now.locator('[data-home-pathway]')).toHaveCount(9)
     await expect(now.getByRole('heading', { name: 'Living Network' })).toBeVisible()
@@ -34,32 +32,19 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(page).toHaveURL(/\/artists\/moises-sanabria/)
   })
 
-  test('programs index lists Clandestine without invented dates', async ({
-    page,
-  }) => {
+  test('programs index does not list Clandestine', async ({ page }) => {
     await page.goto('/programs')
+    await expect(page.getByRole('heading', { name: 'Public programs for digital culture' })).toBeVisible()
     await expect(
       page.getByRole('heading', { name: 'DCC MIA at Clandestine Art Fair 2026' })
-    ).toBeVisible()
-    await expect(page.getByText(/Art fair/i).first()).toBeVisible()
+    ).toHaveCount(0)
     await expect(page.getByText(/\b(10|15)\s*%/)).toHaveCount(0)
   })
 
-  test('Clandestine detail is a coming-soon page without invented facts', async ({
-    page,
-  }) => {
+  test('the old Clandestine URL redirects to the journal', async ({ page }) => {
     await page.goto('/programs/art-fairs/clandestine-art-fair-2026')
-    await expect(
-      page.getByRole('heading', { name: 'DCC MIA at Clandestine Art Fair 2026' })
-    ).toBeVisible()
-    await expect(page.getByText('Coming soon').first()).toBeVisible()
-    await expect(
-      page.getByText(/published when confirmed/i).first()
-    ).toBeVisible()
-    await expect(page.getByRole('heading', { name: 'Artists' })).toHaveCount(0)
-    await expect(page.getByText('Dates to be announced')).toHaveCount(0)
-    await expect(page.getByText(/\b(10|15)\s*%/)).toHaveCount(0)
-    await expect(page.getByText(/DCC × ITS3D|ITS3D Miami/i)).toHaveCount(0)
+    await expect(page).toHaveURL(/\/journal\/?$/)
+    await expect(page.getByText(/Clandestine/i)).toHaveCount(0)
   })
 
   test('public /now is a known-facts ledger without fake storefront language', async ({
@@ -69,11 +54,7 @@ test.describe('dcc culture + fabricate smokes', () => {
     await expect(page).not.toHaveURL(/sign-in/)
     await expect(page.getByRole('heading', { name: 'Where DCC MIA is now' })).toBeVisible()
     await expect(page.getByText(DCC_CULTURAL_POSITION)).toBeVisible()
-    await expect(
-      page.getByText(
-        'Artist names, selected works, dates and venue details will be published when confirmed.'
-      )
-    ).toBeVisible()
+    await expect(page.getByText(/Clandestine/i)).toHaveCount(0)
     await expect(
       page.getByText(/Saturday Lab; 3D Printing for Artists; AI → 3D Physical Object/)
     ).toBeVisible()
