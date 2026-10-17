@@ -35,7 +35,7 @@ Proposal slugs are **not** registered in `lib/cdc/routes.ts` and must stay out o
 | Surface | Audience | Gate |
 |---|---|---|
 | `/fabricate/proposals/*` | Client (Heather, Carol) | Shared proposal password |
-| `/fabricate/internal/[slug]` | DCC staff | Valid scale-up cookie. The CEO dashboard flag does not grant this route. |
+| `/fabricate/internal/[slug]` and `/dashboard/ceo` | DCC staff | Valid scale-up cookie. `DCC_CEO_DASHBOARD_ENABLED` does not grant either route. |
 
 Never mix them. Clients see **quote line items** (packaged amounts). Staff see **cost line items** (machine/operator/consumables) and contribution math.
 

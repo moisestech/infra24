@@ -26,6 +26,10 @@ export type SprintLiveJob = {
   documentationStatus: string
   blocker: string | null
   budgetRange: string | null
+  /** Jobs field Proposal Route. Separate from the commercial Status. */
+  proposalRoute: string | null
+  /** Jobs field Proposal Release Stage. Draft PR is not payment or acceptance. */
+  proposalReleaseStage: string | null
 }
 
 export type QuoteSprintLiveRead = {
@@ -157,6 +161,8 @@ async function fetchQuoteSprintJobs(apiKey: string): Promise<QuoteSprintLiveRead
       ),
       blocker: asText(record.fields['Current Blocker']),
       budgetRange: asText(record.fields['Budget Range']),
+      proposalRoute: asText(record.fields['Proposal Route']),
+      proposalReleaseStage: asText(record.fields['Proposal Release Stage']),
     }
   }
   return {

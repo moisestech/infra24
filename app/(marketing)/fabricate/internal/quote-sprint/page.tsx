@@ -79,7 +79,7 @@ export default async function QuoteSprintPage({ searchParams }: PageProps) {
         <table className="w-full min-w-[980px] text-left text-sm">
           <thead className="border-b border-[var(--cdc-border)] bg-neutral-50 dark:bg-neutral-900/40">
             <tr>
-              {['Client', 'Stage', 'Missing', 'Operator', 'Machine', 'Payment', 'Docs', 'Next'].map((heading) => (
+              {['Client', 'Stage', 'Release', 'Missing', 'Operator', 'Machine', 'Payment', 'Docs', 'Next'].map((heading) => (
                 <th
                   key={heading}
                   className="px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500"
@@ -112,6 +112,9 @@ export default async function QuoteSprintPage({ searchParams }: PageProps) {
                   <td className="px-3 py-2 text-neutral-700 dark:text-neutral-300">
                     {registryStage(entry, live)}
                     {job ? '' : ' · registry'}
+                  </td>
+                  <td className="px-3 py-2 text-neutral-700 dark:text-neutral-300">
+                    {job?.proposalReleaseStage ?? 'Not in Airtable'}
                   </td>
                   <td className="px-3 py-2 text-neutral-700 dark:text-neutral-300">
                     {entry.missingInputs.length ? entry.missingInputs.join('; ') : 'None listed'}
@@ -180,6 +183,8 @@ function SprintCard({ entry, live }: { entry: QuoteSprintEntry; live: QuoteSprin
           value={entry.airtableRecordId ?? 'No job record'}
         />
         <Field label="Last confirmed contact" value={entry.lastConfirmedClientContact} />
+        <Field label="Release stage" value={job?.proposalReleaseStage ?? 'Not in Airtable'} />
+        <Field label="Proposal route" value={job?.proposalRoute ?? 'Not in Airtable'} />
         <Field label="Payment" value={job?.paymentStatus ?? 'Not confirmed in accounting'} />
         {job?.budgetRange ? <Field label="Budget range" value={job.budgetRange} /> : null}
         <Field label="Production" value={job?.productionStatus ?? 'Not in production'} />

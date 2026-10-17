@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CeoScorecard } from '@/components/dcc/ceo/CeoScorecard'
-import { hasScaleUpAccess } from '@/lib/dcc/scale-up-auth'
+import { hasFabricationInternalAccess } from '@/lib/dcc/scale-up-auth'
 
 export const metadata: Metadata = {
   title: 'CEO dashboard',
@@ -11,12 +11,9 @@ export const metadata: Metadata = {
 export const revalidate = 300
 
 export default async function CeoDashboardPage() {
-  const scaleUpOk = await hasScaleUpAccess()
-  const flag = process.env.DCC_CEO_DASHBOARD_ENABLED === 'true'
-  // Allow via scale-up cookie OR explicit staff flag
-  if (!scaleUpOk && !flag && process.env.NODE_ENV === 'production') {
-    notFound()
-  }
+  // Cash, revenue, and pipeline stay behind the scale-up cookie.
+  // DCC_CEO_DASHBOARD_ENABLED does not grant this page.
+  if (!(await hasFabricationInternalAccess())) notFound()
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">

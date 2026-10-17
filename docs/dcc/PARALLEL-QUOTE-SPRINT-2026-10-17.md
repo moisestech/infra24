@@ -80,13 +80,21 @@ Safe migration, not done in this change: add an empty **Client / Requester** lin
 
 ## Privacy boundary
 
-The public repository already contains client names, planning allowances, and scope text. A password gate does not hide GitHub history, and moving files now does not erase that history. Do not rewrite history in this pass. Do not add emails, tokens, CAD, or message bodies.
+The public repository already contains:
 
-Staff pages may read operational Airtable fields server-side (status, blocker, budget text, dates). Those values stay out of git and off the client proposal pages. Client components do not import the sprint cost registry.
+- Client names for Carol, Oscar, Frankie, Sandra, Heather, and Gianni
+- Planning allowances of $225 and $350, and Heather’s declined $625 scope
+- Scope text for those inquiries
+- Airtable record ids
+- The internal $15 machine and $35 operator rate frame in `lib/dcc/fabrication/sprint/quote-sprint.ts`
 
-History purge happens only after explicit approval, using a private store later if the public narrative itself must leave GitHub.
+A password gate and `noindex` protect the rendered page. They do not hide GitHub. A scan of the proposal modules found no client emails, CAD files, tokens, or message bodies.
 
-Staff fabrication routes require the scale-up cookie in production. `DCC_CEO_DASHBOARD_ENABLED` does not grant that access, and a missing `INFRA24_CONTROL_SERVICE_TOKEN` fails closed. The CEO scorecard still uses the feature flag and is a separate follow-up.
+Do not move those narratives into a new store in this release. Moving files now does not erase history. Do not rewrite history. History purge, or a later private store, waits for an explicit approval.
+
+Staff pages may read operational Airtable fields server-side (status, blocker, budget text, proposal route, proposal release stage, dates). Those values stay out of git and off the client proposal pages. Client components do not import the sprint cost registry. `Draft PR` and `Accepted / Paid` are not payment. Do not mark a record `Shared for Client Review` from this change.
+
+Staff fabrication routes and `/dashboard/ceo` require the scale-up cookie in production. `DCC_CEO_DASHBOARD_ENABLED` does not grant that access. A missing `INFRA24_CONTROL_SERVICE_TOKEN` fails closed. The CEO page shows live cash, revenue, and pipeline, so the flag must not open it.
 
 There is no Git Proposal Slug field. Notes already holds sprint context, and replacing it would wipe that history. The git `job.id` on each proposal is the link. An Airtable write waits until the Client / Requester field exists.
 

@@ -45,12 +45,15 @@ describe('quote sprint live status', () => {
           documentationStatus: 'Not documented',
           blocker: null,
           budgetRange: null,
+          proposalRoute: '/fabricate/proposals/carol-haggiag',
+          proposalReleaseStage: 'Draft PR',
         },
       },
     }
     const counts = sprintOperatingCounts(QUOTE_SPRINT, live)
     expect(counts.accepted).toBe(1)
     expect(counts.paid).toBe(0)
+    expect(live.jobs.recSejBYq324jEpoq?.proposalReleaseStage).toBe('Draft PR')
   })
 
   it('filters active blocked inquiries without dropping the historical row from all', () => {
