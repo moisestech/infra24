@@ -4,6 +4,8 @@ import {
   pilotEstimateLinesTotal,
   CAROL_PROPOSAL,
   OSCAR_PROPOSAL,
+  SANDRA_PROPOSAL,
+  FRANKIE_PROPOSAL,
   getClientProposal,
   getMachineCatalogEntry,
   proposalGreetingName,
@@ -46,5 +48,22 @@ describe('DCC pilot quote planning pages', () => {
     expect(getMachineCatalogEntry('bambu-lab-h2s')?.accessStatus).toBe('unconfirmed')
     expect(getMachineCatalogEntry('bambu-lab-h2d')?.accessStatus).toBe('unconfirmed')
     expect(OSCAR_PILOT_ESTIMATE.exclusions.join(' ')).toMatch(/structural/i)
+  })
+})
+
+
+describe('discovery proposal protections', () => {
+  it('keeps Sandra and Frankie in unquoted, private scope review', () => {
+    for (const proposal of [SANDRA_PROPOSAL, FRANKIE_PROPOSAL]) {
+      expect(getClientProposal(proposal.slug)).toBe(proposal)
+      expect(proposal.job.paymentStatus).toBe('not_quoted')
+      expect(proposal.pricing?.amountStatus).toBe('pending')
+      expect(proposal.pricing?.amountUsd).toBeUndefined()
+      expect(proposal.quoteLineItems?.every((line) => line.amountStatus === 'pending')).toBe(true)
+      expect(proposal.job.documentationRights.publicCaseStudy).toBe(false)
+    }
+    expect(SANDRA_PROPOSAL.media).toHaveLength(0)
+    expect(FRANKIE_PROPOSAL.media).toHaveLength(0)
+    expect(FRANKIE_PROPOSAL.pricing?.terms).toMatch(/separately approved/i)
   })
 })
