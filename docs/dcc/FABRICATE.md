@@ -26,7 +26,7 @@ Payments, operator claim, and live status are **manual**. Stripe is not enabled.
 | `/fabricate/start` | Public intake |
 | `/fabricate/quote` | Redirects to `/start` (query preserved) |
 | `/fabricate/proposals/*` | Private, password cookie, noindex |
-| `/fabricate/internal/[slug]` | Staff-only economics estimator, scale-up / CEO gate, noindex |
+| `/fabricate/internal/[slug]` | Staff-only economics estimator, scale-up cookie, noindex |
 
 Proposal slugs are **not** registered in `lib/cdc/routes.ts` and must stay out of the sitemap.
 
@@ -35,7 +35,7 @@ Proposal slugs are **not** registered in `lib/cdc/routes.ts` and must stay out o
 | Surface | Audience | Gate |
 |---|---|---|
 | `/fabricate/proposals/*` | Client (Heather, Carol) | Shared proposal password |
-| `/fabricate/internal/[slug]` | DCC staff | `hasScaleUpAccess()` or `DCC_CEO_DASHBOARD_ENABLED` |
+| `/fabricate/internal/[slug]` | DCC staff | Valid scale-up cookie. The CEO dashboard flag does not grant this route. |
 
 Never mix them. Clients see **quote line items** (packaged amounts). Staff see **cost line items** (machine/operator/consumables) and contribution math.
 

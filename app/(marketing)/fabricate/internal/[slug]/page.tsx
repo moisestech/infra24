@@ -4,19 +4,23 @@ import { InternalQuoteEstimator } from '@/components/dcc/fabrication/internal/In
 import { SprintEstimatePanel } from '@/components/dcc/fabrication/internal/SprintEstimatePanel'
 import { getClientProposal } from '@/lib/dcc/fabrication'
 import { getQuoteSprintEntry } from '@/lib/dcc/fabrication/sprint/quote-sprint'
-import { hasScaleUpAccess } from '@/lib/dcc/scale-up-auth'
+import { hasFabricationInternalAccess } from '@/lib/dcc/scale-up-auth'
 
 type PageProps = {
   params: Promise<{ slug: string }>
 }
 
+const PRIVATE_METADATA: Metadata = {
+  title: 'Internal quote',
+  robots: { index: false, follow: false },
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  if (!(await hasFabricationInternalAccess())) return PRIVATE_METADATA
   const { slug } = await params
   const proposal = getClientProposal(slug)
   const sprint = proposal ? getQuoteSprintEntry(proposal.slug) : undefined
-  if (!proposal || (!sprint && !proposal.quoteLineItems?.length)) {
-    return { title: 'Internal quote', robots: { index: false, follow: false } }
-  }
+  if (!proposal || (!sprint && !proposal.quoteLineItems?.length)) return PRIVATE_METADATA
   return {
     title: `${proposal.job.jobNumber} · Internal economics`,
     robots: { index: false, follow: false },
@@ -24,6 +28,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function FabricateInternalQuotePage({ params }: PageProps) {
+  if (!(await hasFabricationInternalAccess())) notFound()
+
   const { slug } = await params
   const proposal = getClientProposal(slug)
   const sprint = proposal ? getQuoteSprintEntry(proposal.slug) : undefined
@@ -32,12 +38,6 @@ export default async function FabricateInternalQuotePage({ params }: PageProps) 
   )
 
   if (!proposal || (!sprint && !hasFirmCostStack)) {
-    notFound()
-  }
-
-  const scaleUpOk = await hasScaleUpAccess()
-  const flag = process.env.DCC_CEO_DASHBOARD_ENABLED === 'true'
-  if (!scaleUpOk && !flag && process.env.NODE_ENV === 'production') {
     notFound()
   }
 

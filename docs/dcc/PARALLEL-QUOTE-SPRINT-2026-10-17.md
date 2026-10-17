@@ -76,7 +76,17 @@ Confirmed rows:
 
 People schema: the People field **Jobs & Quotes** is the inverse of Jobs **Assigned Operator**. Jobs has no Client, Requester, or Customer link. Client identity is text (`Contact Name`, `Email`). Do not write the People Jobs & Quotes link to attach a client.
 
-Proposed migration, not done in this change: add a **Client / Requester** link from Jobs to People, with its own inverse (for example Client jobs), separate from Assigned Operator.
+Safe migration, not done in this change: add an empty **Client / Requester** link from Jobs to People, with its own inverse (for example Client jobs), separate from Assigned Operator. Leave it empty. Backfill a row only after a unique Person id is confirmed. A Contact Name text match can attach the wrong person, so this pass does not create or backfill that link.
+
+## Privacy boundary
+
+The public repository already contains client names, planning allowances, and scope text. A password gate does not hide GitHub history, and moving files now does not erase that history. Do not rewrite history in this pass. Do not add emails, tokens, CAD, or message bodies.
+
+Staff pages may read operational Airtable fields server-side (status, blocker, budget text, dates). Those values stay out of git and off the client proposal pages. Client components do not import the sprint cost registry.
+
+History purge happens only after explicit approval, using a private store later if the public narrative itself must leave GitHub.
+
+Staff fabrication routes require the scale-up cookie in production. `DCC_CEO_DASHBOARD_ENABLED` does not grant that access, and a missing `INFRA24_CONTROL_SERVICE_TOKEN` fails closed. The CEO scorecard still uses the feature flag and is a separate follow-up.
 
 There is no Git Proposal Slug field. Notes already holds sprint context, and replacing it would wipe that history. The git `job.id` on each proposal is the link. An Airtable write waits until the Client / Requester field exists.
 

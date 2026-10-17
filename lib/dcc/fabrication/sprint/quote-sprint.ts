@@ -239,6 +239,7 @@ const HEATHER: QuoteSprintEntry = {
   role: 'historical',
   clientName: 'Heather Deitch',
   projectTitle: 'Existing prototype history',
+  airtableRecordId: 'rec7kiWSEqEINpcNG',
   stage: 'Closed',
   workingAllowanceUsd: null,
   confidence: 'high',

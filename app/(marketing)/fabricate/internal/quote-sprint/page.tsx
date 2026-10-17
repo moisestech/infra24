@@ -7,21 +7,35 @@ import {
   sprintPendingRows,
   type QuoteSprintEntry,
 } from '@/lib/dcc/fabrication/sprint/quote-sprint'
-import { hasScaleUpAccess } from '@/lib/dcc/scale-up-auth'
+import { hasFabricationInternalAccess } from '@/lib/dcc/scale-up-auth'
+import {
+  airtableJobHref,
+  HEATHER_GLASS_JOB_ID,
+  readQuoteSprintJobs,
+  registryStage,
+  sprintOperatingCounts,
+  filterSprintEntries,
+  type QuoteSprintLiveRead,
+} from '@/lib/dcc/fabrication/sprint/live-jobs'
 
 export const metadata: Metadata = {
   title: 'Quote sprint',
   robots: { index: false, follow: false },
 }
 
-export default async function QuoteSprintPage() {
-  const scaleUpOk = await hasScaleUpAccess()
-  const flag = process.env.DCC_CEO_DASHBOARD_ENABLED === 'true'
-  if (!scaleUpOk && !flag && process.env.NODE_ENV === 'production') {
-    notFound()
-  }
+type PageProps = {
+  searchParams?: Promise<{ stage?: string; readiness?: string }>
+}
 
+export default async function QuoteSprintPage({ searchParams }: PageProps) {
+  if (!(await hasFabricationInternalAccess())) notFound()
+
+  const filters = (await searchParams) ?? {}
+  const live = await readQuoteSprintJobs()
+  const visible = filterSprintEntries(QUOTE_SPRINT, live, filters)
+  const counts = sprintOperatingCounts(QUOTE_SPRINT, live)
   const active = QUOTE_SPRINT.filter((entry) => entry.role === 'active')
+  const glass = live.jobs[HEATHER_GLASS_JOB_ID]
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
@@ -33,13 +47,95 @@ export default async function QuoteSprintPage() {
       </h1>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
         {active.length} inquiries can be scoped at once. None of them is a paid job.
-        Concurrent production stays capped until a quote is accepted and a machine slot
-        is confirmed. Change assumptions in the quote-sprint registry, not in each page.
+        Production stays capped at {counts.productionCap} jobs. {live.detail}
       </p>
+
+      <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+        <Count label="Scopes prepared" value={counts.scopesPrepared} />
+        <Count label="Quotes issued" value={counts.quotesIssued} />
+        <Count label="Accepted" value={counts.accepted} />
+        <Count label="Paid" value={counts.paid} />
+        <Count label="In production" value={`${counts.inProduction}/${counts.productionCap}`} />
+        <Count label="Delivered" value={counts.delivered} />
+        <Count label="Documented" value={counts.documented} />
+      </dl>
+
+      <div className="mt-6 flex flex-wrap gap-2 text-sm">
+        <FilterLink href="/fabricate/internal/quote-sprint" label="All" />
+        <FilterLink href="/fabricate/internal/quote-sprint?readiness=blocked" label="Blocked" />
+        <FilterLink href="/fabricate/internal/quote-sprint?readiness=ready" label="Ready to quote" />
+        <FilterLink href="/fabricate/internal/quote-sprint?stage=Inquiry" label="Inquiry" />
+        <FilterLink href="/fabricate/internal/quote-sprint?stage=Scoped" label="Scoped" />
+        <FilterLink href="/fabricate/internal/quote-sprint?stage=Scoping" label="Registry scoping" />
+      </div>
+
+      {glass ? (
+        <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
+          {`Separate Heather lighting row is ${glass.airtableStatus}. It is not a sprint job.`}
+        </p>
+      ) : null}
+
+      <div className="mt-6 overflow-x-auto rounded-2xl border border-[var(--cdc-border)]">
+        <table className="w-full min-w-[980px] text-left text-sm">
+          <thead className="border-b border-[var(--cdc-border)] bg-neutral-50 dark:bg-neutral-900/40">
+            <tr>
+              {['Client', 'Stage', 'Missing', 'Operator', 'Machine', 'Payment', 'Docs', 'Next'].map((heading) => (
+                <th
+                  key={heading}
+                  className="px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500"
+                >
+                  {heading}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--cdc-border)]">
+            {visible.map((entry) => {
+              const job = entry.airtableRecordId ? live.jobs[entry.airtableRecordId] : undefined
+              return (
+                <tr key={entry.slug}>
+                  <td className="px-3 py-2 text-neutral-900 dark:text-neutral-100">
+                    <span className="block">{entry.clientName}</span>
+                    <span className="mt-1 flex flex-wrap gap-2 text-xs">
+                      {entry.role !== 'candidate' ? (
+                        <Link href={`/fabricate/proposals/${entry.slug}`} className="underline-offset-4 hover:underline">
+                          Proposal
+                        </Link>
+                      ) : null}
+                      {entry.airtableRecordId ? (
+                        <a href={airtableJobHref(entry.airtableRecordId)} className="underline-offset-4 hover:underline" rel="noreferrer">
+                          Airtable
+                        </a>
+                      ) : null}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2 text-neutral-700 dark:text-neutral-300">
+                    {registryStage(entry, live)}
+                    {job ? '' : ' · registry'}
+                  </td>
+                  <td className="px-3 py-2 text-neutral-700 dark:text-neutral-300">
+                    {entry.missingInputs.length ? entry.missingInputs.join('; ') : 'None listed'}
+                  </td>
+                  <td className="px-3 py-2 text-neutral-700 dark:text-neutral-300">{entry.proposedOperator}</td>
+                  <td className="px-3 py-2 text-neutral-700 dark:text-neutral-300">{entry.proposedMachine}</td>
+                  <td className="px-3 py-2 text-neutral-700 dark:text-neutral-300">
+                    {job?.paymentStatus ?? 'Not confirmed in accounting'}
+                  </td>
+                  <td className="px-3 py-2 text-neutral-700 dark:text-neutral-300">
+                    {job?.documentationStatus ?? entry.documentationPermission}
+                  </td>
+                  <td className="px-3 py-2 text-neutral-700 dark:text-neutral-300">{entry.nextAction}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
       <ul className="mt-8 space-y-4">
-        {QUOTE_SPRINT.map((entry) => (
+        {visible.map((entry) => (
           <li key={entry.slug}>
-            <SprintCard entry={entry} />
+            <SprintCard entry={entry} live={live} />
           </li>
         ))}
       </ul>
@@ -47,11 +143,13 @@ export default async function QuoteSprintPage() {
   )
 }
 
-function SprintCard({ entry }: { entry: QuoteSprintEntry }) {
+function SprintCard({ entry, live }: { entry: QuoteSprintEntry; live: QuoteSprintLiveRead }) {
   const pending = sprintPendingRows(entry.rows)
+  const job = entry.airtableRecordId ? live.jobs[entry.airtableRecordId] : undefined
   const proposalHref =
     entry.role === 'candidate' ? null : `/fabricate/proposals/${entry.slug}`
   const economicsHref = entry.role === 'active' ? `/fabricate/internal/${entry.slug}` : null
+  const airtableHref = entry.airtableRecordId ? airtableJobHref(entry.airtableRecordId) : null
 
   return (
     <article className="rounded-2xl border border-[var(--cdc-border)] p-5">
@@ -60,7 +158,8 @@ function SprintCard({ entry }: { entry: QuoteSprintEntry }) {
           {entry.clientName}
         </h2>
         <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
-          {entry.role} · {entry.stage}
+          {entry.role} · {registryStage(entry, live)}
+          {job ? '' : ' · registry'}
         </p>
       </div>
       <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">{entry.projectTitle}</p>
@@ -81,7 +180,13 @@ function SprintCard({ entry }: { entry: QuoteSprintEntry }) {
           value={entry.airtableRecordId ?? 'No job record'}
         />
         <Field label="Last confirmed contact" value={entry.lastConfirmedClientContact} />
-        <Field label="Documentation" value={entry.documentationPermission} />
+        <Field label="Payment" value={job?.paymentStatus ?? 'Not confirmed in accounting'} />
+        {job?.budgetRange ? <Field label="Budget range" value={job.budgetRange} /> : null}
+        <Field label="Production" value={job?.productionStatus ?? 'Not in production'} />
+        <Field
+          label="Documentation"
+          value={job?.documentationStatus ?? entry.documentationPermission}
+        />
         <Field
           label="Technical review"
           value={
@@ -93,6 +198,12 @@ function SprintCard({ entry }: { entry: QuoteSprintEntry }) {
           }
         />
       </dl>
+      {job?.blocker ? (
+        <p className="mt-4 text-sm text-neutral-800 dark:text-neutral-200">
+          <span className="font-medium">Blocker. </span>
+          {job.blocker}
+        </p>
+      ) : null}
       {entry.missingInputs.length ? (
         <div className="mt-4">
           <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
@@ -127,6 +238,11 @@ function SprintCard({ entry }: { entry: QuoteSprintEntry }) {
             Internal estimate
           </Link>
         ) : null}
+        {airtableHref ? (
+          <a href={airtableHref} className="underline-offset-4 hover:underline" rel="noreferrer">
+            Airtable job
+          </a>
+        ) : null}
         {proposalHref ? (
           <Link href={proposalHref} className="underline-offset-4 hover:underline">
             Client proposal
@@ -134,6 +250,26 @@ function SprintCard({ entry }: { entry: QuoteSprintEntry }) {
         ) : null}
       </div>
     </article>
+  )
+}
+
+function Count({ label, value }: { label: string; value: number | string }) {
+  return (
+    <div className="rounded-2xl border border-[var(--cdc-border)] px-3 py-2">
+      <dt className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">{label}</dt>
+      <dd className="mt-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{value}</dd>
+    </div>
+  )
+}
+
+function FilterLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex min-h-10 items-center rounded-full border border-[var(--cdc-border)] px-3 text-neutral-800 hover:bg-neutral-50 dark:text-neutral-100 dark:hover:bg-neutral-900"
+    >
+      {label}
+    </Link>
   )
 }
 
