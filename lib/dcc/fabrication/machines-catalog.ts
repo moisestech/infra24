@@ -2,6 +2,30 @@ import type { Machine } from '@/lib/dcc/fabrication/schema'
 
 export const FABRICATION_MACHINES: Machine[] = [
   {
+    id: 'bambu-lab-h2s',
+    name: 'Bambu Lab H2S',
+    manufacturer: 'Bambu Lab',
+    model: 'H2S',
+    process: 'FDM',
+    location: 'Studio 43 / Bakehouse Art Complex',
+    owner: 'DCC operated — ownership and funding terms require documentation',
+    accessStatus: 'unconfirmed',
+    compatibleMaterials: [],
+    active: true,
+  },
+  {
+    id: 'bambu-lab-h2d',
+    name: 'Bambu Lab H2D',
+    manufacturer: 'Bambu Lab',
+    model: 'H2D',
+    process: 'FDM',
+    location: 'Studio 43 / Bakehouse Art Complex',
+    owner: 'DCC operated — ownership and funding terms require documentation',
+    accessStatus: 'unconfirmed',
+    compatibleMaterials: [],
+    active: true,
+  },
+  {
     id: 'anycubic-photon-mono-m7-max',
     name: 'Anycubic Photon Mono M7 Max',
     manufacturer: 'Anycubic',

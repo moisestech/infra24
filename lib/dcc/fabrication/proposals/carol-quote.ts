@@ -1,6 +1,6 @@
 import type { QuoteLineItem } from '@/lib/dcc/fabrication/schema'
 
-/** Scope layers for Carol — amounts pending until physical object review. */
+/** Future scope layers for Carol — amounts pending; separate from the $225 single-study planning scenario. */
 export const CAROL_QUOTE_LAYERS: QuoteLineItem[] = [
   {
     id: 'source-digital',
@@ -39,10 +39,10 @@ export const CAROL_QUOTE_LAYERS: QuoteLineItem[] = [
     label: 'Lightweight prototype fabrication',
     shortLabel: 'FABRICATION',
     description:
-      'One thin hollow resin shell, then transparent fuchsia and high-visibility green.',
+      'First thin hollow resin shell; both requested colorway variants require separate scope and fabrication approval.',
     clientReceives: [
       'One hollow resin shell',
-      'Fuchsia and high-visibility green transparent colorways',
+      'Transparent colorway development after the first-test checkpoint (not included in the provisional $225 allowance)',
       'Machine + post-processing to review checkpoint',
     ],
     category: 'fabrication',
