@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { ClientQuestionnaire } from '@/components/dcc/fabrication/proposal/ClientQuestionnaire'
+import { PilotEstimate } from '@/components/dcc/fabrication/proposal/PilotEstimate'
+import { CAROL_PILOT_ESTIMATE } from '@/lib/dcc/fabrication/proposals/pilot-estimates'
 import { ProposalChrome } from '@/components/dcc/fabrication/proposal/ProposalChrome'
 import { ProposalMediaFigure } from '@/components/dcc/fabrication/proposal/ProposalMediaFigure'
 import {
@@ -160,9 +162,10 @@ export default function CarolHaggiagProposalPage() {
       >
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
           Carol asked for two transparent colorways: fuchsia and high-visibility
-          green. Both are tinted clear resin. The wearable study is a thin hollow
-          shell with a drain, so the print is not a solid copy of the brass
-          volume. Gray and black resin, and an FDM silhouette, stay optional
+          green. Both are tinted clear resin. The proposed first material test is a thin hollow
+          shell with a drain, not a solid copy of the brass volume. The two requested
+          colorways are separate production tests: the planning allowance below covers
+          only one first-color test. Gray and black resin, and an FDM silhouette, stay optional
           checks — they are not the colors she asked for.
         </p>
         <div className="mt-4">
@@ -255,12 +258,13 @@ export default function CarolHaggiagProposalPage() {
         title="Prototype environment"
       >
         <p>
-          Goal: one thin hollow resin shell at Bakehouse, then the fuchsia and
-          high-visibility green transparent colorways.
+          Goal: one first-color thin hollow resin shell at Bakehouse. The requested
+          fuchsia and high-visibility green variants require separately approved
+          material tests after feasibility is established.
         </p>
         <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
-          The resin workflow below shows the print path for those transparent
-          studies. FDM is only a silhouette check.
+          The resin workflow below illustrates the potential transparent studies,
+          not completed production. FDM is only a silhouette check.
         </p>
         {machine ? <MachineNote machine={machine} /> : null}
         {media('C_RESIN_WORKFLOW')}
@@ -314,6 +318,11 @@ export default function CarolHaggiagProposalPage() {
       <ProposalSection id="price" kicker="14 · Price structure" title="Price structure">
         {pricing ? (
           <>
+            <PilotEstimate plan={CAROL_PILOT_ESTIMATE} />
+            <p className="text-xs text-neutral-500">
+              The detailed stages below describe the broader potential engagement.
+              Their prices remain pending; they are not included in the first-test allowance.
+            </p>
             <PendingQuoteLayers layers={CAROL_QUOTE_LAYERS} intro={pricing.terms} />
             <PaymentTerms
               terms={pricing.terms}
