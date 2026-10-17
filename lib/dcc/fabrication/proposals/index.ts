@@ -1,6 +1,8 @@
 import { CAROL_PROPOSAL } from '@/lib/dcc/fabrication/proposals/carol-haggiag'
 import { HEATHER_PROPOSAL } from '@/lib/dcc/fabrication/proposals/heather-deitch'
 import { OSCAR_PROPOSAL } from '@/lib/dcc/fabrication/proposals/oscar-rieveling'
+import { FRANKIE_PROPOSAL } from '@/lib/dcc/fabrication/proposals/frankie-hsu'
+import { SANDRA_PROPOSAL } from '@/lib/dcc/fabrication/proposals/sandra-ramos'
 import type { ClientProposal } from '@/lib/dcc/fabrication/schema'
 
 export {
@@ -24,8 +26,16 @@ export {
 } from '@/lib/dcc/fabrication/proposals/heather-quote'
 
 export { OSCAR_PROPOSAL } from '@/lib/dcc/fabrication/proposals/oscar-rieveling'
+export { SANDRA_PROPOSAL } from '@/lib/dcc/fabrication/proposals/sandra-ramos'
+export { FRANKIE_PROPOSAL } from '@/lib/dcc/fabrication/proposals/frankie-hsu'
 
-export const CLIENT_PROPOSALS: ClientProposal[] = [HEATHER_PROPOSAL, CAROL_PROPOSAL, OSCAR_PROPOSAL]
+export const CLIENT_PROPOSALS: ClientProposal[] = [
+  HEATHER_PROPOSAL,
+  CAROL_PROPOSAL,
+  OSCAR_PROPOSAL,
+  SANDRA_PROPOSAL,
+  FRANKIE_PROPOSAL,
+]
 
 export function getClientProposal(slug: string): ClientProposal | undefined {
   return CLIENT_PROPOSALS.find((p) => p.slug === slug)
