@@ -24,10 +24,10 @@
 | Branch | `main` |
 | Last culture commits | Journal Phase 3: Public Art essay is the second reference MDX article (figures, citations, Technical Rider). Cost essay remains the first reference. No CMS. |
 | Working language | DCC MIA is a digital cultural center for artists working through the technological conditions of the present. |
-| Culture records published | 1 program (Clandestine 2026, coming soon). **3 artists** (Moises, Fabiola, Angelo — not attached to Clandestine). **5 journal essays** (all `bodyPath` MDX). 0 culture projects. |
+| Culture records published | **0 programs.** Clandestine Art Fair 2026 is withdrawn. **3 artists** (Moises, Fabiola, Angelo). **5 journal essays** (all `bodyPath` MDX). 0 culture projects. The homepage Now card points at `/journal`. |
 | Fabricate Phase 2 | On `main`: Field Lab, estimate planner, `/fabricate/projects`. Hero is **conceptual** (not documentary). |
 | Fabricate Phase 1 studio | `/fabricate/services/*`, `/fabricate/start`, password-gated proposals. See [`FABRICATE.md`](./FABRICATE.md). |
-| Images | **Filled vs not:** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md) § Filled vs not. Teaching stills are conceptual; documentary fabricate/Clandestine/Bakehouse/class shots are not filled. |
+| Images | **Filled vs not:** [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md) § Filled vs not. Teaching stills are conceptual; documentary fabricate/Bakehouse/class shots are not filled. Do not shoot Clandestine. |
 
 ### Namespace commit rule
 
@@ -63,12 +63,12 @@ The site stores the **records and links**. It does not auto-post to Instagram or
 | Route | Namespace | Image | Motion / interactivity | Status |
 |---|---|---|---|---|
 | `/` hero, collage, pathways | marketing | Real Cloudinary photography | Rotating headlines (reduced-motion aware); card hover scale | Shipped |
-| `/` `#now` band | culture | None (text + Era effects) | Pathway cards share Era hover/effects | Snapshot (program, artist, journal) lives inside the same 9-pathway grid as workshops, fabricate, newsletter, network, events, open lab. “Full snapshot” → `/now`. Clinics / public interfaces stay on `/era`. |
+| `/` `#now` band | culture | None (text + Era effects) | Pathway cards share Era hover/effects | Snapshot (journal, artist, featured essay) lives inside the same 9-pathway grid as workshops, fabricate, newsletter, network, events, open lab. “Full snapshot” → `/now`. Clinics / public interfaces stay on `/era`. |
 | `/now` | culture | None | Still | Public known-facts ledger; live journal slot is latest by `publishedAt` (Cost essay); Conversations still forthcoming |
 | `/artists` | culture | Knight / Edge Zones portraits | Hover when `src` exists | Three founders published; not a Clandestine roster |
 | `/artists/[slug]` | culture | Portrait + hero where confirmed | Hover with `src`; 360 on Moises + Fabiola | Angelo has no tour |
-| `/programs` | culture + CDC | Clandestine card has fallback | CardGrid hover on taxonomy cards | Shipped; Current/Upcoming + existing service catalog |
-| `/programs/art-fairs/clandestine-art-fair-2026` | culture | No hero | Still; no fake gallery/testimonials | Program 001 coming-soon page; roster/dates/venue unpublished |
+| `/programs` | culture + CDC | No current program card | CardGrid hover on taxonomy cards | Shipped; program areas stay. Clandestine is withdrawn. |
+| `/programs/art-fairs/clandestine-art-fair-2026` | redirect | — | — | Permanent redirect to `/journal`. DCC is not participating. |
 | `/journal` | culture + CDC | Graphic covers on Cloudinary (`dccmiami/journal/…`); Cost and Public Art essays have no covers yet | Card hover when `src` exists | Thesis-driven index: opening sequence (Lab → Cost → Public Art) plus essay archive, Conversations empty state, six topic labels. Empty CDC shells not advertised. No podcast; no CMS; newsletter/RSS still pending |
 | `/journal/conversations` | culture | None | Still | Empty on purpose |
 | `/journal/[category]/[slug]` | culture | Graphic covers as `heroImage` (takes precedence over unused `heroSlot`); Cost and Public Art essays use `heroSlot` until a cover exists; older essays 02–03 still have inline photo/map slots | Culture body via `bodyPath` MDX (`compileMDX` / `next-mdx-remote/rsc`) | Five essays at `content/journal/<slug>.mdx`. Cost essay is the first reference (living metadata, diagrams, frameworks). Public Art essay is the second (figures, citations, Technical Rider). No invented operating numbers. |
@@ -120,9 +120,9 @@ Moises Studio 43 + Fabiola 360s. Light `tone` on artist pages. Angelo: no tour �
 
 Full production list (types, sizes, primary + alternate, make order): [`IMAGE_SHOT_LIST.md`](./IMAGE_SHOT_LIST.md).
 
-### Culture — founder portraits; four journal diagrams live; photo/hero slots pending; Clandestine still has no program images
+### Culture — founder portraits; journal is the public Now record; photo/hero slots pending
 
-Published artists reuse Knight / Edge Zones / homepage Cloudinary URLs. Five journal essays are published. Three have graphic covers at `dccmiami/journal/…`. Cost and Public Art essays have no covers yet. Cost uses native HTML diagrams; Public Art uses a responsibility stack plus capital/operating compare, with `EditorialFigure` slots empty until licensed images exist. Remaining photo/map slots stay PLACEHOLDER (not documentary). `DCC_PROJECTS = []`. Clandestine has no `heroImage`.
+Published artists reuse Knight / Edge Zones / homepage Cloudinary URLs. Five journal essays are published. Three have graphic covers at `dccmiami/journal/…`. Cost and Public Art essays have no covers yet. Cost uses native HTML diagrams; Public Art uses a responsibility stack plus capital/operating compare, with `EditorialFigure` slots empty until licensed images exist. Remaining photo/map slots stay PLACEHOLDER (not documentary). `DCC_PROJECTS = []`. Clandestine is withdrawn and has no public page.
 
 Journal image production grammar: Studio 43 as it actually is — industrial, dense, equipment-heavy, shelves, screens, cables. No plants, giant windows, palm-tree campus, or luxury lab fiction. Do not generate photography for remaining slots.
 
@@ -163,11 +163,9 @@ Eleven conceptual educational stills wired on `/workshop/3d-printing-for-artists
 
 ## Content gaps (blocked on real facts)
 
-- Three Clandestine participating artist names (founders on `/artists` are **not** that roster)
-- Exact dates, location, DCC program statement
+- Clandestine Art Fair 2026 is withdrawn. Do not fill a roster, dates, or venue for it.
 - Sales / commission terms (do not encode until disclosed)
 - First DCC Conversation guests + recording/transcript
-- Post-fair installation photography
 - Longer founder bios / practice tags beyond Edge Zones one-liners
 
 ### Education / money (do not build checkout this sprint)
@@ -209,9 +207,8 @@ Local Next production build succeeded 24 Aug 2026 (`/artists` SSG for Moises, Fa
 
 ## Open questions
 
-1. Names of the three Clandestine participating artists (founders are published; fair roster is still unknown).
-2. Exact Clandestine dates, venue, booth/program statement?
-3. Sales: 0% artist-direct vs test 10–15% only if DCC invoices — encode later?
+1. Clandestine Art Fair 2026 is withdrawn. Do not collect a roster, dates, or booth statement for it.
+2. Sales: 0% artist-direct vs test 10–15% only if DCC invoices — encode later?
 4. First Conversation: who, and is the website interview the canonical artifact?
 5. Homepage H1: keep service/infra hero, or lean harder into the cultural-center line?
 6. Instagram five pillars (Artists / Programs / Lab / Production / Learn): ops doc only, or metadata on records?
@@ -224,7 +221,7 @@ Local Next production build succeeded 24 Aug 2026 (`/artists` SSG for Moises, Fa
 
 Copy this after reading this file and the record packet:
 
-> Read `docs/dcc/STATUS.md`, `docs/dcc/IMAGE_SHOT_LIST.md`, and the public page `/now`. DCC MIA is a small cultural org whose website is the public memory. Culture architecture is live; Clandestine is Program 001 with no participating artists yet. Founders (Moises, Fabiola, Angelo) are published on `/artists` and are not attached to the fair. Two public 3D workshop pages exist; resin SLA is a syllabus hub, not a third catalog card. Fabricate Phase 2 is live with a conceptual (not documentary) hero and a planning estimate that is not an invoice. Do not invent names, dates, sales %, ITS3D, or documentary photos. The next content fork is one of: Clandestine names (culture), a newsletter provider ID (ops), physical evidence 314 (education), or a documentary fabricate hero (fabricate). Rank by Content Yield (downstream assets per hour), not Instagram likes.
+> Read `docs/dcc/STATUS.md`, `docs/dcc/IMAGE_SHOT_LIST.md`, and the public page `/now`. DCC MIA is a small cultural org whose website is the public memory. Culture architecture is live. Clandestine Art Fair 2026 is withdrawn; do not republish it. The homepage Now card points at the journal. Founders (Moises, Fabiola, Angelo) are published on `/artists`. Two public 3D workshop pages exist; resin SLA is a syllabus hub, not a third catalog card. Fabricate Phase 2 is live with a conceptual (not documentary) hero and a planning estimate that is not an invoice. Do not invent names, dates, sales %, ITS3D, or documentary photos. The next content fork is one of: another journal essay (culture), a newsletter provider ID (ops), physical evidence 314 (education), or a documentary fabricate hero (fabricate). Rank by Content Yield (downstream assets per hour), not Instagram likes.
 
 ---
 

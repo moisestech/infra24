@@ -4,7 +4,6 @@ import { getAllCdcPaths, getCdcPageByPath, getProgramLeaves } from '@/lib/cdc/ro
 import { DCC_STUDIO_TOURS, getStudioTourByArtistSlug } from '@/lib/dcc/studios'
 import {
   ARTISTS_INDEX_INTRO,
-  CLANDESTINE_PLACEHOLDER,
   cultureMediaMotionEnabled,
   DCC_CULTURAL_POSITION,
   DCC_EDITORIAL,
@@ -43,6 +42,7 @@ import {
   listEditorial,
   listFeaturedArtists,
   listFeaturedEditorial,
+  listHomePathways,
   listJournalAdjacent,
   listJournalArchive,
   listJournalIndexSectionSlugs,
@@ -67,7 +67,7 @@ const fixtureArtist: DccArtist = {
   name: 'Fixture Artist A',
   location: 'Miami, FL',
   practiceTags: ['sculpture', 'networks'],
-  programIds: ['clandestine-2026'],
+  programIds: ['fixture-program'],
   projectIds: ['project-fixture-a'],
   editorialIds: ['editorial-fixture-a'],
   status: 'published',
@@ -79,7 +79,7 @@ const fixtureEditorial: DccEditorial = {
   title: 'A conversation with Fixture Artist A',
   type: 'conversation',
   artistIds: ['artist-fixture-a'],
-  programIds: ['clandestine-2026'],
+  programIds: ['fixture-program'],
   projectIds: ['project-fixture-a'],
   status: 'published',
 }
@@ -89,13 +89,22 @@ const fixtureProject: DccProject = {
   slug: 'fixture-work-a',
   title: 'Fixture work A',
   artistIds: ['artist-fixture-a'],
-  programIds: ['clandestine-2026'],
+  programIds: ['fixture-program'],
   status: 'published',
+}
+
+const fixtureProgram: DccProgram = {
+  id: 'fixture-program',
+  slug: 'fixture-program',
+  title: 'Fixture program',
+  type: 'exhibition',
+  status: 'current',
+  artistIds: ['artist-fixture-a'],
 }
 
 const fixtureRegistry: CultureRegistry = {
   artists: [fixtureArtist],
-  programs: DCC_PROGRAMS,
+  programs: [fixtureProgram],
   editorial: [fixtureEditorial],
   projects: [fixtureProject],
 }
@@ -119,33 +128,21 @@ describe('dcc culture public seed', () => {
     expect(DCC_STUDIO_TOURS.some((tour) => tour.artistSlug === 'angelo-caruso')).toBe(false)
   })
 
-  it('seeds Clandestine as the first upcoming art-fair program without invented facts', () => {
-    const programs = listPrograms()
-    expect(programs).toHaveLength(1)
-    const clandestine = getListedProgramBySlug('clandestine-art-fair-2026')
-    expect(clandestine?.id).toBe('clandestine-2026')
-    expect(clandestine?.title).toBe('DCC MIA at Clandestine Art Fair 2026')
-    expect(clandestine?.type).toBe('art-fair')
-    expect(clandestine?.node).toBe('DCC MIA')
-    expect(clandestine?.status).toBe('upcoming')
-    expect(clandestine?.artistIds).toEqual([])
-    expect(clandestine?.startDate).toBeUndefined()
-    expect(clandestine?.endDate).toBeUndefined()
-    expect(clandestine?.locationName).toBeUndefined()
-    expect(clandestine?.description).toMatch(/when those facts are confirmed/)
-    expect(clandestine?.description).not.toMatch(/\b(10|15)\s*%/)
-    expect(getProgramPublicPath(clandestine!)).toBe(
-      '/programs/art-fairs/clandestine-art-fair-2026'
-    )
-    expect(listCurrentOrUpcomingPrograms().map((p) => p.id)).toEqual(['clandestine-2026'])
-    expect(getCdcPageByPath('/programs/art-fairs/clandestine-art-fair-2026')?.title).toBe(
-      'DCC MIA at Clandestine Art Fair 2026'
+  it('does not publish Clandestine and uses the journal as the public Now record', () => {
+    expect(listPrograms()).toEqual([])
+    expect(listCurrentOrUpcomingPrograms()).toEqual([])
+    expect(getListedProgramBySlug('clandestine-art-fair-2026')).toBeUndefined()
+    expect(getAllCdcPaths()).not.toContain('/programs/art-fairs/clandestine-art-fair-2026')
+    expect(getProgramLeaves('art-fairs').map((leaf) => leaf.slug)).not.toContain(
+      'clandestine-art-fair-2026'
     )
     expect(getCdcPageByPath('/artists')?.title).toBe('Artists')
     expect(getCdcPageByPath('/now')?.title).toBe('Where DCC MIA is now')
-    expect(getProgramLeaves('art-fairs').map((leaf) => leaf.slug)).toEqual([
-      'clandestine-art-fair-2026',
-    ])
+    expect(getCdcPageByPath('/journal')?.path).toBe('/journal')
+    const now = listHomePathways().find((pathway) => pathway.id === 'now')
+    expect(now?.title).toBe('Journal')
+    expect(now?.href).toBe('/journal')
+    expect(now?.label).toBe('Read the journal')
   })
 
   it('publishes five journal essays without placeholder shells or invented relations', () => {
@@ -398,9 +395,9 @@ describe('dcc culture public seed', () => {
   it('publishes /now as a known-facts ledger without prices or a fake storefront', () => {
     expect(DCC_NOW_PATH).toBe('/now')
     expect(DCC_NOW_POSITION).toBe(DCC_CULTURAL_POSITION)
-    expect(DCC_NOW_FORTHCOMING[0]?.body).toBe(CLANDESTINE_PLACEHOLDER)
-    expect(DCC_NOW_FORTHCOMING[1]?.title).toBe('DCC Conversations')
-    expect(DCC_NOW_FORTHCOMING[1]?.body).toMatch(/journal itself is live/)
+    expect(DCC_NOW_FORTHCOMING[0]?.title).toBe('DCC Conversations')
+    expect(DCC_NOW_FORTHCOMING[0]?.body).toMatch(/journal itself is live/)
+    expect(DCC_NOW_FORTHCOMING.map((item) => item.title).join(' ')).not.toMatch(/clandestine/i)
     expect(DCC_NOW_PARTICIPATE.links?.map((link) => link.href)).toEqual([
       '/workshops',
       '/newsletter',
@@ -419,6 +416,7 @@ describe('dcc culture public seed', () => {
     expect(ledger).not.toMatch(/fake storefront/i)
     expect(listWorkshopOfferings().map((offering) => offering.title)).toEqual([
       'Saturday Lab',
+      'DCC 3D School',
       '3D Printing for Artists',
       'AI → 3D Physical Object',
       'Vibecoding & Net Art',
@@ -428,14 +426,14 @@ describe('dcc culture public seed', () => {
 
 describe('dcc culture cross-links', () => {
   it('resolves one artist to a program, conversation and project without duplicating records', () => {
-    const program = DCC_PROGRAMS[0]
+    const program = fixtureProgram
     const artists = getArtistsForProgram(
       { ...program, artistIds: ['artist-fixture-a'] },
       fixtureRegistry
     )
     expect(artists.map((a) => a.slug)).toEqual(['fixture-artist-a'])
     expect(getProgramsForArtist(fixtureArtist, fixtureRegistry).map((p) => p.id)).toEqual([
-      'clandestine-2026',
+      'fixture-program',
     ])
     expect(getEditorialForArtist(fixtureArtist, fixtureRegistry).map((e) => e.type)).toEqual([
       'conversation',

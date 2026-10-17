@@ -1,7 +1,7 @@
 /**
  * Ranked image drops for DCC MIA public surfaces.
  * Canonical human list: docs/dcc/IMAGE_DROP.md
- * Do not invent Clandestine artist names. Do not label conceptual stills as shop photos.
+ * Do not label conceptual stills as shop photos.
  */
 
 export type DccImageKind =
@@ -42,12 +42,6 @@ export const FABRICATION_ONE_OBJECT_LADDER = [
   'finish-l4-finished.webp',
 ] as const
 
-export const CLANDESTINE_PROGRAM_HERO_PATH =
-  '/dcc/culture/programs/clandestine-art-fair-2026/hero.svg' as const
-
-export const CLANDESTINE_PROGRAM_HERO_ALT =
-  'DCC MIA Program 001 at Clandestine Art Fair 2026. Three participating artists will be named when confirmed.'
-
 export const DCC_IMAGE_DROPS: DccImageDrop[] = [
   {
     id: 'fab-hero',
@@ -61,19 +55,6 @@ export const DCC_IMAGE_DROPS: DccImageDrop[] = [
     alternateA: 'Same desk, tighter 16:9 crop we letterbox.',
     alternateB: 'Conceptual still of printer + samples, captioned not a documentary photo.',
     publicPath: '/dcc/fabrication/01-fabricate-hero.webp',
-  },
-  {
-    id: 'clandestine-hero',
-    priority: 'P0',
-    fileName: 'hero.svg',
-    kind: 'identity',
-    aspect: '16:9',
-    size: '1600×900',
-    route: '/programs/art-fairs/clandestine-art-fair-2026',
-    shot: 'DCC presentation identity without invented artists. Fair graphic or empty booth build.',
-    alternateA: 'Fair exterior / corridor with DCC signage.',
-    alternateB: 'Typographic lockup (shipped). Still no fake names.',
-    publicPath: CLANDESTINE_PROGRAM_HERO_PATH,
   },
   {
     id: 'home-now-stills',
@@ -229,45 +210,6 @@ export const DCC_IMAGE_DROPS: DccImageDrop[] = [
     alternateA: 'Exhibition install crop.',
     alternateB: 'Leave empty (current).',
     publicPath: '/dcc/culture/artists/angelo-caruso/hero.webp',
-    blockedOnPacket: true,
-  },
-  {
-    id: 'clandestine-artist-portrait',
-    priority: 'P2',
-    fileName: '{slug}/portrait.webp',
-    kind: 'portrait',
-    aspect: '4:5',
-    size: '1200×1500',
-    route: '/artists/{slug}',
-    shot: 'Face, artist-approved. Three participating artists — names unknown.',
-    alternateA: 'Existing press portrait.',
-    alternateB: 'Fair badge crop (last).',
-    blockedOnPacket: true,
-  },
-  {
-    id: 'clandestine-artist-hero',
-    priority: 'P2',
-    fileName: '{slug}/hero.webp',
-    kind: 'artwork-doc',
-    aspect: '16:9',
-    size: '1600×900',
-    route: '/artists/{slug}',
-    shot: 'Selected work for the fair.',
-    alternateA: 'Studio process still.',
-    alternateB: 'Install at fair (after).',
-    blockedOnPacket: true,
-  },
-  {
-    id: 'clandestine-artist-works',
-    priority: 'P2',
-    fileName: '{slug}/work-01.webp … work-05.webp',
-    kind: 'artwork-doc',
-    aspect: '4:5',
-    size: '1200×1500',
-    route: '/artists/{slug}',
-    shot: '3–5 works with title, year, medium, dimensions, photo credit.',
-    alternateA: '3 works instead of 5.',
-    alternateB: 'Process + 2 works.',
     blockedOnPacket: true,
   },
 ]

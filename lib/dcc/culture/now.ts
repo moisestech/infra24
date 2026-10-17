@@ -3,7 +3,7 @@
  * Keep this aligned with docs/dcc/STATUS.md. Do not invent dates, names, or prices.
  */
 
-import { CLANDESTINE_PLACEHOLDER, DCC_CULTURAL_POSITION } from '@/lib/dcc/culture/copy'
+import { DCC_CULTURAL_POSITION } from '@/lib/dcc/culture/copy'
 
 export const DCC_NOW_PATH = '/now'
 
@@ -31,11 +31,6 @@ export const DCC_NOW_LIVE_INTRO =
 
 export const DCC_NOW_FORTHCOMING: DccNowItem[] = [
   {
-    kicker: 'Program 001',
-    title: 'Clandestine roster, dates, and venue',
-    body: CLANDESTINE_PLACEHOLDER,
-  },
-  {
     kicker: 'Journal',
     title: 'DCC Conversations',
     body: 'Conversations are coming. DCC will speak with artists, fabricators, technologists, educators, institutional leaders, and others building the infrastructure of digital culture. A podcast feed is not launching in this phase. The journal itself is live.',
@@ -43,8 +38,8 @@ export const DCC_NOW_FORTHCOMING: DccNowItem[] = [
   },
   {
     kicker: 'Photography',
-    title: 'Documentary shop, class, and fair stills',
-    body: 'Bakehouse room, resin class and kit photos, a documentary fabricate hero, and Clandestine hang photography are not on the site. Conceptual educational stills are labeled as such.',
+    title: 'Documentary shop and class stills',
+    body: 'Bakehouse room, resin class and kit photos, and a documentary fabricate hero are not on the site. Conceptual educational stills are labeled as such.',
   },
   {
     kicker: 'Studios',

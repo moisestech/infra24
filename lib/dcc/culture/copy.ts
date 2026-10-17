@@ -76,6 +76,3 @@ export const DCC_BELIEFS_PARAGRAPHS = [
   'DCC Miami exists to strengthen that infrastructure.',
   'We believe access requires continuity. Knowledge becomes more valuable when it circulates. Technical care is cultural care. And infrastructure should still work after the announcement is over.',
 ] as const
-
-export const CLANDESTINE_PLACEHOLDER =
-  'Artist names, selected works, dates and venue details will be published when confirmed. Do not treat empty slots as announcements.'
