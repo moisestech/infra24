@@ -9,8 +9,6 @@ import type { DccProject } from '@/lib/dcc/culture/types'
  *
  * This phase stores records and renders them on artist, program and journal pages.
  * There is no public /projects takeover.
- *
- * TODO — Clandestine selected works (do not invent titles or images).
  */
 export const DCC_PROJECTS: DccProject[] = []
 

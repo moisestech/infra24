@@ -209,6 +209,7 @@ Append; do not rewrite history.
 
 | Date | What changed | Scoreboard effect |
 |---|---|---|
+| 2026-10-17 | Clandestine Art Fair 2026 withdrawn. Homepage Now card points at the journal. Old program URL redirects to `/journal`. | Programs no longer advertise a fair DCC is not in. |
 | 2026-09-26 | `/backoffice` staff home reads current Jobs and Machines. Queue, classes, and payouts are not separate pages. | Checklist #32 still **P**. #19 still **N**. |
 | 2026-09-26 | Fabrication OS schema proposed in [`FABRICATION-OS.md`](./FABRICATION-OS.md) and [`FABRICATION-OS-SCHEMA.md`](./FABRICATION-OS-SCHEMA.md). Domain types in `lib/dcc/fabrication-os`. No Airtable writes, no queue UI, no Stripe, no QuickBooks. | Checklist #17 still **P**; #19, #20, #21 still **N**; #36 still **P**. Schema is proposed, not built. |
 | 2026-09-21 | DCC 3D School curriculum hub at `/workshop/3d-school` (seven mental-model records, labeled asset placeholders, inquiry CTAs). No dates, instructors, or checkout. | Checklist #7 still **B** with hub evidence. |

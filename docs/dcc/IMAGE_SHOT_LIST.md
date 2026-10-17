@@ -127,9 +127,11 @@ What we can **deliver today** vs what is still empty. Conceptual teaching stills
 
 ## A. Culture — make these (highest yield)
 
-### A1. Clandestine program (blocked on three real names)
+### A1. Clandestine program — withdrawn
 
-Do **not** shoot “Moises/Fabiola/Angelo at Clandestine.” Wait for the packet.
+DCC MIA is not participating in Clandestine Art Fair 2026. Do not shoot portraits, a booth, or a program hero for it. The public replacement is the journal.
+
+The rows below are historical and must not be produced.
 
 Once names exist, per artist:
 

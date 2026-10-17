@@ -1,4 +1,4 @@
-import { JOURNAL_DESCRIPTOR } from '@/lib/dcc/culture/copy'
+import { JOURNAL_DESCRIPTOR, JOURNAL_INTRO } from '@/lib/dcc/culture/copy'
 import { listFeaturedArtists } from '@/lib/dcc/culture/artists'
 import { getEditorialPublicPath, listEditorial, listFeaturedEditorial } from '@/lib/dcc/culture/editorial'
 import { getProgramPublicPath, listCurrentOrUpcomingPrograms } from '@/lib/dcc/culture/programs'
@@ -65,6 +65,20 @@ export function listHomePathways(): HomePathway[] {
       converge: 'The lasting program record — before, during, and after the week.',
       accent: HOME_ACCENT.programs,
       cardEffect: 'venue-node',
+    })
+  } else {
+    pathways.push({
+      id: 'now',
+      kicker: 'Now',
+      shortLabel: 'NOW',
+      title: 'Journal',
+      description: JOURNAL_INTRO,
+      group: 'What is in public now.',
+      href: '/journal',
+      label: 'Read the journal',
+      converge: JOURNAL_DESCRIPTOR,
+      accent: HOME_ACCENT.journal,
+      cardEffect: 'particle-dispatch',
     })
   }
 

@@ -6,14 +6,7 @@ import { dccHomePhotos } from '@/lib/marketing/dcc-home-photography'
  * Curated artists DCC MIA has presented or worked with.
  *
  * Founders / Studio 43 circle are published from existing public copy.
- * Do not attach them to Clandestine until the fair participating artists are confirmed.
- *
- * TODO — Clandestine Art Fair 2026 (do not invent):
- * - names of the three participating artists
- * - slugs, short bios, practice tags
- * - portrait + hero images
- * - website / Instagram if the artist wants them public
- * - programIds: ['clandestine-2026']
+ * DCC MIA is not part of Clandestine Art Fair 2026. Do not attach these artists to that fair.
  */
 export const DCC_ARTISTS: DccArtist[] = [
   {

@@ -69,21 +69,15 @@ Empty image → honest fallback. No fake portraits. Hover / scale motion runs **
 - Optional: `location`, `shortBio`, `bio`, `practiceTags`, `portrait` + `portraitAlt`, `heroImage` + `heroImageAlt`, `websiteUrl`, `instagramUrl`, `programIds`, `featured`
 - Studio 360: only if a row in `tours.ts` uses the **same** `artistSlug`. Tours do not auto-publish culture artists. Founders on `/artists` were added by an explicit culture commit, not because a 360 existed.
 
-## Founders vs Clandestine
+## Founders vs withdrawn fair
 
-- Moises, Fabiola, and Angelo may appear as culture artists without being the fair roster.
-- Do **not** set `programIds: ['clandestine-2026']` or Clandestine `artistIds` until the participating artists are confirmed in a packet.
+- Moises, Fabiola, and Angelo are culture artists. They are not a Clandestine roster.
+- DCC MIA is not participating in Clandestine Art Fair 2026. Do not add that program or attach `programIds` for it.
 - Angelo has no studio tour — do not invent one.
 
-## Clandestine artist packet (later)
+## Journal is the live public record
 
-Required before publishing a fair artist: preferred spelling, slug, 80–120 word short bio, location, 3–5 practice tags, website, Instagram.
-
-Media: portrait; 3–5 works with artist-approved captions (title, year, medium, dimensions, photo credit).
-
-Fair: which work(s), one paragraph on the selected work, why it belongs in the DCC presentation.
-
-Editorial permissions: conversation, video, audio, transcript, approval expectations.
+`/journal` replaces the withdrawn fair on the homepage Now card. Publish essays from confirmed copy only.
 
 ## Conversation spine (no podcast product)
 
@@ -103,7 +97,7 @@ Do not add a `DccProgram` until date and venue are confirmed. If a live studio d
 
 ## Newsletter
 
-Reuse `/newsletter`. Optional provider: `NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_ACTION`. Pass `?source=` (`home-now`, `artist-profile`, `clandestine`, `open-studios`, `journal`). Do not build a newsletter platform in the culture namespace.
+Reuse `/newsletter`. Optional provider: `NEXT_PUBLIC_MARKETING_NEWSLETTER_FORM_ACTION`. Pass `?source=` (`home-now`, `artist-profile`, `open-studios`, `journal`). Do not build a newsletter platform in the culture namespace.
 
 ## Program (minimum)
 

@@ -105,7 +105,7 @@ export default function DccNowPage() {
               item={{
                 kicker: 'Artists',
                 title: `${artists.length} published founders`,
-                body: `${artists.map((artist) => artist.name).join(', ')}. This is not the Clandestine roster.`,
+                body: `${artists.map((artist) => artist.name).join(', ')}. Published founders on the artist record.`,
                 links: [{ href: '/artists', label: 'Artists' }],
               }}
             />
