@@ -85,7 +85,7 @@ Public documentation permissions default **false** except internal process notes
 
 ## What remains manual
 
-- Password distribution to Heather and Carol (one shared `DCC_FABRICATE_PROPOSALS_PASSWORD`)
+- Password distribution to authorized proposal viewers only after production secrets are configured (one shared `DCC_FABRICATE_PROPOSALS_PASSWORD`)
 - Material SKU / supplier / reference price
 - Machine ownership / access confirmation
 - Deposit and balance (offline)
@@ -108,11 +108,12 @@ Types already include `OPEN_FOR_FABRICATION` → `CLAIMED` → `PRODUCTION`. MVP
 ## Environment
 
 ```
-DCC_FABRICATE_PROPOSALS_PASSWORD=dccmiami
+DCC_FABRICATE_PROPOSALS_PASSWORD=<unique-strong-private-password>
+INFRA24_CONTROL_SERVICE_TOKEN=<unique-private-cookie-signing-secret>
 ```
 
-If unset, code falls back to `dccmiami` (`DEFAULT_FABRICATE_PROPOSALS_PASSWORD`). Override in production env when rotating.
+A published fallback password is never valid in production. The proposals gate fails closed if either the proposal password or cookie-signing secret is missing. Confirm both are configured in the actual deployment team before merging client proposal changes.
 
 Reuse: `INFRA24_CONTROL_SERVICE_TOKEN` (HMAC), `RESEND_*`, `MARKETING_CONTACT_TO`, `AIRTABLE_DCC_OS_*`.
 
-Locally, an unset env var skips the unlock screen in dev only. Production always requires the password (env or fallback).
+Locally, an unset env var skips the unlock screen in dev only. Production requires both configured secrets. Proposal routes are not approved for release solely because `robots.noindex` is set. Do not send client URLs before testing access controls and confirming that the repository itself is public-source-safe.
