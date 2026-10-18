@@ -34,7 +34,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
   heroDek:
     'A focused first prototype — preserving texture and sculptural character from Carol’s existing brass casts while solving for lightness, mirrored pair geometry, and wearability.',
   job: {
-    id: 'dcc-job-002',
+    id: 'recSejBYq324jEpoq',
     jobNumber: 'DCC-JOB-002',
     slug: 'carol-haggiag',
     clientName: 'Carol Haggiag',
@@ -42,7 +42,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
     serviceType: 'PREPARE_PLUS_FABRICATE',
     status: 'PROTOTYPE_SCOPING',
     prototypeGoal:
-      'Preserve texture and character while making a mirrored earring, about 2 inches long, light enough to wear — a thin hollow shell in transparent fuchsia and high-visibility green.',
+      'Preserve texture and character while developing an approximately 2-inch mirrored wearable form. First material test is one hollow shell; transparent fuchsia and high-visibility green are separately requested color directions.',
     prototypeDesignation: 'Phase 1 · Lightweight Earring Prototype Study',
     intendedUse: 'Wearable earring prototype / jewelry study',
     clientSuppliedMaterial: true,
@@ -53,7 +53,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
     documentationRights: { ...DEFAULT_DOCUMENTATION_RIGHTS },
     ownership: { ...DEFAULT_CLIENT_OWNERSHIP },
     createdAt: '2026-09-21',
-    updatedAt: '2026-10-01',
+    updatedAt: '2026-10-17',
   },
   sections: [
     { id: 'object', label: 'The object', shortLabel: 'Object' },
@@ -141,9 +141,9 @@ export const CAROL_PROPOSAL: ClientProposal = {
     serviceLabel: 'Phase 1 · Lightweight Earring Prototype Study',
     amountStatus: 'pending',
     materialNote:
-      'Transparent resin: fuchsia and high-visibility green, as a thin hollow shell. Exact length is still coming. Price stays pending until object review.',
+      'Transparent fuchsia and high-visibility green are requested directions. The provisional $225 allowance is for one initial hollow-shell material study in one tint, not both colors or a finished pair. Final price is pending physical review.',
     terms:
-      'Scope and fixed price are confirmed after inspecting Carol’s physical brass pieces in person. No fabrication begins before Carol approves a small, clear scope and price.',
+      'A $225 limited first-test planning allowance is shown for discussion. The full multi-color wearable development scope remains unquoted until in-person cast review, material approval and machine access confirmation. No work starts without a separately approved fixed quote.',
     includedAttempts:
       'Optional revision only if Prototype 1 indicates it is worthwhile — not unlimited iteration.',
     reprintNote: 'Additional studies or production paths are separately approved.',
@@ -155,7 +155,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
     'Measure, weigh, and document physical reference',
     'Digital capture or preparation — method chosen at object review',
     'Mirrored study geometry at agreed scale',
-    'One thin hollow resin shell, then fuchsia and high-visibility green transparent colorways',
+    'One initial hollow-shell resin material test in one selected tint; second colorway only after a separate approval',
     'Weight, transparency, and wear evaluation',
     'Carol review with findings record',
     'Optional scoped revision only if Prototype 1 warrants it',

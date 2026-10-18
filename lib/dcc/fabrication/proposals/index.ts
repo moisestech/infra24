@@ -1,5 +1,8 @@
 import { CAROL_PROPOSAL } from '@/lib/dcc/fabrication/proposals/carol-haggiag'
 import { HEATHER_PROPOSAL } from '@/lib/dcc/fabrication/proposals/heather-deitch'
+import { OSCAR_PROPOSAL } from '@/lib/dcc/fabrication/proposals/oscar-rieveling'
+import { FRANKIE_PROPOSAL } from '@/lib/dcc/fabrication/proposals/frankie-hsu'
+import { SANDRA_PROPOSAL } from '@/lib/dcc/fabrication/proposals/sandra-ramos'
 import type { ClientProposal } from '@/lib/dcc/fabrication/schema'
 
 export {
@@ -22,7 +25,17 @@ export {
   buildHeatherCostLineItems,
 } from '@/lib/dcc/fabrication/proposals/heather-quote'
 
-export const CLIENT_PROPOSALS: ClientProposal[] = [HEATHER_PROPOSAL, CAROL_PROPOSAL]
+export { OSCAR_PROPOSAL } from '@/lib/dcc/fabrication/proposals/oscar-rieveling'
+export { SANDRA_PROPOSAL } from '@/lib/dcc/fabrication/proposals/sandra-ramos'
+export { FRANKIE_PROPOSAL } from '@/lib/dcc/fabrication/proposals/frankie-hsu'
+
+export const CLIENT_PROPOSALS: ClientProposal[] = [
+  HEATHER_PROPOSAL,
+  CAROL_PROPOSAL,
+  OSCAR_PROPOSAL,
+  SANDRA_PROPOSAL,
+  FRANKIE_PROPOSAL,
+]
 
 export function getClientProposal(slug: string): ClientProposal | undefined {
   return CLIENT_PROPOSALS.find((p) => p.slug === slug)
@@ -32,16 +45,4 @@ export function listProposalSlugs(): string[] {
   return CLIENT_PROPOSALS.map((p) => p.slug)
 }
 
-/** First name for unlock greeting — from ?hello= or proposal record. */
-export function proposalGreetingName(
-  slug: string | undefined,
-  helloParam?: string | null
-): string | undefined {
-  const fromQuery = helloParam?.trim()
-  if (fromQuery) return fromQuery.split(/\s+/)[0]
-
-  if (!slug) return undefined
-  const clientName = getClientProposal(slug)?.job.clientName?.trim()
-  if (!clientName) return undefined
-  return clientName.split(/\s+/)[0]
-}
+export { proposalGreetingName } from '@/lib/dcc/fabrication/proposals/greeting'

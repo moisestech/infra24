@@ -1,16 +1,36 @@
+import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { createHmac, timingSafeEqual } from 'node:crypto'
 
+export const LOCKED_PROPOSAL_METADATA: Metadata = {
+  title: 'Private proposal',
+  robots: { index: false, follow: false },
+}
+
+/** Title and description stay generic until the proposal cookie matches. */
+export async function proposalPageMetadata(open: Metadata): Promise<Metadata> {
+  if (!(await hasFabricateProposalsAccess())) return LOCKED_PROPOSAL_METADATA
+  return { ...open, robots: { index: false, follow: false } }
+}
+
 export const FABRICATE_PROPOSALS_COOKIE = 'dcc_fabricate_proposals'
 
-/** Pilot default until a dedicated env var is set in production. */
+/** Local-development convenience only. Never a production credential. */
 export const DEFAULT_FABRICATE_PROPOSALS_PASSWORD = 'dccmiami'
 
-function password(): string {
-  return (
-    process.env.DCC_FABRICATE_PROPOSALS_PASSWORD?.trim() ||
-    DEFAULT_FABRICATE_PROPOSALS_PASSWORD
+function productionSecretsConfigured(): boolean {
+  return Boolean(
+    process.env.DCC_FABRICATE_PROPOSALS_PASSWORD?.trim() &&
+    process.env.INFRA24_CONTROL_SERVICE_TOKEN?.trim()
   )
+}
+
+function password(): string {
+  // Fail closed in production: a published fallback password is not private.
+  if (process.env.NODE_ENV === 'production' && !productionSecretsConfigured()) {
+    return ''
+  }
+  return process.env.DCC_FABRICATE_PROPOSALS_PASSWORD?.trim() || DEFAULT_FABRICATE_PROPOSALS_PASSWORD
 }
 
 export function isFabricateProposalsPasswordConfigured(): boolean {
@@ -18,7 +38,9 @@ export function isFabricateProposalsPasswordConfigured(): boolean {
 }
 
 function tokenForPassword(pw: string): string {
-  const secret = process.env.INFRA24_CONTROL_SERVICE_TOKEN?.trim() || 'dcc-fabricate-proposals-dev'
+  const secret = process.env.INFRA24_CONTROL_SERVICE_TOKEN?.trim() ||
+    (process.env.NODE_ENV === 'production' ? '' : 'dcc-fabricate-proposals-dev')
+  if (!secret) throw new Error('Proposal cookie signing secret is not configured')
   return createHmac('sha256', secret).update(`fabricate-proposals:${pw}`).digest('hex')
 }
 
@@ -42,6 +64,9 @@ export function fabricateProposalsCookieValue(): string {
 }
 
 export async function hasFabricateProposalsAccess(): Promise<boolean> {
+  if (process.env.NODE_ENV === 'production' && !productionSecretsConfigured()) {
+    return false
+  }
   // Dev only: skip unlock when no env override and not production.
   if (
     !isFabricateProposalsPasswordConfigured() &&

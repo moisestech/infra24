@@ -176,7 +176,7 @@ export const CAROL_PHASE_1_STEPS = [
   {
     number: '05',
     title: 'Lightweight prototype',
-    body: 'Print one thin hollow resin shell, then the two transparent colorways — fuchsia and high-visibility green. Judge weight, transparency, and wear.',
+    body: 'Print one first-color thin hollow resin shell. Evaluate weight, transparency and wear; price the second requested colorway only after that checkpoint.',
   },
   {
     number: '06',

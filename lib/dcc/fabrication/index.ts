@@ -226,6 +226,9 @@ export {
   HEATHER_QUOTE_TOTAL_USD,
   buildHeatherCostLineItems,
   CAROL_PROPOSAL,
+  OSCAR_PROPOSAL,
+  SANDRA_PROPOSAL,
+  FRANKIE_PROPOSAL,
 } from '@/lib/dcc/fabrication/proposals'
 
 export {
@@ -233,3 +236,9 @@ export {
   FABRICATE_START_NOTES_PREFIX,
 } from '@/lib/dcc/fabrication/start-schema'
 export type { FabricateStartRequest, ObjectIntent } from '@/lib/dcc/fabrication/start-schema'
+
+export {
+  CAROL_PILOT_ESTIMATE,
+  OSCAR_PILOT_ESTIMATE,
+  pilotEstimateLinesTotal,
+} from '@/lib/dcc/fabrication/proposals/pilot-estimates'

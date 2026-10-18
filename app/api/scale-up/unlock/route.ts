@@ -4,10 +4,14 @@ import {
   scaleUpCookieValue,
   verifyScaleUpPassword,
   isScaleUpPasswordConfigured,
+  isScaleUpSigningSecretConfigured,
 } from '@/lib/dcc/scale-up-auth'
 
 export async function POST(req: Request) {
-  if (!isScaleUpPasswordConfigured() && process.env.NODE_ENV === 'production') {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    (!isScaleUpPasswordConfigured() || !isScaleUpSigningSecretConfigured())
+  ) {
     return NextResponse.json({ error: 'Scale-up gate not configured' }, { status: 503 })
   }
 

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import {
   estimateQuote,
   FABRICATION_QUOTE_EXAMPLES,
@@ -318,6 +319,14 @@ describe('fabricate studio system', () => {
     expect(proposalGreetingName('carol-haggiag')).toBe('Carol')
     expect(proposalGreetingName('heather-deitch', 'Heather Deitch')).toBe('Heather')
     expect(proposalGreetingName(undefined, 'Carol')).toBe('Carol')
+  })
+
+  it('keeps proposal narratives out of the unlock-screen client module', () => {
+    const screen = readFileSync('components/dcc/fabrication/ProposalUnlockScreen.tsx', 'utf8')
+    const greeting = readFileSync('lib/dcc/fabrication/proposals/greeting.ts', 'utf8')
+    expect(screen).toContain('proposals/greeting')
+    expect(screen).not.toContain("from '@/lib/dcc/fabrication/proposals'")
+    expect(greeting).not.toMatch(/from '\.\/(carol|oscar|frankie|sandra|heather)/)
   })
 
   it('keeps Carol in prototype scoping with pending quote layers and Cloudinary media', () => {
