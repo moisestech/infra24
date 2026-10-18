@@ -2,7 +2,7 @@
 
 import { usePathname, useSearchParams } from 'next/navigation'
 import { ProposalUnlockForm } from '@/components/dcc/fabrication/ProposalUnlockForm'
-import { proposalGreetingName } from '@/lib/dcc/fabrication/proposals'
+import { proposalGreetingName } from '@/lib/dcc/fabrication/proposals/greeting'
 
 export function ProposalUnlockScreen() {
   const pathname = usePathname()

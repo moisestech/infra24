@@ -18,9 +18,14 @@ import {
   type QuoteSprintLiveRead,
 } from '@/lib/dcc/fabrication/sprint/live-jobs'
 
-export const metadata: Metadata = {
-  title: 'Quote sprint',
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  if (!(await hasFabricationInternalAccess())) {
+    return {
+      title: { absolute: 'Digital Culture Center Miami' },
+      robots: { index: false, follow: false },
+    }
+  }
+  return { title: 'Quote sprint', robots: { index: false, follow: false } }
 }
 
 type PageProps = {

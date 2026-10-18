@@ -23,6 +23,7 @@ import {
   SourcePathwaysGrid,
 } from '@/components/dcc/fabrication/proposal/modules'
 import { getMachineCatalogEntry } from '@/lib/dcc/fabrication'
+import { hasFabricateProposalsAccess, proposalPageMetadata } from '@/lib/dcc/fabrication/proposal-auth'
 import {
   CAROL_ATTACHMENT_OPTIONS,
   CAROL_CLIENT_QUESTIONS,
@@ -46,11 +47,12 @@ import {
   CAROL_TESTING_FOCUS,
 } from '@/lib/dcc/fabrication/proposals/carol-haggiag'
 
-export const metadata: Metadata = {
-  title: 'Carol Haggiag — Lightweight Earring Prototype Study',
-  description:
-    'A focused lightweight earring prototype study — preserving texture from Carol’s brass casts while solving for weight, mirrored pair geometry, and wearability.',
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  return proposalPageMetadata({
+    title: 'Carol Haggiag — Lightweight Earring Prototype Study',
+    description:
+      'A focused lightweight earring prototype study — preserving texture from Carol’s brass casts while solving for weight, mirrored pair geometry, and wearability.',
+  })
 }
 
 export const dynamic = 'force-dynamic'
@@ -61,7 +63,8 @@ function media(id: string) {
   return <ProposalMediaFigure slug={CAROL_PROPOSAL.slug} slot={slot} />
 }
 
-export default function CarolHaggiagProposalPage() {
+export default async function CarolHaggiagProposalPage() {
+  if (!(await hasFabricateProposalsAccess())) return null
   const job = CAROL_PROPOSAL.job
   const machine = job.machineId ? getMachineCatalogEntry(job.machineId) : undefined
   const pricing = CAROL_PROPOSAL.pricing

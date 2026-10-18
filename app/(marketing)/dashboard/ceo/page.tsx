@@ -3,9 +3,14 @@ import { notFound } from 'next/navigation'
 import { CeoScorecard } from '@/components/dcc/ceo/CeoScorecard'
 import { hasFabricationInternalAccess } from '@/lib/dcc/scale-up-auth'
 
-export const metadata: Metadata = {
-  title: 'CEO dashboard',
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  if (!(await hasFabricationInternalAccess())) {
+    return {
+      title: { absolute: 'Digital Culture Center Miami' },
+      robots: { index: false, follow: false },
+    }
+  }
+  return { title: 'CEO dashboard', robots: { index: false, follow: false } }
 }
 
 export const revalidate = 300

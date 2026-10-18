@@ -27,11 +27,13 @@ import {
   getMachineCatalogEntry,
   getMaterial,
 } from '@/lib/dcc/fabrication'
+import { hasFabricateProposalsAccess, proposalPageMetadata } from '@/lib/dcc/fabrication/proposal-auth'
 
-export const metadata: Metadata = {
-  title: HEATHER_PROPOSAL.heroTitle,
-  description: HEATHER_PROPOSAL.heroDek,
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  return proposalPageMetadata({
+    title: HEATHER_PROPOSAL.heroTitle,
+    description: HEATHER_PROPOSAL.heroDek,
+  })
 }
 
 export const dynamic = 'force-dynamic'
@@ -42,7 +44,8 @@ function media(id: string) {
   return <ProposalMediaFigure slug={HEATHER_PROPOSAL.slug} slot={slot} />
 }
 
-export default function HeatherDeitchProposalPage() {
+export default async function HeatherDeitchProposalPage() {
+  if (!(await hasFabricateProposalsAccess())) return null
   const job = HEATHER_PROPOSAL.job
   const material = getMaterial(HEATHER_PROPOSAL.materialIds[0] ?? '')
   const machine = job.machineId ? getMachineCatalogEntry(job.machineId) : undefined

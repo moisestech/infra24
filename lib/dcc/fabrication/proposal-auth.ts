@@ -1,5 +1,17 @@
+import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { createHmac, timingSafeEqual } from 'node:crypto'
+
+export const LOCKED_PROPOSAL_METADATA: Metadata = {
+  title: 'Private proposal',
+  robots: { index: false, follow: false },
+}
+
+/** Title and description stay generic until the proposal cookie matches. */
+export async function proposalPageMetadata(open: Metadata): Promise<Metadata> {
+  if (!(await hasFabricateProposalsAccess())) return LOCKED_PROPOSAL_METADATA
+  return { ...open, robots: { index: false, follow: false } }
+}
 
 export const FABRICATE_PROPOSALS_COOKIE = 'dcc_fabricate_proposals'
 

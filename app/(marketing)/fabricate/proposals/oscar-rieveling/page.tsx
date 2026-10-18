@@ -12,18 +12,22 @@ import {
   ScopeList,
 } from '@/components/dcc/fabrication/proposal/modules'
 import { getMachineCatalogEntry } from '@/lib/dcc/fabrication'
+import { hasFabricateProposalsAccess, proposalPageMetadata } from '@/lib/dcc/fabrication/proposal-auth'
 import { OSCAR_PROPOSAL } from '@/lib/dcc/fabrication/proposals/oscar-rieveling'
 import { OSCAR_PILOT_ESTIMATE } from '@/lib/dcc/fabrication/proposals/pilot-estimates'
 
-export const metadata: Metadata = {
-  title: 'Oscar Rieveling — Balcony Display Study · Preliminary Scope',
-  description: 'Private preliminary scope for a small balcony-form 3D prototype. No final quote or production approval yet.',
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  return proposalPageMetadata({
+    title: 'Oscar Rieveling — Balcony Display Study · Preliminary Scope',
+    description:
+      'Private preliminary scope for a small balcony-form 3D prototype. No final quote or production approval yet.',
+  })
 }
 
 export const dynamic = 'force-dynamic'
 
-export default function OscarRievelingProposalPage() {
+export default async function OscarRievelingProposalPage() {
+  if (!(await hasFabricateProposalsAccess())) return null
   const proposal = OSCAR_PROPOSAL
   const machine = proposal.job.machineId
     ? getMachineCatalogEntry(proposal.job.machineId)
