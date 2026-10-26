@@ -168,6 +168,8 @@ export type DccEditorial = {
   relatedEditorialIds?: string[]
   heroImage?: string
   heroImageAlt?: string
+  /** Optional visible media provenance caption, especially for conceptual/AI artwork. */
+  heroImageCaption?: string
   /** Planning placeholder when no heroImage exists yet. Not documentary evidence. */
   heroSlot?: DccEditorialImageSlot
   images?: string[]

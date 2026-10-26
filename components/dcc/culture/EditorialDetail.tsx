@@ -91,6 +91,11 @@ export function EditorialDetail({ entry, mdx }: EditorialDetailProps) {
               aspectClassName="aspect-[16/9]"
               priority
             />
+            {entry.heroImageCaption ? (
+              <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                {entry.heroImageCaption}
+              </p>
+            ) : null}
           </div>
         ) : heroEffect && entry.heroSlot ? (
           <div className="mt-10">

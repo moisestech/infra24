@@ -13,6 +13,62 @@ import type { DccEditorial } from '@/lib/dcc/culture/types'
  */
 export const DCC_EDITORIAL: DccEditorial[] = [
   {
+    id: 'capacity-exists-before-infrastructure-does',
+    slug: 'capacity-exists-before-infrastructure-does',
+    title: 'Capacity Exists Before Infrastructure Does',
+    dek: 'An idle machine is not a production promise. Capacity begins when equipment, permission, paid labor and accountable commitments meet.',
+    type: 'essay',
+    author: 'Moises Sanabria',
+    topics: ['Infrastructure', 'Fabrication', 'Art & Technology'],
+    status: 'draft',
+    seoTitle: 'Capacity Exists Before Infrastructure Does | DCC Miami',
+    seoDescription: 'DCC Miami considers the difference between an inventory of spare equipment and verified, fairly compensated, dependable fabrication capacity.',
+    excerpt: 'What turns spare equipment and specialized knowledge into capacity somebody else can actually rely on?',
+    pullQuote: 'A directory answers who might have something. A production relationship answers what someone is prepared to do.',
+    relatedEditorialIds: ['building-node-001-studio-43', 'miami-doesnt-have-a-digital-art-problem'],
+    bodyPath: 'content/journal/capacity-exists-before-infrastructure-does.mdx',
+    heroImage:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1792937719/dccmiami/journal/2026-10/capacity-exists-before-infrastructure-does-hero.png',
+    heroImageAlt:
+      'Conceptual illustration of separated fabrication stations, an unfinished printed object, and equipment awaiting an operator',
+    heroImageCaption: 'AI-generated conceptual illustration · DCC Miami',
+    heroSlot: {
+      id: 'capacity-hero',
+      ratio: '16:9',
+      role: 'hero',
+      title: 'Availability is not a production promise',
+      brief: 'Dark petrol-blue DCC editorial still life: unused desktop fabrication equipment, a half-finished physical object, a separate inspection station, and an incomplete actual cable connection. Conceptual image, not a real job record. Refer to docs/dcc/journal-next-essay-image-prompts-2026-10.md.',
+    },
+  },
+  {
+    id: 'an-invitation-to-build-dcc-miami-with-us',
+    slug: 'an-invitation-to-build-dcc-miami-with-us',
+    title: 'An Invitation to Build DCC Miami With Us',
+    dek: 'Come with something unfinished, a question, a skill, or curiosity. We are building a creative network that makes room for all four.',
+    type: 'essay',
+    author: 'Moises Sanabria',
+    topics: ['Art & Technology', 'Institutions', 'Infrastructure'],
+    status: 'draft',
+    seoTitle: 'An Invitation to Build DCC Miami With Us | DCC Miami',
+    seoDescription: 'An open letter inviting artists, makers, technical specialists, educators and the curious to help shape a generous, consent-based creative network in Miami.',
+    excerpt: 'You do not need to arrive with an impressive introduction. You can start with a question.',
+    pullQuote: 'A healthy creative community makes room for generosity without turning generosity into an obligation.',
+    relatedEditorialIds: ['the-institution-that-can-build-itself', 'the-artist-doesnt-need-to-learn-everything'],
+    bodyPath: 'content/journal/an-invitation-to-build-dcc-miami-with-us.mdx',
+    heroImage:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1792937726/dccmiami/journal/2026-10/an-invitation-to-build-dcc-miami-with-us-hero.png',
+    heroImageAlt:
+      'Conceptual illustration of an inviting artist studio table with a 3D-printed object, work lamp, and empty chairs',
+    heroImageCaption: 'AI-generated conceptual illustration · DCC Miami',
+    heroSlot: {
+      id: 'invitation-hero',
+      ratio: '16:9',
+      role: 'hero',
+      title: 'An open seat for an unfinished contribution',
+      brief: 'One vacant chair beside a modest artist-run studio table and an unfinished object, warm light in a dark blue-green room. Conceptual, not a documentary community gathering. Refer to docs/dcc/journal-next-essay-image-prompts-2026-10.md.',
+    },
+  },
+  {
     id: 'the-institution-that-can-build-itself',
     slug: 'the-institution-that-can-build-itself',
     title: 'The Institution That Can Build Itself',
@@ -31,6 +87,11 @@ export const DCC_EDITORIAL: DccEditorial[] = [
     pullQuote: 'The distinction is between outsourcing an implementation and outsourcing judgment.',
     relatedEditorialIds: ['you-cant-buy-digital-culture', 'what-does-it-cost-to-run-digital-culture', 'building-node-001-studio-43'],
     bodyPath: 'content/journal/the-institution-that-can-build-itself.mdx',
+    heroImage:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1792937458/dccmiami/journal/2026-10/the-institution-that-can-build-itself-hero.png',
+    heroImageAlt:
+      'Conceptual illustration of modular metal studio shelving, archival boxes, tools and prototypes forming a small shared institution',
+    heroImageCaption: 'AI-generated conceptual illustration · DCC Miami',
     heroSlot: { id: 'institution-hero', ratio: '16:9', role: 'hero', title: 'Institutions as shared capacities', brief: 'A modest working table in a Miami creative studio, laptop with abstract non-legible interface and physical prototype; editorial documentary sensibility, not corporate technology imagery or fake documentary evidence.' },
   },
   {
@@ -52,6 +113,11 @@ export const DCC_EDITORIAL: DccEditorial[] = [
     pullQuote: 'Belonging is not the same as membership.',
     relatedEditorialIds: ['the-institution-that-can-build-itself', 'a-digital-lab-is-not-a-room-full-of-equipment'],
     bodyPath: 'content/journal/you-cant-buy-digital-culture.mdx',
+    heroImage:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1792937664/dccmiami/journal/2026-10/you-cant-buy-digital-culture-hero.png',
+    heroImageAlt:
+      'Conceptual illustration of a precarious pile of purchased electronics beside an unfinished creative object',
+    heroImageCaption: 'AI-generated conceptual illustration · DCC Miami',
     heroSlot: { id: 'buy-hero', ratio: '16:9', role: 'hero', title: 'A purchased stack is not a community', brief: 'A grounded editorial still life of handwritten event notes, laptop, printed workshop card, scattered cables, and prototype; no brand logos or fake text.' },
   },
   {
@@ -73,6 +139,11 @@ export const DCC_EDITORIAL: DccEditorial[] = [
     pullQuote: 'A node should be useful because it performs some functions well and connects people to the rest of the system.',
     relatedEditorialIds: ['a-digital-lab-is-not-a-room-full-of-equipment', 'the-institution-that-can-build-itself', 'miami-doesnt-have-a-digital-art-problem'],
     bodyPath: 'content/journal/building-node-001-studio-43.mdx',
+    heroImage:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1792937699/dccmiami/journal/2026-10/building-node-001-studio-43-hero.png',
+    heroImageAlt:
+      'Conceptual illustration of a small 3D-printing workbench, filament and prototype representing a distributed fabrication node',
+    heroImageCaption: 'AI-generated conceptual illustration · DCC Miami',
     heroSlot: { id: 'node-hero', ratio: '16:9', role: 'hero', title: 'Studio 43 as a working control node', brief: 'Use an authentic photo of Studio 43 when available; otherwise a clearly conceptual tabletop studio close-up with modest fabrication tools and prototype, no fabricated people or visits.' },
   },
   {
