@@ -531,6 +531,9 @@ export const JOURNAL_READING_ORDER = [
   'when-public-art-becomes-infrastructure',
   'the-artist-doesnt-need-to-learn-everything',
   'miami-doesnt-have-a-digital-art-problem',
+  'the-institution-that-can-build-itself',
+  'you-cant-buy-digital-culture',
+  'building-node-001-studio-43',
 ] as const
 
 export type JournalHeroEffectName = Extract<
@@ -608,7 +611,7 @@ export function listJournalAdjacent(
 }
 
 /** Public index only lists rooms that have records, plus Conversations (empty on purpose). */
-export const JOURNAL_INDEX_SECTION_ORDER = ['essays', 'conversations'] as const
+export const JOURNAL_INDEX_SECTION_ORDER = ['essays', 'field-notes', 'conversations'] as const
 
 export function listJournalOpeningSequence(
   editorial: readonly DccEditorial[] = DCC_EDITORIAL
