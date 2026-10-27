@@ -62,7 +62,7 @@ const HomeCulturalNowBand = dynamic(
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: marketingHomeMeta.title,
+    title: { absolute: marketingHomeMeta.title },
     description: marketingHomeMeta.description,
     alternates: { canonical: '/' },
     openGraph: {
