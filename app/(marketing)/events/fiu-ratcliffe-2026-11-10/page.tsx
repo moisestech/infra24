@@ -1,3 +1,4 @@
+import RsvpForm from './rsvp-form';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { CalendarDays, Clock3, MapPin, Users } from 'lucide-react';
@@ -54,12 +55,7 @@ export default function FiuRatcliffeEventPage() {
           <a href={event.path + '/calendar.ics'} className="mt-7 flex min-h-11 items-center justify-center rounded-full border border-neutral-300 px-5 py-3 text-center text-sm font-semibold hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800">
             Add to calendar (.ics)
           </a>
-          <div className="mt-5 border-t border-neutral-200 pt-5 dark:border-neutral-700" aria-live="polite">
-            <p className="font-semibold">RSVP opening soon</p>
-            <p className="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-              Registration is not yet open on this page. Please check back for the RSVP form. Arrival and parking instructions are being finalized with the host.
-            </p>
-          </div>
+          <div className="mt-5 border-t border-neutral-200 pt-5 dark:border-neutral-700"><h3 className="mb-4 text-lg font-semibold">Save your spot</h3><RsvpForm /></div>
         </aside>
       </div>
     </article>
