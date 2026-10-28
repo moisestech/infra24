@@ -21,6 +21,17 @@ type UpcomingEvent = {
 
 const upcomingEvents: UpcomingEvent[] = [
   {
+    href: '/events/fiu-ratcliffe-2026-11-10',
+    title: 'DCC × Ratcliffe — Community Working Session',
+    when: 'Tuesday, November 10, 2026 · 6:00–7:30 PM EST',
+    where: 'FIU Biscayne Bay Campus · AC2, Suite 150',
+    blurb: 'Bring a project, a question, or your curiosity. Meet artists, makers, engineers, designers, and potential collaborators.',
+    status: 'confirmed',
+  },
+];
+
+const pastEvents: UpcomingEvent[] = [
+  {
     href: '/events/born-digital-era-open-studio-may',
     title: 'Born-Digital Era: Open Studio #1',
     when: 'May 2026 · 3.5 hours',
@@ -136,6 +147,18 @@ export default function EventsPage() {
               </li>
             );
           })}
+        </ol>
+      </Section>
+
+      <Section className={sectionSolid}>
+        <h2 className="mb-5 text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">Past events and earlier concepts</h2>
+        <ol className="space-y-3">
+          {pastEvents.map((event) => (
+            <li key={event.title} className="rounded-xl border border-[var(--cdc-border)] bg-[#fafafa] p-5 dark:border-neutral-800 dark:bg-neutral-950">
+              {event.href ? <Link href={event.href} className={linkClass}>{event.title}</Link> : <span className="font-medium">{event.title}</span>}
+              <p className="mt-1 text-xs text-neutral-500">{event.when} · {event.where}</p>
+            </li>
+          ))}
         </ol>
       </Section>
 
