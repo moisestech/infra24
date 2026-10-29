@@ -40,5 +40,11 @@
       "destination": "https://infra24.com",
       "permanent": true
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/dcc-event-mail",
+      "schedule": "0 12 * * *"
+    }
   ]
 }
