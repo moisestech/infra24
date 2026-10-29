@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1672 941" width="1672" height="941" role="img" aria-label="A luminous, playful digital sculpture above a massive layered support system hidden below the surface">
+<defs>
+  <radialGradient id="bg" cx="68%" cy="38%" r="80%"><stop offset="0" stop-color="#0b3038"/><stop offset=".34" stop-color="#061e24"/><stop offset=".73" stop-color="#031518"/><stop offset="1" stop-color="#010a0e"/></radialGradient>
+  <radialGradient id="haze"><stop stop-color="#0c8b95" stop-opacity=".3"/><stop offset="1" stop-color="#0c8b95" stop-opacity="0"/></radialGradient>
+  <linearGradient id="top" x1="0" x2=".9" y1="0" y2="1"><stop stop-color="#254852"/><stop offset=".5" stop-color="#102d35"/><stop offset="1" stop-color="#061a20"/></linearGradient>
+  <linearGradient id="face" x1="0" y1=".1" x2=".9" y2=".95"><stop stop-color="#1b4149"/><stop offset=".6" stop-color="#09262d"/><stop offset="1" stop-color="#051419"/></linearGradient>
+  <linearGradient id="side" x1="0" y1="0" x2="1" y2=".7"><stop stop-color="#07191e"/><stop offset=".45" stop-color="#0d3038"/><stop offset="1" stop-color="#07161b"/></linearGradient>
+  <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6dcdd0"/><stop offset=".22" stop-color="#234d55"/><stop offset=".68" stop-color="#09262e"/><stop offset="1" stop-color="#2a6a70"/></linearGradient>
+  <linearGradient id="cable" x1="0" y1="0" x2="1" y2=".2"><stop stop-color="#46d5ce"/><stop offset=".52" stop-color="#087682"/><stop offset="1" stop-color="#021e23"/></linearGradient>
+  <linearGradient id="warm" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffe0a0"/><stop offset=".35" stop-color="#f7a15f"/><stop offset="1" stop-color="#bd523d"/></linearGradient>
+  <radialGradient id="glass" cx="36%" cy="22%" r="75%"><stop stop-color="#d2fff4"/><stop offset=".17" stop-color="#b1fce6"/><stop offset=".42" stop-color="#59d9cf"/><stop offset=".78" stop-color="#078b9b"/><stop offset="1" stop-color="#00404c"/></radialGradient>
+  <linearGradient id="shimmer" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#73faed"/><stop offset=".45" stop-color="#97aaff"/><stop offset=".7" stop-color="#e3a5df"/><stop offset="1" stop-color="#ffbf79"/></linearGradient>
+  <filter id="shadow" x="-40%" y="-50%" width="180%" height="210%"><feGaussianBlur stdDeviation="24"/></filter>
+  <filter id="soft" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="17"/></filter>
+  <filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="5"/></filter>
+  <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".58" numOctaves="3" seed="9" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+</defs>
+<rect width="1672" height="941" fill="url(#bg)"/>
+<ellipse cx="1100" cy="394" rx="540" ry="405" fill="url(#haze)"/>
+<ellipse cx="990" cy="860" rx="590" ry="90" fill="#01090c" opacity=".72" filter="url(#shadow)"/>
+<ellipse cx="1010" cy="855" rx="360" ry="26" fill="#19adb4" opacity=".1" filter="url(#soft)"/>
+<!-- spare negative-space light and distant ambience -->
+<circle cx="1468" cy="168" r="3" fill="#2bb2b5" opacity=".35"/>
+<circle cx="327" cy="620" r="2.5" fill="#7dd6d8" opacity=".12"/>
+<!-- exploded structural layers: invisible work under visible artwork -->
+<g stroke-linejoin="round">
+<path d="M685 513 1086 445 1297 536 880 628Z" fill="url(#top)" stroke="#3a858d" stroke-opacity=".42" stroke-width="2"/>
+<path d="M880 628 1297 536 1239 628 870 716Z" fill="url(#side)" stroke="#2a6470" stroke-opacity=".48" stroke-width="2"/>
+<path d="M685 513 880 628 870 716 673 591Z" fill="#0e3139" stroke="#3b7b82" stroke-opacity=".36"/>
+<path d="M665 629 862 754 1204 668 1235 627 866 717 670 593Z" fill="#112f38" stroke="#327b85" stroke-width="2" stroke-opacity=".6"/>
+<path d="M862 754 1204 668 1181 713 870 798Z" fill="url(#side)"/>
+<path d="M665 629 862 754 870 798 663 670Z" fill="#09262d"/>
+<path d="M708 719 877 827 1137 746 1190 710 870 799 667 670Z" fill="#173b44" stroke="#2c727b" stroke-opacity=".8" stroke-width="2"/>
+<path d="M877 827 1137 746 1078 808 906 863Z" fill="url(#side)"/>
+<path d="M708 719 877 827 906 863 751 781Z" fill="#0a242b"/>
+<path d="M822 842 920 904 1022 865 1078 808 906 863 752 781Z" fill="#11343d" opacity=".93"/>
+<path d="M920 904 1022 865 983 891 935 921Z" fill="#061820"/>
+</g>
+<!-- light seeping between unseen operational strata -->
+<path d="M684 596 867 713 1223 625" fill="none" stroke="#66e1df" opacity=".25" stroke-width="3"/>
+<path d="M685 600 870 717 1223 629" fill="none" stroke="#67c6ce" opacity=".25" stroke-width="10" filter="url(#glow)"/>
+<path d="M678 673 870 795 1184 711" fill="none" stroke="#e18b60" opacity=".52" stroke-width="2.4"/>
+<path d="M678 674 870 795 1184 711" fill="none" stroke="#e18b60" opacity=".28" stroke-width="9" filter="url(#glow)"/>
+<!-- tiny circuit traces, fans, boards, visible labor -->
+<g transform="translate(805 663) skewY(29)" opacity=".85"><rect x="0" y="0" width="66" height="42" rx="3" fill="#092126" stroke="#4f9295" stroke-width="2"/><path d="M8 7H57M8 17H57M8 27H57M21 7V36M42 7V36" stroke="#3d858b" stroke-width="1.3"/><rect x="23" y="12" width="20" height="18" fill="#1b5960" stroke="#9ed8ce"/></g>
+<g transform="translate(982 687) skewY(-14)" opacity=".9"><rect x="0" y="0" width="73" height="59" rx="4" fill="#07191d" stroke="#477b82" stroke-width="2"/><circle cx="37" cy="30" r="21" stroke="#2c7980" stroke-width="3" fill="#153d43"/><path d="M37 12 43 28 61 30 43 36 37 48 31 35 13 30 31 25Z" fill="#67c6ce" opacity=".6"/><circle cx="37" cy="30" r="4" fill="#f7a15f"/></g>
+<g transform="translate(948 774) skewY(-17)" opacity=".82"><rect x="0" y="0" width="51" height="20" fill="#052026" stroke="#268b8e"/><path d="M6 6h36M6 11h24M6 16h36" stroke="#67c6ce" stroke-width="2"/></g>
+<path d="M758 591C786 598 799 641 834 641S888 604 922 623 967 681 1005 666" stroke="url(#cable)" stroke-width="8" fill="none" stroke-linecap="round"/>
+<path d="M765 591C793 595 804 636 834 636S887 601 917 617 973 669 1006 657" stroke="#b3fff4" stroke-width="1.5" fill="none" opacity=".65"/>
+<path d="M1018 565c12 22 46 17 52 40s-7 30 7 55" stroke="url(#warm)" stroke-width="4" fill="none" opacity=".85"/>
+<!-- upper surface, subtle interlock -->
+<path d="M664 438 1072 369 1267 471 861 562Z" fill="url(#top)" stroke="#5ec1c0" stroke-width="2"/>
+<path d="M861 562 1267 471 1297 536 880 628Z" fill="url(#face)" stroke="#2e7881" stroke-width="2"/>
+<path d="M664 438 861 562 880 628 685 513Z" fill="#173940" stroke="#427f84" stroke-width="2"/>
+<path d="M690 448 1067 383 1231 472 861 548Z" fill="#071d23" opacity=".62"/>
+<path d="M690 448 1067 383 1231 472 861 548Z" fill="none" stroke="#50aeb2" opacity=".33" stroke-width="1.4"/>
+<path d="M706 451 857 543" fill="none" stroke="#c0ffff" opacity=".15" stroke-width="2"/>
+<!-- small visible sculpture is playful yet precise, floating above support -->
+<ellipse cx="980" cy="412" rx="95" ry="25" fill="#23d9ce" opacity=".4" filter="url(#soft)"/>
+<path d="M937 384 989 357 1041 387 989 414Z" fill="#09343b" stroke="#61b4b9" stroke-width="2"/>
+<path d="M937 384 989 414 989 433 936 403Z" fill="#153942" stroke="#2da0a7" stroke-width="2"/>
+<path d="M989 414 1041 387 1041 406 989 433Z" fill="#0b252b" stroke="#45969c" stroke-width="2"/>
+<path d="M982 377 984 333" stroke="#67c6ce" stroke-width="6" opacity=".85" stroke-linecap="round"/>
+<ellipse cx="984" cy="323" rx="48" ry="45" fill="#14aeb9" opacity=".35" filter="url(#soft)"/>
+<!-- glass petals made from overlapping faceted forms -->
+<path d="M981 296C937 292 911 267 915 236c28-5 54 15 67 56Z" fill="url(#glass)" stroke="#a6fff0" stroke-opacity=".8" stroke-width="2"/>
+<path d="M983 296c13-47 43-69 80-56-2 35-32 56-80 56Z" fill="url(#shimmer)" stroke="#b3f9f7" stroke-opacity=".75" stroke-width="2"/>
+<path d="M984 293c-28-38-29-67 0-96 33 28 33 60 0 96Z" fill="url(#glass)" stroke="#c3ffff" stroke-opacity=".86" stroke-width="2"/>
+<path d="M984 295c28-26 57-20 75 5-28 24-57 25-75-5Z" fill="#2fd7c4" stroke="#d4ffea" stroke-opacity=".4"/>
+<path d="M982 293c-33-21-62-14-78 14 29 18 54 15 78-14Z" fill="#0b96ab" stroke="#b5f3e5" stroke-opacity=".6"/>
+<circle cx="985" cy="294" r="21" fill="url(#warm)" stroke="#ffe5af" stroke-width="2"/>
+<circle cx="977" cy="286" r="8" fill="#fff6d8" opacity=".9"/>
+<path d="M979 217 990 199 997 217" fill="none" stroke="#d4fffe" opacity=".65" stroke-width="2"/>
+<g fill="#70ffed" opacity=".5"><circle cx="1083" cy="289" r="4"/><circle cx="884" cy="350" r="3"/><circle cx="1110" cy="376" r="2"/></g>
+<circle cx="984" cy="294" r="76" fill="#55f7e2" opacity=".11" filter="url(#soft)"/>
+<!-- tiny warm access light in support face -->
+<rect x="1054" y="565" width="31" height="9" rx="3" transform="rotate(-12 1054 565)" fill="url(#warm)"/>
+<path d="M1043 569 1108 553" stroke="#f7a15f" stroke-width="8" opacity=".36" filter="url(#glow)"/>
+<rect width="1672" height="941" filter="url(#grain)" opacity=".035"/>
+</svg>
