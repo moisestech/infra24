@@ -255,7 +255,7 @@ export const DCC_EDITORIAL: DccEditorial[] = [
       'when-public-art-becomes-infrastructure',
     ],
     bodyPath: 'content/journal/what-does-it-cost-to-run-digital-culture.mdx',
-    heroImage: '/dcc/culture/editorial/what-does-it-cost-to-run-digital-culture/hero.svg',
+    heroImage: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1793300794/dccmiami/journal/2026-10/what-does-it-cost-to-run-digital-culture-vector-cover-v01.svg',
     heroImageAlt: 'Conceptual sculptural cutaway: a small luminous digital artwork rests above a disproportionately large layered system of maintenance components and cables',
     heroImageCaption: 'Conceptual illustration · DCC Miami (experimental vector cover)',
     heroSlot: {
