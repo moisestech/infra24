@@ -13,6 +13,7 @@ import {
   formatCultureDate,
   getEditorialPublicPath,
   listJournalArchive,
+  listEditorialForJournalCategory,
   listJournalOpeningSequence,
 } from '@/lib/dcc/culture'
 import { cn } from '@/lib/utils'
@@ -20,6 +21,7 @@ import { cn } from '@/lib/utils'
 export function JournalFrontDoor() {
   const opening = listJournalOpeningSequence()
   const archive = listJournalArchive()
+  const fieldNotes = listEditorialForJournalCategory('field-notes')
 
   return (
     <>
@@ -134,9 +136,41 @@ export function JournalFrontDoor() {
         )}
       </Section>
 
+      {fieldNotes.length > 0 ? (
+        <Section
+          id="field-notes"
+          className={`${cdcSectionMuted} border-t border-neutral-200 dark:border-neutral-800`}
+        >
+          <h2 className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-400">
+            <Link href="/journal/field-notes" className="underline-offset-4 hover:underline">
+              Field notes
+            </Link>
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            Notes from working studios, experiments and practical production.
+            Conceptual cover illustrations are not documentary photographs.
+          </p>
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+            {fieldNotes.map((entry) => (
+              <CultureRecordCard
+                key={entry.id}
+                href={getEditorialPublicPath(entry)}
+                title={entry.title}
+                eyebrow={EDITORIAL_TYPE_LABEL[entry.type]}
+                meta={entry.publishedAt ? formatCultureDate(entry.publishedAt) : undefined}
+                description={entry.dek ?? entry.excerpt}
+                image={entry.heroImage}
+                imageAlt={entry.heroImageAlt ?? entry.title}
+                fallbackLabel="Image forthcoming"
+              />
+            ))}
+          </ul>
+        </Section>
+      ) : null}
+
       <Section
         id="conversations"
-        className={`${cdcSectionMuted} border-t border-neutral-200 dark:border-neutral-800`}
+        className={`${cdcSectionPaper} border-t border-neutral-200 dark:border-neutral-800`}
       >
         <h2 className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-400">
           <Link href="/journal/conversations" className="underline-offset-4 hover:underline">
@@ -150,7 +184,7 @@ export function JournalFrontDoor() {
 
       <Section
         id="investigating"
-        className={`${cdcSectionPaper} border-t border-neutral-200 pb-16 dark:border-neutral-800`}
+        className={`${cdcSectionMuted} border-t border-neutral-200 pb-16 dark:border-neutral-800`}
       >
         <h2 className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-400">
           What we&apos;re investigating

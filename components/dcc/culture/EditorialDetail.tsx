@@ -89,6 +89,7 @@ export function EditorialDetail({ entry, mdx }: EditorialDetailProps) {
               src={entry.heroImage}
               alt={entry.heroImageAlt ?? entry.title}
               aspectClassName="aspect-[16/9]"
+              sizes="(max-width: 768px) 100vw, 768px"
               priority
             />
             {entry.heroImageCaption ? (
