@@ -28,9 +28,9 @@ export const DCC_EDITORIAL: DccEditorial[] = [
     relatedEditorialIds: ['building-node-001-studio-43', 'miami-doesnt-have-a-digital-art-problem'],
     bodyPath: 'content/journal/capacity-exists-before-infrastructure-does.mdx',
     heroImage:
-      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1792937719/dccmiami/journal/2026-10/capacity-exists-before-infrastructure-does-hero.png',
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1793481397/dccmiami/journal/2026-10/v2/capacity-exists-before-infrastructure-does-hero-v2.png',
     heroImageAlt:
-      'Conceptual illustration of separated fabrication stations, an unfinished printed object, and equipment awaiting an operator',
+      'Conceptual image of two translucent fabricated components separated across a workshop gap, with their small missing connector set aside',
     heroImageCaption: 'AI-generated conceptual illustration · DCC Miami',
     heroSlot: {
       id: 'capacity-hero',
@@ -114,9 +114,9 @@ export const DCC_EDITORIAL: DccEditorial[] = [
     relatedEditorialIds: ['the-institution-that-can-build-itself', 'a-digital-lab-is-not-a-room-full-of-equipment'],
     bodyPath: 'content/journal/you-cant-buy-digital-culture.mdx',
     heroImage:
-      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1792937664/dccmiami/journal/2026-10/you-cant-buy-digital-culture-hero.png',
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1793481377/dccmiami/journal/2026-10/v2/you-cant-buy-digital-culture-hero-v2.png',
     heroImageAlt:
-      'Conceptual illustration of a precarious pile of purchased electronics beside an unfinished creative object',
+      'Conceptual sculpture of stacked unbranded electronics with disconnected cables towering over a fragile handmade translucent object',
     heroImageCaption: 'AI-generated conceptual illustration · DCC Miami',
     heroSlot: { id: 'buy-hero', ratio: '16:9', role: 'hero', title: 'A purchased stack is not a community', brief: 'A grounded editorial still life of handwritten event notes, laptop, printed workshop card, scattered cables, and prototype; no brand logos or fake text.' },
   },
@@ -255,6 +255,11 @@ export const DCC_EDITORIAL: DccEditorial[] = [
       'when-public-art-becomes-infrastructure',
     ],
     bodyPath: 'content/journal/what-does-it-cost-to-run-digital-culture.mdx',
+    heroImage:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1793481309/dccmiami/journal/2026-10/v2/what-does-it-cost-to-run-digital-culture-hero-v1.png',
+    heroImageAlt:
+      'Conceptual cutaway of an orderly technology workstation above densely arranged tools, cables, spare components and records that sustain it',
+    heroImageCaption: 'AI-generated conceptual illustration · DCC Miami',
     heroSlot: {
       id: 'cost-hero',
       ratio: '16:9',
@@ -314,6 +319,11 @@ export const DCC_EDITORIAL: DccEditorial[] = [
       'a-digital-lab-is-not-a-room-full-of-equipment',
     ],
     bodyPath: 'content/journal/when-public-art-becomes-infrastructure.mdx',
+    heroImage:
+      'https://res.cloudinary.com/dck5rzi4h/image/upload/v1793481349/dccmiami/journal/2026-10/v2/when-public-art-becomes-infrastructure-hero-v1.png',
+    heroImageAlt:
+      'Imagined illuminated public sculpture shown in architectural cutaway, revealing electronic equipment, power conduits and maintenance access beneath it',
+    heroImageCaption: 'AI-generated conceptual illustration · DCC Miami',
     heroSlot: {
       id: 'public-art-hero',
       ratio: '16:9',
