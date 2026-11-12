@@ -9,9 +9,9 @@ export const edgeZonesPortalEn: EdgeZonesPortalContent = {
     'Presented at Edge Zones, curated by Jordan Horton, with digital platform and public programming support from DCC Miami.',
   shortDescription:
     'A partnership framework for digital art in Miami, connecting a curator-led exhibition with artist visibility, public programming, digital documentation, and a long-term online archive.',
-  metaTitle: 'DCC Miami × Edge Zones — Touching Grass',
+  metaTitle: 'Touching Grass at Edge Zones — Proposed Exhibition',
   hero: {
-    eyebrow: 'DCC Miami × Edge Zones',
+    eyebrow: 'Presented at Edge Zones · Proposal in development',
     title: 'Touching Grass',
     subtitle: 'Digital Culture, Physical Reality',
     intro: `Touching Grass is an exhibition concept exploring the relationship between digital culture and embodied, ecological, and material reality.
@@ -28,19 +28,18 @@ The exhibition brings together artists whose practices examine how digital techn
   rolesMatrix: {
     title: 'How the partnership works',
     intro:
-      'This proposal is structured around three distinct roles: Edge Zones as the physical host space, Jordan Horton as invited curator, and DCC Miami as the digital platform and public programming support layer.',
+      'Edge Zones is the institutional host; Jordan Horton leads curatorial development, Angelo Caruso coordinates local installation, and DCC Miami provides a proposed digital and public-engagement layer.',
     edgeZones: {
       title: 'Edge Zones',
       subtitle: 'Physical host space',
       intro:
-        'Edge Zones provides the exhibition space, standard exhibition hosting, and opening and closing receptions.',
+        'Edge Zones hosts the exhibition, provides the space and one opening reception under the November 6 terms. Any additional staffing or events require prior approval.',
       items: [
         'Physical host space',
         'Opening reception',
-        'Closing reception',
         'Standard exhibition hosting',
         'Existing Edge Zones website and social media visibility',
-        '$500 curatorial fee under Edge Zones’ standard invited-curator structure',
+        '$500 exhibition honorarium; allocation for production costs and recipient pending written agreement',
       ],
       accent: 'coral',
       href: EDGE_ZONES_GALLERY_WEBSITE,
@@ -68,7 +67,7 @@ The exhibition brings together artists whose practices examine how digital techn
       title: 'DCC Miami',
       subtitle: 'Digital platform and public programming support',
       intro:
-        'DCC Miami extends the life and impact of the exhibition before, during, and after it opens through online infrastructure, artist visibility, documentation, publishing, and one public program or activation.',
+        'DCC Miami has developed a proposal microsite and is planning artist visibility, documentation, publishing and one curator-aligned public program, subject to approval and resources.',
       items: [
         'Exhibition webpage',
         'Artist index',
@@ -144,7 +143,7 @@ The exhibition brings together artists whose practices examine how digital techn
       id: 'support',
       title: 'What DCC adds',
       intro:
-        'DCC provides the digital infrastructure that extends the exhibition before, during, and after it opens.',
+        'Explore what has been built and what is planned. Future work is conditional on materials, capacity and partner approval.',
       modules: [
         {
           id: 'exhibition-webpage',
@@ -227,7 +226,7 @@ The exhibition brings together artists whose practices examine how digital techn
       id: 'programs',
       title: 'DCC-Supported Public Program',
       intro:
-        'DCC will support one public program connected to the exhibition during the run of the show. The final format will be confirmed with Edge Zones, Jordan Horton, and the participating artists.',
+        'DCC proposes one accessible artist conversation and demonstration during the exhibition. Speakers, date, equipment, staffing, costs and access are pending discussion with the curator, artists and Edge Zones.',
       formats: [
         'Artist talk',
         'Digital culture conversation',
@@ -238,7 +237,7 @@ The exhibition brings together artists whose practices examine how digital techn
         'Documentation or publishing event',
       ],
       dateLabel: 'Date TBD',
-      formatLabel: 'Format TBD with Edge Zones, Jordan Horton, and participating artists',
+      formatLabel: 'Proposed artist conversation · date and staffing pending',
       ctaHref: '#join',
       ctaLabel: 'Join updates',
     },
@@ -327,6 +326,7 @@ The exhibition brings together artists whose practices examine how digital techn
     { id: 'concept', label: 'Concept' },
     { id: 'artists', label: 'Artists' },
     { id: 'support', label: 'DCC Support' },
+    { id: 'deliverables', label: 'Delivery Plan' },
     { id: 'programs', label: 'Programs' },
     { id: 'archive', label: 'Archive' },
     { id: 'pdf', label: 'PDF' },
