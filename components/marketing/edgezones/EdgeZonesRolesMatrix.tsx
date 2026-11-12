@@ -37,7 +37,7 @@ export function EdgeZonesRolesMatrix() {
         />
         <EdgeZonesHighlightParagraph className="mt-4 max-w-3xl">{rolesMatrix.intro}</EdgeZonesHighlightParagraph>
 
-        <ul className="mt-10 grid gap-6 lg:grid-cols-3">
+        <ul className="mt-10 grid gap-6 lg:grid-cols-2">
           {columns.map((col) => {
             const portrait = partnershipPortraitFor(col.title)
             const imageFit = portrait?.imageFit ?? 'cover'
@@ -49,7 +49,8 @@ export function EdgeZonesRolesMatrix() {
                 key={col.title}
                 className={cn(
                   'ez-card ez-logo-watermark border-t-4 p-5',
-                  ACCENT_BORDER[col.accent as keyof typeof ACCENT_BORDER]
+                  ACCENT_BORDER[col.accent as keyof typeof ACCENT_BORDER],
+                  col.title === rolesMatrix.edgeZones.title && 'lg:col-span-2'
                 )}
               >
                 <span className="ez-card-watermark pointer-events-none absolute inset-0 z-0" aria-hidden />
@@ -128,6 +129,8 @@ export function EdgeZonesRolesMatrix() {
             )
           })}
         </ul>
+        <div className="mt-6 border-l-4 border-[var(--ez-orange)] bg-[var(--ez-surface)] p-5"><p className="ez-module-number">LOCAL INSTALLATION COORDINATION</p><h3 className="ez-heading ez-subsection-title mt-2">Angelo Caruso</h3><p className="ez-body mt-2 text-[var(--ez-muted)]">Participating artist and local technical point person. Angelo has offered to coordinate installation, deinstallation and gallery logistics. Exact tasks and production costs remain subject to agreement.</p></div>
+        <p className="ez-caption mt-6 text-[var(--ez-muted)]">Moises Sanabria and Fabiola Larios are participating artists and DCC Miami co-founders. DCC contributions are separate from their artworks.</p>
       </div>
     </section>
   )
