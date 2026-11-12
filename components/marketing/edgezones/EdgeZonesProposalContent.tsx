@@ -13,6 +13,7 @@ import { EdgeZonesSectionNav } from '@/components/marketing/edgezones/EdgeZonesS
 import { EdgeZonesArchiveSection } from '@/components/marketing/edgezones/EdgeZonesSectionBanner'
 import { DccPublicProgram } from '@/components/marketing/edgezones/DccPublicProgram'
 import { DccSupportModules } from '@/components/marketing/edgezones/DccSupportModules'
+import { EdgeZonesDeliveryPlan } from '@/components/marketing/edgezones/EdgeZonesDeliveryPlan'
 import { PartnershipPdfCard } from '@/components/marketing/edgezones/PartnershipPdfCard'
 import { TouchingGrassConcept } from '@/components/marketing/edgezones/TouchingGrassConcept'
 import { EdgeZonesIconBadge } from '@/components/marketing/edgezones/EdgeZonesIconBadge'
@@ -40,6 +41,7 @@ export function EdgeZonesProposalContent({ host, curator, artists }: Props) {
       <EdgeZonesNetworkIndex host={host} curator={curator} artists={artists} />
 
       <DccSupportModules />
+      <EdgeZonesDeliveryPlan />
       <DccPublicProgram />
       <EdgeZonesArchiveSection />
 
