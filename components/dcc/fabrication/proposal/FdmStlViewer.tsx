@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
-import { Box3, BufferGeometry, Vector3 } from 'three'
+import { BufferGeometry, DoubleSide, Vector3 } from 'three'
 
 type MeshState =
   | { type: 'loading' }
@@ -57,7 +57,8 @@ export function FdmStlViewer({
         geometry.rotateX(-Math.PI / 2)
         geometry.computeBoundingBox()
         const extents = new Vector3()
-        new Box3().setFromBufferAttribute(geometry.attributes.position).getSize(extents)
+        if (!geometry.boundingBox) throw new Error('Missing bounds')
+        geometry.boundingBox.getSize(extents)
         if (!Number.isFinite(extents.x + extents.y + extents.z) ||
             Math.max(extents.x, extents.y, extents.z) <= 0) {
           geometry.dispose()
@@ -96,7 +97,7 @@ export function FdmStlViewer({
               <directionalLight position={[4, 7, 5]} intensity={2.2} />
               <directionalLight position={[-4, 1, -3]} intensity={0.9} />
               <mesh geometry={state.geometry}>
-                <meshStandardMaterial color={color} roughness={0.68} metalness={0.02} side={2} />
+                <meshStandardMaterial color={color} roughness={0.68} metalness={0.02} side={DoubleSide} />
               </mesh>
               <OrbitControls enablePan={false} enableDamping minDistance={2} maxDistance={12} />
             </Canvas>
