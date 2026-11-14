@@ -99,3 +99,17 @@ Suggested short question: *“For the first FDM octopus test, which color feels 
 - Meshy export documentation: https://docs.meshy.ai/en/webapp/getting-started
 
 **Completion means verified artifacts and documented handoffs, not simply updating a status field.**
+
+## 2026-11-14 octopus concept-sheet intake (new image)
+
+User supplied a single 1080×1080 conceptual collage depicting **ornate metallic octopus drop earrings** in paired front, side and back studies plus a gray '3D print mesh view.' This **is not** a known exported mesh, physical scan or validated 3D CAD file. Image annotations show roughly **55 mm in height** and a **~14 mm marker near the stud/upper assembly**, but **do not establish that the entire octopus is 14 mm wide**. The printed resolution recommendation on the sheet is not a verified machine setting.
+
+**Prepared source crops outside public Git:** isolated original front, side, back and alternative front as square 800×800 PNGs, cropped/padded only, no synthesized artwork. These files are in the current conversation's private working attachment, **not committed** to the public repository. The source may be a conceptual/rendered sheet with slight viewpoint inconsistencies, so first attempt single-image to 3D, then try paid multi-view only if side/back clearly represent the same form.
+
+**Shape objective:** a dangling octopus body with bulbous head, flowing curled differentiated tentacles and visible suction-cup texture. For first FDM silhouette proof, exclude the metal post, butterfly clasp and jump ring from the generated sculptural volume; jewelry hardware to be designed/assembled separately after material/strength analysis. Asymmetrical tentacle curls and undercuts may require thickening or manual sculpt repair for FDM. Do not imply the generic GitHub octopus proof is a copy of this collage.
+
+**Current Meshy workflow (verify at launch):** Meshy 7.1 High Detail / Image to 3D, primary cleaned front PNG; optional multi-view side/back; background removal in tool. Request geometry focus, turn the earring into one sculptural object, inspect all sides, export print STL and editable source GLB/OBJ. Multi-view is a paid-plan feature; do not spend credits or purchase without user authorization. Before printer: watertight/component QA, target dimensions confirmed with Carol, minimum feature thickness, support/printability and original rights review.
+
+**FDM color preference:** share Polymaker Neon Pink (#FF3670), Neon Magenta (#F21185), Neon Green (#00F263) as concept color choices and Neon Orange (#FF7800) as fourth option. Do not represent any color as stocked or supplied by Moonlighter/Bakehouse. Request primary and backup from Carol; don't purchase until operator confirms compatible PLA and actual stock. This is a separate color question from translucent resin chicken-foot prototype.
+
+**Source:** user-attached image in Nov 14 conversation. Prepared reference ZIP available as conversation artifact, not a public URL. Links: https://docs.meshy.ai/en/webapp/image-to-3d and https://shop.polymaker.com/products/neon-pla/ . No fabrication order or public permission granted.
