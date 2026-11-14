@@ -1,6 +1,6 @@
 export const CAROL_INTERNAL_WORKING_TITLE = 'Chicken Fingers'
 
-export const CAROL_STATUS_SUBLABEL = 'Source + priorities clarified'
+export const CAROL_STATUS_SUBLABEL = 'Brass cast at Bakehouse · measurements pending'
 
 export const CAROL_PROJECT_THESIS =
   'Can Carol’s chicken-foot form become a mirrored pair of earrings, about 2 inches long, that retain the texture and sculptural character of the source while becoming light enough to wear comfortably?'
@@ -19,7 +19,7 @@ export const CAROL_TESTING_FOCUS = [
 
 export const CAROL_OBJECT_ANALYSIS = {
   source:
-    'Internet reference image supplied by Carol (visual inspiration — not her original design). Carol’s own brass casts are the stronger physical source.',
+    'Internet reference image supplied by Carol (visual inspiration — not her original design). Carol’s own brass casts are the stronger physical source and are now at Bakehouse Studio 43 for a measured review.'
   scale: 'About 2 inches long — exact length still coming. Do not lock millimeters until Carol sends the measurement.',
   pair: 'Mirrored pair — confirmed.',
   weight:
@@ -156,7 +156,7 @@ export const CAROL_PHASE_1_STEPS = [
   {
     number: '01',
     title: 'Object review',
-    body: 'Inspect Carol’s existing brass pieces in person at Studio 43.',
+    body: 'Review the existing brass pieces now physically at Studio 43; document condition and custody before measurement.'
   },
   {
     number: '02',
@@ -194,6 +194,7 @@ export const CAROL_DOCUMENTATION_STAGES = [
   { id: 'reference', label: 'Reference', status: 'complete' as const },
   { id: 'visual-study', label: 'Visual study', status: 'complete' as const },
   { id: 'client-input', label: 'Client input', status: 'complete' as const },
+  { id: 'brass-at-studio', label: 'Physical brass source at Bakehouse', status: 'complete' as const },
   { id: 'physical-review', label: 'Physical object review', status: 'pending' as const },
   { id: 'measure-weigh', label: 'Measure / weigh', status: 'pending' as const },
   { id: 'digital-source', label: 'Digital source', status: 'pending' as const },
@@ -217,7 +218,7 @@ export const CAROL_CONFIRMED_INPUTS = [
   {
     id: 'physical',
     label: 'Physical reference',
-    answer: 'Carol has real chicken feet previously cast in brass/metal (originally pendants).',
+    answer: 'Carol has real chicken feet previously cast in brass/metal (originally pendants). Moises confirms the physical pieces are at Bakehouse Studio 43; inspection, measurement and weighing remain pending.'
   },
   {
     id: 'mirror',
