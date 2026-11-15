@@ -71,6 +71,27 @@ export default async function CarolFdmQuotePage({
             </div>
           </div>
         </section>
+        {project.slug === 'octopus' && (
+          <section className="rounded-2xl border border-[var(--cdc-border)] bg-neutral-50 p-5 dark:bg-neutral-900">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-neutral-500">Creative development · Image to 3D</p>
+            <h2 className="mt-2 text-xl font-semibold">Preparing the octopus model</h2>
+            <p className="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+              The supplied design sheet is a concept illustration, not a verified 3D model or engineering drawing.
+              The front, side and back need to describe the same object before they can be trusted as multiple
+              reference views. The physical earring post and clasp will be handled separately from the printed form.
+            </p>
+            <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-neutral-700 dark:text-neutral-300">
+              <li><strong>Reference:</strong> review the front image and confirm permission to use it in Meshy. Source imagery is not displayed publicly.</li>
+              <li><strong>Model study:</strong> generate and inspect one preliminary 3D shape; compare its tentacles, head, underside and silhouette with the reference.</li>
+              <li><strong>Print review:</strong> remove generated jewelry hardware, confirm physical size and attachment, repair thin or open geometry, then test one FDM form.</li>
+            </ol>
+            <p className="mt-4 rounded-xl bg-white p-3 text-xs leading-relaxed text-neutral-600 dark:bg-neutral-950 dark:text-neutral-400">
+              Current status: private reference crops prepared for review; artist approval for external AI processing
+              and a consistent multi-view set are still pending. No Meshy-generated Carol model, tested STL,
+              approved fabrication quote or physical print is being claimed.
+            </p>
+          </section>
+        )}
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">3D model preview</h2>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
