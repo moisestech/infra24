@@ -17,8 +17,8 @@ Both are tied to one client id (`carol-haggiag`) and have separate **planning** 
 
 Each quote page includes a reusable client-side STL viewer (`FdmStlViewer`). It:
 1. Requests only the known same-origin proxy endpoint `/api/dcc/fabricate/models/carol/{project}`.
-2. Displays a clear **3D preview coming soon** state when the STL is not yet available.
-3. When present, parses STL, recenters it, scales to display, applies the *illustrative* lime green, and supports rotation/zoom. It labels STL bounds as **STL units** until units are verified.
+2. Displays a clear **3D preview coming soon** state when the STL is not yet hosted, and lets the reviewer select an **STL from their device for local-only inspection** (the file is not sent to DCC or persisted).
+3. When a private-hosted or local STL is present, parses STL, recenters it, scales to display, applies the *illustrative* lime green, and supports rotation/zoom. Shows STL bounds (in unverified **STL units**) and triangle count, not watertightness or minimum-wall tests.
 4. Does not represent 3D visualization as a printability test, physical prototype or approved jewelry material.
 
 ## Private STL storage handoff, once files are supplied
@@ -57,3 +57,7 @@ The former `/fabricate/proposals/carol-haggiag` was a detailed **resin-oriented*
 ## Current release status
 
 All pages and the STL proxy are code changes only in a draft pull request; **no STL has been uploaded, no private bucket verified, no client account provisioned, no fixed price approved, and no deployment completed**.
+
+## Meshy reference preparation
+
+See [CAROL_MESHY_7_1_REFERENCE_TO_STL.md](./CAROL_MESHY_7_1_REFERENCE_TO_STL.md) for the verified 2026 Meshy 7.1 workflow, front/side/back image selection, corrective image-generation prompts, FDM validation and first mesh export steps. The prepared crop images are provided privately in the conversation, **not committed to this public GitHub repository**.
