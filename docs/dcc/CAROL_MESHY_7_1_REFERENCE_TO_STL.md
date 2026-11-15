@@ -24,10 +24,15 @@ Official: https://help.meshy.ai/en/articles/15724161-how-to-export-meshy-models-
 
 User provided a single **1080×1080 composite** sheet showing paired metal octopus earrings and separate side/back/draft views. Cropped/padded source views were prepared in the conversation (not published to the public repo):
 
-1. `01_front_primary.png` — strongest starting view; **still contains stud/post hardware**.
-2. `02_side_reference.png` — use only after checking consistency with front.
-3. `03_back_reference.png` — same caveat.
-4. `04_front_alternate.png` — do NOT pass as a second physical angle; it is another front version.
+1. `01_front_reference.png` — strongest isolated **front** test view; **still contains stud/post/clasp hardware**, which must be removed or separated in a later editable mesh.
+2. `02_side_reference.png` — conceptual **side** view, **not yet validated** as the exact same object.
+3. `03_back_reference.png` — conceptual **back** view, **not yet validated** as the exact same object.
+4. `00_original_collage_reference.png` — complete source sheet, archive/reference only; **do not upload this collage as one Image-to-3D input**.
+
+**Prepared 2026-11-15:** The downloadable private reference pack from this conversation contains these four PNGs and a README. Each crop is padded to 1024×1024 with aspect ratio preserved, but is upscaled from the small original sheet, so resolution is not magically recovered. **Do not check the pictures into Git, `/public`, Cloudinary or unauthenticated Airtable attachments.** A separate `01_front_body` crop was deliberately rejected because removing the hardware by cutting the image also severed part of the head; do not use it. Image cleanup that actually removes hardware must preserve octopus anatomy and be approved by the artist.
+
+**Multi-view gate:** inspect exact head, curl, loop and tentacle correspondence. Current source's side/back may differ illustratively from front. Meshy multi-view should receive only truly coherent alternate viewpoints; otherwise run a **single front image** first and inspect the invented backside critically.
+
 
 The original sheet shows about **55 mm indicated height** but the **14 mm callout is by the top assembly**, not proof of the octopus body's maximum width. Some viewpoint/stud/tentacle relationships differ. These images are **reference art, not engineering drawings**. Request permission to send an artist/client reference to an outside generative platform.
 
@@ -38,7 +43,7 @@ Images stay as private conversation artifacts; never commit proprietary/source a
 ### Pass 1: one-image geometry study (preferred)
 
 1. Get permission to use the octopus reference on Meshy. Open **Model → Image to 3D**, High Detail / Meshy 7.1, 1 image.
-2. Upload `01_front_primary.png`. Do **not** use the entire labeled 1080px collage.
+2. Upload `01_front_reference.png`. Do **not** use the entire labeled 1080px collage.
 3. With first run, choose Standard geometry; no texture is necessary for lime-green PLA FDM.
 4. Generate. Inspect the mesh front, side, back and top. Look for fused tentacles, false stud/clasp geometry, invented back anatomy, collapsed negative spaces and missing suction cups.
 5. Save the Meshy task URL/id and screenshot for the private project record. **Do not order printing yet.**
@@ -109,3 +114,9 @@ Existing branch PR: https://github.com/moisestech/infra24/pull/37
 ## Next recorded outcome
 
 No Meshy task was run or paid credits spent here. First user action is to upload the **front crop** to Meshy and capture a draft screenshot + STL/GLB; then inspect it in the repo viewer locally. No client price is final.
+
+## Meshy 2026 printability verification update
+
+Meshy's Print workflow offers a Printability card and a `Print Check` to identify watertightness, holes and non-manifold edges; `Make Printable` may repair and thicken geometry (and may consume credits). For an FDM physical test, the official guide gives approximately 1.2 mm minimum wall thickness as an *illustrative* starting value dependent on nozzle diameter. **Do not assume that is sufficient for unsupported curled tentacles or the attachment ring**: the selected operator must test orientation, contact points, effective neck thickness, break risk and post-processing. The Print menu allows mm resizing/download as STL/3MF, sometimes plan-gated. All STL dimensions must still be verified in a slicer.
+
+Official: https://docs.meshy.ai/en/webapp/guides/use-cases/3d-printing
