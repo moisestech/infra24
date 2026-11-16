@@ -3,7 +3,9 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ProposalChrome } from '@/components/dcc/fabrication/proposal/ProposalChrome'
 import { FdmStlViewer } from '@/components/dcc/fabrication/proposal/FdmStlViewer'
-import { hasFabricateProposalsAccess, proposalPageMetadata } from '@/lib/dcc/fabrication/proposal-auth'
+import { hasDccClientWorkspaceAccess } from '@/lib/dcc/fabrication/client-workspace-access'
+import { getApprovedPublicCloudinaryGlb } from '@/lib/dcc/fabrication/assets/cloudinary-models'
+import { CloudinaryGlbViewer } from '@/components/dcc/fabrication/proposal/CloudinaryGlbViewer'
 import { CAROL_CLIENT, CAROL_FDM_PROJECTS, isCarolProjectKey } from '@/lib/dcc/fabrication/proposals/carol-client'
 
 export const dynamic = 'force-dynamic'
@@ -13,11 +15,12 @@ export async function generateMetadata({
 }: {
   params: { project: string }
 }): Promise<Metadata> {
-  if (!isCarolProjectKey(params.project)) return { title: 'Private proposal', robots: { index: false, follow: false } }
-  return proposalPageMetadata({
+  if (!(await hasDccClientWorkspaceAccess(CAROL_CLIENT.id)) || !isCarolProjectKey(params.project)) return { title: 'Private project', robots: { index: false, follow: false } }
+  return {
     title: `${CAROL_FDM_PROJECTS[params.project].title} · DCC prototype planning`,
     description: 'Private FDM prototype study. No price has been approved.',
-  })
+    robots: { index: false, follow: false },
+  }
 }
 
 export default async function CarolFdmQuotePage({
@@ -25,11 +28,12 @@ export default async function CarolFdmQuotePage({
 }: {
   params: { project: string }
 }) {
-  if (!(await hasFabricateProposalsAccess())) return null
+  if (!(await hasDccClientWorkspaceAccess(CAROL_CLIENT.id))) notFound()
   if (!isCarolProjectKey(params.project)) notFound()
 
   const project = CAROL_FDM_PROJECTS[params.project]
   const other = CAROL_CLIENT.projectKeys.find((x) => x !== project.slug)!
+  const approvedPublicGlb = getApprovedPublicCloudinaryGlb(CAROL_CLIENT.id, project.slug)
 
   return (
     <ProposalChrome>
@@ -98,6 +102,12 @@ export default async function CarolFdmQuotePage({
             We will display the actual STL here after it passes geometry review and is uploaded to private storage.
             The bright green is a preview tint—not a claim that the object has been printed.
           </p>
+          {approvedPublicGlb && (
+            <div className="mb-4 space-y-2">
+              <p className="text-xs text-neutral-500">Artist-approved public GLB preview (Cloudinary)</p>
+              <CloudinaryGlbViewer url={approvedPublicGlb} title={project.title} />
+            </div>
+          )}
           <FdmStlViewer
             src={`/api/dcc/fabricate/models/carol/${project.slug}`}
             color={project.color.hex}
