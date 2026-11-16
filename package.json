@@ -89,6 +89,7 @@
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "3d-force-graph": "1.79.0",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",
     "cytoscape": "^3.33.2",
@@ -188,5 +189,10 @@
   "bugs": {
     "url": "https://github.com/your-org/infra24/issues"
   },
-  "homepage": "https://github.com/your-org/infra24#readme"
+  "homepage": "https://github.com/your-org/infra24#readme",
+  "overrides": {
+    "3d-force-graph": {
+      "three-render-objects": "1.40.0"
+    }
+  }
 }
