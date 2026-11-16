@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { hasFabricateProposalsAccess } from '@/lib/dcc/fabrication/proposal-auth'
-import { CAROL_FDM_PROJECTS, isCarolProjectKey } from '@/lib/dcc/fabrication/proposals/carol-client'
+import { hasDccClientWorkspaceAccess } from '@/lib/dcc/fabrication/client-workspace-access'
+import { CAROL_CLIENT, CAROL_FDM_PROJECTS, isCarolProjectKey } from '@/lib/dcc/fabrication/proposals/carol-client'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -16,19 +16,19 @@ const PRIVATE_HEADERS = {
 }
 
 /**
- * Read-only, same-origin, cookie-protected proxy for allowlisted STL objects.
+ * Read-only, same-origin, Clerk client/staff identity protected proxy for STL objects.
  * There is deliberately NO arbitrary object-path or URL input and NO public upload endpoint.
  * Required configuration: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
  * Provision a PRIVATE Supabase Storage bucket named "dcc-client-models".
  *
- * Note: Existing proposal password is shared across clients. Before using this
- * for sensitive production CAD, replace/extend it with client-scoped identity.
+ * Access is checked for the specific Carol client through Clerk, not via a
+ * shared proposal password. Storage bucket must remain private.
  */
 export async function GET(
   _request: Request,
   { params }: { params: { project: string } }
 ) {
-  if (!(await hasFabricateProposalsAccess())) {
+  if (!(await hasDccClientWorkspaceAccess(CAROL_CLIENT.id))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: PRIVATE_HEADERS })
   }
 
