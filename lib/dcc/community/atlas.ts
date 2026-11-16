@@ -16,6 +16,7 @@ export type AtlasProfile = {
   practice: string[]
   interests: InterestId[]
   website?: string
+  links?: { label: string; url: string }[]
 }
 export type ApprovedProfileInput = AtlasProfile & {
   identityVerified: boolean

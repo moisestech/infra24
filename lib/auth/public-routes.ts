@@ -122,6 +122,7 @@ export function isPublicRoute(rawPathname: string): boolean {
     '/backoffice',
     '/fabricators',
     '/dashboard/ceo',
+    '/api/dcc/atlas/intake',
     '/api/dcc/make',
     '/api/dcc/fabricate',
     '/api/scale-up',

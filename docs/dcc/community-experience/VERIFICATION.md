@@ -1,38 +1,29 @@
-# Community Atlas preview — verification
+# Community Atlas — verification
 
-Date: November 15, 2026.
+Checkpoint: November 16, 2026.
 
 ## Story
 
-A visitor explores overlapping interests, selects a pilot profile, and optionally creates, reloads, edits or removes a local Passport preview. This preview does not call the legacy CRM graph API and does not enroll members.
-
-## Results
+A visitor explores an interest-based force-directed graph, selects a profile and its public links, and can request their own public profile. Requests remain pending until identity, permission and content review. Approved source edits can be refreshed without rebuilding the site. Passport remains a separate optional local preview.
 
 | Boundary | Result | Evidence |
 |---|---|---|
-| Pure data contract | Pass | Eight Jest cases cover required public grants, withdrawal, field stripping, unsafe links, anonymous dots, discovery and saved-draft parsing. |
-| TypeScript | Pass for changed feature | Strict focused check includes the new route, model and components; no diagnostics. |
-| Lint | Pass | ESLint on new TS/TSX files returned no diagnostics. |
-| Graph rendering | Pass | Headless Chromium rendered the Three.js canvas with reduced motion enabled. |
-| Discovery | Pass | Three pilot cards; interactive filter narrows to Angelo; name search narrows to Fabiola; reset restores all. |
-| Passport preview | Pass | Native dialog accepts a display name and interests, saves in sessionStorage, survives reload, and removes the draft on request. |
-| Enrollment boundary | Pass | No POST request during the full tested flow. The UI explicitly states local preview and not enrolled. |
-| Mobile | Pass | 390 × 844 viewport; no horizontal overflow; full-page visual inspection. Desktop checked at 1440 × 1100. |
-| Browser errors | Pass | No uncaught page errors during tested flow. |
-| Full application integration | Not established | UI exercised in an isolated Next.js harness importing the actual feature files, without production Clerk/CRM configuration or the marketing shell. |
-| Repository-wide type check | Resource limit | Existing repository-wide TypeScript run exceeded the default 2 GiB Node heap. Focused strict feature check then passed. |
-| Live enrollment / CRM projection | Not implemented | Fixture-only preview; no real poll totals, identity verification, consent ledger, live roster or persisted member registration. |
+| Data model / provider / handlers | Pass | 24 focused Jest tests across three suites. Includes public-field stripping, permission gates, unsafe links, duplicate slugs, pagination, sequential retries, pending staging, exact disclosure, same-origin validation, size limits, provider failure and withdrawal/update responses. |
+| Feature TypeScript | Pass | Strict focused check covers the route, model, adapter, form and graph. |
+| Lint | Pass | ESLint on the changed components, adapter, schema and API handlers. |
+| Force graph | Pass | Actual library renders a canvas in headless Chromium; search, interest filtering and profile selection work. |
+| Existing Passport preview | Pass | Browser save/reload/removal retains local-only behavior and no POST. |
+| Public profile form | Pass with mocked HTTP responses | Disabled configuration shown honestly. Enabled form preserves inputs after 503, keeps retry UUID, and displays pending only after 202. It does not add the pending profile to the public list. |
+| Updated data | Pass with mocked HTTP responses | Refresh displays a modified approved summary; subsequent withdrawal removes the profile. |
+| Public links / deep selection | Pass | Approved portfolio link present and query-selected profile opened. |
+| Phone layout | Pass | 390 × 844 viewport, no horizontal overflow. |
+| No-WebGL fallback | Pass | Forced WebGL failure leaves profiles and filters available. |
+| Uncaught browser errors | None during successful journeys | Checked on desktop and phone widths. |
+| Real provider writes / production release | Not established | No actual member submission sent by tests; dedicated server credentials/capacity and release configuration are still required. |
+| Full application integration | Not established | Browser harness imports actual feature files and routes without the production marketing shell or Clerk configuration. |
 
-The first browser pass found that a filter could leave a selected profile outside the result set. The detail panel now falls back to the first matching profile. The complete flow was rerun successfully after this correction.
+The newest library renderer initially failed to compile because it required a Three.js Timer export absent from this application's Three.js 0.170. The graph and renderer are now pinned to a compatible scoped pair; the existing application Three.js version is unchanged. Compilation and browser rendering were rechecked successfully.
 
-The WebGL-unavailable explanatory fallback is implemented; forced no-WebGL runtime verification is not included in the completed browser run. Eight unit tests are focused checks of the new contract; they do not establish correctness of the legacy CRM endpoint.
+A repository-wide type check at the previous checkpoint exceeded the default Node heap. The focused checks do not claim whole-repository type correctness. Request throttling is per instance; production distributed/edge abuse control remains a launch requirement. Provider lookups prevent sequential duplicate retries, not races under concurrent writes.
 
-## Commands
-
-```sh
-npx jest __tests__/lib/dcc-community-atlas.test.ts --runInBand
-npx eslint components/dcc/community/CommunityAtlas.tsx components/dcc/community/CommunityField.tsx 'app/(marketing)/network/community/page.tsx' lib/dcc/community/atlas.ts
-git diff --check
-```
-
-Production release still requires pilot profile wording/permissions review, complete-app checks, server-side publication authorization and the separate live-enrollment work packages. A review branch is not a release.
+No private member roster, private coordination URL, provider credential or individual poll-voter record is committed by this feature. Anonymous dots in preview mode are explicitly illustrative.
