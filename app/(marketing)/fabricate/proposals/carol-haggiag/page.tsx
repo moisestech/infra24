@@ -1,25 +1,28 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ProposalChrome } from '@/components/dcc/fabrication/proposal/ProposalChrome'
-import { hasFabricateProposalsAccess, proposalPageMetadata } from '@/lib/dcc/fabrication/proposal-auth'
+import { notFound } from 'next/navigation'
+import { hasDccClientWorkspaceAccess } from '@/lib/dcc/fabrication/client-workspace-access'
 import { CAROL_CLIENT, CAROL_FDM_PROJECTS, carolProjectPath } from '@/lib/dcc/fabrication/proposals/carol-client'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
-  return proposalPageMetadata({
-    title: 'Carol Haggiag · Your DCC projects',
+  if (!(await hasDccClientWorkspaceAccess(CAROL_CLIENT.id))) {
+    return { title: 'Private project', robots: { index: false, follow: false } }
+  }
+  return {
+    title: 'Your DCC projects',
     description: 'Private overview of two individually scoped FDM prototype studies.',
-  })
+    robots: { index: false, follow: false },
+  }
 }
 
-/**
- * One client reference, two separately approvable FDM studies.
- * Existing proposal password remains a shared gate; this is NOT an authenticated
- * member account or per-client role isolation. Do not share outside review yet.
+/** One client reference, two separately approvable FDM studies.
+ * Pages require a real Clerk identity allowlisted to this client or DCC staff.
  */
 export default async function CarolProjectsPage() {
-  if (!(await hasFabricateProposalsAccess())) return null
+  if (!(await hasDccClientWorkspaceAccess(CAROL_CLIENT.id))) notFound()
 
   return (
     <ProposalChrome>
