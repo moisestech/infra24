@@ -134,7 +134,7 @@ function personRole(fields: Record<string, unknown>): string | undefined {
 function personEligibleForPublicGraph(fields: Record<string, unknown>): boolean {
   const consent = asString(fields[F.people.publicProfileConsent])
   const layer = asString(fields[F.people.graphLayer])
-  if (!consent && !layer) return true
+  if (!consent) return false
   return isPublicGraphEligible(consent, layer)
 }
 
