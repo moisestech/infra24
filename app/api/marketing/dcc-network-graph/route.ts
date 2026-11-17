@@ -14,14 +14,23 @@ export async function GET(request: NextRequest) {
     const mode = parseGraphMode(request.nextUrl.searchParams.get('mode'))
     const visibility = parseGraphVisibility(request.nextUrl.searchParams.get('visibility'))
 
-    if (mode === 'admin' && process.env.DCC_NETWORK_ADMIN_ENABLED !== 'true') {
-      return NextResponse.json({ error: 'Admin graph is not enabled' }, { status: 403 })
+    // This marketing endpoint has no authenticated steward boundary.
+    // Feature flags and query parameters must never grant private CRM access.
+    const requestedMode = request.nextUrl.searchParams.get('mode')
+    const requestedVisibility = request.nextUrl.searchParams.get('visibility')
+    if (
+      (requestedMode !== null && requestedMode !== 'active') ||
+      (requestedVisibility !== null && requestedVisibility !== 'public')
+    ) {
+      return NextResponse.json({ error: 'Only the public active graph is available here' }, {
+        status: 403, headers: { 'Cache-Control': 'no-store' },
+      })
     }
 
     const payload = await fetchDccCrmGraphPayload({ surface, mode, visibility })
     return NextResponse.json(payload, {
       headers: {
-        'Cache-Control': 'private, max-age=60, stale-while-revalidate=120',
+        'Cache-Control': 'no-store',
       },
     })
   } catch (e) {
