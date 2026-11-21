@@ -2,167 +2,119 @@
 
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { useEffect, useMemo, useState } from 'react'
-import { PATTERN_GROUPS, type PatternLens } from '@/lib/dcc/artwork/network-patterns'
-import { makeIllustrativePeopleGraph, studyPosition } from '@/lib/dcc/artwork/people-graph'
-import { makeMembershipPresenceGraph, presenceSpherePosition } from '@/lib/dcc/artwork/member-presence'
-import type { LocalNode } from './PeopleNetworkField'
+import { useEffect, useState } from 'react'
+import { DCC_DISCOVERY_POLL, discoveryChoice, isDiscoveryChoice, type DiscoveryPollChoiceId } from '@/lib/dcc/artwork/discovery-poll'
+import { makeMembershipPresenceGraph, presenceSpherePosition, MEMBER_PRESENCE_SOURCE } from '@/lib/dcc/artwork/member-presence'
 
 const Field = dynamic(() => import('./PeopleNetworkField'), {
   ssr: false,
-  loading: () => <div className="flex h-full min-h-[400px] items-center justify-center text-xs uppercase tracking-widest text-white/35">Drawing the network…</div>,
+  loading: () => <div className="flex h-full min-h-[380px] items-center justify-center text-xs text-white/40">Opening the network…</div>,
 })
 
-type Signal = LocalNode['signal']
-const SIGNALS: Signal[] = ['show', 'need', 'offer']
-type NetworkMode = 'presence' | 'study'
-function isMode(value: string | null): value is NetworkMode { return value === 'presence' || value === 'study' }
-function isLens(value: string | null): value is PatternLens {
-  return value === 'practices' || value === 'activity'
-}
-function isSignal(value: string | null): value is Signal {
-  return value === 'show' || value === 'need' || value === 'offer'
-}
-/**
- * A deterministic 2D index of the *same categories and connections* in the
- * force field. This is a visual study, not a 3D capture or a cut-ready toolpath.
- */
-/**
- * The same illustrated people-and-connection topology projected onto a
- * reproducible 2D paper study. Not a 3D capture or laser-cut file.
- */
-function editionSvg(lens: PatternLens, local: LocalNode | null) {
-  const graph = makeIllustrativePeopleGraph(local)
-  const lines = graph.connections.map((edge) => {
-    const from = studyPosition(edge.source)
-    const to = edge.target === 'visitor-local'
-      ? { x: 500, y: 500 }
-      : studyPosition(edge.target)
-    const color = edge.kind === 'local' ? '#ae9364' : '#849d8b'
-    return '<line x1="' + from.x.toFixed(1) + '" y1="' + from.y.toFixed(1) +
-      '" x2="' + to.x.toFixed(1) + '" y2="' + to.y.toFixed(1) +
-      '" stroke="' + color + '" stroke-width="' + (edge.kind === 'local' ? 2 : 0.9) + '"/>'
-  }).join('')
-  const dots = graph.people.map((person) => {
-    const position = studyPosition(person.id)
-    const color = person.id === 'visitor-local' ? '#f1cd89' : '#324f41'
-    return '<circle cx="' + position.x.toFixed(1) +
-      '" cy="' + position.y.toFixed(1) +
-      '" r="' + (person.id === 'visitor-local' ? 12 : 7) +
-      '" fill="' + color + '"/>'
-  }).join('')
-  return '<?xml version="1.0" encoding="UTF-8"?>' +
-    '<svg xmlns="http://www.w3.org/2000/svg" width="300mm" height="300mm" viewBox="0 0 1000 1000">' +
-    '<title>DCC / The Network Makes Itself — illustrative people and connections</title>' +
-    '<desc>Fictional person-position nodes and hypothetical person-to-person lines. Neither is a DCC CRM record or an actual relationship. Not a fabrication-ready file.</desc>' +
-    '<rect width="1000" height="1000" fill="#f3f4eb"/>' +
-    '<text x="55" y="65" font-family="monospace" font-size="18" fill="#153329">THE NETWORK MAKES ITSELF</text>' +
-    '<text x="55" y="92" font-family="monospace" font-size="11" fill="#677e70">PERSON → CONNECTION / ' + lens.toUpperCase() + '</text>' +
-    lines + dots +
-    '<text x="55" y="956" font-family="monospace" font-size="11" fill="#6d8172">ILLUSTRATIVE HUMAN TOPOLOGY — NOT ACTUAL MEMBERS, NOT CUT-READY</text>' +
-    '</svg>'
+type FocusId = 'moises-sanabria' | 'fabiola-larios' | null
+function isFounder(id: string | null): id is Exclude<FocusId, null> {
+  return id === 'moises-sanabria' || id === 'fabiola-larios'
 }
 
-/** Real reported minimum as marks; their positions are arbitrary. No private edges. */
-function presenceSvg() {
+/**
+ * The geometry is a public lower-bound membership portrait. This vector
+ * exports exactly the same two named public founders + anonymous count marks,
+ * and exactly one public cofounding edge (not a fabricated friendship map).
+ * The positions themselves are artistic, not evidence of social distance.
+ */
+function exportMembershipSvg() {
   const graph = makeMembershipPresenceGraph()
-  const dots = graph.marks.map((mark, index) => {
-    const xyz = presenceSpherePosition(index, graph.marks.length, 340)
-    return '<circle cx="' + (500 + xyz.x).toFixed(2) + '" cy="' + (500 + xyz.y).toFixed(2) +
-      '" r="6" fill="#2f6654"/>'
+  const nodes = graph.marks.map((mark, index) => {
+    const position = mark.kind === 'public-cofounder'
+      ? { x: mark.id === 'moises-sanabria' ? -32 : 32, y: 0 }
+      : presenceSpherePosition(index - 2, graph.marks.length - 2, 155)
+    const x = (500 + position.x * 2).toFixed(1)
+    const y = (510 + position.y * 2).toFixed(1)
+    const founder = mark.kind === 'public-cofounder'
+    const circle = '<circle cx="' + x + '" cy="' + y +
+      '" r="' + (founder ? 14 : 4.2) + '" fill="' + (founder ? '#c7e0bd' : '#6c9d84') + '" />'
+    const label = founder
+      ? '<text x="' + x + '" y="' + (Number(y) + (mark.id === 'moises-sanabria' ? -24 : 38)) +
+        '" font-family="sans-serif" font-size="13" text-anchor="middle" fill="#1b4634">' +
+        (mark.id === 'moises-sanabria' ? 'MOISES SANABRIA' : 'FABIOLA LARIOS') + '</text>'
+      : ''
+    return circle + label
   }).join('')
   return '<?xml version="1.0" encoding="UTF-8"?>' +
     '<svg xmlns="http://www.w3.org/2000/svg" width="300mm" height="300mm" viewBox="0 0 1000 1000">' +
-    '<title>DCC / A membership presence edition — reported 100+</title>' +
-    '<desc>At least 101 founder-reported WhatsApp group members represented as anonymous marks. The exact count is not yet roster-verified. Marker locations do not identify individuals. No personal relationship edges are shown. Conceptual vector sketch only.</desc>' +
-    '<rect width="1000" height="1000" fill="#f3f4eb"/>' +
-    '<text x="55" y="65" font-family="monospace" font-size="21" fill="#153329">THE NETWORK MAKES ITSELF / PRESENCE</text>' +
-    '<text x="55" y="98" font-family="monospace" font-size="14" fill="#687e70">100+ REPORTED MEMBERS · MINIMUM COUNT REPRESENTATION</text>' +
-    dots +
-    '<text x="55" y="958" font-family="monospace" font-size="11" fill="#687e70">NO PRIVATE IDENTITIES OR EDGES · NOT FABRICATION READY</text>' +
+    '<title>The Network Makes Itself — DCC member presence</title>' +
+    '<desc>Minimum 101 founder-reported Commons membership positions, including public cofounders Moises Sanabria and Fabiola Larios, connected only by documented DCC cofounding. Other marks are anonymous; exact roster unverified; poll choices not assigned. Vector sketch, not cut-ready geometry.</desc>' +
+    '<rect width="1000" height="1000" fill="#edf1e8"/>' +
+    '<text x="45" y="56" font-family="monospace" font-size="21" fill="#204734">THE NETWORK MAKES ITSELF</text>' +
+    '<text x="45" y="82" font-family="monospace" font-size="12" fill="#688b79">100+ REPORTED MEMBERS / MINIMUM 101 POSITIONS</text>' +
+    '<line x1="436" y1="510" x2="564" y2="510" stroke="#4d8864" stroke-width="3" />' +
+    nodes +
+    '<text x="45" y="940" font-family="monospace" font-size="11" fill="#688b79">ONLY DOCUMENTED PERSON-TO-PERSON EDGE: DCC COFOUNDING</text>' +
+    '<text x="45" y="960" font-family="monospace" font-size="11" fill="#688b79">AGGREGATE VOTE TOTALS ARE NOT INDIVIDUAL NODE ATTRIBUTES</text>' +
     '</svg>'
 }
 
 export function CollectiveNetworkArtwork() {
-  const [lens, setLens] = useState<PatternLens>('practices')
-  const [mode, setMode] = useState<NetworkMode>('presence')
-  const [selected, setSelected] = useState('member-mark-001')
-  const [studio, setStudio] = useState(false)
-  const [group, setGroup] = useState('code')
-  const [signal, setSignal] = useState<Signal>('show')
-  const [local, setLocal] = useState<LocalNode | null>(null)
+  const [focus, setFocus] = useState<FocusId>(null)
+  const [interest, setInterest] = useState<DiscoveryPollChoiceId>('art')
   const [notice, setNotice] = useState('')
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const nextLens = params.get('view')
-    if (isLens(nextLens)) setLens(nextLens)
-    const nextMode = params.get('mode')
-    if (isMode(nextMode)) { setMode(nextMode); setSelected(nextMode === 'presence' ? 'member-mark-001' : 'position-01') }
-    const nextGroup = params.get('group')
-    const nextSignal = params.get('signal')
-    if (nextGroup && PATTERN_GROUPS.practices.some((p) => p.id === nextGroup) && isSignal(nextSignal)) {
-      setGroup(nextGroup)
-      setSignal(nextSignal)
-      setLocal({ group: nextGroup, signal: nextSignal })
-    }
+    const search = new URLSearchParams(window.location.search)
+    const next = search.get('interest')
+    if (isDiscoveryChoice(next)) setInterest(next)
+    const person = search.get('person')
+    if (isFounder(person)) setFocus(person)
   }, [])
 
-  const study = useMemo(() => makeIllustrativePeopleGraph(local), [local])
-  const presence = useMemo(() => makeMembershipPresenceGraph(), [])
-  const people = mode === 'presence' ? presence.marks : study.people
-  const active = people.find((person) => person.id === selected) ?? people[0]
-  const connections = mode === 'presence' ? [] : study.connections.filter((edge) => edge.source === active.id || edge.target === active.id)
+  const active = discoveryChoice(interest)
+  function selectInterest(value: DiscoveryPollChoiceId) {
+    setInterest(value)
+    const url = new URL(window.location.href)
+    url.searchParams.set('interest', value)
+    url.searchParams.delete('mode')
+    url.searchParams.delete('view')
+    url.searchParams.delete('group')
+    url.searchParams.delete('signal')
+    window.history.replaceState(null, '', url.toString())
+  }
+  function selectFounder(value: FocusId) {
+    setFocus(value)
+    const url = new URL(window.location.href)
+    if (value) url.searchParams.set('person', value)
+    else url.searchParams.delete('person')
+    window.history.replaceState(null, '', url.toString())
+  }
 
-  function changeLens(next: PatternLens) {
-    setLens(next)
-    setNotice('')
-  }
-  function changeMode(next: NetworkMode) {
-    setMode(next)
-    setSelected(next === 'presence' ? 'member-mark-001' : 'position-01')
-    setStudio(false)
-    setNotice('')
-  }
-  function preview() {
-    setLocal({ group, signal })
-    setMode('study')
-    setSelected('visitor-local')
-    setStudio(false)
-    setNotice('Added to this browser only.')
-  }
   async function share() {
     const url = new URL(window.location.href)
     url.search = ''
-    url.searchParams.set('view', lens)
-    url.searchParams.set('mode', mode)
-    if (local) {
-      url.searchParams.set('group', local.group)
-      url.searchParams.set('signal', local.signal)
-    }
+    url.searchParams.set('interest', interest)
+    if (focus) url.searchParams.set('person', focus)
     try {
       await navigator.clipboard.writeText(url.toString())
-      setNotice('View link copied. It contains only category choices.')
+      setNotice('Shareable view link copied.')
     } catch {
-      setNotice('Copy this address: ' + url.toString())
+      setNotice('Copy: ' + url.toString())
     }
   }
-  function exportStudy() {
-    const svg = mode === 'presence' ? presenceSvg() : editionSvg(lens, local)
+
+  function exportSvg() {
+    const svg = exportMembershipSvg()
     const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = mode === 'presence' ? 'dcc-member-presence-study.svg' : 'dcc-connection-study.svg'
+    link.download = 'dcc-the-network-makes-itself-member-presence.svg'
     link.click()
     URL.revokeObjectURL(url)
-    setNotice('Conceptual vector study exported. No private member data included.')
+    setNotice('SVG study exported; physical fabrication requires further design.')
   }
 
   return (
-    <main className="min-h-screen bg-[#091313] text-[#eaf1e9]">
-      <div className="mx-auto flex max-w-[1800px] flex-col px-3 pb-9 pt-3 sm:px-6 sm:pt-5">
-        <nav aria-label="Network artwork navigation" className="flex items-center justify-between gap-4 px-2 py-3 text-[11px] uppercase tracking-[0.19em] text-white/55">
+    <main className="min-h-screen bg-[#091313] text-[#eef4ec]">
+      <div className="mx-auto max-w-[1800px] px-3 pb-10 pt-3 sm:px-6 sm:pt-5">
+        <nav aria-label="Network artwork navigation" className="flex items-center justify-between gap-3 px-2 py-3 text-[11px] uppercase tracking-[.17em] text-white/55">
           <Link href="/" className="transition hover:text-white">DCC <span className="hidden sm:inline">MIAMI</span></Link>
           <div className="flex gap-5">
             <Link href="/network/community" className="transition hover:text-white">Atlas</Link>
@@ -170,103 +122,100 @@ export function CollectiveNetworkArtwork() {
           </div>
         </nav>
 
-        <section aria-label="The Network Makes Itself" className="relative isolate mt-2 overflow-hidden rounded-xl border border-white/[.08] bg-[#0b1818]">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_48%,rgba(58,101,82,.14),transparent_61%)]" aria-hidden />
-          <div className="pointer-events-none absolute left-5 right-5 top-6 z-10 sm:left-10 sm:top-9">
-            <p className="font-mono text-[10px] uppercase tracking-[.23em] text-[#a0bfae]">DCC / 100+ reported members</p>
-            <h1 className="mt-3 text-[clamp(2.5rem,5.8vw,6.2rem)] font-light leading-[.91] tracking-[-.075em] text-white">
-              The network<br /><em className="text-[#b8d2be]">makes itself.</em>
-            </h1>
+        <section aria-label="The Network Makes Itself" className="relative isolate mt-2 overflow-hidden rounded-xl border border-white/10 bg-[#0b1818]">
+          <div className="pointer-events-none absolute inset-0 z-[1]" style={{
+            background: 'radial-gradient(ellipse at 52% 58%, ' + active.tint + '19 0%, transparent 54%)',
+          }} aria-hidden="true" />
+          <header className="pointer-events-none absolute left-5 right-5 top-6 z-10 flex flex-wrap justify-between gap-4 sm:left-10 sm:right-10 sm:top-9">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[.21em] text-[#9ebfaa]">DCC / Collective network</p>
+              <h1 className="mt-3 text-[clamp(2.45rem,5.8vw,6.2rem)] font-light leading-[.91] tracking-[-.075em] text-white">
+                The network<br /><em className="text-[#b9d4bf]">makes itself.</em>
+              </h1>
+            </div>
+            <div className="hidden text-right font-mono text-[11px] uppercase tracking-[.17em] text-white/50 sm:block">
+              <div>{MEMBER_PRESENCE_SOURCE.reportedLabel} members reported</div>
+              <div className="mt-2">01 documented public connection</div>
+            </div>
+          </header>
+
+          <div className="h-[70svh] min-h-[490px] max-h-[880px] w-full">
+            <Field selected={focus} onSelect={selectFounder} />
           </div>
 
-          <div className="h-[70svh] min-h-[520px] max-h-[900px] w-full">
-            <Field mode={mode} lens={lens} selected={selected} onSelect={setSelected} local={mode === "study" ? local : null} />
-          </div>
-
-          <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-end justify-between gap-3 sm:bottom-7 sm:left-8 sm:right-8">
-            <div role="group" aria-label="Choose network representation" className="flex rounded-full border border-[#c3dac9]/20 bg-[#081414]/90 p-1 shadow-xl backdrop-blur-md">
-              {([['presence', 'Members'], ['study', 'Connections study']] as const).map(([key, title]) => (
-                <button key={key} type="button" onClick={() => changeMode(key)} aria-pressed={mode === key}
-                  className={'rounded-full px-4 py-2.5 text-xs font-medium transition ' +
-                    (mode === key ? 'bg-[#d6e8d7] text-[#173a29]' : 'text-white/65 hover:text-white')}
-                >{title}</button>
+          <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2 sm:bottom-7 sm:left-8 sm:right-8">
+            <div role="group" aria-label="Focus on public nodes" className="flex rounded-full border border-white/20 bg-[#091313]/90 p-1 shadow-xl backdrop-blur-md">
+              {([
+                { id: null, label: 'All' },
+                { id: 'moises-sanabria', label: 'Moises' },
+                { id: 'fabiola-larios', label: 'Fabiola' },
+              ] as {id:FocusId;label:string}[]).map((item) => (
+                <button type="button" key={item.label} aria-pressed={focus === item.id}
+                  onClick={() => selectFounder(item.id)}
+                  className={'rounded-full px-3 py-2.5 text-xs transition sm:px-5 ' +
+                    (focus === item.id ? 'bg-[#d7e8d7] font-semibold text-[#183b2e]' : 'text-white/65 hover:text-white')}
+                >{item.label}</button>
               ))}
             </div>
-            {mode === 'study' ? (
-              <div role="group" aria-label="Recolor illustrative positions" className="flex rounded-full border border-[#c3dac9]/20 bg-[#081414]/90 p-1">
-                {(['practices', 'activity'] as PatternLens[]).map((value) => (
-                  <button key={value} onClick={() => changeLens(value)} aria-pressed={lens === value}
-                    className={'rounded-full px-3 py-2 text-[11px] capitalize ' + (lens === value ? 'bg-[#d6e8d7] text-[#173a29]' : 'text-white/60')}
-                  >{value}</button>
-                ))}
-              </div>
-            ) : null}
-            <button type="button" onClick={() => { setMode('study'); setSelected('position-01'); setStudio((value) => !value) }} aria-expanded={studio}
-              className="rounded-full border border-[#c3dac9]/30 bg-[#081414]/90 px-5 py-3 text-xs font-medium text-white/90 shadow-xl backdrop-blur-md transition hover:border-[#c3dac9]/70">
-              {studio ? 'Close' : '+ Try a connection'}
-            </button>
+            <span className="rounded-full border border-white/15 bg-[#091313]/85 px-3 py-2 font-mono text-[10px] tracking-wider text-[#c5d9c8]">
+              {focus ? 'Public cofounder / DCC' : 'Membership presence / reported minimum'}
+            </span>
           </div>
         </section>
 
-        <div className="mx-2 flex flex-col justify-between gap-5 border-b border-white/10 py-6 sm:flex-row sm:items-center sm:px-4">
-          <div className="min-w-0">
-            <label htmlFor="pattern-inspector" className="block font-mono text-[10px] uppercase tracking-[.2em] text-white/40">Inspect a position</label>
-            <select id="pattern-inspector" value={active.id} onChange={(event) => setSelected(event.target.value)}
-              className="mt-2 w-full max-w-[310px] rounded border border-white/15 bg-[#142522] px-3 py-2 text-sm text-[#eaf1e9] sm:w-[280px]">
-              {people.map((person) => <option key={person.id} value={person.id}>{person.label}</option>)}
-            </select>
-            <p className="mt-2 max-w-xl text-xs leading-relaxed text-white/55">
-              {mode === 'presence'
-                ? 'Anonymous membership mark, not mapped to a specific person. No public relationship attached.'
-                : active.id === 'visitor-local'
-                  ? 'Your unsaved sketch · one imaginary connection. No submission.'
-                  : active.label + ' · ' + connections.length + ' hypothetical connections.'}
-            </p>
-          </div>
-          <div className="flex shrink-0 flex-wrap items-center gap-5 text-xs">
-            <button type="button" onClick={() => void share()} className="text-[#d4e8d6] underline underline-offset-4 transition hover:text-white">Share view ↗</button>
-            <button type="button" onClick={exportStudy} className="text-[#d4e8d6] underline underline-offset-4 transition hover:text-white">Export SVG ↗</button>
-            <Link href="/network/community" className="text-white/60 underline underline-offset-4 transition hover:text-white">Community Atlas ↗</Link>
-          </div>
-        </div>
-
-        {studio ? (
-          <section aria-label="Add a local node" className="mx-2 grid gap-6 border-b border-white/10 px-1 py-7 sm:grid-cols-[1fr_1fr_auto] sm:items-end sm:px-4">
+        <section aria-labelledby="poll-title" className="mx-2 border-b border-white/10 px-1 pb-7 pt-9 sm:px-4 sm:pt-11">
+          <div className="flex flex-wrap items-baseline justify-between gap-4">
             <div>
-              <label htmlFor="my-practice" className="block font-mono text-[10px] uppercase tracking-[.2em] text-white/55">Your creative practice</label>
-              <select id="my-practice" value={group} onChange={(event) => setGroup(event.target.value)}
-                className="mt-3 w-full rounded-lg border border-white/20 bg-[#142622] px-4 py-3 text-sm">
-                {PATTERN_GROUPS.practices.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
-              </select>
+              <p className="font-mono text-[10px] uppercase tracking-[.18em] text-[#a7c7af]">Community pulse / WhatsApp poll</p>
+              <h2 id="poll-title" className="mt-2 max-w-2xl text-2xl font-light tracking-[-.045em] text-white sm:text-3xl">
+                What would you most like to discover?
+              </h2>
             </div>
-            <div>
-              <span className="block font-mono text-[10px] uppercase tracking-[.2em] text-white/55">What would you bring?</span>
-              <div className="mt-3 flex gap-2" role="group" aria-label="Your activity type">
-                {SIGNALS.map((value) => (
-                  <button key={value} aria-pressed={signal === value} type="button" onClick={() => setSignal(value)}
-                    className={'rounded-full border px-4 py-3 text-xs capitalize transition ' +
-                      (signal === value ? 'border-[#d6e8d7] bg-[#d6e8d7] text-[#152f23]' : 'border-white/20 text-white/70 hover:border-white/50')}>{value}</button>
-                ))}
-              </div>
+            <div className="text-right">
+              <span className="text-2xl font-light tabular-nums text-white">{DCC_DISCOVERY_POLL.totalSelections}</span>
+              <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-white/45">selections</span>
             </div>
-            <button type="button" onClick={preview} className="rounded-full bg-[#d6e8d7] px-6 py-3 text-sm font-semibold text-[#143127] transition hover:bg-white">
-              Add your position ↗
-            </button>
-            <p className="text-xs leading-relaxed text-white/45 sm:col-span-3">A private sketch, not a real introduction. No identity, account, or Airtable write.</p>
-          </section>
-        ) : null}
+          </div>
 
-        <div className="mx-2 flex flex-wrap items-center justify-between gap-4 px-1 pt-6 text-[11px] text-white/45 sm:px-4">
-          <details className="max-w-3xl">
-            <summary className="cursor-pointer text-white/65 hover:text-white">How to read this ↗</summary>
-            <p className="mt-3 max-w-2xl text-xs leading-relaxed">
-              Members mode shows one anonymous mark for each of at least 101 founder-reported WhatsApp members. The exact current roster has not yet been independently reconciled. No mark maps to a specific account and no private ties are drawn.
-              Connections study is fictional: it helps explore the visual language without making claims about real people. A real social graph needs opt-in nodes and separately mutually approved public edges.
+          <div role="group" aria-label="Explore poll choice totals" className="mt-7 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {DCC_DISCOVERY_POLL.choices.map((choice) => (
+              <button type="button" key={choice.id} onClick={() => selectInterest(choice.id)}
+                aria-pressed={interest === choice.id}
+                className={'group flex min-w-0 items-center gap-4 rounded-xl border p-4 text-left transition ' +
+                  (interest === choice.id ? 'border-[#9bc6a8]/65 bg-white/[.09]' : 'border-white/[.08] bg-white/[.025] hover:border-white/20')}>
+                <span className="text-xl" aria-hidden="true">{choice.icon}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm leading-tight text-white/85">{choice.short}</span>
+                  <span className="mt-2 block h-[3px] overflow-hidden rounded-full bg-white/10">
+                    <span className="block h-full rounded-full" style={{ backgroundColor: choice.tint, width: (choice.count / 21 * 100) + '%' }} />
+                  </span>
+                </span>
+                <span className="font-mono text-lg tabular-nums text-white/85">{choice.count}</span>
+              </button>
+            ))}
+          </div>
+
+          <p className="mt-4 text-xs leading-relaxed text-white/40">
+            {active.count} selections for {active.label.toLowerCase()}. Poll allowed multiple choices.
+            Respondent count and each person’s answers are unknown; no poll selections are assigned to graph nodes.
+          </p>
+        </section>
+
+        <footer className="mx-2 flex flex-wrap items-center justify-between gap-4 px-1 pt-6 text-xs sm:px-4">
+          <details className="max-w-xl text-white/50">
+            <summary className="cursor-pointer text-white/65 hover:text-white">How this is mapped</summary>
+            <p className="mt-3 leading-relaxed">
+              The founder reports more than 100 WhatsApp members, represented by a lower-bound field of 101 marks. Two are named public cofounders; the other 99 are anonymous count-based positions, not a roster.
+              The sole social edge records DCC cofounding. Poll totals come from a screenshot shared November 21, 2026, not an individual voter dataset.
+              No other identities or relationships are inferred.
             </p>
           </details>
-          <span>{mode === 'presence' ? '100+ founder-reported · exact count pending' : 'Hypothetical connections · not a CRM graph'}</span>
-        </div>
-        <p aria-live="polite" role="status" className="mx-3 mt-4 break-all text-xs text-[#c0d3bb]">{notice}</p>
+          <div className="flex flex-wrap items-center gap-5">
+            <button type="button" onClick={() => void share()} className="text-[#d7e8d7] underline underline-offset-4 hover:text-white">Share view ↗</button>
+            <button type="button" onClick={exportSvg} className="text-[#d7e8d7] underline underline-offset-4 hover:text-white">Export SVG ↗</button>
+          </div>
+        </footer>
+        <p className="mx-3 mt-4 break-all text-xs text-[#abc9b2]" role="status" aria-live="polite">{notice}</p>
       </div>
     </main>
   )

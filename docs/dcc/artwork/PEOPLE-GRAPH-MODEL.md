@@ -1,6 +1,8 @@
 # The Network Makes Itself — people-first graph model
 
-**Design correction: A node is a person. An edge is a connection between two people.**
+**Design correction: A node is a person. An edge is a documented relationship between two people.**
+
+**Update, November 21:** The former fictional Connections study was retired. The public field now shows 101 minimum-count marks (including two named cofounders), one public cofounder connection, and six actual poll totals that are not joined to individual nodes. See `MEMBER-PRESENCE-STATUS.md` and `discovery-poll.ts`. The illustrative specification below is historical context and not the current user-facing implementation.
 
 Practices, interests, activity and participation histories are *attributes and visual lenses*. They are not autonomous people, and they are not edges to category hubs.
 

@@ -1,47 +1,61 @@
-# DCC — reported member presence / public artwork
+# The Network Makes Itself — current member and poll evidence
 
-**Artwork route:** \`/network/artwork\`  
-**Data status:** founder-reported **more than 100** WhatsApp Commons members, November 21, 2026.  
-**Minimum mathematically supported count:** **101**.
+**Public route:** \`https://dcc.miami/network/artwork\`  
+**Code snapshot:** November 21, 2026  
+**Scope:** One 3D field; no speculative "Connections study" mode.
 
-## Verified source reconciliation
+## What the field says
 
-| Evidence | Date | Count | What it really verifies |
+- The DCC founder reports **more than 100 WhatsApp Commons members** as of November 21, 2026. Without a current roster export, the public art includes **101 positions as a minimum**, not an audited exact headcount.
+- **Two of the 101 are labeled public cofounders:** Moises Sanabria and Fabiola Larios. They are *included in* the minimum count, not added to it.
+- **Exactly one person-to-person connection is shown:** the publicly documented cofounding relationship between them. No other private introduction, friendship, vote, skill, or collaboration is inferred.
+- The remaining **99 positions are anonymous count-based marks**, not hash-pseudonymized private CRM people; the marks have no stable mapping to WhatsApp accounts, names or phone numbers.
+- The remaining spatial geometry is an artistic distribution, **not a factual social-distance map**.
+
+## Evidence chronology
+
+| Source | As-of date | Count | Qualification |
 |---|---|---:|---|
-| WhatsApp screenshot audit | Oct 24–29, 2026 | 50 roster rows | A historical screenshot-based count, not a current API feed |
-| DCC Community Weekly Pulse | Week of Oct 25, 2026 | 50 | Visually reconciled baseline including founder |
-| DCC People | Nov 21, 2026 | 45 Active or Joined | Partial internal CRM coverage, not the WhatsApp participant list |
-| Founder report in conversation | Nov 21, 2026 | **100+** | Current scale reported by an authorized organizer; exact count not independently reconciled |
+| WhatsApp roster visual audit | Oct 24, 2026 | 50 | Historic group screenshot reconciliation |
+| WhatsApp Community info, referenced in Airtable weekly pulse | Oct 29, 2026 | 73 | Later direct screenshot count, not a current feed |
+| Airtable People marked Active or Joined | Nov 21, 2026 | 45 | Partial CRM coverage, not complete WhatsApp roster |
+| Founder report | Nov 21, 2026 | **100+** | Current reported minimum; precise WhatsApp count unavailable |
 
-### Why the graph doesn't publish raw membership or connection records
+## Actual WhatsApp poll counts
 
-The current public 3D sculpture contains **101 anonymous membership-presence marks**, corresponding to the *minimum* implied by the founder's 100+ statement. This does not assert that there are exactly 101 people. It does not attach any mark to a specific person's name, chat account, hashed contact, Airtable record ID, message, practice, or friendship.
+The supplied screenshot asks: **"What would you most like to discover through DCC? Select all that interest you."**
 
-**No actual interpersonal connections are published** because a social graph is identifying even when names are suppressed. A WhatsApp group is a container for possible interaction; common group membership does not mean that every pair has a meaningful interpersonal edge.
+| Choice | Selections |
+|---|---:|
+| Art, exhibitions & creative practice | 21 |
+| Fabrication, materials & objects | 16 |
+| Film, animation & sound | 11 |
+| Creative coding, AI & automation | 10 |
+| Games, XR & interactive installations | 7 |
+| Still exploring / across disciplines | 7 |
+| **TOTAL selections** | **72** |
 
-The **Connections study** is strictly labeled hypothetical; it displays a separate fictional diagram. Its lines do not derive from private DCC messages or Introductions. Visitor-added marks and edges are local simulations.
+**The poll is multi-select.** 72 is a tally of selections, *not* 72 distinct respondents. Screenshot shared Nov 21; the actual screenshot capture time isn't visible. Voter identities and their per-person choice combinations are not established by that image. Thumbnail avatars on a screenshot aren't sufficient permission or reliable evidence to attribute a choice to a named person.
 
-## How to replace the lower bound with an exact count
+Single public editorial data source: \`lib/dcc/artwork/discovery-poll.ts\`. The frontend highlights one aggregate choice count at a time; it never colors a person position as a voter for that choice, and no poll-to-people edges are generated.
 
-1. Obtain a new screenshot or export of the current WhatsApp group participant count from an authorized group admin.
-2. Record its time, scope, and any counting ambiguity. Reconcile duplicate accounts and whether the founder's account is included. Never expose the screenshot, phone numbers or raw member list through the site.
-3. Update \`lib/dcc/artwork/member-presence.ts\` with the exact verified value and a precise data-source label. Add the relevant date and audit note here.
-4. Re-run the tests, inspect whether the count could identify anyone within a sensitive subpopulation, and verify the number on the actual deployed page.
+A new \`DCC Community Poll Results\` table was created in the DCC Airtable base, but **Airtable rejected inserting rows because the base exceeded its record limit**. Until storage capacity is available, verified aggregate totals live in versioned GitHub and in the existing Airtable weekly pulse metadata/notes, not as poll-result records. The table's existence does not imply data was saved to rows.
 
-Longer term, a private backend may read a verified membership summary, but no public client should query the full WhatsApp roster or CRM.
+## The next genuine social layer
 
-## How to add *real* public edges
+To make **specific people** reveal the poll themes they chose, a respondent should explicitly opt in to sharing their own selections. Poll choices are interests in *discovery*, not automatically professional expertise. Valid opt-in person-to-category edges may be a separate visual layer, but cannot be drawn from the six aggregate totals alone.
 
-Public real connections require not merely two people in the group, but a meaningful connection type and permission to make that connection public. Recommended types: collaboration, confirmed introduction, co-production, project participation, mutual exchange. Do not equate a shared interest or recommendation with a confirmed relationship.
+Real person-to-person connections must have documented relationship semantics and a permission rule. Proposed categories: cofounding, confirmed collaboration, shared project, member-confirmed exchange. For private personal or professional relationships, obtain separate public agreement from each endpoint.
 
-**Separate consent gates**: person-public-artwork participation, person display rules, edge-type publication, consent from both endpoints for that edge, and additional permission for an enduring physical edition. A participant must be able to withdraw from future digital displays and know the limitations of removing a fabricated object.
+A public graph must never infer an edge from being in the same WhatsApp group, an organizer introduction request, or similar skill tags. Group membership is one common container, not \`100 × 100\` social relationships.
 
-A future protected curator interface can inspect actual connected-app records. A public snapshot must contain only approved nodes and approved edges; it should never expose stable pseudonyms that allow matching the private roster back to public positions. See \`PEOPLE-GRAPH-MODEL.md\` and \`projectApprovedPersonGraph\` in \`people-graph.ts\`.
+## Implementation / change policy
 
-## Artistic distinction
+1. Update minimum membership value only after a dated, authorized current group count is obtained. Do not publish raw contacts or roster exports.
+2. Keep named public people included in—not additional to—the reported group minimum.
+3. For a new screenshot, write the six counts into the versioned \`discovery-poll.ts\` and update the source date/caveats. Preserve exact wording and multi-select semantics.
+4. Only append member-level preferences or public edges after individual permission and independently grounded relationship evidence. Track withdrawals.
+5. Run the \`member-presence.test.ts\` and \`discovery-poll.test.ts\` suites and inspect both main artwork and home/proposal embeds.
+6. Export SVG as **conceptual fabrication study**, not validated structural or CNC plans.
 
-- **Presence**: what can be said now—an existing Commons with **100+ reported members**. The spatial field contains one mark for every member in the supported *minimum*. The geometry is an artistic arrangement, not a reconstruction of interactions.
-- **Connections study**: a separately labeled speculative illustration of the institutional relationships the network may choose to make public in the future.
-- **Future edition**: a coauthored network in which the geometry of actual agreed connections becomes fabrication data.
-
-Keeping these states distinct makes the work a credible institutional experiment rather than a falsely exact visualization of a private group.
+The artwork is a real community with partial evidence—**not** a complete claim that every person or edge is already known.

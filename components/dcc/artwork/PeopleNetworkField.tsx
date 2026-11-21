@@ -2,76 +2,58 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ForceGraph3DInstance, LinkObject, NodeObject } from '3d-force-graph'
-import { makeIllustrativePeopleGraph, colorForPerson, type LocalExperiment } from '@/lib/dcc/artwork/people-graph'
-import { makeMembershipPresenceGraph, presenceSpherePosition } from '@/lib/dcc/artwork/member-presence'
-import type { PatternLens } from '@/lib/dcc/artwork/network-patterns'
+import { makeMembershipPresenceGraph, presenceSpherePosition, type MemberPresenceMark } from '@/lib/dcc/artwork/member-presence'
 
-export type { LocalExperiment as LocalNode } from '@/lib/dcc/artwork/people-graph'
-type PersonNode = NodeObject & {
+type HumanNode = NodeObject & {
   id: string
   label: string
-  color: string
-  local: boolean
-}
-type ConnectionLink = LinkObject<PersonNode> & {
-  kind: 'illustrative' | 'local'
+  kind: MemberPresenceMark['kind']
   color: string
 }
+type HumanLink = LinkObject<HumanNode> & { kind: 'documented-cofounding'; color: string }
+
 export type PeopleNetworkFieldProps = {
-  mode?: 'presence' | 'study'
-  lens: PatternLens
   selected: string | null
-  onSelect: (id: string) => void
-  local: LocalExperiment | null
+  onSelect: (id: string | null) => void
 }
 
-function graphData(lens: PatternLens, local: LocalExperiment | null, mode: 'presence' | 'study') {
-  if (mode === 'presence') {
-    const presence = makeMembershipPresenceGraph()
+function graphData() {
+  const graph = makeMembershipPresenceGraph()
+  const anonymousCount = graph.marks.filter((mark) => mark.kind === 'anonymous-presence').length
+  let anonymousIndex = 0
+  const nodes: HumanNode[] = graph.marks.map((mark) => {
+    const publicFounder = mark.kind === 'public-cofounder'
+    const position = publicFounder
+      ? { x: mark.id === 'moises-sanabria' ? -32 : 32, y: 0, z: 0 }
+      : presenceSpherePosition(anonymousIndex++, anonymousCount, 156)
     return {
-      nodes: presence.marks.map((mark, i) => {
-        const point = presenceSpherePosition(i, presence.marks.length)
-        return {
-          id: mark.id, label: mark.label, color: '#adcfc0', local: false,
-          x: point.x, y: point.y, z: point.z,
-          fx: point.x, fy: point.y, fz: point.z,
-        }
-      }),
-      // Shared group membership is not a person-to-person relationship.
-      links: [] as { source: string; target: string; kind: 'illustrative' | 'local'; color: string }[],
+      id: mark.id,
+      label: mark.label,
+      kind: mark.kind,
+      color: publicFounder ? '#e1edd4' : '#9bb5a8',
+      x: position.x, y: position.y, z: position.z,
+      fx: position.x, fy: position.y, fz: position.z,
     }
-  }
-  const study = makeIllustrativePeopleGraph(local)
-  return {
-    nodes: study.people.map((person) => ({
-      id: person.id,
-      label: person.label,
-      color: person.id === 'visitor-local' ? '#f7dfa5' : colorForPerson(person, lens),
-      local: person.id === 'visitor-local',
-    })),
-    links: study.connections.map((link) => ({
-      source: link.source, target: link.target, kind: link.kind,
-      color: link.kind === 'local' ? '#f4d998' : '#7fa394',
-    })),
-  }
-}
-function idOf(value: string | PersonNode | number | undefined) {
-  if (typeof value === 'string') return value
-  if (typeof value === 'number') return String(value)
-  return value?.id ?? ''
+  })
+  const links: HumanLink[] = graph.connections.map((edge) => ({
+    source: edge.from,
+    target: edge.to,
+    kind: edge.kind,
+    color: '#d1ecbb',
+  }))
+  return { nodes, links }
 }
 
-export default function PeopleNetworkField({ mode = 'presence', lens, selected, onSelect, local }: PeopleNetworkFieldProps) {
-  const host = useRef<HTMLDivElement>(null)
-  const instanceRef = useRef<ForceGraph3DInstance<PersonNode, ConnectionLink> | null>(null)
-  const callbacks = useRef({ onSelect, selected })
-  callbacks.current = { onSelect, selected }
-
+export default function PeopleNetworkField({ selected, onSelect }: PeopleNetworkFieldProps) {
+  const elRef = useRef<HTMLDivElement>(null)
+  const graphRef = useRef<ForceGraph3DInstance<HumanNode, HumanLink> | null>(null)
+  const selectRef = useRef(onSelect)
+  selectRef.current = onSelect
   const [visible, setVisible] = useState(false)
   const [ready, setReady] = useState(false)
   const [unavailable, setUnavailable] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
-  const data = useMemo(() => graphData(lens, local, mode), [lens, local, mode])
+  const data = useMemo(graphData, [])
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -82,82 +64,70 @@ export default function PeopleNetworkField({ mode = 'presence', lens, selected, 
   }, [])
 
   useEffect(() => {
-    const el = host.current
-    if (!el) return
+    const element = elRef.current
+    if (!element) return
     if (typeof IntersectionObserver === 'undefined') { setVisible(true); return }
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) { setVisible(true); observer.disconnect() }
-    }, { rootMargin: '180px' })
-    observer.observe(el)
+    }, { rootMargin: '150px' })
+    observer.observe(element)
     return () => observer.disconnect()
   }, [])
 
   useEffect(() => {
-    if (!visible || !host.current) return
-    const el = host.current
+    if (!visible || !elRef.current) return
+    const element = elRef.current
     let disposed = false
-    let resize: ResizeObserver | undefined
-    let onVisibility: (() => void) | undefined
+    let resize: ResizeObserver | null = null
+    let onVisibility: (() => void) | null = null
 
     void import('3d-force-graph').then(({ default: ForceGraph3D }) => {
       if (disposed) return
       try {
-        const graph = new ForceGraph3D(el, {
+        const instance = new ForceGraph3D(element, {
           controlType: 'orbit',
           rendererConfig: { antialias: true, alpha: true },
-        }) as unknown as ForceGraph3DInstance<PersonNode, ConnectionLink>
-        instanceRef.current = graph
-        graph
+        }) as unknown as ForceGraph3DInstance<HumanNode, HumanLink>
+        graphRef.current = instance
+        instance
           .backgroundColor('#091313')
           .showNavInfo(false)
-          .nodeResolution(20)
+          .graphData({ nodes: data.nodes, links: data.links })
+          .nodeResolution(16)
+          .nodeRelSize(3.2)
           .nodeOpacity(0.94)
-          .nodeRelSize(2.9)
-          .nodeVal((node) => node.local ? 2.7 : node.id === callbacks.current.selected ? 2.4 : 1.15)
-          .nodeColor((node) => node.id === callbacks.current.selected ? '#fff7dd' : node.color)
+          .nodeVal((node) => node.kind === 'public-cofounder' ? 3.4 : 0.9)
+          .nodeColor((node) => node.color)
           .nodeLabel((node) => {
             const label = document.createElement('span')
-            label.textContent = node.local
-              ? 'Your local illustration · not submitted'
-              : node.id.startsWith('member-mark-')
-                ? 'Count-based member mark · anonymous placement, not a roster identifier'
-                : node.label + ' · illustrative position, not a real member'
+            label.textContent = node.kind === 'public-cofounder'
+              ? node.label + ' · publicly identified DCC cofounder'
+              : 'Anonymous member-presence mark · no identity or poll choice mapped'
             return label
           })
-          .linkColor((link) => {
-            const a = idOf(link.source), b = idOf(link.target)
-            return link.kind === 'local'
-              ? '#f5d28d'
-              : callbacks.current.selected && [a,b].includes(callbacks.current.selected)
-                ? '#c7f0d0'
-                : link.color
+          .linkColor((link) => link.color)
+          .linkOpacity(0.9)
+          .linkWidth(2.1)
+          .linkLabel(() => 'Documented connection: DCC cofounding (not a poll response)')
+          .onNodeClick((node) => {
+            if (node.kind === 'public-cofounder') selectRef.current(node.id)
+            else selectRef.current(null)
           })
-          .linkOpacity(0.55)
-          .linkWidth((link) => {
-            const a = idOf(link.source), b = idOf(link.target)
-            return callbacks.current.selected && [a,b].includes(callbacks.current.selected) ? 2.5 : link.kind === 'local' ? 1.4 : 0.65
-          })
-          .linkLabel((link) =>
-            link.kind === 'local'
-              ? 'Your temporary illustrated connection, not an introduction'
-              : 'Illustrative person-to-person connection · NOT verified or derived from CRM'
-          )
-          .onNodeClick((node) => { callbacks.current.onSelect(node.id) })
-          .onNodeHover((node) => { el.style.cursor = node ? 'pointer' : 'grab' })
-          .onNodeDragEnd((node) => { node.fx = node.x; node.fy = node.y; node.fz = node.z })
-          .warmupTicks(80)
-          .cooldownTicks(200)
+          .onNodeHover((node) => { element.style.cursor = node?.kind === 'public-cofounder' ? 'pointer' : 'grab' })
+          .warmupTicks(30)
+          .cooldownTicks(0)
 
         resize = new ResizeObserver(() => {
-          const { width, height } = el.getBoundingClientRect()
-          if (width > 0 && height > 0) graph.width(width).height(height)
+          const { width, height } = element.getBoundingClientRect()
+          if (width > 0 && height > 0) instance.width(width).height(height)
         })
-        resize.observe(el)
+        resize.observe(element)
         onVisibility = () => {
-          if (document.hidden) graph.pauseAnimation()
-          else graph.resumeAnimation()
+          if (document.hidden) instance.pauseAnimation()
+          else instance.resumeAnimation()
         }
         document.addEventListener('visibilitychange', onVisibility)
+        instance.zoomToFit(500, 85)
         setReady(true)
       } catch {
         if (!disposed) setUnavailable(true)
@@ -168,50 +138,44 @@ export default function PeopleNetworkField({ mode = 'presence', lens, selected, 
       disposed = true
       resize?.disconnect()
       if (onVisibility) document.removeEventListener('visibilitychange', onVisibility)
-      instanceRef.current?._destructor()
-      instanceRef.current = null
-      el.replaceChildren()
+      graphRef.current?._destructor()
+      graphRef.current = null
+      element.replaceChildren()
     }
-  }, [visible])
+  }, [data, visible])
 
   useEffect(() => {
-    if (!ready || !instanceRef.current) return
-    const graph = instanceRef.current
-    const prior = new Map(graph.graphData().nodes.map((node) => [node.id, node]))
-    graph.graphData({
-      nodes: data.nodes.map((node) => Object.assign(prior.get(node.id) ?? {}, node)),
-      links: data.links.map((edge) => ({ ...edge })),
-    })
-    graph.zoomToFit(700, 75)
-    graph.d3ReheatSimulation()
-  }, [ready, data])
+    if (!ready || !graphRef.current) return
+    const instance = graphRef.current
+    instance.nodeVal((node) => node.id === selected ? 5.6 : node.kind === 'public-cofounder' ? 3.4 : 0.9)
+    instance.nodeColor((node) => node.id === selected ? '#f4dda5' : node.color)
+    if (selected === 'moises-sanabria' || selected === 'fabiola-larios') {
+      const x = selected === 'moises-sanabria' ? -32 : 32
+      instance.cameraPosition({ x: x + 58, y: 31, z: 110 }, { x, y: 0, z: 0 }, reducedMotion ? 0 : 550)
+    } else {
+      instance.zoomToFit(reducedMotion ? 0 : 550, 85)
+    }
+  }, [ready, reducedMotion, selected])
 
   useEffect(() => {
-    if (!ready || !instanceRef.current) return
-    const graph = instanceRef.current
-    graph.nodeVal((node) => node.local ? 2.7 : node.id === selected ? 2.4 : 1.15)
-    graph.nodeColor((node) => node.id === selected ? '#fff7dd' : node.color)
-    graph.linkWidth((link) =>
-      selected && [idOf(link.source), idOf(link.target)].includes(selected)
-        ? 2.5 : link.kind === 'local' ? 1.4 : 0.65
-    )
-  }, [ready, selected])
-
-  useEffect(() => {
-    if (!ready || !instanceRef.current) return
-    if (reducedMotion) instanceRef.current.pauseAnimation()
-    else if (!document.hidden) instanceRef.current.resumeAnimation()
+    if (!ready || !graphRef.current) return
+    if (reducedMotion) graphRef.current.pauseAnimation()
+    else if (!document.hidden) graphRef.current.resumeAnimation()
   }, [ready, reducedMotion])
 
   return (
     <div className="relative h-full w-full">
-      <div ref={host} className="h-full min-h-[400px] w-full" role="img"
-        aria-label={mode === "presence" ? "Three-dimensional arrangement of anonymous marks, one for each of at least 101 founder-reported WhatsApp members. No real member identity or person-to-person edge is exposed." : "3D illustrative people-and-connections network; all interpersonal edges are fictional."}
+      <div ref={elRef} className="h-full min-h-[380px] w-full" role="img"
+        aria-label="Three-dimensional DCC member-presence sculpture: 101 minimum-count marks including two named public cofounders with one documented cofounding relationship. All other positions have no member identifiers or poll answers."
       />
-      {!ready && !unavailable ? <p role="status" className="pointer-events-none absolute bottom-5 left-5 text-xs text-white/45">Building the field…</p> : null}
-      {unavailable ? <p role="status" className="absolute inset-0 flex items-center justify-center p-8 text-center text-sm text-white/65">
-        The 3D view is unavailable. Use the node selector below to explore the illustrative model.
-      </p> : null}
+      {!ready && !unavailable && (
+        <p className="pointer-events-none absolute bottom-5 left-5 text-xs text-white/45" role="status">Opening the network…</p>
+      )}
+      {unavailable && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[#091313] p-8 text-center text-sm text-white/70" role="status">
+          3D display unavailable. You can still explore the public cofounders and poll totals below.
+        </div>
+      )}
     </div>
   )
 }

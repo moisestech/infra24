@@ -1,32 +1,50 @@
 import {
-  MEMBER_PRESENCE_SOURCE, makeMembershipPresenceGraph, presenceSpherePosition,
+  MEMBER_PRESENCE_SOURCE, PUBLIC_FOUNDERS, makeMembershipPresenceGraph, presenceSpherePosition,
 } from '../member-presence'
 
-describe('DCC founder-reported membership scale', () => {
-  it('shows the mathematical minimum for more than 100 reported members, without invented edges', () => {
-    expect(MEMBER_PRESENCE_SOURCE.reportedLabel).toBe('100+')
-    expect(MEMBER_PRESENCE_SOURCE.minimumCount).toBe(101)
-    expect(MEMBER_PRESENCE_SOURCE.status).toContain('awaiting roster reconciliation')
+describe('DCC membership presence, without invented social or poll data', () => {
+  it('represents the reported >100 minimum as 101 positions including two founders', () => {
     const graph = makeMembershipPresenceGraph()
+    expect(MEMBER_PRESENCE_SOURCE.minimumCount).toBe(101)
+    expect(MEMBER_PRESENCE_SOURCE.reportedLabel).toBe('100+')
     expect(graph.marks).toHaveLength(101)
-    expect(graph.connections).toEqual([])
     expect(new Set(graph.marks.map((m) => m.id)).size).toBe(101)
+    expect(graph.marks.filter((m) => m.kind === 'public-cofounder')).toHaveLength(2)
+    expect(graph.marks.filter((m) => m.kind === 'anonymous-presence')).toHaveLength(99)
+    expect(graph.marks.slice(0, 2)).toEqual([...PUBLIC_FOUNDERS])
   })
-  it('contains no mapped member IDs or personal attributes', () => {
-    for (const mark of makeMembershipPresenceGraph().marks) {
-      expect(mark.kind).toBe('membership-mark')
-      expect(Object.keys(mark).sort()).toEqual(['id', 'kind', 'label'])
-      expect(mark.id).toMatch(/^member-mark-\d{3}$/)
-    }
+
+  it('draws only the documented DCC cofounder relationship', () => {
+    const graph = makeMembershipPresenceGraph()
+    expect(graph.connections).toEqual([{
+      from: 'moises-sanabria',
+      to: 'fabiola-larios',
+      kind: 'documented-cofounding',
+    }])
+    expect(graph.connections.every((e) =>
+      graph.marks.some((n) => n.id === e.from) &&
+      graph.marks.some((n) => n.id === e.to)
+    )).toBe(true)
   })
-  it('can be updated to a reconciled aggregate without changing node semantics', () => {
-    expect(makeMembershipPresenceGraph(114).marks).toHaveLength(114)
-    expect(makeMembershipPresenceGraph(114).connections).toEqual([])
-    expect(makeMembershipPresenceGraph(-1).marks).toHaveLength(0)
+
+  it('does not derive individual IDs, relationships, or preferences for anonymous marks', () => {
+    const anonymous = makeMembershipPresenceGraph().marks.filter((m) => m.kind === 'anonymous-presence')
+    expect(anonymous.every((mark) => Object.keys(mark).sort().join(',') === 'id,kind,label')).toBe(true)
+    expect(anonymous.every((mark) => /^anonymous-\d{3}$/.test(mark.id))).toBe(true)
+    expect(anonymous.every((mark) => !('interests' in mark) && !('whatsAppId' in mark))).toBe(true)
   })
-  it('places the same membership-presence marks at stable 3D coordinates', () => {
-    const a = presenceSpherePosition(26, 101)
-    expect(a).toEqual(presenceSpherePosition(26, 101))
-    expect(Object.values(a).every(Number.isFinite)).toBe(true)
+
+  it('can be updated to an audited count without inventing other social edges', () => {
+    const graph = makeMembershipPresenceGraph(114)
+    expect(graph.marks).toHaveLength(114)
+    expect(graph.marks.filter((mark) => mark.kind === 'anonymous-presence')).toHaveLength(112)
+    expect(graph.connections).toHaveLength(1)
+    expect(makeMembershipPresenceGraph(0).marks).toEqual([])
+    expect(makeMembershipPresenceGraph(1).connections).toEqual([])
+  })
+
+  it('uses stable, deterministic geometry, not recovered WhatsApp positions', () => {
+    expect(presenceSpherePosition(21, 99)).toEqual(presenceSpherePosition(21, 99))
+    expect(Object.values(presenceSpherePosition(21, 99)).every(Number.isFinite)).toBe(true)
   })
 })
