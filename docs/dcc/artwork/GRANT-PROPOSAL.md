@@ -5,8 +5,8 @@
 **DCC Miami / Moises Sanabria / Born Into the Machine**  
 **Proposal category:** CO-OP  
 **Requested microgrant:** $1,500  
-**Interactive study:** [/network/artwork](../../../../app/(marketing)/network/artwork/page.tsx) (source)  
-**Full proposal microsite:** [/network/artwork/proposal](../../../../app/(marketing)/network/artwork/proposal/page.tsx) (source)
+**Interactive artwork and proposal microsite:** [GitHub development PR #54](https://github.com/moisestech/infra24/pull/54)  
+**Planned permanent proposal route:** /network/artwork/proposal (once deployed)
 
 ![Speculative sketch: the living network and the physical edition](../../../public/images/dcc/the-network-makes-itself-study.svg)
 
@@ -71,13 +71,7 @@ The long-term institutional question is whether stewardship can be transferred t
 
 The project extends *Born Into the Machine*, an artistic inquiry into what happens when computational systems stop being discrete tools and become the climate in which identity, labor, and social life are organized.
 
-It also connects to DCC's internal research:
-
-- [Institutional Capacity Protocol: critique through institution building](https://docs.google.com/document/d/1tFkcXDbIisb1jgTwaYT5ReJNVLdKh7mWx-rUyQyWEek/edit)
-- [DCC Network Atlas: opt-in identity and consent](https://docs.google.com/document/d/1xqE7qS0Gqu3izUlG4toXvWtiHDVQuhFkWse0yREFpDg/edit)
-- [Machine Sentences: human intention as machine-readable structure](https://docs.google.com/document/d/1J718qN9pRShO_7SstGtJWMHx6QATVmGKooDhuVCyyOs/edit)
-
-These research links may be private. The public project proposal and project sketch are intended to stand on their own, without a reader needing access to internal DCC documents.
+It also builds on DCC's ongoing research into institutional capacity, opt-in representation, human-scale consent, and machine-readable communication. These remain internal working documents; the public proposal stands independently of private community records.
 
 ---
 
