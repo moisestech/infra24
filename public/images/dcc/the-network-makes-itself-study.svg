@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+<title>The Network Makes Itself — annotated digital-to-physical study</title>
+<desc>Speculative proposal diagram, not a finished artwork or a record of real member relations. A fictional living network at left becomes a layered material edition at right.</desc>
+<defs>
+  <linearGradient id="night" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#0b1618"/><stop offset="1" stop-color="#1a2a2a"/></linearGradient>
+  <linearGradient id="gallery" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#e8eae5"/><stop offset="1" stop-color="#c4cbc7"/></linearGradient>
+  <radialGradient id="light"><stop stop-color="#a2ddc1" stop-opacity=".32"/><stop offset="1" stop-color="#82bba0" stop-opacity="0"/></radialGradient>
+  <filter id="shadow"><feGaussianBlur stdDeviation="9"/></filter>
+  <pattern id="grid" width="45" height="45" patternUnits="userSpaceOnUse"><path d="M 45 0 L 0 0 0 45" fill="none" stroke="#ecf7ee" stroke-opacity=".045"/></pattern>
+</defs>
+<rect width="1600" height="900" fill="#eaece5"/>
+<rect width="770" height="900" fill="url(#night)"/>
+<rect width="770" height="900" fill="url(#grid)"/>
+<rect x="770" width="830" height="900" fill="url(#gallery)"/>
+<path d="M770 0V900" stroke="#0d1a1a" stroke-opacity=".25" stroke-width="4"/>
+<circle cx="402" cy="452" r="370" fill="url(#light)"/>
+<g fill="none" stroke="#aad8c1" stroke-width="2.1">
+  <path d="M182 433L294 263L462 298L560 440L439 569L236 626L182 433L439 569L294 263L560 440L236 626L462 298"/>
+  <path d="M108 360L182 433L295 500L462 298L592 255L560 440L643 568L439 569L497 700L236 626L108 360" stroke-opacity=".5" stroke-dasharray="5 12"/>
+  <path d="M294 263L395 157L592 255M236 626L144 728L497 700" stroke-opacity=".58"/>
+</g>
+<g fill="#d6f9e9" stroke="#7ebca3" stroke-width="5">
+<circle cx="182" cy="433" r="13"/><circle cx="294" cy="263" r="18"/><circle cx="462" cy="298" r="15"/><circle cx="560" cy="440" r="17"/><circle cx="439" cy="569" r="19"/><circle cx="236" cy="626" r="13"/><circle cx="295" cy="500" r="8"/><circle cx="592" cy="255" r="9"/><circle cx="108" cy="360" r="8"/><circle cx="643" cy="568" r="9"/><circle cx="497" cy="700" r="8"/><circle cx="395" cy="157" r="8"/><circle cx="144" cy="728" r="8"/>
+</g>
+<g fill="#a9d2bb" font-family="Arial, sans-serif" font-size="19" letter-spacing="3">
+<text x="56" y="69">THE LIVING FIELD</text><text x="56" y="110" font-size="12" letter-spacing="2" opacity=".7">FICTIONAL / PARTICIPANT-EDITABLE STUDY</text>
+<text x="318" y="234" font-size="13" opacity=".9">AUTHOR</text><text x="479" y="278" font-size="13" opacity=".9">OFFER</text>
+<text x="470" y="592" font-size="13" opacity=".9">NEED</text><text x="83" y="836" font-size="13" opacity=".65">PROTOCOL  /  CONSENT  /  MUTUAL CONNECTION</text>
+</g>
+<g stroke="#899e99" stroke-width="3" fill="none" opacity=".75">
+<path d="M790 530L945 470L1130 504L1320 350L1480 482L1408 628L1130 685L945 470L1408 628L1130 504L1480 482"/>
+<path d="M790 530L944 640L1130 685L1320 350L1130 504M944 640L1320 350" stroke-dasharray="7 11"/>
+</g>
+<g opacity=".32" transform="translate(17 32)" filter="url(#shadow)" stroke="#61736c" stroke-width="8" fill="none">
+<path d="M790 530L945 470L1130 504L1320 350L1480 482L1408 628L1130 685L945 470L1408 628L1130 504L1480 482"/>
+</g>
+<g>
+<path d="M917 404L993 385L1017 691L941 714Z" fill="#f7fcf4" opacity=".35" stroke="#fff" stroke-opacity=".7"/>
+<path d="M1080 312L1232 350L1241 731L1088 699Z" fill="#f7fcf4" opacity=".27" stroke="#fff" stroke-opacity=".65"/>
+<path d="M1274 265L1440 300L1437 751L1281 706Z" fill="#f7fcf4" opacity=".18" stroke="#fff" stroke-opacity=".65"/>
+</g>
+<g fill="#36584c" stroke="#c7e5d6" stroke-width="4">
+<circle cx="790" cy="530" r="14"/><circle cx="945" cy="470" r="20"/><circle cx="1130" cy="504" r="20"/><circle cx="1320" cy="350" r="22"/><circle cx="1480" cy="482" r="14"/><circle cx="1408" cy="628" r="19"/><circle cx="1130" cy="685" r="15"/><circle cx="944" cy="640" r="12"/>
+</g>
+<g fill="#263b35" font-family="Arial, sans-serif">
+<text x="820" y="69" font-size="19" letter-spacing="3">THE MATERIAL EDITION</text>
+<text x="820" y="110" font-size="12" letter-spacing="2" opacity=".65">PROPOSED / LAYERED FABRICATION STUDY</text>
+<text x="1230" y="830" font-size="12" letter-spacing="2" opacity=".74">ONE CONSENTED SNAPSHOT</text>
+</g>
+<rect x="688" y="421" width="165" height="68" rx="34" fill="#f5f1e5" stroke="#879f96" stroke-width="2"/>
+<path d="M707 455H832" stroke="#527a67" stroke-width="2" stroke-dasharray="5 6"/>
+<path d="M822 447L832 455L822 463" fill="none" stroke="#527a67" stroke-width="2"/>
+<g fill="#203730" font-family="Arial, sans-serif" font-size="13" letter-spacing="2">
+<text x="718" y="445">FREEZE</text><text x="718" y="474">+ MAKE</text>
+</g>
+<text x="56" y="876" font-family="Arial, sans-serif" font-size="13" letter-spacing="1.8" fill="#b6d8c4">THE NETWORK MAKES ITSELF  /  PROJECT SKETCH 001</text>
+<text x="845" y="876" font-family="Arial, sans-serif" font-size="13" letter-spacing="1.2" fill="#4b6058">CONCEPT ARTWORK — NOT AN EXISTING INSTALLATION</text>
+</svg>
