@@ -74,7 +74,7 @@ export default function NetworkArtworkProposalPage() {
           <div className="flex flex-col justify-center border-t border-[color:var(--dn-line)] p-7 md:border-l md:border-t-0 sm:p-10">
             <p className="font-mono text-xs uppercase tracking-[.18em] text-[color:var(--dn-subtle)]">People create the architecture</p>
             <h2 className="mt-5 text-3xl font-light leading-tight tracking-[-.05em] sm:text-4xl">A structure that can be rewritten.</h2>
-            <p className="mt-5 text-sm leading-relaxed text-[color:var(--dn-muted)]">The Commons reports more than 100 members. Two marks identify DCC’s public cofounders, who share a documented founding connection; the remaining 99 marks are anonymous minimum-count positions. Six actual poll totals disclose collective interests, not individual choices.</p>
+            <p className="mt-5 text-sm leading-relaxed text-[color:var(--dn-muted)]">The Commons reports more than 100 members. Two marks identify DCC’s public cofounders, who share a documented founding connection; Angelo Caruso is also visible through his public artist profile, leaving 98 anonymous minimum-count positions. Six practice nodes show real aggregate poll results; links from named artists come from public editorial profiles, not individual voting records.</p>
             <p className="mt-4 text-xs leading-relaxed text-[color:var(--dn-subtle)]">The precise current roster and individual votes are not available. No other relationships are inferred.</p>
             <Link href="/network/artwork" className="mt-8 w-fit rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] hover:bg-[var(--dn-accent-hover)]">Explore the living artwork ↗</Link>
           </div>
