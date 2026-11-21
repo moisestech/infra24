@@ -1,14 +1,14 @@
 # The Network Makes Itself — people-first graph model
 
-**Design correction: A node is a person. An edge is a documented relationship between two people.**
+**Current model:** Small nodes represent people; larger labeled nodes represent practice areas; links express either a documented person-to-person relationship or a publicly listed person-to-practice connection. Practice links do NOT identify individual poll voters.
 
-**Update, November 21:** The former fictional Connections study was retired. The public field now shows 101 minimum-count marks (including two named cofounders), one public cofounder connection, and six actual poll totals that are not joined to individual nodes. See `MEMBER-PRESENCE-STATUS.md` and `discovery-poll.ts`. The illustrative specification below is historical context and not the current user-facing implementation.
+**Update, November 21:** The former fictional Connections study was retired. The public field now shows 101 minimum-count human marks (three named public artists and 98 anonymous), one documented cofounder edge, and six category nodes with actual aggregate poll totals. Eight public editorial practice associations are visibly distinct from votes. See `MEMBER-PRESENCE-STATUS.md` and `discovery-poll.ts`. The illustrative specification below is historical context and not the current user-facing implementation.
 
-Practices, interests, activity and participation histories are *attributes and visual lenses*. They are not autonomous people, and they are not edges to category hubs.
+Practice areas are intentionally a **different node type** from people in the current bipartite graph. Public editorial profile tags may create practice links; personal WhatsApp poll answers cannot be assigned to individuals without permission.
 
 This document supersedes the category-hub visual model from \`AGGREGATE-NETWORK-20261121.md\`. That older report remains an internal record of available category vocabulary and consent gaps, **not** the current visual or social-graph specification.
 
-## Current public demo
+## Historical prototype (superseded; do not implement from this section)
 
 - 30 deliberately fictional **person-positions**, each represented by a dot; this number does not match, estimate, or enumerate DCC's actual roster.
 - Fixed illustrative **person-to-person connections** chosen for legible formal composition. They are not inferred from any member's practice, WhatsApp group activity, or Airtable introduction.
