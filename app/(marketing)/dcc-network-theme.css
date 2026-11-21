@@ -102,3 +102,21 @@
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Consistent tooltip contrast; node labels should not rely on vendor styles. */
+.dcc-network-theme .dn-node-tooltip {
+  display: inline-block;
+  max-width: 240px;
+  border: 1px solid var(--dn-graph-chip-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--dn-graph-chip);
+  color: var(--dn-on-graph);
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 6px 25px rgb(0 0 0 / 10%);
+}
+/* System keyboard and browser zoom preference are respected. */
+.dcc-network-theme .dn-graph-overlay button:focus-visible {
+  outline-color: var(--dn-link);
+}
