@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import Link from 'next/link'
 import { makePeoplePracticeGraph } from '@/lib/dcc/artwork/people-practice-graph'
 import { MEMBER_PRESENCE_SOURCE } from '@/lib/dcc/artwork/member-presence'
@@ -48,7 +48,7 @@ function NodeButton({
   title: string
   selected: boolean
   onClick: () => void
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <g
