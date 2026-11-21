@@ -149,6 +149,9 @@ export function NetworkGraph3DExplorer({ initialMode = 'combined' }: { initialMo
         <p className="mt-2 text-sm font-light leading-relaxed text-white/60">
           Search a name · drag to explore · click a node to inspect its connections.
         </p>
+        <Link href="/network/artwork" className="mt-4 inline-block rounded-full border border-[#91b49e]/60 bg-[#18372c]/70 px-4 py-2 text-xs font-medium text-[#cbe6d1] transition hover:bg-[#214d3c]">
+          Explore the coauthored artwork ↗
+        </Link>
         {loadError ? <p className="mt-2 text-xs text-red-400">{loadError}</p> : null}
         {payload ? (
           <p className="mt-2 text-xs text-white/40">

@@ -1,6 +1,13 @@
 'use client'
 
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+import type { ArtworkPerson, ArtworkRelationship } from './ArtworkForceField'
+
+const ForceField = dynamic(() => import('./ArtworkForceField'), {
+  ssr: false,
+  loading: () => <div className="flex h-full min-h-[430px] items-center justify-center text-sm text-white/60">Opening the 3D artwork…</div>,
+})
 import { useEffect, useMemo, useState } from 'react'
 import { INTERESTS, isInterestId, type InterestId } from '@/lib/dcc/community/atlas'
 
@@ -113,6 +120,13 @@ export function CollectiveNetworkArtwork() {
   }, [])
   const visible = view === 'edition' && frozen ? frozen : state
   const scene = useMemo(() => makeScene(visible), [visible])
+  const forcePeople = useMemo<ArtworkPerson[]>(() => scene.participants.map((p) => ({
+    id: p.id, label: p.label, interests: p.interests, guest: p.guest,
+  })), [scene])
+  const forceRelationships = useMemo<ArtworkRelationship[]>(() =>
+    scene.edges.filter((edge) => edge.kind !== 'declared').map((edge) => ({
+      from: edge.from, to: edge.to, kind: edge.kind, color: edge.color,
+    })), [scene])
   const active = scene.participants.find((p) => p.id === selected) ?? scene.participants[scene.participants.length - 1]
   const contributionInfo: Record<Contribution, string> = {
     show: 'Here is something I am making.',
@@ -131,7 +145,7 @@ export function CollectiveNetworkArtwork() {
   function freeze() {
     setFrozen({ ...state, interests: [...state.interests] })
     setView('edition')
-    setNotice('Edition 001 frozen in this browser tab. It is not published or saved to DCC.')
+    setNotice('Edition 001 topology frozen in this tab. The 2D vector export records the same authored connections, not exact 3D positions. Nothing was saved to DCC.')
   }
   function download() {
     if (!frozen) return
@@ -190,43 +204,23 @@ export function CollectiveNetworkArtwork() {
               <button type="button" onClick={() => setView('living')} aria-pressed={view === 'living'} className={'rounded-full px-3 py-2 text-xs transition ' + (view === 'living' ? 'bg-[#e8eedf] text-[#14201b]' : 'border border-white/20 text-white/65 hover:text-white')}>Live</button>
               <button type="button" onClick={() => frozen && setView('edition')} disabled={!frozen} aria-pressed={view === 'edition'} className={'rounded-full px-3 py-2 text-xs transition disabled:opacity-30 ' + (view === 'edition' ? 'bg-[#e8eedf] text-[#14201b]' : 'border border-white/20 text-white/65 hover:text-white')}>Edition</button>
             </div>
-            <svg viewBox="0 0 1000 650" className="h-[min(65vh,680px)] min-h-[430px] w-full" role="img" aria-label="Interactive fictional creative network. Dashed lines indicate declared interests; gold lines illustrate proposed or hypothetical mutually approved collaborations.">
-              <defs>
-                <radialGradient id="network-glow"><stop offset="0" stopColor="#8cb7a2" stopOpacity="0.18"/><stop offset="1" stopColor="#8cb7a2" stopOpacity="0"/></radialGradient>
-                <filter id="soft-glow"><feGaussianBlur stdDeviation="9"/></filter>
-              </defs>
-              <circle cx="500" cy="325" r="360" fill="url(#network-glow)"/>
-              {[130, 250, 372].map((r) => <circle key={r} cx="500" cy="325" r={r} fill="none" stroke="#e3f3e9" strokeOpacity="0.055"/>)}
-              {[0, 1, 2, 3, 4, 5].map((i) => <line key={i} x1="500" y1="325" x2={500 + 475 * Math.cos(i * Math.PI / 3)} y2={325 + 475 * Math.sin(i * Math.PI / 3)} stroke="#e3f3e9" strokeOpacity=".035"/>)}
-              {scene.edges.map((edge, i) => {
-                const from = scene.points.get(edge.from)!
-                const to = scene.points.get(edge.to)!
-                const special = edge.kind !== 'declared'
-                return <line key={edge.from + ':' + edge.to + ':' + i} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke={special ? '#f2c680' : edge.color} strokeWidth={edge.kind === 'mutual' ? 3 : edge.guest ? 1.6 : 0.9} strokeOpacity={special ? 0.95 : edge.guest ? 0.85 : 0.32} strokeDasharray={edge.kind === 'mutual' ? undefined : special ? '9 8' : '3 8'}/>
-              })}
-              {INTERESTS.map((interest) => {
-                const p = HUBS[interest.id]
-                const linked = visible.interests.includes(interest.id)
-                return <g key={interest.id} role="button" tabIndex={0} onClick={() => toggleInterest(interest.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleInterest(interest.id) } }} aria-label={'Toggle your connection to ' + interest.label} className="cursor-pointer outline-none">
-                  <circle cx={p.x} cy={p.y} r={linked ? 10 : 6} fill={linked ? interest.color : '#1b292a'} stroke={interest.color} strokeWidth="1.5"/>
-                  <circle cx={p.x} cy={p.y} r="23" fill="transparent"/>
-                  <text x={p.x + 16} y={p.y + 4} fill={linked ? '#f4f2e8' : '#94a9a4'} fontSize="10" fontFamily="monospace" letterSpacing="1">{interest.short.toUpperCase()}</text>
-                </g>
-              })}
-              {scene.participants.map((participant) => {
-                const activeNode = participant.id === selected
-                return <g key={participant.id} role="button" tabIndex={0} onClick={() => setSelected(participant.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(participant.id) } }} aria-label={'Inspect ' + participant.label} className="cursor-pointer outline-none">
-                  {participant.guest ? <circle cx={participant.x} cy={participant.y} r="28" fill="#d7e9d0" fillOpacity=".17" filter="url(#soft-glow)"/> : null}
-                  <circle cx={participant.x} cy={participant.y} r={participant.guest ? 16 : 9} fill={participant.guest ? '#d7e9d0' : '#607a75'} stroke={activeNode ? '#f5f1de' : 'transparent'} strokeWidth={activeNode ? 3 : 0}/>
-                  <circle cx={participant.x} cy={participant.y} r="26" fill="transparent"/>
-                  <text x={participant.x + (participant.guest ? 25 : 16)} y={participant.y - 11} fill={participant.guest ? '#f5f1de' : '#bdc7c0'} fontSize={participant.guest ? 14 : 11} fontWeight={participant.guest ? 700 : 400} letterSpacing="1.1" fontFamily="monospace">{participant.label}</text>
-                </g>
-              })}
-              <text x="34" y="612" fill="#e7eee4" opacity=".45" fontSize="11" fontFamily="monospace" letterSpacing="1.2">A SHARED INTEREST IS NOT A VERIFIED RELATIONSHIP</text>
-            </svg>
+            <div className="h-[min(65vh,680px)] min-h-[430px] w-full">
+              <ForceField
+                people={forcePeople}
+                relationships={forceRelationships}
+                guestSignal={visible.contribution}
+                selected={selected}
+                paused={view === 'edition'}
+                onSelect={(id) => setSelected(id)}
+              />
+            </div>
+            <div className="relative z-10 border-t border-white/10 px-5 py-3 text-xs leading-relaxed text-[#b9c8b8] sm:px-7">
+              Orbit and drag the Three.js force-directed field. Interest hubs and signal types are categories, not people.
+              Physical SVG editions use a reproducible flat projection of this same authored topology—not a screenshot or an exact capture of the moving 3D coordinates.
+            </div>
             <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 px-5 py-4 text-xs text-white/55 sm:px-7">
-              <span>{scene.participants.length} fictional positions · {scene.edges.length} illustrated connections</span>
-              <span><span className="mr-2 text-[#b6ccb9]">┄┄</span> Declared interest <span className="ml-5 mr-2 text-[#f2c680]">━━━━</span> Hypothetical mutual connection</span>
+              <span>{scene.participants.length} fictional positions · {scene.edges.length} interest/proposed connections</span>
+              <span><span className="mr-2 text-[#b6ccb9]">┄┄</span> Interest or signal category <span className="ml-5 mr-2 text-[#f2c680]">━━━━</span> Hypothetical mutual connection</span>
             </div>
           </section>
 
@@ -263,6 +257,15 @@ export function CollectiveNetworkArtwork() {
               <p className="mb-2 text-[11px] uppercase tracking-wider text-[#536661]">Selected position</p>
               <p className="text-xl font-medium tracking-tight">{active.label}</p>
               <p className="mt-1 text-sm text-[#536661]">{active.practice}</p>
+              <label htmlFor="artwork-node-selector" className="mt-4 block text-[11px] font-semibold uppercase tracking-wider text-[#536661]">Inspect a fictional position</label>
+              <select
+                id="artwork-node-selector"
+                value={active.id}
+                onChange={(event) => setSelected(event.target.value)}
+                className="mt-2 w-full rounded-md border border-[#a8baa9] bg-[#f5f6ef] px-3 py-2 text-sm text-[#163629]"
+              >
+                {scene.participants.map((person) => <option key={person.id} value={person.id}>{person.label}</option>)}
+              </select>
               <button type="button" onClick={() => { change(START); setFrozen(null); setSelected('guest') }} className="mt-5 text-xs underline underline-offset-4 hover:text-[#478064]">Reset fictional study</button>
             </div>
           </aside>
@@ -272,7 +275,7 @@ export function CollectiveNetworkArtwork() {
           <div className="rounded-2xl border border-white/15 p-6 sm:p-8">
             <p className="mb-3 text-[11px] uppercase tracking-[0.25em] text-[#a9d4bd]">03 / Materialize the network</p>
             <h2 className="text-3xl font-light tracking-tight sm:text-4xl">Freeze a moment. Make it physical.</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/60">An edition records one deliberately chosen state of the graph. Its geometry can be exported as a deterministic SVG for further fabrication work. This is a visual/vector study, <strong className="font-medium text-white/80">not a cut-ready laser or 3D-printing file</strong>.</p>
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/60">An edition records one deliberately chosen topology of the living 3D graph. The SVG is a reproducible flattened drawing of that topology for fabrication experiments, not an exact 3D coordinate export. This is a visual/vector study, <strong className="font-medium text-white/80">not a cut-ready laser or 3D-printing file</strong>.</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <button type="button" onClick={freeze} className="rounded-full bg-[#cfdfc9] px-5 py-3 text-sm font-semibold text-[#112a23] transition hover:bg-white">Freeze edition 001</button>
               <button type="button" onClick={download} disabled={!frozen} className="rounded-full border border-white/40 px-5 py-3 text-sm transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35">Download edition SVG</button>
