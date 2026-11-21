@@ -257,6 +257,15 @@ export function CollectiveNetworkArtwork() {
               <p className="mb-2 text-[11px] uppercase tracking-wider text-[#536661]">Selected position</p>
               <p className="text-xl font-medium tracking-tight">{active.label}</p>
               <p className="mt-1 text-sm text-[#536661]">{active.practice}</p>
+              <label htmlFor="artwork-node-selector" className="mt-4 block text-[11px] font-semibold uppercase tracking-wider text-[#536661]">Inspect a fictional position</label>
+              <select
+                id="artwork-node-selector"
+                value={active.id}
+                onChange={(event) => setSelected(event.target.value)}
+                className="mt-2 w-full rounded-md border border-[#a8baa9] bg-[#f5f6ef] px-3 py-2 text-sm text-[#163629]"
+              >
+                {scene.participants.map((person) => <option key={person.id} value={person.id}>{person.label}</option>)}
+              </select>
               <button type="button" onClick={() => { change(START); setFrozen(null); setSelected('guest') }} className="mt-5 text-xs underline underline-offset-4 hover:text-[#478064]">Reset fictional study</button>
             </div>
           </aside>
