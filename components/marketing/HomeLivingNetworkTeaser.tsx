@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import PeopleNetworkField from '@/components/dcc/artwork/PeopleNetworkField'
+import { NetworkGraphBoundary } from '@/components/dcc/artwork/NetworkGraphBoundary'
 
 /** Shared public people, reported anonymous presence, and practice-category nodes. */
 export function HomeLivingNetworkTeaser() {
@@ -24,7 +25,7 @@ export function HomeLivingNetworkTeaser() {
           </div>
         </div>
         <div className="relative h-[350px] overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)] sm:h-[490px]">
-          <PeopleNetworkField selected={selected} onSelect={setSelected} />
+          <NetworkGraphBoundary><PeopleNetworkField selected={selected} onSelect={setSelected} /></NetworkGraphBoundary>
           <div className="pointer-events-none absolute bottom-4 left-5 rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-graph-chip)] px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-[color:var(--dn-graph-muted)]">
             100+ reported · 3 featured artists · 6 practices
           </div>

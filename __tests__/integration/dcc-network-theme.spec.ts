@@ -64,4 +64,17 @@ test.describe('DCC Atlas / network theme and mobile experience', () => {
       expect(overflow).toBeLessThan(2)
     }
   })
+
+  test('never crashes the entire page when WebGL is unavailable', async ({ page }) => {
+    const uncaught: string[] = []
+    page.on('pageerror', (error) => uncaught.push(error.message))
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/network/artwork')
+    await expect(page.getByRole('heading', { name: /The network makes itself/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Explore 3D network' })).toBeVisible()
+    await expect(page.getByText('72', { exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: /Find people through their practice/i })).toBeVisible()
+    expect(uncaught).toEqual([])
+  })
+
 })
