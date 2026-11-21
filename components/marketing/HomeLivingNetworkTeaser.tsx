@@ -24,11 +24,13 @@ export function HomeLivingNetworkTeaser() {
             <Link href="/network/community" className="rounded-full border border-[color:var(--dn-line-strong)] px-5 py-3 text-[color:var(--dn-muted)] hover:border-[color:var(--dn-line-strong)]">Community Atlas ↗</Link>
           </div>
         </div>
-        <div className="relative h-[350px] overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)] sm:h-[490px]">
-          <NetworkGraphBoundary><PeopleNetworkField selected={selected} onSelect={setSelected} /></NetworkGraphBoundary>
-          <div className="pointer-events-none absolute bottom-4 left-5 rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-graph-chip)] px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-[color:var(--dn-graph-muted)]">
-            100+ reported · 3 featured artists · 6 practices
+        <div className="overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)]">
+          <div className="h-[350px] sm:h-[490px]">
+            <NetworkGraphBoundary><PeopleNetworkField selected={selected} onSelect={setSelected} /></NetworkGraphBoundary>
           </div>
+          <p className="border-t border-[color:var(--dn-line)] px-4 py-3 font-mono text-[10px] uppercase tracking-wider text-[color:var(--dn-graph-muted)]">
+            100+ reported · 3 featured artists · 6 practices
+          </p>
         </div>
       </div>
     </section>
