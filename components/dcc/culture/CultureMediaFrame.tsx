@@ -10,6 +10,8 @@ type CultureMediaFrameProps = {
   aspectClassName?: string
   fallbackLabel?: string
   priority?: boolean
+  /** Responsive sizing hint for the exact presentation width; hero images differ from cards. */
+  sizes?: string
 }
 
 export function CultureMediaFrame({
@@ -19,6 +21,7 @@ export function CultureMediaFrame({
   aspectClassName = 'aspect-[4/3]',
   fallbackLabel = 'Documentation forthcoming',
   priority = false,
+  sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
 }: CultureMediaFrameProps) {
   return (
     <div
@@ -37,7 +40,7 @@ export function CultureMediaFrame({
           alt={alt}
           fill
           priority={priority}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          sizes={sizes}
           className={cn(
             'object-cover',
             cultureMediaMotionEnabled(src) &&
