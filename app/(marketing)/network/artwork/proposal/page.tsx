@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { Building2, Network } from 'lucide-react'
 import Link from 'next/link'
 import AggregateNetworkPreview from '@/components/dcc/artwork/AggregateNetworkPreview'
 import { NETWORK_ARTWORK_PROPOSAL as proposal } from '@/lib/dcc/artwork/proposal'
@@ -98,7 +99,7 @@ export default function NetworkArtworkProposalPage() {
           <div className="mt-10 grid gap-3 md:grid-cols-2">
             {[proposal.tension.left, proposal.tension.right].map((v, index) => (
               <div key={v.label} className={'min-h-[290px] rounded-lg border p-8 sm:p-10 ' + (index === 0 ? 'border-white/15 bg-white/[.035]' : 'border-[#8daf96]/50 bg-[#244336]')}>
-                <div className="flex justify-between font-mono text-xs uppercase tracking-[.18em] text-[#a8c8ae]"><span>{v.label}</span><span className="text-xl">{index === 0 ? '□' : '✳'}</span></div>
+                <div className="flex justify-between font-mono text-xs uppercase tracking-[.18em] text-[#a8c8ae]"><span>{v.label}</span><span className="text-xl">{index === 0 ? <Building2 size={20} strokeWidth={1.5} aria-hidden /> : <Network size={20} strokeWidth={1.5} aria-hidden />}</span></div>
                 <h3 className="mt-12 text-3xl font-light leading-tight tracking-[-.05em]">{v.title}</h3>
                 <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/65">{v.body}</p>
               </div>
