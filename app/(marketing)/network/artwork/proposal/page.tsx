@@ -67,9 +67,13 @@ export default function NetworkArtworkProposalPage() {
 
       <section className="mx-auto max-w-[1400px] px-5 pb-16 sm:px-10" aria-label="Three dimensional network artwork study">
         <div className="grid gap-0 overflow-hidden rounded-lg border border-[color:var(--dn-line)] bg-[var(--dn-panel)] text-[color:var(--dn-ink)] md:grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)]">
-          <div className="relative h-[420px] sm:h-[520px]">
-            <div className="pointer-events-none absolute left-5 top-5 z-10 font-mono text-xs uppercase tracking-[.18em] text-[color:var(--dn-graph-muted)]">100+ reported presence / public cofounders</div>
-            <AggregateNetworkPreview />
+          <div className="min-w-0 bg-[var(--dn-graph-bg)]">
+            <p className="border-b border-[color:var(--dn-line)] px-5 py-3 font-mono text-[10px] uppercase tracking-[.15em] text-[color:var(--dn-graph-muted)]">
+              100+ reported member presence
+            </p>
+            <div className="h-[420px] sm:h-[520px]">
+              <AggregateNetworkPreview />
+            </div>
           </div>
           <div className="flex flex-col justify-center border-t border-[color:var(--dn-line)] p-7 md:border-l md:border-t-0 sm:p-10">
             <p className="font-mono text-xs uppercase tracking-[.18em] text-[color:var(--dn-subtle)]">People create the architecture</p>
