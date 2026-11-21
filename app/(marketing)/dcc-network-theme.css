@@ -1,0 +1,134 @@
+/*
+ * Theme-safe palette for the DCC Atlas, The Network Makes Itself and proposal.
+ *
+ * The platform theme is controlled by html.light / html.dark from ThemeContext.
+ * Never override the platform's theme or store another mode preference here.
+ * All network pages, cards, dialogs and the Three.js renderer read these tokens.
+ */
+.dcc-network-theme {
+  --dn-bg: #f2f5ef;
+  --dn-ink: #172c22;
+  --dn-muted: #415a4c;
+  --dn-subtle: #5b7566;
+  --dn-line: rgb(22 66 42 / 21%);
+  --dn-line-strong: rgb(21 93 50 / 45%);
+  --dn-panel: #fffefa;
+  --dn-panel-raised: rgb(250 252 248 / 94%);
+  --dn-panel-soft: #e4ede4;
+  --dn-hover: #d9e7db;
+  --dn-accent: #21573a;
+  --dn-accent-hover: #194b32;
+  --dn-accent-ink: #f8fff9;
+  --dn-link: #165438;
+  --dn-on-graph: #213e2c;
+  --dn-graph-muted: #4c6657;
+  --dn-graph-bg: #e5eee5;
+  --dn-graph-node: #5d9075;
+  --dn-graph-founder: #1c6648;
+  --dn-graph-link: #378a60;
+  --dn-graph-selected: #bc742d;
+  --dn-graph-chip: rgb(250 253 248 / 96%);
+  --dn-graph-chip-border: rgb(24 72 44 / 23%);
+  --dn-title-accent: #366849;
+  --dn-progress-track: rgb(36 75 48 / 13%);
+  --dn-glow: rgb(74 130 87 / 12%);
+  --dn-poll-art: #337449;
+  --dn-poll-fabrication: #986236;
+  --dn-poll-film: #555fa4;
+  --dn-poll-code: #167980;
+  --dn-poll-xr: #75538f;
+  --dn-poll-exploring: #657438;
+  --dn-scrim: rgb(237 246 237 / 80%);
+  background: var(--dn-bg);
+  color: var(--dn-ink);
+  color-scheme: light;
+  accent-color: var(--dn-accent);
+}
+.dark .dcc-network-theme {
+  --dn-bg: #091313;
+  --dn-ink: #eef4ec;
+  --dn-muted: #bfd1c4;
+  --dn-subtle: #9bb6a6;
+  --dn-line: rgb(230 248 234 / 17%);
+  --dn-line-strong: rgb(183 224 188 / 50%);
+  --dn-panel: #12221e;
+  --dn-panel-raised: rgb(9 19 19 / 94%);
+  --dn-panel-soft: #1c3229;
+  --dn-hover: #253c31;
+  --dn-accent: #d3e7d6;
+  --dn-accent-hover: #eff9ed;
+  --dn-accent-ink: #153628;
+  --dn-link: #b8e1c0;
+  --dn-on-graph: #ecf5ec;
+  --dn-graph-muted: #b2cbbc;
+  --dn-graph-bg: #0b1818;
+  --dn-graph-node: #9bb5a8;
+  --dn-graph-founder: #e1edd4;
+  --dn-graph-link: #d1ecbb;
+  --dn-graph-selected: #f4dda5;
+  --dn-graph-chip: rgb(9 19 19 / 94%);
+  --dn-graph-chip-border: rgb(239 247 239 / 25%);
+  --dn-title-accent: #c3d9c7;
+  --dn-progress-track: rgb(255 255 255 / 11%);
+  --dn-glow: rgb(58 100 82 / 16%);
+  --dn-poll-art: #b4d9b9;
+  --dn-poll-fabrication: #d9c2a8;
+  --dn-poll-film: #bfcae6;
+  --dn-poll-code: #a6d5d2;
+  --dn-poll-xr: #d6bbdc;
+  --dn-poll-exploring: #d4d7ad;
+  --dn-scrim: rgb(9 19 19 / 84%);
+  color-scheme: dark;
+}
+.dcc-network-theme :is(button, a, input, select, summary):focus-visible {
+  outline: 2px solid var(--dn-link);
+  outline-offset: 4px;
+}
+.dcc-network-theme ::selection {
+  color: var(--dn-accent-ink);
+  background: var(--dn-accent);
+}
+/* The WebGL surface remains theme-aware without re-mounting the 3D graph. */
+.dcc-network-theme .dn-network-field {
+  background: var(--dn-graph-bg);
+}
+.dcc-network-theme .dn-graph-overlay {
+  background: var(--dn-graph-chip);
+  color: var(--dn-on-graph);
+  border-color: var(--dn-graph-chip-border);
+}
+@media (max-width: 639px) {
+  .dcc-network-theme .dn-network-field { touch-action: pan-y; }
+  .dcc-network-theme .dn-mobile-scroller {
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .dcc-network-theme .dn-mobile-scroller::-webkit-scrollbar { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dcc-network-theme *,
+  .dcc-network-theme *::before,
+  .dcc-network-theme *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Consistent tooltip contrast; node labels should not rely on vendor styles. */
+.dcc-network-theme .dn-node-tooltip {
+  display: inline-block;
+  max-width: 240px;
+  border: 1px solid var(--dn-graph-chip-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--dn-graph-chip);
+  color: var(--dn-on-graph);
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 6px 25px rgb(0 0 0 / 10%);
+}
+/* System keyboard and browser zoom preference are respected. */
+.dcc-network-theme .dn-graph-overlay button:focus-visible {
+  outline-color: var(--dn-link);
+}

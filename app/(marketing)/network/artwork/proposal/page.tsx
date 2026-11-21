@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { Building2, Network } from 'lucide-react'
 import Link from 'next/link'
 import AggregateNetworkPreview from '@/components/dcc/artwork/AggregateNetworkPreview'
 import { NETWORK_ARTWORK_PROPOSAL as proposal } from '@/lib/dcc/artwork/proposal'
@@ -7,20 +8,20 @@ import { NETWORK_ARTWORK_PROPOSAL as proposal } from '@/lib/dcc/artwork/proposal
 export const metadata: Metadata = {
   title: 'The Network Makes Itself — Project Proposal | DCC Miami',
   description: 'A collectively authored web artwork that materializes an evolving, network-native cultural institution as sculpture.',
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
   openGraph: {
     title: 'The Network Makes Itself — A cultural institution built from code and relationships',
-    description: 'A full project proposal, interactive study, and proposed physical edition.',
+    description: 'Project research, a real cofounder portrait, live member-presence visualization and proposed material edition.',
     type: 'website',
   },
 }
 
-const kicker = 'font-mono text-[11px] uppercase tracking-[.22em] text-[#638b70]'
+const kicker = 'font-mono text-[11px] uppercase tracking-[.22em] text-[color:var(--dn-subtle)]'
 const heading = 'text-[clamp(2.3rem,5vw,5.2rem)] font-light leading-[1.04] tracking-[-.06em]'
 
 export default function NetworkArtworkProposalPage() {
   return (
-    <main className="min-h-screen bg-[#ecede7] text-[#152a23]">
+    <main className="dcc-network-theme min-h-screen bg-[var(--dn-bg)] text-[color:var(--dn-ink)]">
       <header className="relative overflow-hidden bg-[#0b1717] text-[#f0f3eb]">
         <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(ellipse at 78% 42%, rgba(99,164,132,.18), transparent 45%)' }} />
         <div className="relative mx-auto max-w-[1400px] px-5 sm:px-10">
@@ -48,40 +49,46 @@ export default function NetworkArtworkProposalPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1400px] px-5 py-10 sm:px-10">
-        <div className="overflow-hidden rounded-lg bg-[#d4ddd3]">
-          <Image src="/images/dcc/the-network-makes-itself-study.svg" width={1600} height={900} unoptimized priority className="h-auto w-full" alt="Speculative diagram showing a fictional participant-editable network on a dark digital field and its proposed translation into a translucent sculptural network."/>
-        </div>
-        <div className="mt-3 flex flex-wrap justify-between gap-2 font-mono text-[11px] uppercase tracking-[.12em] text-[#577462]">
-          <span>FIG. 01 / THE LIVING NETWORK ↔ MATERIAL EDITION</span>
-          <span>Concept sketch — no finished artwork implied</span>
-        </div>
-      </div>
+      <figure className="mx-auto grid max-w-[1400px] items-center gap-6 px-5 py-9 sm:grid-cols-[180px_minmax(0,1fr)] sm:px-10 sm:py-12">
+        <Image
+          src="https://res.cloudinary.com/dck5rzi4h/image/upload/v1777520267/dccmiami/portraits/Fabiola-and-Moises_khyrpu.jpg"
+          width={1920} height={1920} unoptimized
+          alt="Portrait of the two public DCC cofounders, Fabiola Larios and Moises Sanabria"
+          className="aspect-[4/3] w-full rounded-lg object-cover sm:aspect-square"
+        />
+        <figcaption className="max-w-2xl">
+          <p className="font-mono text-[11px] uppercase tracking-[.17em] text-[color:var(--dn-subtle)]">The people behind the infrastructure</p>
+          <p className="mt-3 text-2xl font-light tracking-[-.04em] sm:text-3xl">Moises Sanabria & Fabiola Larios</p>
+          <p className="mt-3 text-sm leading-relaxed text-[color:var(--dn-muted)]">
+            Two public cofounders, one documented relationship. The network below uses a reported membership minimum, while other identities and social ties remain private.
+          </p>
+        </figcaption>
+      </figure>
 
       <section className="mx-auto max-w-[1400px] px-5 pb-16 sm:px-10" aria-label="Three dimensional network artwork study">
-        <div className="grid gap-0 overflow-hidden rounded-lg bg-[#0b1717] text-[#e8f2e9] md:grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)]">
+        <div className="grid gap-0 overflow-hidden rounded-lg border border-[color:var(--dn-line)] bg-[var(--dn-panel)] text-[color:var(--dn-ink)] md:grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)]">
           <div className="relative h-[420px] sm:h-[520px]">
-            <div className="pointer-events-none absolute left-5 top-5 z-10 font-mono text-xs uppercase tracking-[.18em] text-[#b5d9ba]">100+ reported presence / public cofounders</div>
+            <div className="pointer-events-none absolute left-5 top-5 z-10 font-mono text-xs uppercase tracking-[.18em] text-[color:var(--dn-graph-muted)]">100+ reported presence / public cofounders</div>
             <AggregateNetworkPreview />
           </div>
-          <div className="flex flex-col justify-center border-t border-white/10 p-7 md:border-l md:border-t-0 sm:p-10">
-            <p className="font-mono text-xs uppercase tracking-[.18em] text-[#9cbfa8]">People create the architecture</p>
+          <div className="flex flex-col justify-center border-t border-[color:var(--dn-line)] p-7 md:border-l md:border-t-0 sm:p-10">
+            <p className="font-mono text-xs uppercase tracking-[.18em] text-[color:var(--dn-subtle)]">People create the architecture</p>
             <h2 className="mt-5 text-3xl font-light leading-tight tracking-[-.05em] sm:text-4xl">A structure that can be rewritten.</h2>
-            <p className="mt-5 text-sm leading-relaxed text-white/65">The Commons reports more than 100 members. Two marks identify DCC’s public cofounders, who share a documented founding connection; the remaining 99 marks are anonymous minimum-count positions. Six actual poll totals disclose collective interests, not individual choices.</p>
-            <p className="mt-4 text-xs leading-relaxed text-white/45">The precise current roster and individual votes are not available. No other relationships are inferred.</p>
-            <Link href="/network/artwork" className="mt-8 w-fit rounded-full bg-[#cfe3ce] px-5 py-3 text-sm font-semibold text-[#173628] hover:bg-white">Explore the living artwork ↗</Link>
+            <p className="mt-5 text-sm leading-relaxed text-[color:var(--dn-muted)]">The Commons reports more than 100 members. Two marks identify DCC’s public cofounders, who share a documented founding connection; the remaining 99 marks are anonymous minimum-count positions. Six actual poll totals disclose collective interests, not individual choices.</p>
+            <p className="mt-4 text-xs leading-relaxed text-[color:var(--dn-subtle)]">The precise current roster and individual votes are not available. No other relationships are inferred.</p>
+            <Link href="/network/artwork" className="mt-8 w-fit rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] hover:bg-[var(--dn-accent-hover)]">Explore the living artwork ↗</Link>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1400px] gap-8 border-t border-[#b8c9bc] px-5 py-16 sm:px-10 lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-20 lg:py-24">
+      <section className="mx-auto grid max-w-[1400px] gap-8 border-t border-[color:var(--dn-line)] px-5 py-16 sm:px-10 lg:grid-cols-[230px_minmax(0,1fr)] lg:gap-20 lg:py-24">
         <p className={kicker}>01 / THE PROPOSITION</p>
         <div>
           <h2 className={heading}>An institution need not begin with a building.</h2>
-          <div className="mt-8 grid gap-6 text-[17px] leading-relaxed text-[#4d6556] md:grid-cols-2">
+          <div className="mt-8 grid gap-6 text-[17px] leading-relaxed text-[color:var(--dn-muted)] md:grid-cols-2">
             {proposal.introduction.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           </div>
-          <blockquote className="mt-12 border-l-2 border-[#749d81] pl-6 text-[clamp(1.5rem,3vw,3rem)] font-light leading-tight tracking-[-.05em]">{proposal.projectQuestion}</blockquote>
+          <blockquote className="mt-12 border-l-2 border-[color:var(--dn-line)] pl-6 text-[clamp(1.5rem,3vw,3rem)] font-light leading-tight tracking-[-.05em]">{proposal.projectQuestion}</blockquote>
         </div>
       </section>
 
@@ -92,7 +99,7 @@ export default function NetworkArtworkProposalPage() {
           <div className="mt-10 grid gap-3 md:grid-cols-2">
             {[proposal.tension.left, proposal.tension.right].map((v, index) => (
               <div key={v.label} className={'min-h-[290px] rounded-lg border p-8 sm:p-10 ' + (index === 0 ? 'border-white/15 bg-white/[.035]' : 'border-[#8daf96]/50 bg-[#244336]')}>
-                <div className="flex justify-between font-mono text-xs uppercase tracking-[.18em] text-[#a8c8ae]"><span>{v.label}</span><span className="text-xl">{index === 0 ? '□' : '✳'}</span></div>
+                <div className="flex justify-between font-mono text-xs uppercase tracking-[.18em] text-[#a8c8ae]"><span>{v.label}</span><span className="text-xl">{index === 0 ? <Building2 size={20} strokeWidth={1.5} aria-hidden /> : <Network size={20} strokeWidth={1.5} aria-hidden />}</span></div>
                 <h3 className="mt-12 text-3xl font-light leading-tight tracking-[-.05em]">{v.title}</h3>
                 <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/65">{v.body}</p>
               </div>
@@ -105,38 +112,38 @@ export default function NetworkArtworkProposalPage() {
       <section className="mx-auto max-w-[1400px] px-5 py-16 sm:px-10 sm:py-24">
         <p className={kicker}>03 / PARTICIPATORY SCORE</p>
         <h2 className={'mt-7 max-w-5xl ' + heading}>The nodes are not subjects.<br/>They are coauthors.</h2>
-        <div className="mt-12 grid gap-px overflow-hidden rounded-lg border border-[#c3cec4] bg-[#c3cec4] md:grid-cols-2">
+        <div className="mt-12 grid gap-px overflow-hidden rounded-lg border border-[color:var(--dn-line)] bg-[var(--dn-panel-soft)] md:grid-cols-2">
           {proposal.phases.map((v) => (
-            <div key={v.number} className="min-h-[315px] bg-[#f5f5ee] p-8 sm:p-10">
-              <div className="flex justify-between font-mono text-xs tracking-[.16em] text-[#5a8065]"><span>{v.number} / 04</span><span>{v.verb}</span></div>
+            <div key={v.number} className="min-h-[315px] bg-[var(--dn-panel)] p-8 sm:p-10">
+              <div className="flex justify-between font-mono text-xs tracking-[.16em] text-[color:var(--dn-muted)]"><span>{v.number} / 04</span><span>{v.verb}</span></div>
               <h3 className="mt-14 text-3xl font-light tracking-[-.05em] sm:text-4xl">{v.title}</h3>
-              <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-[#536b5b]">{v.body}</p>
+              <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-[color:var(--dn-muted)]">{v.body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="bg-[#dce6da] py-16 sm:py-24">
+      <section className="bg-[var(--dn-panel-soft)] py-16 sm:py-24">
         <div className="mx-auto grid max-w-[1400px] gap-12 px-5 sm:px-10 lg:grid-cols-[minmax(0,1fr)_410px] lg:gap-20">
           <div>
             <p className={kicker}>04 / THE CURRENT CODE</p>
             <h2 className={'mt-7 ' + heading}>The interface is the artwork.</h2>
-            <p className="mt-8 max-w-3xl text-[17px] leading-relaxed text-[#496557]">{proposal.proposition}</p>
+            <p className="mt-8 max-w-3xl text-[17px] leading-relaxed text-[color:var(--dn-muted)]">{proposal.proposition}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/network/artwork" className="rounded-full bg-[#163829] px-6 py-4 text-sm font-semibold text-white hover:bg-[#2b5d42]">TRY THE INTERACTIVE STUDY ↗</Link>
               <Link href="/network/community" className="rounded-full border border-[#7f9e83] px-6 py-4 text-sm font-medium text-[#163829] hover:bg-[#c2d7c5]">EXISTING DCC ATLAS ↗</Link>
             </div>
-            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-[#617868]">The public network renders a minimum-count membership portrait, with two identified cofounders and their documented founding connection. Poll results are factual aggregate selections, not mapped to private people. Member-authored profiles, additional approved edges, and physical editions remain proposed.</p>
+            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-[color:var(--dn-muted)]">The public network renders a minimum-count membership portrait, with two identified cofounders and their documented founding connection. Poll results are factual aggregate selections, not mapped to private people. Member-authored profiles, additional approved edges, and physical editions remain proposed.</p>
           </div>
-          <aside className="rounded-lg border border-[#b8c8bb] bg-[#f3f5ec] p-8">
+          <aside className="rounded-lg border border-[color:var(--dn-line)] bg-[var(--dn-panel)] p-8">
             <h3 className="text-2xl font-light tracking-[-.04em]">Prototype vs. proposed work</h3>
-            <p className="mb-4 mt-8 font-mono text-[11px] uppercase tracking-[.17em] text-[#5c8665]">Already present in code</p>
-            <ul className="space-y-3 text-sm leading-relaxed text-[#516957]">
-              {proposal.status.implemented.map((text) => <li key={text} className="flex gap-3"><span className="text-[#417e55]">✓</span><span>{text}</span></li>)}
+            <p className="mb-4 mt-8 font-mono text-[11px] uppercase tracking-[.17em] text-[color:var(--dn-muted)]">Already present in code</p>
+            <ul className="space-y-3 text-sm leading-relaxed text-[color:var(--dn-muted)]">
+              {proposal.status.implemented.map((text) => <li key={text} className="flex gap-3"><span className="text-[color:var(--dn-muted)]">✓</span><span>{text}</span></li>)}
             </ul>
-            <p className="mb-4 mt-8 border-t border-[#b7c7b6] pt-6 font-mono text-[11px] uppercase tracking-[.17em] text-[#5c8665]">Still to be made</p>
-            <ul className="space-y-3 text-sm leading-relaxed text-[#516957]">
-              {proposal.status.proposed.map((text) => <li key={text} className="flex gap-3"><span className="text-[#978d5c]">○</span><span>{text}</span></li>)}
+            <p className="mb-4 mt-8 border-t border-[color:var(--dn-line)] pt-6 font-mono text-[11px] uppercase tracking-[.17em] text-[color:var(--dn-muted)]">Still to be made</p>
+            <ul className="space-y-3 text-sm leading-relaxed text-[color:var(--dn-muted)]">
+              {proposal.status.proposed.map((text) => <li key={text} className="flex gap-3"><span className="text-[color:var(--dn-muted)]">○</span><span>{text}</span></li>)}
             </ul>
           </aside>
         </div>
@@ -146,24 +153,24 @@ export default function NetworkArtworkProposalPage() {
         <div>
           <p className={kicker}>05 / MICROGRANT / $1,500</p>
           <h2 className={'mt-7 ' + heading}>{proposal.grant.heading}</h2>
-          <p className="mt-8 text-[17px] leading-relaxed text-[#4b6655]">{proposal.grant.summary}</p>
-          <p className="mt-9 font-mono text-xs uppercase tracking-[.17em] text-[#5c8665]">Planned deliverables</p>
-          <ol className="mt-5 space-y-3 text-[15px] leading-relaxed text-[#435e4d]">
-            {proposal.grant.outcomes.map((text, i) => <li key={text} className="flex gap-4"><span className="font-mono text-xs text-[#789e80]">{String(i + 1).padStart(2,'0')}</span><span>{text}</span></li>)}
+          <p className="mt-8 text-[17px] leading-relaxed text-[color:var(--dn-muted)]">{proposal.grant.summary}</p>
+          <p className="mt-9 font-mono text-xs uppercase tracking-[.17em] text-[color:var(--dn-muted)]">Planned deliverables</p>
+          <ol className="mt-5 space-y-3 text-[15px] leading-relaxed text-[color:var(--dn-muted)]">
+            {proposal.grant.outcomes.map((text, i) => <li key={text} className="flex gap-4"><span className="font-mono text-xs text-[color:var(--dn-muted)]">{String(i + 1).padStart(2,'0')}</span><span>{text}</span></li>)}
           </ol>
         </div>
-        <aside className="h-fit rounded-lg border border-[#b8c9b9] bg-[#f4f5ed] p-8">
-          <p className="font-mono text-xs uppercase tracking-[.15em] text-[#5f8064]">Proposed award allocation</p>
+        <aside className="h-fit rounded-lg border border-[color:var(--dn-line)] bg-[var(--dn-panel)] p-8">
+          <p className="font-mono text-xs uppercase tracking-[.15em] text-[color:var(--dn-muted)]">Proposed award allocation</p>
           <p className="mt-4 text-6xl font-light tracking-[-.065em]">{proposal.grant.award}</p>
-          <div className="mt-8 border-t border-[#bfcebe]">
+          <div className="mt-8 border-t border-[color:var(--dn-line)]">
             {proposal.grant.budget.map((v) => (
-              <div key={v.name} className="grid grid-cols-[minmax(0,1fr)_70px] gap-3 border-b border-[#cdd6cb] py-5">
-                <div><p className="text-sm font-semibold">{v.name}</p><p className="mt-1 text-xs leading-relaxed text-[#67806c]">{v.detail}</p></div>
+              <div key={v.name} className="grid grid-cols-[minmax(0,1fr)_70px] gap-3 border-b border-[color:var(--dn-line)] py-5">
+                <div><p className="text-sm font-semibold">{v.name}</p><p className="mt-1 text-xs leading-relaxed text-[color:var(--dn-muted)]">{v.detail}</p></div>
                 <p className="text-right font-mono text-sm">{'$' + v.amount.toLocaleString('en-US')}</p>
               </div>
             ))}
           </div>
-          <p className="mt-5 text-xs text-[#6b7f6e]">Scope, collaborators and materials remain subject to grant support and consent.</p>
+          <p className="mt-5 text-xs text-[color:var(--dn-muted)]">Scope, collaborators and materials remain subject to grant support and consent.</p>
         </aside>
       </section>
 
@@ -187,14 +194,14 @@ export default function NetworkArtworkProposalPage() {
         <div>
           <p className={kicker}>ARTIST / RESEARCH / CODE</p>
           <h2 className="mt-4 text-3xl font-light tracking-[-.05em]">{proposal.attribution.lead}</h2>
-          <p className="mt-2 max-w-xl text-sm text-[#586e5d]">{proposal.attribution.studio} / {proposal.attribution.research}</p>
+          <p className="mt-2 max-w-xl text-sm text-[color:var(--dn-muted)]">{proposal.attribution.studio} / {proposal.attribution.research}</p>
           <div className="mt-7 flex flex-wrap gap-5 text-sm underline underline-offset-4">
             <a href="https://www.moises.tech" target="_blank" rel="noopener noreferrer">Artist portfolio ↗</a>
             <a href="https://dcc.miami" target="_blank" rel="noopener noreferrer">DCC Miami ↗</a>
             <a href="https://github.com/moisestech/infra24/pull/54" target="_blank" rel="noopener noreferrer">GitHub proposal code ↗</a>
           </div>
         </div>
-        <p className="max-w-xs text-xs leading-relaxed text-[#647765]">{proposal.attribution.note}</p>
+        <p className="max-w-xs text-xs leading-relaxed text-[color:var(--dn-muted)]">{proposal.attribution.note}</p>
       </footer>
     </main>
   )
