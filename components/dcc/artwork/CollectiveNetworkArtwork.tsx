@@ -1,17 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
-import { INTERESTS, isInterestId, type InterestId } from '@/lib/dcc/community/atlas'
+import { useMemo, useState } from 'react'
+import { INTERESTS, type InterestId } from '@/lib/dcc/community/atlas'
+import { ARTWORK_DEFAULT, ARTWORK_START as START, readArtworkUrl, writeArtworkUrl, shareUrl, type ArtworkState, type Contribution, type Relation } from '@/lib/dcc/network/url-state'
+import { useUrlState } from '@/lib/dcc/network/use-url-state'
 
-type Contribution = 'show' | 'need' | 'offer'
-type Relation = 'none' | 'proposed' | 'mutual'
-type ArtworkState = { interests: InterestId[]; contribution: Contribution; relation: Relation }
 type Point = { x: number; y: number }
 type Participant = Point & { id: string; label: string; practice: string; interests: InterestId[]; guest?: boolean }
 type GraphEdge = { from: string; to: string; kind: 'declared' | 'proposal' | 'mutual'; color: string; guest?: boolean }
 
-const START: ArtworkState = { interests: ['making', 'code-ai'], contribution: 'show', relation: 'none' }
 const HUBS: Record<InterestId, Point> = {
   making: { x: 276, y: 160 },
   'image-sound': { x: 128, y: 420 },
@@ -86,31 +84,11 @@ function fixtureSvg(state: ArtworkState) {
   ].join('\n')
 }
 
-function validContribution(value: string | null): value is Contribution {
-  return value === 'show' || value === 'need' || value === 'offer'
-}
-function validRelation(value: string | null): value is Relation {
-  return value === 'none' || value === 'proposed' || value === 'mutual'
-}
-
 export function CollectiveNetworkArtwork() {
-  const [state, setState] = useState<ArtworkState>(START)
-  const [frozen, setFrozen] = useState<ArtworkState | null>(null)
-  const [view, setView] = useState<'living' | 'edition'>('living')
-  const [selected, setSelected] = useState('guest')
+  const [{ state, frozen, view, selected }, updateLocation] = useUrlState(ARTWORK_DEFAULT, readArtworkUrl, writeArtworkUrl)
+  const setSelected = (selected: string) => updateLocation({ selected })
+  const setView = (view: 'living' | 'edition') => updateLocation({ view })
   const [notice, setNotice] = useState('')
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const requested = params.get('i')
-    const interests = requested === null ? START.interests : requested.split(',').filter(isInterestId)
-    const contribution = params.get('s')
-    const relation = params.get('r')
-    setState({
-      interests: Array.from(new Set(interests)),
-      contribution: validContribution(contribution) ? contribution : START.contribution,
-      relation: validRelation(relation) ? relation : START.relation,
-    })
-  }, [])
   const visible = view === 'edition' && frozen ? frozen : state
   const scene = useMemo(() => makeScene(visible), [visible])
   const active = scene.participants.find((p) => p.id === selected) ?? scene.participants[scene.participants.length - 1]
@@ -121,17 +99,15 @@ export function CollectiveNetworkArtwork() {
   }
 
   function change(next: ArtworkState) {
-    setState(next)
-    setView('living')
+    updateLocation({ state: next, view: 'living' })
     setNotice('Composition changed. No member data was stored.')
   }
   function toggleInterest(id: InterestId) {
     change({ ...state, interests: state.interests.includes(id) ? state.interests.filter((item) => item !== id) : [...state.interests, id] })
   }
   function freeze() {
-    setFrozen({ ...state, interests: [...state.interests] })
-    setView('edition')
-    setNotice('Edition 001 frozen in this browser tab. It is not published or saved to DCC.')
+    updateLocation({ frozen: { ...state, interests: [...state.interests] }, view: 'edition' })
+    setNotice('Edition 001 frozen. Copy the study URL to reopen it; it is not published or saved to DCC.')
   }
   function download() {
     if (!frozen) return
@@ -145,16 +121,12 @@ export function CollectiveNetworkArtwork() {
     setNotice('SVG study downloaded. It requires fabrication review before cutting or printing.')
   }
   async function copyLink() {
-    const url = new URL(window.location.href)
-    url.search = ''
-    url.searchParams.set('i', state.interests.join(','))
-    url.searchParams.set('s', state.contribution)
-    url.searchParams.set('r', state.relation)
+    const url = shareUrl(window.location.href, writeArtworkUrl({ state, frozen, view, selected }))
     try {
-      await navigator.clipboard.writeText(url.toString())
-      setNotice('Study link copied. It reproduces the fictional settings, not private member information.')
+      await navigator.clipboard.writeText(url)
+      setNotice('Study link copied. It restores the fictional settings, selected node and frozen edition.')
     } catch {
-      setNotice('Copy this study URL: ' + url.toString())
+      setNotice('Copy this study URL: ' + url)
     }
   }
 
@@ -263,7 +235,7 @@ export function CollectiveNetworkArtwork() {
               <p className="mb-2 text-[11px] uppercase tracking-wider text-[#536661]">Selected position</p>
               <p className="text-xl font-medium tracking-tight">{active.label}</p>
               <p className="mt-1 text-sm text-[#536661]">{active.practice}</p>
-              <button type="button" onClick={() => { change(START); setFrozen(null); setSelected('guest') }} className="mt-5 text-xs underline underline-offset-4 hover:text-[#478064]">Reset fictional study</button>
+              <button type="button" onClick={() => { updateLocation({ ...ARTWORK_DEFAULT, state: START }); setNotice('Fictional study reset.') }} className="mt-5 text-xs underline underline-offset-4 hover:text-[#478064]">Reset fictional study</button>
             </div>
           </aside>
         </div>
