@@ -31,7 +31,7 @@ The existing approved profile-data contract only exposes individually approved a
 
 ## The three next visuals worth producing
 
-**Priority 1 — actual artwork preview still / OG card.** Capture the *deployed real 3D field*, preferably at 1200×630 and 1080×1350, with the two public cofounders visible and no fictitious person-to-person links. Use a UI capture rather than fabricated render. This is for link previews and project pitches. Review small-screen legibility before promoting it.
+**Priority 1 — actual artwork preview still / OG card.** Capture the *deployed real 3D field*, preferably at 1200×630 and 1080×1350, with the three public artists and the six practice nodes visible, without fictional person-to-person links. Use a UI capture rather than fabricated render. This is for link previews and project pitches. Review small-screen legibility before promoting it.
 
 **Priority 2 — actual DCC action documentation.** One or two consent-cleared photographs of a fabrication exchange, workshop, or public meetup. This makes the social infrastructure tangible, but should be used sparingly in the Atlas/Passport context. Record photographer credit and reuse permissions. Don't imply people shown opted into public profiles.
 
