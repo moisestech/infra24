@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import AggregateNetworkField from '@/components/dcc/artwork/AggregateNetworkField'
+import AggregateNetworkPreview from '@/components/dcc/artwork/AggregateNetworkPreview'
 import { NETWORK_ARTWORK_PROPOSAL as proposal } from '@/lib/dcc/artwork/proposal'
 
 export const metadata: Metadata = {
@@ -62,7 +62,7 @@ export default function NetworkArtworkProposalPage() {
         <div className="grid gap-0 overflow-hidden rounded-lg bg-[#0b1717] text-[#e8f2e9] md:grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)]">
           <div className="relative h-[420px] sm:h-[520px]">
             <div className="pointer-events-none absolute left-5 top-5 z-10 font-mono text-xs uppercase tracking-[.18em] text-[#b5d9ba]">Reviewed aggregate / no identities</div>
-            <AggregateNetworkField lens="practices" selected="commons" onSelect={() => {}} local={null} />
+            <AggregateNetworkPreview />
           </div>
           <div className="flex flex-col justify-center border-t border-white/10 p-7 md:border-l md:border-t-0 sm:p-10">
             <p className="font-mono text-xs uppercase tracking-[.18em] text-[#9cbfa8]">The interface becomes the artwork</p>
