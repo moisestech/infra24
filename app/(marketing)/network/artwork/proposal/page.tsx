@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import ArtworkForceField from '@/components/dcc/artwork/ArtworkForceField'
+import AggregateNetworkPreview from '@/components/dcc/artwork/AggregateNetworkPreview'
 import { NETWORK_ARTWORK_PROPOSAL as proposal } from '@/lib/dcc/artwork/proposal'
 
 export const metadata: Metadata = {
@@ -61,15 +61,15 @@ export default function NetworkArtworkProposalPage() {
       <section className="mx-auto max-w-[1400px] px-5 pb-16 sm:px-10" aria-label="Three dimensional network artwork study">
         <div className="grid gap-0 overflow-hidden rounded-lg bg-[#0b1717] text-[#e8f2e9] md:grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)]">
           <div className="relative h-[420px] sm:h-[520px]">
-            <div className="pointer-events-none absolute left-5 top-5 z-10 font-mono text-xs uppercase tracking-[.18em] text-[#b5d9ba]">Live Three.js force study / fictional positions</div>
-            <ArtworkForceField compact />
+            <div className="pointer-events-none absolute left-5 top-5 z-10 font-mono text-xs uppercase tracking-[.18em] text-[#b5d9ba]">Reviewed aggregate / no identities</div>
+            <AggregateNetworkPreview />
           </div>
           <div className="flex flex-col justify-center border-t border-white/10 p-7 md:border-l md:border-t-0 sm:p-10">
             <p className="font-mono text-xs uppercase tracking-[.18em] text-[#9cbfa8]">The interface becomes the artwork</p>
             <h2 className="mt-5 text-3xl font-light leading-tight tracking-[-.05em] sm:text-4xl">A structure that can be rewritten.</h2>
-            <p className="mt-5 text-sm leading-relaxed text-white/65">Orbit this simulated force-directed network. Interest hubs, activity types, and fictional coauthors form its present architecture. In the interactive study, changing a guest node reshapes those connections.</p>
-            <p className="mt-4 text-xs leading-relaxed text-white/45">No Airtable names, private signals, or unapproved relationships are used in this visualization.</p>
-            <Link href="/network/artwork" className="mt-8 w-fit rounded-full bg-[#cfe3ce] px-5 py-3 text-sm font-semibold text-[#173628] hover:bg-white">Edit a node in the artwork ↗</Link>
+            <p className="mt-5 text-sm leading-relaxed text-white/65">Explore an anonymous portrait built from existing DCC practice annotations. The artwork also reveals categories of activity, while keeping individual identities and relationships out of view.</p>
+            <p className="mt-4 text-xs leading-relaxed text-white/45">Broad bands, not exact personal responses. This is an incomplete internal snapshot, not the community poll.</p>
+            <Link href="/network/artwork" className="mt-8 w-fit rounded-full bg-[#cfe3ce] px-5 py-3 text-sm font-semibold text-[#173628] hover:bg-white">Explore the living artwork ↗</Link>
           </div>
         </div>
       </section>

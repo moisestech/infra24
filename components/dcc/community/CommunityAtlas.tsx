@@ -116,7 +116,7 @@ export function CommunityAtlas() {
     </header>
 
     <div className="mb-7 flex flex-wrap items-center justify-between gap-5 rounded-xl border border-[#9bbea4]/40 bg-[#17302b] px-5 py-5 text-[#e7f2e7]">
-      <div className="max-w-2xl"><p className="text-[10px] uppercase tracking-[.2em] text-[#a6d2b2]">A related artwork / collective network authorship</p><h2 className="mt-2 text-xl font-light tracking-[-.04em]">The Network Makes Itself</h2><p className="mt-2 text-sm leading-relaxed text-[#b8cfc1]">The Community Atlas is for discovery; the separate force-directed artwork explores what it means for people to author an institution’s living architecture. The artwork uses fictional nodes until specific public permissions exist.</p></div>
+      <div className="max-w-2xl"><p className="text-[10px] uppercase tracking-[.2em] text-[#a6d2b2]">A related artwork / collective network authorship</p><h2 className="mt-2 text-xl font-light tracking-[-.04em]">The Network Makes Itself</h2><p className="mt-2 text-sm leading-relaxed text-[#b8cfc1]">The Atlas is for opt-in discovery. The separate artwork shows anonymous, broadly grouped patterns from reviewed DCC data, with no private profiles or implied person-to-person connections.</p></div>
       <div className="flex flex-wrap gap-3"><Link href="/network/artwork" className="rounded-full bg-[#d3e7d6] px-4 py-3 text-sm font-medium text-[#173127] hover:bg-white">Explore artwork ↗</Link><Link href="/network/artwork/proposal" className="rounded-full border border-[#c4d6c8]/50 px-4 py-3 text-sm text-[#e5f2e5] hover:bg-white/10">Project proposal ↗</Link></div>
     </div>
     <div className={styles.workspace}>

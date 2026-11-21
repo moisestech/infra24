@@ -93,8 +93,8 @@ export const NETWORK_ARTWORK_PROPOSAL = {
   status: {
     implemented: [
       'Existing DCC Community Atlas and member-consent design research',
-      'Isolated fictional interactive artwork study with node editing',
-      'A deterministic SVG study export and shareable fictional state',
+      'Privacy-reviewed category artwork based on DCC skill annotations and network signal types',
+      'A shareable local node experiment and reproducible SVG category study',
     ],
     proposed: [
       'Real participant authorship and verified mutual-edge approval',
