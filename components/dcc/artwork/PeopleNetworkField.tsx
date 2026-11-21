@@ -1,12 +1,11 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import * as THREE from 'three'
 import type { ForceGraph3DInstance, LinkObject, NodeObject } from '3d-force-graph'
 import { useTheme } from '@/contexts/ThemeContext'
 import { presenceSpherePosition } from '@/lib/dcc/artwork/member-presence'
 import { makePeoplePracticeGraph } from '@/lib/dcc/artwork/people-practice-graph'
-import { DCC_DISCOVERY_POLL } from '@/lib/dcc/artwork/discovery-poll'
+import { NetworkGraphFallback } from './NetworkGraphBoundary'
 
 type FieldNode = NodeObject & {
   id: string
@@ -22,7 +21,6 @@ export type PeopleNetworkFieldProps = {
   selected: string | null
   onSelect: (id: string | null) => void
 }
-
 const POSITIONS: Record<string, { x: number; y: number; z: number }> = {
   'moises-sanabria': { x: -42, y: 0, z: 18 },
   'fabiola-larios': { x: 42, y: 0, z: 18 },
@@ -30,10 +28,10 @@ const POSITIONS: Record<string, { x: number; y: number; z: number }> = {
 }
 
 function buildGraph() {
-  const content = makePeoplePracticeGraph()
-  const anonymousCount = content.marks.filter((mark) => mark.kind === 'anonymous-presence').length
+  const data = makePeoplePracticeGraph()
+  const anonymousCount = data.marks.filter((mark) => mark.kind === 'anonymous-presence').length
   let anonymousIndex = 0
-  const nodes: FieldNode[] = content.marks.map((mark) => {
+  const nodes: FieldNode[] = data.marks.map((mark) => {
     const position = mark.kind === 'anonymous-presence'
       ? presenceSpherePosition(anonymousIndex++, anonymousCount, 132)
       : POSITIONS[mark.id] ?? { x: 0, y: 0, z: 0 }
@@ -42,9 +40,9 @@ function buildGraph() {
       ...position, fx: position.x, fy: position.y, fz: position.z,
     }
   })
-  content.practices.forEach((practice, index) => {
-    const angle = -Math.PI / 2 + index * Math.PI * 2 / content.practices.length
-    const position = { x: Math.cos(angle) * 215, y: Math.sin(angle) * 180, z: -9 }
+  data.practices.forEach((practice, index) => {
+    const theta = -Math.PI / 2 + index * Math.PI * 2 / data.practices.length
+    const position = { x: Math.cos(theta) * 215, y: Math.sin(theta) * 180, z: -9 }
     nodes.push({
       id: practice.id, label: practice.short, kind: 'practice',
       choiceId: practice.choiceId, count: practice.count,
@@ -52,248 +50,215 @@ function buildGraph() {
     })
   })
   const links: FieldEdge[] = [
-    ...content.connections.map((edge) => ({ source: edge.from, target: edge.to, kind: edge.kind })),
-    ...content.practiceEdges.map((edge) => ({ source: edge.source, target: edge.target, kind: edge.kind })),
+    ...data.connections.map((edge) => ({ source: edge.from, target: edge.to, kind: edge.kind })),
+    ...data.practiceEdges.map((edge) => ({ source: edge.source, target: edge.target, kind: edge.kind })),
   ]
   return { nodes, links }
 }
-
-function nodeId(endpoint: string | FieldNode | undefined): string {
-  return typeof endpoint === 'string' ? endpoint : endpoint?.id ?? ''
+function endpointId(value: string | number | FieldNode | undefined): string {
+  if (typeof value === 'string' || typeof value === 'number') return String(value)
+  return value?.id ?? ''
 }
 
-/** Sprite text is scene geometry, not a DOM card or emoji. */
-function labelSprite(label: string, count: number | null, ink: string, surface: string): THREE.Sprite {
-  const canvas = document.createElement('canvas')
-  canvas.width = 580
-  canvas.height = 155
-  const ctx = canvas.getContext('2d')
-  if (ctx) {
-    ctx.fillStyle = surface
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = ink
-    ctx.font = '600 57px Arial, sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText(label, canvas.width / 2, count === null ? 97 : 67, 552)
-    if (count !== null) {
-      ctx.font = '37px Arial, sans-serif'
-      ctx.fillText(count + ' selections', canvas.width / 2, 125)
-    }
-  }
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: new THREE.CanvasTexture(canvas),
-    transparent: true,
-    depthWrite: false,
-  }))
-  sprite.scale.set(count === null ? 92 : 153, count === null ? 24 : 40, 1)
-  sprite.position.y = count === null ? 15 : 33
-  return sprite
-}
-
-
-/** Outlined category rings are distinct from solid person dots. */
-function nodeDecoration(node: FieldNode, element: HTMLElement): THREE.Group {
-  const group = new THREE.Group()
-  if (node.kind === 'anonymous-presence') return group
-  const css = getComputedStyle(element)
-  const ink = css.getPropertyValue('--dn-on-graph').trim() || '#eef4ec'
-  const background = css.getPropertyValue('--dn-graph-chip').trim() || '#091313'
-  if (node.kind === 'practice') {
-    const color = css.getPropertyValue('--dn-poll-' + (node.choiceId ?? 'art')).trim() || '#8fae95'
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(12, 1.45, 9, 48),
-      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthWrite: false }),
-    )
-    group.add(ring)
-  }
-  group.add(labelSprite(
-    node.kind === 'practice' ? node.label : node.label.split(' ')[0],
-    node.kind === 'practice' ? node.count ?? 0 : null,
-    ink, background,
-  ))
-  return group
-}
-
+/**
+ * Stable, low-risk WebGL view. The previous implementation added a custom
+ * THREE.CanvasTexture/TorusGeometry to every category/artist. Those custom
+ * objects execute inside WebGL's asynchronous render loop, outside React's
+ * error handling. Keep the real people/practice model, but use built-in
+ * 3d-force-graph spheres and HTML category labels until browser QA confirms
+ * the custom geometry can be reintroduced safely.
+ *
+ * On touch devices, show the functional lightweight view by default and
+ * allow opt-in WebGL. A phone must never need WebGL to access the network.
+ */
 export default function PeopleNetworkField({ selected, onSelect }: PeopleNetworkFieldProps) {
-  const elRef = useRef<HTMLDivElement>(null)
+  const elementRef = useRef<HTMLDivElement>(null)
   const graphRef = useRef<ForceGraph3DInstance<FieldNode, FieldEdge> | null>(null)
-  const labelThemeRef = useRef<string | null>(null)
-  const selectRef = useRef(onSelect)
-  selectRef.current = onSelect
+  const onSelectRef = useRef(onSelect)
+  onSelectRef.current = onSelect
+  const { resolvedTheme } = useTheme()
+  const [enabled, setEnabled] = useState(false)
   const [visible, setVisible] = useState(false)
   const [ready, setReady] = useState(false)
-  const [unavailable, setUnavailable] = useState(false)
+  const [failed, setFailed] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
-  const { resolvedTheme } = useTheme()
   const data = useMemo(buildGraph, [])
 
   useEffect(() => {
+    const touch = window.matchMedia('(pointer: coarse), (max-width: 640px)').matches
+    setEnabled(!touch)
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
     const update = () => setReducedMotion(media.matches)
     update()
-    media.addEventListener('change', update)
-    return () => media.removeEventListener('change', update)
+    media.addEventListener?.('change', update)
+    return () => media.removeEventListener?.('change', update)
   }, [])
 
   useEffect(() => {
-    const element = elRef.current
-    if (!element) return
+    const element = elementRef.current
+    if (!element || !enabled) return
     if (typeof IntersectionObserver === 'undefined') { setVisible(true); return }
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) { setVisible(true); observer.disconnect() }
-    }, { rootMargin: '150px' })
+    }, { rootMargin: '120px' })
     observer.observe(element)
     return () => observer.disconnect()
-  }, [])
+  }, [enabled])
 
   useEffect(() => {
-    if (!visible || !elRef.current) return
-    const element = elRef.current
+    const element = elementRef.current
+    if (!enabled || !visible || !element || failed) return
     let disposed = false
-    let resize: ResizeObserver | null = null
-    let onVisibility: (() => void) | null = null
+    let resize: ResizeObserver | undefined
+    let visibilityListener: (() => void) | undefined
+    let contextLossListener: ((event: Event) => void) | undefined
+    let instance: ForceGraph3DInstance<FieldNode, FieldEdge> | null = null
+
     void import('3d-force-graph').then(({ default: ForceGraph3D }) => {
       if (disposed) return
       try {
-        const graph = new ForceGraph3D(element, {
+        instance = new ForceGraph3D(element, {
           controlType: 'orbit',
           rendererConfig: { antialias: true, alpha: true },
         }) as unknown as ForceGraph3DInstance<FieldNode, FieldEdge>
+        const graph = instance
         graphRef.current = graph
         const style = getComputedStyle(element)
         graph
           .backgroundColor(style.getPropertyValue('--dn-graph-bg').trim() || '#091313')
           .showNavInfo(false)
           .graphData({ nodes: data.nodes, links: data.links })
-          .nodeResolution(14)
-          .nodeRelSize(3)
-          .nodeOpacity(0.95)
-          .nodeVal((node) => node.kind === 'practice' ? 7 : node.kind === 'anonymous-presence' ? 0.8 : 4)
-          .nodeColor((node) => node.kind === 'practice' ? '#8fae95' : node.kind === 'anonymous-presence' ? '#9bb5a8' : '#e1edd4')
+          .nodeResolution(11)
+          .nodeRelSize(2.7)
+          .nodeVal((node) => node.kind === 'practice' ? 9 : node.kind === 'anonymous-presence' ? 0.75 : 4)
+          .nodeOpacity(0.96)
           .nodeLabel((node) => {
             const label = document.createElement('span')
             label.className = 'dn-node-tooltip'
             label.textContent = node.kind === 'practice'
-              ? node.label + ': ' + node.count + ' community poll selections. Public profile lines show listed practices, not individual poll answers.'
+              ? node.label + ' · ' + node.count + ' community poll selections'
               : node.kind === 'anonymous-presence'
-                ? 'Anonymous membership mark'
+                ? 'Anonymous member-presence mark'
                 : node.label + ' · public artist profile'
             return label
           })
-          .nodeThreeObjectExtend(true)
-          .nodeThreeObject((node) => nodeDecoration(node, element))
-          .linkWidth((link) => link.kind === 'documented-cofounding' ? 2.4 : 1.2)
-          .linkOpacity(0.82)
-          .linkColor((link) => link.kind === 'documented-cofounding' ? '#d1ecbb' : '#88baa0')
+          .linkWidth((link) => link.kind === 'documented-cofounding' ? 2.2 : 1.1)
+          .linkOpacity(0.75)
           .linkLabel((link) => link.kind === 'documented-cofounding'
-            ? 'Documented DCC cofounding'
-            : 'Listed public artist practice — not a poll response')
-          .onNodeClick((node) => {
-            selectRef.current(node.kind === 'anonymous-presence' ? null : node.id)
-          })
-          .onNodeHover((node) => {
-            element.style.cursor = node?.kind === 'anonymous-presence' ? 'grab' : node ? 'pointer' : 'grab'
-          })
-          .warmupTicks(30)
+            ? 'DCC cofounding'
+            : 'Public profile practice, not a poll vote')
+          .onNodeClick((node) => onSelectRef.current(node.kind === 'anonymous-presence' ? null : node.id))
+          .onNodeHover((node) => { element.style.cursor = node && node.kind !== 'anonymous-presence' ? 'pointer' : 'grab' })
           .cooldownTicks(0)
 
-        graph.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75))
-        if (window.matchMedia('(pointer: coarse)').matches) {
-          graph.renderer().domElement.style.touchAction = 'pan-y'
+        // Not every browser or rendering implementation supports these
+        // optional optimizations. Never let them crash the page.
+        try {
+          const renderer = graph.renderer()
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
+          if (window.matchMedia('(pointer: coarse)').matches) renderer.domElement.style.touchAction = 'pan-y'
+          contextLossListener = (event: Event) => {
+            event.preventDefault()
+            if (!disposed) { setFailed(true); setReady(false) }
+          }
+          renderer.domElement.addEventListener('webglcontextlost', contextLossListener)
+        } catch { /* Keep the graph without renderer-specific tuning. */ }
+
+        if (typeof ResizeObserver !== 'undefined') {
+          resize = new ResizeObserver(() => {
+            if (disposed) return
+            const { width, height } = element.getBoundingClientRect()
+            if (width > 0 && height > 0) graph.width(width).height(height)
+          })
+          resize.observe(element)
+        } else {
+          graph.width(Math.max(320, element.clientWidth)).height(Math.max(350, element.clientHeight))
         }
-        resize = new ResizeObserver(() => {
-          const { width, height } = element.getBoundingClientRect()
-          if (width > 0 && height > 0) graph.width(width).height(height)
-        })
-        resize.observe(element)
-        onVisibility = () => {
+        visibilityListener = () => {
           if (document.hidden) graph.pauseAnimation()
           else graph.resumeAnimation()
         }
-        document.addEventListener('visibilitychange', onVisibility)
-        graph.zoomToFit(500, 75)
+        document.addEventListener('visibilitychange', visibilityListener)
+        graph.zoomToFit(0, 65)
         setReady(true)
-      } catch {
-        if (!disposed) setUnavailable(true)
+      } catch (error) {
+        console.error('[network-graph] WebGL initialization failed', error)
+        if (!disposed) { setFailed(true); setReady(false) }
       }
-    }).catch(() => { if (!disposed) setUnavailable(true) })
+    }).catch((error) => {
+      console.error('[network-graph] Module failed to load', error)
+      if (!disposed) { setFailed(true); setReady(false) }
+    })
 
     return () => {
       disposed = true
       resize?.disconnect()
-      if (onVisibility) document.removeEventListener('visibilitychange', onVisibility)
-      graphRef.current?._destructor()
+      if (visibilityListener) document.removeEventListener('visibilitychange', visibilityListener)
+      if (contextLossListener && instance) {
+        try { instance.renderer().domElement.removeEventListener('webglcontextlost', contextLossListener) } catch { /* context already gone */ }
+      }
+      try { instance?._destructor() } catch { /* WebGL context may be lost */ }
       graphRef.current = null
-      labelThemeRef.current = null
       element.replaceChildren()
     }
-  }, [data, visible])
+  }, [data, enabled, failed, visible])
 
   useEffect(() => {
-    if (!ready || !graphRef.current) return
     const graph = graphRef.current
-    const style = elRef.current ? getComputedStyle(elRef.current) : null
-    const theme = (key: string, fallback: string) => style?.getPropertyValue(key).trim() || fallback
-    graph.backgroundColor(theme('--dn-graph-bg', '#091313'))
-    graph.nodeVal((node) => node.id === selected ? 11 : node.kind === 'practice' ? 7 : node.kind === 'anonymous-presence' ? 0.8 : 4)
-    graph.nodeColor((node) => {
-      const highlighted = selected === node.id
-      const connected = selected && data.links.some((edge) =>
-        (nodeId(edge.source) === selected && nodeId(edge.target) === node.id) ||
-        (nodeId(edge.target) === selected && nodeId(edge.source) === node.id))
-      if (highlighted) return theme('--dn-graph-selected', '#f4dda5')
-      if (connected) return theme('--dn-graph-founder', '#e1edd4')
-      if (node.kind === 'practice') {
-        return theme('--dn-poll-' + (node.choiceId ?? 'art'), '#8fae95')
-      }
-      if (node.kind === 'anonymous-presence') return theme('--dn-graph-node', '#9bb5a8')
-      return theme('--dn-graph-founder', '#e1edd4')
-    })
-    graph.linkColor((link) => {
+    if (!ready || !graph) return
+    try {
+      const style = elementRef.current ? getComputedStyle(elementRef.current) : null
+      const theme = (property: string, fallback: string) =>
+        style?.getPropertyValue(property).trim() || fallback
+      graph.backgroundColor(theme('--dn-graph-bg', '#091313'))
+      graph.nodeVal((node) => node.id === selected ? 12 : node.kind === 'practice' ? 9 : node.kind === 'anonymous-presence' ? 0.75 : 4)
+      graph.nodeColor((node) => {
+        if (node.id === selected) return theme('--dn-graph-selected', '#f4dda5')
+        if (node.kind === 'practice') return theme('--dn-poll-' + (node.choiceId ?? 'art'), '#8fae95')
+        if (node.kind === 'anonymous-presence') return theme('--dn-graph-node', '#9bb5a8')
+        return theme('--dn-graph-founder', '#e1edd4')
+      })
+      graph.linkColor((link) =>
+        selected && [endpointId(link.source), endpointId(link.target)].includes(selected)
+          ? theme('--dn-graph-selected', '#f4dda5')
+          : link.kind === 'documented-cofounding'
+            ? theme('--dn-graph-link', '#d1ecbb')
+            : theme('--dn-graph-muted', '#88baa0'))
       if (selected) {
-        const participates = nodeId(link.source) === selected || nodeId(link.target) === selected
-        if (participates) return theme('--dn-graph-selected', '#f4dda5')
+        const point = data.nodes.find((node) => node.id === selected)
+        if (point) {
+          graph.cameraPosition(
+            { x: (point.x ?? 0) + 60, y: (point.y ?? 0) + 30, z: (point.z ?? 0) + 175 },
+            { x: point.x ?? 0, y: point.y ?? 0, z: point.z ?? 0 },
+            reducedMotion ? 0 : 450,
+          )
+        }
+      } else {
+        graph.zoomToFit(reducedMotion ? 0 : 450, 65)
       }
-      return link.kind === 'documented-cofounding'
-        ? theme('--dn-graph-link', '#d1ecbb')
-        : theme('--dn-graph-muted', '#88baa0')
-    })
-    // Rebuild the six text sprites when the user's light/dark preference changes.
-    if (elRef.current && labelThemeRef.current !== resolvedTheme) {
-      const element = elRef.current
-      graph.nodeThreeObject((node) => nodeDecoration(node, element))
-      labelThemeRef.current = resolvedTheme
-    }
-    if (selected && data.nodes.some((node) => node.id === selected)) {
-      const node = data.nodes.find((point) => point.id === selected)!
-      graph.cameraPosition(
-        { x: (node.x ?? 0) + 70, y: (node.y ?? 0) + 35, z: (node.z ?? 0) + 175 },
-        { x: node.x ?? 0, y: node.y ?? 0, z: node.z ?? 0 },
-        reducedMotion ? 0 : 550,
-      )
-    } else {
-      graph.zoomToFit(reducedMotion ? 0 : 550, 75)
+    } catch (error) {
+      console.error('[network-graph] View update failed', error)
+      setFailed(true)
+      setReady(false)
     }
   }, [data, ready, reducedMotion, resolvedTheme, selected])
 
-  useEffect(() => {
-    if (!ready || !graphRef.current) return
-    if (!document.hidden) graphRef.current.resumeAnimation()
-  }, [ready, reducedMotion])
-
+  if (failed) return <NetworkGraphFallback />
   return (
     <div className="relative h-full w-full">
-      <div ref={elRef} className="dn-network-field h-full min-h-[350px] w-full" role="img"
-        aria-label={'Interactive 3D network of at least 101 reported people-positions, including Moises, Fabiola, and Angelo; six labeled practice nodes with poll totals ' +
-          DCC_DISCOVERY_POLL.totalSelections + ' selections; edges link public artists to listed practices and the cofounders to one another. No anonymous vote or private relationship is attributed.'}
-      />
-      {!ready && !unavailable && (
-        <p className="pointer-events-none absolute bottom-5 left-5 text-xs text-[color:var(--dn-graph-muted)]" role="status">Opening the network…</p>
-      )}
-      {unavailable && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[var(--dn-graph-bg)] p-8 text-center text-sm text-[color:var(--dn-on-graph)]" role="status">
-          3D display unavailable. The public profiles and practice interests are available below.
+      {!enabled && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 overflow-y-auto p-3">
+          <NetworkGraphFallback />
+          <button type="button" onClick={() => setEnabled(true)}
+            className="rounded-full border border-[color:var(--dn-line-strong)] bg-[var(--dn-accent)] px-5 py-3 text-xs font-medium text-[color:var(--dn-accent-ink)]">
+            Explore 3D network
+          </button>
         </div>
+      )}
+      <div ref={elementRef} className="dn-network-field h-full min-h-[350px] w-full"
+        role="img" aria-label="Three-dimensional network of public artist nodes and six practice categories. Other member positions do not identify individual people." />
+      {enabled && !ready && !failed && (
+        <p className="pointer-events-none absolute bottom-5 left-5 text-xs text-[color:var(--dn-graph-muted)]" role="status">Opening the network…</p>
       )}
     </div>
   )
