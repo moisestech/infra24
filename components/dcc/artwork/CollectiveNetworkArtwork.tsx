@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { PollPulse } from '@/components/dcc/community/PollPulse'
+import { NetworkGraphBoundary } from './NetworkGraphBoundary'
 import { MEMBER_PRESENCE_SOURCE, PUBLIC_ARTISTS } from '@/lib/dcc/artwork/member-presence'
 import { isDiscoveryChoice, type DiscoveryPollChoiceId } from '@/lib/dcc/artwork/discovery-poll'
 
@@ -66,7 +67,7 @@ export function CollectiveNetworkArtwork() {
           </header>
 
           <div className="h-[63svh] min-h-[440px] max-h-[830px] w-full sm:h-[73svh]">
-            <Field selected={focus} onSelect={chooseNode} />
+            <NetworkGraphBoundary><Field selected={focus} onSelect={chooseNode} /></NetworkGraphBoundary>
           </div>
 
           <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-3 sm:bottom-7 sm:left-8 sm:right-8">
