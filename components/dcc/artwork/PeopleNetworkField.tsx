@@ -5,7 +5,7 @@ import type { ForceGraph3DInstance, LinkObject, NodeObject } from '3d-force-grap
 import { useTheme } from '@/contexts/ThemeContext'
 import { presenceSpherePosition } from '@/lib/dcc/artwork/member-presence'
 import { makePeoplePracticeGraph } from '@/lib/dcc/artwork/people-practice-graph'
-import { NetworkGraphFallback } from './NetworkGraphBoundary'
+import PeopleNetwork2D from './PeopleNetwork2D'
 
 type FieldNode = NodeObject & {
   id: string
@@ -243,23 +243,38 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
     }
   }, [data, ready, reducedMotion, resolvedTheme, selected])
 
-  if (failed) return <NetworkGraphFallback />
   return (
-    <div className="relative h-full w-full">
-      {!enabled && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 overflow-y-auto p-3">
-          <NetworkGraphFallback />
-          <button type="button" onClick={() => setEnabled(true)}
-            className="rounded-full border border-[color:var(--dn-line-strong)] bg-[var(--dn-accent)] px-5 py-3 text-xs font-medium text-[color:var(--dn-accent-ink)]">
-            Explore 3D network
-          </button>
+    <div className="relative flex h-full min-h-0 w-full flex-col">
+      {(!enabled || failed) && (
+        <div className="min-h-0 flex-1">
+          <PeopleNetwork2D selected={selected} onSelect={onSelect} />
         </div>
       )}
-      <div ref={elementRef} className="dn-network-field h-full min-h-[350px] w-full"
-        role="img" aria-label="Three-dimensional network of public artist nodes and six practice categories. Other member positions do not identify individual people." />
+      <div ref={elementRef}
+        className={'dn-network-field min-h-0 w-full flex-1 ' + (enabled && !failed ? '' : 'hidden')}
+        role="img"
+        aria-label="Three-dimensional network of public artist nodes and six practice categories. The other member positions have no individual identities."
+      />
       {enabled && !ready && !failed && (
-        <p className="pointer-events-none absolute bottom-5 left-5 text-xs text-[color:var(--dn-graph-muted)]" role="status">Opening the network…</p>
+        <p className="pointer-events-none absolute bottom-16 left-4 text-xs text-[color:var(--dn-graph-muted)]" role="status">
+          Opening 3D…
+        </p>
       )}
+      <div className="flex shrink-0 items-center justify-end px-4 pb-3 pt-1">
+        {failed ? (
+          <span className="text-xs text-[color:var(--dn-graph-muted)]">2D network</span>
+        ) : (
+          <button type="button"
+            onClick={() => {
+              setReady(false)
+              setVisible(false)
+              setEnabled((current) => !current)
+            }}
+            className="min-h-10 rounded-full border border-[color:var(--dn-line-strong)] bg-[var(--dn-graph-chip)] px-4 py-2 text-xs font-medium text-[color:var(--dn-on-graph)] transition hover:bg-[var(--dn-hover)]">
+            {enabled ? 'View 2D' : 'Explore 3D'}
+          </button>
+        )}
+      </div>
     </div>
   )
 }

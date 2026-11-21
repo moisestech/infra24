@@ -192,13 +192,10 @@ export function CommunityAtlas() {
   return (
     <section className="dcc-network-theme min-h-screen bg-[var(--dn-bg)] px-3 pb-14 pt-4 text-[color:var(--dn-ink)] sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[1650px]">
-        <nav aria-label="Atlas navigation" className="flex items-center justify-between border-b border-[color:var(--dn-line)] px-2 pb-4 text-xs text-[color:var(--dn-muted)]">
-          <Link href="/" className="font-mono font-medium tracking-[.15em] hover:text-[color:var(--dn-ink)]">DCC</Link>
-          <div className="flex gap-5">
-            <Link href="/network/artwork" className="hover:text-[color:var(--dn-ink)]">Artwork</Link>
-            <Link href="/network/artwork/proposal" className="hover:text-[color:var(--dn-ink)]">About</Link>
-          </div>
-        </nav>
+        <div className="flex justify-end gap-5 pb-2 text-xs text-[color:var(--dn-link)]">
+          <Link href="/network/artwork" className="hover:underline">Artwork</Link>
+          <Link href="/network/artwork/proposal" className="hover:underline">About</Link>
+        </div>
 
         <header className="flex flex-col justify-between gap-8 py-10 sm:py-16 lg:flex-row lg:items-end">
           <div>
@@ -223,16 +220,17 @@ export function CommunityAtlas() {
         </header>
 
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(290px,.6fr)]">
-          <section className="dn-network-field relative min-w-0 overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)]" aria-label="Network field">
-            <div className="pointer-events-none absolute left-5 top-5 z-10 flex flex-col gap-1.5">
+          <section className="dn-network-field min-w-0 overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)]" aria-label="Network field">
+            <div className="border-b border-[color:var(--dn-line)] px-4 py-3 sm:px-5">
               <p className="font-mono text-[10px] uppercase tracking-[.13em] text-[color:var(--dn-graph-muted)]">The network</p>
-              <p className="text-xs text-[color:var(--dn-subtle)]">Dots are people · rings are practices · lines show connections</p>
+              <p className="mt-1 text-xs text-[color:var(--dn-subtle)]">Dots are people · rings are practices · lines are public connections</p>
             </div>
-            <div className="h-[52svh] min-h-[350px] max-h-[660px] sm:h-[60svh] lg:h-[600px]">
+            <div className="h-[420px] w-full sm:h-[540px] lg:h-[560px]">
               <NetworkGraphBoundary><Field selected={graphFocus} onSelect={chooseGraphNode} /></NetworkGraphBoundary>
             </div>
-            <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2">
-              <div className="dn-graph-overlay flex rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-graph-chip)] p-1 shadow-lg backdrop-blur-md" role="group" aria-label="Focus public artist or practice">
+            <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 border-t border-[color:var(--dn-line)] p-3 sm:p-4">
+              <div className="dn-mobile-scroller flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-panel)] p-1"
+                role="group" aria-label="Focus public artist or practice">
                 {([
                   { label: 'All', id: null },
                   { label: 'Moises', id: 'moises-sanabria' },
@@ -241,13 +239,14 @@ export function CommunityAtlas() {
                 ] as {label:string;id:GraphSelection}[]).map((item) => (
                   <button type="button" key={item.label} aria-pressed={graphFocus === item.id}
                     onClick={() => chooseGraphNode(item.id)}
-                    className={'shrink-0 rounded-full px-3.5 py-2.5 text-xs transition ' +
+                    className={'min-h-10 shrink-0 rounded-full px-3.5 py-2 text-xs transition ' +
                       (graphFocus === item.id ? 'bg-[var(--dn-accent)] font-semibold text-[color:var(--dn-accent-ink)]' : 'text-[color:var(--dn-muted)] hover:text-[color:var(--dn-ink)]')}>
                     {item.label}
                   </button>
                 ))}
               </div>
-              <Link href={graphFocus && isPublicArtist(graphFocus) ? '/network/artwork?person=' + graphFocus : selectedChoice ? '/network/artwork?practice=' + selectedChoice : '/network/artwork'} className="dn-graph-overlay inline-flex items-center gap-1 rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-graph-chip)] px-3.5 py-3 text-xs text-[color:var(--dn-muted)] hover:text-[color:var(--dn-ink)]">
+              <Link href={graphFocus && isPublicArtist(graphFocus) ? '/network/artwork?person=' + graphFocus : selectedChoice ? '/network/artwork?practice=' + selectedChoice : '/network/artwork'}
+                className="inline-flex items-center gap-1 text-xs text-[color:var(--dn-link)] hover:underline">
                 Open artwork <ArrowUpRight size={14} />
               </Link>
             </div>
