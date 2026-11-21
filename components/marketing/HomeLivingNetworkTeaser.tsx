@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import PeopleNetworkField from '@/components/dcc/artwork/PeopleNetworkField'
 
-/** An artwork entry: a privacy-reviewed aggregate, not a member directory. */
+/** Illustration of anonymous human positions, not private CRM relationships. */
 export function HomeLivingNetworkTeaser() {
   const [selected, setSelected] = useState('position-01')
   return (
