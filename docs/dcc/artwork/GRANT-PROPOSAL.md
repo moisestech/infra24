@@ -54,8 +54,8 @@ The project deliberately reuses DCC's current code and community coordination re
 ## What already exists
 
 - DCC's artist-led network, working network protocol, and Community Atlas source code
-- A 3D member-presence portrait based on the founder's November 21 report that WhatsApp Commons has more than 100 members: 101 anonymous minimum-count marks are shown, not linked to identifiable accounts or actual private relationships. This is an **unaudited lower bound**, not a live WhatsApp integration.
-- A separate, explicitly hypothetical human-connection study explores possible link forms and practice/activity color lenses. Visitor experiments remain local. Both minimum-count presence and imaginary connection drawings support SVG study exports.
+- A 3D member-presence portrait based on the founder's November 21 report that WhatsApp Commons has more than 100 members: 101 minimum-count marks include two named public cofounders, Moises Sanabria and Fabiola Larios, and 99 anonymous positions. It is an **unaudited lower bound**, not a live WhatsApp integration.
+- The only displayed person-to-person edge documents that Moises and Fabiola co-founded DCC. The artwork has **no fictional connection view**. Six screenshot-verified WhatsApp poll totals—21 Art; 16 Fabrication; 11 Film; 10 Code/AI; 7 Games/XR; 7 Exploring—show what the community wants to discover, without attributing individual ballots. A vector member-presence study can be exported.
 
 **Not yet built or independently verified:** real participant-authored public profiles and edges, member-controlled publishing and withdrawal, a production edition system, material testing, consent for lasting physical inclusion, or a completed installation.
 
@@ -78,4 +78,4 @@ It also builds on DCC's ongoing research into institutional capacity, opt-in rep
 **Public project site:** /network/artwork/proposal  
 **Content source for ongoing updates:** lib/dcc/artwork/proposal.ts  
 **Creative lead:** Moises Sanabria; future participating coauthors to be credited only upon agreement.  
-**Status:** Public lower-bound member-presence artwork and a separate fictional connection study. DCC's exact current roster must be reconciled; its actual person-to-person map remains private. There is no consent to publish member identities or ties, and no grant award or sculpture has been completed. No grant award or finished sculpture implied.
+**Status:** Public lower-bound member-presence artwork with a documented public cofounder edge and six actual multi-select poll tallies (72 selections, not 72 unique voters). DCC's exact current roster and individual vote assignments are unknown; private connections remain unpublished. No grant award or fabricated sculpture is claimed.
