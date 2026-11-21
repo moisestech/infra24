@@ -162,7 +162,7 @@ export function CollectiveNetworkArtwork() {
     <main className="min-h-screen bg-[#080d0f] text-[#f4f2e8]">
       <div className="mx-auto max-w-[1580px] px-4 pb-24 pt-7 sm:px-8">
         <nav className="flex flex-wrap items-center justify-between gap-4 border-b border-white/15 pb-5 text-[11px] uppercase tracking-[0.22em] text-white/65">
-          <Link href="/network/community" className="transition hover:text-white">DCC MIAMI / COMMUNITY ATLAS</Link>
+          <div className="flex flex-wrap items-center gap-4"><Link href="/network/community" className="transition hover:text-white">DCC MIAMI / COMMUNITY ATLAS</Link><Link href="/network/artwork/proposal" className="text-[#c7dec9] underline underline-offset-4 transition hover:text-white">READ THE FULL PROPOSAL ↗</Link></div>
           <span>ARTWORK PROTOTYPE — 2026 / STUDY 001</span>
         </nav>
         <header className="grid gap-6 py-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10 lg:py-16">
