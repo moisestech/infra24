@@ -143,11 +143,21 @@ export default function ArtworkForceField({
   const hostRef = useRef<HTMLDivElement>(null)
   const graphRef = useRef<ForceGraph3DInstance<GraphNode, GraphLink> | null>(null)
   const callbacksRef = useRef({ onSelect, paused, selected })
-  callbacksRef.current = { onSelect, paused, selected }
   const [visible, setVisible] = useState(false)
   const [ready, setReady] = useState(false)
   const [unavailable, setUnavailable] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
+  const motionPaused = paused || reducedMotion
+  callbacksRef.current = { onSelect, paused: motionPaused, selected }
   const data = useMemo(() => buildGraph(people, relationships, guestSignal), [people, relationships, guestSignal])
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReducedMotion(media.matches)
+    update()
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
 
   // Defer WebGL setup until this part of the page is on screen.
   useEffect(() => {
@@ -219,7 +229,7 @@ export default function ArtworkForceField({
           .onNodeHover((node) => { element.style.cursor = node?.personId && !compact ? 'pointer' : 'grab' })
           .onNodeDragEnd((node) => { node.fx = node.x; node.fy = node.y; node.fz = node.z })
           .warmupTicks(90)
-          .cooldownTicks(paused ? 0 : 140)
+          .cooldownTicks(motionPaused ? 0 : 140)
 
         resize = new ResizeObserver(() => {
           const { width, height } = element.getBoundingClientRect()
@@ -266,9 +276,9 @@ export default function ArtworkForceField({
     instance.nodeVal((node) =>
       node.personId === selected ? 4 : node.guest ? 3 : node.kind === 'person' ? 1.7 : 1.1
     )
-    instance.cooldownTicks(paused ? 0 : 140)
-    if (!paused) instance.d3ReheatSimulation()
-  }, [ready, paused, selected])
+    instance.cooldownTicks(motionPaused ? 0 : 140)
+    if (!motionPaused) instance.d3ReheatSimulation()
+  }, [ready, motionPaused, selected])
 
   return (
     <div className="relative h-full min-h-[340px] w-full">
