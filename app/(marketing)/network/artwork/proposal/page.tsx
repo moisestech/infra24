@@ -126,7 +126,7 @@ export default function NetworkArtworkProposalPage() {
               <Link href="/network/artwork" className="rounded-full bg-[#163829] px-6 py-4 text-sm font-semibold text-white hover:bg-[#2b5d42]">TRY THE INTERACTIVE STUDY ↗</Link>
               <Link href="/network/community" className="rounded-full border border-[#7f9e83] px-6 py-4 text-sm font-medium text-[#163829] hover:bg-[#c2d7c5]">EXISTING DCC ATLAS ↗</Link>
             </div>
-            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-[#617868]">The study uses fictional nodes. It demonstrates how state changes the picture, and it can freeze a deterministic SVG. Real participant authorship and physical editions remain proposed.</p>
+            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-[#617868]">The public network renders a minimum-count membership portrait, with two identified cofounders and their documented founding connection. Poll results are factual aggregate selections, not mapped to private people. Member-authored profiles, additional approved edges, and physical editions remain proposed.</p>
           </div>
           <aside className="rounded-lg border border-[#b8c8bb] bg-[#f3f5ec] p-8">
             <h3 className="text-2xl font-light tracking-[-.04em]">Prototype vs. proposed work</h3>
