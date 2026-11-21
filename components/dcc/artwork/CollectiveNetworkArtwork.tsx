@@ -20,10 +20,6 @@ function isLens(value: string | null): value is PatternLens {
 function isSignal(value: string | null): value is Signal {
   return value === 'show' || value === 'need' || value === 'offer'
 }
-function xml(value: string) {
-  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-}
-
 /**
  * A deterministic 2D index of the *same categories and connections* in the
  * force field. This is a visual study, not a 3D capture or a cut-ready toolpath.
