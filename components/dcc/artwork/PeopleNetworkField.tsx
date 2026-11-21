@@ -65,19 +65,19 @@ function nodeId(endpoint: string | FieldNode | undefined): string {
 /** Sprite text is scene geometry, not a DOM card or emoji. */
 function labelSprite(label: string, count: number | null, ink: string, surface: string): THREE.Sprite {
   const canvas = document.createElement('canvas')
-  canvas.width = 660
-  canvas.height = 118
+  canvas.width = 580
+  canvas.height = 155
   const ctx = canvas.getContext('2d')
   if (ctx) {
     ctx.fillStyle = surface
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.fillStyle = ink
-    ctx.font = '600 37px Arial, sans-serif'
+    ctx.font = '600 57px Arial, sans-serif'
     ctx.textAlign = 'center'
-    ctx.fillText(label, canvas.width / 2, 51)
+    ctx.fillText(label, canvas.width / 2, count === null ? 97 : 67, 552)
     if (count !== null) {
-      ctx.font = '28px Arial, sans-serif'
-      ctx.fillText(count + ' poll selections', canvas.width / 2, 91)
+      ctx.font = '37px Arial, sans-serif'
+      ctx.fillText(count + ' selections', canvas.width / 2, 125)
     }
   }
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
@@ -85,8 +85,8 @@ function labelSprite(label: string, count: number | null, ink: string, surface: 
     transparent: true,
     depthWrite: false,
   }))
-  sprite.scale.set(112, 20, 1)
-  sprite.position.y = 20
+  sprite.scale.set(count === null ? 92 : 153, count === null ? 24 : 40, 1)
+  sprite.position.y = count === null ? 15 : 33
   return sprite
 }
 
@@ -157,12 +157,13 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
           })
           .nodeThreeObjectExtend(true)
           .nodeThreeObject((node) => {
-            if (node.kind !== 'practice') return new THREE.Group()
+            if (node.kind === 'anonymous-presence') return new THREE.Group()
             const css = getComputedStyle(element)
             const ink = css.getPropertyValue('--dn-on-graph').trim() || '#eef4ec'
             const background = css.getPropertyValue('--dn-graph-chip').trim() || '#091313'
             const group = new THREE.Group()
-            group.add(labelSprite(node.label, node.count ?? null, ink, background))
+            group.add(labelSprite(node.kind === 'practice' ? node.label : node.label.split(' ')[0],
+              node.kind === 'practice' ? node.count ?? 0 : null, ink, background))
             return group
           })
           .linkWidth((link) => link.kind === 'documented-cofounding' ? 2.4 : 1.2)
@@ -217,6 +218,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
     const style = elRef.current ? getComputedStyle(elRef.current) : null
     const theme = (key: string, fallback: string) => style?.getPropertyValue(key).trim() || fallback
     graph.backgroundColor(theme('--dn-graph-bg', '#091313'))
+    graph.nodeVal((node) => node.id === selected ? 11 : node.kind === 'practice' ? 7 : node.kind === 'anonymous-presence' ? 0.8 : 4)
     graph.nodeColor((node) => {
       const highlighted = selected === node.id
       const connected = selected && data.links.some((edge) =>
@@ -241,9 +243,10 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
     })
     // Rebuild the six text sprites when the user's light/dark preference changes.
     graph.nodeThreeObject((node) => {
-      if (node.kind !== 'practice') return new THREE.Group()
+      if (node.kind === 'anonymous-presence') return new THREE.Group()
       const group = new THREE.Group()
-      group.add(labelSprite(node.label, node.count ?? null,
+      group.add(labelSprite(node.kind === 'practice' ? node.label : node.label.split(' ')[0],
+        node.kind === 'practice' ? node.count ?? 0 : null,
         theme('--dn-on-graph', '#eef4ec'), theme('--dn-graph-chip', '#091313')))
       return group
     })
