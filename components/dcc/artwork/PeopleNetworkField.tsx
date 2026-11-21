@@ -117,6 +117,7 @@ function nodeDecoration(node: FieldNode, element: HTMLElement): THREE.Group {
 export default function PeopleNetworkField({ selected, onSelect }: PeopleNetworkFieldProps) {
   const elRef = useRef<HTMLDivElement>(null)
   const graphRef = useRef<ForceGraph3DInstance<FieldNode, FieldEdge> | null>(null)
+  const labelThemeRef = useRef<string | null>(null)
   const selectRef = useRef(onSelect)
   selectRef.current = onSelect
   const [visible, setVisible] = useState(false)
@@ -223,6 +224,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
       if (onVisibility) document.removeEventListener('visibilitychange', onVisibility)
       graphRef.current?._destructor()
       graphRef.current = null
+      labelThemeRef.current = null
       element.replaceChildren()
     }
   }, [data, visible])
@@ -257,7 +259,11 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
         : theme('--dn-graph-muted', '#88baa0')
     })
     // Rebuild the six text sprites when the user's light/dark preference changes.
-    if (elRef.current) graph.nodeThreeObject((node) => nodeDecoration(node, elRef.current!))
+    if (elRef.current && labelThemeRef.current !== resolvedTheme) {
+      const element = elRef.current
+      graph.nodeThreeObject((node) => nodeDecoration(node, element))
+      labelThemeRef.current = resolvedTheme
+    }
     if (selected && data.nodes.some((node) => node.id === selected)) {
       const node = data.nodes.find((point) => point.id === selected)!
       graph.cameraPosition(
