@@ -16,6 +16,7 @@ export type AtlasProfile = {
   practice: string[]
   interests: InterestId[]
   website?: string
+  image?: string
   links?: { label: string; url: string }[]
 }
 export type ApprovedProfileInput = AtlasProfile & {
@@ -41,6 +42,7 @@ export function projectPublicProfiles(records: ApprovedProfileInput[]): AtlasPro
       practice: [...r.practice],
       interests: r.interests.filter(isInterestId),
       ...(r.website && /^https:\/\//i.test(r.website) ? { website: r.website } : {}),
+      ...(r.image && /^https:\/\/res\.cloudinary\.com\/dck5rzi4h\/image\/upload\//.test(r.image) ? { image: r.image } : {}),
     }))
 }
 
@@ -60,18 +62,21 @@ export const PILOT_PREVIEWS: AtlasProfile[] = [
     summary: 'Artist, creative technologist and DCC Miami co-founder.',
     practice: ['Interdisciplinary art', 'Creative technology', 'Digital fabrication'],
     interests: ['making', 'code-ai', 'culture'], website: 'https://www.moises.tech',
+    image: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777511801/dccmiami/portraits/moises-pfp_dnn3d3.jpg',
   },
   {
     slug: 'fabiola-larios', name: 'Fabiola Larios',
     summary: 'Interdisciplinary artist and DCC Miami co-founder.',
     practice: ['Digital art', 'AI', 'Creative practice'],
     interests: ['image-sound', 'code-ai', 'culture'], website: 'https://fabiola.io',
+    image: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777518148/dccmiami/portraits/fabiola-lariosm-profile_vuypf4.jpg',
   },
   {
     slug: 'angelo-caruso', name: 'Angelo Caruso',
     summary: 'Artist working with interactive and tactile objects.',
     practice: ['Interactive art', 'Objects', 'Digital fabrication'],
     interests: ['making', 'interactive'], website: 'https://angelocaruso.art',
+    image: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1780488560/dccmiami/portraits/angelo-caruso-portrait-from-exhibition_avht0i.png',
   },
 ]
 

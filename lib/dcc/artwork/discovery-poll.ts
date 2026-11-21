@@ -20,12 +20,12 @@ export const DCC_DISCOVERY_POLL = {
   respondents: null as number | null,
   multiSelect: true,
   choices: [
-    { id: 'art', label: 'Art, exhibitions & creative practice', short: 'Art & exhibitions', icon: '🎨', count: 21, tint: '#b4d9b9' },
-    { id: 'fabrication', label: 'Fabrication, materials & objects', short: 'Fabrication', icon: '🛠', count: 16, tint: '#d9c2a8' },
-    { id: 'film', label: 'Film, animation & sound', short: 'Film & sound', icon: '🎬', count: 11, tint: '#bfcae6' },
-    { id: 'code', label: 'Creative coding, AI & automation', short: 'Code & AI', icon: '💻', count: 10, tint: '#a6d5d2' },
-    { id: 'xr', label: 'Games, XR & interactive installations', short: 'Games & XR', icon: '🎮', count: 7, tint: '#d6bbdc' },
-    { id: 'exploring', label: 'Still exploring / across disciplines', short: 'Exploring', icon: '🌱', count: 7, tint: '#d4d7ad' },
+    { id: 'art', label: 'Art, exhibitions & creative practice', short: 'Art & exhibitions', count: 21, tint: '#b4d9b9' },
+    { id: 'fabrication', label: 'Fabrication, materials & objects', short: 'Fabrication', count: 16, tint: '#d9c2a8' },
+    { id: 'film', label: 'Film, animation & sound', short: 'Film & sound', count: 11, tint: '#bfcae6' },
+    { id: 'code', label: 'Creative coding, AI & automation', short: 'Code & AI', count: 10, tint: '#a6d5d2' },
+    { id: 'xr', label: 'Games, XR & interactive installations', short: 'Games & XR', count: 7, tint: '#d6bbdc' },
+    { id: 'exploring', label: 'Still exploring / across disciplines', short: 'Exploring', count: 7, tint: '#d4d7ad' },
   ],
 } as const
 

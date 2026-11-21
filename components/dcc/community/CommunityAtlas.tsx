@@ -1,46 +1,99 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+import * as Avatar from '@radix-ui/react-avatar'
+import { ArrowUpRight, ExternalLink, Search, UserRoundPlus, RefreshCw } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
-import { INTERESTS, PILOT_PREVIEWS, filterProfiles, PASSPORT_PREVIEW_KEY, readPassportPreview, type InterestId, type PassportPreview, type AtlasProfile } from '@/lib/dcc/community/atlas'
-import styles from './community.module.css'
+import {
+  INTERESTS, PILOT_PREVIEWS, filterProfiles, PASSPORT_PREVIEW_KEY,
+  readPassportPreview, type InterestId, type PassportPreview, type AtlasProfile,
+} from '@/lib/dcc/community/atlas'
+import { PollPulse } from './PollPulse'
 import { AtlasProfileForm } from './AtlasProfileForm'
+import styles from './community.module.css'
 
-const Field = dynamic(() => import('./CommunityField'), { ssr: false, loading: () => <p className={styles.loading}>Opening the field…</p> })
+const Field = dynamic(() => import('@/components/dcc/artwork/PeopleNetworkField'), {
+  ssr: false,
+  loading: () => <div className="flex min-h-[360px] items-center justify-center text-sm text-white/50">Opening the network…</div>,
+})
+
+type PublicFounderId = 'moises-sanabria' | 'fabiola-larios' | null
+function isPublicFounder(value: string | null): value is Exclude<PublicFounderId, null> {
+  return value === 'moises-sanabria' || value === 'fabiola-larios'
+}
+function websiteFor(profile: AtlasProfile): string | null {
+  const candidate = profile.website ?? profile.links?.find((link) => /^https:\/\//i.test(link.url))?.url
+  return candidate && /^https:\/\//i.test(candidate) ? candidate : null
+}
+function initials(name: string) {
+  return name.split(' ').map((word) => word[0]).join('').slice(0, 2).toUpperCase()
+}
+function Portrait({ profile, size = 'card' }: { profile: AtlasProfile; size?: 'card' | 'detail' }) {
+  return (
+    <Avatar.Root className={'relative block shrink-0 overflow-hidden rounded-xl bg-[#254136] ' +
+      (size === 'detail' ? 'h-20 w-20' : 'h-[72px] w-[72px] sm:h-[88px] sm:w-[88px]')}>
+      {profile.image ? <Avatar.Image src={profile.image} alt={'Portrait of ' + profile.name}
+        loading="lazy" className="h-full w-full object-cover" /> : null}
+      <Avatar.Fallback delayMs={250} className="flex h-full w-full items-center justify-center font-mono text-lg text-[#d6ebd7]">
+        {initials(profile.name)}
+      </Avatar.Fallback>
+    </Avatar.Root>
+  )
+}
 
 export function CommunityAtlas() {
-  const [interests, setInterests] = useState<InterestId[]>([])
   const [query, setQuery] = useState('')
+  const [interests, setInterests] = useState<InterestId[]>([])
   const [sourceProfiles, setSourceProfiles] = useState<AtlasProfile[]>(PILOT_PREVIEWS)
   const [mode, setMode] = useState<'preview' | 'live'>('preview')
   const [intakeEnabled, setIntakeEnabled] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [loadError, setLoadError] = useState('')
+  const [selected, setSelected] = useState('moises-sanabria')
+  const [founderFocus, setFounderFocus] = useState<PublicFounderId>(null)
   const [showProfileForm, setShowProfileForm] = useState(false)
-  const profileDialog = useRef<HTMLDialogElement>(null)
-  const loadId = useRef(0)
-  const [selected, setSelected] = useState<string | null>('moises-sanabria')
-  const [paused, setPaused] = useState(true)
   const [showPassport, setShowPassport] = useState(false)
   const [passport, setPassport] = useState<PassportPreview | null>(null)
   const [notice, setNotice] = useState('')
+  const profileDialog = useRef<HTMLDialogElement>(null)
   const passportDialog = useRef<HTMLDialogElement>(null)
-  const profiles = useMemo(() => filterProfiles(sourceProfiles, interests, query), [sourceProfiles, interests, query])
-  const profile = profiles.find((p) => p.slug === selected) ?? profiles[0]
+  const detailRef = useRef<HTMLDivElement>(null)
+  const loadId = useRef(0)
+
+  // Featured editorial profiles always appear. The public API may also return
+  // independently reviewed opt-in profiles, but the graph never maps private CRM IDs.
+  const allProfiles = useMemo(() => [
+    ...sourceProfiles,
+    ...PILOT_PREVIEWS.filter((p) => !sourceProfiles.some((record) => record.slug === p.slug)),
+  ], [sourceProfiles])
+  const profiles = useMemo(
+    () => filterProfiles(allProfiles, interests, query),
+    [allProfiles, interests, query],
+  )
+  const profile = profiles.find((p) => p.slug === selected) ?? profiles[0] ?? null
 
   const refreshProfiles = useCallback(async (signal?: AbortSignal) => {
-    const currentLoad = ++loadId.current
+    const load = ++loadId.current
     setRefreshing(true)
     try {
       const response = await fetch('/api/marketing/community-atlas', { cache: 'no-store', signal })
-      const result = await response.json()
-      if (!response.ok || !Array.isArray(result.profiles) || !['preview', 'live'].includes(result.mode)) throw new Error('The network is temporarily unavailable. Please try again.')
-      if (signal?.aborted || currentLoad !== loadId.current) return
-      setSourceProfiles(result.profiles); setMode(result.mode); setIntakeEnabled(result.intakeEnabled === true); setLoadError('')
+      const data = await response.json()
+      if (!response.ok || !Array.isArray(data.profiles) || !['preview', 'live'].includes(data.mode)) {
+        throw new Error('Unable to load new profiles')
+      }
+      if (signal?.aborted || load !== loadId.current) return
+      setSourceProfiles(data.profiles)
+      setMode(data.mode)
+      setIntakeEnabled(data.intakeEnabled === true)
+      setLoadError('')
     } catch {
-      if (!signal?.aborted && currentLoad === loadId.current) { setSourceProfiles([]); setIntakeEnabled(false); setLoadError('The network is temporarily unavailable. Please refresh to try again.') }
-    } finally { if (currentLoad === loadId.current) setRefreshing(false) }
+      if (!signal?.aborted && load === loadId.current) {
+        setLoadError('New profiles are temporarily unavailable. Featured artists are still accessible.')
+      }
+    } finally {
+      if (load === loadId.current) setRefreshing(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -49,106 +102,299 @@ export function CommunityAtlas() {
     const refresh = () => { if (!document.hidden) void refreshProfiles(controller.signal) }
     const interval = window.setInterval(refresh, 60000)
     document.addEventListener('visibilitychange', refresh)
-    return () => { controller.abort(); window.clearInterval(interval); document.removeEventListener('visibilitychange', refresh) }
+    return () => {
+      controller.abort()
+      window.clearInterval(interval)
+      document.removeEventListener('visibilitychange', refresh)
+    }
   }, [refreshProfiles])
+
+  useEffect(() => {
+    try { setPassport(readPassportPreview(sessionStorage.getItem(PASSPORT_PREVIEW_KEY))) }
+    catch { /* Private browsing may block local storage. */ }
+    const requested = new URL(window.location.href).searchParams.get('profile')
+    if (requested && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(requested)) setSelected(requested)
+  }, [])
 
   useEffect(() => {
     if (showProfileForm && profileDialog.current && !profileDialog.current.open) profileDialog.current.showModal()
   }, [showProfileForm])
-
-  useEffect(() => {
-    try { setPassport(readPassportPreview(sessionStorage.getItem(PASSPORT_PREVIEW_KEY))) } catch { /* Storage may be disabled. */ }
-    setPaused(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-  }, [])
-
   useEffect(() => {
     if (showPassport && passportDialog.current && !passportDialog.current.open) passportDialog.current.showModal()
   }, [showPassport])
 
-  const selectProfile = useCallback((slug: string) => {
+  function selectProfile(slug: string, scroll = true) {
     setSelected(slug)
+    setFounderFocus(isPublicFounder(slug) ? slug : null)
     const url = new URL(window.location.href)
     url.searchParams.set('profile', slug)
     window.history.replaceState(null, '', url)
-  }, [])
-
-  useEffect(() => {
-    const slug = new URL(window.location.href).searchParams.get('profile')
-    if (slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) && slug.length <= 100) setSelected(slug)
-  }, [])
-
-  async function copyProfileLink() {
-    if (!profile) return
-    const url = new URL(window.location.href)
-    url.searchParams.set('profile', profile.slug)
-    try { await navigator.clipboard.writeText(url.toString()); setNotice('Profile link copied.') }
-    catch { setNotice(`Profile link: ${url.toString()}`) }
+    if (scroll && window.innerWidth < 1024) {
+      window.requestAnimationFrame(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
+    }
   }
-
+  function chooseFounder(id: string | null) {
+    if (isPublicFounder(id)) selectProfile(id, false)
+    else setFounderFocus(null)
+  }
   function toggleInterest(id: InterestId) {
-    setInterests((current) => current.includes(id) ? current.filter((v) => v !== id) : [...current, id])
+    setInterests((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
   }
-
   function savePassport(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const fields = new FormData(event.currentTarget)
-    const draft = readPassportPreview(JSON.stringify({ name: String(fields.get('name') ?? '').trim(), interests: fields.getAll('interests'), visibility: fields.get('visibility') }))
-    if (!draft) { setNotice('Please enter a display name to preview your Passport.'); return }
+    const form = new FormData(event.currentTarget)
+    const draft = readPassportPreview(JSON.stringify({
+      name: String(form.get('name') ?? '').trim(),
+      interests: form.getAll('interests'),
+      visibility: form.get('visibility'),
+    }))
+    if (!draft) { setNotice('Add a display name to save your Passport draft.'); return }
     setPassport(draft)
     try {
       sessionStorage.setItem(PASSPORT_PREVIEW_KEY, JSON.stringify(draft))
-      setNotice('Preview saved for this browser tab. You have not enrolled or published a profile.')
-    } catch { setNotice('Preview created for this visit. Browser storage is unavailable; nothing was sent.') }
+      setNotice('Your Passport draft is saved in this browser. You can use it to start a public profile.')
+    } catch { setNotice('Your Passport draft is available for this visit.') }
+    passportDialog.current?.close()
     setShowPassport(false)
   }
-
   function clearPassport() {
-    try { sessionStorage.removeItem(PASSPORT_PREVIEW_KEY) } catch { /* In-memory preview can still be cleared. */ }
+    try { sessionStorage.removeItem(PASSPORT_PREVIEW_KEY) } catch { /* Already local-only. */ }
     setPassport(null)
-    setNotice('Your local Passport preview has been removed.')
+    setNotice('Passport draft cleared.')
+  }
+  function continueToProfile() {
+    passportDialog.current?.close()
+    setShowPassport(false)
+    setShowProfileForm(true)
   }
 
-  return <section className={styles.atlas}>
-    <div className={styles.topline}><span>DCC MIAMI / COMMUNITY ATLAS</span><span>{mode === 'preview' ? 'DESIGN PREVIEW · 02' : 'PUBLIC COMMUNITY ATLAS'}</span></div>
-    <header className={styles.header}>
-      <div><p className={styles.eyebrow}>One network. Your way in.</p><h1>Find your<br /><em>constellation.</em></h1><p className={styles.intro}>People, ideas and possibilities across Miami’s creative community. Explore what interests you. Come back when it matters.</p></div>
-      <div className={styles.headerActions}><button className={styles.primary} onClick={() => setShowProfileForm(true)}>Add your public profile <span aria-hidden>↗</span></button><button className={styles.textButton} onClick={() => setShowPassport(true)}>Explore your Passport ↗</button><p>Optional participation.<br />No need to follow every conversation.</p></div>
-    </header>
+  return (
+    <section className="min-h-screen bg-[#091313] px-3 pb-14 pt-4 text-[#edf4eb] sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1650px]">
+        <nav aria-label="Atlas navigation" className="flex items-center justify-between border-b border-white/10 px-2 pb-4 text-xs text-white/65">
+          <Link href="/" className="font-mono font-medium tracking-[.15em] hover:text-white">DCC</Link>
+          <div className="flex gap-5">
+            <Link href="/network/artwork" className="hover:text-white">Artwork</Link>
+            <Link href="/network/artwork/proposal" className="hover:text-white">About</Link>
+          </div>
+        </nav>
 
-    <div className="mb-7 flex flex-wrap items-center justify-between gap-5 rounded-xl border border-[#9bbea4]/40 bg-[#17302b] px-5 py-5 text-[#e7f2e7]">
-      <div className="max-w-2xl"><p className="text-[10px] uppercase tracking-[.2em] text-[#a6d2b2]">A related artwork / collective network authorship</p><h2 className="mt-2 text-xl font-light tracking-[-.04em]">The Network Makes Itself</h2><p className="mt-2 text-sm leading-relaxed text-[#b8cfc1]">The Atlas supports opt-in discovery. The artwork maps DCC’s 100+ reported presence, two public cofounders, their founding link, and anonymous community poll totals—without private member identities or ties.</p></div>
-      <div className="flex flex-wrap gap-3"><Link href="/network/artwork" className="rounded-full bg-[#d3e7d6] px-4 py-3 text-sm font-medium text-[#173127] hover:bg-white">Explore artwork ↗</Link><Link href="/network/artwork/proposal" className="rounded-full border border-[#c4d6c8]/50 px-4 py-3 text-sm text-[#e5f2e5] hover:bg-white/10">Project proposal ↗</Link></div>
-    </div>
-    <div className={styles.workspace}>
-      <aside className={styles.filters} aria-label="Discover by interest">
-        <p className={styles.eyebrow}>01 / Follow your curiosity</p>
-        <label className={styles.searchLabel}>Find a profile<input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Name or practice…" /></label>
-        <div className={styles.interests}>{INTERESTS.map((interest) => <button key={interest.id} aria-pressed={interests.includes(interest.id)} onClick={() => toggleInterest(interest.id)}><span className={styles.dot} style={{ background: interest.color }} /><span>{interest.label}</span><span aria-hidden>{interests.includes(interest.id) ? '−' : '+'}</span></button>)}</div>
-        <button className={styles.textButton} onClick={() => { setInterests([]); setQuery('') }}>Reset filters</button>
-        <p className={styles.small}>Choose more than one. Results match any selected interest. {mode === 'preview' ? 'These are example profile interests, not recorded poll votes.' : 'Interests are member-declared; they are not verified skills or availability.'}</p>
-        <div className={styles.poll}><span className={styles.eyebrow}>Community listening</span><strong>The interest poll is live.</strong><p>Posted November 15 in the Commons. Results will be added after review.</p><span className={styles.pending}>Vote totals not connected</span></div>
-      </aside>
+        <header className="flex flex-col justify-between gap-8 py-10 sm:py-16 lg:flex-row lg:items-end">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[.21em] text-[#a2c6ab]">Community atlas</p>
+            <h1 className="mt-4 text-[clamp(3.4rem,7vw,7rem)] font-light leading-[.88] tracking-[-.075em] text-white">
+              Find your<br /><em className="text-[#c1ddc4]">constellation.</em>
+            </h1>
+            <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-white/60">
+              Discover artists, practices and ways to connect across the network.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => setShowProfileForm(true)}
+              className="inline-flex items-center gap-2 rounded-full bg-[#d3e7d6] px-5 py-3 text-sm font-semibold text-[#133529] transition hover:bg-white">
+              <UserRoundPlus size={17} /> Add your profile
+            </button>
+            <button type="button" onClick={() => setShowPassport(true)}
+              className="rounded-full border border-white/25 px-5 py-3 text-sm text-white/85 transition hover:border-white/55">
+              Your Passport
+            </button>
+          </div>
+        </header>
 
-      <div className={styles.fieldWrap}>
-        <div className={styles.fieldTop}><span>02 / The field</span><button onClick={() => void refreshProfiles()} disabled={refreshing}>{refreshing ? 'Refreshing…' : 'Refresh profiles'}</button><button aria-pressed={paused} onClick={() => setPaused((v) => !v)}>{paused ? 'Resume motion' : 'Pause motion'}</button></div>
-        {loadError ? <p className={styles.graphError} role="alert">{loadError}</p> : null}<Field illustrative={mode === 'preview' && !loadError} profiles={profiles} selected={profile?.slug ?? null} paused={paused} onSelect={selectProfile} />
-        <div className={styles.fieldBottom}><span><i /> {profiles.length} {mode === 'preview' ? 'pilot previews' : 'public profiles'}</span><span>{mode === 'preview' ? '64 illustrative dots · not a member count' : 'Approved profiles · refreshes every minute'}</span></div>
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(290px,.6fr)]">
+          <section className="relative min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#0b1818]" aria-label="Network field">
+            <div className="pointer-events-none absolute left-5 top-5 z-10 flex flex-col gap-1.5">
+              <p className="font-mono text-[10px] uppercase tracking-[.13em] text-[#bed7c4]">The network</p>
+              <p className="text-xs text-white/50">100+ members reported · 2 public cofounders</p>
+            </div>
+            <div className="h-[52svh] min-h-[350px] max-h-[660px] sm:h-[60svh] lg:h-[600px]">
+              <Field selected={founderFocus} onSelect={chooseFounder} />
+            </div>
+            <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex rounded-full border border-white/20 bg-[#091313]/90 p-1 shadow-lg backdrop-blur-md" role="group" aria-label="Select public cofounder">
+                {([
+                  { label: 'All', id: null },
+                  { label: 'Moises', id: 'moises-sanabria' },
+                  { label: 'Fabiola', id: 'fabiola-larios' },
+                ] as {label:string;id:PublicFounderId}[]).map((item) => (
+                  <button type="button" key={item.label} aria-pressed={founderFocus === item.id}
+                    onClick={() => chooseFounder(item.id)}
+                    className={'rounded-full px-3.5 py-2.5 text-xs transition ' +
+                      (founderFocus === item.id ? 'bg-[#d5e9d8] font-semibold text-[#143527]' : 'text-white/65 hover:text-white')}>
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              <Link href={founderFocus ? "/network/artwork?person=" + founderFocus : "/network/artwork"} className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-[#091313]/90 px-3.5 py-3 text-xs text-white/85 hover:text-white">
+                Open artwork <ArrowUpRight size={14} />
+              </Link>
+            </div>
+          </section>
+
+          <aside ref={detailRef} className="min-w-0 rounded-2xl border border-white/10 bg-white/[.035] p-5 sm:p-7" aria-label="Artist profile">
+            <div className="flex items-center justify-between gap-2">
+              <p className="font-mono text-[10px] uppercase tracking-[.15em] text-[#a7c9af]">Artist profile</p>
+              <span className="font-mono text-[10px] text-white/40">{mode === 'preview' ? 'Featured' : 'Explore'}</span>
+            </div>
+            {profile ? (
+              <div className="mt-6">
+                <Portrait key={profile.slug} profile={profile} size="detail" />
+                <h2 className="mt-5 text-3xl font-light tracking-[-.05em]">{profile.name}</h2>
+                <p className="mt-3 text-sm leading-relaxed text-white/65">{profile.summary}</p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {profile.practice.map((practice) => (
+                    <span key={practice} className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/70">{practice}</span>
+                  ))}
+                </div>
+                {websiteFor(profile) ? (
+                  <a href={websiteFor(profile)!} target="_blank" rel="noopener noreferrer"
+                    className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-[#cce5cf] hover:text-white">
+                    Visit website <ExternalLink size={15} />
+                  </a>
+                ) : null}
+              </div>
+            ) : <p className="mt-7 text-sm text-white/60">No profile matches those filters.</p>}
+            <div className="mt-9 border-t border-white/10 pt-5 text-xs leading-relaxed text-white/45">
+              Curated artist examples and approved public profiles. New profiles can be submitted for review.
+            </div>
+          </aside>
+        </div>
+
+        <section id="find-people" className="mt-14 scroll-mt-5">
+          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[.18em] text-[#a7c9af]">People / practice</p>
+              <h2 className="mt-3 text-3xl font-light tracking-[-.05em] sm:text-4xl">Find people through their practice.</h2>
+            </div>
+            <button onClick={() => void refreshProfiles()} disabled={refreshing} type="button" title="Refresh public profiles"
+              className="inline-flex items-center gap-2 self-start text-xs text-white/50 hover:text-white disabled:opacity-40">
+              <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} /> Refresh profiles
+            </button>
+          </div>
+
+          <div className="relative mt-6 max-w-xl">
+            <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/45" />
+            <label htmlFor="atlas-search" className="sr-only">Search names or practices</label>
+            <input id="atlas-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search names or practices" className="w-full rounded-xl border border-white/15 bg-white/[.045] py-3.5 pl-11 pr-4 text-sm text-white placeholder:text-white/40 focus:border-[#c2dbbf] focus:outline-none" />
+          </div>
+
+          <div className="-mx-3 mt-4 overflow-x-auto px-3 pb-2 sm:mx-0 sm:px-0" role="group" aria-label="Filter people by interest">
+            <div className="flex w-max min-w-full gap-2 sm:flex-wrap">
+              {INTERESTS.map((item) => (
+                <button type="button" key={item.id} aria-pressed={interests.includes(item.id)}
+                  onClick={() => toggleInterest(item.id)}
+                  className={'flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2.5 text-xs transition ' +
+                    (interests.includes(item.id) ? 'border-[#bfe3c6] bg-[#d4e8d6] text-[#173628]' : 'border-white/15 bg-white/[.03] text-white/70 hover:border-white/35')}>
+                  <span className="h-2 w-2 rounded-full" style={{ background: item.color }} aria-hidden="true" />
+                  {item.short}
+                </button>
+              ))}
+              {(interests.length > 0 || query) && (
+                <button onClick={() => { setInterests([]); setQuery('') }} type="button" className="shrink-0 px-2 py-2.5 text-xs text-[#c9e4cb]">Clear</button>
+              )}
+            </div>
+          </div>
+          {loadError ? <p role="status" className="mt-3 text-xs text-[#dac9aa]">{loadError}</p> : null}
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {profiles.map((p) => (
+              <article key={p.slug} className={'min-w-0 rounded-2xl border bg-white/[.035] p-4 transition-colors ' +
+                (profile?.slug === p.slug ? 'border-[#aacdb2]/60' : 'border-white/10 hover:border-white/25')}>
+                <button type="button" onClick={() => selectProfile(p.slug)}
+                  className="flex w-full items-start gap-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d2e9ce]">
+                  <Portrait profile={p} />
+                  <span className="min-w-0 flex-1">
+                    <strong className="block text-lg font-normal tracking-[-.03em] text-white">{p.name}</strong>
+                    <span className="mt-1 block text-xs leading-relaxed text-white/55">{p.practice.slice(0, 2).join(' · ')}</span>
+                    <span className="mt-3 block text-xs text-[#bde0c6]">View profile</span>
+                  </span>
+                </button>
+                {websiteFor(p) ? (
+                  <a href={websiteFor(p)!} target="_blank" rel="noopener noreferrer"
+                    className="mt-4 inline-flex w-full items-center justify-between border-t border-white/10 pt-3 text-xs text-white/65 hover:text-white">
+                    Website <ExternalLink size={14} />
+                  </a>
+                ) : null}
+              </article>
+            ))}
+            {profiles.length === 0 ? <p className="col-span-full py-8 text-sm text-white/55">No matches. Try another practice.</p> : null}
+          </div>
+        </section>
+
+        <div className="mt-16 border-t border-white/10 pt-10">
+          <PollPulse compact title="What the community wants to discover" />
+        </div>
+
+        <section id="passport" className="mt-16 grid gap-7 rounded-2xl border border-white/10 bg-white/[.035] p-6 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[.18em] text-[#a6c6b2]">Your Passport</p>
+            <h2 className="mt-3 text-3xl font-light tracking-[-.05em] sm:text-4xl">
+              Give your practice a place in the network.
+            </h2>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/60">
+              Start with your interests. Build a profile, connect to people and develop it as your work changes.
+            </p>
+            {passport ? <p className="mt-4 text-xs text-[#b9d8bf]">Draft for {passport.name} · {passport.interests.length} interests saved in this browser</p> : null}
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => setShowPassport(true)}
+              className="rounded-full border border-white/30 px-5 py-3 text-sm text-white hover:border-white/60">
+              {passport ? 'Edit Passport' : 'Start Passport'}
+            </button>
+            <button type="button" onClick={() => setShowProfileForm(true)}
+              className="rounded-full bg-[#d3e7d6] px-5 py-3 text-sm font-semibold text-[#123326] hover:bg-white">
+              Add public profile
+            </button>
+            {passport ? <button type="button" onClick={clearPassport} className="px-2 text-xs text-white/45 hover:text-white">Clear draft</button> : null}
+          </div>
+        </section>
+
+        <p aria-live="polite" role="status" className="mt-5 text-xs text-[#b9d8bf]">{notice}</p>
       </div>
 
-      <aside className={styles.detail} aria-label="Profile details">
-        <p className={styles.eyebrow}>03 / A closer look</p>
-        {profile ? <><div className={styles.monogram} aria-hidden>{profile.name.split(' ').map((n) => n[0]).join('')}</div><span className={styles.pending}>{mode === 'preview' ? 'Pilot profile preview' : 'Public profile'}</span><h2>{profile.name}</h2><p>{profile.summary}</p><div className={styles.tags}>{profile.practice.map((practice) => <span key={practice}>{practice}</span>)}</div><p className={styles.eyebrow}>{mode === 'preview' ? 'Example interests' : 'Interests'}</p><p>{profile.interests.map((id) => INTERESTS.find((i) => i.id === id)!.short).join(' · ')}</p>{(profile.links?.length ? profile.links : profile.website ? [{ label: 'Artist website', url: profile.website }] : []).map((link) => <a key={link.url} className={styles.external} href={link.url} target="_blank" rel="noopener noreferrer">{link.label} ↗</a>)}<button className={styles.textButton} onClick={() => void copyProfileLink()}>Copy profile link ↗</button></> : <><h2>Leave room<br />for discovery.</h2><p>No public profiles match these filters yet. Reset or try another interest.</p></>}
-        <div className={styles.boundary}><strong>A presence without exposure.</strong><p>Anonymous dots carry no identities. Lines connect profiles to interests. They do not assert personal relationships. Public profile requests are reviewed before appearing.</p></div>
-      </aside>
-    </div>
+      {showProfileForm ? (
+        <dialog ref={profileDialog} className={styles.modalShade} onCancel={() => setShowProfileForm(false)} onClose={() => setShowProfileForm(false)} aria-labelledby="atlas-form-title">
+          <section className={styles.passportForm}>
+            <div className={styles.modalTop}>
+              <span className={styles.eyebrow}>Public artist profile</span>
+              <button onClick={() => { profileDialog.current?.close(); setShowProfileForm(false) }} aria-label="Close profile form">Close</button>
+            </div>
+            <AtlasProfileForm enabled={intakeEnabled} initialName={passport?.name} initialInterests={passport?.interests} />
+          </section>
+        </dialog>
+      ) : null}
 
-    <section className={styles.profileList} aria-label="Accessible profile list"><div><p className={styles.eyebrow}>Find people through their practice</p><h2>Different practices.<br />Shared possibilities.</h2></div><div className={styles.cards}>{profiles.map((p) => <button key={p.slug} onClick={() => selectProfile(p.slug)} aria-pressed={p.slug === profile?.slug}><span className={styles.cardInitials}>{p.name.split(' ').map((n) => n[0]).join('')}</span><strong>{p.name}</strong><span>{p.summary}</span><small>View profile ↗</small></button>)}{!profiles.length ? <p role="status">No matching profiles yet.</p> : null}</div></section>
-
-    <section className={styles.passportBand} id="passport"><div><p className={styles.eyebrow}>Your DCC Passport</p><h2>A place for your practice.<br />At your own pace.</h2><p>Start with what you make and what you’re curious about. Future gatherings, projects and connections are yours to add voluntarily.</p></div><div>{passport ? <div className={styles.passportCard}><span>LOCAL PREVIEW / NOT ENROLLED</span><h3>{passport.name}</h3><p>{passport.interests.map((id) => INTERESTS.find((i) => i.id === id)!.short).join(' · ') || 'Your interests are yours to choose.'}</p><p>Preferred future visibility: {passport.visibility}</p><button onClick={() => setShowPassport(true)}>Edit preview</button><button onClick={clearPassport}>Remove preview</button></div> : <><button className={styles.primary} onClick={() => setShowPassport(true)}>Preview my Passport ↗</button><p className={styles.small}>An exploration, not an account or membership application.</p></>}</div></section>
-    <p className={styles.notice} role="status">{notice}</p>
-    <footer className={styles.footer}>COMMONS / SIGNAL / ATLAS / LABS / GATHERINGS <span>Built around participation, not constant attention.</span></footer>
-
-    {showProfileForm ? <dialog ref={profileDialog} className={styles.modalShade} aria-labelledby="atlas-form-title" onCancel={() => setShowProfileForm(false)}><section className={styles.passportForm}><div className={styles.modalTop}><span className={styles.eyebrow}>Public profile / request</span><button onClick={() => setShowProfileForm(false)} aria-label="Close profile form">Close ×</button></div><AtlasProfileForm enabled={intakeEnabled} /></section></dialog> : null}
-    {showPassport ? <dialog ref={passportDialog} className={styles.modalShade} aria-labelledby="passport-title" onCancel={() => setShowPassport(false)}><section className={styles.passportForm}><div className={styles.modalTop}><span className={styles.eyebrow}>Passport / local preview</span><button onClick={() => setShowPassport(false)} aria-label="Close Passport preview">Close ×</button></div><h2 id="passport-title">Start with your curiosity.</h2><p>This form creates a preview in this browser tab. Nothing is sent to DCC, added to Airtable, or published.</p><form onSubmit={savePassport} key={passport?.name ?? 'new'}><label>Your display name<input name="name" maxLength={80} required defaultValue={passport?.name ?? ''} autoComplete="off" /></label><fieldset><legend>What would you like to explore?</legend>{INTERESTS.map((i) => <label key={i.id}><input type="checkbox" name="interests" value={i.id} defaultChecked={passport?.interests.includes(i.id) ?? false} />{i.label}</label>)}</fieldset><label>Preferred visibility when enrollment opens<select name="visibility" defaultValue={passport?.visibility ?? 'private'}><option value="private">Private: only me and authorized stewards</option><option value="members">Verified members only</option><option value="public">Public profile, after separate approval</option></select></label><p className={styles.small}>This preference is not a consent grant. Public listing, introduction requests, editorial features and updates will have separate choices.</p><button className={styles.primary} type="submit">Create local preview ↗</button></form></section></dialog> : null}
-  </section>
+      {showPassport ? (
+        <dialog ref={passportDialog} className={styles.modalShade} onCancel={() => setShowPassport(false)} onClose={() => setShowPassport(false)} aria-labelledby="passport-title">
+          <section className={styles.passportForm}>
+            <div className={styles.modalTop}>
+              <span className={styles.eyebrow}>Your Passport</span>
+              <button onClick={() => { passportDialog.current?.close(); setShowPassport(false) }} aria-label="Close Passport">Close</button>
+            </div>
+            <h2 id="passport-title">Start with your curiosity.</h2>
+            <p>Choose what you explore. You can carry this draft into your public profile.</p>
+            <form onSubmit={savePassport} key={passport?.name ?? 'new'}>
+              <label>Display name<input name="name" maxLength={80} required defaultValue={passport?.name ?? ''} autoComplete="name" /></label>
+              <fieldset>
+                <legend>Interests</legend>
+                {INTERESTS.map((item) => (
+                  <label key={item.id}><input type="checkbox" name="interests" value={item.id} defaultChecked={passport?.interests.includes(item.id) ?? false} />{item.label}</label>
+                ))}
+              </fieldset>
+              <label>Profile visibility
+                <select name="visibility" defaultValue={passport?.visibility ?? 'private'}>
+                  <option value="private">Private draft</option>
+                  <option value="members">Visible to members after enrollment</option>
+                  <option value="public">Public when approved</option>
+                </select>
+              </label>
+              <button className={styles.primary} type="submit">Save Passport draft</button>
+            </form>
+            {passport ? <button type="button" onClick={continueToProfile} className={styles.textButton}>Continue to public profile</button> : null}
+          </section>
+        </dialog>
+      ) : null}
+    </section>
+  )
 }
