@@ -65,7 +65,7 @@ export default function NetworkArtworkProposalPage() {
             <AggregateNetworkPreview />
           </div>
           <div className="flex flex-col justify-center border-t border-white/10 p-7 md:border-l md:border-t-0 sm:p-10">
-            <p className="font-mono text-xs uppercase tracking-[.18em] text-[#9cbfa8]">The interface becomes the artwork</p>
+            <p className="font-mono text-xs uppercase tracking-[.18em] text-[#9cbfa8]">People create the architecture</p>
             <h2 className="mt-5 text-3xl font-light leading-tight tracking-[-.05em] sm:text-4xl">A structure that can be rewritten.</h2>
             <p className="mt-5 text-sm leading-relaxed text-white/65">Each dot represents a hypothetical person-position, each line a connection between two positions. Practice and activity are visual lenses. Actual membership and social ties remain private until permission is given.</p>
             <p className="mt-4 text-xs leading-relaxed text-white/45">This is a structural artwork study, not a map of real members or confirmed introductions.</p>
