@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { INTERESTS, PILOT_PREVIEWS, filterProfiles, PASSPORT_PREVIEW_KEY, readPassportPreview, type InterestId, type PassportPreview, type AtlasProfile } from '@/lib/dcc/community/atlas'
 import styles from './community.module.css'
@@ -114,6 +115,10 @@ export function CommunityAtlas() {
       <div className={styles.headerActions}><button className={styles.primary} onClick={() => setShowProfileForm(true)}>Add your public profile <span aria-hidden>↗</span></button><button className={styles.textButton} onClick={() => setShowPassport(true)}>Explore your Passport ↗</button><p>Optional participation.<br />No need to follow every conversation.</p></div>
     </header>
 
+    <div className="mb-7 flex flex-wrap items-center justify-between gap-5 rounded-xl border border-[#9bbea4]/40 bg-[#17302b] px-5 py-5 text-[#e7f2e7]">
+      <div className="max-w-2xl"><p className="text-[10px] uppercase tracking-[.2em] text-[#a6d2b2]">A related artwork / collective network authorship</p><h2 className="mt-2 text-xl font-light tracking-[-.04em]">The Network Makes Itself</h2><p className="mt-2 text-sm leading-relaxed text-[#b8cfc1]">The Community Atlas is for discovery; the separate force-directed artwork explores what it means for people to author an institution’s living architecture. The artwork uses fictional nodes until specific public permissions exist.</p></div>
+      <div className="flex flex-wrap gap-3"><Link href="/network/artwork" className="rounded-full bg-[#d3e7d6] px-4 py-3 text-sm font-medium text-[#173127] hover:bg-white">Explore artwork ↗</Link><Link href="/network/artwork/proposal" className="rounded-full border border-[#c4d6c8]/50 px-4 py-3 text-sm text-[#e5f2e5] hover:bg-white/10">Project proposal ↗</Link></div>
+    </div>
     <div className={styles.workspace}>
       <aside className={styles.filters} aria-label="Discover by interest">
         <p className={styles.eyebrow}>01 / Follow your curiosity</p>
