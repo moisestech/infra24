@@ -3,7 +3,7 @@ import { CollectiveNetworkArtwork } from '@/components/dcc/artwork/CollectiveNet
 
 export const metadata: Metadata = {
   title: 'The Network Makes Itself — DCC Miami',
-  description: 'A minimal Three.js portrait of the reported 100+ DCC Commons members as anonymous marks, with a separate hypothetical connection study. No private identities or relationships are published.',
+  description: 'A minimal interactive network artwork: 100+ reported DCC members, public cofounders, one documented relationship, and six verified WhatsApp poll totals—without identifying voters or private ties.',
   robots: { index: true, follow: true },
 }
 
