@@ -7,6 +7,7 @@ import { dccSiteMeta, marketingHomeMeta } from '@/lib/marketing/content';
 import { getSiteUrl } from '@/lib/marketing/site-url';
 import { cn } from '@/lib/utils';
 import './cdc-marketing-theme.css';
+import './dcc-network-theme.css';
 
 /** Marketing-only (OFL): Space Grotesk for UI + display; IBM Plex Mono for labels / mono strip. */
 const dccDisplay = Space_Grotesk({
