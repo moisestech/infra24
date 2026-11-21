@@ -1,351 +1,97 @@
+import Link from 'next/link'
 import type { Metadata } from 'next'
-import { ClientQuestionnaire } from '@/components/dcc/fabrication/proposal/ClientQuestionnaire'
-import { PilotEstimate } from '@/components/dcc/fabrication/proposal/PilotEstimate'
-import { CAROL_PILOT_ESTIMATE } from '@/lib/dcc/fabrication/proposals/pilot-estimates'
 import { ProposalChrome } from '@/components/dcc/fabrication/proposal/ProposalChrome'
-import { ProposalMediaFigure } from '@/components/dcc/fabrication/proposal/ProposalMediaFigure'
-import {
-  ApprovalBlock,
-  DocumentationStages,
-  MachineNote,
-  MaterialDirectionsList,
-  NumberedPhaseSteps,
-  PaymentTerms,
-  PendingQuoteLayers,
-  ProcessFlow,
-  ProductionNetworkFlow,
-  ProjectCredits,
-  ProjectGoal,
-  ProjectStatus,
-  ProposalHero,
-  ProposalSection,
-  ScopeList,
-  SourcePathwaysGrid,
-} from '@/components/dcc/fabrication/proposal/modules'
-import { getMachineCatalogEntry } from '@/lib/dcc/fabrication'
-import { hasFabricateProposalsAccess, proposalPageMetadata } from '@/lib/dcc/fabrication/proposal-auth'
-import {
-  CAROL_ATTACHMENT_OPTIONS,
-  CAROL_CLIENT_QUESTIONS,
-  CAROL_CONFIRMED_INPUTS,
-  CAROL_CREDITS,
-  CAROL_DOCUMENTATION_STAGES,
-  CAROL_FUTURE_SCOPE_EXCLUDED,
-  CAROL_MATERIAL_DIRECTIONS,
-  CAROL_METAL_CASTING_NOTE,
-  CAROL_OBJECT_ANALYSIS,
-  CAROL_PHASE_1_STEPS,
-  CAROL_PRIOR_METAL_STUDY,
-  CAROL_PRODUCTION_NETWORK,
-  CAROL_PROPOSAL,
-  CAROL_PROJECT_SUMMARY,
-  CAROL_PROJECT_THESIS,
-  CAROL_QUOTE_LAYERS,
-  CAROL_SOURCE_PATHWAYS,
-  CAROL_SOURCE_PATHWAY_NOTE,
-  CAROL_STATUS_SUBLABEL,
-  CAROL_TESTING_FOCUS,
-} from '@/lib/dcc/fabrication/proposals/carol-haggiag'
-
-export async function generateMetadata(): Promise<Metadata> {
-  return proposalPageMetadata({
-    title: 'Carol Haggiag — Lightweight Earring Prototype Study',
-    description:
-      'A focused lightweight earring prototype study — preserving texture from Carol’s brass casts while solving for weight, mirrored pair geometry, and wearability.',
-  })
-}
+import { notFound } from 'next/navigation'
+import { hasDccClientWorkspaceAccess } from '@/lib/dcc/fabrication/client-workspace-access'
+import { CAROL_CLIENT, CAROL_FDM_PROJECTS, carolProjectPath } from '@/lib/dcc/fabrication/proposals/carol-client'
 
 export const dynamic = 'force-dynamic'
 
-function media(id: string) {
-  const slot = CAROL_PROPOSAL.media.find((item) => item.id === id)
-  if (!slot) return null
-  return <ProposalMediaFigure slug={CAROL_PROPOSAL.slug} slot={slot} />
+export async function generateMetadata(): Promise<Metadata> {
+  if (!(await hasDccClientWorkspaceAccess(CAROL_CLIENT.id))) {
+    return { title: 'Private project', robots: { index: false, follow: false } }
+  }
+  return {
+    title: 'Your DCC projects',
+    description: 'Private overview of two individually scoped FDM prototype studies.',
+    robots: { index: false, follow: false },
+  }
 }
 
-export default async function CarolHaggiagProposalPage() {
-  if (!(await hasFabricateProposalsAccess())) return null
-  const job = CAROL_PROPOSAL.job
-  const machine = job.machineId ? getMachineCatalogEntry(job.machineId) : undefined
-  const pricing = CAROL_PROPOSAL.pricing
+/** One client reference, two separately approvable FDM studies.
+ * Pages require a real Clerk identity allowlisted to this client or DCC staff.
+ */
+export default async function CarolProjectsPage() {
+  if (!(await hasDccClientWorkspaceAccess(CAROL_CLIENT.id))) notFound()
 
   return (
-    <ProposalChrome job={job} sections={CAROL_PROPOSAL.sections}>
-      <ProposalHero
-        kicker={CAROL_PROPOSAL.heroKicker}
-        title={CAROL_PROPOSAL.heroTitle}
-        dek={CAROL_PROPOSAL.heroDek}
-      >
-        <ProjectStatus status={job.status} substatus={CAROL_STATUS_SUBLABEL} />
-        <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
-          Project lead: Moises Sanabria · Creative technology + fabrication advisor
-        </p>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {media('C_SOURCE_FRONT')}
-          {media('C_SOURCE_BACK')}
-        </div>
-        <div className="mt-4 max-w-2xl">{media('C_METAL_CAST')}</div>
-      </ProposalHero>
-
-      <ProposalSection id="object" kicker="02 · The object" title="The object">
-        <ProjectGoal>
-          <p className="text-base font-medium text-neutral-900 dark:text-neutral-100">
-            {CAROL_PROJECT_THESIS}
+    <ProposalChrome>
+      <div className="space-y-6">
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--cdc-teal)]">
+            Digital Culture Center Miami · Private project overview
           </p>
-          <p className="mt-3">{CAROL_PROJECT_SUMMARY}</p>
-          <p className="text-neutral-600 dark:text-neutral-400">
-            Carol Haggiag · jewelry / sculptural object · lightweight prototype study
-          </p>
-        </ProjectGoal>
-        <dl className="mt-6 grid gap-4 sm:grid-cols-2">
-          {Object.entries(CAROL_OBJECT_ANALYSIS).map(([key, value]) => (
-            <div
-              key={key}
-              className="rounded-2xl border border-[var(--cdc-border)] p-4"
-            >
-              <dt className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
-                {key}
-              </dt>
-              <dd className="mt-2 text-sm text-neutral-700 dark:text-neutral-300">
-                {value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </ProposalSection>
-
-      <ProposalSection
-        id="prior-material-study"
-        kicker="03 · Prior material study"
-        title={CAROL_PRIOR_METAL_STUDY.heading}
-      >
-        <p>{CAROL_PRIOR_METAL_STUDY.intro}</p>
-        <p className="mt-3 text-sm font-medium text-neutral-800 dark:text-neutral-200">
-          {CAROL_PRIOR_METAL_STUDY.shift}
-        </p>
-        <ul className="mt-6 grid gap-3 sm:grid-cols-3">
-          {CAROL_PRIOR_METAL_STUDY.criteria.map((item) => (
-            <li
-              key={item.label}
-              className="rounded-xl border border-[var(--cdc-border)] px-4 py-3"
-            >
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
-                {item.label}
-              </p>
-              <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">
-                {item.note}
-              </p>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-6 max-w-xl">{media('C_METAL_CAST')}</div>
-      </ProposalSection>
-
-      <ProposalSection
-        id="testing"
-        kicker="04 · What we’re testing"
-        title="What we’re testing"
-      >
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Prototype 1 should answer whether the form can become wearable earrings
-          while preserving texture and sculptural character — with substantially
-          less weight than the brass reference.
-        </p>
-        <ul className="mt-4 list-disc space-y-2 pl-5">
-          {CAROL_TESTING_FOCUS.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </ProposalSection>
-
-      <ProposalSection
-        id="material-directions"
-        kicker="05 · Material directions"
-        title="Material directions"
-      >
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Carol asked for two transparent colorways: fuchsia and high-visibility
-          green. Both are tinted clear resin. The proposed first material test is a thin hollow
-          shell with a drain, not a solid copy of the brass volume. The two requested
-          colorways are separate production tests: the planning allowance below covers
-          only one first-color test. Gray and black resin, and an FDM silhouette, stay optional
-          checks — they are not the colors she asked for.
-        </p>
-        <div className="mt-4">
-          <MaterialDirectionsList items={CAROL_MATERIAL_DIRECTIONS} />
-        </div>
-        <p className="mt-4 rounded-xl border border-[var(--cdc-border)] px-4 py-3 text-sm text-neutral-700 dark:text-neutral-300">
-          {CAROL_METAL_CASTING_NOTE}
-        </p>
-        {media('C_MATERIAL_DIRECTION')}
-      </ProposalSection>
-
-      <ProposalSection id="on-the-body" kicker="06 · On the body" title="On the body">
-        <p>
-          Wearability is not only silhouette. Scale, weight, movement, and how the
-          earrings relate to the body must be tested — with fingers pointing{' '}
-          <strong>down</strong>, as in the reference study below.
-        </p>
-        <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
-          Target scale: <strong>about 2 inches</strong> — exact length still
-          coming. The pair should be <strong>mirrored</strong>.
-        </p>
-        {media('C_WEARABILITY')}
-      </ProposalSection>
-
-      <ProposalSection id="connection" kicker="07 · Connection" title="Connection">
-        <p>
-          A small attachment loop appears at the wrist in the references. Strength,
-          orientation, and hardware must be tested — no option is approved yet.
-        </p>
-        <ul className="mt-4 space-y-3">
-          {CAROL_ATTACHMENT_OPTIONS.map((option) => (
-            <li
-              key={option.id}
-              className="rounded-xl border border-[var(--cdc-border)] px-4 py-3 text-sm"
-            >
-              <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-                {option.label}
-              </span>
-              <span className="text-neutral-600 dark:text-neutral-400">
-                {' '}
-                — {option.note}
-              </span>
-            </li>
-          ))}
-        </ul>
-        {media('C_ATTACHMENT')}
-      </ProposalSection>
-
-      <ProposalSection
-        id="image-to-object"
-        kicker="08 · From object to prototype"
-        title="From object to prototype"
-      >
-        <SourcePathwaysGrid
-          pathways={CAROL_SOURCE_PATHWAYS}
-          note={CAROL_SOURCE_PATHWAY_NOTE}
-        />
-      </ProposalSection>
-
-      <ProposalSection
-        id="first-study"
-        kicker="09 · Proposed first study"
-        title="Phase 1 · Lightweight Earring Prototype Study"
-      >
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          A small, bounded first engagement — not a broad development program.
-          Prototype 1 is intended to answer the material and wearability question
-          before committing to a finished pair.
-        </p>
-        <div className="mt-4">
-          <NumberedPhaseSteps steps={CAROL_PHASE_1_STEPS} />
-        </div>
-      </ProposalSection>
-
-      <ProposalSection
-        id="questions"
-        kicker="10 · Open questions"
-        title="Open questions"
-      >
-        <ClientQuestionnaire
-          projectLabel={CAROL_PROPOSAL.job.jobNumber}
-          confirmedItems={CAROL_CONFIRMED_INPUTS}
-          questions={CAROL_CLIENT_QUESTIONS}
-        />
-      </ProposalSection>
-
-      <ProposalSection
-        id="environment"
-        kicker="11 · Prototype environment"
-        title="Prototype environment"
-      >
-        <p>
-          Goal: one first-color thin hollow resin shell at Bakehouse. The requested
-          fuchsia and high-visibility green variants require separately approved
-          material tests after feasibility is established.
-        </p>
-        <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
-          The resin workflow below illustrates the potential transparent studies,
-          not completed production. FDM is only a silhouette check.
-        </p>
-        {machine ? <MachineNote machine={machine} /> : null}
-        {media('C_RESIN_WORKFLOW')}
-        <div className="mt-6 rounded-2xl border border-[var(--cdc-border)] p-4 text-sm">
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
-            FDM (conditional)
-          </p>
-          <p className="mt-2 text-neutral-700 dark:text-neutral-300">
-            Potential FDM node at Bakehouse — used for physical scale, silhouette,
-            and lightweight study when it answers a specific question.
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+            {CAROL_CLIENT.name}
+          </h1>
+          <p className="mt-2 max-w-2xl text-neutral-600 dark:text-neutral-400">
+            Your two fabrication studies, together in one place. Each has its own model preview,
+            scope and eventual quote. You can review or approve either independently once prices are ready.
           </p>
         </div>
-      </ProposalSection>
 
-      <ProposalSection
-        id="whats-next"
-        kicker="12 · What could come next"
-        title="What could come next"
-      >
-        <ProcessFlow steps={CAROL_PROPOSAL.processSteps} current="Carol’s physical cast" />
-        <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
-          Only if Prototype 1 proves worthwhile — a second refinement or additional
-          material study. Metal casting is not the current direction.
-        </p>
-        <div className="mt-6">
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-500">
-            Production network
+        <div className="rounded-2xl border border-[var(--cdc-border)] bg-neutral-50 p-4 text-sm dark:bg-neutral-900">
+          <p className="font-medium text-neutral-900 dark:text-neutral-100">Where we are</p>
+          <p className="mt-1 text-neutral-600 dark:text-neutral-400">
+            We are preparing FDM models and checking local production options. Both prices and printer
+            assignments are pending. No order or payment has been authorized.
           </p>
-          <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
-            Appropriate expertise at each stage — kept small and focused for this
-            first study.
-          </p>
-          <div className="mt-4">
-            <ProductionNetworkFlow nodes={CAROL_PRODUCTION_NETWORK} />
-          </div>
         </div>
-      </ProposalSection>
 
-      <ProposalSection
-        id="documentation"
-        kicker="13 · Documentation"
-        title="Documentation / project status"
-      >
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Living case study — nothing public without Carol’s approval.
+        <div className="grid gap-4">
+          {CAROL_CLIENT.projectKeys.map((key, index) => {
+            const project = CAROL_FDM_PROJECTS[key]
+            return (
+              <Link
+                key={project.slug}
+                href={carolProjectPath(project.slug)}
+                className="group block rounded-2xl border border-[var(--cdc-border)] bg-white p-5 transition hover:border-[var(--cdc-teal)] hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cdc-teal)] dark:bg-neutral-950"
+              >
+                <div className="flex gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-100 font-mono text-sm text-neutral-600 dark:bg-neutral-900 dark:text-neutral-300">
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                      {project.reference} · FDM / PLA
+                    </p>
+                    <h2 className="mt-1 text-xl font-semibold text-neutral-900 group-hover:underline dark:text-neutral-100">
+                      {project.title}
+                    </h2>
+                    <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">{project.subtitle}</p>
+                    <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-neutral-600 dark:text-neutral-400">
+                      <span className="inline-flex items-center gap-2">
+                        <span className="h-4 w-4 rounded-full border border-black/10" style={{ backgroundColor: project.color.hex }} />
+                        High-vis lime green · preferred
+                      </span>
+                      <span>Model awaiting verified STL</span>
+                      <span>Quote being prepared</span>
+                    </div>
+                    <p className="mt-3 text-sm font-medium text-[var(--cdc-teal)]">View project and 3D model →</p>
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+
+        <p className="text-xs leading-relaxed text-neutral-500">
+          These are two FDM/filament proposal drafts, not resin-print quotes. The earlier
+          resin material study was an exploration and its $225 estimate is not being
+          presented as an FDM price. The octopus experiment is distinct from the rescheduled
+          Moonlighter workshop. Public images or case studies require separate permission.
         </p>
-        <DocumentationStages stages={CAROL_DOCUMENTATION_STAGES} />
-        <ProjectCredits credits={CAROL_CREDITS} />
-      </ProposalSection>
-
-      <ProposalSection id="price" kicker="14 · Price structure" title="Price structure">
-        {pricing ? (
-          <>
-            <PilotEstimate plan={CAROL_PILOT_ESTIMATE} />
-            <p className="text-xs text-neutral-500">
-              The detailed stages below describe the broader potential engagement.
-              Their prices remain pending; they are not included in the first-test allowance.
-            </p>
-            <PendingQuoteLayers layers={CAROL_QUOTE_LAYERS} intro={pricing.terms} />
-            <PaymentTerms
-              terms={pricing.terms}
-              includedAttempts={pricing.includedAttempts}
-              reprintNote={pricing.reprintNote}
-            />
-          </>
-        ) : null}
-      </ProposalSection>
-
-      <ProposalSection id="scope" kicker="15 · Scope" title="Scope">
-        <ScopeList
-          included={CAROL_PROPOSAL.scopeIncluded}
-          excluded={[...CAROL_FUTURE_SCOPE_EXCLUDED]}
-        />
-      </ProposalSection>
-
-      <ProposalSection id="approval" kicker="16 · Next step" title="Next step">
-        <ApprovalBlock nextStep={CAROL_PROPOSAL.approvalNextStep} />
-      </ProposalSection>
+      </div>
     </ProposalChrome>
   )
 }

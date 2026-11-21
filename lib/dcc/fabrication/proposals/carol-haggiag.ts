@@ -53,7 +53,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
     documentationRights: { ...DEFAULT_DOCUMENTATION_RIGHTS },
     ownership: { ...DEFAULT_CLIENT_OWNERSHIP },
     createdAt: '2026-09-21',
-    updatedAt: '2026-10-17',
+    updatedAt: '2026-11-14',
   },
   sections: [
     { id: 'object', label: 'The object', shortLabel: 'Object' },
@@ -163,7 +163,7 @@ export const CAROL_PROPOSAL: ClientProposal = {
   scopeExcluded: CAROL_FUTURE_SCOPE_EXCLUDED,
   requiredInputs: CAROL_CLIENT_QUESTIONS.map((q) => q.text),
   approvalNextStep:
-    'Bring the existing metal chicken-foot pieces to Studio 43 for an in-person object review. At the meeting we will inspect, measure, weigh, record the exact length (working note: about 2 inches), evaluate attachment orientation, and determine the simplest digital capture route. Moises will send a small fixed scope and price before any fabrication begins. This page does not collect payment.',
+    'The existing brass chicken-foot pieces are now at Bakehouse Studio 43. Next: document their condition and custody, take private reference photos, measure and weigh the source, then confirm the exact length (earlier 2.5-inch request; later working note about 2 inches), materials and attachment orientation with Carol. After assessing digital capture and real operator availability, Moises will send a small fixed scope and price before fabrication. Public photographs or video require separate permission. This page does not collect payment.',
   modules: [
     'HERO',
     'OBJECT',
