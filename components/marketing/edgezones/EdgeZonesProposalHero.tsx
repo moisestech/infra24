@@ -8,6 +8,8 @@ import { useEdgeZonesLocale } from '@/components/marketing/edgezones/EdgeZonesLo
 import { EDGE_ZONES_CTA_ICONS_BY_HREF, EDGE_ZONES_HERO_CHIP_ICONS } from '@/lib/marketing/edgezones-icons'
 import { edgeZonesHeroCollagePhotos } from '@/lib/marketing/edgezones-media'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
+import { EDGE_ZONES_GALLERY_MARK_URL } from '@/lib/marketing/edgezones-network-index'
 
 export function EdgeZonesProposalHero() {
   const { portal } = useEdgeZonesLocale()
@@ -19,6 +21,16 @@ export function EdgeZonesProposalHero() {
       <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(340px,520px)] lg:items-start">
           <div>
+            <div className="mb-6 flex items-center gap-4 border-l-4 border-[var(--ez-orange)] bg-[var(--ez-surface)] p-4">
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded bg-white p-1">
+                <Image src={EDGE_ZONES_GALLERY_MARK_URL} alt="Edge Zones Gallery logo" width={72} height={72} className="h-full w-full object-contain" />
+              </div>
+              <div>
+                <p className="ez-module-number">HOST INSTITUTION · EDGE ZONES</p>
+                <a href="https://edgezones.org" target="_blank" rel="noopener noreferrer" className="ez-heading text-2xl leading-tight underline decoration-[var(--ez-blue)] underline-offset-4">Edge Zones</a>
+                <p className="ez-caption text-[var(--ez-muted)]">Miami · Experimental art since 1996</p>
+              </div>
+            </div>
             <p className="ez-heading ez-caption flex items-center gap-2 text-[var(--ez-muted)]">
               <EdgeZonesIconBadge icon="sparkles" accent="teal" size="compact" />
               {hero.eyebrow}

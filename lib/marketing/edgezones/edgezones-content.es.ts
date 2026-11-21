@@ -9,9 +9,9 @@ export const edgeZonesPortalEs: EdgeZonesPortalContent = {
     'Presentada en Edge Zones, curada por Jordan Horton, con plataforma digital y apoyo de programación pública de DCC Miami.',
   shortDescription:
     'Un marco de colaboración para el arte digital en Miami que conecta una exposición liderada por un curador con visibilidad de artistas, programación pública, documentación digital y un archivo en línea a largo plazo.',
-  metaTitle: 'DCC Miami × Edge Zones — Touching Grass',
+  metaTitle: 'Touching Grass en Edge Zones — Propuesta expositiva',
   hero: {
-    eyebrow: 'DCC Miami × Edge Zones',
+    eyebrow: 'Presentada en Edge Zones · Propuesta en desarrollo',
     title: 'Touching Grass',
     subtitle: 'Cultura digital, realidad física',
     intro: `Touching Grass es un concepto de exposición que explora la relación entre la cultura digital y la realidad encarnada, ecológica y material.
@@ -33,14 +33,13 @@ La exposición reúne a artistas cuyas prácticas examinan cómo las tecnología
       title: 'Edge Zones',
       subtitle: 'Espacio anfitrión físico',
       intro:
-        'Edge Zones proporciona el espacio de exposición, la gestión estándar de la muestra y las recepciones de apertura y clausura.',
+        'Edge Zones es la sede institucional y aporta el espacio y una recepción de apertura, según los términos del 6 de noviembre. Otras actividades requieren aprobación.',
       items: [
         'Espacio anfitrión físico',
         'Recepción de apertura',
-        'Recepción de clausura',
         'Gestión estándar de exposición',
         'Visibilidad en el sitio web y redes sociales existentes de Edge Zones',
-        'Honorario curatorial de $500 bajo la estructura estándar de curador invitado de Edge Zones',
+        'Honorario de $500 para la exposición; destino y aplicación a producción pendientes del acuerdo escrito',
       ],
       accent: 'coral',
       href: EDGE_ZONES_GALLERY_WEBSITE,
@@ -327,6 +326,7 @@ La exposición reúne a artistas cuyas prácticas examinan cómo las tecnología
     { id: 'concept', label: 'Concepto' },
     { id: 'artists', label: 'Artistas' },
     { id: 'support', label: 'Apoyo DCC' },
+    { id: 'deliverables', label: 'Entregables' },
     { id: 'programs', label: 'Programas' },
     { id: 'archive', label: 'Archivo' },
     { id: 'pdf', label: 'PDF' },
