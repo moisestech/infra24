@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ForceGraph3DInstance, LinkObject, NodeObject } from '3d-force-graph'
 import { makeIllustrativePeopleGraph, colorForPerson, type LocalExperiment } from '@/lib/dcc/artwork/people-graph'
+import { makeMembershipPresenceGraph, presenceSpherePosition } from '@/lib/dcc/artwork/member-presence'
 import type { PatternLens } from '@/lib/dcc/artwork/network-patterns'
 
 export type { LocalExperiment as LocalNode } from '@/lib/dcc/artwork/people-graph'
@@ -17,13 +18,29 @@ type ConnectionLink = LinkObject<PersonNode> & {
   color: string
 }
 export type PeopleNetworkFieldProps = {
+  mode?: 'presence' | 'study'
   lens: PatternLens
   selected: string | null
   onSelect: (id: string) => void
   local: LocalExperiment | null
 }
 
-function graphData(lens: PatternLens, local: LocalExperiment | null) {
+function graphData(lens: PatternLens, local: LocalExperiment | null, mode: 'presence' | 'study') {
+  if (mode === 'presence') {
+    const presence = makeMembershipPresenceGraph()
+    return {
+      nodes: presence.marks.map((mark, i) => {
+        const point = presenceSpherePosition(i, presence.marks.length)
+        return {
+          id: mark.id, label: mark.label, color: '#adcfc0', local: false,
+          x: point.x, y: point.y, z: point.z,
+          fx: point.x, fy: point.y, fz: point.z,
+        }
+      }),
+      // Shared group membership is not a person-to-person relationship.
+      links: [] as { source: string; target: string; kind: 'illustrative' | 'local'; color: string }[],
+    }
+  }
   const study = makeIllustrativePeopleGraph(local)
   return {
     nodes: study.people.map((person) => ({
@@ -44,7 +61,7 @@ function idOf(value: string | PersonNode | number | undefined) {
   return value?.id ?? ''
 }
 
-export default function PeopleNetworkField({ lens, selected, onSelect, local }: PeopleNetworkFieldProps) {
+export default function PeopleNetworkField({ mode = 'presence', lens, selected, onSelect, local }: PeopleNetworkFieldProps) {
   const host = useRef<HTMLDivElement>(null)
   const instanceRef = useRef<ForceGraph3DInstance<PersonNode, ConnectionLink> | null>(null)
   const callbacks = useRef({ onSelect, selected })
@@ -54,7 +71,7 @@ export default function PeopleNetworkField({ lens, selected, onSelect, local }: 
   const [ready, setReady] = useState(false)
   const [unavailable, setUnavailable] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
-  const data = useMemo(() => graphData(lens, local), [lens, local])
+  const data = useMemo(() => graphData(lens, local, mode), [lens, local, mode])
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -95,14 +112,16 @@ export default function PeopleNetworkField({ lens, selected, onSelect, local }: 
           .showNavInfo(false)
           .nodeResolution(20)
           .nodeOpacity(0.94)
-          .nodeRelSize(3.8)
-          .nodeVal((node) => node.local ? 2.7 : node.id === callbacks.current.selected ? 2.4 : 1.35)
+          .nodeRelSize(2.9)
+          .nodeVal((node) => node.local ? 2.7 : node.id === callbacks.current.selected ? 2.4 : 1.15)
           .nodeColor((node) => node.id === callbacks.current.selected ? '#fff7dd' : node.color)
           .nodeLabel((node) => {
             const label = document.createElement('span')
             label.textContent = node.local
               ? 'Your local illustration · not submitted'
-              : node.label + ' · illustrative position, not a real member'
+              : node.id.startsWith('member-mark-')
+                ? 'Count-based member mark · anonymous placement, not a roster identifier'
+                : node.label + ' · illustrative position, not a real member'
             return label
           })
           .linkColor((link) => {
@@ -163,13 +182,14 @@ export default function PeopleNetworkField({ lens, selected, onSelect, local }: 
       nodes: data.nodes.map((node) => Object.assign(prior.get(node.id) ?? {}, node)),
       links: data.links.map((edge) => ({ ...edge })),
     })
+    graph.zoomToFit(700, 75)
     graph.d3ReheatSimulation()
   }, [ready, data])
 
   useEffect(() => {
     if (!ready || !instanceRef.current) return
     const graph = instanceRef.current
-    graph.nodeVal((node) => node.local ? 2.7 : node.id === selected ? 2.4 : 1.35)
+    graph.nodeVal((node) => node.local ? 2.7 : node.id === selected ? 2.4 : 1.15)
     graph.nodeColor((node) => node.id === selected ? '#fff7dd' : node.color)
     graph.linkWidth((link) =>
       selected && [idOf(link.source), idOf(link.target)].includes(selected)
@@ -186,7 +206,7 @@ export default function PeopleNetworkField({ lens, selected, onSelect, local }: 
   return (
     <div className="relative h-full w-full">
       <div ref={host} className="h-full min-h-[400px] w-full" role="img"
-        aria-label="3D illustrative network. Every dot is a person-position and every line represents a hypothetical connection between two positions. Neither maps to DCC private records."
+        aria-label={mode === "presence" ? "Three-dimensional arrangement of anonymous marks, one for each of at least 101 founder-reported WhatsApp members. No real member identity or person-to-person edge is exposed." : "3D illustrative people-and-connections network; all interpersonal edges are fictional."}
       />
       {!ready && !unavailable ? <p role="status" className="pointer-events-none absolute bottom-5 left-5 text-xs text-white/45">Building the field…</p> : null}
       {unavailable ? <p role="status" className="absolute inset-0 flex items-center justify-center p-8 text-center text-sm text-white/65">

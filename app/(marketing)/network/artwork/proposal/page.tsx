@@ -61,14 +61,14 @@ export default function NetworkArtworkProposalPage() {
       <section className="mx-auto max-w-[1400px] px-5 pb-16 sm:px-10" aria-label="Three dimensional network artwork study">
         <div className="grid gap-0 overflow-hidden rounded-lg bg-[#0b1717] text-[#e8f2e9] md:grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)]">
           <div className="relative h-[420px] sm:h-[520px]">
-            <div className="pointer-events-none absolute left-5 top-5 z-10 font-mono text-xs uppercase tracking-[.18em] text-[#b5d9ba]">Illustrative people + connections</div>
+            <div className="pointer-events-none absolute left-5 top-5 z-10 font-mono text-xs uppercase tracking-[.18em] text-[#b5d9ba]">100+ founder-reported member presence</div>
             <AggregateNetworkPreview />
           </div>
           <div className="flex flex-col justify-center border-t border-white/10 p-7 md:border-l md:border-t-0 sm:p-10">
             <p className="font-mono text-xs uppercase tracking-[.18em] text-[#9cbfa8]">People create the architecture</p>
             <h2 className="mt-5 text-3xl font-light leading-tight tracking-[-.05em] sm:text-4xl">A structure that can be rewritten.</h2>
-            <p className="mt-5 text-sm leading-relaxed text-white/65">Each dot represents a hypothetical person-position, each line a connection between two positions. Practice and activity are visual lenses. Actual membership and social ties remain private until permission is given.</p>
-            <p className="mt-4 text-xs leading-relaxed text-white/45">This is a structural artwork study, not a map of real members or confirmed introductions.</p>
+            <p className="mt-5 text-sm leading-relaxed text-white/65">The Commons reports more than 100 members. Each mark in this study stands for one member in the minimum reported count, without revealing who that person is. Approved public connections can eventually make this architecture visible.</p>
+            <p className="mt-4 text-xs leading-relaxed text-white/45">The current exact roster is awaiting reconciliation. No private memberships or actual ties are mapped into the graphic.</p>
             <Link href="/network/artwork" className="mt-8 w-fit rounded-full bg-[#cfe3ce] px-5 py-3 text-sm font-semibold text-[#173628] hover:bg-white">Explore the living artwork ↗</Link>
           </div>
         </div>
