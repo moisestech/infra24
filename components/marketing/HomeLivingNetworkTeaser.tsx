@@ -25,7 +25,7 @@ export function HomeLivingNetworkTeaser() {
           </div>
         </div>
         <div className="overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)]">
-          <div className="h-[350px] sm:h-[490px]">
+          <div className="h-[430px] sm:h-[490px]">
             <NetworkGraphBoundary><PeopleNetworkField selected={selected} onSelect={setSelected} /></NetworkGraphBoundary>
           </div>
           <p className="border-t border-[color:var(--dn-line)] px-4 py-3 font-mono text-[10px] uppercase tracking-wider text-[color:var(--dn-graph-muted)]">
