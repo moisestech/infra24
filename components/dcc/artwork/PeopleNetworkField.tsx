@@ -122,6 +122,11 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
 
         // Keep rendering responsive on mobile without full device-pixel-ratio cost.
         instance.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75))
+        // On touch devices allow vertical page scrolling over the canvas while
+        // preserving horizontal drag/orbit and tap-to-select interactions.
+        if (window.matchMedia('(pointer: coarse)').matches) {
+          instance.renderer().domElement.style.touchAction = 'pan-y'
+        }
         resize = new ResizeObserver(() => {
           const { width, height } = element.getBoundingClientRect()
           if (width > 0 && height > 0) instance.width(width).height(height)
