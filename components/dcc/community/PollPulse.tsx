@@ -15,11 +15,22 @@ const ICONS = {
   exploring: Compass,
 } as const
 
-type Props = { compact?: boolean; title?: string }
+type Props = {
+  compact?: boolean
+  title?: string
+  selectedChoice?: DiscoveryPollChoiceId | null
+  onSelectChoice?: (choice: DiscoveryPollChoiceId | null) => void
+}
 
 /** Shared poll totals; selections are aggregate and never attributed to people. */
-export function PollPulse({ compact = false, title = 'What would you like to discover?' }: Props) {
-  const [selected, setSelected] = useState<DiscoveryPollChoiceId | null>(null)
+export function PollPulse({ compact = false, title = 'What would you like to discover?', selectedChoice, onSelectChoice }: Props) {
+  const [internalSelection, setInternalSelection] = useState<DiscoveryPollChoiceId | null>(null)
+  const selected = selectedChoice === undefined ? internalSelection : selectedChoice
+  function select(choice: DiscoveryPollChoiceId) {
+    const next = selected === choice ? null : choice
+    if (selectedChoice === undefined) setInternalSelection(next)
+    onSelectChoice?.(next)
+  }
   const max = Math.max(...DCC_DISCOVERY_POLL.choices.map((choice) => choice.count))
   const active = DCC_DISCOVERY_POLL.choices.find((choice) => choice.id === selected)
 
@@ -48,7 +59,7 @@ export function PollPulse({ compact = false, title = 'What would you like to dis
               key={choice.id}
               type="button"
               aria-pressed={isActive}
-              onClick={() => setSelected((value) => value === choice.id ? null : choice.id)}
+              onClick={() => select(choice.id)}
               className={[
                 'group flex min-w-0 items-center gap-3 rounded-xl border px-3.5 py-3.5 text-left transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--dn-link)]',
                 isActive ? 'border-[color:var(--dn-line-strong)] bg-[var(--dn-panel-soft)]' : 'border-[color:var(--dn-line)] bg-[var(--dn-panel)] hover:border-[color:var(--dn-line-strong)] hover:bg-[var(--dn-hover)]',
@@ -70,7 +81,7 @@ export function PollPulse({ compact = false, title = 'What would you like to dis
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs leading-relaxed text-[color:var(--dn-subtle)]">
-        <p aria-live="polite">{active ? active.count + ' selections · ' + active.label : 'Multiple selections allowed · individual answers not displayed'}</p>
+        <p aria-live="polite">{active ? active.count + ' selections · ' + active.label + ' · public practice links are not poll votes' : 'Multiple selections allowed · practice links reflect public profiles, not votes'}</p>
         {compact ? <Link href="/network/artwork#community-interests" className="inline-flex items-center gap-1 text-[color:var(--dn-link)] hover:text-[color:var(--dn-ink)]">
           Open artwork <ArrowUpRight size={13} />
         </Link> : null}

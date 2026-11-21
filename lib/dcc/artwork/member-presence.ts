@@ -5,18 +5,18 @@
  * Exactly 101 *minimum-count presence marks* are rendered, rather than
  * claiming that 101 is the full or independently verified membership.
  *
- * Only DCC's two publicly identified cofounders are labeled as people.
- * They occupy two of the 101 positions, NOT two added above the minimum.
- * The remaining 99 marks are NOT pseudonymized records and have no stable
- * relationship to any particular WhatsApp/Airtable user.
+ * Three public artists (Moises, Fabiola, and Angelo) occupy three of the
+ * 101 minimum-count positions; the other 98 have no identifying mapping.
  *
  * The only public person-to-person edge is the documented DCC cofounding.
- * Poll totals are kept entirely separate from these nodes.
+ * Aggregate poll totals remain distinct from public editorial practices.
  *
  * For a future real-person graph, use the explicit bilateral-publication
  * consent contract in people-graph.ts. Group membership alone is not an
  * interpersonal relationship or proof of a poll answer.
  */
+import { PILOT_PREVIEWS } from '@/lib/dcc/community/atlas'
+
 export const MEMBER_PRESENCE_SOURCE = {
   date: '2026-11-21',
   reportedLabel: '100+',
@@ -25,14 +25,14 @@ export const MEMBER_PRESENCE_SOURCE = {
   status: 'Reported lower bound; current roster not independently reconciled',
   previousVerifiedAt: '2026-10-29',
   previousVerifiedCount: 73,
-  caveat: 'One public mark per position in the minimum reported population; anonymous positions do not identify specific members. The only drawn relationship is DCC cofounding.',
+  caveat: 'Three featured artists within the reported lower bound; 98 anonymous marks. Person-to-person lines are limited to documented cofounding.',
 } as const
 
 export type MemberPresenceMark = {
   id: string
   label: string
-  kind: 'public-cofounder' | 'anonymous-presence'
-  publicRole?: 'DCC cofounder'
+  kind: 'public-cofounder' | 'public-artist' | 'anonymous-presence'
+  publicRole?: 'DCC cofounder' | 'Featured artist'
 }
 export type PublicRelationshipEdge = {
   from: string
@@ -49,19 +49,26 @@ export const PUBLIC_FOUNDERS: readonly MemberPresenceMark[] = [
   { id: 'fabiola-larios', label: 'Fabiola Larios', kind: 'public-cofounder', publicRole: 'DCC cofounder' },
 ]
 
+export const PUBLIC_ARTISTS: readonly MemberPresenceMark[] = [
+  ...PUBLIC_FOUNDERS,
+  ...PILOT_PREVIEWS.filter((p) => !PUBLIC_FOUNDERS.some((founder) => founder.id === p.slug)).map((p) => ({
+    id: p.slug, label: p.name, kind: 'public-artist' as const, publicRole: 'Featured artist' as const,
+  })),
+]
+
 export function makeMembershipPresenceGraph(
   count = MEMBER_PRESENCE_SOURCE.minimumCount,
 ): MembershipPresenceGraph {
   const bounded = Number.isFinite(count) ? Math.max(0, Math.min(5000, Math.floor(count))) : 0
-  const founders = PUBLIC_FOUNDERS.slice(0, bounded)
-  const anonymous: MemberPresenceMark[] = Array.from({ length: bounded - founders.length }, (_, i) => ({
+  const visible = PUBLIC_ARTISTS.slice(0, bounded)
+  const anonymous: MemberPresenceMark[] = Array.from({ length: bounded - visible.length }, (_, i) => ({
     id: 'anonymous-' + String(i + 1).padStart(3, '0'),
     label: 'Anonymous member-presence mark',
     kind: 'anonymous-presence',
   }))
   return {
-    marks: [...founders, ...anonymous],
-    connections: founders.length === 2 ? [{
+    marks: [...visible, ...anonymous],
+    connections: visible.length >= 2 ? [{
       from: founders[0].id,
       to: founders[1].id,
       kind: 'documented-cofounding',

@@ -10,6 +10,9 @@ import {
   readPassportPreview, type InterestId, type PassportPreview, type AtlasProfile,
 } from '@/lib/dcc/community/atlas'
 import { PollPulse } from './PollPulse'
+import { PUBLIC_ARTISTS } from '@/lib/dcc/artwork/member-presence'
+import { isDiscoveryChoice, type DiscoveryPollChoiceId } from '@/lib/dcc/artwork/discovery-poll'
+import { INTEREST_POLL_CATEGORIES } from '@/lib/dcc/artwork/people-practice-graph'
 import { AtlasProfileForm } from './AtlasProfileForm'
 import styles from './community.module.css'
 
@@ -18,9 +21,9 @@ const Field = dynamic(() => import('@/components/dcc/artwork/PeopleNetworkField'
   loading: () => <div className="flex min-h-[360px] items-center justify-center text-sm text-[color:var(--dn-subtle)]">Opening the network…</div>,
 })
 
-type PublicFounderId = 'moises-sanabria' | 'fabiola-larios' | null
-function isPublicFounder(value: string | null): value is Exclude<PublicFounderId, null> {
-  return value === 'moises-sanabria' || value === 'fabiola-larios'
+type GraphSelection = string | null
+function isPublicArtist(value: string | null) {
+  return Boolean(value && PUBLIC_ARTISTS.some((artist) => artist.id === value))
 }
 function websiteFor(profile: AtlasProfile): string | null {
   const candidate = profile.website ?? profile.links?.find((link) => /^https:\/\//i.test(link.url))?.url
@@ -51,7 +54,7 @@ export function CommunityAtlas() {
   const [refreshing, setRefreshing] = useState(false)
   const [loadError, setLoadError] = useState('')
   const [selected, setSelected] = useState('moises-sanabria')
-  const [founderFocus, setFounderFocus] = useState<PublicFounderId>(null)
+  const [graphFocus, setGraphFocus] = useState<GraphSelection>(null)
   const [showProfileForm, setShowProfileForm] = useState(false)
   const [showPassport, setShowPassport] = useState(false)
   const [passport, setPassport] = useState<PassportPreview | null>(null)
@@ -113,7 +116,10 @@ export function CommunityAtlas() {
     try { setPassport(readPassportPreview(sessionStorage.getItem(PASSPORT_PREVIEW_KEY))) }
     catch { /* Private browsing may block local storage. */ }
     const requested = new URL(window.location.href).searchParams.get('profile')
-    if (requested && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(requested)) setSelected(requested)
+    if (requested && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(requested)) {
+      setSelected(requested)
+      if (isPublicArtist(requested)) setGraphFocus(requested)
+    }
   }, [])
 
   useEffect(() => {
@@ -125,7 +131,7 @@ export function CommunityAtlas() {
 
   function selectProfile(slug: string, scroll = true) {
     setSelected(slug)
-    setFounderFocus(isPublicFounder(slug) ? slug : null)
+    setGraphFocus(isPublicArtist(slug) ? slug : null)
     const url = new URL(window.location.href)
     url.searchParams.set('profile', slug)
     window.history.replaceState(null, '', url)
@@ -133,10 +139,24 @@ export function CommunityAtlas() {
       window.requestAnimationFrame(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
     }
   }
-  function chooseFounder(id: string | null) {
-    if (isPublicFounder(id)) selectProfile(id, false)
-    else setFounderFocus(null)
+  function chooseGraphNode(id: GraphSelection) {
+    setGraphFocus(id)
+    if (id && isPublicArtist(id)) {
+      selectProfile(id, false)
+    } else if (id?.startsWith('practice-')) {
+      const choice = id.slice('practice-'.length)
+      if (isDiscoveryChoice(choice)) {
+        setInterests(INTERESTS.filter((interest) =>
+          INTEREST_POLL_CATEGORIES[interest.id] === choice
+        ).map((interest) => interest.id))
+      }
+    } else if (!id) {
+      setInterests([])
+    }
   }
+  const selectedChoice: DiscoveryPollChoiceId | null =
+    graphFocus?.startsWith('practice-') && isDiscoveryChoice(graphFocus.slice(9))
+      ? graphFocus.slice(9) as DiscoveryPollChoiceId : null
   function toggleInterest(id: InterestId) {
     setInterests((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
   }
@@ -205,27 +225,28 @@ export function CommunityAtlas() {
           <section className="dn-network-field relative min-w-0 overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)]" aria-label="Network field">
             <div className="pointer-events-none absolute left-5 top-5 z-10 flex flex-col gap-1.5">
               <p className="font-mono text-[10px] uppercase tracking-[.13em] text-[color:var(--dn-graph-muted)]">The network</p>
-              <p className="text-xs text-[color:var(--dn-subtle)]">100+ members reported · 2 public cofounders</p>
+              <p className="text-xs text-[color:var(--dn-subtle)]">Dots are people · rings are practices · lines show connections</p>
             </div>
             <div className="h-[52svh] min-h-[350px] max-h-[660px] sm:h-[60svh] lg:h-[600px]">
-              <Field selected={founderFocus} onSelect={chooseFounder} />
+              <Field selected={graphFocus} onSelect={chooseGraphNode} />
             </div>
             <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2">
-              <div className="dn-graph-overlay flex rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-graph-chip)] p-1 shadow-lg backdrop-blur-md" role="group" aria-label="Select public cofounder">
+              <div className="dn-graph-overlay flex rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-graph-chip)] p-1 shadow-lg backdrop-blur-md" role="group" aria-label="Focus public artist or practice">
                 {([
                   { label: 'All', id: null },
                   { label: 'Moises', id: 'moises-sanabria' },
                   { label: 'Fabiola', id: 'fabiola-larios' },
-                ] as {label:string;id:PublicFounderId}[]).map((item) => (
-                  <button type="button" key={item.label} aria-pressed={founderFocus === item.id}
-                    onClick={() => chooseFounder(item.id)}
-                    className={'rounded-full px-3.5 py-2.5 text-xs transition ' +
-                      (founderFocus === item.id ? 'bg-[var(--dn-accent)] font-semibold text-[color:var(--dn-accent-ink)]' : 'text-[color:var(--dn-muted)] hover:text-[color:var(--dn-ink)]')}>
+                  { label: 'Angelo', id: 'angelo-caruso' },
+                ] as {label:string;id:GraphSelection}[]).map((item) => (
+                  <button type="button" key={item.label} aria-pressed={graphFocus === item.id}
+                    onClick={() => chooseGraphNode(item.id)}
+                    className={'shrink-0 rounded-full px-3.5 py-2.5 text-xs transition ' +
+                      (graphFocus === item.id ? 'bg-[var(--dn-accent)] font-semibold text-[color:var(--dn-accent-ink)]' : 'text-[color:var(--dn-muted)] hover:text-[color:var(--dn-ink)]')}>
                     {item.label}
                   </button>
                 ))}
               </div>
-              <Link href={founderFocus ? "/network/artwork?person=" + founderFocus : "/network/artwork"} className="dn-graph-overlay inline-flex items-center gap-1 rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-graph-chip)] px-3.5 py-3 text-xs text-[color:var(--dn-muted)] hover:text-[color:var(--dn-ink)]">
+              <Link href={graphFocus && isPublicArtist(graphFocus) ? '/network/artwork?person=' + graphFocus : selectedChoice ? '/network/artwork?practice=' + selectedChoice : '/network/artwork'} className="dn-graph-overlay inline-flex items-center gap-1 rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-graph-chip)] px-3.5 py-3 text-xs text-[color:var(--dn-muted)] hover:text-[color:var(--dn-ink)]">
                 Open artwork <ArrowUpRight size={14} />
               </Link>
             </div>
@@ -323,7 +344,7 @@ export function CommunityAtlas() {
         </section>
 
         <div className="mt-16 border-t border-[color:var(--dn-line)] pt-10">
-          <PollPulse compact title="What the community wants to discover" />
+          <PollPulse compact title="What the community wants to discover" selectedChoice={selectedChoice} onSelectChoice={(choice) => chooseGraphNode(choice ? 'practice-' + choice : null)} />
         </div>
 
         <section id="passport" className="mt-16 grid gap-7 rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-panel)] p-6 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-end">

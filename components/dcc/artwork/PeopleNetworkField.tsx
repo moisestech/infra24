@@ -1,53 +1,123 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useTheme } from '@/contexts/ThemeContext'
+import * as THREE from 'three'
 import type { ForceGraph3DInstance, LinkObject, NodeObject } from '3d-force-graph'
-import { makeMembershipPresenceGraph, presenceSpherePosition, type MemberPresenceMark } from '@/lib/dcc/artwork/member-presence'
+import { useTheme } from '@/contexts/ThemeContext'
+import { presenceSpherePosition } from '@/lib/dcc/artwork/member-presence'
+import { makePeoplePracticeGraph } from '@/lib/dcc/artwork/people-practice-graph'
+import { DCC_DISCOVERY_POLL } from '@/lib/dcc/artwork/discovery-poll'
 
-type HumanNode = NodeObject & {
+type FieldNode = NodeObject & {
   id: string
   label: string
-  kind: MemberPresenceMark['kind']
-  color: string
+  kind: 'public-cofounder' | 'public-artist' | 'anonymous-presence' | 'practice'
+  choiceId?: string
+  count?: number
 }
-type HumanLink = LinkObject<HumanNode> & { kind: 'documented-cofounding'; color: string }
-
+type FieldEdge = LinkObject<FieldNode> & {
+  kind: 'documented-cofounding' | 'listed-practice'
+}
 export type PeopleNetworkFieldProps = {
   selected: string | null
   onSelect: (id: string | null) => void
 }
 
-function graphData() {
-  const graph = makeMembershipPresenceGraph()
-  const anonymousCount = graph.marks.filter((mark) => mark.kind === 'anonymous-presence').length
+const POSITIONS: Record<string, { x: number; y: number; z: number }> = {
+  'moises-sanabria': { x: -42, y: 0, z: 18 },
+  'fabiola-larios': { x: 42, y: 0, z: 18 },
+  'angelo-caruso': { x: 0, y: 62, z: 18 },
+}
+
+function buildGraph() {
+  const content = makePeoplePracticeGraph()
+  const anonymousCount = content.marks.filter((mark) => mark.kind === 'anonymous-presence').length
   let anonymousIndex = 0
-  const nodes: HumanNode[] = graph.marks.map((mark) => {
-    const publicFounder = mark.kind === 'public-cofounder'
-    const position = publicFounder
-      ? { x: mark.id === 'moises-sanabria' ? -32 : 32, y: 0, z: 0 }
-      : presenceSpherePosition(anonymousIndex++, anonymousCount, 156)
+  const nodes: FieldNode[] = content.marks.map((mark) => {
+    const position = mark.kind === 'anonymous-presence'
+      ? presenceSpherePosition(anonymousIndex++, anonymousCount, 132)
+      : POSITIONS[mark.id] ?? { x: 0, y: 0, z: 0 }
     return {
-      id: mark.id,
-      label: mark.label,
-      kind: mark.kind,
-      color: publicFounder ? '#e1edd4' : '#9bb5a8',
-      x: position.x, y: position.y, z: position.z,
-      fx: position.x, fy: position.y, fz: position.z,
+      id: mark.id, label: mark.label, kind: mark.kind,
+      ...position, fx: position.x, fy: position.y, fz: position.z,
     }
   })
-  const links: HumanLink[] = graph.connections.map((edge) => ({
-    source: edge.from,
-    target: edge.to,
-    kind: edge.kind,
-    color: '#d1ecbb',
-  }))
+  content.practices.forEach((practice, index) => {
+    const angle = -Math.PI / 2 + index * Math.PI * 2 / content.practices.length
+    const position = { x: Math.cos(angle) * 215, y: Math.sin(angle) * 180, z: -9 }
+    nodes.push({
+      id: practice.id, label: practice.short, kind: 'practice',
+      choiceId: practice.choiceId, count: practice.count,
+      ...position, fx: position.x, fy: position.y, fz: position.z,
+    })
+  })
+  const links: FieldEdge[] = [
+    ...content.connections.map((edge) => ({ source: edge.from, target: edge.to, kind: edge.kind })),
+    ...content.practiceEdges.map((edge) => ({ source: edge.source, target: edge.target, kind: edge.kind })),
+  ]
   return { nodes, links }
+}
+
+function nodeId(endpoint: string | FieldNode | undefined): string {
+  return typeof endpoint === 'string' ? endpoint : endpoint?.id ?? ''
+}
+
+/** Sprite text is scene geometry, not a DOM card or emoji. */
+function labelSprite(label: string, count: number | null, ink: string, surface: string): THREE.Sprite {
+  const canvas = document.createElement('canvas')
+  canvas.width = 580
+  canvas.height = 155
+  const ctx = canvas.getContext('2d')
+  if (ctx) {
+    ctx.fillStyle = surface
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.fillStyle = ink
+    ctx.font = '600 57px Arial, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(label, canvas.width / 2, count === null ? 97 : 67, 552)
+    if (count !== null) {
+      ctx.font = '37px Arial, sans-serif'
+      ctx.fillText(count + ' selections', canvas.width / 2, 125)
+    }
+  }
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: new THREE.CanvasTexture(canvas),
+    transparent: true,
+    depthWrite: false,
+  }))
+  sprite.scale.set(count === null ? 92 : 153, count === null ? 24 : 40, 1)
+  sprite.position.y = count === null ? 15 : 33
+  return sprite
+}
+
+
+/** Outlined category rings are distinct from solid person dots. */
+function nodeDecoration(node: FieldNode, element: HTMLElement): THREE.Group {
+  const group = new THREE.Group()
+  if (node.kind === 'anonymous-presence') return group
+  const css = getComputedStyle(element)
+  const ink = css.getPropertyValue('--dn-on-graph').trim() || '#eef4ec'
+  const background = css.getPropertyValue('--dn-graph-chip').trim() || '#091313'
+  if (node.kind === 'practice') {
+    const color = css.getPropertyValue('--dn-poll-' + (node.choiceId ?? 'art')).trim() || '#8fae95'
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(12, 1.45, 9, 48),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthWrite: false }),
+    )
+    group.add(ring)
+  }
+  group.add(labelSprite(
+    node.kind === 'practice' ? node.label : node.label.split(' ')[0],
+    node.kind === 'practice' ? node.count ?? 0 : null,
+    ink, background,
+  ))
+  return group
 }
 
 export default function PeopleNetworkField({ selected, onSelect }: PeopleNetworkFieldProps) {
   const elRef = useRef<HTMLDivElement>(null)
-  const graphRef = useRef<ForceGraph3DInstance<HumanNode, HumanLink> | null>(null)
+  const graphRef = useRef<ForceGraph3DInstance<FieldNode, FieldEdge> | null>(null)
+  const labelThemeRef = useRef<string | null>(null)
   const selectRef = useRef(onSelect)
   selectRef.current = onSelect
   const [visible, setVisible] = useState(false)
@@ -55,7 +125,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
   const [unavailable, setUnavailable] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
   const { resolvedTheme } = useTheme()
-  const data = useMemo(graphData, [])
+  const data = useMemo(buildGraph, [])
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -82,62 +152,66 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
     let disposed = false
     let resize: ResizeObserver | null = null
     let onVisibility: (() => void) | null = null
-
     void import('3d-force-graph').then(({ default: ForceGraph3D }) => {
       if (disposed) return
       try {
-        const instance = new ForceGraph3D(element, {
+        const graph = new ForceGraph3D(element, {
           controlType: 'orbit',
           rendererConfig: { antialias: true, alpha: true },
-        }) as unknown as ForceGraph3DInstance<HumanNode, HumanLink>
-        graphRef.current = instance
-        instance
-          .backgroundColor(getComputedStyle(element).getPropertyValue('--dn-graph-bg').trim() || '#091313')
+        }) as unknown as ForceGraph3DInstance<FieldNode, FieldEdge>
+        graphRef.current = graph
+        const style = getComputedStyle(element)
+        graph
+          .backgroundColor(style.getPropertyValue('--dn-graph-bg').trim() || '#091313')
           .showNavInfo(false)
           .graphData({ nodes: data.nodes, links: data.links })
-          .nodeResolution(16)
-          .nodeRelSize(3.2)
-          .nodeOpacity(0.94)
-          .nodeVal((node) => node.kind === 'public-cofounder' ? 3.4 : 0.9)
-          .nodeColor((node) => node.color)
+          .nodeResolution(14)
+          .nodeRelSize(3)
+          .nodeOpacity(0.95)
+          .nodeVal((node) => node.kind === 'practice' ? 7 : node.kind === 'anonymous-presence' ? 0.8 : 4)
+          .nodeColor((node) => node.kind === 'practice' ? '#8fae95' : node.kind === 'anonymous-presence' ? '#9bb5a8' : '#e1edd4')
           .nodeLabel((node) => {
             const label = document.createElement('span')
             label.className = 'dn-node-tooltip'
-            label.textContent = node.kind === 'public-cofounder'
-              ? node.label + ' · publicly identified DCC cofounder'
-              : 'Anonymous member-presence mark · no identity or poll choice mapped'
+            label.textContent = node.kind === 'practice'
+              ? node.label + ': ' + node.count + ' community poll selections. Public profile lines show listed practices, not individual poll answers.'
+              : node.kind === 'anonymous-presence'
+                ? 'Anonymous membership mark'
+                : node.label + ' · public artist profile'
             return label
           })
-          .linkColor((link) => link.color)
-          .linkOpacity(0.9)
-          .linkWidth(2.1)
-          .linkLabel(() => 'Documented connection: DCC cofounding (not a poll response)')
+          .nodeThreeObjectExtend(true)
+          .nodeThreeObject((node) => nodeDecoration(node, element))
+          .linkWidth((link) => link.kind === 'documented-cofounding' ? 2.4 : 1.2)
+          .linkOpacity(0.82)
+          .linkColor((link) => link.kind === 'documented-cofounding' ? '#d1ecbb' : '#88baa0')
+          .linkLabel((link) => link.kind === 'documented-cofounding'
+            ? 'Documented DCC cofounding'
+            : 'Listed public artist practice — not a poll response')
           .onNodeClick((node) => {
-            if (node.kind === 'public-cofounder') selectRef.current(node.id)
-            else selectRef.current(null)
+            selectRef.current(node.kind === 'anonymous-presence' ? null : node.id)
           })
-          .onNodeHover((node) => { element.style.cursor = node?.kind === 'public-cofounder' ? 'pointer' : 'grab' })
+          .onNodeHover((node) => {
+            element.style.cursor = node?.kind === 'anonymous-presence' ? 'grab' : node ? 'pointer' : 'grab'
+          })
           .warmupTicks(30)
           .cooldownTicks(0)
 
-        // Keep rendering responsive on mobile without full device-pixel-ratio cost.
-        instance.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75))
-        // On touch devices allow vertical page scrolling over the canvas while
-        // preserving horizontal drag/orbit and tap-to-select interactions.
+        graph.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75))
         if (window.matchMedia('(pointer: coarse)').matches) {
-          instance.renderer().domElement.style.touchAction = 'pan-y'
+          graph.renderer().domElement.style.touchAction = 'pan-y'
         }
         resize = new ResizeObserver(() => {
           const { width, height } = element.getBoundingClientRect()
-          if (width > 0 && height > 0) instance.width(width).height(height)
+          if (width > 0 && height > 0) graph.width(width).height(height)
         })
         resize.observe(element)
         onVisibility = () => {
-          if (document.hidden) instance.pauseAnimation()
-          else instance.resumeAnimation()
+          if (document.hidden) graph.pauseAnimation()
+          else graph.resumeAnimation()
         }
         document.addEventListener('visibilitychange', onVisibility)
-        instance.zoomToFit(500, 85)
+        graph.zoomToFit(500, 75)
         setReady(true)
       } catch {
         if (!disposed) setUnavailable(true)
@@ -150,51 +224,75 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
       if (onVisibility) document.removeEventListener('visibilitychange', onVisibility)
       graphRef.current?._destructor()
       graphRef.current = null
+      labelThemeRef.current = null
       element.replaceChildren()
     }
   }, [data, visible])
 
   useEffect(() => {
     if (!ready || !graphRef.current) return
-    const instance = graphRef.current
-    instance.nodeVal((node) => node.id === selected ? 5.6 : node.kind === 'public-cofounder' ? 3.4 : 0.9)
-    // The page theme can change without remounting WebGL or losing camera state.
-    const element = elRef.current
-    const styles = element ? getComputedStyle(element) : null
-    const themeColor = (property: string, fallback: string) => styles?.getPropertyValue(property).trim() || fallback
-    instance.backgroundColor(themeColor('--dn-graph-bg', '#091313'))
-    instance.nodeColor((node) => node.id === selected
-      ? themeColor('--dn-graph-selected', '#f4dda5')
-      : node.kind === 'public-cofounder'
-        ? themeColor('--dn-graph-founder', '#e1edd4')
-        : themeColor('--dn-graph-node', '#9bb5a8'))
-    instance.linkColor(() => themeColor('--dn-graph-link', '#d1ecbb'))
-    if (selected === 'moises-sanabria' || selected === 'fabiola-larios') {
-      const x = selected === 'moises-sanabria' ? -32 : 32
-      instance.cameraPosition({ x: x + 58, y: 31, z: 110 }, { x, y: 0, z: 0 }, reducedMotion ? 0 : 550)
-    } else {
-      instance.zoomToFit(reducedMotion ? 0 : 550, 85)
+    const graph = graphRef.current
+    const style = elRef.current ? getComputedStyle(elRef.current) : null
+    const theme = (key: string, fallback: string) => style?.getPropertyValue(key).trim() || fallback
+    graph.backgroundColor(theme('--dn-graph-bg', '#091313'))
+    graph.nodeVal((node) => node.id === selected ? 11 : node.kind === 'practice' ? 7 : node.kind === 'anonymous-presence' ? 0.8 : 4)
+    graph.nodeColor((node) => {
+      const highlighted = selected === node.id
+      const connected = selected && data.links.some((edge) =>
+        (nodeId(edge.source) === selected && nodeId(edge.target) === node.id) ||
+        (nodeId(edge.target) === selected && nodeId(edge.source) === node.id))
+      if (highlighted) return theme('--dn-graph-selected', '#f4dda5')
+      if (connected) return theme('--dn-graph-founder', '#e1edd4')
+      if (node.kind === 'practice') {
+        return theme('--dn-poll-' + (node.choiceId ?? 'art'), '#8fae95')
+      }
+      if (node.kind === 'anonymous-presence') return theme('--dn-graph-node', '#9bb5a8')
+      return theme('--dn-graph-founder', '#e1edd4')
+    })
+    graph.linkColor((link) => {
+      if (selected) {
+        const participates = nodeId(link.source) === selected || nodeId(link.target) === selected
+        if (participates) return theme('--dn-graph-selected', '#f4dda5')
+      }
+      return link.kind === 'documented-cofounding'
+        ? theme('--dn-graph-link', '#d1ecbb')
+        : theme('--dn-graph-muted', '#88baa0')
+    })
+    // Rebuild the six text sprites when the user's light/dark preference changes.
+    if (elRef.current && labelThemeRef.current !== resolvedTheme) {
+      const element = elRef.current
+      graph.nodeThreeObject((node) => nodeDecoration(node, element))
+      labelThemeRef.current = resolvedTheme
     }
-  }, [ready, reducedMotion, selected, resolvedTheme])
+    if (selected && data.nodes.some((node) => node.id === selected)) {
+      const node = data.nodes.find((point) => point.id === selected)!
+      graph.cameraPosition(
+        { x: (node.x ?? 0) + 70, y: (node.y ?? 0) + 35, z: (node.z ?? 0) + 175 },
+        { x: node.x ?? 0, y: node.y ?? 0, z: node.z ?? 0 },
+        reducedMotion ? 0 : 550,
+      )
+    } else {
+      graph.zoomToFit(reducedMotion ? 0 : 550, 75)
+    }
+  }, [data, ready, reducedMotion, resolvedTheme, selected])
 
   useEffect(() => {
     if (!ready || !graphRef.current) return
-    // Physics are already frozen by cooldownTicks(0); pausing the render loop
-    // would disable touch orbit and node selection, especially on mobile.
     if (!document.hidden) graphRef.current.resumeAnimation()
   }, [ready, reducedMotion])
 
   return (
     <div className="relative h-full w-full">
       <div ref={elRef} className="dn-network-field h-full min-h-[350px] w-full" role="img"
-        aria-label="Three-dimensional DCC member-presence sculpture: 101 minimum-count marks including two named public cofounders with one documented cofounding relationship. All other positions have no member identifiers or poll answers."
+        aria-label={'Interactive 3D network of at least 101 reported people-positions, including Moises, Fabiola, and Angelo; six labeled practice nodes with poll totals ' +
+          DCC_DISCOVERY_POLL.totalSelections + ' selections; edges link public artists to listed practices and the cofounders to one another. No anonymous vote or private relationship is attributed.'}
       />
       {!ready && !unavailable && (
         <p className="pointer-events-none absolute bottom-5 left-5 text-xs text-[color:var(--dn-graph-muted)]" role="status">Opening the network…</p>
       )}
       {unavailable && (
         <div className="absolute inset-0 flex items-center justify-center bg-[var(--dn-graph-bg)] p-8 text-center text-sm text-[color:var(--dn-on-graph)]" role="status">
-          3D display unavailable. You can still explore the public cofounders and poll totals below.
+          3D display unavailable. The public profiles and practice interests are available below.
         </div>
       )}
     </div>

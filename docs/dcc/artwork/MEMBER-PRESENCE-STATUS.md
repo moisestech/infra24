@@ -7,9 +7,9 @@
 ## What the field says
 
 - The DCC founder reports **more than 100 WhatsApp Commons members** as of November 21, 2026. Without a current roster export, the public art includes **101 positions as a minimum**, not an audited exact headcount.
-- **Two of the 101 are labeled public cofounders:** Moises Sanabria and Fabiola Larios. They are *included in* the minimum count, not added to it.
+- **Three of the 101 are publicly featured artists:** Moises Sanabria, Fabiola Larios, and Angelo Caruso. The first two are public cofounders. They are *included in* the minimum count, not added to it.
 - **Exactly one person-to-person connection is shown:** the publicly documented cofounding relationship between them. No other private introduction, friendship, vote, skill, or collaboration is inferred.
-- The remaining **99 positions are anonymous count-based marks**, not hash-pseudonymized private CRM people; the marks have no stable mapping to WhatsApp accounts, names or phone numbers.
+- The remaining **98 positions are anonymous count-based marks**, not hash-pseudonymized private CRM people; the marks have no stable mapping to WhatsApp accounts, names or phone numbers.
 - The remaining spatial geometry is an artistic distribution, **not a factual social-distance map**.
 
 ## Evidence chronology
@@ -37,7 +37,7 @@ The supplied screenshot asks: **"What would you most like to discover through DC
 
 **The poll is multi-select.** 72 is a tally of selections, *not* 72 distinct respondents. Screenshot shared Nov 21; the actual screenshot capture time isn't visible. Voter identities and their per-person choice combinations are not established by that image. Thumbnail avatars on a screenshot aren't sufficient permission or reliable evidence to attribute a choice to a named person.
 
-Single public editorial data source: \`lib/dcc/artwork/discovery-poll.ts\`. The frontend highlights one aggregate choice count at a time; it never colors a person position as a voter for that choice, and no poll-to-people edges are generated.
+Single public editorial data source: \`lib/dcc/artwork/discovery-poll.ts\`. The frontend highlights one aggregate choice count at a time. The six larger practice nodes show those same totals. Links from named people to practices come from their public Atlas descriptions—not their votes. No poll-to-person edges are inferred.
 
 A new \`DCC Community Poll Results\` table was created in the DCC Airtable base, but **Airtable rejected inserting rows because the base exceeded its record limit**. Until storage capacity is available, verified aggregate totals live in versioned GitHub and in the existing Airtable weekly pulse metadata/notes, not as poll-result records. The table's existence does not imply data was saved to rows.
 
