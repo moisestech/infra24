@@ -8,9 +8,9 @@
 **Interactive artwork:** https://dcc.miami/network/artwork  
 **Project proposal:** https://dcc.miami/network/artwork/proposal
 
-![Speculative sketch: the living network and the physical edition](../../../public/images/dcc/the-network-makes-itself-study.svg)
+![Cofounders Moises Sanabria and Fabiola Larios](https://res.cloudinary.com/dck5rzi4h/image/upload/v1777520267/dccmiami/portraits/Fabiola-and-Moises_khyrpu.jpg)
 
-*Figure 01: Digital-to-physical project sketch. Fictional network; proposed sculpture, not a finished installation.*
+*Figure 01: Public cofounders. The interactive graph above represents a current, lower-bound network; a fabricated sculpture remains proposed.*
 
 ## Concept
 
@@ -54,8 +54,8 @@ The project deliberately reuses DCC's current code and community coordination re
 ## What already exists
 
 - DCC's artist-led network, working network protocol, and Community Atlas source code
-- A 3D member-presence portrait based on the founder's November 21 report that WhatsApp Commons has more than 100 members: 101 minimum-count marks include two named public cofounders, Moises Sanabria and Fabiola Larios, and 99 anonymous positions. It is an **unaudited lower bound**, not a live WhatsApp integration.
-- The only displayed person-to-person edge documents that Moises and Fabiola co-founded DCC. The artwork has **no fictional connection view**. Six screenshot-verified WhatsApp poll totals—21 Art; 16 Fabrication; 11 Film; 10 Code/AI; 7 Games/XR; 7 Exploring—show what the community wants to discover, without attributing individual ballots. A vector member-presence study can be exported.
+- A 3D member-presence portrait based on the founder's November 21 report that WhatsApp Commons has more than 100 members: 101 minimum-count marks include three named public artists—Moises Sanabria, Fabiola Larios and Angelo Caruso—and 98 anonymous positions. The two cofounders share a documented person-to-person relationship. It is an **unaudited lower bound**, not a live WhatsApp integration.
+- The only displayed person-to-person edge documents that Moises and Fabiola co-founded DCC. The artwork has **no fictional connection view**. Six practice nodes carry screenshot-verified poll totals—21 Art; 16 Fabrication; 11 Film; 10 Code/AI; 7 Games/XR; 7 Exploring—without attributing individual ballots. A vector member-presence study can be exported.
 
 **Not yet built or independently verified:** real participant-authored public profiles and edges, member-controlled publishing and withdrawal, a production edition system, material testing, consent for lasting physical inclusion, or a completed installation.
 
