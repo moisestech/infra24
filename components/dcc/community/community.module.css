@@ -4,3 +4,66 @@
 @media(prefers-reduced-motion:reduce){.atlas *{scroll-behavior:auto!important}}
 
 .linkRow{display:grid;grid-template-columns:1fr 1.7fr;gap:12px;margin:12px 0}.linkRow label{font-size:11px}.passportForm textarea{display:block;width:100%;box-sizing:border-box;margin-top:8px;background:#0c1719;border:1px solid #ffffff30;border-radius:3px;padding:10px;color:#dce8d6;font:inherit}.passportForm .consent{display:flex;align-items:flex-start;gap:10px;font-size:11px;line-height:1.6}.consent input{margin-top:4px;flex-shrink:0}.formNotice{border:1px solid #b9dca84a;padding:12px}.formError,.graphError{color:#f3c4b7!important;font-size:12px}.graphError{position:absolute;top:55px;left:24px;right:24px;z-index:2}.honeypot{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}.primary:disabled{opacity:.5;cursor:not-allowed}.fieldTop{flex-wrap:wrap}.headerActions .textButton{display:block;margin-top:8px}.passportForm a{color:#b9dca8}@media(max-width:650px){.linkRow{grid-template-columns:1fr}.fieldTop{font-size:8px}}
+
+
+/* Passport & profile-request forms inherit the shared network palette in
+   both light and dark theme, including when dialogs enter the top layer. */
+.passportForm {
+  background: var(--dn-panel);
+  color: var(--dn-ink);
+  border: 1px solid var(--dn-line);
+  border-radius: 18px;
+  box-shadow: 0 24px 100px rgb(0 0 0 / 20%);
+}
+.passportForm p,
+.passportForm fieldset label,
+.passportForm .small,
+.passportForm .eyebrow,
+.passportForm .textButton {
+  color: var(--dn-muted);
+}
+.passportForm :is(input:not([type=checkbox]),textarea,select) {
+  background: var(--dn-panel-soft);
+  border: 1px solid var(--dn-line);
+  border-radius: 9px;
+  color: var(--dn-ink);
+}
+.passportForm :is(input,textarea,select):focus-visible {
+  outline: 2px solid var(--dn-link);
+  outline-offset: 2px;
+}
+.passportForm .primary {
+  border-radius: 999px;
+  background: var(--dn-accent);
+  color: var(--dn-accent-ink);
+}
+.passportForm a,
+.passportForm .textButton {
+  color: var(--dn-link);
+}
+.passportForm .formNotice,
+.passportForm .formError {
+  background: var(--dn-panel-soft);
+  border-color: var(--dn-line);
+  color: var(--dn-muted);
+}
+.modalTop {
+  border-bottom-color: var(--dn-line);
+  color: var(--dn-ink);
+}
+.modalTop button {
+  color: var(--dn-muted);
+}
+@media (max-width: 640px) {
+  .modalShade {
+    padding: 10px;
+    place-items: start center;
+    overscroll-behavior: contain;
+  }
+  .passportForm {
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 14px;
+  }
+  .passportForm h2 { font-size: clamp(1.7rem, 7vw, 2.1rem); }
+}
