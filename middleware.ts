@@ -1,10 +1,18 @@
 import { authMiddleware } from '@clerk/nextjs'
 import { isPublicRoute } from '@/lib/auth/public-routes'
+import { getDccCanonicalRedirectUrl } from '@/lib/marketing/canonical-request-url'
 
 export default authMiddleware({
   publicRoutes: (req) => isPublicRoute(req.nextUrl.pathname),
   // Bypass Clerk entirely for live-session APIs (public join/facilitate sync).
   ignoredRoutes: ['/api/workshop-live-sessions(.*)'],
+  beforeAuth: (req) => {
+    const canonicalRedirect = getDccCanonicalRedirectUrl(req.nextUrl)
+
+    if (canonicalRedirect) {
+      return Response.redirect(canonicalRedirect, 308)
+    }
+  },
   afterAuth: (auth, req) => {
     const { pathname } = req.nextUrl
     const { userId } = auth
