@@ -85,7 +85,7 @@ export default function DccNetworkPage() {
       <section className="mb-8 rounded-2xl border border-[#9bc0ab]/40 bg-[#112a24] p-6 text-[#edf4ee] sm:p-8" aria-label="Collective network artwork">
         <p className="text-xs font-semibold uppercase tracking-[.18em] text-[#a7d0b0]">Artist-led network experiment</p>
         <h2 className="mt-3 text-2xl font-light tracking-[-.05em] sm:text-3xl">The Network Makes Itself</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/70">The network is more than a directory. Explore a separate Three.js artwork with 100+ reported DCC member-presence marks. Public social connections remain absent until approved; an optional connection study demonstrates how the network could evolve.</p>
+        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/70">The network is more than a directory. Explore a single Three.js artwork representing 100+ reported member positions, public cofounders, one documented founding relationship, and six real community poll counts. No fictional connection view or private voter mapping.</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/network/artwork" className="rounded-full bg-[#d5e7d4] px-5 py-2.5 text-sm font-semibold text-[#123426] hover:bg-white">Open the artwork ↗</Link>
           <Link href="/network/artwork/proposal" className="rounded-full border border-white/40 px-5 py-2.5 text-sm font-medium hover:bg-white/10">Read the project proposal ↗</Link>
