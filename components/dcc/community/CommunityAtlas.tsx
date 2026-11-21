@@ -182,7 +182,7 @@ export function CommunityAtlas() {
         <header className="flex flex-col justify-between gap-8 py-10 sm:py-16 lg:flex-row lg:items-end">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[.21em] text-[color:var(--dn-subtle)]">Community atlas</p>
-            <h1 className="mt-4 text-[clamp(3.4rem,7vw,7rem)] font-light leading-[.88] tracking-[-.075em] text-[color:var(--dn-ink)]">
+            <h1 className="mt-4 text-[clamp(2.95rem,7vw,7rem)] font-light leading-[.88] tracking-[-.075em] text-[color:var(--dn-ink)]">
               Find your<br /><em className="text-[color:var(--dn-title-accent)]">constellation.</em>
             </h1>
             <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-[color:var(--dn-muted)]">
