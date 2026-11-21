@@ -225,7 +225,7 @@ export function CommunityAtlas() {
           <section className="dn-network-field relative min-w-0 overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)]" aria-label="Network field">
             <div className="pointer-events-none absolute left-5 top-5 z-10 flex flex-col gap-1.5">
               <p className="font-mono text-[10px] uppercase tracking-[.13em] text-[color:var(--dn-graph-muted)]">The network</p>
-              <p className="text-xs text-[color:var(--dn-subtle)]">People are dots · practices are larger nodes</p>
+              <p className="text-xs text-[color:var(--dn-subtle)]">Dots are people · rings are practices · lines show connections</p>
             </div>
             <div className="h-[52svh] min-h-[350px] max-h-[660px] sm:h-[60svh] lg:h-[600px]">
               <Field selected={graphFocus} onSelect={chooseGraphNode} />
