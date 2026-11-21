@@ -3,7 +3,7 @@ import { CollectiveNetworkArtwork } from '@/components/dcc/artwork/CollectiveNet
 
 export const metadata: Metadata = {
   title: 'The Network Makes Itself — DCC Miami',
-  description: 'A minimal interactive network artwork: 100+ reported DCC members, public cofounders, one documented relationship, and six verified WhatsApp poll totals—without identifying voters or private ties.',
+  description: 'A living, interactive network of people and practices. Three public artists, six real community-interest categories, documented public connections, and no individual poll voter attribution.',
   robots: { index: true, follow: true },
 }
 
