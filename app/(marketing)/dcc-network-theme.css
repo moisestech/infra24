@@ -32,6 +32,12 @@
   --dn-title-accent: #366849;
   --dn-progress-track: rgb(36 75 48 / 13%);
   --dn-glow: rgb(74 130 87 / 12%);
+  --dn-poll-art: #337449;
+  --dn-poll-fabrication: #986236;
+  --dn-poll-film: #555fa4;
+  --dn-poll-code: #167980;
+  --dn-poll-xr: #75538f;
+  --dn-poll-exploring: #657438;
   --dn-scrim: rgb(237 246 237 / 80%);
   background: var(--dn-bg);
   color: var(--dn-ink);
@@ -65,6 +71,12 @@
   --dn-title-accent: #c3d9c7;
   --dn-progress-track: rgb(255 255 255 / 11%);
   --dn-glow: rgb(58 100 82 / 16%);
+  --dn-poll-art: #b4d9b9;
+  --dn-poll-fabrication: #d9c2a8;
+  --dn-poll-film: #bfcae6;
+  --dn-poll-code: #a6d5d2;
+  --dn-poll-xr: #d6bbdc;
+  --dn-poll-exploring: #d4d7ad;
   --dn-scrim: rgb(9 19 19 / 84%);
   color-scheme: dark;
 }
