@@ -90,6 +90,30 @@ function labelSprite(label: string, count: number | null, ink: string, surface: 
   return sprite
 }
 
+
+/** Outlined category rings are distinct from solid person dots. */
+function nodeDecoration(node: FieldNode, element: HTMLElement): THREE.Group {
+  const group = new THREE.Group()
+  if (node.kind === 'anonymous-presence') return group
+  const css = getComputedStyle(element)
+  const ink = css.getPropertyValue('--dn-on-graph').trim() || '#eef4ec'
+  const background = css.getPropertyValue('--dn-graph-chip').trim() || '#091313'
+  if (node.kind === 'practice') {
+    const color = css.getPropertyValue('--dn-poll-' + (node.choiceId ?? 'art')).trim() || '#8fae95'
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(12, 1.45, 9, 48),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthWrite: false }),
+    )
+    group.add(ring)
+  }
+  group.add(labelSprite(
+    node.kind === 'practice' ? node.label : node.label.split(' ')[0],
+    node.kind === 'practice' ? node.count ?? 0 : null,
+    ink, background,
+  ))
+  return group
+}
+
 export default function PeopleNetworkField({ selected, onSelect }: PeopleNetworkFieldProps) {
   const elRef = useRef<HTMLDivElement>(null)
   const graphRef = useRef<ForceGraph3DInstance<FieldNode, FieldEdge> | null>(null)
@@ -156,16 +180,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
             return label
           })
           .nodeThreeObjectExtend(true)
-          .nodeThreeObject((node) => {
-            if (node.kind === 'anonymous-presence') return new THREE.Group()
-            const css = getComputedStyle(element)
-            const ink = css.getPropertyValue('--dn-on-graph').trim() || '#eef4ec'
-            const background = css.getPropertyValue('--dn-graph-chip').trim() || '#091313'
-            const group = new THREE.Group()
-            group.add(labelSprite(node.kind === 'practice' ? node.label : node.label.split(' ')[0],
-              node.kind === 'practice' ? node.count ?? 0 : null, ink, background))
-            return group
-          })
+          .nodeThreeObject((node) => nodeDecoration(node, element))
           .linkWidth((link) => link.kind === 'documented-cofounding' ? 2.4 : 1.2)
           .linkOpacity(0.82)
           .linkColor((link) => link.kind === 'documented-cofounding' ? '#d1ecbb' : '#88baa0')
@@ -242,14 +257,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
         : theme('--dn-graph-muted', '#88baa0')
     })
     // Rebuild the six text sprites when the user's light/dark preference changes.
-    graph.nodeThreeObject((node) => {
-      if (node.kind === 'anonymous-presence') return new THREE.Group()
-      const group = new THREE.Group()
-      group.add(labelSprite(node.kind === 'practice' ? node.label : node.label.split(' ')[0],
-        node.kind === 'practice' ? node.count ?? 0 : null,
-        theme('--dn-on-graph', '#eef4ec'), theme('--dn-graph-chip', '#091313')))
-      return group
-    })
+    if (elRef.current) graph.nodeThreeObject((node) => nodeDecoration(node, elRef.current!))
     if (selected && data.nodes.some((node) => node.id === selected)) {
       const node = data.nodes.find((point) => point.id === selected)!
       graph.cameraPosition(
