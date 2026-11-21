@@ -10,6 +10,7 @@ import {
   readPassportPreview, type InterestId, type PassportPreview, type AtlasProfile,
 } from '@/lib/dcc/community/atlas'
 import { PollPulse } from './PollPulse'
+import { NetworkGraphBoundary } from '@/components/dcc/artwork/NetworkGraphBoundary'
 import { PUBLIC_ARTISTS } from '@/lib/dcc/artwork/member-presence'
 import { isDiscoveryChoice, type DiscoveryPollChoiceId } from '@/lib/dcc/artwork/discovery-poll'
 import { INTEREST_POLL_CATEGORIES } from '@/lib/dcc/artwork/people-practice-graph'
@@ -228,7 +229,7 @@ export function CommunityAtlas() {
               <p className="text-xs text-[color:var(--dn-subtle)]">Dots are people · rings are practices · lines show connections</p>
             </div>
             <div className="h-[52svh] min-h-[350px] max-h-[660px] sm:h-[60svh] lg:h-[600px]">
-              <Field selected={graphFocus} onSelect={chooseGraphNode} />
+              <NetworkGraphBoundary><Field selected={graphFocus} onSelect={chooseGraphNode} /></NetworkGraphBoundary>
             </div>
             <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2">
               <div className="dn-graph-overlay flex rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-graph-chip)] p-1 shadow-lg backdrop-blur-md" role="group" aria-label="Focus public artist or practice">
