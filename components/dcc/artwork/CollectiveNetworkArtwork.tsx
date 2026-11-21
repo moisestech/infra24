@@ -59,7 +59,7 @@ export function CollectiveNetworkArtwork() {
         <section className="dn-network-field relative mt-2 overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)]" aria-label="Member network">
           <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,var(--dn-glow),transparent_62%)]" aria-hidden />
           <header className="pointer-events-none absolute left-5 right-5 top-6 z-10 sm:left-9 sm:top-9">
-            <p className="font-mono text-[10px] uppercase tracking-[.17em] text-[color:var(--dn-graph-muted)]">People, practices, connections</p>
+            <p className="font-mono text-[10px] uppercase tracking-[.17em] text-[color:var(--dn-graph-muted)]">Dots are people · rings are practices</p>
             <h1 className="mt-3 text-[clamp(2.65rem,5.8vw,6rem)] font-light leading-[.91] tracking-[-.075em] text-[color:var(--dn-on-graph)]">
               The network<br /><em className="text-[color:var(--dn-graph-muted)]">makes itself.</em>
             </h1>
@@ -95,7 +95,7 @@ export function CollectiveNetworkArtwork() {
         </div>
 
         <div className="mx-1 mt-6 flex flex-wrap items-center justify-between gap-3 text-xs text-[color:var(--dn-subtle)] sm:mx-4">
-          <p>Small dots are people. Larger nodes are practices. Lines show public profiles and documented connections; poll totals stay anonymous.</p>
+          <p>Dots are people. Rings are practice areas. Lines show listed practices or documented relationships. Poll totals are anonymous.</p>
           <Link href={focus && publicPerson(focus) ? '/network/community?profile=' + focus : '/network/community'} className="inline-flex items-center gap-1 text-[color:var(--dn-link)] transition hover:text-[color:var(--dn-ink)]">
             Find people through their practice <ArrowUpRight size={14} />
           </Link>
