@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTheme } from '@/contexts/ThemeContext'
 import type { ForceGraph3DInstance, LinkObject, NodeObject } from '3d-force-graph'
 import { makeMembershipPresenceGraph, presenceSpherePosition, type MemberPresenceMark } from '@/lib/dcc/artwork/member-presence'
 
@@ -53,6 +54,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
   const [ready, setReady] = useState(false)
   const [unavailable, setUnavailable] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
+  const { resolvedTheme } = useTheme()
   const data = useMemo(graphData, [])
 
   useEffect(() => {
@@ -90,7 +92,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
         }) as unknown as ForceGraph3DInstance<HumanNode, HumanLink>
         graphRef.current = instance
         instance
-          .backgroundColor('#091313')
+          .backgroundColor(getComputedStyle(element).getPropertyValue('--dn-graph-bg').trim() || '#091313')
           .showNavInfo(false)
           .graphData({ nodes: data.nodes, links: data.links })
           .nodeResolution(16)
@@ -100,6 +102,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
           .nodeColor((node) => node.color)
           .nodeLabel((node) => {
             const label = document.createElement('span')
+            label.className = 'dn-node-tooltip'
             label.textContent = node.kind === 'public-cofounder'
               ? node.label + ' · publicly identified DCC cofounder'
               : 'Anonymous member-presence mark · no identity or poll choice mapped'
@@ -117,6 +120,8 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
           .warmupTicks(30)
           .cooldownTicks(0)
 
+        // Keep rendering responsive on mobile without full device-pixel-ratio cost.
+        instance.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75))
         resize = new ResizeObserver(() => {
           const { width, height } = element.getBoundingClientRect()
           if (width > 0 && height > 0) instance.width(width).height(height)
@@ -148,31 +153,42 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
     if (!ready || !graphRef.current) return
     const instance = graphRef.current
     instance.nodeVal((node) => node.id === selected ? 5.6 : node.kind === 'public-cofounder' ? 3.4 : 0.9)
-    instance.nodeColor((node) => node.id === selected ? '#f4dda5' : node.color)
+    // The page theme can change without remounting WebGL or losing camera state.
+    const element = elRef.current
+    const styles = element ? getComputedStyle(element) : null
+    const themeColor = (property: string, fallback: string) => styles?.getPropertyValue(property).trim() || fallback
+    instance.backgroundColor(themeColor('--dn-graph-bg', '#091313'))
+    instance.nodeColor((node) => node.id === selected
+      ? themeColor('--dn-graph-selected', '#f4dda5')
+      : node.kind === 'public-cofounder'
+        ? themeColor('--dn-graph-founder', '#e1edd4')
+        : themeColor('--dn-graph-node', '#9bb5a8'))
+    instance.linkColor(() => themeColor('--dn-graph-link', '#d1ecbb'))
     if (selected === 'moises-sanabria' || selected === 'fabiola-larios') {
       const x = selected === 'moises-sanabria' ? -32 : 32
       instance.cameraPosition({ x: x + 58, y: 31, z: 110 }, { x, y: 0, z: 0 }, reducedMotion ? 0 : 550)
     } else {
       instance.zoomToFit(reducedMotion ? 0 : 550, 85)
     }
-  }, [ready, reducedMotion, selected])
+  }, [ready, reducedMotion, selected, resolvedTheme])
 
   useEffect(() => {
     if (!ready || !graphRef.current) return
-    if (reducedMotion) graphRef.current.pauseAnimation()
-    else if (!document.hidden) graphRef.current.resumeAnimation()
+    // Physics are already frozen by cooldownTicks(0); pausing the render loop
+    // would disable touch orbit and node selection, especially on mobile.
+    if (!document.hidden) graphRef.current.resumeAnimation()
   }, [ready, reducedMotion])
 
   return (
     <div className="relative h-full w-full">
-      <div ref={elRef} className="h-full min-h-[380px] w-full" role="img"
+      <div ref={elRef} className="dn-network-field h-full min-h-[350px] w-full" role="img"
         aria-label="Three-dimensional DCC member-presence sculpture: 101 minimum-count marks including two named public cofounders with one documented cofounding relationship. All other positions have no member identifiers or poll answers."
       />
       {!ready && !unavailable && (
-        <p className="pointer-events-none absolute bottom-5 left-5 text-xs text-white/45" role="status">Opening the network…</p>
+        <p className="pointer-events-none absolute bottom-5 left-5 text-xs text-[color:var(--dn-graph-muted)]" role="status">Opening the network…</p>
       )}
       {unavailable && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#091313] p-8 text-center text-sm text-white/70" role="status">
+        <div className="absolute inset-0 flex items-center justify-center bg-[var(--dn-graph-bg)] p-8 text-center text-sm text-[color:var(--dn-on-graph)]" role="status">
           3D display unavailable. You can still explore the public cofounders and poll totals below.
         </div>
       )}
