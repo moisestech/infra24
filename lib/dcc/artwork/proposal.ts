@@ -93,8 +93,8 @@ export const NETWORK_ARTWORK_PROPOSAL = {
   status: {
     implemented: [
       'Existing DCC Community Atlas and member-consent design research',
-      'Privacy-reviewed category artwork based on DCC skill annotations and network signal types',
-      'A shareable local node experiment and reproducible SVG category study',
+      'Three.js illustration in which positions represent people and edges illustrate person-to-person connections',
+      'A shareable local person-position experiment and reproducible SVG connection study',
     ],
     proposed: [
       'Real participant authorship and verified mutual-edge approval',
