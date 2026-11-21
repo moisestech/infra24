@@ -42,6 +42,7 @@ export function PollPulse({ compact = false, title = 'What would you like to dis
         {DCC_DISCOVERY_POLL.choices.map((choice) => {
           const Icon = ICONS[choice.id]
           const isActive = choice.id === selected
+          const categoryColor = 'var(--dn-poll-' + choice.id + ')'
           return (
             <button
               key={choice.id}
@@ -49,17 +50,17 @@ export function PollPulse({ compact = false, title = 'What would you like to dis
               aria-pressed={isActive}
               onClick={() => setSelected((value) => value === choice.id ? null : choice.id)}
               className={[
-                'group flex min-w-0 items-center gap-3 rounded-xl border px-3.5 py-3.5 text-left transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4eed4]',
+                'group flex min-w-0 items-center gap-3 rounded-xl border px-3.5 py-3.5 text-left transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--dn-link)]',
                 isActive ? 'border-[color:var(--dn-line-strong)] bg-[var(--dn-panel-soft)]' : 'border-[color:var(--dn-line)] bg-[var(--dn-panel)] hover:border-[color:var(--dn-line-strong)] hover:bg-[var(--dn-hover)]',
               ].join(' ')}
             >
-              <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--dn-panel-soft)]" style={{ color: choice.tint }}>
+              <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--dn-panel-soft)]" style={{ color: categoryColor }}>
                 <Icon size={18} strokeWidth={1.65} />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[13px] leading-tight text-[color:var(--dn-muted)]">{choice.short}</span>
                 <Progress.Root value={choice.count} max={max} aria-label={choice.label} className="mt-2.5 h-[3px] overflow-hidden rounded-full bg-[var(--dn-progress-track)]">
-                  <Progress.Indicator className="h-full rounded-full transition-transform duration-300 motion-reduce:transition-none" style={{ backgroundColor: choice.tint, width: String(choice.count / max * 100) + '%' }} />
+                  <Progress.Indicator className="h-full rounded-full transition-transform duration-300 motion-reduce:transition-none" style={{ backgroundColor: categoryColor, width: String(choice.count / max * 100) + '%' }} />
                 </Progress.Root>
               </span>
               <span className="shrink-0 font-mono text-base tabular-nums text-[color:var(--dn-muted)]">{choice.count}</span>
