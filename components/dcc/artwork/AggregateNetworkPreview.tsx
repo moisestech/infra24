@@ -5,14 +5,8 @@ import PeopleNetworkField from './PeopleNetworkField'
 
 /** Client boundary for embedding the human-connections artwork into server-rendered editorial pages. */
 export default function AggregateNetworkPreview() {
-  const [selected, setSelected] = useState('member-mark-001')
+  const [selected, setSelected] = useState<string | null>(null)
   return (
-    <PeopleNetworkField
-      mode="presence"
-      lens="practices"
-      selected={selected}
-      onSelect={setSelected}
-      local={null}
-    />
+    <PeopleNetworkField selected={selected} onSelect={setSelected} />
   )
 }
