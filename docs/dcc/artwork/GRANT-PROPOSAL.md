@@ -54,8 +54,8 @@ The project deliberately reuses DCC's current code and community coordination re
 ## What already exists
 
 - DCC's artist-led network, working network protocol, and Community Atlas source code
-- A minimal Three.js artwork using a reviewed, coarsened snapshot of DCC practice annotations and network activity categories (November 21, 2026)
-- A local, unsaved node experiment, shareable category-only URLs, and a deterministic SVG category study; no individual CRM rows or person-to-person edges
+- A minimal Three.js study: each node illustrates a person-position, and each edge joins two person-positions. This public topology is **fictional**, not an extraction of the private DCC people or introductions tables
+- Broad practice and activity lenses affect the color of people-nodes but are not separate hubs. A local, unsaved node experiment, category-only shared URLs, and an SVG projection of the same illustrated connections are available
 
 **Not yet built or independently verified:** real participant-authored public profiles and edges, member-controlled publishing and withdrawal, a production edition system, material testing, consent for lasting physical inclusion, or a completed installation.
 
@@ -78,4 +78,4 @@ It also builds on DCC's ongoing research into institutional capacity, opt-in rep
 **Public project site:** /network/artwork/proposal  
 **Content source for ongoing updates:** lib/dcc/artwork/proposal.ts  
 **Creative lead:** Moises Sanabria; future participating coauthors to be credited only upon agreement.  
-**Status:** Public aggregate artwork prototype and proposed participatory sculptural edition. The internal snapshot is partial, not a poll. No grant award, participant enrollment, consent to publish identities, or finished sculpture implied.
+**Status:** Public fictional human-network artwork prototype and proposed participatory sculptural edition. DCC's actual person-to-person map remains private; the current data does not authorize publication of member identities or social ties. No grant award or finished sculpture implied.

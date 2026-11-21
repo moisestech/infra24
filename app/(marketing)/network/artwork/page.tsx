@@ -3,7 +3,7 @@ import { CollectiveNetworkArtwork } from '@/components/dcc/artwork/CollectiveNet
 
 export const metadata: Metadata = {
   title: 'The Network Makes Itself — DCC Miami',
-  description: 'Explore a sculptural 3D view of anonymous creative-practice and activity patterns drawn from reviewed DCC Miami aggregates.',
+  description: 'An interactive 3D artwork: human positions become nodes, their hypothetical interpersonal connections become edges. No private DCC people or relationships are exposed.',
   robots: { index: true, follow: true },
 }
 
