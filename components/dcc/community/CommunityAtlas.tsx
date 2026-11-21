@@ -225,7 +225,7 @@ export function CommunityAtlas() {
                   </button>
                 ))}
               </div>
-              <Link href="/network/artwork" className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-[#091313]/90 px-3.5 py-3 text-xs text-white/85 hover:text-white">
+              <Link href={founderFocus ? "/network/artwork?person=" + founderFocus : "/network/artwork"} className="inline-flex items-center gap-1 rounded-full border border-white/20 bg-[#091313]/90 px-3.5 py-3 text-xs text-white/85 hover:text-white">
                 Open artwork <ArrowUpRight size={14} />
               </Link>
             </div>
