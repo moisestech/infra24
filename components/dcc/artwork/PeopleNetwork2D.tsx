@@ -48,9 +48,8 @@ function selectionPoint(choiceId: DiscoveryPollChoiceId, index: number, count: n
   const radius = isOuter ? 56 : 39
   const span = 144 * Math.PI / 180
   const progress = layerCount === 1 ? 0.5 : local / (layerCount - 1)
-  const theta = (upper ? Math.PI : 0) + (upper ? 1 : 1) * (Math.PI - span) / 2 + span * progress
-  // Top fan spans approximately 198°–342° (toward top); bottom 18°–162°.
-  const angle = upper ? theta : (Math.PI - span) / 2 + span * progress
+  // Top fan spans approximately 198°–342° (up); bottom 18°–162° (down).
+  const angle = (upper ? Math.PI : 0) + (Math.PI - span) / 2 + span * progress
   return { x: center.x + Math.cos(angle) * radius, y: center.y + Math.sin(angle) * radius }
 }
 
