@@ -42,6 +42,17 @@ describe('people and practice network from public source data', () => {
     expect(DCC_DISCOVERY_POLL.respondents).toBeNull()
   })
 
+  it('honors Moises self-declared all-six interests without changing historic poll votes', () => {
+    const graph = makePeoplePracticeGraph()
+    const moises = graph.practiceEdges.filter((edge) => edge.source === 'moises-sanabria')
+    expect(moises.map((edge) => edge.target)).toEqual([
+      'practice-fabrication', 'practice-film', 'practice-xr', 'practice-code', 'practice-art', 'practice-exploring',
+    ])
+    expect(moises.every((edge) => edge.evidence === 'member-self-declared')).toBe(true)
+    expect(graph.pollEdges).toHaveLength(72)
+    expect(graph.practices.map((practice) => practice.count)).toEqual([21, 16, 11, 10, 7, 7])
+  })
+
   it('links Angelo to fabrication and interactive using the Atlas editorial profile, not the poll', () => {
     const graph = makePeoplePracticeGraph()
     const angelo = graph.practiceEdges.filter((edge) => edge.source === 'angelo-caruso')
@@ -54,7 +65,7 @@ describe('people and practice network from public source data', () => {
     const graph = makePeoplePracticeGraph()
     expect(graph.practiceEdges.every((edge) => PILOT_PREVIEWS.some((p) => p.slug === edge.source))).toBe(true)
     expect(graph.practiceEdges.every((edge) => !edge.source.startsWith('anonymous-'))).toBe(true)
-    expect(graph.practiceEdges.length).toBe(8)
+    expect(graph.practiceEdges.length).toBe(11)
     expect(graph.connections).toEqual([{
       from: 'moises-sanabria', to: 'fabiola-larios', kind: 'documented-cofounding',
     }])
