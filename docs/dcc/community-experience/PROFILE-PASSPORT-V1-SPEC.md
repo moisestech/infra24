@@ -2,6 +2,8 @@
 
 Status: **Proposed / implementation not yet enabled** · 2026-11-22 · Owners: Moises Sanabria + Fabiola Larios
 
+> **Reconciliation update, November 22:** [RFC 01 — One Website Membership, One Node, One Editable Profile](./RFC-01-UNIFIED-WEB-MEMBERSHIP.md) proposes that a successful verified DCC website join creates/resolves one canonical internal member node, regardless of entry route. Join, signup, login, Passport and profile become one stateful experience; repeated login creates no duplicate. Public node visibility is an explicit founder decision (RFC Q1); prior language describing Join as merely a contact request or requiring a published profile for membership is superseded by the RFC proposal. **The RFC remains a draft pending decisions and no enrollment changes are live.**
+
 This specification supersedes conflicting *prototype* assumptions; it does **not** retroactively grant member consent, merge CRM records, enable new intake, or deploy authenticated accounts. Source contracts: [Atlas product/data contract](https://docs.google.com/document/d/1UBoVdLiYE4DsCBe8jqpyMxZDZpyMad-MHRHNAE6FKEI/edit), [Atlas v0.1 intake/consent spec](https://docs.google.com/document/d/1HsfNFLQZdv4k-oz11gL5qwUrlxytdyy3hiTHL8Doi9A/edit), [community build hub](https://docs.google.com/document/d/1dlA8wCfh8uxkWcQaPdrTHh3tvjH0kzpEdRfWIe8snM0/edit).
 
 ## 1. Product thesis
