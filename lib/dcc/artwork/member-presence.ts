@@ -69,8 +69,8 @@ export function makeMembershipPresenceGraph(
   return {
     marks: [...visible, ...anonymous],
     connections: visible.length >= 2 ? [{
-      from: founders[0].id,
-      to: founders[1].id,
+      from: PUBLIC_FOUNDERS[0].id,
+      to: PUBLIC_FOUNDERS[1].id,
       kind: 'documented-cofounding',
     }] : [],
   }
