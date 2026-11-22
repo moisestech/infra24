@@ -223,7 +223,7 @@ export function CommunityAtlas() {
           <section className="dn-network-field min-w-0 overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)]" aria-label="Network field">
             <div className="border-b border-[color:var(--dn-line)] px-4 py-3 sm:px-5">
               <p className="font-mono text-[10px] uppercase tracking-[.13em] text-[color:var(--dn-graph-muted)]">The network</p>
-              <p className="mt-1 text-xs text-[color:var(--dn-subtle)]">Dots are people · rings are practices · lines are public connections</p>
+              <p className="mt-1 text-xs text-[color:var(--dn-subtle)]">Circles: people · hexagons: practices · colored lines: poll selections</p>
             </div>
             <div className="h-[420px] w-full sm:h-[540px] lg:h-[560px]">
               <NetworkGraphBoundary><Field selected={graphFocus} onSelect={chooseGraphNode} /></NetworkGraphBoundary>
