@@ -10,12 +10,13 @@ import PeopleNetwork2D from './PeopleNetwork2D'
 type FieldNode = NodeObject & {
   id: string
   label: string
-  kind: 'public-cofounder' | 'public-artist' | 'anonymous-presence' | 'practice'
+  kind: 'public-cofounder' | 'public-artist' | 'anonymous-presence' | 'practice' | 'poll-selection'
   choiceId?: string
   count?: number
 }
 type FieldEdge = LinkObject<FieldNode> & {
-  kind: 'documented-cofounding' | 'listed-practice'
+  kind: 'documented-cofounding' | 'listed-practice' | 'aggregate-poll-selection'
+  choiceId?: string
 }
 export type PeopleNetworkFieldProps = {
   selected: string | null
@@ -49,9 +50,32 @@ function buildGraph() {
       ...position, fx: position.x, fy: position.y, fz: position.z,
     })
   })
+  // Selection marks orbit their category; they are counts, not person identities.
+  data.pollSelections.forEach((selection) => {
+    const hub = nodes.find((node) => node.id === 'practice-' + selection.choiceId)
+    if (!hub) return
+    const index = Number(selection.id.split('-').pop() ?? '1') - 1
+    const total = data.practices.find((practice) => practice.choiceId === selection.choiceId)?.count ?? 1
+    const angle = index * Math.PI * (3 - Math.sqrt(5))
+    const radius = 33 + Math.sqrt((index + 0.5) / total) * 42
+    const position = {
+      x: (hub.x ?? 0) + Math.cos(angle) * radius,
+      y: (hub.y ?? 0) + Math.sin(angle) * radius,
+      z: (hub.z ?? 0) + Math.sin(index * 2.3) * 26,
+    }
+    nodes.push({
+      id: selection.id, label: 'Anonymous poll selection',
+      kind: 'poll-selection', choiceId: selection.choiceId,
+      ...position, fx: position.x, fy: position.y, fz: position.z,
+    })
+  })
   const links: FieldEdge[] = [
     ...data.connections.map((edge) => ({ source: edge.from, target: edge.to, kind: edge.kind })),
     ...data.practiceEdges.map((edge) => ({ source: edge.source, target: edge.target, kind: edge.kind })),
+    ...data.pollEdges.map((edge) => ({
+      source: edge.source, target: edge.target, kind: edge.kind,
+      choiceId: edge.target.slice('practice-'.length),
+    })),
   ]
   return { nodes, links }
 }
@@ -130,24 +154,28 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
           .graphData({ nodes: data.nodes, links: data.links })
           .nodeResolution(11)
           .nodeRelSize(2.7)
-          .nodeVal((node) => node.kind === 'practice' ? 9 : node.kind === 'anonymous-presence' ? 0.75 : 4)
+          .nodeVal((node) => node.kind === 'practice' ? 11 : node.kind === 'poll-selection' ? 1.2 : node.kind === 'anonymous-presence' ? 0.75 : 4)
           .nodeOpacity(0.96)
           .nodeLabel((node) => {
             const label = document.createElement('span')
             label.className = 'dn-node-tooltip'
             label.textContent = node.kind === 'practice'
-              ? node.label + ' · ' + node.count + ' community poll selections'
-              : node.kind === 'anonymous-presence'
-                ? 'Anonymous member-presence mark'
-                : node.label + ' · public artist profile'
+              ? node.label + ' · ' + node.count + ' anonymous poll selection connections'
+              : node.kind === 'poll-selection'
+                ? 'An unattributed poll selection · category totals do not identify unique voters'
+                : node.kind === 'anonymous-presence'
+                  ? 'Anonymous member-presence mark · not a known voter'
+                  : node.label + ' · public artist profile'
             return label
           })
-          .linkWidth((link) => link.kind === 'documented-cofounding' ? 2.2 : 1.1)
+          .linkWidth((link) => link.kind === 'documented-cofounding' ? 2.2 : link.kind === 'aggregate-poll-selection' ? 0.95 : 1.1)
           .linkOpacity(0.75)
           .linkLabel((link) => link.kind === 'documented-cofounding'
             ? 'DCC cofounding'
-            : 'Public profile practice, not a poll vote')
-          .onNodeClick((node) => onSelectRef.current(node.kind === 'anonymous-presence' ? null : node.id))
+            : link.kind === 'aggregate-poll-selection'
+              ? 'One aggregate poll selection, voter unknown'
+              : 'Public editorial practice, not a poll response')
+          .onNodeClick((node) => onSelectRef.current(node.kind === 'anonymous-presence' ? null : node.kind === 'poll-selection' ? 'practice-' + node.choiceId : node.id))
           .onNodeHover((node) => { element.style.cursor = node && node.kind !== 'anonymous-presence' ? 'pointer' : 'grab' })
           .cooldownTicks(0)
 
@@ -211,19 +239,24 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
       const theme = (property: string, fallback: string) =>
         style?.getPropertyValue(property).trim() || fallback
       graph.backgroundColor(theme('--dn-graph-bg', '#091313'))
-      graph.nodeVal((node) => node.id === selected ? 12 : node.kind === 'practice' ? 9 : node.kind === 'anonymous-presence' ? 0.75 : 4)
+      graph.nodeVal((node) => node.id === selected ? 14 : node.kind === 'practice' ? 11 : node.kind === 'poll-selection' ? 1.2 : node.kind === 'anonymous-presence' ? 0.75 : 4)
       graph.nodeColor((node) => {
         if (node.id === selected) return theme('--dn-graph-selected', '#f4dda5')
-        if (node.kind === 'practice') return theme('--dn-poll-' + (node.choiceId ?? 'art'), '#8fae95')
+        if (node.kind === 'practice' || node.kind === 'poll-selection') return theme('--dn-poll-' + (node.choiceId ?? 'art'), '#8fae95')
         if (node.kind === 'anonymous-presence') return theme('--dn-graph-node', '#9bb5a8')
         return theme('--dn-graph-founder', '#e1edd4')
       })
-      graph.linkColor((link) =>
-        selected && [endpointId(link.source), endpointId(link.target)].includes(selected)
-          ? theme('--dn-graph-selected', '#f4dda5')
-          : link.kind === 'documented-cofounding'
-            ? theme('--dn-graph-link', '#d1ecbb')
-            : theme('--dn-graph-muted', '#88baa0'))
+      graph.linkColor((link) => {
+        if (selected && [endpointId(link.source), endpointId(link.target)].includes(selected)) {
+          return theme('--dn-graph-selected', '#f4dda5')
+        }
+        if (link.kind === 'aggregate-poll-selection') {
+          return theme('--dn-poll-' + (link.choiceId ?? 'art'), '#8fae95')
+        }
+        return link.kind === 'documented-cofounding'
+          ? theme('--dn-graph-link', '#d1ecbb')
+          : theme('--dn-graph-muted', '#88baa0')
+      })
       if (selected) {
         const point = data.nodes.find((node) => node.id === selected)
         if (point) {
@@ -253,7 +286,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
       <div ref={elementRef}
         className={'dn-network-field min-h-0 w-full flex-1 ' + (enabled && !failed ? '' : 'hidden')}
         role="img"
-        aria-label="Three-dimensional network of public artist nodes and six practice categories. The other member positions have no individual identities."
+        aria-label="3D network: reported people as neutral spheres, six large colored practice hubs and 72 anonymous poll-selection spokes. Selections are not unique voter identities."
       />
       {enabled && !ready && !failed && (
         <p className="pointer-events-none absolute bottom-16 left-4 text-xs text-[color:var(--dn-graph-muted)]" role="status">

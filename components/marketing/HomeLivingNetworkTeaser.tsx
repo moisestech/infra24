@@ -17,7 +17,7 @@ export function HomeLivingNetworkTeaser() {
             The network<br /><em className="text-[color:var(--dn-title-accent)]">makes itself.</em>
           </h2>
           <p className="mt-6 max-w-md text-[15px] leading-relaxed text-[color:var(--dn-muted)]">
-            Dots are people. Rings are practice areas. Explore Moises, Fabiola and Angelo, and the places where their public work overlaps.
+            People are circles; practice hubs are colored hexagons. Each colored spoke counts one poll selection. Explore the known public profiles without attributing anyone's vote.
           </p>
           <div className="mt-8 flex flex-wrap gap-4 text-sm">
             <Link href="/network/artwork" className="rounded-full bg-[var(--dn-accent)] px-5 py-3 font-semibold text-[color:var(--dn-accent-ink)] hover:bg-[var(--dn-accent-hover)]">Explore the artwork ↗</Link>

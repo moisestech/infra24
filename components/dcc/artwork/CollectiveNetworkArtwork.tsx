@@ -61,7 +61,7 @@ export function CollectiveNetworkArtwork() {
           </h1>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <p className="max-w-xl text-sm leading-relaxed text-[color:var(--dn-muted)] sm:text-[15px]">
-              Dots are people. Rings are practices. Lines show public connections.
+              Circles are people. Hexagons are practices. Colored lines count poll selections.
             </p>
             <div className="flex items-center gap-5 text-xs text-[color:var(--dn-link)]">
               <Link href="/network/community" className="hover:underline">Find people <ArrowUpRight size={13} className="inline" /></Link>
@@ -111,7 +111,7 @@ export function CollectiveNetworkArtwork() {
         </div>
 
         <footer className="mt-6 flex flex-wrap items-start justify-between gap-4 text-xs leading-relaxed text-[color:var(--dn-subtle)]">
-          <p className="max-w-xl">Public artist practices and documented relationships only. Poll results are aggregate, not individual responses.</p>
+          <p className="max-w-xl">72 poll selections, not 72 identifiable voters. Dashed lines show listed public practices; named relationships require evidence.</p>
           <Link href={focus && isPublicPerson(focus) ? '/network/community?profile=' + focus : '/network/community'}
             className="inline-flex items-center gap-1 text-[color:var(--dn-link)] hover:underline">
             Explore the Atlas <ArrowUpRight size={14} />

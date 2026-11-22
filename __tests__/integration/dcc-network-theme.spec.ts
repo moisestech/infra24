@@ -65,6 +65,27 @@ test.describe('DCC Atlas / network theme and mobile experience', () => {
     }
   })
 
+  test('mobile graph shows count-accurate anonymous vote spokes with distinct category geometry', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/network/artwork')
+    const graph = page.locator('.dn-2d-network svg')
+    await expect(graph).toBeVisible()
+    await expect(graph.locator('polygon')).toHaveCount(6)
+    for (const [category, count] of [
+      ['art', 21], ['fabrication', 16], ['film', 11],
+      ['code', 10], ['xr', 7], ['exploring', 7],
+    ] as const) {
+      await expect(graph.locator('line[stroke="var(--dn-poll-' + category + ')"]')).toHaveCount(count)
+      await expect(graph.locator('circle[fill="var(--dn-poll-' + category + ')"]')).toHaveCount(count)
+    }
+    await expect(graph.locator('line')).toHaveCount(81) // 72 poll + 8 editorial + 1 cofounder
+    await expect(page.getByText(/not 72 unique voters/i)).toBeVisible()
+    await graph.getByRole('button', { name: /Games & XR: 7 anonymous poll-selection connections/i }).click()
+    await expect(page).toHaveURL(/practice=xr/)
+    await expect(page.getByText(/7 poll-selection connections/i)).toBeVisible()
+    await expect(page.getByText(/Voter identities unknown/i)).toBeVisible()
+  })
+
   test('never crashes the entire page when WebGL is unavailable', async ({ page }) => {
     const uncaught: string[] = []
     page.on('pageerror', (error) => uncaught.push(error.message))
