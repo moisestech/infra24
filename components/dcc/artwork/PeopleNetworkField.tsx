@@ -165,7 +165,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
                 ? 'An unattributed poll selection · category totals do not identify unique voters'
                 : node.kind === 'anonymous-presence'
                   ? 'Anonymous member-presence mark · not a known voter'
-                  : node.label + ' · public artist profile
+                  : node.label + ' · public artist profile'
             return label
           })
           .linkWidth((link) => link.kind === 'documented-cofounding' ? 2.2 : link.kind === 'aggregate-poll-selection' ? 0.95 : 1.1)
