@@ -8,12 +8,13 @@ import {
 const principal: VerifiedSessionPrincipal = {
   provider: 'clerk', subject: 'user_verified_123', verifiedEmail: 'Member@example.test', emailVerified: true,
 }
-function fixture(legacyCandidates = 0) {
+function fixture(legacyCandidates = 0, newAccount = false) {
   const bindings = new Map<string, { privatePersonId: string; state: 'active' | 'withdrawn' | 'suspended' }>()
   let creates = 0
   const store: DccMembershipStore = {
     async findByProviderSubject(_provider, subject) { return bindings.get(subject) ?? null },
     async countUnboundPeopleCandidates() { return legacyCandidates },
+    async wasNewPlatformAccountCreatedUnderPolicy() { return newAccount },
     async createOrGetVerifiedMembership(input) {
       // Simulates the required atomic unique constraint in the persistence adapter.
       const existing = bindings.get(input.subject)
@@ -45,22 +46,28 @@ describe('BDD — one canonical DCC member across every entry', () => {
     expect(f.count()).toBe(1)
   })
 
-  it('Given a generic Smart Sign account, when authenticated, then no implicit DCC enrollment', async () => {
+  it('Given a NEW verified Smart Sign account with trusted creation evidence, membership is automatic', async () => {
+    const f = fixture(0, true)
+    expect((await enterDccMembership('platform-sign-up', principal, f.store)).memberStatus).toBe('active')
+    expect((await enterDccMembership('sign-in', principal, f.store)).memberStatus).toBe('active')
+    expect(f.count()).toBe(1)
+  })
+
+  it('Given a PRE-CUTOVER account, sign-in cannot trigger automatic membership', async () => {
     const f = fixture()
-    expect((await enterDccMembership('platform-sign-up', principal, f.store)).memberStatus).toBe('not_member')
     expect((await enterDccMembership('sign-in', principal, f.store)).memberStatus).toBe('not_member')
     expect(f.count()).toBe(0)
   })
 
   it('Given no email verification, when Join is requested, then enrollment is held', async () => {
-    const f = fixture()
-    expect((await enterDccMembership('join', { ...principal, emailVerified: false }, f.store)).memberStatus).toBe('verification_required')
+    const f = fixture(0, true)
+    expect((await enterDccMembership('platform-sign-up', { ...principal, emailVerified: false }, f.store)).memberStatus).toBe('verification_required')
     expect(f.count()).toBe(0)
   })
 
   it('Given an older People email match, when Join is requested, then ownership is reviewed, not claimed', async () => {
-    const f = fixture(1)
-    expect((await enterDccMembership('join', principal, f.store)).memberStatus).toBe('review_required')
+    const f = fixture(1, true)
+    expect((await enterDccMembership('platform-sign-up', principal, f.store)).memberStatus).toBe('review_required')
     expect(f.count()).toBe(0)
   })
 
@@ -77,9 +84,9 @@ describe('BDD — one canonical DCC member across every entry', () => {
     await expect(enterDccMembership('join', principal, f.store)).rejects.toThrow('provider unavailable')
   })
 
-  it('Given concurrent verified Join requests, the atomic store returns one membership', async () => {
-    const f = fixture()
-    const receipts = await Promise.all(Array.from({ length: 8 }, () => enterDccMembership('join', principal, f.store)))
+  it('Given concurrent verified platform-account creation deliveries, the atomic store returns one membership', async () => {
+    const f = fixture(0, true)
+    const receipts = await Promise.all(Array.from({ length: 8 }, () => enterDccMembership('platform-sign-up', principal, f.store)))
     expect(receipts.every(r => r.memberStatus === 'active')).toBe(true)
     expect(f.count()).toBe(1)
   })

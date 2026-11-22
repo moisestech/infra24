@@ -3,6 +3,7 @@
  * The caller MUST obtain principal from a server-verified Clerk session.
  * The store MUST enforce atomic uniqueness for provider+subject and personId.
  * A CRM email match is a reconciliation candidate, not ownership proof.
+ * Domain contract only; webhook, persistence, cutover and UI are NOT implemented.
  */
 export type DccEntryPoint = 'join' | 'add-profile' | 'passport' | 'sign-in' | 'platform-sign-up'
 export type VerifiedSessionPrincipal = {
@@ -18,12 +19,14 @@ export type DccMembership = {
 export type DccMembershipStore = {
   findByProviderSubject(provider: 'clerk', subject: string): Promise<DccMembership | null>
   countUnboundPeopleCandidates(verifiedEmail: string): Promise<number>
+  /** Verified, durable Clerk creation-event evidence after a configured cutover. Never sourced from client input. */
+  wasNewPlatformAccountCreatedUnderPolicy(provider: 'clerk', subject: string): Promise<boolean>
   /** Atomic create-or-get; never use a read-then-create Airtable upsert to implement this. */
   createOrGetVerifiedMembership(input: {
     provider: 'clerk'
     subject: string
     verifiedEmail: string
-    source: 'join' | 'add-profile' | 'passport'
+    source: 'join' | 'add-profile' | 'passport' | 'platform-account-created'
   }): Promise<DccMembership>
 }
 export type DccMembershipReceipt = {
@@ -57,8 +60,10 @@ export async function enterDccMembership(
     // Withdrawal/suspension are never silently reversed by a login or another CTA.
     return receipt(existing.state === 'active' ? 'active' : 'review_required')
   }
-  // Smart Sign / unrelated platform accounts never silently enroll in DCC.
-  if (!DCC_INTENTS.has(entry)) return receipt('not_member')
+  // Q2: all NEW platform accounts auto-enroll, including Smart Sign. Existing pre-cutover accounts are not backfilled on sign-in.
+  // Only a trusted server-side creation-event ledger may establish new-account eligibility.
+  const newAccount = await store.wasNewPlatformAccountCreatedUnderPolicy(principal.provider, principal.subject)
+  if (!newAccount && !DCC_INTENTS.has(entry)) return receipt('not_member')
   if (!principal.emailVerified || !principal.verifiedEmail?.trim()) {
     return receipt('verification_required')
   }
@@ -69,7 +74,7 @@ export async function enterDccMembership(
     provider: principal.provider,
     subject: principal.subject,
     verifiedEmail: email,
-    source: entry as 'join' | 'add-profile' | 'passport',
+    source: newAccount ? 'platform-account-created' : entry as 'join' | 'add-profile' | 'passport',
   })
   // A store failure must throw upstream; never fabricate a successful receipt.
   return receipt(member.state === 'active' ? 'active' : 'review_required')
