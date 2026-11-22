@@ -20,6 +20,28 @@ describe('people and practice network from public source data', () => {
     expect(graph.practices.reduce((sum, p) => sum + p.count, 0)).toBe(72)
   })
 
+
+  it('draws exactly one anonymous spoke per poll selection, without inventing voters', () => {
+    const graph = makePeoplePracticeGraph()
+    expect(graph.pollSelections).toHaveLength(72)
+    expect(graph.pollEdges).toHaveLength(72)
+    expect(new Set(graph.pollSelections.map((node) => node.id)).size).toBe(72)
+    expect(graph.pollSelections.every((node) => node.kind === 'poll-selection')).toBe(true)
+    const humanIds = new Set(graph.marks.map((mark) => mark.id))
+    expect(graph.pollSelections.some((node) => humanIds.has(node.id))).toBe(false)
+    for (const choice of DCC_DISCOVERY_POLL.choices) {
+      const marks = graph.pollSelections.filter((node) => node.choiceId === choice.id)
+      const links = graph.pollEdges.filter((edge) => edge.target === 'practice-' + choice.id)
+      expect(marks).toHaveLength(choice.count)
+      expect(links).toHaveLength(choice.count)
+      expect(links.every((edge) => marks.some((node) => node.id === edge.source))).toBe(true)
+      expect(links.every((edge) => edge.evidence === 'organizer-poll-screenshot')).toBe(true)
+    }
+    expect(graph.pollEdges.every((edge) => !humanIds.has(edge.source) && !humanIds.has(edge.target))).toBe(true)
+    // 72 selections do NOT establish the unique respondent count for a multi-select poll.
+    expect(DCC_DISCOVERY_POLL.respondents).toBeNull()
+  })
+
   it('links Angelo to fabrication and interactive using the Atlas editorial profile, not the poll', () => {
     const graph = makePeoplePracticeGraph()
     const angelo = graph.practiceEdges.filter((edge) => edge.source === 'angelo-caruso')
