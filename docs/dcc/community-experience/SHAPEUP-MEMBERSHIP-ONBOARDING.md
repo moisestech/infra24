@@ -2,7 +2,7 @@
 
 Status: IMPLEMENTATION DRAFT — no live member enrollment, provider binding or graph snapshots enabled
 Date: 2026-11-22
-Source: RFC #72 and Profile/Passport V1. Decision A is approved. DCC-specific enrollment is the working assumption pending explicit founder approval of Q2.
+Source: RFC #72 and Profile/Passport V1. Decisions A and Q2 are approved. All NEW platform accounts after cutover enter the DCC membership lifecycle, including Smart Sign. Existing accounts are not retroactively imported.
 
 ## Problem and appetite
 The site has three separate affordances: a CRM email-based Join, a staged Atlas profile request, and a local-only Passport. They feel like multiple enrollments and may mislead people that a submission verifies identity or publishes a profile. The graph currently mixes editorial previews, a WhatsApp-reported backdrop and poll selections. A trustworthy system must make belonging durable while refusing to leak identities, interests or event-level presence.
@@ -10,7 +10,7 @@ The site has three separate affordances: a CRM email-based Join, a staged Atlas 
 Two-week product bet: prove the smallest join-and-return journey with a real verified session and one canonical People record, then a separate snapshot/publication pilot. Shape work to verified identity, reusable profile, explicit consent, and measurable usefulness. Cut optional photos, relationships, intro automation, activity history and member-only directory first.
 
 ## Boundaries / non-goals
-- DCC-specific entry (Join, Add profile, Passport) requires explicit DCC membership intent. A generic Smart Sign/Clerk account or dashboard sign-in does NOT auto-enroll by default.
+- NEW platform account creation (Smart Sign included) automatically enters the DCC lifecycle after policy cutover. Pre-cutover accounts do NOT auto-enroll just by signing in; explicit Join is supported.
 - A verified session is not an identity match to legacy Airtable People by email. Existing unmatched People require ownership review. No silent mass migration or duplicate writes.
 - People remains DCC's canonical person/profile projection; a transactional provider-subject ↔ People-ID uniqueness index may be required, but must not be a second public people directory.
 - Internal membership node is derived from one verified active People binding. Never create graph nodes on login/profile reads/Passport edits.
@@ -19,7 +19,7 @@ Two-week product bet: prove the smallest join-and-return journey with a real ver
 - No automatic WhatsApp import or invitations; no speculative member activity or AI ranking.
 
 ## Solution sketch
-1. All DCC-specific CTAs resolve to a single mobile-first Join / Your profile route. Existing /join campaign parameters survive. Generic platform account creation does not imply DCC membership.
+1. All new platform account signup paths initiate private pending DCC membership with clear pre-signup disclosure. Existing /join and campaign links remain; older accounts can choose Join.
 2. Server-verified Clerk principal is checked against a provider/subject binding. If found, reuse; if absent, require verified contact and inspect unbound legacy People candidates. Any collision enters manual review. Only a store with atomic unique constraints may create a verified membership.
 3. A server-confirmed verified membership is distinct from a CRM prospect submission. Initial private profile can be empty. Returning users see the same editor; Passport is the edit mode, not a new registration.
 4. Member drafts, public scope grants, consent versions and reviewer approvals are separate events. Public directory and artwork share exactly one reviewed allowlisted profile projection. Revocation hides that projection immediately and invalidates cached copies.
@@ -37,7 +37,7 @@ Two-week product bet: prove the smallest join-and-return journey with a real ver
 
 ## BDD: acceptance contract (Given / When / Then)
 - Given a new person with a server-verified identity, when they complete Join DCC, then exactly one canonical active membership exists and their profile stays private.
-- Given an authenticated account created for unrelated Smart Sign, when the user signs in, then no DCC membership is created unless they explicitly choose a DCC entry.
+- Given a NEW Smart Sign account after policy cutover, when verified account creation evidence and owned credentials are confirmed, then a DCC membership is created once, without a separate Join click. A pre-cutover account sign-in does not retroactively enroll.
 - Given an unverified email, when Join is requested, then the request remains verification-required and the public and internal verified-member count do not change.
 - Given an unbound legacy People email match, when a verified account requests Join, then the person is held for ownership review and neither person is overwritten.
 - Given the same verified member using Join, a QR link, two devices, Add profile, and Passport, when requests repeat or race, then the atomic unique binding returns one People member and one internal graph node.
@@ -61,3 +61,7 @@ S4 — Pilot: 10 volunteers, 2 successful searches, 1 mutually approved useful c
 
 ## Done means
 One verified DCC enrollment resolves to one durable member regardless of entry, an unverified CRM contact never pretends to be a member, public views never expose private data, provider outage and collisions fail closed, and mobile testing plus real-provider end-to-end are documented. Keep production disabled until all S1–S4 gates are proven.
+
+
+## Q2 founder lock and security correction — November 22
+Earlier DCC-specific-only enrollment is SUPERSEDED. New accounts across the platform enter DCC automatically after cutover; verified identity, collision review and atomic persistence precede an active internal node. This must be visible in Smart Sign onboarding copy. Member-only access remains disabled; public profiles, interests and marketing still require separate permission. Before any live integration remove personal webhook payload logging, add signed-event idempotency/out-of-order protection, check existing role=resident semantics, secure a private one-to-one Clerk↔People binding and resolve legacy collisions. See RFC §10. No live behavior changed.

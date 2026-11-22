@@ -1,6 +1,6 @@
 # RFC 01 — One Website Membership, One Node, One Editable Profile
 
-Status: **Q1 decided (A) — other founder decisions open; not implemented or released**
+Status: **Q1 A and Q2 automatic new-account enrollment LOCKED; implementation security gates open; not released**
 Date: 2026-11-22
 Owner: Moises Sanabria + Fabiola Larios
 Changes the interpretation of: [V1 Product Specification](./PROFILE-PASSPORT-V1-SPEC.md) §3–6 and §8; [execution issue #68](https://github.com/moisestech/infra24/issues/68).
@@ -9,7 +9,7 @@ Changes the interpretation of: [V1 Product Specification](./PROFILE-PASSPORT-V1-
 
 DCC website **Join, Sign up, Sign in, Add profile, and Passport must be entry points to one underlying membership system**, not different opportunities to become multiple people or submit repeated questionnaires. Once someone *successfully joins DCC through the website* they have one canonical internal **member identity / person node**. Their public profile and disclosed practice connections develop from that member over time.
 
-Important clarification: **logging in is not another join**. It restores an existing verified identity, and must never create a duplicate graph node. Generic authentication elsewhere in infra24 (Clerk's existing Smart Sign routes, organization profiles, dashboards) is currently distinct from DCC membership; whether all new platform accounts should automatically enter DCC is an explicit founder decision, not a safe assumption.
+Important clarification: **logging in is not another join**. It restores an existing verified identity, and must never create a duplicate graph node. Generic authentication elsewhere in infra24 (Clerk's existing Smart Sign routes, organization profiles, dashboards) is currently distinct from DCC membership; Q2 is now decided: all newly created platform accounts after the policy cutover enter DCC automatically, including Smart Sign; earlier accounts do not auto-backfill.
 
 WhatsApp membership is independent. The historic 101 minimum-count positions are *reported community scale*, not a verified unique website-membership roster; do not simply add website registrations to 101 or silently subtract anonymous dots. A website DCC member might also belong to WhatsApp; identity intersection is not currently known.
 
@@ -41,7 +41,7 @@ WhatsApp membership is independent. The historic 101 minimum-count positions are
 **State transition** (proposed):
 
 1. Any DCC Join / Create profile / Passport CTA → one **Join DCC** journey.
-2. Anonymous entry → minimal name + email; identity proof / session establishment handled once. Existing verified identity → prefill and resume. Non-DCC platform accounts are not silently imported.
+2. Anonymous entry → minimal name + email; identity proof / session establishment handled once. Existing verified identity → prefill and resume. New Smart Sign/platform account creation after cutover initiates DCC enrollment; existing accounts are not imported on sign-in.
 3. On confirmed server-side *DCC enrollment* → reconcile to existing People once; write a durable membership transition with idempotency key; create the **internal person node** once. If not yet verified, hold pending rather than claiming active verified membership. Re-entries and sign-ins reuse this node.
 4. Ask about optional practice interests / public website / photo (progressive, skippable), then visibility. A private member remains a member and keeps the internal node.
 5. Public-facing directory + artwork receive only approved public projection; public status/interest edges can update when review succeeds, not when someone merely clicks a local preview.
@@ -118,7 +118,7 @@ The internal model contains **one canonical node for each verified, active DCC w
 
 **Q1 — DECIDED A (founder, November 22, 2026).** Every successful, verified **DCC website** enrollment creates or resolves exactly one internal person node. An anonymous public presence mark **may** appear for that member, but only through a privacy-safe published snapshot; their identity, interests, join time and relationship edges remain private until separately authorized. It is **not** a claim that the historic WhatsApp roster was reconciled or that a 1:1 viewer-addressable anonymous account ID is safe. No public-update behavior is live yet.
 
-**Q2 — Scope of account creation**. Does signing up to *any* DCC-hosted platform experience automatically join the DCC community, or only a website action explicitly labeled Join DCC? Existing Smart Sign org accounts are currently separate.
+**Q2 — LOCKED:** every NEW platform account after the policy cutover enters DCC enrollment automatically, including Smart Sign. Identity verification and safe People reconciliation are required before active membership.
 
 **Q3 — What makes a website join official?** Verified email/account in a live session (recommended), or immediate submission before email proof? A quick unverified form could still produce a **pending private** node, but should not claim a verified person.
 
@@ -126,16 +126,61 @@ The internal model contains **one canonical node for each verified, active DCC w
 
 **Q5 — The first WhatsApp CTA**. Direct people to "Join DCC" (including existing WhatsApp members), or "Create your network profile" (same experience behind the CTA)? These may be differing entry copy with a shared implementation.
 
-Founder Q1 is answered with **A**. Q2–Q5 remain open, and none of the proposed membership/account/publication APIs or the anonymous website cohort is in production. This RFC remains a decision draft until account scope and identity-verification semantics are agreed.
+Founder Q1 is answered with **A** and Q2 is automatic new-account enrollment. Q3–Q5 remain open, and none of the proposed membership/account/publication APIs or the anonymous website cohort is in production. This RFC remains a decision draft until account scope and identity-verification semantics are agreed.
 
 ## 9. Shape Up + BDD implementation checkpoint (2026-11-22)
 
 Engineering slice S0 committed on draft PR #72 at a9bb4c1ee765f951770a6e887771611c0b5efc9b. See [Shape Up plan](./SHAPEUP-MEMBERSHIP-ONBOARDING.md) for product appetite, boundaries, no-gos, user journeys, Gherkin-style acceptance criteria, risks and release gates.
 
-- lib/dcc/membership/enrollment.ts: server-session-driven DCC-specific enrollment decision; generic platform sign-ups do not enroll by default; verified legacy email collisions require review; store contract requires atomic uniqueness.
+- lib/dcc/membership/enrollment.ts: server-session-driven membership contract aligned to verified new-platform-account creation evidence; verified legacy email collisions require review; store contract requires atomic uniqueness.
 - lib/dcc/membership/public-snapshot.ts: delayed and coarsened weekly website-member cohort projection; counts remain separate from WhatsApp and poll selections; no member payload.
 - __tests__/lib/dcc-membership-lifecycle.test.ts: BDD regression coverage for identity reuse, duplicate joins, unverified identities, collisions, withdrawal, provider error, snapshot suppression and repeat publishing.
 
 This is a domain and test contract, NOT a wired Clerk/Airtable/Supabase implementation. Current /api/dcc/signup still stages CRM data by self-entered email and must not be interpreted as a verified membership writer. The test suite has not been run in the full repository environment in this session; CI is pending. No real member data, schema migrations, snapshots, consent grants or deployments were made.
 
-Working Q2 rule for implementation until founder approval: an account for unrelated Smart Sign/platform experiences is not a DCC enrollment. DCC-labeled Join, Add Profile and Passport require explicit DCC intent and funnel into one membership. Keep this RFC draft and do not enable live enrollment until verified Clerk binding, transactional uniqueness, reviewer reconciliation, privacy review and mobile release gates are established.
+**Superseded by locked Q2:** newly created Smart Sign and other platform accounts enroll automatically when verified and safely reconciled. Existing pre-cutover accounts do not auto-enroll upon sign-in, but may explicitly Join. Keep this RFC draft and do not enable live enrollment until verified Clerk binding, transactional uniqueness, reviewer reconciliation, privacy review and mobile release gates are established.
+
+
+## 10. Locked Decision 2 — automatic NEW platform account enrollment; implementation safeguards
+
+**Approved November 22, 2026.** Every newly created platform account, including Smart Sign and non-DCC app entry, enters the DCC membership lifecycle after a configured production cutover. The account is NOT a verified member merely because a Clerk user object exists. Verified ownership plus a durable atomic binding to one canonical People record is required before ACTIVE membership and one internal graph node. Pre-cutover accounts do not retroactively enroll on sign-in; they can explicitly Join and reconcile. Account creation never grants a named public profile, interests, practice connections, newsletter marketing, WhatsApp membership, or privileged/member-only discovery.
+
+### Code/security audit — confirmed from current repository
+- app/sign-up/[[...rest]]/page.tsx creates a Smart Sign account without explaining automatic DCC membership. Show plain-language membership disclosure before every supported signup/OAuth path, plus a private-by-default explanation and withdrawal path.
+- app/api/webhooks/clerk/route.ts verifies Svix signatures but creates org_memberships(role=resident, org_id=null) on user.created. This is not DCC People membership and must not be reused as directory authorization. Existing org role semantics need review.
+- The same handler logs the full webhook payload; remove/redact personal data from logs. It has no visible persisted processed-event ledger, DCC identity binding or idempotent DCC creation. A missing primary email returns the generic successful response without a DCC member transition.
+- The user.deleted webhook deletes org_memberships. Model DCC withdrawal, account deletion, tombstones and late-event handling separately; a late user.created must never resurrect a deleted or withdrawn membership.
+- /api/dcc/signup currently upserts People by self-entered email, returns internal recordId and acknowledges as joined. It is CRM lead intake, NOT verified platform account membership. Remove misleading responses and record-ID exposure before live migration.
+- Airtable DCC People currently has 52 rows, 11 with populated email, 41 without, zero Atlas Identity Verified checkboxes checked. These schema observations do not rule out independent identity evidence. Do not auto-match the historical 41 by name, WhatsApp or social handle.
+
+### Legacy reconciliation matrix
+| Condition | Required behavior |
+| --- | --- |
+| New post-cutover verified Clerk account, no collision | Atomic create-or-get one People member binding; private profile; one active internal node |
+| New account unverified or lacking durable creation evidence | Pending enrollment, no verified node or public count; repair/retry, not false success |
+| New account verified email overlaps unbound legacy People | Hold for ownership review; never overwrite old People or create a duplicate |
+| New account collides with People bound to different Clerk subject | Security conflict; block claim; escalation; no second node |
+| Pre-cutover Clerk account signs in | Reuse existing binding if present, otherwise no automatic enrollment |
+| Pre-cutover account explicitly chooses Join | Verified, safe reconciliation into same membership lifecycle |
+| Legacy CRM contact without email, WhatsApp-only, or /network/signup form | No automatic binding or publication; needs independently verified evidence |
+| Deleted, suspended, or withdrawn account, or delayed webhook replay | Tombstone-aware no resurrection; intentional restoration process only |
+
+### Transaction and event boundary (not implemented)
+- Use one private transactional provider-instance + Clerk subject -> DCC People binding ledger, with unique subject and canonical person constraints, event/audit records and an idempotent retry/outbox. This is a private identity link, not a second public directory. Airtable email read-then-create is not an atomic uniqueness mechanism.
+- Verify every incoming Svix signature, event ID, instance, provider-created timestamp, policy cutover eligibility and email ownership from trusted server/provider evidence. Handle duplicate and out-of-order user.created, updated, deleted and merged events, primary email changes, and conflicting accounts. Never accept a browser-provided new-account flag.
+- Keep an explicit feature flag OFF until cutover, and run a dry-run legacy collision report, quota check and provider end-to-end test. Do not replay historical Clerk accounts as new members.
+- The existing blanket Smart Sign role resident must not authorize private DCC views. Automatic DCC membership expands the audience of member-only content dramatically; keep member-only profile visibility disabled until separate, proven authorization.
+- Automatic account membership must be disclosed, provide a withdrawal path distinct from account deletion, and must not imply newsletter opt-in, data sharing, contact disclosure, intro consent or Atlas publication.
+- The public website-member cohort is a delayed, privacy-reviewed, coarsened aggregate of verified active DCC members (now potentially acquired through ALL platform account funnels). Keep it separate from WhatsApp-reported figures and historical poll selections and do not sum as distinct humans.
+
+### BDD release-blocking cases
+1. Trusted new platform account creation, including Smart Sign, activates exactly one private DCC membership after verification without requiring Join.
+2. Pre-cutover account login cannot activate a new DCC membership without explicit join intent; already-bound member sign-ins only restore identity.
+3. Webhook duplicate delivery, out-of-order updates, same-account concurrent requests, new email and merged-account histories never create multiple People bindings.
+4. Forged, unsigned, wrong-instance or stale creation events and unverified email cannot activate membership.
+5. Legacy People collision or second-subject claimant cannot overwrite a record or create a second node.
+6. Deleted/withdrawn users remain inactive despite late user.created retries; suspension or reactivation requires explicit review.
+7. Private active members have no public name, practice edge, member-only directory privilege, newsletter opt-in or immediate anonymous signup dot.
+8. Provider outage, storage capacity, latency, withdrawal and cache invalidation do not return false success or leak internal Airtable identifiers.
+
+**Status:** Q2 product rule is final; policy cutover, eligible Clerk instances, creation event ledger, verified session binding, privacy disclosure, migration review and release gates are engineering prerequisites. Existing S0 domain functions/tests are unwired. No live enrollment, schema migration, member-row mutation or production deployment has been performed.
