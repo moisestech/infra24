@@ -1,6 +1,6 @@
 # RFC 01 — One Website Membership, One Node, One Editable Profile
 
-Status: **Decision draft — awaiting founder answers, not implemented or released**
+Status: **Q1 decided (A) — other founder decisions open; not implemented or released**
 Date: 2026-11-22
 Owner: Moises Sanabria + Fabiola Larios
 Changes the interpretation of: [V1 Product Specification](./PROFILE-PASSPORT-V1-SPEC.md) §3–6 and §8; [execution issue #68](https://github.com/moisestech/infra24/issues/68).
@@ -34,7 +34,7 @@ WhatsApp membership is independent. The historic 101 minimum-count positions are
 - `profile_completion`: basic / enriched. Required just to join: very few fields; a long bio, portfolio and photo must never be prerequisites.
 - `profile_visibility`: private (default), member-only (only when permissioned member auth really exists), public (explicit opt-in), hidden/withdrawn.
 - `profile_review`: draft / pending / approved / requires changes; PUBLIC named discovery requires permission, validation and approved fields. A confirmed membership is not blocked on editorial publication.
-- `graph_projection`: internal member node exists for each active web DCC member; public named node only with effective approved public profile. A *public anonymous mark* for private members is a design/consent decision; no identity, interest, timing or stable pseudonym may leak without an allowed scope.
+- `graph_projection`: one internal person node for each verified DCC website member. **Decision A approved, November 22:** an anonymous, non-identifying public presence mark may represent a website member without making their name, interests, profile or interpersonal edges public. Named nodes still require effective reviewed public consent. Public anonymous rendering is **snapshot-derived**, not a one-to-one client-readable identifier and not necessarily real-time.
 - `interests`: optional **self-declared**, multiple of the six canonical topics, editable over time; never inferred from WhatsApp ballots. Only publish profile→practice edges when those interests have an effective authorized public scope.
 - `network_joins`: documented interpersonal links require their own evidence and appropriate permissions.
 
@@ -76,10 +76,30 @@ Define server-owned `resolveDccPerson(authIdentity)`: authenticated user id → 
 ## 6. Graph correctness and privacy
 
 - **Internal graph**: one canonical member node per joined website member (subject to verified identity/appropriate lifecycle), independently of public listing preference. Multiple visits, QR sources, sign-ins and submissions do not create additional nodes.
-- **Public graph**: one named person node only when the participant affirmatively approves public representation and content is approved. Unpublished members remain hidden or aggregate-only **depending on Q1** below.
+- **Public graph**: **DECIDED A** — verified active DCC website members may contribute anonymous presence marks to a separate *verified website community* cohort. Public named profiles and person→practice edges appear only when separately approved; no automatic interest edges. Never reveal private member identifiers, exact join times, verified emails, or a stable anonymous fingerprint. Publication must follow the privacy guardrails in §6.1.
 - **Edges**: declared practice after permission; two-person links after documented agreement. A WhatsApp poll response is never transferred to a named member without evidence and permission.
 - **Three denominators must never be summed as if disjoint**: (A) WhatsApp reported minimum membership positions; (B) distinct verified DCC website members; (C) aggregate poll *selections* (multi-select 72).
-- If public anonymous web-joined dots are enabled, show a separate *verified website community* group/layer and explain possible overlap with WhatsApp. No publicly stable anonymous identifiers or identifiable timestamp-based changes.
+- **Website cohort vs WhatsApp**: show the verified website cohort as a separately named layer (not added to the reported 101 WhatsApp lower-bound positions); the two populations may overlap. Never present their sum as unique membership. Suppress or coarsen sparse counts and do not publish event-by-event updates.
+
+
+### 6.1 Decision A — anonymous public website cohort, privacy-preserving contract
+
+The internal model contains **one canonical node for each verified, active DCC website membership**. An opaque, server-only person ID is used for deduplication and authorization. A graph viewer must **never** receive or reverse-map that ID.
+
+**Public snapshot projection** (proposed, not implemented):
+- A server-approved, **delayed snapshot** derives the active verified DCC website member population and a count of public presence marks; never emit a live "someone just joined" event, new-user timestamp, hashed email, account slug, or stable pseudonymous member key.
+- Generate decorative per-snapshot marks from an aggregate count, **not directly from serialized People records**. Marks may be re-laid out on each snapshot; a mark carries no identity, practice, membership event, or attached person-specific link.
+- **Minimum-cohort and cadence gate required** before enabling this endpoint: propose at least five verified website members for an initial public cohort, then publish in batched periodic snapshots (e.g., weekly), with small changes held/coarsened until safe. The five-member threshold and cadence are **initial engineering guardrails for review**, not yet approved site policy or guarantees of anonymity.
+- Named, reviewed public people may appear separately in the exact same artwork **without an implicit one-to-one crosswalk** to anonymous marks. Do not subtract or deterministically join named profiles to mark slots unless safe deduplication can be proven without leaking identities.
+- Keep **three labeled quantities** in both API and presentation: `reportedWhatsAppLowerBound` (101 from prior report, uncertain overlap), `verifiedWebsiteMemberPresence` (published, possibly suppressed/coarsened cohort), and `pollSelections` (72 historical multi-select choices, not people). Do not sum these as unique humans.
+- Privacy controls must remain transparent: membership onboarding copy should disclose the anonymous **aggregate** participation mark; public profile publication remains a separate unselected choice, with a hide/withdraw option backed by a tested authorization path.
+- Server must return **no raw web-member list**, no individual join dates, no "last member added" metadata and no per-user interest edges on this cohort. Ordinary unauthenticated API inspection, cache freshness and timing tests must enforce this.
+
+**Examples**:
+1. First verified web DCC join creates one internal node. With the website cohort below the publication threshold the public graph does **not** instantly display a new distinguishable dot.
+2. Five or more verified members exist and a reviewed batch publishes: the graph may render a coarsened count of anonymous website-presence marks; these do not link to member profiles, polls, or interest hubs.
+3. Member edits Passport, uses a QR link, signs back in, or submits an optional public-profile revision: **zero extra internal nodes**. Approved public profile representation changes separately; anonymous aggregate snapshots must not permit tracing the person.
+4. Website member also belongs to WhatsApp: **one website identity**, but do not assume the WhatsApp aggregate and website cohort can be added into a unique total.
 
 ## 7. Acceptance tests before live release
 
@@ -96,10 +116,7 @@ Define server-owned `resolveDccPerson(authIdentity)`: authenticated user id → 
 
 ## 8. Founder decisions (answer in conversation, in order)
 
-**Q1 — Presence default (first decision)**. After a person officially joins the website, should the public network show:
-A. An **unlabeled anonymous dot** representing the verified website join immediately, independent of profile-publication consent; or
-B. **No additional public dot until they actively allow publication**, while retaining their private canonical node?
-Either way, a named public node/profile only appears with explicit public approval. Note that even anonymous dots can reveal recent participation if counts are small or updated in real time.
+**Q1 — DECIDED A (founder, November 22, 2026).** Every successful, verified **DCC website** enrollment creates or resolves exactly one internal person node. An anonymous public presence mark **may** appear for that member, but only through a privacy-safe published snapshot; their identity, interests, join time and relationship edges remain private until separately authorized. It is **not** a claim that the historic WhatsApp roster was reconciled or that a 1:1 viewer-addressable anonymous account ID is safe. No public-update behavior is live yet.
 
 **Q2 — Scope of account creation**. Does signing up to *any* DCC-hosted platform experience automatically join the DCC community, or only a website action explicitly labeled Join DCC? Existing Smart Sign org accounts are currently separate.
 
@@ -109,4 +126,4 @@ Either way, a named public node/profile only appears with explicit public approv
 
 **Q5 — The first WhatsApp CTA**. Direct people to "Join DCC" (including existing WhatsApp members), or "Create your network profile" (same experience behind the CTA)? These may be differing entry copy with a shared implementation.
 
-No founder choices have been answered or silently defaulted as product policy. This RFC is an implementation basis once those decisions are made, not a production release.
+Founder Q1 is answered with **A**. Q2–Q5 remain open, and none of the proposed membership/account/publication APIs or the anonymous website cohort is in production. This RFC remains a decision draft until account scope and identity-verification semantics are agreed.
