@@ -16,7 +16,7 @@ Two-week product bet: prove the smallest join-and-return journey with a real ver
 - Internal membership node is derived from one verified active People binding. Never create graph nodes on login/profile reads/Passport edits.
 - Public named profile, public practice edge, anonymous cohort, WhatsApp minimum and poll selections are distinct data products. They have different evidence, permission and denominators.
 - No frontend graph integration until authenticated create-or-get, revocation, publisher and cache tests are green; do not connect private CRM records to client components.
-- No automatic WhatsApp import or invitations; no speculative member activity or AI ranking.
+- No automatic WhatsApp import or invitations; no speculative member activity or AI ranking. No automatic public profile when a platform account is created.
 
 ## Solution sketch
 1. All new platform account signup paths initiate private pending DCC membership with clear pre-signup disclosure. Existing /join and campaign links remain; older accounts can choose Join.
@@ -53,7 +53,7 @@ Two-week product bet: prove the smallest join-and-return journey with a real ver
 - Given reduced-motion, screen-reader, iOS Safari at 390×844 and Android, when they use the journey, then they can complete or exit each step with visible focus and 44px targets.
 
 ## Vertical slices and gates
-S0 — Vocabulary and contract (this PR): domain interface, BDD regression tests, strict no-implicit-enrollment, delayed snapshot projector; no production wiring. Needs CI run.
+S0 — Vocabulary and contract (this PR): membership lifecycle domain interface, verified NEW platform-account automatic eligibility (not pre-cutover account sign-in), BDD regression definitions, delayed snapshot projector; no production wiring. Needs CI run.
 S1 — Verified enrollment: server-side Clerk session proof, atomic binding + People reconciliation, idempotent retry/outbox, honest UI receipt; provider/quota and identity-collision test.
 S2 — Unified owner editor: /join + Atlas CTA + Passport route use one profile after verified ownership; no duplicate questionnaires, draft/review/visibility event history.
 S3 — Publication: one allowlisted profile read for directory/artwork; revocation and cache invalidation; periodic reviewed anonymous snapshot cron; no per-event API.
@@ -65,3 +65,7 @@ One verified DCC enrollment resolves to one durable member regardless of entry, 
 
 ## Q2 founder lock and security correction — November 22
 Earlier DCC-specific-only enrollment is SUPERSEDED. New accounts across the platform enter DCC automatically after cutover; verified identity, collision review and atomic persistence precede an active internal node. This must be visible in Smart Sign onboarding copy. Member-only access remains disabled; public profiles, interests and marketing still require separate permission. Before any live integration remove personal webhook payload logging, add signed-event idempotency/out-of-order protection, check existing role=resident semantics, secure a private one-to-one Clerk↔People binding and resolve legacy collisions. See RFC §10. No live behavior changed.
+
+
+## UX pitch and first-use journey (November 22, 2026)
+A detailed mobile-first breadboard, value-first copy, source attribution schema, three editorial pilot example cards, six existing practice lenses, 18 BDD scenarios, and launch scorecard now live in [MOBILE-JOIN-DISCOVER-SHAPE-UP-V1.md](./MOBILE-JOIN-DISCOVER-SHAPE-UP-V1.md). This is the UX companion to the identity/security RFC, not a second signup service. The two-week appetite is for a verified private member + clearly explained one-account entry, optional owner practice editor and accessible browsing. Public profile publication and anonymous population snapshots remain separately gated. Cut AI matching, member-only, intros, photo upload and graph redesign before trading away privacy correctness.
