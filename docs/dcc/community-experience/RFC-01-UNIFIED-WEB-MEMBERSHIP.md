@@ -127,3 +127,15 @@ The internal model contains **one canonical node for each verified, active DCC w
 **Q5 — The first WhatsApp CTA**. Direct people to "Join DCC" (including existing WhatsApp members), or "Create your network profile" (same experience behind the CTA)? These may be differing entry copy with a shared implementation.
 
 Founder Q1 is answered with **A**. Q2–Q5 remain open, and none of the proposed membership/account/publication APIs or the anonymous website cohort is in production. This RFC remains a decision draft until account scope and identity-verification semantics are agreed.
+
+## 9. Shape Up + BDD implementation checkpoint (2026-11-22)
+
+Engineering slice S0 committed on draft PR #72 at a9bb4c1ee765f951770a6e887771611c0b5efc9b. See [Shape Up plan](./SHAPEUP-MEMBERSHIP-ONBOARDING.md) for product appetite, boundaries, no-gos, user journeys, Gherkin-style acceptance criteria, risks and release gates.
+
+- lib/dcc/membership/enrollment.ts: server-session-driven DCC-specific enrollment decision; generic platform sign-ups do not enroll by default; verified legacy email collisions require review; store contract requires atomic uniqueness.
+- lib/dcc/membership/public-snapshot.ts: delayed and coarsened weekly website-member cohort projection; counts remain separate from WhatsApp and poll selections; no member payload.
+- __tests__/lib/dcc-membership-lifecycle.test.ts: BDD regression coverage for identity reuse, duplicate joins, unverified identities, collisions, withdrawal, provider error, snapshot suppression and repeat publishing.
+
+This is a domain and test contract, NOT a wired Clerk/Airtable/Supabase implementation. Current /api/dcc/signup still stages CRM data by self-entered email and must not be interpreted as a verified membership writer. The test suite has not been run in the full repository environment in this session; CI is pending. No real member data, schema migrations, snapshots, consent grants or deployments were made.
+
+Working Q2 rule for implementation until founder approval: an account for unrelated Smart Sign/platform experiences is not a DCC enrollment. DCC-labeled Join, Add Profile and Passport require explicit DCC intent and funnel into one membership. Keep this RFC draft and do not enable live enrollment until verified Clerk binding, transactional uniqueness, reviewer reconciliation, privacy review and mobile release gates are established.
