@@ -1,10 +1,10 @@
 # The Network Makes Itself — people-first graph model
 
-**Current model:** Small nodes represent people; larger labeled nodes represent practice areas; links express either a documented person-to-person relationship or a publicly listed person-to-practice connection. Practice links do NOT identify individual poll voters.
+**Current model:** Neutral filled circles represent 101 minimum-count membership positions, with three public names. Six colored hexagons represent practice areas. Each practice has one colored spoke per recorded aggregate poll selection (72 spokes total). These spokes connect **anonymous selection marks**, not attributed voter identities; the multi-select poll does not expose person-to-answer mappings or 72 distinct respondents. Separately, dashed connections depict publicly listed artist practices and the documented cofounding link.
 
 **Update, November 21:** The former fictional Connections study was retired. The public field now shows 101 minimum-count human marks (three named public artists and 98 anonymous), one documented cofounder edge, and six category nodes with actual aggregate poll totals. Eight public editorial practice associations are visibly distinct from votes. See `MEMBER-PRESENCE-STATUS.md` and `discovery-poll.ts`. The illustrative specification below is historical context and not the current user-facing implementation.
 
-Practice areas are intentionally a **different node type** from people in the current bipartite graph. Public editorial profile tags may create practice links; personal WhatsApp poll answers cannot be assigned to individuals without permission.
+Practice hubs, person marks, and anonymous poll-selection marks are three distinct node types. Public editorial profile tags may create practice associations; individual WhatsApp answers cannot be assigned to real people without suitable evidence and publication permission.
 
 This document supersedes the category-hub visual model from \`AGGREGATE-NETWORK-20261121.md\`. That older report remains an internal record of available category vocabulary and consent gaps, **not** the current visual or social-graph specification.
 
