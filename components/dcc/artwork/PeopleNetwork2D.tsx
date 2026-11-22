@@ -108,7 +108,7 @@ export default function PeopleNetwork2D({ selected, onSelect }: Props) {
     position: PRACTICES[practice.choiceId],
   }))
   const selectionPositions = graph.pollSelections.map((mark) => {
-    const index = Number(mark.id.split('-').at(-1)) - 1
+    const index = Number(mark.id.split('-').pop() ?? '1') - 1
     const count = graph.practices.find((practice) => practice.choiceId === mark.choiceId)?.count ?? 0
     return { ...mark, position: selectionPoint(mark.choiceId, index, count) }
   })
@@ -229,7 +229,7 @@ export default function PeopleNetwork2D({ selected, onSelect }: Props) {
               View profile
             </Link></span>
         ) : (
-          <span>Filled circles: people · colored hexagons: practices · spokes: 72 selections (not 72 unique voters)</span>
+          <span>Neutral dots: people · colored dots: poll selections · hexagons: practices (not 72 unique voters)</span>
         )}
       </div>
     </div>
