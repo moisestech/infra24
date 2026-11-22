@@ -29,10 +29,10 @@ describe('Community Atlas publication boundary', () => {
 
 describe('Member discovery and local Passport preview', () => {
   it('matches any chosen interest and combines that with search', () => {
-    expect(filterProfiles(PILOT_PREVIEWS, ['interactive']).map((p) => p.slug)).toEqual(['angelo-caruso'])
+    expect(filterProfiles(PILOT_PREVIEWS, ['interactive']).map((p) => p.slug)).toEqual(['moises-sanabria', 'angelo-caruso'])
     expect(filterProfiles(PILOT_PREVIEWS, ['interactive', 'code-ai'])).toHaveLength(3)
     expect(filterProfiles(PILOT_PREVIEWS, ['code-ai'], 'fabiola')).toHaveLength(1)
-    expect(filterProfiles(PILOT_PREVIEWS, ['exploring'])).toEqual([])
+    expect(filterProfiles(PILOT_PREVIEWS, ['exploring']).map((p) => p.slug)).toEqual(['moises-sanabria'])
   })
   it('treats a saved Passport preference as a preview with no publication grant', () => {
     expect(readPassportPreview('bad-json')).toBeNull()
