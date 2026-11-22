@@ -54,7 +54,7 @@ function buildGraph() {
   data.pollSelections.forEach((selection) => {
     const hub = nodes.find((node) => node.id === 'practice-' + selection.choiceId)
     if (!hub) return
-    const index = Number(selection.id.split('-').at(-1)) - 1
+    const index = Number(selection.id.split('-').pop() ?? '1') - 1
     const total = data.practices.find((practice) => practice.choiceId === selection.choiceId)?.count ?? 1
     const angle = index * Math.PI * (3 - Math.sqrt(5))
     const radius = 33 + Math.sqrt((index + 0.5) / total) * 42
