@@ -13,7 +13,7 @@ A public, optional profile-discovery surface for people, practice, interests and
 - An optional profile request form that stages private pending submissions and records the displayed public consent. Identity and content review precede publication.
 - The separate Passport local preview remains optional; profile submission does not create a Passport account or subscribe the member.
 
-See [V1 Profile / Passport / Directory specification](PROFILE-PASSPORT-V1-SPEC.md), [Airtable setup](AIRTABLE-SETUP.md), [library research](FORCE-GRAPH-REFERENCE.md), and [verification](VERIFICATION.md).
+See [V1 Profile / Passport / Directory specification](PROFILE-PASSPORT-V1-SPEC.md), [Mobile Join → Discover Shape Up pitch and BDD](MOBILE-JOIN-DISCOVER-SHAPE-UP-V1.md), [One Membership RFC](RFC-01-UNIFIED-WEB-MEMBERSHIP.md), [Airtable setup](AIRTABLE-SETUP.md), [library research](FORCE-GRAPH-REFERENCE.md), and [verification](VERIFICATION.md).
 
 ## Discovery labels
 
@@ -55,3 +55,7 @@ npx jest __tests__/lib/dcc-community-atlas.test.ts __tests__/lib/dcc-atlas-intak
 ```
 
 The explicit mapper avoids an unrelated pre-existing Jest configuration typo. Focused TypeScript and ESLint checks cover the new files. Twenty-four focused tests and browser journeys pass; see VERIFICATION.md for the boundaries of that evidence.
+
+
+## Next journey — not live
+All NEW platform accounts (including Smart Sign) after a verified cutover enter private pending DCC membership. Existing pre-cutover accounts are not bulk auto-enrolled by signing in. One real verified People identity underpins all Join, Add Profile and Passport journeys. Membership is NOT a public directory listing; public presence needs deliberate approval. Proposed value-first mobile journey, example profiles, provenance of where a member joined, shared category taxonomy and graph evidence rules: [UX Shape Up pitch](MOBILE-JOIN-DISCOVER-SHAPE-UP-V1.md). Do not treat the current email-based signup or sessionStorage Passport preview as verified official enrollment.
