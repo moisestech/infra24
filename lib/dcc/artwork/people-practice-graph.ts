@@ -49,7 +49,7 @@ export type PracticeEdge = {
   source: string
   target: string
   kind: 'listed-practice'
-  evidence: 'public-Atlas-editorial-profile'
+  evidence: 'public-Atlas-editorial-profile' | 'member-self-declared'
 }
 
 export function makePeoplePracticeGraph(count?: number) {
@@ -70,7 +70,7 @@ export function makePeoplePracticeGraph(count?: number) {
         source: profile.slug,
         target: 'practice-' + INTEREST_POLL_CATEGORIES[id],
         kind: 'listed-practice' as const,
-        evidence: 'public-Atlas-editorial-profile' as const,
+        evidence: profile.slug === 'moises-sanabria' ? 'member-self-declared' as const : 'public-Atlas-editorial-profile' as const,
       }))
   )
   // One spoke per recorded category selection. These are not people nodes:

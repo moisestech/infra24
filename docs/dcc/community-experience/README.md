@@ -13,7 +13,7 @@ A public, optional profile-discovery surface for people, practice, interests and
 - An optional profile request form that stages private pending submissions and records the displayed public consent. Identity and content review precede publication.
 - The separate Passport local preview remains optional; profile submission does not create a Passport account or subscribe the member.
 
-See [Airtable setup](AIRTABLE-SETUP.md), [library research](FORCE-GRAPH-REFERENCE.md), and [verification](VERIFICATION.md).
+See [V1 Profile / Passport / Directory specification](PROFILE-PASSPORT-V1-SPEC.md), [Airtable setup](AIRTABLE-SETUP.md), [library research](FORCE-GRAPH-REFERENCE.md), and [verification](VERIFICATION.md).
 
 ## Discovery labels
 

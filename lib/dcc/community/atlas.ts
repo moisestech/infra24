@@ -61,7 +61,9 @@ export const PILOT_PREVIEWS: AtlasProfile[] = [
     slug: 'moises-sanabria', name: 'Moises Sanabria',
     summary: 'Artist, creative technologist and DCC Miami co-founder.',
     practice: ['Interdisciplinary art', 'Creative technology', 'Digital fabrication'],
-    interests: ['making', 'code-ai', 'culture'], website: 'https://www.moises.tech',
+    // Moises explicitly requested all six practices be visible on his public node (Nov 22).
+    // This is self-declared interest, NOT evidence that he selected those WhatsApp poll answers.
+    interests: ['making', 'image-sound', 'interactive', 'code-ai', 'culture', 'exploring'], website: 'https://www.moises.tech',
     image: 'https://res.cloudinary.com/dck5rzi4h/image/upload/v1777511801/dccmiami/portraits/moises-pfp_dnn3d3.jpg',
   },
   {
