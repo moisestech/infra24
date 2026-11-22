@@ -7,6 +7,10 @@
  *
  * A public person-to-practice edge is taken ONLY from a curated public
  * Atlas editorial profile; it does not say the person answered the poll.
+ * Each selection is drawn as one anonymous ballot-mark spoke to its category.
+ * This encodes 72 recorded selections, NOT 72 unique people or identities.
+ * A member may have selected several categories, and no individual voters
+ * are known. Poll-mark IDs are per-category drawing slots, not voter IDs.
  * No aggregate votes are converted to identity-level edges.
  */
 import { INTERESTS, PILOT_PREVIEWS, type InterestId } from '@/lib/dcc/community/atlas'
@@ -29,6 +33,17 @@ export type PracticeNode = {
   choiceId: DiscoveryPollChoiceId
   count: number // aggregate selections, never number of linked public profiles
   kind: 'practice'
+}
+export type PollSelectionNode = {
+  id: string
+  choiceId: DiscoveryPollChoiceId
+  kind: 'poll-selection'
+}
+export type PollSelectionEdge = {
+  source: string
+  target: string
+  kind: 'aggregate-poll-selection'
+  evidence: 'organizer-poll-screenshot'
 }
 export type PracticeEdge = {
   source: string
@@ -58,7 +73,22 @@ export function makePeoplePracticeGraph(count?: number) {
         evidence: 'public-Atlas-editorial-profile' as const,
       }))
   )
-  return { ...membership, practices, practiceEdges: edges }
+  // One spoke per recorded category selection. These are not people nodes:
+  // WhatsApp exposes aggregate totals but not a complete voter/answer mapping.
+  const pollSelections: PollSelectionNode[] = practices.flatMap((practice) =>
+    Array.from({ length: practice.count }, (_, i) => ({
+      id: 'poll-selection-' + practice.choiceId + '-' + String(i + 1).padStart(2, '0'),
+      choiceId: practice.choiceId,
+      kind: 'poll-selection' as const,
+    }))
+  )
+  const pollEdges: PollSelectionEdge[] = pollSelections.map((selection) => ({
+    source: selection.id,
+    target: 'practice-' + selection.choiceId,
+    kind: 'aggregate-poll-selection',
+    evidence: 'organizer-poll-screenshot',
+  }))
+  return { ...membership, practices, practiceEdges: edges, pollSelections, pollEdges }
 }
 
 export function isPracticeNode(id: string | null): id is string {
