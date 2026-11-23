@@ -7,6 +7,7 @@ import { ArrowUpRight } from 'lucide-react'
 import { PollPulse } from '@/components/dcc/community/PollPulse'
 import { NetworkGraphBoundary } from './NetworkGraphBoundary'
 import { MEMBER_PRESENCE_SOURCE, PUBLIC_ARTISTS } from '@/lib/dcc/artwork/member-presence'
+import { PILOT_PREVIEWS, type AtlasProfile } from '@/lib/dcc/community/atlas'
 import { isDiscoveryChoice, type DiscoveryPollChoiceId } from '@/lib/dcc/artwork/discovery-poll'
 
 const Field = dynamic(() => import('./PeopleNetworkField'), {
@@ -15,12 +16,35 @@ const Field = dynamic(() => import('./PeopleNetworkField'), {
 })
 
 type GraphSelection = string | null
-function isPublicPerson(value: string | null) {
-  return Boolean(value && PUBLIC_ARTISTS.some((person) => person.id === value))
-}
-
 export function CollectiveNetworkArtwork() {
   const [focus, setFocus] = useState<GraphSelection>(null)
+  const [profiles,setProfiles] = useState<AtlasProfile[]>(PILOT_PREVIEWS)
+  const [websiteMarks,setWebsiteMarks] = useState(0)
+  const [snapshotWeek,setSnapshotWeek] = useState<string | null>(null)
+  const [sourceState,setSourceState] = useState<'preview'|'live'>('preview')
+  const isPublicPerson = (value:string|null) => Boolean(value &&
+    (PUBLIC_ARTISTS.some(person=>person.id===value) || profiles.some(p=>p.slug===value)))
+
+  useEffect(()=>{
+    const controller=new AbortController()
+    async function refresh(){
+      try {
+        const response=await fetch('/api/dcc/sculpture/public',{cache:'no-store',signal:controller.signal})
+        if (!response.ok) return
+        const data=await response.json()
+        if (controller.signal.aborted || !Array.isArray(data.profiles)) return
+        // Match the Atlas: previously curated editorial features remain clearly labeled.
+        const approved=data.profiles as AtlasProfile[]
+        setProfiles([...approved,...PILOT_PREVIEWS.filter(p=>!approved.some(a=>a.slug===p.slug))])
+        setWebsiteMarks(data.websitePresence?.status==='coarsened' ? data.websitePresence.markCount : 0)
+        setSnapshotWeek(typeof data.websitePresence?.snapshotWeek==='string'?data.websitePresence.snapshotWeek:null)
+        setSourceState(data.mode==='live'?'live':'preview')
+      } catch { /* Existing editorial visualization stays available; no private fallback. */ }
+    }
+    void refresh()
+    const interval=window.setInterval(()=>{if(!document.hidden)void refresh()},300000)
+    return ()=>{controller.abort();window.clearInterval(interval)}
+  },[])
 
   useEffect(() => {
     const search = new URL(window.location.href).searchParams
@@ -61,7 +85,8 @@ export function CollectiveNetworkArtwork() {
           </h1>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <p className="max-w-xl text-sm leading-relaxed text-[color:var(--dn-muted)] sm:text-[15px]">
-              Circles are people. Hexagons are practices. Colored lines count poll selections.
+              Featured or reviewed public people connect to self-declared practices. Historic WhatsApp
+              presence, aggregate website-member marks and poll selections are separate layers.
             </p>
             <div className="flex items-center gap-5 text-xs text-[color:var(--dn-link)]">
               <Link href="/network/community" className="hover:underline">Find people <ArrowUpRight size={13} className="inline" /></Link>
@@ -75,7 +100,7 @@ export function CollectiveNetworkArtwork() {
           className="dn-network-field min-w-0 overflow-hidden rounded-2xl border border-[color:var(--dn-line)] bg-[var(--dn-graph-bg)]">
           <div className="h-[440px] w-full sm:h-[590px] lg:h-[670px]">
             <NetworkGraphBoundary>
-              <Field selected={focus} onSelect={chooseNode} />
+              <Field selected={focus} onSelect={chooseNode} profiles={profiles} websitePresenceMarks={websiteMarks} />
             </NetworkGraphBoundary>
           </div>
         </section>
@@ -100,9 +125,10 @@ export function CollectiveNetworkArtwork() {
               </button>
             ))}
           </div>
-          <span className="font-mono text-[11px] tracking-wider text-[color:var(--dn-subtle)]">
-            {MEMBER_PRESENCE_SOURCE.reportedLabel} members reported
-          </span>
+          <div className="flex flex-wrap gap-3 text-right font-mono text-[11px] tracking-wider text-[color:var(--dn-subtle)]">
+            <span>{MEMBER_PRESENCE_SOURCE.reportedLabel} WhatsApp positions reported</span>
+            <span>{websiteMarks ? websiteMarks+' delayed website-cohort marks · '+snapshotWeek : 'Website-member snapshot not published'}</span>
+          </div>
         </div>
 
         <div className="mt-10 border-b border-[color:var(--dn-line)] pb-10 sm:mt-14">
@@ -111,7 +137,7 @@ export function CollectiveNetworkArtwork() {
         </div>
 
         <footer className="mt-6 flex flex-wrap items-start justify-between gap-4 text-xs leading-relaxed text-[color:var(--dn-subtle)]">
-          <p className="max-w-xl">72 poll selections, not 72 identifiable voters. Dashed lines show listed public practices; named relationships require evidence.</p>
+          <p className="max-w-xl">72 poll selections, not 72 identifiable voters. Public practices require consent and review. Website marks appear only in delayed anonymous snapshots, never at the moment of signup. {sourceState==='preview'?'Featured artist cards are editorial previews.':''}</p>
           <Link href={focus && isPublicPerson(focus) ? '/network/community?profile=' + focus : '/network/community'}
             className="inline-flex items-center gap-1 text-[color:var(--dn-link)] hover:underline">
             Explore the Atlas <ArrowUpRight size={14} />
