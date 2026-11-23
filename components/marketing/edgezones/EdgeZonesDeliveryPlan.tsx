@@ -10,16 +10,16 @@ const content = {
       { title: 'Explore now', status: 'Built — preliminary', items: [
         ['Exhibition microsite', 'Responsive proposal with host credit, exhibition concept and gallery imagery.', '#overview'],
         ['Artist index prototype', 'Six initial profiles; final roster, works and image rights require artist approval.', '#artists'],
-        ['Opt-in signup', 'A DCC signup form exists; Edge Zones audience information is not transferred without consent.', '#join']
+        ['Opt-in signup', 'An optional DCC membership/signup form exists; it is not the official exhibition RSVP or an Edge Zones mailing list.', '#join']
       ] },
       { title: 'Planned production', status: 'Materials / capacity pending', items: [
         ['Artist and work records', 'Approved images, biographies, artwork details, alt text and meaningful links.', '#artists'],
         ['Documentation archive', 'Credit installation photos, program notes and permissions; video or 360 is not guaranteed.', '#archive'],
-        ['Publishing and outreach', 'Editorial recap and DCC-channel announcements with Edge Zones and artist credits.', '#support']
+        ['Publishing and outreach', 'Proposed editorial recap and DCC-channel amplification, using Charo-approved copy, images and credits, linking first to Edge Zones official exhibition information.', '#support']
       ] },
       { title: 'Joint approvals', status: 'Not yet confirmed', items: [
         ['Final checklist', 'Jordan and artists decide works and needs; Angelo coordinates local installation.', '#artists'],
-        ['One proposed public program', 'Confirm presenters, access, staffing, equipment, duration, cost and date with Edge Zones.', '#programs'],
+        ['One proposed public program', 'Charo must approve presenters, date, access, staffing, equipment and costs before any program promotion.', '#programs'],
         ['Honorarium and costs', 'Clarify the $500 allocation and any external travel or production funding.', '#roles']
       ] }
     ],
@@ -28,21 +28,21 @@ const content = {
   },
   es: {
     title: 'Qué aporta DCC — estado de entrega',
-    intro: 'Explora el prototipo, la producción prevista y las decisiones pendientes. El estado de desarrollo no constituye un contrato.',
+    intro: 'Explora el prototipo y lo que requiere aprobación de Edge Zones. El trabajo de DCC no es promoción oficial y no implica un acuerdo firmado.',
     stages: [
       { title: 'Explorar ahora', status: 'Versión inicial', items: [
         ['Micrositio de la exposición', 'Propuesta adaptable con crédito a la sede e imágenes de la galería.', '#overview'],
         ['Índice de artistas', 'Seis perfiles iniciales; nombres, obras y derechos de imagen requieren revisión.', '#artists'],
-        ['Registro voluntario', 'Formulario de DCC; los datos del público de Edge Zones no se transfieren sin consentimiento.', '#join']
+        ['Registro voluntario', 'Formulario opcional de membresía DCC, no una reserva oficial ni lista de correo de Edge Zones.', '#join']
       ] },
       { title: 'Producción prevista', status: 'Materiales pendientes', items: [
         ['Fichas de artistas y obras', 'Imágenes aprobadas, biografías, detalles técnicos, textos alternativos y enlaces.', '#artists'],
         ['Archivo documental', 'Fotografías con créditos y notas. Video y 360 no están garantizados.', '#archive'],
-        ['Difusión editorial', 'Resumen y anuncios de DCC con créditos para Edge Zones y artistas.', '#support']
+        ['Difusión editorial', 'Resumen y anuncios propuestos, con copia y créditos aprobados por Charo y enlaces a la información oficial de Edge Zones.', '#support']
       ] },
       { title: 'Aprobaciones conjuntas', status: 'Sin confirmar', items: [
         ['Lista definitiva', 'Jordan y artistas definen las obras; Angelo coordina la instalación.', '#artists'],
-        ['Un programa público propuesto', 'Acordar participantes, acceso, personal, equipo, duración, costo y fecha.', '#programs'],
+        ['Un programa público propuesto', 'Charo debe aprobar participantes, fecha, acceso, personal, equipo y costos antes de difundirlo.', '#programs'],
         ['Honorario y costos', 'Aclarar la asignación de $500 y gastos de viaje o producción.', '#roles']
       ] }
     ],
