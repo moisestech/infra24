@@ -35,7 +35,9 @@ export function CollectiveNetworkArtwork() {
         if (controller.signal.aborted || !Array.isArray(data.profiles)) return
         // Match the Atlas: previously curated editorial features remain clearly labeled.
         const approved=data.profiles as AtlasProfile[]
-        setProfiles([...approved,...PILOT_PREVIEWS.filter(p=>!approved.some(a=>a.slug===p.slug))])
+        // A live approved feed is authoritative. Never reinsert withdrawn editorial
+        // fixtures into the sculpture after a publication change.
+        setProfiles(data.mode==='live' ? approved : PILOT_PREVIEWS)
         setWebsiteMarks(data.websitePresence?.status==='coarsened' ? data.websitePresence.markCount : 0)
         setSnapshotWeek(typeof data.websitePresence?.snapshotWeek==='string'?data.websitePresence.snapshotWeek:null)
         setSourceState(data.mode==='live'?'live':'preview')
