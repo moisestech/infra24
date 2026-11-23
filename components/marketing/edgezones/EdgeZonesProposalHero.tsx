@@ -26,9 +26,9 @@ export function EdgeZonesProposalHero() {
                 <Image src={EDGE_ZONES_GALLERY_MARK_URL} alt="Edge Zones Gallery logo" width={72} height={72} className="h-full w-full object-contain" />
               </div>
               <div>
-                <p className="ez-module-number">HOST INSTITUTION · EDGE ZONES</p>
+                <p className="ez-module-number">PROPOSED VENUE · EDGE ZONES</p>
                 <a href="https://edgezones.org" target="_blank" rel="noopener noreferrer" className="ez-heading text-2xl leading-tight underline decoration-[var(--ez-blue)] underline-offset-4">Edge Zones</a>
-                <p className="ez-caption text-[var(--ez-muted)]">Miami · Experimental art since 1996</p>
+                <p className="ez-caption text-[var(--ez-muted)]">Miami · Experimental art since 1996 · Venue agreement pending</p>
               </div>
             </div>
             <p className="ez-heading ez-caption flex items-center gap-2 text-[var(--ez-muted)]">
