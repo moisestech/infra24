@@ -74,7 +74,11 @@ begin
   on conflict do nothing returning event_type into v_new_event;
 
   if v_new_event is null then
-    return 'duplicate';
+    -- A duplicate CREATE delivered after DELETE must not resurrect the
+    -- legacy organization membership in the HTTP handler.
+    select state into v_state from public.dcc_platform_member_bindings
+      where clerk_instance=p_instance and clerk_user_id=p_subject;
+    return coalesce(v_state, 'duplicate');
   end if;
 
   if p_event_type = 'user.deleted' then
