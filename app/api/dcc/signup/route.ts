@@ -98,7 +98,7 @@ export async function handleDccSignupPost(body: unknown) {
     ok: true,
     updated: result.updated,
     formMode: mode,
-    message: "You're in. Thanks for joining the DCC network.",
+    message: 'Your contact request was received for review, not as verified website membership.',
   })
 }
 
