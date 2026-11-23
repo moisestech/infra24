@@ -40,7 +40,7 @@
 - `/api/dcc/membership/reconcile` is an authenticated, feature-gated worker; must be scheduled/operated independently after providers are restored and tested.
 - `/api/dcc/me`, `/api/dcc/me/publish`, `/api/dcc/me/visibility`, `/api/dcc/me/entry`: private owner draft, review request, withdrawal and limited attribution.
 - `/network/your-profile`: mobile editor with six existing categories, optional practices/summary/links, explicit public review consent, private constellation preview and withdraw action.
-- `/api/dcc/sculpture/public`: same allowlisted approved profile projection used by Atlas and the sculpture, plus delayed aggregate website presence. No raw CRM, private drafts, emails or Cliff subjects.
+- `/api/dcc/sculpture/public`: same allowlisted approved profile projection used by Atlas and the sculpture, plus delayed aggregate website presence. No raw CRM, private drafts, emails or Clerk subjects.
 - `/api/dcc/sculpture/publish-snapshot`: guarded manual/scheduled publisher, OFF by default; no signup hook runs it.
 - `PeopleNetworkField`, `PeopleNetwork2D`, `CollectiveNetworkArtwork`, `CommunityAtlas`: 2D/3D rendering of approved people and category connections plus independently labeled historical WhatsApp backdrop, multi-select poll marks and delayed website cohort.
 
@@ -70,3 +70,6 @@
 - Mobile at 390×844, iOS Safari, Android, keyboard, reduced motion and no WebGL: member can navigate and find approved profiles without using 3D.
 
 **Status:** Staged feature code and Airtable binding FIELD exist. User data migration, live member creation, reviewer approval, snapshot publication, cron scheduling, full CI and deployment are not completed.
+
+## Privacy regression verified in code (test execution pending)
+When the public Atlas API is configured and returns a live profile list, that list is authoritative: the three editorial featured profiles do not reappear in the directory or sculpture after withdrawal. The historic founder-reported WhatsApp backdrop remains the same number of marks, but any no-longer-approved previously featured person becomes an unidentifiable reported-position mark and its public edges are removed. Explicit empty live input means zero named nodes. See BDD cases in `__tests__/lib/dcc-sculpture-profiles.test.ts`. Only PREVIEW mode shows the editorial examples as labeled previews. This behavioral contract must be tested in an actual browser before release.
