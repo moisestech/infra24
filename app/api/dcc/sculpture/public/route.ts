@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { atlasReadConfigured, readPublicAtlas } from '@/lib/dcc/community/airtable-atlas'
+import { atlasIntakeConfigured, atlasReadConfigured, readPublicAtlas } from '@/lib/dcc/community/airtable-atlas'
 import { PILOT_PREVIEWS } from '@/lib/dcc/community/atlas'
 import { safeWebsitePresenceSnapshot, type PublicSculptureData } from '@/lib/dcc/artwork/public-sculpture'
 export const dynamic = 'force-dynamic'
@@ -30,7 +30,7 @@ export async function GET() {
       websitePresence=safeWebsitePresenceSnapshot(data)
     }
     return NextResponse.json({
-      mode,profiles,websitePresence,
+      mode,profiles,websitePresence,intakeEnabled:atlasIntakeConfigured(),
       reportedWhatsAppMembershipIsSeparate:true,
       pollSelectionsAreSeparate:true,
     } satisfies PublicSculptureData,{headers})
