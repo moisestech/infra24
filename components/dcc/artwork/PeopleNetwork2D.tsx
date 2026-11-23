@@ -3,12 +3,15 @@
 import { useMemo, type ReactNode } from 'react'
 import Link from 'next/link'
 import { makePeoplePracticeGraph } from '@/lib/dcc/artwork/people-practice-graph'
+import type { AtlasProfile } from '@/lib/dcc/community/atlas'
 import { MEMBER_PRESENCE_SOURCE } from '@/lib/dcc/artwork/member-presence'
 import type { DiscoveryPollChoiceId } from '@/lib/dcc/artwork/discovery-poll'
 
 type Props = {
   selected: string | null
   onSelect: (id: string | null) => void
+  profiles?: AtlasProfile[]
+  websitePresenceMarks?: number
 }
 type Point = { x: number; y: number }
 
@@ -90,10 +93,21 @@ function Selectable({
   )
 }
 
-export default function PeopleNetwork2D({ selected, onSelect }: Props) {
-  const graph = useMemo(makePeoplePracticeGraph, [])
+export default function PeopleNetwork2D({ selected, onSelect, profiles, websitePresenceMarks=0 }: Props) {
+  const graph = useMemo(()=>makePeoplePracticeGraph({profiles,websitePresenceMarks}),[profiles,websitePresenceMarks])
   const anonymous = graph.marks.filter((mark) => mark.kind === 'anonymous-presence')
-  const people = graph.marks.filter((mark) => mark.kind !== 'anonymous-presence')
+  const website = graph.marks.filter((mark) => mark.kind === 'anonymous-website-presence')
+  const people = graph.marks.filter((mark) =>
+    mark.kind === 'public-cofounder' || mark.kind === 'public-artist' || mark.kind === 'approved-profile')
+  const additionalPeople = people.filter(person=>!PEOPLE[person.id])
+  const positions: Record<string, Point> = { ...PEOPLE }
+  additionalPeople.forEach((person,index)=>{
+    const angle = index * 2.399963229728653
+    positions[person.id] = {
+      x: 180 + Math.cos(angle)*110,
+      y: 218 + Math.sin(angle)*82,
+    }
+  })
   const selectedPractice = graph.practices.find((item) => item.id === selected)
   const selectedPerson = people.find((item) => item.id === selected)
   const knownPeople = selectedPractice
@@ -121,7 +135,7 @@ export default function PeopleNetwork2D({ selected, onSelect }: Props) {
         preserveAspectRatio="xMidYMid meet"
         className="block min-h-0 w-full max-w-[520px] flex-1"
         role="group"
-        aria-label={MEMBER_PRESENCE_SOURCE.reportedLabel + ' reported member presence marks, three public people, six practice areas, and 72 anonymous poll selection lines'}
+        aria-label={MEMBER_PRESENCE_SOURCE.reportedLabel + ' reported WhatsApp positions, ' + website.length + ' delayed anonymous website marks, approved people, six practice areas and historical poll selections'}
       >
         <title>People, practices, and poll selections</title>
         <desc>People are neutral filled circles, practice areas are colored hexagons. Each colored spoke is one reported poll selection, not an identified individual voter. Counts may overlap because voters could choose several topics.</desc>
@@ -132,6 +146,14 @@ export default function PeopleNetwork2D({ selected, onSelect }: Props) {
           return <circle key={mark.id} cx={p.x} cy={p.y} r="1.55" fill="var(--dn-graph-node)" opacity="0.45" />
         })}
 
+        {/* Separately batch-published coarsened website-presence marks; no member mapping. */}
+        {website.map((mark,index)=>{
+          const angle=index*Math.PI*(3-Math.sqrt(5))
+          const radius=36+Math.sqrt((index+0.5)/website.length)*63
+          return <circle key={mark.id} cx={180+Math.cos(angle)*radius}
+            cy={214+Math.sin(angle)*radius*0.65} r="1.9"
+            fill="var(--dn-graph-website, #c9b8e6)" opacity="0.65" />
+        })}
         {/* One colored spoke for each of 72 aggregate selections. */}
         {selectionPositions.map((mark) => {
           const hub = PRACTICES[mark.choiceId]
@@ -152,7 +174,7 @@ export default function PeopleNetwork2D({ selected, onSelect }: Props) {
 
         {/* Editorial profile links are visually dashed, distinct from poll spokes. */}
         {graph.practiceEdges.map((edge) => {
-          const a = PEOPLE[edge.source]
+          const a = positions[edge.source]
           const choiceId = edge.target.slice(9) as DiscoveryPollChoiceId
           const b = PRACTICES[choiceId]
           if (!a || !b) return null
@@ -166,7 +188,7 @@ export default function PeopleNetwork2D({ selected, onSelect }: Props) {
         })}
         {graph.connections.map((edge) => {
           const a = PEOPLE[edge.from]
-          const b = PEOPLE[edge.to]
+          const b = positions[edge.to]
           if (!a || !b) return null
           return <line key={edge.from + edge.to} x1={a.x} y1={a.y} x2={b.x} y2={b.y}
             stroke="var(--dn-graph-link)" strokeWidth="1.6" strokeOpacity="0.65"
@@ -196,9 +218,9 @@ export default function PeopleNetwork2D({ selected, onSelect }: Props) {
           )
         })}
 
-        {/* Only three named profiles; none is assigned a vote. */}
+        {/* Only named editorial/approved profiles; no private identities. */}
         {people.map((person) => {
-          const position = PEOPLE[person.id]
+          const position = positions[person.id]
           if (!position) return null
           const active = selected === person.id
           return (
@@ -229,7 +251,7 @@ export default function PeopleNetwork2D({ selected, onSelect }: Props) {
               View profile
             </Link></span>
         ) : (
-          <span>Neutral dots: people · colored dots: poll selections · hexagons: practices (not 72 unique voters)</span>
+          <span>Neutral dots: reported WhatsApp positions · purple dots: delayed website cohort ({website.length}) · colored spokes: historic poll selections · hexagons: practices. Counts may overlap.</span>
         )}
       </div>
     </div>
