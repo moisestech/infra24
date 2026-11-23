@@ -7,7 +7,7 @@ import type { OwnerPassport } from './profile-schema'
 const PRIVATE_HEADERS = { 'Cache-Control': 'private, no-store, max-age=0' }
 export { PRIVATE_HEADERS }
 
-export type PassportBinding = { id: string; state: string }
+export type PassportBinding = { id: string; state: string; airtablePersonId: string | null }
 export class MemberAccessError extends Error {
   constructor(public status: number, public code: string) { super(code) }
 }
@@ -32,7 +32,7 @@ export async function memberPassportContext(): Promise<{
     auth: { autoRefreshToken: false, persistSession: false },
   })
   const { data, error } = await db.from('dcc_platform_member_bindings')
-    .select('id,state').eq('clerk_instance', config.instance)
+    .select('id,state,airtable_person_id').eq('clerk_instance', config.instance)
     .eq('clerk_user_id', userId).maybeSingle()
   if (error) throw new MemberAccessError(503, 'store_unavailable')
   if (!data) throw new MemberAccessError(409, 'membership_pending_sync')
@@ -45,7 +45,7 @@ export async function memberPassportContext(): Promise<{
   if (data.state === 'review_required') {
     throw new MemberAccessError(409, 'identity_review_required')
   }
-  return { db, binding: { id: data.id, state: data.state } }
+  return { db, binding: { id: data.id, state: data.state, airtablePersonId: data.airtable_person_id ?? null } }
 }
 
 export function ownerPassportPayload(row: Record<string, any> | null) {
