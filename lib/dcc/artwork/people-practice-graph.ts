@@ -13,7 +13,7 @@
  * are known. Poll-mark IDs are per-category drawing slots, not voter IDs.
  * No aggregate votes are converted to identity-level edges.
  */
-import { INTERESTS, PILOT_PREVIEWS, type InterestId } from '@/lib/dcc/community/atlas'
+import { INTERESTS, PILOT_PREVIEWS, type InterestId, type AtlasProfile } from '@/lib/dcc/community/atlas'
 import { DCC_DISCOVERY_POLL, type DiscoveryPollChoiceId } from './discovery-poll'
 import { makeMembershipPresenceGraph } from './member-presence'
 
@@ -49,12 +49,43 @@ export type PracticeEdge = {
   source: string
   target: string
   kind: 'listed-practice'
-  evidence: 'public-Atlas-editorial-profile' | 'member-self-declared'
+  evidence: 'public-Atlas-editorial-profile' | 'member-self-declared' | 'approved-Atlas-profile'
 }
 
-export function makePeoplePracticeGraph(count?: number) {
-  const membership = makeMembershipPresenceGraph(count)
-  const visible = new Set(membership.marks.filter((mark) => mark.kind !== 'anonymous-presence').map((mark) => mark.id))
+export function makePeoplePracticeGraph(options: {
+  profiles?: AtlasProfile[]
+  websitePresenceMarks?: number
+} = {}) {
+  const membership = makeMembershipPresenceGraph()
+  // The input must be approved/public Atlas profiles, never private owner drafts.
+  // Three editorial features already occupy historic WhatsApp backdrop positions.
+  const profiles = options.profiles ?? PILOT_PREVIEWS
+  const featured = new Set(membership.marks.filter((mark) => mark.kind !== 'anonymous-presence').map(mark => mark.id))
+  const slugs = new Set<string>()
+  const publicProfiles = profiles.filter(profile => {
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(profile.slug) || slugs.has(profile.slug)) return false
+    slugs.add(profile.slug)
+    return true
+  })
+  const websiteCount = Number.isSafeInteger(options.websitePresenceMarks) &&
+    (options.websitePresenceMarks ?? 0) >= 5 &&
+    (options.websitePresenceMarks ?? 0) <= 1024 &&
+    (options.websitePresenceMarks ?? 0) % 5 === 0
+      ? options.websitePresenceMarks! : 0
+  const marks = [
+    ...membership.marks,
+    ...publicProfiles.filter(p => !featured.has(p.slug)).map(p => ({
+      id:p.slug,label:p.name,kind:'approved-profile' as const,
+    })),
+    ...Array.from({ length: websiteCount }, (_,i)=>({
+      id:'website-cohort-mark-'+String(i+1).padStart(4,'0'),
+      label:'Delayed anonymous website-member aggregate',
+      kind:'anonymous-website-presence' as const,
+    })),
+  ]
+  const visible = new Set(marks.filter(mark =>
+    mark.kind === 'public-cofounder' || mark.kind === 'public-artist' || mark.kind === 'approved-profile'
+  ).map(mark=>mark.id))
   const practices: PracticeNode[] = DCC_DISCOVERY_POLL.choices.map((choice) => ({
     id: 'practice-' + choice.id,
     label: choice.label,
@@ -63,14 +94,14 @@ export function makePeoplePracticeGraph(count?: number) {
     count: choice.count,
     kind: 'practice',
   }))
-  const edges: PracticeEdge[] = PILOT_PREVIEWS.filter((profile) => visible.has(profile.slug)).flatMap((profile) =>
+  const edges: PracticeEdge[] = publicProfiles.filter((profile) => visible.has(profile.slug)).flatMap((profile) =>
     profile.interests
       .filter((id) => INTERESTS.some((category) => category.id === id))
       .map((id) => ({
         source: profile.slug,
         target: 'practice-' + INTEREST_POLL_CATEGORIES[id],
         kind: 'listed-practice' as const,
-        evidence: profile.slug === 'moises-sanabria' ? 'member-self-declared' as const : 'public-Atlas-editorial-profile' as const,
+        evidence: profile.slug === 'moises-sanabria' ? 'member-self-declared' as const : 'approved-Atlas-profile' as const,
       }))
   )
   // One spoke per recorded category selection. These are not people nodes:
@@ -88,7 +119,7 @@ export function makePeoplePracticeGraph(count?: number) {
     kind: 'aggregate-poll-selection',
     evidence: 'organizer-poll-screenshot',
   }))
-  return { ...membership, practices, practiceEdges: edges, pollSelections, pollEdges }
+  return { ...membership, marks, practices, practiceEdges: edges, pollSelections, pollEdges }
 }
 
 export function isPracticeNode(id: string | null): id is string {
