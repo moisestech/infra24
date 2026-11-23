@@ -11,12 +11,13 @@ create table if not exists public.dcc_platform_member_bindings (
   state text not null default 'pending_verification'
     check (state in ('pending_verification','pending_reconciliation','review_required','active','withdrawn','suspended','deleted')),
   verified_at timestamptz,
+  activated_at timestamptz,
   airtable_person_id text unique,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (clerk_instance, clerk_user_id),
   constraint dcc_active_requires_person check (
-    state <> 'active' or (verified_at is not null and airtable_person_id is not null)
+    state <> 'active' or (verified_at is not null and activated_at is not null and airtable_person_id is not null)
   )
 );
 
