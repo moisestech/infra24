@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
 import { PollPulse } from '@/components/dcc/community/PollPulse'
 import { NetworkGraphBoundary } from './NetworkGraphBoundary'
-import { MEMBER_PRESENCE_SOURCE, PUBLIC_ARTISTS } from '@/lib/dcc/artwork/member-presence'
+import { MEMBER_PRESENCE_SOURCE } from '@/lib/dcc/artwork/member-presence'
 import { PILOT_PREVIEWS, type AtlasProfile } from '@/lib/dcc/community/atlas'
 import { isDiscoveryChoice, type DiscoveryPollChoiceId } from '@/lib/dcc/artwork/discovery-poll'
 
@@ -23,7 +23,7 @@ export function CollectiveNetworkArtwork() {
   const [snapshotWeek,setSnapshotWeek] = useState<string | null>(null)
   const [sourceState,setSourceState] = useState<'preview'|'live'>('preview')
   const isPublicPerson = (value:string|null) => Boolean(value &&
-    (PUBLIC_ARTISTS.some(person=>person.id===value) || profiles.some(p=>p.slug===value)))
+    profiles.some(p=>p.slug===value))
 
   useEffect(()=>{
     const controller=new AbortController()
