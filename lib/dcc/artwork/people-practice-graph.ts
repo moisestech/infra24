@@ -56,24 +56,38 @@ export function makePeoplePracticeGraph(options: {
   profiles?: AtlasProfile[]
   websitePresenceMarks?: number
 } = {}) {
-  const membership = makeMembershipPresenceGraph()
-  // The input must be approved/public Atlas profiles, never private owner drafts.
-  // Three editorial features already occupy historic WhatsApp backdrop positions.
+  // A provided list is the exact currently authorized public projection.
+  // Omission is editorial PREVIEW only. Never keep named fixtures as a live
+  // fallback when someone withdraws publication.
   const profiles = options.profiles ?? PILOT_PREVIEWS
-  const featured = new Set(membership.marks.filter((mark) => mark.kind !== 'anonymous-presence').map(mark => mark.id))
   const slugs = new Set<string>()
   const publicProfiles = profiles.filter(profile => {
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(profile.slug) || slugs.has(profile.slug)) return false
     slugs.add(profile.slug)
     return true
   })
+  const approvedSlugs = new Set(publicProfiles.map(profile=>profile.slug))
+  const membership = makeMembershipPresenceGraph()
+  const reportedBackdrop = membership.marks.map((mark,index) => {
+    if(mark.kind === 'anonymous-presence' || approvedSlugs.has(mark.id)) return mark
+    // Preserve the founder-reported BACKDROP count with no identity claim.
+    // A withdrawn public artist stops being a named person immediately.
+    return {
+      id:'anonymous-reported-' + String(index + 1).padStart(3,'0'),
+      label:'Reported WhatsApp presence without approved public identity',
+      kind:'anonymous-presence' as const,
+    }
+  })
+  const featured = new Set(reportedBackdrop.filter(mark =>
+    mark.kind === 'public-cofounder' || mark.kind === 'public-artist'
+  ).map(mark=>mark.id))
   const websiteCount = Number.isSafeInteger(options.websitePresenceMarks) &&
     (options.websitePresenceMarks ?? 0) >= 5 &&
     (options.websitePresenceMarks ?? 0) <= 1024 &&
     (options.websitePresenceMarks ?? 0) % 5 === 0
       ? options.websitePresenceMarks! : 0
   const marks = [
-    ...membership.marks,
+    ...reportedBackdrop,
     ...publicProfiles.filter(p => !featured.has(p.slug)).map(p => ({
       id:p.slug,label:p.name,kind:'approved-profile' as const,
     })),
@@ -119,7 +133,9 @@ export function makePeoplePracticeGraph(options: {
     kind: 'aggregate-poll-selection',
     evidence: 'organizer-poll-screenshot',
   }))
-  return { ...membership, marks, practices, practiceEdges: edges, pollSelections, pollEdges }
+  const connections = membership.connections.filter(edge =>
+    approvedSlugs.has(edge.from) && approvedSlugs.has(edge.to))
+  return { ...membership, marks, connections, practices, practiceEdges: edges, pollSelections, pollEdges }
 }
 
 export function isPracticeNode(id: string | null): id is string {
