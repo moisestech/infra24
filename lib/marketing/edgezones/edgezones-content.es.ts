@@ -308,7 +308,7 @@ La exposición reúne a artistas cuyas prácticas examinan cómo las tecnología
     materialsNeededPrefix: 'Materiales necesarios:',
     partnershipContactTitle: 'Contacto de colaboración',
     partnershipContactBody:
-      '¿Preguntas sobre la programación de Edge Zones o la exposición Touching Grass? Comuníquese con Charo Oquet (Edge Zones) a través del equipo de DCC.',
+      'Para aprobaciones de la sede e información oficial de la exposición, contacta a Edge Zones directamente. DCC responde por su contribución digital propuesta.',
     emailDccTeam: 'Enviar correo al equipo de DCC',
     downloadPartnershipPdf: 'Descargar PDF de colaboración',
     openPdfNewTab: 'Abrir PDF en una nueva pestaña',
