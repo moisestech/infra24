@@ -42,7 +42,7 @@ export function CollectiveNetworkArtwork() {
       } catch { /* Existing editorial visualization stays available; no private fallback. */ }
     }
     void refresh()
-    const interval=window.setInterval(()=>{if(!document.hidden)void refresh()},300000)
+    const interval=window.setInterval(()=>{if(!document.hidden)void refresh()},60000)
     return ()=>{controller.abort();window.clearInterval(interval)}
   },[])
 
