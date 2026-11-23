@@ -5,12 +5,13 @@ import type { ForceGraph3DInstance, LinkObject, NodeObject } from '3d-force-grap
 import { useTheme } from '@/contexts/ThemeContext'
 import { presenceSpherePosition } from '@/lib/dcc/artwork/member-presence'
 import { makePeoplePracticeGraph } from '@/lib/dcc/artwork/people-practice-graph'
+import type { AtlasProfile } from '@/lib/dcc/community/atlas'
 import PeopleNetwork2D from './PeopleNetwork2D'
 
 type FieldNode = NodeObject & {
   id: string
   label: string
-  kind: 'public-cofounder' | 'public-artist' | 'anonymous-presence' | 'practice' | 'poll-selection'
+  kind: 'public-cofounder' | 'public-artist' | 'approved-profile' | 'anonymous-presence' | 'anonymous-website-presence' | 'practice' | 'poll-selection'
   choiceId?: string
   count?: number
 }
@@ -21,6 +22,8 @@ type FieldEdge = LinkObject<FieldNode> & {
 export type PeopleNetworkFieldProps = {
   selected: string | null
   onSelect: (id: string | null) => void
+  profiles?: AtlasProfile[]
+  websitePresenceMarks?: number
 }
 const POSITIONS: Record<string, { x: number; y: number; z: number }> = {
   'moises-sanabria': { x: -42, y: 0, z: 18 },
@@ -28,14 +31,22 @@ const POSITIONS: Record<string, { x: number; y: number; z: number }> = {
   'angelo-caruso': { x: 0, y: 62, z: 18 },
 }
 
-function buildGraph() {
-  const data = makePeoplePracticeGraph()
+function buildGraph(profiles?: AtlasProfile[], websitePresenceMarks=0) {
+  const data = makePeoplePracticeGraph({profiles,websitePresenceMarks})
   const anonymousCount = data.marks.filter((mark) => mark.kind === 'anonymous-presence').length
   let anonymousIndex = 0
+  let websiteIndex = 0
+  let additionalProfileIndex = 0
+  const extraCount = data.marks.filter(mark=>mark.kind==='approved-profile').length
+  const websiteCount = data.marks.filter(mark=>mark.kind==='anonymous-website-presence').length
   const nodes: FieldNode[] = data.marks.map((mark) => {
     const position = mark.kind === 'anonymous-presence'
       ? presenceSpherePosition(anonymousIndex++, anonymousCount, 132)
-      : POSITIONS[mark.id] ?? { x: 0, y: 0, z: 0 }
+      : mark.kind === 'anonymous-website-presence'
+        ? presenceSpherePosition(websiteIndex++,websiteCount,95)
+        : mark.kind === 'approved-profile'
+          ? (()=>{const angle=additionalProfileIndex++*2.3999632297;return {x:Math.cos(angle)*76,y:Math.sin(angle)*92,z:42}})()
+          : POSITIONS[mark.id] ?? { x: 0, y: 0, z: 0 }
     return {
       id: mark.id, label: mark.label, kind: mark.kind,
       ...position, fx: position.x, fy: position.y, fz: position.z,
@@ -95,7 +106,7 @@ function endpointId(value: string | number | FieldNode | undefined): string {
  * On touch devices, show the functional lightweight view by default and
  * allow opt-in WebGL. A phone must never need WebGL to access the network.
  */
-export default function PeopleNetworkField({ selected, onSelect }: PeopleNetworkFieldProps) {
+export default function PeopleNetworkField({ selected, onSelect, profiles, websitePresenceMarks=0 }: PeopleNetworkFieldProps) {
   const elementRef = useRef<HTMLDivElement>(null)
   const graphRef = useRef<ForceGraph3DInstance<FieldNode, FieldEdge> | null>(null)
   const onSelectRef = useRef(onSelect)
@@ -106,7 +117,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
   const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
-  const data = useMemo(buildGraph, [])
+  const data = useMemo(()=>buildGraph(profiles,websitePresenceMarks), [profiles,websitePresenceMarks])
 
   useEffect(() => {
     const touch = window.matchMedia('(pointer: coarse), (max-width: 640px)').matches
@@ -154,7 +165,7 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
           .graphData({ nodes: data.nodes, links: data.links })
           .nodeResolution(11)
           .nodeRelSize(2.7)
-          .nodeVal((node) => node.kind === 'practice' ? 11 : node.kind === 'poll-selection' ? 1.2 : node.kind === 'anonymous-presence' ? 0.75 : 4)
+          .nodeVal((node) => node.kind === 'practice' ? 11 : node.kind === 'poll-selection' ? 1.2 : (node.kind === 'anonymous-presence'||node.kind === 'anonymous-website-presence') ? 0.75 : 4)
           .nodeOpacity(0.96)
           .nodeLabel((node) => {
             const label = document.createElement('span')
@@ -163,8 +174,10 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
               ? node.label + ' · ' + node.count + ' anonymous poll selection connections'
               : node.kind === 'poll-selection'
                 ? 'An unattributed poll selection · category totals do not identify unique voters'
+                : node.kind === 'anonymous-website-presence'
+                  ? 'Delayed anonymous website-membership aggregate · not an individual account dot'
                 : node.kind === 'anonymous-presence'
-                  ? 'Anonymous member-presence mark · not a known voter'
+                  ? 'Reported WhatsApp member-presence mark · not a known voter'
                   : node.label + ' · public artist profile'
             return label
           })
@@ -175,8 +188,8 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
             : link.kind === 'aggregate-poll-selection'
               ? 'One aggregate poll selection, voter unknown'
               : 'Public editorial practice, not a poll response')
-          .onNodeClick((node) => onSelectRef.current(node.kind === 'anonymous-presence' ? null : node.kind === 'poll-selection' ? 'practice-' + node.choiceId : node.id))
-          .onNodeHover((node) => { element.style.cursor = node && node.kind !== 'anonymous-presence' ? 'pointer' : 'grab' })
+          .onNodeClick((node) => onSelectRef.current(node.kind === 'anonymous-presence' || node.kind === 'anonymous-website-presence' ? null : node.kind === 'poll-selection' ? 'practice-' + node.choiceId : node.id))
+          .onNodeHover((node) => { element.style.cursor = node && node.kind !== 'anonymous-presence' && node.kind !== 'anonymous-website-presence' ? 'pointer' : 'grab' })
           .cooldownTicks(0)
 
         // Not every browser or rendering implementation supports these
@@ -239,10 +252,11 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
       const theme = (property: string, fallback: string) =>
         style?.getPropertyValue(property).trim() || fallback
       graph.backgroundColor(theme('--dn-graph-bg', '#091313'))
-      graph.nodeVal((node) => node.id === selected ? 14 : node.kind === 'practice' ? 11 : node.kind === 'poll-selection' ? 1.2 : node.kind === 'anonymous-presence' ? 0.75 : 4)
+      graph.nodeVal((node) => node.id === selected ? 14 : node.kind === 'practice' ? 11 : node.kind === 'poll-selection' ? 1.2 : (node.kind === 'anonymous-presence' || node.kind === 'anonymous-website-presence') ? 0.75 : 4)
       graph.nodeColor((node) => {
         if (node.id === selected) return theme('--dn-graph-selected', '#f4dda5')
         if (node.kind === 'practice' || node.kind === 'poll-selection') return theme('--dn-poll-' + (node.choiceId ?? 'art'), '#8fae95')
+        if (node.kind === 'anonymous-website-presence') return theme('--dn-graph-website', '#c9b8e6')
         if (node.kind === 'anonymous-presence') return theme('--dn-graph-node', '#9bb5a8')
         return theme('--dn-graph-founder', '#e1edd4')
       })
@@ -280,13 +294,13 @@ export default function PeopleNetworkField({ selected, onSelect }: PeopleNetwork
     <div className="relative flex h-full min-h-0 w-full flex-col">
       {(!enabled || failed) && (
         <div className="min-h-0 flex-1">
-          <PeopleNetwork2D selected={selected} onSelect={onSelect} />
+          <PeopleNetwork2D selected={selected} onSelect={onSelect} profiles={profiles} websitePresenceMarks={websitePresenceMarks} />
         </div>
       )}
       <div ref={elementRef}
         className={'dn-network-field min-h-0 w-full flex-1 ' + (enabled && !failed ? '' : 'hidden')}
         role="img"
-        aria-label="3D network: reported people as neutral spheres, six large colored practice hubs and 72 anonymous poll-selection spokes. Selections are not unique voter identities."
+        aria-label="3D network: separately reported WhatsApp presence, optionally approved public profiles, delayed anonymous website-presence marks, six practice hubs and historical anonymous poll selections. No signup-time individual dot."
       />
       {enabled && !ready && !failed && (
         <p className="pointer-events-none absolute bottom-16 left-4 text-xs text-[color:var(--dn-graph-muted)]" role="status">
