@@ -22,6 +22,22 @@ export default function SignUpPage() {
             <h1 className="text-4xl font-bold text-white mb-2">Smart Sign</h1>
             <p className="text-gray-400">Create your account</p>
           </div>
+          <div className="mb-6 rounded-xl border border-gray-700 bg-gray-900/80 px-4 py-4 text-left">
+            <p className="text-sm font-medium text-white">One account for the DCC network</p>
+            <p className="mt-2 text-sm leading-relaxed text-gray-300">
+              Creating this account also starts your private Digital Culture Center Miami
+              membership after identity verification. You can use Smart Sign without
+              creating a public profile. Your name, email, interests, and connections
+              are not added to the public directory automatically.
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-gray-400">
+              Public visibility is optional and reviewed.{' '}
+              <a href="/privacy" className="underline underline-offset-2 hover:text-white">
+                Privacy details
+              </a>
+              . Membership enrollment is being prepared and is not yet live.
+            </p>
+          </div>
           
           <SignUp 
             redirectUrl="/dashboard"
