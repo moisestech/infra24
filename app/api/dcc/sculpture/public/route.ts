@@ -4,7 +4,7 @@ import { atlasIntakeConfigured, atlasReadConfigured, readPublicAtlas } from '@/l
 import { PILOT_PREVIEWS } from '@/lib/dcc/community/atlas'
 import { safeWebsitePresenceSnapshot, type PublicSculptureData } from '@/lib/dcc/artwork/public-sculpture'
 export const dynamic = 'force-dynamic'
-const headers = { 'Cache-Control':'public, max-age=60, stale-while-revalidate=120' }
+const headers = { 'Cache-Control':'no-store, max-age=0' }
 
 /**
  * One allowlisted public payload for the directory and the sculpture.
