@@ -1,6 +1,12 @@
 import { sendEmail } from '@/lib/email/resend-client'
 import { getSiteUrl } from '@/lib/marketing/site-url'
 
+function safeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[ch] ?? '')
+}
+
 export async function sendDccSignupWelcomeEmail(opts: {
   to: string
   fullName: string
@@ -14,9 +20,9 @@ export async function sendDccSignupWelcomeEmail(opts: {
     'DCC Miami <onboarding@resend.dev>'
 
   const html = `
-    <p>Hi ${firstName},</p>
-    <p>Thanks for joining Miami's Digital Culture Map.</p>
-    <p>You'll receive updates about artists, public programs, workshops, and digital culture opportunities in Miami.</p>
+    <p>Hi ${safeHtml(firstName)},</p>
+    <p>Thanks for sharing your interest in Miami's Digital Culture Map.</p>
+    <p>We received your contact request for review. It is not verified website membership or consent to a public profile in the network sculpture. Newsletter subscriptions are separate.</p>
     <p><a href="${site}">Explore the platform</a> · <a href="${site}/network">Network</a> · <a href="${site}/programs">Programs</a> · <a href="${site}/workshops">Workshops</a></p>
     <p>— Digital Culture Center Miami</p>
   `.trim()
@@ -24,9 +30,9 @@ export async function sendDccSignupWelcomeEmail(opts: {
   const text = [
     `Hi ${firstName},`,
     '',
-    "Thanks for joining Miami's Digital Culture Map.",
+    "Thanks for sharing your interest in Miami's Digital Culture Map.",
     '',
-    "You'll receive updates about artists, public programs, workshops, and digital culture opportunities in Miami.",
+    "We received your contact request for review. This does not verify website membership, publish a sculpture node or subscribe you to updates.",
     '',
     `Explore: ${site}`,
     '',
@@ -36,9 +42,9 @@ export async function sendDccSignupWelcomeEmail(opts: {
   await sendEmail({
     to: opts.to,
     from,
-    subject: 'Welcome to DCC Miami',
+    subject: 'DCC Miami — we received your interest',
     html,
     text,
-    tags: [{ name: 'category', value: 'dcc_signup_welcome' }],
+    tags: [{ name: 'category', value: 'dcc_interest_receipt' }],
   })
 }
