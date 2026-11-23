@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { fetchAllRecords } from '@/lib/airtable/client'
 import { memberPassportContext, MemberAccessError, PRIVATE_HEADERS,
   readOwnerPassport, saveOwnerPassport } from '@/lib/dcc/membership/profile-store'
 import { ownerPassportSchema, mayEditOwnerPassport } from '@/lib/dcc/membership/profile-schema'
@@ -13,10 +14,28 @@ function failure(error: unknown) {
 export async function GET() {
   try {
     const { db, binding } = await memberPassportContext()
+    let currentlyPublic: boolean | null = null
+    if (binding.airtablePersonId) {
+      const base=process.env.AIRTABLE_DCC_ATLAS_BASE_ID
+      const table=process.env.AIRTABLE_DCC_ATLAS_PEOPLE_TABLE
+      const key=process.env.AIRTABLE_DCC_ATLAS_API_KEY
+      if (base && table && key) {
+        const records=await fetchAllRecords(base,table,key,{
+          filterFormula:'RECORD_ID()="'+binding.airtablePersonId+'"',
+        })
+        if(records.length!==1 || records[0].fields['DCC Website Member Binding ID']!==binding.id) {
+          throw new MemberAccessError(409,'identity_link_requires_review')
+        }
+        const f=records[0].fields
+        currentlyPublic=f['Atlas Publication State']==='Approved' &&
+          f['Atlas Public Consent']===true && f['Public Profile?']===true &&
+          f['Atlas Identity Verified']===true
+      }
+    }
     return NextResponse.json({
       membership: binding.state === 'active' ? 'active' : 'pending_reconciliation',
       profile: await readOwnerPassport(db, binding),
-      publicPublication: 'review_required',
+      currentlyPublic,
     }, { headers: PRIVATE_HEADERS })
   } catch (e) { return failure(e) }
 }
