@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { INTERESTS, type InterestId } from '@/lib/dcc/community/atlas'
 import { DCC_PUBLIC_PROFILE_DISCLOSURE } from '@/lib/dcc/membership/profile-schema'
+import { YourConstellationPreview } from './YourConstellationPreview'
 
 type Draft = {
   displayName: string
@@ -196,6 +197,7 @@ export function YourDccProfile() {
             <div className="grid gap-2 sm:grid-cols-2">{INTERESTS.map(i=><label key={i.id} className="flex min-h-11 items-center gap-3 rounded-xl border border-[var(--dn-line)] p-3 text-sm">
               <input type="checkbox" checked={draft.interests.includes(i.id)} onChange={()=>toggle(i.id)} className="h-5 w-5" />{i.label}
             </label>)}</div></fieldset>
+          <YourConstellationPreview displayName={draft.displayName} interests={draft.interests}/>
           <div><label htmlFor="dcc-link" className="mb-2 block text-sm font-medium">Portfolio or website (optional)</label>
             <div className="flex gap-2"><input id="dcc-link" className={inputClass} type="url" value={linkUrl} placeholder="https://…" onChange={e=>setLinkUrl(e.target.value)} />
               <button type="button" className="min-h-11 rounded-xl border border-[var(--dn-line)] px-4" onClick={addLink}>Add</button></div>
