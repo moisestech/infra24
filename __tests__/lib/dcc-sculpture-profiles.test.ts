@@ -23,6 +23,21 @@ describe('BDD — member profile affects sculpture only when publicly approved',
     expect(graph.practiceEdges.filter(x=>x.source==='public-practitioner').map(x=>x.target).sort())
       .toEqual(['practice-fabrication','practice-xr'])
   })
+  it('withdrawn featured artists are not silently reinserted as named graph nodes',()=>{
+    const withoutFabiola=PILOT_PREVIEWS.filter(p=>p.slug!=='fabiola-larios')
+    const graph=makePeoplePracticeGraph({profiles:withoutFabiola,websitePresenceMarks:0})
+    expect(graph.marks.some(x=>x.id==='fabiola-larios')).toBe(false)
+    expect(graph.practiceEdges.some(x=>x.source==='fabiola-larios')).toBe(false)
+    expect(graph.connections.some(x=>x.from==='fabiola-larios'||x.to==='fabiola-larios')).toBe(false)
+    expect(graph.marks.filter(x=>x.kind==='anonymous-presence')).toHaveLength(99)
+  })
+  it('live empty approved feed cannot publish any named editorial fixture',()=>{
+    const graph=makePeoplePracticeGraph({profiles:[],websitePresenceMarks:0})
+    expect(graph.marks.some(x=>x.kind==='public-cofounder'||x.kind==='public-artist'||x.kind==='approved-profile')).toBe(false)
+    expect(graph.practiceEdges).toHaveLength(0)
+    expect(graph.connections).toHaveLength(0)
+    expect(graph.marks.filter(x=>x.kind==='anonymous-presence')).toHaveLength(101)
+  })
   it('a private/unapproved person absent from the public input cannot appear',()=>{
     const graph=makePeoplePracticeGraph({profiles:PILOT_PREVIEWS,websitePresenceMarks:10})
     expect(JSON.stringify(graph)).not.toContain('private-practitioner')
