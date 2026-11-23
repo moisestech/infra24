@@ -4,7 +4,6 @@ import { clerkClient } from '@clerk/nextjs/server'
 import {
   createAirtableRecords, fetchAllRecords,
 } from '@/lib/airtable/client'
-import { escapeAirtableString } from '@/lib/dcc/signup/upsert-person'
 
 type Claim = { binding_id:string; clerk_subject:string; claim_token:string }
 type AirtablePerson = { id:string; fields:Record<string,unknown> }
@@ -79,9 +78,14 @@ export async function reconcileOneVerifiedDccMember():Promise<ReconcileOutcome> 
       }
     }else{
       // Any unbound legacy candidate is HUMAN review, not email-based takeover.
-      const matches=await fetchAllRecords(baseId,tableId,pat,{
-        filterFormula:"LOWER({Email})='"+escapeAirtableString(email)+"'",
-      })
+      // Airtable formula dialect is not SQL. Compare the legacy roster
+      // locally so quoting/case/blank fields cannot silently hide collisions.
+      // This CRM is small; pagination also handles future growth.
+      const allPeople=await fetchAllRecords(baseId,tableId,pat)
+      const matches=allPeople.filter(record=>
+        typeof record.fields.Email==='string' &&
+        record.fields.Email.trim().toLowerCase()===email
+      )
       if(matches.length){
         await finish('review_required',undefined,'legacy_people_email_collision')
         return 'review_required'
