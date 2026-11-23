@@ -42,6 +42,7 @@ export function YourDccProfile() {
   const [dirty,setDirty] = useState(false)
   const [feedback,setFeedback] = useState('')
   const [publicConsent,setPublicConsent] = useState(false)
+  const [currentlyPublic,setCurrentlyPublic] = useState<boolean | null>(null)
   const fetchMember = useCallback(async () => {
     try {
       const response = await fetch('/api/dcc/me',{cache:'no-store'})
@@ -50,6 +51,7 @@ export function YourDccProfile() {
       if (!response.ok) { setStatus('unavailable');setFeedback(humanizeError(body.error));return }
       setMembership(body.membership)
       setDraft(body.profile)
+      setCurrentlyPublic(typeof body.currentlyPublic==='boolean' ? body.currentlyPublic : null)
       setStatus('ready')
       setFeedback('')
     } catch { setStatus('unavailable');setFeedback('Your private profile is temporarily unavailable.') }
@@ -99,6 +101,24 @@ export function YourDccProfile() {
       setFeedback('Private profile saved. It is not public or part of the named sculpture yet.')
     } catch {setFeedback('Could not confirm save. Your changes remain on this screen.')}
     finally {setBusy(false)}
+  }
+  async function withdrawPublic() {
+    if(busy || membership!=='active')return
+    setBusy(true);setFeedback('')
+    try{
+      const response=await fetch('/api/dcc/me/visibility',{method:'POST'})
+      const result=await response.json()
+      if(!response.ok || result.status!=='withdrawn'){
+        setFeedback(humanizeError(result.error))
+        return
+      }
+      setCurrentlyPublic(false)
+      setPublicConsent(false)
+      setDraft(old=>({...old,publication:'withdrawal_requested'}))
+      setFeedback('Public listing withdrawn. Your private DCC membership is unchanged.')
+    }catch {
+      setFeedback('We could not confirm your public visibility change. Please contact DCC.')
+    }finally{setBusy(false)}
   }
   async function requestPublic() {
     if (busy || dirty || membership!=='active' || !publicConsent) return
@@ -168,11 +188,25 @@ export function YourDccProfile() {
           <p className="font-mono text-xs uppercase tracking-wide text-[var(--dn-subtle)]">Visibility and sculpture</p>
           <h2 className="mt-2 text-2xl font-light">Be discoverable, on your terms.</h2>
           <p className="mt-3 text-sm text-[var(--dn-muted)]">After identity and content review, your approved display name and selected practices may appear in the directory and become visible connections to practice hubs in the sculpture. Your private draft is never the public graph.</p>
-          {draft.publication==='pending_review' && <p className="mt-3 text-sm" role="status">A publication request is pending review. Your information is not published by this action.</p>}
+          {currentlyPublic===true && <p className="mt-3 text-sm" role="status">
+            An earlier approved version of your profile is currently discoverable.
+            Editing this private draft does not automatically update or remove that public version.
+          </p>}
+          {currentlyPublic===null && membership==='active' && <p className="mt-3 text-xs text-[var(--dn-muted)]">
+            Public listing status has not been confirmed yet.
+          </p>}
+          {draft.publication==='pending_review' && <p className="mt-3 text-sm" role="status">
+            Your latest public listing request is pending review; this action did not publish new information.
+          </p>}
           {membership!=='active' && <p className="mt-3 text-sm" role="status">Public profile requests become available after your membership is verified.</p>}
           <label className="mt-5 flex items-start gap-3 text-sm leading-relaxed"><input type="checkbox" className="mt-1 h-5 w-5 shrink-0" checked={publicConsent} onChange={e=>setPublicConsent(e.target.checked)} disabled={membership!=='active'||dirty}/>
             I ask DCC to review my display name, summary, practices, categories and public links for publication in the public directory and artwork. This is separate from membership and marketing, and does not authorize person-to-person links.</label>
-          <button type="button" className={buttonClass+' mt-5'} disabled={busy||dirty||membership!=='active'||!publicConsent} onClick={()=>void requestPublic()}>Request public listing</button>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <button type="button" className={buttonClass} disabled={busy||dirty||membership!=='active'||!publicConsent} onClick={()=>void requestPublic()}>Request public listing</button>
+            <button type="button" className="min-h-11 rounded-full border border-[var(--dn-line)] px-5 py-3 text-sm" disabled={busy} onClick={()=>void withdrawPublic()}>
+              Withdraw public listing
+            </button>
+          </div>
           {dirty && <p className="mt-2 text-xs text-[var(--dn-subtle)]">Save your private changes before requesting review.</p>}
         </div>
         {feedback && <p role="status" className="text-sm text-[var(--dn-link)]">{feedback}</p>}
