@@ -193,7 +193,7 @@ The exhibition brings together artists whose practices examine how digital techn
           id: 'audience-signup',
           number: '05',
           title: 'Audience Signup Pathway',
-          description: 'QR codes, RSVP links, newsletter signup, artist intake forms, and workshop interest collection.',
+          description: 'Optional DCC membership/signup form; not an official Edge Zones exhibition RSVP or mailing list.',
           href: '#join',
           status: 'live',
           icon: 'mail',
@@ -308,7 +308,7 @@ The exhibition brings together artists whose practices examine how digital techn
     materialsNeededPrefix: 'Materials needed:',
     partnershipContactTitle: 'Partnership contact',
     partnershipContactBody:
-      'Questions about Edge Zones programming or the Touching Grass exhibition? Reach Charo Oquet (Edge Zones) via the DCC team.',
+      'For Edge Zones venue approvals and official exhibition details, contact Edge Zones directly. DCC can answer questions about its proposed digital contribution.',
     emailDccTeam: 'Email the DCC team',
     downloadPartnershipPdf: 'Download Partnership PDF',
     openPdfNewTab: 'Open PDF in New Tab',
