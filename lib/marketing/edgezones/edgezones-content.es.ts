@@ -192,8 +192,8 @@ La exposición reúne a artistas cuyas prácticas examinan cómo las tecnología
         {
           id: 'audience-signup',
           number: '05',
-          title: 'Vía de registro para la audiencia',
-          description: 'Códigos QR, enlaces de RSVP, registro al boletín, formularios de artistas y recopilación de interés en talleres.',
+          title: 'Registro opcional a DCC',
+          description: 'Formulario opcional de membresía DCC; no equivale a una reserva ni a una suscripción oficial de Edge Zones.',
           href: '#join',
           status: 'live',
           icon: 'mail',
