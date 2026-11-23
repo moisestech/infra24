@@ -6,9 +6,9 @@ export const DCC_SIGNUP_COPY = {
 
 The DCC Index helps us understand who is working across art, technology, media, AI, software, the internet, video, sound, performance, education, and digital life — so we can share relevant programs, workshops, opportunities, collaborations, and public-facing support.`,
   cta: "Join Miami's Digital Culture Map",
-  confirmation: `Thank you for joining Miami's Digital Culture Map.
+  confirmation: `Thanks for sharing your interest in Miami's Digital Culture Map.
 
-We'll review your submission and use it to connect you with relevant DCC programs, workshops, opportunities, and network updates.`,
+We will review this contact request. It does not create a verified website member or a public profile. Marketing updates require separate permission.`,
   socialHint: 'Adding a website, Instagram, or LinkedIn helps us verify and connect your profile.',
   suggestTitle: 'Help Build the Research View',
   suggestSubtitle:
@@ -18,8 +18,8 @@ We'll review your submission and use it to connect you with relevant DCC program
 
 DCC will review your suggestion and use it to expand the cultural memory map.`,
   quickSubtitle:
-    'Join the DCC network in under a minute. We’ll follow up with programs, workshops, and opportunities in Miami.',
-  quickConfirmation: `Thanks for joining the DCC network. We'll send updates about artists, public programs, workshops, and public opportunities.`,
+    'Share your interest in the DCC community in under a minute. Official website membership requires separate account verification.',
+  quickConfirmation: `Thanks for sharing your interest. This contact request is received for review; it does not create a verified member or a sculpture node.`,
   fullFormLinkLabel: 'Complete the full index profile instead',
 } as const
 
