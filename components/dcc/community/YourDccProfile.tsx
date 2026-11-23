@@ -42,6 +42,7 @@ export function YourDccProfile() {
   const [dirty,setDirty] = useState(false)
   const [feedback,setFeedback] = useState('')
   const [publicConsent,setPublicConsent] = useState(false)
+  const [returnPath,setReturnPath] = useState('/network/your-profile')
   const [currentlyPublic,setCurrentlyPublic] = useState<boolean | null>(null)
   const fetchMember = useCallback(async () => {
     try {
@@ -54,9 +55,28 @@ export function YourDccProfile() {
       setCurrentlyPublic(typeof body.currentlyPublic==='boolean' ? body.currentlyPublic : null)
       setStatus('ready')
       setFeedback('')
+      // Attribution is optional private metadata; success/failure cannot change
+      // verified membership, owner draft or public sculpture publication.
+      const params=new URL(window.location.href).searchParams
+      const source=params.get('entry') || 'passport'
+      const campaign=params.get('utm_campaign') || params.get('campaign')
+      void fetch('/api/dcc/me/entry',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({source,campaign}),
+      }).catch(()=>{})
     } catch { setStatus('unavailable');setFeedback('Your private profile is temporarily unavailable.') }
   },[])
-  useEffect(() => {void fetchMember()},[fetchMember])
+  useEffect(() => {
+    const params=new URL(window.location.href).searchParams
+    const safe=new URLSearchParams()
+    const entry=params.get('entry')
+    const campaign=params.get('utm_campaign') || params.get('campaign')
+    if(entry && /^[a-z-]{1,30}$/.test(entry))safe.set('entry',entry)
+    if(campaign && /^[a-zA-Z0-9_-]{1,64}$/.test(campaign))safe.set('campaign',campaign)
+    const query=safe.toString()
+    setReturnPath('/network/your-profile'+(query?'?'+query:''))
+    void fetchMember()
+  },[fetchMember])
   function change<K extends keyof Draft>(key: K, value: Draft[K]) {
     setDraft(old=>({...old,[key]:value}))
     setDirty(true)
@@ -147,8 +167,8 @@ export function YourDccProfile() {
         <h2 className="text-xl">Sign in to keep your profile across devices.</h2>
         <p className="mt-2 text-sm text-[var(--dn-muted)]">Your DCC member identity is reused. No separate Passport account.</p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link className={buttonClass} href="/sign-in?redirect_url=%2Fnetwork%2Fyour-profile">Sign in</Link>
-          <Link className="min-h-11 rounded-full border border-[var(--dn-line)] px-5 py-3 text-sm" href="/sign-up?redirect_url=%2Fnetwork%2Fyour-profile">Create an account</Link>
+          <Link className={buttonClass} href={'/sign-in?redirect_url='+encodeURIComponent(returnPath)}>Sign in</Link>
+          <Link className="min-h-11 rounded-full border border-[var(--dn-line)] px-5 py-3 text-sm" href={'/sign-up?redirect_url='+encodeURIComponent(returnPath)}>Create an account</Link>
         </div>
       </div>}
       {status==='unavailable' && <div className="mt-8 rounded-2xl border border-[var(--dn-line)] p-6" role="status">
