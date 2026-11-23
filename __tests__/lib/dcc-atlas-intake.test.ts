@@ -34,6 +34,13 @@ describe('Public profile requests and publication', () => {
     expect(approvedLinks('[{"label":"x","url":"https://user:pass@example.test"}]')).toEqual([])
     expect(approvedLinks('not-json')).toEqual([])
   })
+  it('allows a reviewed discoverable profile without a personal portfolio link', () => {
+    const publicProfile=approvedAirtableProfile({...fields,'Atlas Public Links':'[]'})
+    expect(publicProfile?.slug).toBe('test-artist')
+    expect(publicProfile?.links).toEqual([])
+    expect(publicProfile?.website).toBeUndefined()
+    expect(JSON.stringify(publicProfile)).not.toContain('private@example.test')
+  })
   it('reads paginated public fields and rechecks approval even after provider filtering', async () => {
     const fetcher = jest.fn().mockResolvedValueOnce(new Response(JSON.stringify({ records: [{ id: 'secret-record', fields }], offset: 'page2' })))
       .mockResolvedValueOnce(new Response(JSON.stringify({ records: [{ id: 'private', fields: { ...fields, 'Atlas Public Consent': false } }] })))
