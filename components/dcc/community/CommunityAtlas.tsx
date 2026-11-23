@@ -68,10 +68,12 @@ export function CommunityAtlas() {
 
   // Featured editorial profiles always appear. The public API may also return
   // independently reviewed opt-in profiles, but the graph never maps private CRM IDs.
-  const allProfiles = useMemo(() => [
-    ...sourceProfiles,
-    ...PILOT_PREVIEWS.filter((p) => !sourceProfiles.some((record) => record.slug === p.slug)),
-  ], [sourceProfiles])
+  // Live approved projection is authoritative; editorial examples are
+  // available in PREVIEW mode only, not after a member withdraws publication.
+  const allProfiles = useMemo(() => mode==='live'
+    ? sourceProfiles
+    : [...sourceProfiles,...PILOT_PREVIEWS.filter(p => !sourceProfiles.some(r=>r.slug===p.slug))],
+  [sourceProfiles,mode])
   const profiles = useMemo(
     () => filterProfiles(allProfiles, interests, query),
     [allProfiles, interests, query],
