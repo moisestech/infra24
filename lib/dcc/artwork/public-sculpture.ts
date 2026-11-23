@@ -4,6 +4,7 @@ import type { AtlasProfile } from '@/lib/dcc/community/atlas'
 export type PublicSculptureData = {
   mode: 'preview' | 'live'
   profiles: AtlasProfile[]
+  intakeEnabled?: boolean
   websitePresence: {
     status: 'not_published' | 'suppressed' | 'coarsened'
     markCount: number
