@@ -50,6 +50,7 @@ export function CommunityAtlas() {
   const [query, setQuery] = useState('')
   const [interests, setInterests] = useState<InterestId[]>([])
   const [sourceProfiles, setSourceProfiles] = useState<AtlasProfile[]>(PILOT_PREVIEWS)
+  const [websitePresenceMarks, setWebsitePresenceMarks] = useState(0)
   const [mode, setMode] = useState<'preview' | 'live'>('preview')
   const [intakeEnabled, setIntakeEnabled] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
@@ -76,18 +77,20 @@ export function CommunityAtlas() {
     [allProfiles, interests, query],
   )
   const profile = profiles.find((p) => p.slug === selected) ?? profiles[0] ?? null
+  const isVisiblePublicPerson = (id: string | null) => Boolean(id && allProfiles.some(p=>p.slug===id))
 
   const refreshProfiles = useCallback(async (signal?: AbortSignal) => {
     const load = ++loadId.current
     setRefreshing(true)
     try {
-      const response = await fetch('/api/marketing/community-atlas', { cache: 'no-store', signal })
+      const response = await fetch('/api/dcc/sculpture/public', { cache: 'no-store', signal })
       const data = await response.json()
       if (!response.ok || !Array.isArray(data.profiles) || !['preview', 'live'].includes(data.mode)) {
         throw new Error('Unable to load new profiles')
       }
       if (signal?.aborted || load !== loadId.current) return
       setSourceProfiles(data.profiles)
+      setWebsitePresenceMarks(data.websitePresence?.status === 'coarsened' ? data.websitePresence.markCount : 0)
       setMode(data.mode)
       setIntakeEnabled(data.intakeEnabled === true)
       setLoadError('')
@@ -132,7 +135,7 @@ export function CommunityAtlas() {
 
   function selectProfile(slug: string, scroll = true) {
     setSelected(slug)
-    setGraphFocus(isPublicArtist(slug) ? slug : null)
+    setGraphFocus(isVisiblePublicPerson(slug) ? slug : null)
     const url = new URL(window.location.href)
     url.searchParams.set('profile', slug)
     window.history.replaceState(null, '', url)
@@ -142,7 +145,7 @@ export function CommunityAtlas() {
   }
   function chooseGraphNode(id: GraphSelection) {
     setGraphFocus(id)
-    if (id && isPublicArtist(id)) {
+    if (id && isVisiblePublicPerson(id)) {
       selectProfile(id, false)
     } else if (id?.startsWith('practice-')) {
       const choice = id.slice('practice-'.length)
@@ -208,14 +211,14 @@ export function CommunityAtlas() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => setShowProfileForm(true)}
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] transition hover:bg-[var(--dn-accent-hover)]">
-              <UserRoundPlus size={17} /> Add your profile
-            </button>
-            <button type="button" onClick={() => setShowPassport(true)}
-              className="rounded-full border border-[color:var(--dn-line)] px-5 py-3 text-sm text-[color:var(--dn-muted)] transition hover:border-[color:var(--dn-line-strong)]">
+            <Link href="/network/your-profile"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] transition hover:bg-[var(--dn-accent-hover)]">
+              <UserRoundPlus size={17} /> Create or edit your profile
+            </Link>
+            <Link href="/network/your-profile"
+              className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--dn-line)] px-5 py-3 text-sm text-[color:var(--dn-muted)] transition hover:border-[color:var(--dn-line-strong)]">
               Your Passport
-            </button>
+            </Link>
           </div>
         </header>
 
@@ -226,7 +229,7 @@ export function CommunityAtlas() {
               <p className="mt-1 text-xs text-[color:var(--dn-subtle)]">Circles: people · hexagons: practices · colored lines: poll selections</p>
             </div>
             <div className="h-[420px] w-full sm:h-[540px] lg:h-[560px]">
-              <NetworkGraphBoundary><Field selected={graphFocus} onSelect={chooseGraphNode} /></NetworkGraphBoundary>
+              <NetworkGraphBoundary><Field selected={graphFocus} onSelect={chooseGraphNode} profiles={allProfiles} websitePresenceMarks={websitePresenceMarks} /></NetworkGraphBoundary>
             </div>
             <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 border-t border-[color:var(--dn-line)] p-3 sm:p-4">
               <div className="dn-mobile-scroller flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-panel)] p-1"
@@ -245,7 +248,7 @@ export function CommunityAtlas() {
                   </button>
                 ))}
               </div>
-              <Link href={graphFocus && isPublicArtist(graphFocus) ? '/network/artwork?person=' + graphFocus : selectedChoice ? '/network/artwork?practice=' + selectedChoice : '/network/artwork'}
+              <Link href={graphFocus && isVisiblePublicPerson(graphFocus) ? '/network/artwork?person=' + graphFocus : selectedChoice ? '/network/artwork?practice=' + selectedChoice : '/network/artwork'}
                 className="inline-flex items-center gap-1 text-xs text-[color:var(--dn-link)] hover:underline">
                 Open artwork <ArrowUpRight size={14} />
               </Link>
@@ -359,14 +362,14 @@ export function CommunityAtlas() {
             {passport ? <p className="mt-4 text-xs text-[color:var(--dn-link)]">Draft for {passport.name} · {passport.interests.length} interests saved in this browser</p> : null}
           </div>
           <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => setShowPassport(true)}
-              className="rounded-full border border-[color:var(--dn-line)] px-5 py-3 text-sm text-[color:var(--dn-ink)] hover:border-[color:var(--dn-line-strong)]">
-              {passport ? 'Edit Passport' : 'Start Passport'}
-            </button>
-            <button type="button" onClick={() => setShowProfileForm(true)}
-              className="rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] hover:bg-[var(--dn-accent-hover)]">
-              Add public profile
-            </button>
+            <Link href="/network/your-profile"
+              className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--dn-line)] px-5 py-3 text-sm text-[color:var(--dn-ink)] hover:border-[color:var(--dn-line-strong)]">
+              Edit your Profile / Passport
+            </Link>
+            <Link href="/network/your-profile"
+              className="inline-flex min-h-11 items-center rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] hover:bg-[var(--dn-accent-hover)]">
+              Request public listing
+            </Link>
             {passport ? <button type="button" onClick={clearPassport} className="px-2 text-xs text-[color:var(--dn-subtle)] hover:text-[color:var(--dn-ink)]">Clear draft</button> : null}
           </div>
         </section>
