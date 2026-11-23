@@ -11,7 +11,7 @@ export const edgeZonesPortalEn: EdgeZonesPortalContent = {
     'A partnership framework for digital art in Miami, connecting a curator-led exhibition with artist visibility, public programming, digital documentation, and a long-term online archive.',
   metaTitle: 'Touching Grass at Edge Zones — Proposed Exhibition',
   hero: {
-    eyebrow: 'Presented at Edge Zones · Proposal in development',
+    eyebrow: 'Proposed for Edge Zones · Pending venue approval',
     title: 'Touching Grass',
     subtitle: 'Digital Culture, Physical Reality',
     intro: `Touching Grass is an exhibition concept exploring the relationship between digital culture and embodied, ecological, and material reality.
@@ -28,7 +28,7 @@ The exhibition brings together artists whose practices examine how digital techn
   rolesMatrix: {
     title: 'How the partnership works',
     intro:
-      'Edge Zones is the institutional host; Jordan Horton leads curatorial development, Angelo Caruso coordinates local installation, and DCC Miami provides a proposed digital and public-engagement layer.',
+      'Edge Zones controls its venue, institutional presentation and gallery-facing communications. Jordan Horton leads the curatorial proposal; Angelo Caruso coordinates local logistics; DCC proposes optional digital and public-program support subject to Charo Oquet’s approval. The final presenting structure remains under discussion.',
     edgeZones: {
       title: 'Edge Zones',
       subtitle: 'Physical host space',
@@ -38,7 +38,7 @@ The exhibition brings together artists whose practices examine how digital techn
         'Physical host space',
         'Opening reception',
         'Standard exhibition hosting',
-        'Existing Edge Zones website and social media visibility',
+        'Edge Zones retains control over its website, social channels, institutional identity and approval of shared exhibition announcements',
         '$500 exhibition honorarium; allocation for production costs and recipient pending written agreement',
       ],
       accent: 'coral',
@@ -71,11 +71,11 @@ The exhibition brings together artists whose practices examine how digital techn
       items: [
         'Exhibition webpage',
         'Artist index',
-        'Audience signup pathway',
+        'Optional DCC network signup, separate from any Edge Zones exhibition RSVP or mailing list',
         'Digital documentation/archive structure',
         'Digital publishing support',
-        'Promotion through DCC channels and network',
-        'One public program, workshop, conversation, or activation connected to the exhibition',
+        'DCC-channel amplification of Edge Zones-approved exhibition announcements with Edge Zones credited first',
+        'One public program proposal for Edge Zones review before scheduling or publicity',
       ],
       accent: 'teal',
       href: DCC_MIAMI_WEBSITE,
@@ -143,7 +143,7 @@ The exhibition brings together artists whose practices examine how digital techn
       id: 'support',
       title: 'What DCC adds',
       intro:
-        'Explore what has been built and what is planned. Future work is conditional on materials, capacity and partner approval.',
+        'Explore what has been built and what is planned. DCC’s prototypes do not represent an approved venue partnership; Edge Zones reviews institutional credits, publicity and programming before release.',
       modules: [
         {
           id: 'exhibition-webpage',
@@ -226,7 +226,7 @@ The exhibition brings together artists whose practices examine how digital techn
       id: 'programs',
       title: 'DCC-Supported Public Program',
       intro:
-        'DCC proposes one accessible artist conversation and demonstration during the exhibition. Speakers, date, equipment, staffing, costs and access are pending discussion with the curator, artists and Edge Zones.',
+        'DCC can develop one artist conversation or demonstration concept for Charo’s review. No public program, gallery staffing, access or use of Edge Zones channels is confirmed until Charo approves the details.',
       formats: [
         'Artist talk',
         'Digital culture conversation',
@@ -263,19 +263,19 @@ The exhibition brings together artists whose practices examine how digital techn
       id: 'pdf',
       title: 'Partnership PDF',
       description:
-        'Download or open the DCC Miami × Edge Zones proposal booklet — partnership framework, exhibition concept, DCC support model, artist cluster, and network index.',
+        'Open the working exhibition proposal booklet. Institutional credit, promotion, roster, costs and programs remain subject to Edge Zones and team review.',
       note: 'This proposal packet may be updated as roles, deliverables, dates, and artist materials are confirmed.',
     },
     join: {
       id: 'join',
-      title: 'Join the DCC x Edge Zones updates list',
+      title: 'Explore DCC Miami (optional)',
       intro:
-        'Receive updates about Touching Grass, the artist index, public program, documentation archive, and future DCC Miami programming.',
+        'This is an optional DCC Miami network signup, not an official Edge Zones exhibition RSVP or subscription. Follow Edge Zones directly for official gallery announcements.',
       formIntro:
-        'Share your contact information to receive updates and future opportunities connected to DCC Miami, Edge Zones, and Miami’s digital art ecosystem.',
+        'The linked form joins the DCC network, and occasional DCC emails are separately opt-in. It does not register you for the exhibition or subscribe you to Edge Zones communications.',
       signupHref:
         '/network/signup?source=edgezones&utm_source=edgezones&utm_medium=proposal&utm_campaign=dcc_edgezones_launch&utm_content=partnership_pdf&qr=dcc_edgezones_main',
-      signupLabel: 'Join updates',
+      signupLabel: 'Explore DCC membership',
       suggestHref: '/network/signup?pathway=research&source=edgezones',
       suggestLabel: 'Suggest someone for the Research View',
     },
