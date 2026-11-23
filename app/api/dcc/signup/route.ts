@@ -43,6 +43,10 @@ export async function handleDccSignupPost(body: unknown) {
 
   const input = parsed.data
   const pathway = getPathwayById(input.pathway)
+  // After verified enrollment launches, block email-only membership writes.
+  if (process.env.DCC_MEMBER_PROFILE_ENABLED === 'true' && pathway.id === 'join_dcc_index') {
+    return NextResponse.json({ error: 'Official DCC membership now uses verified accounts. Please use Join DCC.' }, { status: 410 })
+  }
   if (!pathway.enabled) {
     return NextResponse.json({ error: 'This signup pathway is not available yet.' }, { status: 400 })
   }
@@ -92,7 +96,6 @@ export async function handleDccSignupPost(body: unknown) {
 
   return NextResponse.json({
     ok: true,
-    recordId: result.recordId,
     updated: result.updated,
     formMode: mode,
     message: "You're in. Thanks for joining the DCC network.",
