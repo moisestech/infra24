@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { mayReadDccCrmGraph } from '@/lib/airtable/crm-graph-access'
 import { fetchDccCrmGraphPayload } from '@/lib/airtable/crm-graph-service'
 import { parseGraphMode, parseGraphVisibility } from '@/lib/airtable/crm-graph-transform'
 import type { DccNetworkGraphSurface } from '@/lib/marketing/dcc-crm-graph-types'
@@ -14,14 +16,20 @@ export async function GET(request: NextRequest) {
     const mode = parseGraphMode(request.nextUrl.searchParams.get('mode'))
     const visibility = parseGraphVisibility(request.nextUrl.searchParams.get('visibility'))
 
-    if (mode === 'admin' && process.env.DCC_NETWORK_ADMIN_ENABLED !== 'true') {
-      return NextResponse.json({ error: 'Admin graph is not enabled' }, { status: 403 })
+    // Query parameters can never authorize access to internal CRM data.
+    // Research mode also contains unsanitized candidate names in JSON.
+    const restricted = mode !== 'active' || visibility !== 'public'
+    const staffId = restricted ? auth().userId : null
+    if (!mayReadDccCrmGraph(mode, visibility, staffId, process.env)) {
+      return NextResponse.json({ error: 'Private graph access is not authorized' }, {
+        status: 403, headers: { 'Cache-Control': 'private, no-store' },
+      })
     }
 
     const payload = await fetchDccCrmGraphPayload({ surface, mode, visibility })
     return NextResponse.json(payload, {
       headers: {
-        'Cache-Control': 'private, max-age=60, stale-while-revalidate=120',
+        'Cache-Control': restricted ? 'private, no-store' : 'public, max-age=60, stale-while-revalidate=120',
       },
     })
   } catch (e) {
