@@ -25,7 +25,7 @@ export default function NetworkSignupPage({ searchParams }: Props) {
     if (searchParams?.utm_campaign && /^[a-zA-Z0-9_-]{1,64}$/.test(searchParams.utm_campaign)) {
       query.set('campaign', searchParams.utm_campaign)
     }
-    redirect('/network/your-profile?' + query.toString())
+    redirect('/network/your-dcc?' + query.toString())
   }
 
   return (
