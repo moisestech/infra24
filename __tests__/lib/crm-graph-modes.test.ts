@@ -76,7 +76,7 @@ describe('graph modes', () => {
     expect(person.publicNodeSummary).toBe('Seed summary context')
   })
 
-  it('reads live DCC people fields Name and Role / Title without a graph layer', () => {
+  it('does not publish a DCC contact without explicit consent and graph layer', () => {
     const tables = {
       people: [
         {
@@ -99,13 +99,12 @@ describe('graph modes', () => {
     const person = els.find(
       (e) => 'kind' in e.data && (e.data as DccGraphNodeData).kind === 'person'
     )?.data as DccGraphNodeData
-    expect(person?.label).toBe('Heather Deitch')
-    expect(person?.contactCategory).toBe('Client')
-    expect(person?.website).toBeUndefined()
-    expect(JSON.stringify(person)).not.toContain('hidden@example.com')
+    expect(person).toBeUndefined()
+    expect(JSON.stringify(els)).not.toContain('Heather Deitch')
+    expect(JSON.stringify(els)).not.toContain('hidden@example.com')
   })
 
-  it('treats an operator stage as a fabricator without publishing the stage', () => {
+  it('keeps an unconsented operator off the public graph', () => {
     const tables = {
       people: [
         {
@@ -123,8 +122,9 @@ describe('graph modes', () => {
     const person = els.find(
       (e) => 'kind' in e.data && (e.data as DccGraphNodeData).kind === 'person'
     )?.data as DccGraphNodeData
-    expect(person?.contactCategory).toBe('Fabricator')
-    expect(JSON.stringify(person)).not.toContain('Potential')
+    expect(person).toBeUndefined()
+    expect(JSON.stringify(els)).not.toContain('Miguel Gonzales')
+    expect(JSON.stringify(els)).not.toContain('Potential')
   })
 
   it('excludes Do Not Show demo readiness', () => {
