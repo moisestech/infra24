@@ -37,6 +37,17 @@ export function YourDccHome({membershipLive}:{membershipLive:boolean}) {
     void check()
     return()=>controller.abort()
   },[membershipLive])
+  useEffect(()=>{
+    if(state!=='active' && state!=='pending_review')return
+    const params=new URL(window.location.href).searchParams
+    const source=params.get('entry')||'app-sign-up'
+    const campaign=params.get('campaign')||params.get('utm_campaign')
+    // Marketing provenance only. It cannot grant membership or public listing.
+    void fetch('/api/dcc/me/entry',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({source,campaign}),
+    }).catch(()=>{})
+  },[state])
   const current=labels[state]
   return <main className="min-h-screen bg-[#f3f5ee] px-4 py-8 text-[#19382a] sm:px-6 sm:py-14">
     <div className="mx-auto max-w-4xl">
