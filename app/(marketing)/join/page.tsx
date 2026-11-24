@@ -23,7 +23,7 @@ export default function JoinRedirectPage({ searchParams }: Props) {
   if (process.env.DCC_MEMBER_PROFILE_ENABLED === 'true') {
     params.set('entry', 'join')
     const query = params.toString()
-    redirect(query ? `/network/your-profile?${query}` : '/network/your-profile')
+    redirect(query ? `/network/your-dcc?${query}` : '/network/your-dcc')
   }
   // Until then, keep the existing CRM lead-capture route intact and do not
   // imply that its self-entered email creates an active membership.
