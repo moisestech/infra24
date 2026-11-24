@@ -20,10 +20,13 @@ export default function JoinRedirectPage({ searchParams }: Props) {
   }
   // Once real verified owner membership is enabled, every Join link uses the
   // same account/Profile journey, preserving campaign context for private audit.
-  if (process.env.DCC_MEMBER_PROFILE_ENABLED === 'true') {
+  if (process.env.DCC_MEMBER_EVENT_CAPTURE_ENABLED === 'true' &&
+      process.env.DCC_MEMBER_RECONCILIATION_ENABLED === 'true' &&
+      process.env.DCC_MEMBER_PROFILE_ENABLED === 'true') {
     params.set('entry', 'join')
     const query = params.toString()
-    redirect(query ? `/network/your-dcc?${query}` : '/network/your-dcc')
+    const destination = '/network/your-dcc' + (query ? '?' + query : '')
+    redirect('/sign-up?redirect_url=' + encodeURIComponent(destination))
   }
   // Until then, keep the existing CRM lead-capture route intact and do not
   // imply that its self-entered email creates an active membership.
