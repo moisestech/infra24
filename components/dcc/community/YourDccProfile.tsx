@@ -162,6 +162,7 @@ export function YourDccProfile() {
       <Link href="/network/community" className="text-sm text-[var(--dn-link)] hover:underline">← Explore the Atlas</Link>
       <p className="mt-9 font-mono text-xs uppercase tracking-[.17em] text-[var(--dn-subtle)]">DCC member space</p>
       <h1 className="mt-3 text-4xl font-light tracking-[-.06em] sm:text-5xl">Your Profile <em>/ Passport</em></h1>
+      <Link href="/network/your-dcc" className="mt-3 inline-block text-sm underline underline-offset-4">Your DCC home</Link>
       <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--dn-muted)]">One identity across DCC. Share what you work on, explore the network, and choose whether people can discover you. Your draft starts private.</p>
       {status==='loading' && <p className="mt-8" role="status">Checking your DCC membership…</p>}
       {status==='signed_out' && <div className="mt-8 rounded-2xl border border-[var(--dn-line)] p-6">
