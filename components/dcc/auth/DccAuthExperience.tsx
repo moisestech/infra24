@@ -26,7 +26,7 @@ export function DccAuthExperience({
   mode,membershipLive,
 }: {mode:Mode;membershipLive:boolean}) {
   const params=useSearchParams()
-  const fallback=mode==='sign-up'&&membershipLive?'/network/your-profile':'/dashboard'
+  const fallback=membershipLive?'/network/your-dcc':'/dashboard'
   const destination=dccPostAuthPath(params.get('redirect_url'),fallback)
   const joinedFromNetwork=destination.startsWith('/network/')
   const otherUrl=(mode==='sign-in'?'/sign-up':'/sign-in')+
