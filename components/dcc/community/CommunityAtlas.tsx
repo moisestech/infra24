@@ -278,6 +278,10 @@ export function CommunityAtlas() {
                     Visit website <ExternalLink size={15} />
                   </a>
                 ) : null}
+                {mode === 'live' && <Link href={'/network/community/' + profile.slug}
+                  className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full border border-[color:var(--dn-line)] px-5 text-sm font-semibold text-[color:var(--dn-link)] hover:border-[color:var(--dn-line-strong)]">
+                  Open shareable profile <ExternalLink size={14} />
+                </Link>}
               </div>
             ) : <p className="mt-7 text-sm text-[color:var(--dn-muted)]">No profile matches those filters.</p>}
             <div className="mt-9 border-t border-[color:var(--dn-line)] pt-5 text-xs leading-relaxed text-[color:var(--dn-subtle)]">
