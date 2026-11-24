@@ -45,6 +45,7 @@ export function YourDccProfile() {
   const [publicConsent,setPublicConsent] = useState(false)
   const [returnPath,setReturnPath] = useState('/network/your-profile')
   const [currentlyPublic,setCurrentlyPublic] = useState<boolean | null>(null)
+  const [publicSlug,setPublicSlug] = useState<string | null>(null)
   const fetchMember = useCallback(async () => {
     try {
       const response = await fetch('/api/dcc/me',{cache:'no-store'})
@@ -54,6 +55,7 @@ export function YourDccProfile() {
       setMembership(body.membership)
       setDraft(body.profile)
       setCurrentlyPublic(typeof body.currentlyPublic==='boolean' ? body.currentlyPublic : null)
+      setPublicSlug(typeof body.publicSlug==='string' ? body.publicSlug : null)
       setStatus('ready')
       setFeedback('')
       // Attribution is optional private metadata; success/failure cannot change
@@ -134,6 +136,7 @@ export function YourDccProfile() {
         return
       }
       setCurrentlyPublic(false)
+      setPublicSlug(null)
       setPublicConsent(false)
       setDraft(old=>({...old,publication:'withdrawal_requested'}))
       setFeedback('Public listing withdrawn. Your private DCC membership is unchanged.')
@@ -218,6 +221,10 @@ export function YourDccProfile() {
           {currentlyPublic===null && membership==='active' && <p className="mt-3 text-xs text-[var(--dn-muted)]">
             Public listing status has not been confirmed yet.
           </p>}
+          {currentlyPublic===true && publicSlug && <Link href={'/network/community/' + publicSlug}
+            className="mt-4 inline-flex min-h-11 items-center rounded-full border border-[var(--dn-line)] px-5 py-2 text-sm font-semibold text-[var(--dn-link)] underline underline-offset-4">
+            View your approved public profile
+          </Link>}
           {draft.publication==='pending_review' && <p className="mt-3 text-sm" role="status">
             Your latest public listing request is pending review; this action did not publish new information.
           </p>}
