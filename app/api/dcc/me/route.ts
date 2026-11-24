@@ -15,6 +15,7 @@ export async function GET() {
   try {
     const { db, binding } = await memberPassportContext()
     let currentlyPublic: boolean | null = null
+    let publicSlug: string | null = null
     if (binding.airtablePersonId) {
       const base=process.env.AIRTABLE_DCC_ATLAS_BASE_ID
       const table=process.env.AIRTABLE_DCC_ATLAS_PEOPLE_TABLE
@@ -30,12 +31,17 @@ export async function GET() {
         currentlyPublic=f['Atlas Publication State']==='Approved' &&
           f['Atlas Public Consent']===true && f['Public Profile?']===true &&
           f['Atlas Identity Verified']===true
+        const candidate=f['Profile Slug']
+        publicSlug=currentlyPublic && typeof candidate==='string' &&
+          candidate.length<=100 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(candidate)
+            ? candidate : null
       }
     }
     return NextResponse.json({
       membership: binding.state === 'active' ? 'active' : 'pending_reconciliation',
       profile: await readOwnerPassport(db, binding),
       currentlyPublic,
+      publicSlug,
     }, { headers: PRIVATE_HEADERS })
   } catch (e) { return failure(e) }
 }
