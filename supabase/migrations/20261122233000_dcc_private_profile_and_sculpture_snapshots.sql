@@ -14,6 +14,22 @@ create table if not exists public.dcc_member_profile_drafts (
   public_requested_at timestamptz,
   updated_at timestamptz not null default now()
 );
+-- Every submitted change (including a fresh publication request or withdrawal)
+-- must advance the revision so a reviewer can reject stale submissions.
+create or replace function public.dcc_bump_member_profile_revision()
+returns trigger language plpgsql security invoker set search_path = ''
+as $
+begin
+  new.revision := old.revision + 1;
+  return new;
+end
+$;
+revoke all on function public.dcc_bump_member_profile_revision() from public, anon, authenticated;
+drop trigger if exists dcc_member_profile_revision_bump on public.dcc_member_profile_drafts;
+create trigger dcc_member_profile_revision_bump
+before update on public.dcc_member_profile_drafts
+for each row execute function public.dcc_bump_member_profile_revision();
+
 alter table public.dcc_member_profile_drafts enable row level security;
 revoke all on public.dcc_member_profile_drafts from public, anon, authenticated;
 grant select,insert,update on public.dcc_member_profile_drafts to service_role;
