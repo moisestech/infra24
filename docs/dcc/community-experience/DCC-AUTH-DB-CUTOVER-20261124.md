@@ -56,3 +56,6 @@ GitHub has reported Vercel status for the PR branch (sometimes success, later pe
 **Feature switches remain OFF:** `DCC_MEMBER_EVENT_CAPTURE_ENABLED`, `DCC_MEMBER_RECONCILIATION_ENABLED`, `DCC_MEMBER_PROFILE_ENABLED`, `DCC_STEWARD_REVIEW_ENABLED`, `DCC_SCULPTURE_SNAPSHOTS_ENABLED`, `DCC_SCULPTURE_SNAPSHOT_PUBLISH_ENABLED`.
 
 **No deployment, activation, or actual DCC website enrollment performed in this checkpoint.**
+
+## Vercel build status checkpoint (latest observed)
+GitHub reports **Vercel SUCCESS** for draft head `808c022a5806b4bbec814fb8ef109d12f720eb75` on November 24, 2026, at https://vercel.com/moises-sanabrias-projects/infra24/4C3JHCVdjJftX4Y2hhHfrghkssD2. This confirms the GitHub-reported deployment check outcome, **not** a personally inspected preview runtime. The available Vercel connection returns no infra24 project in the visible team scope (project detail 404), so private runtime environment names/values and signed webhook configuration are **not** verified. No GitHub Actions PR workflow runs were returned for this commit; Jest/browser/provider test execution remains unverified. Keep pilot flags disabled by default.
