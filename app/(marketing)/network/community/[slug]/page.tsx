@@ -63,7 +63,7 @@ export default async function PublicAtlasProfilePage({ params }: Props) {
           <h2 className="text-xs font-semibold uppercase tracking-[.13em] text-[var(--dn-subtle)]">Explore through</h2>
           <div className="mt-3 flex flex-wrap gap-2">{profile.interests.map(id=>{
             const interest=INTERESTS.find(item=>item.id===id)
-            return interest ? <Link key={id} href={'/network/community?practice='+encodeURIComponent(id)} className="inline-flex min-h-[44px] items-center rounded-full border border-[var(--dn-line)] px-4 text-sm hover:border-[var(--dn-line-strong)]">{interest.label}</Link> : null
+            return interest ? <Link key={id} href="/network/community#find-people" className="inline-flex min-h-[44px] items-center rounded-full border border-[var(--dn-line)] px-4 text-sm hover:border-[var(--dn-line-strong)]">{interest.label}</Link> : null
           })}</div>
         </section>}
         {profile.links && profile.links.length > 0 && <section className="mt-8 border-t border-[var(--dn-line)] pt-6">
