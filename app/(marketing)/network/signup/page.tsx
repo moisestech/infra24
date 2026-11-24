@@ -20,12 +20,14 @@ export default function NetworkSignupPage({ searchParams }: Props) {
   const source = searchParams?.source
   const pathway = parsePathwayParam(searchParams?.pathway)
   const formMode = parseSignupFormMode(searchParams?.form)
-  if (process.env.DCC_MEMBER_PROFILE_ENABLED === 'true' && pathway === 'join_dcc_index') {
+  if (process.env.DCC_MEMBER_EVENT_CAPTURE_ENABLED === 'true' &&
+      process.env.DCC_MEMBER_RECONCILIATION_ENABLED === 'true' &&
+      process.env.DCC_MEMBER_PROFILE_ENABLED === 'true' && pathway === 'join_dcc_index') {
     const query = new URLSearchParams({ entry: 'network-signup' })
     if (searchParams?.utm_campaign && /^[a-zA-Z0-9_-]{1,64}$/.test(searchParams.utm_campaign)) {
       query.set('campaign', searchParams.utm_campaign)
     }
-    redirect('/network/your-dcc?' + query.toString())
+    redirect('/sign-up?redirect_url=' + encodeURIComponent('/network/your-dcc?' + query.toString()))
   }
 
   return (
