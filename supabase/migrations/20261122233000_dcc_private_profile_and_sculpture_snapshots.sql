@@ -18,12 +18,12 @@ create table if not exists public.dcc_member_profile_drafts (
 -- must advance the revision so a reviewer can reject stale submissions.
 create or replace function public.dcc_bump_member_profile_revision()
 returns trigger language plpgsql security invoker set search_path = ''
-as $
+as $dcc_revision$
 begin
   new.revision := old.revision + 1;
   return new;
 end
-$;
+$dcc_revision$;
 revoke all on function public.dcc_bump_member_profile_revision() from public, anon, authenticated;
 drop trigger if exists dcc_member_profile_revision_bump on public.dcc_member_profile_drafts;
 create trigger dcc_member_profile_revision_bump
