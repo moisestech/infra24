@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { requireDccSteward } from '@/lib/dcc/membership/steward-access'
 import { MemberAccessError, PRIVATE_HEADERS } from '@/lib/dcc/membership/profile-store'
-import { ownerPassportSchema } from '@/lib/dcc/membership/profile-schema'
+import { ownerPassportSchema, DCC_PUBLIC_PROFILE_DISCLOSURE } from '@/lib/dcc/membership/profile-schema'
 
 export const dynamic='force-dynamic'
 
@@ -43,7 +43,9 @@ export async function GET() {
         disclosureVersion:d.request_disclosure_version,
         memberVerified:b?.state==='active'&&Boolean(b.verified_at)&&Boolean(b.airtable_person_id),
         preview:parsed.success ? parsed.data : null,
-        needsReview:!parsed.success||b?.state!=='active'||!b.airtable_person_id,
+        needsReview:!parsed.success||b?.state!=='active'||!b.airtable_person_id||!b.verified_at||
+          d.request_disclosure_version!==DCC_PUBLIC_PROFILE_DISCLOSURE||
+          (typeof d.summary==='string'&&d.summary.trim().length<10),
       }
     })
     return NextResponse.json({requests},{headers:PRIVATE_HEADERS})
