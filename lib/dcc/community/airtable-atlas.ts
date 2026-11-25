@@ -22,7 +22,7 @@ async function request(url: URL, init: RequestInit = {}) {
 
 export async function readPublicAtlas() {
   if (!atlasReadConfigured()) throw new Error('ATLAS_NOT_CONFIGURED')
-  const records: Array<{ fields: Record<string, unknown> }> = []
+  const records: Array<{ id: string; fields: Record<string, unknown> }> = []
   let offset: string | undefined
   let pages = 0
   do {
