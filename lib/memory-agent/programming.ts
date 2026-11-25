@@ -150,11 +150,10 @@ function resolveProgrammingImageUrl(
   for (const item of media) {
     if (!item || typeof item !== 'object') continue
     const record = item as Record<string, unknown>
-    const url =
-      (typeof record.url === 'string' && record.url) ||
-      (typeof record.file_url === 'string' && record.file_url) ||
-      (typeof record.src === 'string' && record.src)
-    if (url?.trim()) return url.trim()
+    const url = [record.url, record.file_url, record.src].find(
+      (candidate): candidate is string => typeof candidate === 'string' && candidate.trim().length > 0
+    )
+    if (url) return url.trim()
   }
   return undefined
 }
