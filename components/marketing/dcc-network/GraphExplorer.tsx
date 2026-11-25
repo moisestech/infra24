@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { Core, StylesheetStyle } from 'cytoscape'
+import type { Core, EdgeSingular, StylesheetStyle } from 'cytoscape'
 import { GraphFilterBar } from '@/components/marketing/dcc-network/GraphFilterBar'
 import { GraphNodeCard, GraphNodeTooltip } from '@/components/marketing/dcc-network/GraphNodeCard'
 import type {
@@ -113,7 +113,7 @@ const cytoscapeStylesheet: StylesheetStyle[] = [
       'target-arrow-color': '#94a3b8',
       'target-arrow-shape': 'triangle',
       'curve-style': 'bezier',
-      opacity: (edge) => {
+      opacity: (edge: EdgeSingular) => {
         // Equivalent clamped mapping of recencyScore 0..3 to opacity 0.35..0.9.
         // A numeric accessor also satisfies Cytoscape's typed edge-style API.
         const raw = Number(edge.data('recencyScore') ?? 0)

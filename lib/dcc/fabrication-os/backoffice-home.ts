@@ -34,7 +34,7 @@ export type BackOfficeCount = {
   note: string
 }
 
-export type TableReadStatus = 'records' | 'unconfigured' | 'forbidden'
+export type TableReadStatus = 'records' | 'unconfigured' | 'missing' | 'forbidden'
 
 export type BackOfficeOperatorInput = {
   active: boolean
