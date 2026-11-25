@@ -9,7 +9,7 @@ import { AnnouncementType, AnnouncementSubType } from "@/types/announcement";
 const announcementSchema = z.object({
   title: z.string().min(3, "Title is required"),
   date: z.string().min(1, "Date is required"),
-  type: z.enum(["urgent", "facility", "event", "opportunity", "administrative"]),
+  type: z.enum(["urgent", "facility", "event", "opportunity", "administrative", "attention_artists", "attention_public", "fun_fact", "promotion", "gala_announcement", "cinematic"]),
   subType: z.string().min(1, "Subtype is required"),
   description: z.string().min(10, "Description is required"),
   location: z.string().optional(),
@@ -28,6 +28,7 @@ const subTypeOptions: Record<AnnouncementType, AnnouncementSubType[]> = {
   fun_fact: ["general"],
   promotion: ["general"],
   gala_announcement: ["general"],
+  cinematic: ["cinematic"],
 };
 
 function CreateAnnouncementPageContent() {

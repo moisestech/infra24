@@ -16,6 +16,10 @@ export type AnnouncementImageSet = {
   square?: string;
 };
 
+// Legacy organization announcements may have no media array or image URL.
+// The image resolver already treats absent fields as empty candidates.
+export type AnnouncementImageSource = Partial<Pick<Announcement, 'image_url' | 'metadata' | 'media'>>;
+
 export type AnnouncementImageCandidate = {
   url: string;
   shape: ImageAspectShape;
@@ -94,7 +98,7 @@ function addCandidate(
 
 /** Gather every usable image URL on an announcement with inferred shape. */
 export function collectAnnouncementImageCandidates(
-  announcement: Pick<Announcement, 'image_url' | 'metadata' | 'media'>
+  announcement: AnnouncementImageSource
 ): AnnouncementImageCandidate[] {
   const bucket = new Map<string, AnnouncementImageCandidate>();
   const meta = announcement.metadata;
@@ -177,7 +181,7 @@ const CONTEXT_SHAPE_ORDER: Record<AnnouncementImageContext, ImageAspectShape[]> 
 };
 
 export function announcementImageForContext(
-  announcement: Pick<Announcement, 'image_url' | 'metadata' | 'media'>,
+  announcement: AnnouncementImageSource,
   context: AnnouncementImageContext = 'card'
 ): { url: string | null; shape: ImageAspectShape | null } {
   const candidates = collectAnnouncementImageCandidates(announcement);
@@ -192,21 +196,21 @@ export function announcementImageForContext(
 
 /** True when any context-appropriate image exists. */
 export function announcementHasDisplayImage(
-  announcement: Pick<Announcement, 'image_url' | 'metadata' | 'media'>
+  announcement: AnnouncementImageSource
 ): boolean {
   return collectAnnouncementImageCandidates(announcement).length > 0;
 }
 
 /** Best landscape URL for CMS list/card (explicit helper). */
 export function announcementLandscapeImageUrl(
-  announcement: Pick<Announcement, 'image_url' | 'metadata' | 'media'>
+  announcement: AnnouncementImageSource
 ): string | null {
   return announcementImageForContext(announcement, 'list').url;
 }
 
 /** Best portrait URL for smart-sign / kiosk display. */
 export function announcementPortraitImageUrl(
-  announcement: Pick<Announcement, 'image_url' | 'metadata' | 'media'>
+  announcement: AnnouncementImageSource
 ): string | null {
   return announcementImageForContext(announcement, 'display').url;
 }
