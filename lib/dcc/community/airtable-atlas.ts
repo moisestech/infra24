@@ -42,6 +42,10 @@ export async function readPublicAtlas() {
   // Legacy editorial people without a DCC website binding continue under their
   // separately reviewed Airtable flags until explicitly migrated.
   const guarded = new Set<string>()
+  // Separate emergency public visibility switch. Staff may stage/review a grant
+  // without enabling public visibility for website-member profiles.
+  const websiteProfilesPublic =
+    process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED === 'true'
   const hasWebsiteBindings = records.some(r =>
     typeof r.fields['DCC Website Member Binding ID'] === 'string')
   if (hasWebsiteBindings || process.env.DCC_STEWARD_PUBLICATION_ENABLED === 'true') {
@@ -71,6 +75,7 @@ export async function readPublicAtlas() {
     for(const record of records) {
       const binding=byRecord.get(record.id)
       const fieldId=record.fields['DCC Website Member Binding ID']
+      if (typeof fieldId === 'string' && !websiteProfilesPublic) continue
       if(!binding) {
         // Legacy reviewed People are not website memberships; never accept a
         // stray unresolved binding from the CRM as a public identity.
