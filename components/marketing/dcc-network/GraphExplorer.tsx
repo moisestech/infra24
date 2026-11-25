@@ -26,9 +26,9 @@ const cytoscapeStylesheet: StylesheetStyle[] = [
     selector: 'node',
     style: {
       label: 'data(label)',
-      'font-size': 10,
+      'font-size': '10px',
       'text-wrap': 'wrap',
-      'text-max-width': 88,
+      'text-max-width': '88px',
       color: '#171717',
       'text-valign': 'center',
       'text-halign': 'center',
