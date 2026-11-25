@@ -7,6 +7,29 @@ on:
     branches: [main, develop]
 
 jobs:
+  dcc-mvp:
+    name: DCC Passport security and publication regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: DCC focused Jest tests
+        run: |
+          npx jest --runInBand --ci \
+            __tests__/lib/dcc-membership-clerk-event.test.ts \
+            __tests__/lib/dcc-membership-lifecycle.test.ts \
+            __tests__/lib/dcc-passport-owner.test.ts \
+            __tests__/lib/dcc-steward-review.test.ts \
+            __tests__/lib/dcc-atlas-intake.test.ts \
+            __tests__/lib/dcc-sculpture-public.test.ts \
+            __tests__/lib/dcc-sculpture-profiles.test.ts \
+            __tests__/lib/dcc-auth-return-path.test.ts
+
   test:
     runs-on: ubuntu-latest
 
