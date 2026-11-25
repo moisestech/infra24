@@ -21,7 +21,8 @@ export async function POST(request: NextRequest) {
       .select('display_name,summary,practices,public_links')
       .eq('binding_id', binding.id).maybeSingle()
     if (readError) throw new MemberAccessError(503,'profile_read_failed')
-    if (!draft?.display_name || !draft?.summary || !Array.isArray(draft?.practices) || draft.practices.length === 0) {
+    if (!draft?.display_name || typeof draft.summary!=='string' || draft.summary.trim().length<10 ||
+      !Array.isArray(draft?.practices) || draft.practices.length === 0) {
       return NextResponse.json({ error: 'complete_your_profile_first' }, { status: 409, headers: PRIVATE_HEADERS })
     }
     const { error } = await db.from('dcc_member_profile_drafts').update({
