@@ -39,13 +39,14 @@ function dbFrom(table:string) {
   if(!row)throw Error('unexpected table')
   return {select:()=>({eq:()=>({maybeSingle:async()=>({data:row,error:null})})})}
 }
-const variables=['DCC_STEWARD_PUBLICATION_ENABLED','NEXT_PUBLIC_SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','AIRTABLE_DCC_ATLAS_BASE_ID','AIRTABLE_DCC_ATLAS_PEOPLE_TABLE','AIRTABLE_DCC_ATLAS_API_KEY'] as const
+const variables=['DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED','DCC_STEWARD_PUBLICATION_ENABLED','NEXT_PUBLIC_SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','AIRTABLE_DCC_ATLAS_BASE_ID','AIRTABLE_DCC_ATLAS_PEOPLE_TABLE','AIRTABLE_DCC_ATLAS_API_KEY'] as const
 const saved=Object.fromEntries(variables.map(k=>[k,process.env[k]]))
 beforeEach(()=>{
   jest.clearAllMocks()
   draft={...profile}
   binding={...member}
   process.env.DCC_STEWARD_PUBLICATION_ENABLED='true'
+  process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED='true'
   process.env.NEXT_PUBLIC_SUPABASE_URL='https://project.supabase.co'
   process.env.SUPABASE_SERVICE_ROLE_KEY='server-test-key'
   process.env.AIRTABLE_DCC_ATLAS_BASE_ID='test-base'
@@ -142,6 +143,12 @@ describe('DCC BDD — actual steward to Airtable publication orchestration',()=>
       'Public Profile?':false,
       'Atlas Publication State':'Hidden',
     })
+  })
+
+  it('stages an approved grant without claiming public visibility while the public switch is off',async()=>{
+    process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED='false'
+    const result=await decideStewardPublication(request,reviewer)
+    expect(result).toEqual({state:'approved',public:false,slug:'example-artist'})
   })
 
   it('is disabled without an explicit independent publication flag',async()=>{
