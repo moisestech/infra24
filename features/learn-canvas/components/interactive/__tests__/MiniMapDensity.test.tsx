@@ -61,17 +61,24 @@ Object.defineProperty(HTMLCanvasElement.prototype, 'getBoundingClientRect', {
   })),
 })
 
+// Use a real DOM element so the ref satisfies HTMLElement and scroll methods
+// remain independently observable in tests.
+function createScrollRef(scrollWidth: number, clientWidth: number, scrollLeft = 0) {
+  const element = document.createElement('div')
+  Object.defineProperties(element, {
+    scrollWidth: { value: scrollWidth, configurable: true },
+    clientWidth: { value: clientWidth, configurable: true },
+  })
+  element.scrollLeft = scrollLeft
+  element.scrollTo = jest.fn()
+  element.scrollBy = jest.fn()
+  element.addEventListener = jest.fn()
+  element.removeEventListener = jest.fn()
+  return { current: element }
+}
+
 describe('MiniMapDensity', () => {
-  const mockScrollRef = {
-    current: {
-      scrollWidth: 2400,
-      clientWidth: 800,
-      scrollLeft: 0,
-      scrollTo: jest.fn(),
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-    }
-  }
+  const mockScrollRef = createScrollRef(2400, 800)
 
   beforeEach(() => {
     // Mock ResizeObserver
@@ -236,16 +243,7 @@ describe('MiniMapDensity', () => {
       />
     )
     
-    const newScrollRef = {
-      current: {
-        scrollWidth: 1200,
-        clientWidth: 400,
-        scrollLeft: 200,
-        scrollTo: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-      }
-    }
+    const newScrollRef = createScrollRef(1200, 400, 200)
     
     rerender(
       <MiniMapDensity
@@ -260,16 +258,7 @@ describe('MiniMapDensity', () => {
   })
 
   it('handles viewport width calculations', () => {
-    const wideScrollRef = {
-      current: {
-        scrollWidth: 4000,
-        clientWidth: 800,
-        scrollLeft: 0,
-        scrollTo: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-      }
-    }
+    const wideScrollRef = createScrollRef(4000, 800)
     
     render(
       <MiniMapDensity
