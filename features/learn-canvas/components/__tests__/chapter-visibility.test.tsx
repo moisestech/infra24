@@ -7,7 +7,6 @@ import { WorkshopDetail } from '../WorkshopDetail'
 import { ChapterCard } from '../ChapterCard'
 import { ChapterReader } from '../ChapterReader'
 import { workshopService } from '../../services/workshopService'
-import type { Workshop } from '@/types/workshop'
 
 // Mock the workshop service
 jest.mock('../../services/workshopService')
@@ -50,7 +49,7 @@ describe('Chapter Visibility Tests - Critical Bug Prevention', () => {
     metadata: {},
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',
-  } satisfies Workshop
+  }
 
   const mockChapters = [
     {

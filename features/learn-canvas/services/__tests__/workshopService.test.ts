@@ -1,7 +1,6 @@
 // @jest-environment jsdom
 /// <reference types="jest" />
 import { workshopService } from '../workshopService'
-import { WorkshopSummary, WorkshopWithChapters, Chapter } from '@/shared/types/workshop'
 
 // Mock the workshop service
 jest.mock('../workshopService')
