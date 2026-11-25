@@ -141,5 +141,11 @@ export async function decideStewardPublication(
     }catch { /* DB gate remains closed even if provider is unreachable. */ }
     throw new MemberAccessError(409,'publication_review_stale_or_uncertain')
   }
-  return {state:'approved' as const,public:true,slug,url:'/network/community/'+slug}
+  const publiclyVisible=process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED==='true'
+  return {
+    state:'approved' as const,
+    public:publiclyVisible,
+    slug,
+    ...(publiclyVisible?{url:'/network/community/'+slug}:{}),
+  }
 }
