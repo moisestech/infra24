@@ -9,17 +9,16 @@ import { createClient } from '@supabase/supabase-js'
 
 jest.mock('@clerk/nextjs/server', () => ({ auth: jest.fn() }))
 jest.mock('@/lib/security/require-organization-staff', () => ({ requireOrganizationStaff: jest.fn() }))
-jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }))
+jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn(() => ({ from: jest.fn() })) }))
 jest.mock('@/lib/supabase', () => ({ getSupabaseAdmin: jest.fn() }))
 
 const clerk = auth as jest.Mock
 const authorized = requireOrganizationStaff as jest.Mock
-const connect = createClient as jest.Mock
+const clients = (createClient as jest.Mock).mock.results.map(result => result.value)
 const insert = jest.fn()
 const single = jest.fn()
 const select = jest.fn()
 const from = jest.fn()
-const fakeDb = { from }
 const orgId = 'aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa'
 
 beforeEach(() => {
@@ -30,7 +29,10 @@ beforeEach(() => {
   select.mockReturnValue({ single })
   insert.mockReturnValue({ select })
   from.mockReturnValue({ insert })
-  connect.mockReturnValue(fakeDb)
+  for (const db of clients) {
+    db.from.mockReset()
+    db.from.mockImplementation((...args: unknown[]) => from(...args))
+  }
 })
 
 describe('service-role endpoint boundary', () => {
