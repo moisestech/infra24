@@ -105,10 +105,12 @@ declare
  v_draft public.dcc_member_profile_drafts%rowtype;
  v_result text;
 begin
- select * into v_grant from public.dcc_member_publication_grants
- where binding_id=p_binding for update;
+ -- Acquire binding lock FIRST: same lock order as claim and withdrawal,
+ -- so a concurrent owner withdrawal cannot deadlock against finalization.
  select * into v_binding from public.dcc_platform_member_bindings
  where id=p_binding for update;
+ select * into v_grant from public.dcc_member_publication_grants
+ where binding_id=p_binding for update;
  select * into v_draft from public.dcc_member_profile_drafts
  where binding_id=p_binding for update;
  if v_grant.state is distinct from 'pending_external'
