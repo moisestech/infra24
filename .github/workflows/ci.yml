@@ -26,6 +26,7 @@ jobs:
             __tests__/lib/dcc-passport-owner.test.ts \
             __tests__/lib/dcc-steward-review.test.ts \
             __tests__/lib/dcc-steward-publication.test.ts \
+            __tests__/lib/dcc-steward-publication-service.test.ts \
             __tests__/lib/dcc-steward-decision-route.test.ts \
             __tests__/lib/dcc-atlas-intake.test.ts \
             __tests__/lib/dcc-atlas-publication-grant.test.ts \
