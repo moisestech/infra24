@@ -110,7 +110,12 @@ export async function decideStewardPublication(
       member.airtable_person_id!,publicFields)
     patched=updated.id===member.airtable_person_id
       && updated.fields['DCC Website Member Binding ID']===member.id
+      && updated.fields['Profile Slug']===slug
+      && updated.fields['Display Name']===publicFields['Display Name']
+      && updated.fields['Short Bio']===publicFields['Short Bio']
       && updated.fields['Atlas Publication State']==='Approved'
+      && updated.fields['Atlas Identity Verified']===true
+      && updated.fields['Public Profile?']===true
       && updated.fields['Atlas Public Consent']===true
     if(!patched)throw Error('provider_write_unconfirmed')
   }catch {
