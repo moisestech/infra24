@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { Core, StylesheetCSS } from 'cytoscape'
+import type { Core, StylesheetStyle } from 'cytoscape'
 import { GraphFilterBar } from '@/components/marketing/dcc-network/GraphFilterBar'
 import { GraphNodeCard, GraphNodeTooltip } from '@/components/marketing/dcc-network/GraphNodeCard'
 import type {
@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils'
 
 type TooltipState = { x: number; y: number; node: DccGraphNodeData } | null
 
-const cytoscapeStylesheet: StylesheetCSS[] = [
+const cytoscapeStylesheet: StylesheetStyle[] = [
   {
     selector: 'node',
     style: {
