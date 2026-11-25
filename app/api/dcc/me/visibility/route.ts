@@ -12,14 +12,13 @@ export const dynamic = 'force-dynamic'
 export async function POST() {
   try {
     const { db, binding }=await memberPassportContext()
-    if(process.env.DCC_STEWARD_PUBLICATION_ENABLED==='true') {
-      // Revoke the authoritative database grant FIRST, before contacting
-      // Airtable. Even if its update fails, public projections hide immediately.
-      const {data:result,error:revocationError}=await db.rpc(
-        'dcc_withdraw_member_publication',{p_binding:binding.id})
-      if(revocationError||result!=='withdrawn')
-        throw new MemberAccessError(503,'publication_revocation_unavailable')
-    }
+    // Every authenticated member withdrawal revokes the authoritative grant
+    // FIRST. The independent publication flag is a kill switch, not a reason
+    // to skip revocation. This RPC is required by the profile launch migration.
+    const {data:result,error:revocationError}=await db.rpc(
+      'dcc_withdraw_member_publication',{p_binding:binding.id})
+    if(revocationError||result!=='withdrawn')
+      throw new MemberAccessError(503,'publication_revocation_unavailable')
     const base=process.env.AIRTABLE_DCC_ATLAS_BASE_ID
     const table=process.env.AIRTABLE_DCC_ATLAS_PEOPLE_TABLE
     const key=process.env.AIRTABLE_DCC_ATLAS_API_KEY
