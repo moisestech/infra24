@@ -7,6 +7,7 @@ import { WorkshopDetail } from '../WorkshopDetail'
 import { ChapterCard } from '../ChapterCard'
 import { ChapterReader } from '../ChapterReader'
 import { workshopService } from '../../services/workshopService'
+import type { Workshop } from '@/types/workshop'
 
 // Mock the workshop service
 jest.mock('../../services/workshopService')
@@ -29,13 +30,27 @@ describe('Chapter Visibility Tests - Critical Bug Prevention', () => {
     ],
     duration_weeks: 4,
     difficulty_level: 'beginner' as const,
+    organization_id: 'test-org',
+    type: 'workshop' as const,
+    level: 'beginner' as const,
+    status: 'published' as const,
+    price: 0,
+    is_active: true,
+    is_public: true,
+    is_shared: false,
+    created_by: 'test-user',
+    outcomes: [
+      'Understand AI bias and mitigation strategies',
+      'Create fact-checked news content with AI assistance',
+      'Implement ethical guidelines in AI journalism'
+    ],
     category: 'journalism',
     featured: true,
     published: true,
     metadata: {},
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',
-  }
+  } satisfies Workshop
 
   const mockChapters = [
     {
