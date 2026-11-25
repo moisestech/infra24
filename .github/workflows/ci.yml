@@ -27,6 +27,10 @@ jobs:
 
       - name: Run type check
         run: npm run type-check
+        env:
+          # This repository's TS program exceeds Node 18's ~2 GiB default V8 heap.
+          # Keep strict checking enabled; do not suppress diagnostics.
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Run linting
         run: npm run lint
