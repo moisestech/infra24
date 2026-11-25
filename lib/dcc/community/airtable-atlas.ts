@@ -1,7 +1,8 @@
 import 'server-only'
+import { createClient } from '@supabase/supabase-js'
 import { approvedAirtableProfile, ATLAS_PUBLIC_CONSENT, type AtlasIntake } from './intake'
 
-const PUBLIC_FIELDS = ['Display Name', 'Profile Slug', 'Short Bio', 'Public Skills', 'Public Profile?', 'Atlas Publication State', 'Atlas Public Consent', 'Atlas Identity Verified', 'Atlas Interests', 'Atlas Public Links']
+const PUBLIC_FIELDS = ['Display Name', 'Profile Slug', 'Short Bio', 'Public Skills', 'Public Profile?', 'Atlas Publication State', 'Atlas Public Consent', 'Atlas Identity Verified', 'Atlas Interests', 'Atlas Public Links', 'DCC Website Member Binding ID']
 const credential = () => process.env.AIRTABLE_DCC_ATLAS_API_KEY?.trim()
 const base = () => process.env.AIRTABLE_DCC_ATLAS_BASE_ID?.trim()
 const people = () => process.env.AIRTABLE_DCC_ATLAS_PEOPLE_TABLE?.trim()
@@ -35,7 +36,61 @@ export async function readPublicAtlas() {
     pages++
     if (offset && pages >= 20) throw new Error('ATLAS_PAGE_LIMIT')
   } while (offset)
-  const projected = records.map((record) => approvedAirtableProfile(record.fields)).filter((profile): profile is NonNullable<typeof profile> => profile !== null)
+  // A website-member's Airtable approval flags are necessary but NOT sufficient.
+  // DB grants are the revocation-first authoritative gate, preventing an external
+  // provider update from re-publishing an owner who withdrew during review.
+  // Legacy editorial people without a DCC website binding continue under their
+  // separately reviewed Airtable flags until explicitly migrated.
+  const guarded = new Set<string>()
+  const hasWebsiteBindings = records.some(r =>
+    typeof r.fields['DCC Website Member Binding ID'] === 'string')
+  if (hasWebsiteBindings || process.env.DCC_STEWARD_PUBLICATION_ENABLED === 'true') {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!url || !key) throw new Error('ATLAS_PUBLICATION_GUARD_UNAVAILABLE')
+    const db = createClient<any>(url,key,{auth:{persistSession:false,autoRefreshToken:false}})
+    const bindings: Array<{id:string;state:string;airtable_person_id:string|null}> = []
+    for(let i=0;i<records.length;i+=40) {
+      const recordIds = records.slice(i,i+40).map(record=>record.id)
+      const {data,error} = await db.from('dcc_platform_member_bindings')
+        .select('id,state,airtable_person_id').in('airtable_person_id',recordIds)
+      if(error) throw new Error('ATLAS_PUBLICATION_GUARD_UNAVAILABLE')
+      bindings.push(...(data??[]))
+    }
+    const ids=bindings.map(b=>b.id)
+    const grants: Array<{binding_id:string;state:string;slug:string;airtable_person_id:string}> = []
+    for(let i=0;i<ids.length;i+=40) {
+      const {data,error} = await db.from('dcc_member_publication_grants')
+        .select('binding_id,state,slug,airtable_person_id')
+        .in('binding_id',ids.slice(i,i+40)).eq('state','approved')
+      if(error) throw new Error('ATLAS_PUBLICATION_GUARD_UNAVAILABLE')
+      grants.push(...(data??[]))
+    }
+    const byRecord=new Map(bindings.map(b=>[b.airtable_person_id,b]))
+    const byBinding=new Map(grants.map(g=>[g.binding_id,g]))
+    for(const record of records) {
+      const binding=byRecord.get(record.id)
+      const fieldId=record.fields['DCC Website Member Binding ID']
+      if(!binding) {
+        // Legacy reviewed People are not website memberships; never accept a
+        // stray unresolved binding from the CRM as a public identity.
+        if(typeof fieldId !== 'string') guarded.add(record.id)
+        continue
+      }
+      const grant=byBinding.get(binding.id)
+      if(binding.state==='active' && fieldId===binding.id &&
+        grant?.state==='approved' && grant.airtable_person_id===record.id &&
+        grant.slug===record.fields['Profile Slug']) guarded.add(record.id)
+    }
+  } else {
+    for(const record of records) {
+      if(typeof record.fields['DCC Website Member Binding ID'] !== 'string')
+        guarded.add(record.id)
+    }
+  }
+  const projected = records.filter(r=>guarded.has(r.id))
+    .map(record => approvedAirtableProfile(record.fields))
+    .filter((profile): profile is NonNullable<typeof profile> => profile !== null)
   const counts = new Map<string, number>()
   projected.forEach((profile) => counts.set(profile.slug, (counts.get(profile.slug) ?? 0) + 1))
   // A slug collision must not silently attach the wrong person's public URL.
