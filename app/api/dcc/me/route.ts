@@ -35,6 +35,19 @@ export async function GET() {
         publicSlug=currentlyPublic && typeof candidate==='string' &&
           candidate.length<=100 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(candidate)
             ? candidate : null
+        // A CRM checkbox is NOT a publication grant. Owner-facing status must
+        // agree with the same private DB consent and public visibility gate
+        // used by anonymous Atlas and sculpture readers.
+        currentlyPublic=false
+        if(publicSlug && process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED==='true') {
+          const {data:grant,error:grantError}=await db.from('dcc_member_publication_grants')
+            .select('binding_id,slug,state,airtable_person_id')
+            .eq('binding_id',binding.id).eq('state','approved').maybeSingle()
+          if(grantError)throw new MemberAccessError(503,'publication_status_unavailable')
+          currentlyPublic=Boolean(grant && grant.slug===publicSlug &&
+            grant.airtable_person_id===binding.airtablePersonId)
+        }
+        if(!currentlyPublic)publicSlug=null
       }
     }
     return NextResponse.json({
