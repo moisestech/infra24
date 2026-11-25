@@ -18,7 +18,11 @@ export type AnnouncementImageSet = {
 
 // Legacy organization announcements may have no media array or image URL.
 // The image resolver already treats absent fields as empty candidates.
-export type AnnouncementImageSource = Partial<Pick<Announcement, 'image_url' | 'metadata' | 'media'>>;
+export type AnnouncementImageSource = {
+  image_url?: Announcement['image_url'] | null;
+  metadata?: Announcement['metadata'] | null;
+  media?: Announcement['media'] | null;
+};
 
 export type AnnouncementImageCandidate = {
   url: string;

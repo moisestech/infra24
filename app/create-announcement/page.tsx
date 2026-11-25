@@ -28,7 +28,7 @@ const subTypeOptions: Record<AnnouncementType, AnnouncementSubType[]> = {
   fun_fact: ["general"],
   promotion: ["general"],
   gala_announcement: ["general"],
-  cinematic: ["cinematic"],
+  cinematic: ["general"],
 };
 
 function CreateAnnouncementPageContent() {

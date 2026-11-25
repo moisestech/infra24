@@ -868,7 +868,7 @@ export function MemoryAgentClient({
                                       saveCtx && mode === 'staff_operator' && a.outputs?.staff
                                         ? () =>
                                             void addAsset({
-                                              ...buildStaffBriefAsset(a.outputs.staff!, slug, saveCtx),
+                                              ...buildStaffBriefAsset(a.outputs!.staff!, slug, saveCtx),
                                               metadata: buildSaveAssetTraceMetadata({
                                                 sourceMode: mode,
                                                 assetType: 'staff_brief',
@@ -885,7 +885,7 @@ export function MemoryAgentClient({
                                         ? () =>
                                             void addAsset({
                                               ...buildLeadershipInsightAsset(
-                                                a.outputs.leadership!,
+                                                a.outputs!.leadership!,
                                                 slug,
                                                 saveCtx
                                               ),
