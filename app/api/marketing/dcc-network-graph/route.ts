@@ -13,8 +13,19 @@ export async function GET(request: NextRequest) {
     const surface: DccNetworkGraphSurface =
       surfaceParam === 'explorer' ? 'explorer' : 'home'
 
-    const mode = parseGraphMode(request.nextUrl.searchParams.get('mode'))
-    const visibility = parseGraphVisibility(request.nextUrl.searchParams.get('visibility'))
+    const requestedMode = request.nextUrl.searchParams.get('mode')
+    const requestedVisibility = request.nextUrl.searchParams.get('visibility')
+    // Reject unrecognized values before permissive legacy parsers normalize them.
+    if (
+      (requestedMode !== null && !['active', 'research', 'combined', 'admin'].includes(requestedMode)) ||
+      (requestedVisibility !== null && !['public', 'internal'].includes(requestedVisibility))
+    ) {
+      return NextResponse.json({ error: 'Invalid graph visibility request' }, {
+        status: 403, headers: { 'Cache-Control': 'no-store' },
+      })
+    }
+    const mode = parseGraphMode(requestedMode)
+    const visibility = parseGraphVisibility(requestedVisibility)
 
     // Query parameters can never authorize access to internal CRM data.
     // Research mode also contains unsanitized candidate names in JSON.
