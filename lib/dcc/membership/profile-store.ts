@@ -1,8 +1,10 @@
 import 'server-only'
 import { auth } from '@clerk/nextjs/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { clerkMembershipCaptureConfig } from './clerk-event'
 import type { OwnerPassport } from './profile-schema'
+
+export type MemberDb = SupabaseClient<any>
 
 const PRIVATE_HEADERS = { 'Cache-Control': 'private, no-store, max-age=0' }
 export { PRIVATE_HEADERS }
@@ -12,7 +14,7 @@ export class MemberAccessError extends Error {
   constructor(public status: number, public code: string) { super(code) }
 }
 export async function memberPassportContext(): Promise<{
-  db: ReturnType<typeof createClient>
+  db: MemberDb
   binding: PassportBinding
 }> {
   // Never authorize based on a browser payload, claimed email or URL parameter.
@@ -28,7 +30,7 @@ export async function memberPassportContext(): Promise<{
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!url || !key) throw new MemberAccessError(503, 'store_unavailable')
-  const db = createClient(url, key, {
+  const db: MemberDb = createClient<any>(url, key, {
     auth: { autoRefreshToken: false, persistSession: false },
   })
   const { data, error } = await db.from('dcc_platform_member_bindings')
@@ -62,7 +64,7 @@ export function ownerPassportPayload(row: Record<string, any> | null) {
 }
 
 export async function readOwnerPassport(
-  db: ReturnType<typeof createClient>, binding: PassportBinding,
+  db: MemberDb, binding: PassportBinding,
 ) {
   const { data, error } = await db.from('dcc_member_profile_drafts')
     .select('display_name,summary,practices,interests,public_links,public_request_state')
@@ -73,7 +75,7 @@ export async function readOwnerPassport(
 
 /** Server-owned binding ID prevents IDOR even when the caller tampers with JSON. */
 export async function saveOwnerPassport(
-  db: ReturnType<typeof createClient>, binding: PassportBinding, draft: OwnerPassport,
+  db: MemberDb, binding: PassportBinding, draft: OwnerPassport,
 ) {
   const row = {
     binding_id: binding.id,
