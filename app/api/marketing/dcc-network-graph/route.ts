@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     const payload = await fetchDccCrmGraphPayload({ surface, mode, visibility })
     return NextResponse.json(payload, {
       headers: {
-        'Cache-Control': restricted ? 'private, no-store' : 'public, max-age=60, stale-while-revalidate=120',
+        'Cache-Control': 'no-store',
       },
     })
   } catch (e) {
