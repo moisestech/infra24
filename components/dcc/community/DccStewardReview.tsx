@@ -59,7 +59,9 @@ export function DccStewardReview({canWrite}:{canWrite:boolean}) {
         return
       }
       setMessage(action==='approve'
-        ?'Approved listing published. Check the public Atlas profile and withdrawal behavior.'
+        ?result.public
+          ?'Approved and publicly discoverable. Verify the Atlas profile and withdrawal behavior.'
+          :'Approved for publication, but the website-member visibility switch is OFF. This profile is not public yet.'
         :action==='return'
           ?'Returned for edits. This draft is no longer pending public review.'
           :'Review rejected. No new information was published.')
