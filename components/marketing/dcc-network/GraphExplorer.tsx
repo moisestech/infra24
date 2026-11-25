@@ -113,7 +113,13 @@ const cytoscapeStylesheet: StylesheetStyle[] = [
       'target-arrow-color': '#94a3b8',
       'target-arrow-shape': 'triangle',
       'curve-style': 'bezier',
-      opacity: 'mapData(recencyScore, 0, 3, 0.35, 0.9)',
+      opacity: (edge) => {
+        // Equivalent clamped mapping of recencyScore 0..3 to opacity 0.35..0.9.
+        // A numeric accessor also satisfies Cytoscape's typed edge-style API.
+        const raw = Number(edge.data('recencyScore') ?? 0)
+        const score = Number.isFinite(raw) ? Math.min(3, Math.max(0, raw)) : 0
+        return 0.35 + (score / 3) * 0.55
+      },
     },
   },
   {
