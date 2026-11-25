@@ -34,9 +34,13 @@ jobs:
       - name: Run tests
         run: npm run test
 
-      - name: Memory Agent golden eval
-        if: ${{ secrets.OPENAI_API_KEY != '' }}
-        run: npm run eval:memory-agent -- --org=dcc
+      - name: Memory Agent golden eval (optional)
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "Optional Memory Agent golden eval skipped (no API key)"
+            exit 0
+          fi
+          npm run eval:memory-agent -- --org=dcc
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
