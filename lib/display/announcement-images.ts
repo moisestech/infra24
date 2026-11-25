@@ -73,7 +73,7 @@ export function inferImageShapeFromUrl(url: string): ImageAspectShape {
 }
 
 export function readAnnouncementImageSet(
-  metadata: Announcement['metadata']
+  metadata: Announcement['metadata'] | null
 ): AnnouncementImageSet {
   if (!metadata || typeof metadata !== 'object') return {};
   const raw = metadata.images;
