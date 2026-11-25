@@ -321,7 +321,7 @@ export function applyProgrammingQuestionFilters(
   }
 
   if (/\b(register|registration|sign up|bookable|rsvp|what can i register)\b/i.test(q)) {
-    const bookable = out.filter((r) => r.bookingCta?.grounded || r.rsvpUrl || r.bookable)
+    const bookable = out.filter((r) => r.bookingCta?.grounded || r.rsvpUrl || r.recordKind === 'bookable_event')
     if (bookable.length) {
       out = [...bookable].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
     }
@@ -512,7 +512,7 @@ export function rankProgrammingForQuestion(
       relationBoost += 0.2
     }
     if (workshopQuestion && record.recordKind === 'workshop') relationBoost += 0.16
-    if (registerQuestion && (record.bookingCta?.grounded || record.bookable)) relationBoost += 0.18
+    if (registerQuestion && (record.bookingCta?.grounded || record.recordKind === 'bookable_event')) relationBoost += 0.18
     const vb = vectorBoost?.get(record.id) ?? 0
     const pgBoost = vb > 0 ? vb * 0.25 : 0
     const score =
