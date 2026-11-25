@@ -4,7 +4,7 @@ import type { GlossaryTerm } from './types'
  * Master course glossary (A–Z). Pedagogical chapter pointers use `usedInChapters`
  * where we have mapped them; many tool terms ship without chapter pins.
  */
-export const VCN_GLOSSARY_TERMS: GlossaryTerm[] = [
+export const VCN_GLOSSARY_TERMS: GlossaryTerm[] = ([
   {
     slug: 'anti-interface',
     term: 'Anti-interface',
@@ -465,4 +465,4 @@ export const VCN_GLOSSARY_TERMS: GlossaryTerm[] = [
     usedInChapters: [0, 9],
     sourceNote: 'See Visual Studio Code documentation.',
   },
-].sort((a, b) => a.term.localeCompare(b.term))
+] satisfies GlossaryTerm[]).sort((a, b) => a.term.localeCompare(b.term))
