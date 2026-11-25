@@ -18,6 +18,7 @@ const approved={
 }
 const savedFetch=global.fetch
 const savedFlag=process.env.DCC_STEWARD_PUBLICATION_ENABLED
+const savedVisibility=process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED
 const fetcher=jest.fn()
 beforeEach(()=>{
   jest.clearAllMocks()
@@ -27,6 +28,7 @@ beforeEach(()=>{
   process.env.NEXT_PUBLIC_SUPABASE_URL='https://project.supabase.co'
   process.env.SUPABASE_SERVICE_ROLE_KEY='test-server-key'
   process.env.DCC_STEWARD_PUBLICATION_ENABLED='true'
+  process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED='true'
   fetcher.mockResolvedValue(new Response(JSON.stringify({
     records:[{id:recordId,fields:approved}],
   })))
@@ -36,6 +38,8 @@ afterAll(()=>{
   global.fetch=savedFetch
   if(savedFlag===undefined)delete process.env.DCC_STEWARD_PUBLICATION_ENABLED
   else process.env.DCC_STEWARD_PUBLICATION_ENABLED=savedFlag
+  if(savedVisibility===undefined)delete process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED
+  else process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED=savedVisibility
 })
 function setDb(state:'approved'|'withdrawn'|'missing') {
   db.mockReturnValue({from:(table:string)=>{
@@ -62,6 +66,11 @@ describe('website member Atlas projection requires a current private publication
     expect(profiles[0].slug).toBe('consenting-member')
     expect(JSON.stringify(profiles)).not.toContain(bindingId)
     expect(JSON.stringify(profiles)).not.toContain(recordId)
+  })
+  it('does not publicly show approved website members before the independent visibility switch',async()=>{
+    setDb('approved')
+    process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED='false'
+    expect(await readPublicAtlas()).toEqual([])
   })
   it.each(['withdrawn','missing'] as const)('hides website profile after %s grant',async state=>{
     setDb(state)
