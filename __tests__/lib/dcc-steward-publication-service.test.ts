@@ -152,10 +152,11 @@ describe('DCC BDD — actual steward to Airtable publication orchestration',()=>
   })
 
   it('can reject a request without ever writing to Airtable',async()=>{
+    rpc.mockImplementation(async()=>({data:'rejected',error:null}))
     const result=await decideStewardPublication({
       requestId:bindingId,revision:3,action:'reject',
     },reviewer)
-    expect(result).toMatchObject({state:'returned',public:false})
+    expect(result).toMatchObject({state:'rejected',public:false})
     expect(fetchPeople).not.toHaveBeenCalled()
     expect(patchPerson).not.toHaveBeenCalled()
     expect(rpc).toHaveBeenCalledWith('dcc_return_steward_publication',
