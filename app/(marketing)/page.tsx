@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
+import { HomeLivingNetworkTeaser } from '@/components/marketing/HomeLivingNetworkTeaserClient'
+
 import { MarketingSection } from '@/components/marketing/MarketingSection';
 import { marketingHomeMeta } from '@/lib/marketing/content';
 import { dccHomeMissionHeadline, dccHomeOrgLine, dccHomePositioning } from '@/lib/marketing/dcc-pilot-home-content';
@@ -39,19 +41,6 @@ const ArtistProductionPromiseBand = dynamic(
 const HomeBelowFoldHero = dynamic(
   () => import('@/components/marketing/HomeBelowFoldHero').then((m) => m.HomeBelowFoldHero),
   { ssr: true }
-);
-
-const HomeLivingNetworkTeaser = dynamic(
-  () => import('@/components/marketing/HomeLivingNetworkTeaser').then((m) => m.HomeLivingNetworkTeaser),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        className="min-h-[280px] border-b border-[var(--cdc-border)] bg-neutral-950"
-        aria-hidden
-      />
-    ),
-  }
 );
 
 const HomeCulturalNowBand = dynamic(

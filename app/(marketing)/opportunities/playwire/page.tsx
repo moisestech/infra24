@@ -1,11 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
-
-const PublisherJourneyDemo = dynamic(
-  () => import('@/features/playwire-demo/PublisherJourneyDemo').then((m) => m.PublisherJourneyDemo),
-  { ssr: false }
-)
+import { PublisherJourneyDemo } from '@/features/playwire-demo/PublisherJourneyDemoClient'
 
 export const metadata: Metadata = {
   title: 'Playwire RAMP — publisher journey (concept demo)',
