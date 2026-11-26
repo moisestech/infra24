@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('resources')
       .select('*')
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
 
     if (type) {
       query = query.eq('type', type)
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
     const { data: resource, error: resourceError } = await supabase
       .from('resources')
       .insert({
-        organization_id: organizationId,
+        org_id: organizationId,
         title,
         description,
         type,
