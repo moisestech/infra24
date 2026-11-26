@@ -12,7 +12,7 @@ export async function POST(
     const { id: bookingId } = await params
     const { token, reason } = await request.json()
 
-    if (!token) {
+    if (typeof token !== 'string' || !token.trim()) {
       return NextResponse.json(
         { error: 'Cancel token is required' },
         { status: 400 }
@@ -80,6 +80,9 @@ export async function POST(
         }
       })
       .eq('id', bookingId)
+      .eq('org_id', booking.org_id)
+      .eq('metadata->>reschedule_token', token)
+      .eq('status', booking.status)
       .select()
       .single()
 
