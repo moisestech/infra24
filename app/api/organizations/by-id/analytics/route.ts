@@ -1,3 +1,4 @@
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { createClient } from '@/lib/supabase';
@@ -5,8 +6,7 @@ import { createClient } from '@/lib/supabase';
 export const dynamic = 'force-dynamic';
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ orgId: string }> }
+  request: NextRequest
 ) {
   try {
     const { userId } = await auth();
@@ -15,24 +15,14 @@ export async function GET(
     }
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-    const { orgId } = await params;
+    const orgId = new URL(request.url).searchParams.get('org_id')
+    const access = await requireOrganizationStaff(orgId)
+    if (!access.ok) return NextResponse.json({error:access.error},{status:access.status,headers:{'Cache-Control':'private, no-store'}})
     const { searchParams } = new URL(request.url);
     
     const startDate = searchParams.get('start_date') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     const endDate = searchParams.get('end_date') || new Date().toISOString().split('T')[0];
     const metricType = searchParams.get('type') || 'all'; // 'bookings', 'submissions', 'all'
-
-    // Check if user has permission to view analytics for this organization
-    const { data: membership } = await supabase
-      .from('org_memberships')
-      .select('role')
-      .eq('org_id', orgId)
-      .eq('user_id', userId)
-      .single();
-
-    if (!membership) {
-      return NextResponse.json({ error: 'Not a member of this organization' }, { status: 403 });
-    }
 
     const analytics: any = {};
 

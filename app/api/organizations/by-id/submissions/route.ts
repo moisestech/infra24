@@ -6,11 +6,10 @@ import { createClient } from '@/lib/supabase';
 export const dynamic = 'force-dynamic';
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ orgId: string }> }
+  request: NextRequest
 ) {
   try {
-    const { orgId } = await params;
+    const orgId = new URL(request.url).searchParams.get('org_id')
     const access = await requireOrganizationStaff(orgId);
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status, headers: { 'Cache-Control': 'private, no-store' } });
     const supabase = access.db;
@@ -77,13 +76,13 @@ export async function GET(
 }
 
 export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ orgId: string }> }
+  request: NextRequest
 ) {
   try {
     const { userId } = await auth();
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-    const { orgId } = await params;
+    const orgId = new URL(request.url).searchParams.get('org_id')
+    if (!orgId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orgId)) return NextResponse.json({error:'A valid organization ID is required'},{status:400})
     const body = await request.json();
 
     const {
