@@ -1,11 +1,12 @@
 import { redirect } from 'next/navigation'
 
 type Props = {
-  searchParams?: Record<string, string | string[] | undefined>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }
 
 /** Canonical short link → network signup (preserves campaign query params). */
-export default function JoinRedirectPage({ searchParams }: Props) {
+export default async function JoinRedirectPage({ searchParams: pendingSearchParams }: Props) {
+  const searchParams = await pendingSearchParams
   const params = new URLSearchParams()
   if (searchParams) {
     for (const [key, value] of Object.entries(searchParams)) {

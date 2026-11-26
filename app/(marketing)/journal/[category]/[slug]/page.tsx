@@ -12,13 +12,14 @@ import {
 } from '@/lib/dcc/culture';
 import { compileEditorialBody } from '@/lib/dcc/culture/load-editorial-body';
 
-type Props = { params: { category: string; slug: string } };
+type Props = { params: Promise<{ category: string; slug: string }> };
 
 export function generateStaticParams() {
   return getAllJournalPosts().map((p) => ({ category: p.category, slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const cultureEntry = getPublishedEditorialBySlug(params.slug);
   if (cultureEntry) {
     const path = getEditorialPublicPath(cultureEntry);
@@ -43,7 +44,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return cdcPageMetadata(path);
 }
 
-export default async function JournalPostPage({ params }: Props) {
+export default async function JournalPostPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const cultureEntry = getPublishedEditorialBySlug(params.slug);
   if (cultureEntry) {
     const mdx = await compileEditorialBody(cultureEntry);
