@@ -168,7 +168,8 @@ export async function POST(request: NextRequest) {
       resource_id,
       start_time,
       end_time,
-      resource.availability_rules
+      resource.availability_rules,
+      org_id
     )
 
     if (!slotAvailable.available) {
@@ -182,7 +183,12 @@ export async function POST(request: NextRequest) {
     const rescheduleToken = crypto.randomBytes(32).toString('hex')
 
     // Determine host (from availability or default)
-    const host = slotAvailable.host || resource.metadata?.default_hosts?.[0] || 'mo@oolite.org'
+    const host = slotAvailable.host || resource.metadata?.default_hosts?.[0]
+    if (typeof host !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(host)) {
+      return NextResponse.json({ error: 'Booking host is not configured' }, { status: 503 })
+    }
+    const { data: organization, error: organizationError } = await supabaseAdmin.from('organizations').select('name').eq('id', org_id).eq('is_active', true).single()
+    if (organizationError || !organization?.name) return NextResponse.json({ error: 'Booking organization is not configured' }, { status: 503 })
 
     // Generate Google Meet link for remote visits
     let meetingUrl: string | undefined
@@ -330,7 +336,7 @@ export async function POST(request: NextRequest) {
         location: meetingUrl || resource.location || 'TBD',
         meetingUrl: meetingUrl,
         meetingCode: meetingCode,
-        organizationName: 'Oolite Arts', // TODO: Get from organization data
+        organizationName: organization.name,
         rescheduleUrl: rescheduleUrl,
         cancelUrl: cancelUrl,
         icsUrl: icsUrl,
@@ -372,24 +378,27 @@ async function validateSlotAvailability(
   resourceId: string,
   startTime: string,
   endTime: string,
-  availabilityRules: any
+  availabilityRules: any,
+  orgId: string
 ): Promise<{ available: boolean; reason?: string; host?: string }> {
   try {
     // Check for existing bookings in the same time slot
-    const { data: conflictingBookings } = await supabaseAdmin
+    const { data: conflictingBookings, error: conflictError } = await supabaseAdmin
       .from('bookings')
       .select('start_time, end_time, metadata')
       .eq('resource_id', resourceId)
+      .eq('org_id', orgId)
       .eq('status', 'confirmed')
       .or(`and(start_time.lt.${endTime},end_time.gt.${startTime})`)
 
+    if (conflictError) return { available: false, reason: 'Error checking availability' }
     if (conflictingBookings && conflictingBookings.length > 0) {
       return { available: false, reason: 'Time slot is already booked' }
     }
 
     // For now, return the first available host
     // In a more sophisticated implementation, you'd check availability rules
-    const defaultHost = availabilityRules?.windows?.[0]?.host || 'mo@oolite.org'
+    const defaultHost = availabilityRules?.windows?.[0]?.host
     
     return { available: true, host: defaultHost }
 
