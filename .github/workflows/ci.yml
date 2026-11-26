@@ -87,6 +87,76 @@ jobs:
           "$RUNNER_TEMP/dcc-sql/bin/pip" install 'psycopg[binary]==3.2.13'
           "$RUNNER_TEMP/dcc-sql/bin/python" supabase/tests/dcc_concurrency.py
 
+  dcc-legacy-sql:
+    name: DCC legacy tenant permission regression
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: local-ci-only
+          POSTGRES_DB: dcc_legacy_permissions_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d dcc_legacy_permissions_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate staged legacy migration twice against disposable fixture
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGPASSWORD: local-ci-only
+          PGDATABASE: dcc_legacy_permissions_test
+        run: |
+          set -euo pipefail
+          unset PGOPTIONS PGSERVICE PGSERVICEFILE
+          psql -X -v ON_ERROR_STOP=1 -c 'CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE service_role NOLOGIN BYPASSRLS;'
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/legacy/fixture.sql
+          for attempt in 1 2; do
+            echo "Legacy migration pass $attempt"
+            psql -X -v ON_ERROR_STOP=1 -f supabase/staged/20261126170000_legacy_tenant_permissions.sql
+            psql -X -v ON_ERROR_STOP=1 -f supabase/tests/legacy/permissions.sql
+          done
+      - name: Verify actual direct client denial
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGPASSWORD: local-ci-only
+          PGDATABASE: dcc_legacy_permissions_test
+        run: |
+          set -euo pipefail
+          for role in anon authenticated; do
+            for relation in artist_tips booking_participants bookings organization_donations resources submission_forms submissions; do
+              # Match the SQLSTATE rather than treating arbitrary SQL errors as success.
+              if output=$(psql -X -v ON_ERROR_STOP=1 -v VERBOSITY=verbose -c "SET ROLE $role; SELECT * FROM public.$relation LIMIT 1;" 2>&1); then
+                echo "Unexpected read access: $role on $relation"
+                exit 1
+              fi
+              if ! grep -q '42501' <<< "$output"; then
+                printf '%s\n' "$output"
+                exit 1
+              fi
+            done
+            if output=$(psql -X -v ON_ERROR_STOP=1 -v VERBOSITY=verbose -c "SET ROLE $role; SELECT * FROM public.legacy_review_booking(NULL,NULL,NULL,NULL,NULL);" 2>&1); then
+              echo "Unexpected RPC access: $role"
+              exit 1
+            fi
+            if ! grep -q '42501' <<< "$output"; then
+              printf '%s\n' "$output"
+              exit 1
+            fi
+          done
+
   test:
     runs-on: ubuntu-latest
 
