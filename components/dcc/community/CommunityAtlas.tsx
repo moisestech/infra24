@@ -6,7 +6,7 @@ import * as Avatar from '@radix-ui/react-avatar'
 import { ArrowUpRight, ExternalLink, Search, UserRoundPlus, RefreshCw } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import {
-  INTERESTS, PILOT_PREVIEWS, filterProfiles, PASSPORT_PREVIEW_KEY,
+  INTERESTS, filterProfiles, PASSPORT_PREVIEW_KEY,
   readPassportPreview, type InterestId, type PassportPreview, type AtlasProfile,
 } from '@/lib/dcc/community/atlas'
 import { PollPulse } from './PollPulse'
@@ -49,9 +49,9 @@ function Portrait({ profile, size = 'card' }: { profile: AtlasProfile; size?: 'c
 export function CommunityAtlas() {
   const [query, setQuery] = useState('')
   const [interests, setInterests] = useState<InterestId[]>([])
-  const [sourceProfiles, setSourceProfiles] = useState<AtlasProfile[]>(PILOT_PREVIEWS)
+  const [sourceProfiles, setSourceProfiles] = useState<AtlasProfile[]>([])
   const [websitePresenceMarks, setWebsitePresenceMarks] = useState(0)
-  const [mode, setMode] = useState<'preview' | 'live'>('preview')
+  const [mode, setMode] = useState<'preview' | 'live' | 'loading' | 'unavailable'>('loading')
   const [intakeEnabled, setIntakeEnabled] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [loadError, setLoadError] = useState('')
@@ -66,14 +66,8 @@ export function CommunityAtlas() {
   const detailRef = useRef<HTMLDivElement>(null)
   const loadId = useRef(0)
 
-  // Featured editorial profiles always appear. The public API may also return
-  // independently reviewed opt-in profiles, but the graph never maps private CRM IDs.
-  // Live approved projection is authoritative; editorial examples are
-  // available in PREVIEW mode only, not after a member withdraws publication.
-  const allProfiles = useMemo(() => mode==='live'
-    ? sourceProfiles
-    : [...sourceProfiles,...PILOT_PREVIEWS.filter(p => !sourceProfiles.some(r=>r.slug===p.slug))],
-  [sourceProfiles,mode])
+  // Only the most recent successful public feed can populate the directory.
+  const allProfiles = sourceProfiles
   const profiles = useMemo(
     () => filterProfiles(allProfiles, interests, query),
     [allProfiles, interests, query],
@@ -98,7 +92,11 @@ export function CommunityAtlas() {
       setLoadError('')
     } catch {
       if (!signal?.aborted && load === loadId.current) {
-        setLoadError('New profiles are temporarily unavailable. Featured artists are still accessible.')
+        setSourceProfiles([])
+        setWebsitePresenceMarks(0)
+        setMode('unavailable')
+        setIntakeEnabled(false)
+        setLoadError('Public profiles are temporarily unavailable. Please try again.')
       }
     } finally {
       if (load === loadId.current) setRefreshing(false)

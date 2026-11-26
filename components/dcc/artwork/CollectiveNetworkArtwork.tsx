@@ -18,21 +18,24 @@ const Field = dynamic(() => import('./PeopleNetworkField'), {
 type GraphSelection = string | null
 export function CollectiveNetworkArtwork() {
   const [focus, setFocus] = useState<GraphSelection>(null)
-  const [profiles,setProfiles] = useState<AtlasProfile[]>(PILOT_PREVIEWS)
+  const [profiles,setProfiles] = useState<AtlasProfile[]>([])
   const [websiteMarks,setWebsiteMarks] = useState(0)
   const [snapshotWeek,setSnapshotWeek] = useState<string | null>(null)
-  const [sourceState,setSourceState] = useState<'preview'|'live'>('preview')
+  const [sourceState,setSourceState] = useState<'preview'|'live'|'loading'|'unavailable'>('loading')
   const isPublicPerson = (value:string|null) => Boolean(value &&
     profiles.some(p=>p.slug===value))
 
   useEffect(()=>{
     const controller=new AbortController()
+    let latest=0
     async function refresh(){
+      const requestId=++latest
       try {
         const response=await fetch('/api/dcc/sculpture/public',{cache:'no-store',signal:controller.signal})
-        if (!response.ok) return
+        if (!response.ok) throw new Error('Public projection unavailable')
         const data=await response.json()
-        if (controller.signal.aborted || !Array.isArray(data.profiles)) return
+        if (controller.signal.aborted || requestId!==latest) return
+        if (!Array.isArray(data.profiles) || !['preview','live'].includes(data.mode)) throw new Error('Invalid public projection')
         // Match the Atlas: previously curated editorial features remain clearly labeled.
         const approved=data.profiles as AtlasProfile[]
         // A live approved feed is authoritative. Never reinsert withdrawn editorial
@@ -41,11 +44,17 @@ export function CollectiveNetworkArtwork() {
         setWebsiteMarks(data.websitePresence?.status==='coarsened' ? data.websitePresence.markCount : 0)
         setSnapshotWeek(typeof data.websitePresence?.snapshotWeek==='string'?data.websitePresence.snapshotWeek:null)
         setSourceState(data.mode==='live'?'live':'preview')
-      } catch { /* Existing editorial visualization stays available; no private fallback. */ }
+      } catch {
+        if(!controller.signal.aborted && requestId===latest){
+          setProfiles([]);setWebsiteMarks(0);setSnapshotWeek(null);setSourceState('unavailable')
+        }
+      }
     }
     void refresh()
-    const interval=window.setInterval(()=>{if(!document.hidden)void refresh()},60000)
-    return ()=>{controller.abort();window.clearInterval(interval)}
+    const onVisible=()=>{if(!document.hidden)void refresh()}
+    const interval=window.setInterval(onVisible,60000)
+    document.addEventListener('visibilitychange',onVisible)
+    return ()=>{controller.abort();window.clearInterval(interval);document.removeEventListener('visibilitychange',onVisible)}
   },[])
 
   useEffect(() => {
@@ -54,7 +63,7 @@ export function CollectiveNetworkArtwork() {
     const practice = search.get('practice')
     if (person && isPublicPerson(person)) setFocus(person)
     else if (isDiscoveryChoice(practice)) setFocus('practice-' + practice)
-  }, [])
+  }, [profiles])
 
   function chooseNode(next: GraphSelection) {
     setFocus(next)
@@ -111,12 +120,7 @@ export function CollectiveNetworkArtwork() {
         <div className="mt-3 flex min-w-0 flex-wrap items-center justify-between gap-3">
           <div className="dn-mobile-scroller flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-panel)] p-1"
             role="group" aria-label="Focus public artist">
-            {([
-              { label: 'All', id: null },
-              { label: 'Moises', id: 'moises-sanabria' },
-              { label: 'Fabiola', id: 'fabiola-larios' },
-              { label: 'Angelo', id: 'angelo-caruso' },
-            ] as { label: string; id: GraphSelection }[]).map((item) => (
+            {([{ label: 'All', id: null }, ...profiles.map(profile=>({label:profile.name,id:profile.slug}))] as { label: string; id: GraphSelection }[]).map((item) => (
               <button key={item.label} type="button" aria-pressed={focus === item.id}
                 onClick={() => chooseNode(item.id)}
                 className={'min-h-10 shrink-0 rounded-full px-4 py-2 text-xs transition ' +

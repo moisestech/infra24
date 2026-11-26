@@ -59,6 +59,7 @@ export function makePeoplePracticeGraph(options: {
   // A provided list is the exact currently authorized public projection.
   // Omission is editorial PREVIEW only. Never keep named fixtures as a live
   // fallback when someone withdraws publication.
+  const editorialPreview = options.profiles === undefined
   const profiles = options.profiles ?? PILOT_PREVIEWS
   const slugs = new Set<string>()
   const publicProfiles = profiles.filter(profile => {
@@ -67,9 +68,12 @@ export function makePeoplePracticeGraph(options: {
     return true
   })
   const approvedSlugs = new Set(publicProfiles.map(profile=>profile.slug))
+  const publicBySlug = new Map(publicProfiles.map(profile=>[profile.slug,profile]))
   const membership = makeMembershipPresenceGraph()
   const reportedBackdrop = membership.marks.map((mark,index) => {
-    if(mark.kind === 'anonymous-presence' || approvedSlugs.has(mark.id)) return mark
+    if(mark.kind === 'anonymous-presence') return mark
+    const profile=publicBySlug.get(mark.id)
+    if(profile) return {...mark,label:profile.name}
     // Preserve the founder-reported BACKDROP count with no identity claim.
     // A withdrawn public artist stops being a named person immediately.
     return {
@@ -115,7 +119,9 @@ export function makePeoplePracticeGraph(options: {
         source: profile.slug,
         target: 'practice-' + INTEREST_POLL_CATEGORIES[id],
         kind: 'listed-practice' as const,
-        evidence: profile.slug === 'moises-sanabria' ? 'member-self-declared' as const : 'approved-Atlas-profile' as const,
+        evidence: editorialPreview
+          ? (profile.slug === 'moises-sanabria' ? 'member-self-declared' as const : 'public-Atlas-editorial-profile' as const)
+          : 'approved-Atlas-profile' as const,
       }))
   )
   // One spoke per recorded category selection. These are not people nodes:
@@ -133,8 +139,9 @@ export function makePeoplePracticeGraph(options: {
     kind: 'aggregate-poll-selection',
     evidence: 'organizer-poll-screenshot',
   }))
-  const connections = membership.connections.filter(edge =>
-    approvedSlugs.has(edge.from) && approvedSlugs.has(edge.to))
+  // Editorial cofounding is a separate source, not consent to live relationship edges.
+  const connections = editorialPreview ? membership.connections.filter(edge =>
+    approvedSlugs.has(edge.from) && approvedSlugs.has(edge.to)) : []
   return { ...membership, marks, connections, practices, practiceEdges: edges, pollSelections, pollEdges }
 }
 

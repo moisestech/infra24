@@ -49,6 +49,13 @@ describe('BDD — member profile affects sculpture only when publicly approved',
     expect(makePeoplePracticeGraph({websitePresenceMarks:7}).marks.some(
       x=>x.kind==='anonymous-website-presence')).toBe(false)
   })
+  it('uses current approved snapshot names and evidence, never editorial identity labels or relationships',()=>{
+    const live=PILOT_PREVIEWS.map(p=>({...p,name:p.slug==='moises-sanabria'?'Updated approved name':p.name}))
+    const graph=makePeoplePracticeGraph({profiles:live})
+    expect(graph.marks.find(m=>m.id==='moises-sanabria')?.label).toBe('Updated approved name')
+    expect(graph.practiceEdges.every(e=>e.evidence==='approved-Atlas-profile')).toBe(true)
+    expect(graph.connections).toEqual([])
+  })
   it('deduplicates repeated approved profile slugs',()=>{
     const graph=makePeoplePracticeGraph({profiles:[approved,approved],websitePresenceMarks:0})
     expect(graph.marks.filter(x=>x.kind==='approved-profile')).toHaveLength(1)
