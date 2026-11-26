@@ -57,6 +57,27 @@ describe('buildCrmGraphElements', () => {
     expect(edges.some((e) => e.data.kind === 'affiliated_with')).toBe(true)
   })
 
+  it('never exposes website-bound People or their private affiliations through legacy public consent', () => {
+    const tables = {
+      people: [{ id: 'recBound', fields: {
+        [PF.name]: 'Private website member',
+        [PF.publicProfileConsent]: 'Public Listing OK',
+        [PF.graphLayer]: 'Network Node',
+        [PF.institution]: ['recPrivateAffiliation'],
+        'DCC Website Member Binding ID': 'synthetic-binding',
+      }}],
+      seedCandidates: [], institutions: [], opportunities: [], interactions: [], campaigns: [],
+    }
+    for (const surface of ['home','explorer'] as const) {
+      const publicGraph = buildCrmGraphElements(tables, { surface, mode:'active', visibility:'public' })
+      expect(JSON.stringify(publicGraph)).not.toContain('Private website member')
+      expect(JSON.stringify(publicGraph)).not.toContain('recBound')
+      expect(JSON.stringify(publicGraph)).not.toContain('recPrivateAffiliation')
+    }
+    const internal = buildCrmGraphElements(tables, { surface:'explorer', mode:'admin', visibility:'internal' })
+    expect(JSON.stringify(internal)).toContain('Private website member')
+  })
+
   it('excludes people without public listing consent on public surfaces', () => {
     const tables = {
       people: [
