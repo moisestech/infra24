@@ -1,62 +1,14 @@
 name: DCC pinned security candidate (Node 22)
 on:
   push:
-    branches: ['security/dcc-dependency-remediation-20261126']
+    branches: ['security/dcc-dependency-remediation-20261126', 'spec/unified-website-membership-node-rfc-20261122', main]
 permissions:
   contents: read
 concurrency:
   group: dcc-security-pinned-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 jobs:
-  resolve-fonts:
-    name: Resolve only self-hosted font dependencies
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Produce exact manifest and lockfile
-        run: |
-          set -euo pipefail
-          if ! node -e "const p=require('./package.json'); if(!p.dependencies['@fontsource-variable/space-grotesk'] || !p.dependencies['@fontsource/ibm-plex-mono']) process.exit(1)"; then
-            npm install --package-lock-only --ignore-scripts --no-audit --no-fund --save-exact @fontsource-variable/space-grotesk@5 @fontsource/ibm-plex-mono@5
-          fi
-          mkdir -p resolved
-          cp package.json package-lock.json resolved/
-          sha256sum package.json package-lock.json > resolved/sha256.txt
-      - uses: actions/upload-artifact@v4
-        with:
-          name: resolved-font-lock
-          path: resolved/
-  persist-fonts:
-    name: Commit resolved font dependencies (no dependency execution)
-    needs: resolve-fonts
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/security/dcc-dependency-remediation-20261126' }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: resolved-font-lock
-          path: resolved
-      - name: Verify and persist only manifest and lock
-        run: |
-          set -euo pipefail
-          cp resolved/package.json resolved/package-lock.json .
-          sha256sum -c resolved/sha256.txt
-          git add -- package.json package-lock.json
-          if git diff --cached --quiet; then exit 0; fi
-          git -c user.name='DCC dependency CI' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'build: pin self-hosted DCC font packages'
-          git push origin HEAD:refs/heads/security/dcc-dependency-remediation-20261126
   audit:
-    needs: resolve-fonts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -65,15 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - uses: actions/download-artifact@v4
-        with:
-          name: resolved-font-lock
-          path: resolved
-      - name: Verify exact candidate lock
-        run: |
-          cp resolved/package.json resolved/package-lock.json .
-          sha256sum -c resolved/sha256.txt
-      - name: Audit exact candidate lockfile (no dependency execution)
+      - name: Audit committed lockfile (no dependency execution)
         run: |
           set -euo pipefail
           mkdir -p evidence
@@ -88,7 +32,6 @@ jobs:
           path: evidence/
           retention-days: 14
   validate:
-    needs: resolve-fonts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -98,18 +41,15 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - uses: actions/download-artifact@v4
-        with:
-          name: resolved-font-lock
-          path: resolved
-      - name: Verify exact candidate lock
-        run: |
-          cp resolved/package.json resolved/package-lock.json .
-          sha256sum -c resolved/sha256.txt
       - name: Install exact dependencies
         id: install
         run: npm ci
       - run: npm run secret-scan && npm run type-check
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+      - name: Generate and validate Next route contracts before build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npx --no-install next typegen && npm run type-check
         env:
           NODE_OPTIONS: --max-old-space-size=4096
       - run: npm run lint

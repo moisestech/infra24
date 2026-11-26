@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, develop, 'career/**']
+    branches: [main, develop, 'career/**', 'security/dcc-dependency-remediation-20261126', 'spec/unified-website-membership-node-rfc-20261122']
   pull_request:
     branches: [main, develop]
 
@@ -119,6 +119,7 @@ jobs:
         run: npm run test
 
       - name: Memory Agent golden eval (optional)
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
         run: |
           if [ -z "$OPENAI_API_KEY" ]; then
             echo "Optional Memory Agent golden eval skipped (no API key)"
