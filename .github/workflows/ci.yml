@@ -77,6 +77,9 @@ jobs:
             psql -v ON_ERROR_STOP=1 -f "$migration"
           done
           psql -v ON_ERROR_STOP=1 -f supabase/tests/dcc_owner_passport_revision_cas.sql
+          python3 -m venv "$RUNNER_TEMP/dcc-sql"
+          "$RUNNER_TEMP/dcc-sql/bin/pip" install 'psycopg[binary]==3.2.13'
+          "$RUNNER_TEMP/dcc-sql/bin/python" supabase/tests/dcc_concurrency.py
 
   test:
     runs-on: ubuntu-latest
