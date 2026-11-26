@@ -29,7 +29,7 @@ class ConcurrentConsent(unittest.TestCase):
         self.assertEqual(self.db.execute(SAVE, (self.binding, 0)).fetchone()[0], 1)
 
     def remove_fixture(self):
-        for table in ('dcc_member_publication_audit', 'dcc_member_publication_grants', 'dcc_member_profile_drafts'):
+        for table in ('dcc_approved_passport_snapshots', 'dcc_member_publication_audit', 'dcc_member_publication_grants', 'dcc_member_profile_drafts'):
             self.db.execute(psycopg.sql.SQL('delete from public.{} where binding_id=%s')
                             .format(psycopg.sql.Identifier(table)), (self.binding,))
         self.db.execute('delete from public.dcc_platform_member_bindings where id=%s', (self.binding,))
