@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { generateICS, generateICSFileName, ICSBookingData } from '@/lib/ics-generator'
 
@@ -18,6 +20,8 @@ export async function GET(
       )
     }
 
+    const { userId } = await auth()
+    if (!userId) return NextResponse.json({error:'Authentication required'},{status:401,headers:{'Cache-Control':'private, no-store'}})
     const supabaseAdmin = getSupabaseAdmin()
 
     // Get booking details with participants
@@ -40,6 +44,12 @@ export async function GET(
       )
     }
 
+    // Email addresses in legacy participant records are not Clerk identity proof.
+    if (booking.user_id !== userId) {
+      const access = await requireOrganizationStaff(booking.org_id)
+      if (!access.ok) return NextResponse.json({error:'Forbidden'},{status:403,headers:{'Cache-Control':'private, no-store'}})
+    }
+
     // Get organization details
     const { data: organization } = await supabaseAdmin
       .from('organizations')
@@ -52,6 +62,7 @@ export async function GET(
       .from('resources')
       .select('title, location')
       .eq('id', booking.resource_id)
+      .eq('org_id', booking.org_id)
       .single()
 
     // Extract participant information
@@ -83,9 +94,9 @@ export async function GET(
     }
 
     // Generate ICS content
-    console.log('ICS API - Generating ICS for data:', icsData)
+
     const icsContent = generateICS(icsData)
-    console.log('ICS API - Generated content length:', icsContent.length)
+
     const fileName = generateICSFileName(booking.id, booking.title)
 
     // Return ICS file
