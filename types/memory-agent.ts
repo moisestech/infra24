@@ -43,6 +43,8 @@ export type MemoryAgentEventCardSource =
   | 'workshop'
   | 'cms_story'
   | 'soho_record'
+  /** Explicitly authored, publicly linked showcase; not a database announcement row. */
+  | 'curated_showcase'
 
 export type MemoryAgentDataGapAction =
   | 'edit_airtable_row'

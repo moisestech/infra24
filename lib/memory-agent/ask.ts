@@ -49,6 +49,7 @@ import { memoryAgentSystemPrompt, MEMORY_AGENT_JSON_INSTRUCTION } from '@/lib/me
 import {
   mergeEventCardsFromContext,
   parseModelEventsFromAskJson,
+  type ParsedModelEvent,
 } from '@/lib/memory-agent/event-cards'
 import {
   applyIntentTimeFilter,
@@ -97,7 +98,7 @@ import { sohoHouseDomainPrimer } from '@/lib/sohohouse/knowledge-domain'
 type ParsedAskJson = {
   answer: string
   artists: MemoryAgentAskResult['artists']
-  events: MemoryAgentAskResult['events']
+  events: ParsedModelEvent[]
   followUps: string[]
   dataGaps: string[]
   outputs?: MemoryAgentTripleOutputs

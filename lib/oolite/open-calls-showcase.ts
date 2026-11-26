@@ -273,6 +273,12 @@ export function buildOpenCallEventCards(
   return offerings.map((o) => ({
     id: `open_call_${o.key}`,
     title: o.shortLabel,
+    recordKind: 'opportunity',
+    source: 'curated_showcase',
+    sourceRecordId: `open_call_${o.key}`,
+    bookable: false,
+    publicSafe: true,
+    allowPublicActions: true,
     summary: o.description,
     ctaLabel: 'Apply',
     ctaUrl: o.applyUrl,

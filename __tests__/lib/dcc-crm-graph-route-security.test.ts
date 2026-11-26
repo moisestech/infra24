@@ -47,7 +47,8 @@ describe('public CRM graph route', () => {
   ])('fails closed without an authorized staff account for %s', async query => {
     const response = await call(query)
     expect(response.status).toBe(403)
-    expect(response.headers.get('cache-control')).toBe('no-store')
+    const invalid = query.includes('=unknown')
+    expect(response.headers.get('cache-control')).toBe(invalid ? 'no-store' : 'private, no-store')
     expect(graph).not.toHaveBeenCalled()
   })
 

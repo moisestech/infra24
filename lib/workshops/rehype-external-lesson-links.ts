@@ -12,7 +12,7 @@ export function rehypeExternalLessonLinks() {
       if (typeof href !== 'string') return
       if (!href.startsWith('http://') && !href.startsWith('https://')) return
 
-      const props = { ...node.properties } as Record<string, unknown>
+      const props = { ...node.properties }
       props.target = '_blank'
       props.rel = 'noopener noreferrer'
       if (props.title == null) {

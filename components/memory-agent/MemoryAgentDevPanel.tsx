@@ -10,8 +10,8 @@ import { MemoryAgentVoiceOutputPanel } from '@/components/memory-agent/MemoryAge
 import { useVoiceRecorder } from '@/hooks/memory-agent/useVoiceRecorder'
 import { ma } from '@/lib/memory-agent/ui-tokens'
 import { cn } from '@/lib/utils'
+import type { MemoryAgentAssetsSource } from '@/hooks/memory-agent/useMemoryAgentGeneratedAssets'
 import type {
-  MemoryAgentAssetsSource,
   MemoryAgentGeneratedAsset,
   MemoryAgentGeneratedAssetStatus,
   MemoryAgentMode,
@@ -34,7 +34,7 @@ type MemoryAgentDevPanelProps = {
   assets: MemoryAgentGeneratedAsset[]
   assetsSource: MemoryAgentAssetsSource
   hydrated: boolean
-  onSetAssetStatus: (id: string, status: MemoryAgentGeneratedAssetStatus) => void | Promise<void>
+  onSetStatus: (id: string, status: MemoryAgentGeneratedAssetStatus) => void | Promise<void>
   onMakePublicHandoff?: (id: string) => void | Promise<void>
 }
 
@@ -54,7 +54,7 @@ export function MemoryAgentDevPanel({
   assets,
   assetsSource,
   hydrated,
-  onSetAssetStatus,
+  onSetStatus,
   onMakePublicHandoff,
 }: MemoryAgentDevPanelProps) {
   return (
@@ -90,7 +90,7 @@ export function MemoryAgentDevPanel({
             orgSlug={slug}
             mode={mode}
             assetsSource={assetsSource}
-            onSetStatus={onSetAssetStatus}
+            onSetStatus={onSetStatus}
             onMakePublicHandoff={onMakePublicHandoff}
           />
         ) : null}

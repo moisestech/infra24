@@ -5,7 +5,7 @@ import {
   matchDigitalLabBookingQuestion,
   resolveDigitalLabBookingSpokenAnswer,
 } from '@/lib/orgs/oolite/digital-lab-qgiv-offerings'
-import type { MemoryAgentAskResult } from '@/types/memory-agent'
+import type { MemoryAgentAskResult, MemoryAgentEventCard } from '@/types/memory-agent'
 
 function buildDigitalLabDisplayAnswer(question: string): string {
   const offering = findDigitalLabQgivOfferingByQuery(question)
@@ -48,11 +48,17 @@ export function applyDigitalLabBookingResponse(args: {
       'Book Vibe Coding workshops, SEO and website audits, 3D printing consulting, VR sessions, and 1:1 studio visits.',
   }
 
-  const events = getDigitalLabQgivOfferingsByKind('workshop')
+  const events: MemoryAgentEventCard[] = getDigitalLabQgivOfferingsByKind('workshop')
     .concat(getDigitalLabQgivOfferingsByKind('consulting').slice(0, 4))
     .map((o) => ({
       id: `digital_lab_${o.key}`,
       title: o.shortLabel ?? o.title,
+      recordKind: o.kind === 'workshop' ? 'workshop' : 'bookable_event',
+      source: 'curated_showcase',
+      sourceRecordId: `digital_lab_${o.key}`,
+      bookable: true,
+      publicSafe: true,
+      allowPublicActions: true,
       summary: o.description,
       ctaLabel: 'Book',
       ctaUrl: o.bookUrl,
