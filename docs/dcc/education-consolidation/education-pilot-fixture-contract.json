@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "status": "design-only synthetic test contract; do not seed production or expose real curriculum",
+  "runtime": false,
+  "source_commit": "a1e5fac92ebea4d960e9b09cf275083dcf102ca6",
+  "review_target_commit": "acd368be20dd09cd0a44671db0df3dcb278f5b00",
+  "organizations": [
+    {
+      "id": "00000000-0000-4000-8000-000000000101",
+      "slug": "dcc-pilot-fixture",
+      "active": true
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000102",
+      "slug": "partner-pilot-fixture",
+      "active": true
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000103",
+      "slug": "unrelated-pilot-fixture",
+      "active": true
+    }
+  ],
+  "curriculum": {
+    "id": "ai24:ai-art-fundamentals",
+    "version": "0.1.0-draft",
+    "author_label": "AI24 (rights confirmation pending)",
+    "publication": "hold",
+    "asset_allowlist": [],
+    "chapters": [
+      {
+        "id": "00000000-0000-4000-8000-000000000201",
+        "slug": "02-ai-art-tools-techniques",
+        "order": 1,
+        "source_blob_sha": "6842cebdbff7d531d73819ae3473b64246c649ee",
+        "source_path": "content/workshops/ai-art-fundamentals/chapters/02-ai-art-tools-techniques.md",
+        "body": "Synthetic test text only; no real chapter copied",
+        "approved": false
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000202",
+        "slug": "03-creative-workflows",
+        "order": 2,
+        "source_blob_sha": "8fd7940c20ebc9aaac811e054945a15c8a6e2c12",
+        "source_path": "content/workshops/ai-art-fundamentals/chapters/03-creative-workflows.md",
+        "body": "Synthetic test text only; no real chapter copied",
+        "approved": false
+      }
+    ]
+  },
+  "offerings": [
+    {
+      "id": "00000000-0000-4000-8000-000000000301",
+      "organization_id": "00000000-0000-4000-8000-000000000101",
+      "curriculum_id": "ai24:ai-art-fundamentals",
+      "curriculum_version": "0.1.0-draft",
+      "metadata": {
+        "slug": "ai-art-fundamentals",
+        "format": "async_resources",
+        "track": "ai_literacy",
+        "releaseStatus": "in_development",
+        "skillsYoullLearn": [
+          "Prompt experimentation",
+          "Critical image evaluation",
+          "Iterative creative workflows",
+          "Process documentation and attribution"
+        ]
+      },
+      "status": "draft",
+      "is_active": false,
+      "is_public": false,
+      "is_shared": false,
+      "price": 0
+    }
+  ],
+  "sharing_scenarios": [
+    {
+      "name": "no grant",
+      "expected": "deny partner"
+    },
+    {
+      "name": "approved version-specific active grant",
+      "expected": "allow only named partner and scope, in synthetic positive test"
+    },
+    {
+      "name": "expired grant",
+      "expected": "deny"
+    },
+    {
+      "name": "revoked grant",
+      "expected": "deny"
+    },
+    {
+      "name": "different curriculum version",
+      "expected": "deny"
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "PUB-01",
+      "scenario": "draft offering and direct chapter routes, anonymous",
+      "expected": "not discoverable; 404 or deliberate authorization denial; no lesson text"
+    },
+    {
+      "id": "PUB-02",
+      "scenario": "synthetically approve exactly both chapters and offering in isolated fixture",
+      "expected": "two canonical chapters in order, safe Markdown, no extra content"
+    },
+    {
+      "id": "PUB-03",
+      "scenario": "unapproved third chapter, UUID path, old learn route, plural URL",
+      "expected": "no bypass; canonical approved paths only"
+    },
+    {
+      "id": "PUB-04",
+      "scenario": "raw HTML, executable MDX, unsafe URL, invalid or traversal-like slug",
+      "expected": "reject or safely render inert; no filesystem escape"
+    },
+    {
+      "id": "TEN-01",
+      "scenario": "unrelated organization list and direct detail",
+      "expected": "no access to private pilot"
+    },
+    {
+      "id": "TEN-02",
+      "scenario": "partner without grant, expired/revoked grant, wrong version",
+      "expected": "deny nonpublic delivery access and listing"
+    },
+    {
+      "id": "TEN-03",
+      "scenario": "approved partner grant with synthetic publication and distinct offering",
+      "expected": "same version/body source, separate offering identifiers; no cross-tenant edits or learner data"
+    },
+    {
+      "id": "PROG-01",
+      "scenario": "anonymous, wrong learner, unenrolled learner, wrong org",
+      "expected": "deny progress mutation/read not authorized"
+    },
+    {
+      "id": "PROG-02",
+      "scenario": "chapter belonging to another workshop, out-of-range progress, duplicate request",
+      "expected": "reject mismatched IDs/invalid data, idempotent valid update"
+    },
+    {
+      "id": "UX-01",
+      "scenario": "mobile 320/375/430 CSS px, keyboard and previous/next",
+      "expected": "no horizontal overflow, valid navigation and focus"
+    },
+    {
+      "id": "REG-01",
+      "scenario": "existing Vibe, Oolite, Smart Sign and Passport flows",
+      "expected": "no behavioral regressions"
+    },
+    {
+      "id": "ENV-01",
+      "scenario": "preview missing isolated provider or safe mail configuration",
+      "expected": "fail closed; no production data writes or outgoing mail"
+    }
+  ]
+}

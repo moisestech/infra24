@@ -1,0 +1,59 @@
+# Sprint 2 — Editorial preparation, catalog ownership and taxonomy
+
+Date: 2026-11-26 | Planning only | #85 / draft #86
+Source a1e5fac92ebea4d960e9b09cf275083dcf102ca6; main 6ea68a31d0a57b66319fcc2b22a29482c064aaf1; Passport observed acd368be20dd09cd0a44671db0df3dcb278f5b00 (draft, unmerged). Exact-head CI runs 45901575785 and 45901570372 and pinned security run 45901570366 reported success. Runtime and production migration approval remains gated; no application code imported.
+
+## Editorial draft for review (not runtime curriculum)
+Working title: AI Art Fundamentals — Creative AI Foundations. Two self-paced beginner lessons; source estimates 50 + 60 minutes (110 total, pilot estimate, not verified delivery duration). Learning outcomes: design a prompt experiment, critically compare outputs, document creative decisions and assemble an attributable process study. No account or paid tool required for the paper/fixture alternative; no badge or certification claim. No external assets, embedded videos, JSX or copied third-party passages. Creator attribution to AI24 curriculum with pinned source path/hash, individual author/rights confirmation still pending.
+
+### Lesson 1: AI Art Tools & Techniques
+Source 02-ai-art-tools-techniques.md, blob 6842cebdbff7d531d73819ae3473b64246c649ee. Proposed stable slug 02-ai-art-tools-techniques, order 1.
+Goal: distinguish generation, transformation and editing; learn to compare outputs rather than equate tool quality with artistic quality.
+- Start with an artistic intention: a geometric sculpture on a neutral background, soft side lighting and a limited color palette. Describe subject, composition, medium, lighting and constraints in plain language. Avoid imitating a named artist or using private or unlicensed reference material.
+- Generate or sketch three variants, changing one variable at a time. If a tool supports seeds or negative instructions, note those settings; do not assume every product exposes identical controls or that a seed guarantees identical results across versions.
+- Compare composition, fidelity to intention, artifacts, bias, controllability, access cost and privacy. A tool-neutral offline alternative is to annotate three instructor-owned sample images or hand-drawn studies (no samples supplied yet).
+- Record prompt/version, tool/model if known, inputs and rights, edits, selection rationale and limitations. Check provider terms and model-specific license before uploading, publishing or using outputs commercially.
+Deliverable: one-page comparison of three variants with a short reflection. Review rubric: controlled experiment, clear rationale, documentation, responsible inputs. No competency award from self-completion alone.
+
+### Lesson 2: Creative Workflows with AI Art
+Source 03-creative-workflows.md, blob 8fd7940c20ebc9aaac811e054945a15c8a6e2c12. Proposed stable slug 03-creative-workflows, order 2.
+Goal: use AI as one optional stage of a human-directed artistic process.
+- Define intention, audience and output format; make an initial sketch or prompt using owned/licensed inputs.
+- Develop three directions and select one using a stated criterion. Iterate deliberately: crop, collage, draw over, adjust colors or revise the underlying concept using any available tool.
+- Keep a process ledger: input provenance, prompts/model, versions, what was manually changed, selection/rejection decisions and any uncertainty about rights. Distinguish artist decisions from automated output.
+- Prepare a final image or mockup and a short process statement. Peer critique asks what the artist contributed, whether the result serves the intention, where the model constrained it and what could improve.
+Deliverable: one finished study plus process ledger and 100-word reflection; no upload to public profile required. Offline alternative: use own photographs/sketches with a documented manual variation exercise. Rubric: coherent intent, iteration, critical reflection, rights/provenance.
+
+### Reference disposition — checked 2026-11-26
+Original DALL-E 2 FAQ resolves to ChatGPT release notes, not the promised guide: omit. stablediffusionweb.com returned 403 to retrieval: access/ownership/terms unverified; omit, not evidence it is permanently down. Both source Artnome and Sotheby's URLs were not accessible to retrieval; omit until verified. No external references mandatory for lesson 2. Candidate optional references for lesson 1: Adobe's [prompt guide](https://helpx.adobe.com/firefly/web/work-with-images/generate-images/writing-effective-text-prompts.html) and Hugging Face [Diffusers text-to-image documentation](https://huggingface.co/docs/diffusers/main/en/using-diffusers/conditional_image_generation), both returned relevant indexed content; link only, no quotations or republishing, no requirement to buy a tool. Recheck on implementation. No independent legal clearance, full historical claims review or instructor sign-off; keep both lessons conditional. Source syllabus and 51 held chapters remain excluded; no copied curriculum in runtime paths.
+
+## Catalog reconciliation
+Read-only live aggregate query to connected Infra24 database: nine organization rows; four workshop rows, two published. Both published workshops are associated with oolite; madarts has two nonpublished. oolite and oolite-arts coexist (do not merge without ownership review). No dcc or ai24 organization row was returned. This is a database observation, not proof of live Vercel environment configuration. Do not modify production, repurpose Oolite or assume DCC tenancy based on branding.
+Proposed model: canonical curriculum ID and version in Git, explicit creator/source/rights; workshop offering references curriculum + delivering organization, schedule, format, approved publication and price. A curriculum may have several licensed organization offerings, not duplicate text. Keep catalog marketing metadata and existing organization boundaries; prefer existing workshop sharing model if audited compatible. Determine actual public tenant, resolve slug aliases deliberately, and propose separate DCC/AI24 organization provisioning only after authorization. Start with fixture tenant dcc-pilot (synthetic only); no database writes. Existing /workshops catalog should continue to show its existing authorized offerings. No change to NEXT_PUBLIC_WORKSHOP_CATALOG_ORG_SLUG or deployed flags. For future public DCC catalog, propose DCC-owned tenant and explicit approved partner listings rather than unscoped cross-tenant query. AI24 remains source/creator, not automatically a host. Institution-hosted delivery may differ from ownership. Existing workshop route, catalog UI, interest parsing and 3D School engine reused.
+
+## Taxonomy contract
+Use existing Atlas InterestId -> poll category mapping in lib/dcc/artwork/people-practice-graph.ts. Existing historical 72 multi-select selections: art 21, fabrication 16, film 11, code 10, xr 7, exploring 7. Unknown respondent count. These are aggregate discovery signals, not unique members, paid demand, individual skills, graph edges or verified competencies. Keep workshop marketing track separate from discovery category; current track enum presence / ai_literacy / creative_coding / systems_archive. Use current skillsYoullLearn display strings for pilot; add versioned stable skill identifiers only after architecture review, never treat tags as achievements. Existing fabrication maturity stages observed/tested/repeatable/sellable/teachable/scalable represent DCC operational evidence, not member skill levels. Private learner progress and verified achievements remain distinct, consent/review required for any public projection.
+Proposed mapping, not a ranking of individual people:
+- art / culture: AI Art Fundamentals, AI art intensive, AI photography, AI philosophy; art/exhibition project study.
+- fabrication / making: existing 3D School, Blender, CAD, resin, finishing, AI to 3D Physical Object; Smart Sign 101 only after hardware/installation relevance review.
+- film / image-sound: AI filmmaking, advanced filmmaking, AI video production, AI documentary, AI animation, AI VFX, AI music creation.
+- code / code-ai: Vibe Coding, LLM fundamentals, AI data visualization; AI ethics/governance, AI literacy/digital citizenship, AI social impact, ethical AI journalism, AI writing/content, AI advertising, vibe marketing; some cross-tag culture.
+- xr / interactive: AI game development; immersive work only when actual module available, do not advertise XR curriculum inferred from title.
+- exploring / exploring: Saturday Lab and introductory AI art pilot; discovery pathway, not mastery.
+Multiple category tags allowed for offerings. AI Art pilot primary art, secondary code, optional exploring; proposed skill keys prompt-experiment, output-evaluation, creative-iteration, provenance-documentation. Display labels: Prompt experimentation; Critical image evaluation; Iterative creative workflows; Process documentation and attribution. Pilot track ai_literacy, format async_resources, level beginner, status not public. Avoid new database taxonomy until existing org_taxonomies/org_terms and Atlas model reviewed.
+All 23 AI24 directory slugs accounted for in companion crosswalk; no additions to graph, poll or member data.
+
+## Engineering backlog, in dependency order
+P0-1 Passport: verify exact-head CI and production migration/RPC compatibility; protected preview provider isolation, browser synthetic acceptance and explicit release approval. Separate workstream, do not modify #72 here.
+P0-2 Editorial: approve two lesson drafts, verify author rights and references, record approved version/hash. Source history/ethics/video/intensive held. No source media.
+P0-3 Tenant: verify Vercel catalog env presence and intended org ownership; design tenant fixture and sharing permission; review existing duplicate Oolite slugs without mutation.
+P1-1 After approval, independent implementation branch from verified Passport baseline. Make reader fail-closed for exact approved chapters while preserving existing Vibe routes; fixture-based catalog/detail, no public flags or new production rows.
+P1-2 Import/adapt only two allowed lessons; explicit slug/order/provenance; generic previous/next/back, safe link schemes, mobile 320/375/430, missing chapter and tenant-denial tests. Add CI triggers or run authorized equivalent for branch, types/lint/Jest/build/security and generated route checks. No shipping on missing checks.
+P1-3 Reconcile registration/session/progress schema with current DB; choose canonical existing workshop model; local RLS/tenant constraints, migration rollback and negative authorization tests. Replace mock enrollment and Pro status. No production migration without approval.
+P1-4 Expand curriculum in reviewed small batches based on workshop demand and reuse, not total number imported. Validate catalog dedupe and shared content versioning.
+P2-1 Stripe one-time checkout test mode only, verified server price/identity, webhook signature and event dedupe, refunds and replay tests. No live charges.
+P2-2 Passport learning evidence: private progress, instructor verification, explicit member consent and review for public skills. No automatic graph links or membership from purchases/completion.
+P3 Shared brand delivery, institutional licensing, analytics, source database/storage verification and retirement only with approval.
+
+## Verification and gates
+Static editorial drafts and architecture recommendations only, not approved lesson content or execution. No rendered/browser or implementation CI performed; exact-head Passport CI is separate evidence. No application branch, production writes, payment activation, publishing, deployment, data or permission changes. Next concrete work: approve pilot text and provenance, verify tenant/provider config, and prepare isolated fixtures after Passport approval.
