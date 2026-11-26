@@ -4,6 +4,7 @@ import { requireOrganizationStaff } from '@/lib/security/require-organization-st
 import { GET, POST } from '@/app/api/organizations/[orgId]/resources/route'
 import { POST as POSTById } from '@/app/api/organizations/by-id/resources/route'
 import { GET as GETAnalytics } from '@/app/api/analytics/bookings/overview/route'
+import { GET as GETStats } from '@/app/api/admin/bookings/stats/route'
 import { PATCH } from '@/app/api/organizations/[orgId]/bookings/[bookingId]/route'
 jest.mock('@/lib/security/require-organization-staff', () => ({ requireOrganizationStaff: jest.fn() }))
 const guard = requireOrganizationStaff as jest.Mock
@@ -93,4 +94,23 @@ test('legacy analytics fails closed without privileged database execution', asyn
   expect(response.headers.get('cache-control')).toContain('no-store')
   expect(rpc).not.toHaveBeenCalled()
   expect(from).not.toHaveBeenCalled()
+})
+
+test('booking statistics reject unauthorized staff', async () => {
+  guard.mockResolvedValue({ok:false,status:403,error:'Forbidden'})
+  expect((await GETStats(new NextRequest('http://localhost/api/test?organization_id='+orgId))).status).toBe(403)
+})
+test('every booking statistics query is scoped to verified tenant', async () => {
+  const queries: any[] = []
+  const from = jest.fn(() => {
+    const q = {select:jest.fn().mockReturnThis(),eq:jest.fn().mockReturnThis(),not:jest.fn().mockReturnThis(),gte:jest.fn().mockReturnThis(),count:0,data:[]}
+    queries.push(q)
+    return q
+  })
+  guard.mockResolvedValue({ok:true,orgId,db:{from}})
+  const response = await GETStats(new NextRequest('http://localhost/api/test?organization_id='+orgId))
+  expect(response.status).toBe(200)
+  expect(response.headers.get('cache-control')).toContain('no-store')
+  expect(queries).toHaveLength(9)
+  for (const q of queries) expect(q.eq).toHaveBeenCalledWith('org_id',orgId)
 })
