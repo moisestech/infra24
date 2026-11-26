@@ -39,43 +39,32 @@ describe('matchEdgeZonesExhibitionQuestion', () => {
 })
 
 describe('dccInstitutionalMemorySuggestedQuestions', () => {
-  it('includes the Touching Grass exhibition chip', () => {
+  it('does not promote the unrelated Edge Zones exhibition', () => {
     const chips = dccInstitutionalMemorySuggestedQuestions()
-    expect(chips).toContain('Tell me about the Touching Grass exhibition.')
+    expect(chips).not.toContain('Tell me about the Touching Grass exhibition.')
   })
 })
 
 describe('mergeDccMemoryAgentSuggestedQuestions', () => {
-  it('appends exhibition chip without duplicating existing entries', () => {
+  it('keeps network suggestions without adding Touching Grass', () => {
     const merged = mergeDccMemoryAgentSuggestedQuestions([
       'Who has experience with public screens or documentation?',
     ])
-
-    expect(merged).toContain('Tell me about the Touching Grass exhibition.')
-    expect(merged.filter((q) => q === 'Tell me about the Touching Grass exhibition.')).toHaveLength(1)
+    expect(merged).not.toContain('Tell me about the Touching Grass exhibition.')
+    expect(merged).toContain('Which artists in the pilot work with born-digital or networked practice?')
   })
 })
 
 describe('applyShowcaseExhibitionResponse for dcc', () => {
-  it('returns exhibition title, blurb, multiple artist cards, and clears data gaps', () => {
+  it('does not present the Edge Zones exhibition as a DCC showcase', () => {
     const result = applyShowcaseExhibitionResponse({
       orgSlug: 'dcc',
       question: 'Tell me about the Touching Grass exhibition.',
       result: { ...EMPTY_RESULT },
     })
-
-    expect(result.answer).toContain(TOUCHING_GRASS_EXHIBITION.workingTitle)
-    expect(result.answer).toContain('Jordan Horton')
-    expect(result.answer).toContain('"Touching Grass (working title) explores')
-    expect(result.answer).toContain('AFK')
-    expect(result.dataGaps).toEqual([])
-    expect(result.artists?.length).toBe(7)
-    expect(result.artists?.[0]?.name).toBe('Jordan Horton')
-    expect(result.artists?.some((a) => a.name === 'Fabiola Larios')).toBe(true)
-    expect(result.events?.[0]?.title).toBe('Touching Grass')
-    expect(result.events?.[0]?.ctaUrl).toBe('/edgezones#concept')
-    expect(result.events?.[0]?.curator).toBe('Jordan Horton')
-    expect(TOUCHING_GRASS_EXHIBITION.galleryImages.length).toBeGreaterThan(0)
+    expect(result.answer).toBe('placeholder')
+    expect(result.events).toBeUndefined()
+    expect(result.dataGaps).toEqual(['should clear'])
   })
 
   it('does not override unrelated questions', () => {

@@ -4,11 +4,9 @@
  */
 
 import { mergeAppSuggestedQuestions } from '@/lib/memory-agent/suggested-questions'
-import { EDGE_ZONES_EXHIBITION_SUGGESTED_QUESTIONS } from '@/lib/marketing/edgezones-exhibition'
 
-/** Partnership exhibition & network (hero first). */
+/** DCC network only. Edge Zones exhibition is not a DCC initiative. */
 export const DCC_VISITOR_SUGGESTED_QUESTIONS = [
-  ...EDGE_ZONES_EXHIBITION_SUGGESTED_QUESTIONS,
   'Which artists in the pilot work with born-digital or networked practice?',
 ] as const
 

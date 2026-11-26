@@ -1,13 +1,11 @@
 import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/normalize-suggested-question-key'
 import type { MemoryAgentGalleryImage } from '@/types/memory-agent'
-import { DCC_MIAMI_LOGO_URL_LIGHT } from '@/lib/marketing/cdc-brand'
 import {
   EDGE_ZONES_GALLERY_MARK_URL,
   JORDAN_HORTON_PORTRAIT_URL,
   edgeZonesNetworkIndex,
   staticProfilesToArtistProfiles,
 } from '@/lib/marketing/edgezones-network-index'
-import { edgeZonesGalleryForMemoryAgent } from '@/lib/marketing/edgezones-media'
 
 export type EdgeZonesExhibitionConfig = {
   key: string
@@ -55,7 +53,7 @@ export const TOUCHING_GRASS_EXHIBITION: EdgeZonesExhibitionConfig = {
   curatorImageUrl: JORDAN_HORTON_PORTRAIT_URL,
   partnership: {
     host: 'Edge Zones Gallery',
-    digital: 'DCC Miami',
+    digital: 'No institutional digital partner confirmed',
   },
   partnershipImages: {
     host: {
@@ -69,31 +67,18 @@ export const TOUCHING_GRASS_EXHIBITION: EdgeZonesExhibitionConfig = {
       fit: 'cover',
     },
     digital: {
-      url: DCC_MIAMI_LOGO_URL_LIGHT,
-      alt: 'DCC.miami — Digital Culture Center Miami',
+      url: '',
+      alt: 'Former DCC concept image — not an approved partner',
       fit: 'contain',
     },
   },
   location: 'Edge Zones Gallery, Miami',
   dates: 'Dates TBD',
-  ctaUrl: '/edgezones#concept',
+  ctaUrl: 'https://edgezones.org',
   artistNames: EXHIBITION_ARTIST_NAMES,
   curatorialBlurb: JORDAN_HORTON_CURATOR_STATEMENT,
-  spokenAnswer: `Touching Grass is a group exhibition curated by Jordan Horton at Edge Zones Gallery, supported by DCC Miami. Dates are still being confirmed. Jordan Horton writes: "${JORDAN_HORTON_CURATOR_STATEMENT.slice(0, 120)}…" Featuring ${EXHIBITION_ARTIST_NAMES.join(', ')}.`,
-  displayAnswer: `Touching Grass (working title)
-
-Curated by Jordan Horton · Edge Zones Gallery · DCC Miami
-Dates TBD
-
-Curator's statement — Jordan Horton
-
-"${JORDAN_HORTON_CURATOR_STATEMENT}"
-
-Featuring ${EXHIBITION_ARTIST_NAMES.join(', ')}.
-
-Partnership: Edge Zones Gallery (physical host) · Jordan Horton (curatorial vision) · DCC Miami (digital platform and support layer).
-
-Location: Edge Zones Gallery, Miami`,
+  spokenAnswer: 'Touching Grass is a proposed exhibition at Edge Zones. For confirmed information, consult the gallery directly. DCC is not an exhibition organizer.',
+  displayAnswer: `Touching Grass (working title)\n\nProposed at Edge Zones Gallery. Institutional information, curatorial details, roster, and dates should be verified with Edge Zones directly. DCC Miami is not an institutional partner.\n\nOfficial venue: https://edgezones.org`,
   followUps: [
     'Who is curating Touching Grass?',
     'Tell me about Fabiola Larios.',
@@ -101,7 +86,7 @@ Location: Edge Zones Gallery, Miami`,
     'Which artists work with new media in Miami?',
     "Join Miami's Digital Culture Map",
   ],
-  galleryImages: edgeZonesGalleryForMemoryAgent(),
+  galleryImages: [],
 }
 
 export const EDGE_ZONES_EXHIBITION_SUGGESTED_QUESTIONS = [
