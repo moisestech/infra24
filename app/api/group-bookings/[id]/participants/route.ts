@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
+import { getSupabaseAdmin } from '@/lib/supabase'
 import { GroupBookingService } from '@/lib/group-booking/service'
 import { z } from 'zod'
 
@@ -23,6 +24,9 @@ export async function POST(
     }
 
     const { id: bookingId } = await params
+    const {data:booking,error} = await getSupabaseAdmin().from('bookings').select('id,group_booking_type,status,start_time').eq('id',bookingId).eq('is_group_booking',true).maybeSingle()
+    if (error) return NextResponse.json({error:'Registration verification unavailable'},{status:503})
+    if (!booking || booking.group_booking_type !== 'public' || booking.status !== 'confirmed' || !(Date.parse(booking.start_time) > Date.now())) return NextResponse.json({error:'Registration unavailable'},{status:403})
     const body = await request.json()
     const { participantName, participantEmail, participantPhone, notes } = addParticipantSchema.parse(body)
 
