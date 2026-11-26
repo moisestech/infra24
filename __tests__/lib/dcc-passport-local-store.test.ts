@@ -19,6 +19,7 @@ suite('Passport application store against disposable PostgREST', () => {
     const bindingId = process.env.DCC_TEST_BINDING_ID
     if (!bindingId || !/^[0-9a-f-]{36}$/.test(bindingId)) throw new Error('Missing synthetic binding')
     // The isolated gateway mounts PostgREST at its root, not Supabase's /rest/v1.
+    const nativeFetch = global.fetch
     const localFetch: typeof fetch = (input, init) => {
       const target = new URL(String(input))
       if (target.origin !== url || !target.pathname.startsWith('/rest/v1/')) throw new Error('Nonlocal request refused')
@@ -26,7 +27,7 @@ suite('Passport application store against disposable PostgREST', () => {
       const headers = new Headers(init?.headers)
       headers.delete('authorization')
       headers.delete('apikey')
-      return fetch(target, { ...init, headers })
+      return nativeFetch(target, { ...init, headers })
     }
     const client = () => createClient(url, 'local-only', { auth: { persistSession: false, autoRefreshToken: false }, global: { fetch: localFetch } })
     const binding = { id: bindingId, state: 'pending_reconciliation', airtablePersonId: null }
