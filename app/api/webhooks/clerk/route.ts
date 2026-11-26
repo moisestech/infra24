@@ -41,15 +41,20 @@ export async function POST(req: Request) {
   // No raw event logs, email, full names or webhook payloads in application logs.
   // The server-side event contract only records Clerk subject + verified boolean.
   try {
-    const supabase = getServerSupabase()
+    const legacyEnabled = process.env.CLERK_LEGACY_ORG_MEMBERSHIP_ENABLED === 'true'
     const config = clerkMembershipCaptureConfig(process.env)
     const event = normalizeClerkMembershipEvent(evt, messageId, config)
+    // Dedicated DCC instances must not implicitly provision legacy organization roles.
+    if (!event && !legacyEnabled) return new Response('Webhook ignored', { status: 200 })
+    const supabase = getServerSupabase()
     let dccState: string | null = null
     if (event) {
       const { data, error } = await supabase.rpc('dcc_capture_clerk_membership_event', event)
       if (error) throw new Error('DCC member event persistence failed')
       dccState = typeof data === 'string' ? data : null
     }
+
+    if (!legacyEnabled) return new Response('DCC event handled', { status: 200 })
 
     if (evt.type === 'user.created') {
       // If a previously deleted account's CREATE arrived late, do not revive
