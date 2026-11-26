@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "npm run saturday-lab:assets && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "node scripts/tools/lint.mjs",
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
