@@ -68,6 +68,14 @@ describe('immutable approved website Passport snapshots',()=>{
     setRows([snapshot],false)
     expect((await readPublicAtlas()).map(p=>p.name)).toEqual(['Approved artist'])
   })
+  it('holds unmarked legacy profiles when canonical membership cannot be checked', async () => {
+    delete process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED = 'false'
+    fetcher.mockResolvedValueOnce(new Response(JSON.stringify({
+      records: [{ id: recordId, fields: { ...mutated, 'DCC Website Member Binding ID': undefined } }],
+    })))
+    await expect(readPublicAtlas()).rejects.toThrow('ATLAS_PUBLICATION_GUARD_UNAVAILABLE')
+  })
   it('fails closed on private database outage',async()=>{
     rpc.mockResolvedValueOnce({data:null,error:{message:'private database unavailable'}})
     await expect(readPublicAtlas()).rejects.toThrow('ATLAS_PUBLICATION_GUARD_UNAVAILABLE')

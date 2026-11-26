@@ -1,19 +1,29 @@
 /** @jest-environment node */
 import { approvedAirtableProfile, approvedLinks, atlasIntakeSchema, ATLAS_DISCLOSURE_VERSION, ATLAS_PUBLIC_CONSENT } from '../../lib/dcc/community/intake'
 jest.mock('server-only', () => ({}))
+jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn() }))
+import { createClient } from '@supabase/supabase-js'
 import { readPublicAtlas, stageAtlasSubmission } from '../../lib/dcc/community/airtable-atlas'
 
 const submission = { submissionKey: '0df4bbe3-547e-4826-b041-62ff2402a571', name: 'Test Artist', email: 'private@example.test', summary: 'I make experimental objects.', practice: 'Sculpture', interests: ['making'], links: [{ label: 'Portfolio', url: 'https://example.test' }], publicConsent: true, disclosureVersion: ATLAS_DISCLOSURE_VERSION, company: '' }
 const fields = { 'Atlas Publication State': 'Approved', 'Atlas Public Consent': true, 'Atlas Identity Verified': true, 'Public Profile?': true, 'Profile Slug': 'test-artist', 'Display Name': 'Test Artist', 'Short Bio': 'I make experimental objects.', 'Public Skills': ['Sculpture'], 'Atlas Interests': ['making', 'inferred-tag'], 'Atlas Public Links': JSON.stringify(submission.links), Email: 'private@example.test', Phone: 'secret', Notes: 'internal', Name: 'private alias' }
 const originalFetch = global.fetch
+const originalEnv = process.env
 beforeEach(() => {
+  process.env = { ...originalEnv, NEXT_PUBLIC_SUPABASE_URL: 'https://db.example.test', SUPABASE_SERVICE_ROLE_KEY: 'fixture-only', DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED: 'false' }
+  const canonicalBindings = { in: jest.fn().mockResolvedValue({ data: [], error: null }) }
+  ;(createClient as jest.Mock).mockReturnValue({ from: () => ({ select: () => canonicalBindings }) })
   process.env.AIRTABLE_DCC_ATLAS_API_KEY = 'test-token'
   process.env.AIRTABLE_DCC_ATLAS_BASE_ID = 'test-base'
   process.env.AIRTABLE_DCC_ATLAS_PEOPLE_TABLE = 'test-people'
   process.env.AIRTABLE_DCC_ATLAS_INTAKE_TABLE = 'test-intake'
   process.env.DCC_ATLAS_INTAKE_ENABLED = 'true'
 })
-afterEach(() => { global.fetch = originalFetch; jest.restoreAllMocks() })
+afterEach(() => {
+  process.env = originalEnv
+  global.fetch = originalFetch
+  jest.restoreAllMocks()
+})
 
 describe('Public profile requests and publication', () => {
   it('validates required consent, bounded content, links and honeypot', () => {
