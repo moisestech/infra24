@@ -33,7 +33,7 @@ function IdentityCase({item,refresh}:{item:Hold;refresh:()=>Promise<void>}) {
   }
   return <article className="space-y-3 rounded-xl border p-4">
     <h3 className="break-all font-medium">Case {item.requestId}</h3>
-    <p className="text-sm">{item.stage.replaceAll('_',' ')} · {item.reason.replaceAll('_',' ')} · revision {item.version}</p>
+    <p className="text-sm">{item.stage.replace(/_/g,' ')} · {item.reason.replace(/_/g,' ')} · revision {item.version}</p>
     {item.jobStatus==='needs_inspection'&&<p>Locate the existing provider binding before reviewing this interrupted worker claim.</p>}
     {!uncertain&&<fieldset disabled={busy} className="space-y-3">
       <label className="block">Historical People record ID<input className={inputStyle} value={person} onChange={e=>setPerson(e.target.value)} autoComplete="off"/></label>
