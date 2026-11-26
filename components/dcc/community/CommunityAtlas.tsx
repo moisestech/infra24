@@ -209,15 +209,20 @@ export function CommunityAtlas() {
             <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-[color:var(--dn-muted)]">
               Discover artists, practices and ways to connect across the network.
             </p>
+            {mode === 'preview' ? (
+              <p role="status" className="mt-4 max-w-xl text-sm leading-relaxed text-[color:var(--dn-subtle)]">
+                You’re exploring a curated preview, not the complete DCC member directory. Private community contacts and unapproved profiles are not shown.
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/network/your-profile"
               className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] transition hover:bg-[var(--dn-accent-hover)]">
-              <UserRoundPlus size={17} /> Create or edit your profile
+              <UserRoundPlus size={17} /> Explore your profile
             </Link>
-            <Link href="/network/your-profile"
+            <Link href="/join"
               className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--dn-line)] px-5 py-3 text-sm text-[color:var(--dn-muted)] transition hover:border-[color:var(--dn-line-strong)]">
-              Your Passport
+              Join DCC
             </Link>
           </div>
         </header>
@@ -283,7 +288,7 @@ export function CommunityAtlas() {
               </div>
             ) : <p className="mt-7 text-sm text-[color:var(--dn-muted)]">No profile matches those filters.</p>}
             <div className="mt-9 border-t border-[color:var(--dn-line)] pt-5 text-xs leading-relaxed text-[color:var(--dn-subtle)]">
-              Curated artist examples and approved public profiles. New profiles can be submitted for review.
+              {mode === 'preview' ? 'Curated public artist examples only. The complete member directory is not live.' : 'Only independently approved and consented public profiles are shown. New profiles require review.'}
             </div>
           </aside>
         </div>
@@ -361,7 +366,7 @@ export function CommunityAtlas() {
               Give your practice a place in the network.
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-[color:var(--dn-muted)]">
-              Start with your interests. Build a profile, connect to people and develop it as your work changes.
+              Explore your interests and preview your profile. Public listing requires verified ownership, explicit consent and human review.
             </p>
             {passport ? <p className="mt-4 text-xs text-[color:var(--dn-link)]">Draft for {passport.name} · {passport.interests.length} interests saved in this browser</p> : null}
           </div>
@@ -372,7 +377,7 @@ export function CommunityAtlas() {
             </Link>
             <Link href="/network/your-profile"
               className="inline-flex min-h-11 items-center rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] hover:bg-[var(--dn-accent-hover)]">
-              Request public listing
+              Review listing options
             </Link>
             {passport ? <button type="button" onClick={clearPassport} className="px-2 text-xs text-[color:var(--dn-subtle)] hover:text-[color:var(--dn-ink)]">Clear draft</button> : null}
           </div>
