@@ -22,34 +22,27 @@ export async function PATCH(
 
     const supabase = access.db;
 
-    // Update the booking
-    const { data: booking, error: updateError } = await supabase
-      .from('bookings')
-      .update({
-        status,
-        notes: notes || null,
-        updated_at: new Date().toISOString(),
-        updated_by: access.userId
+    // The staged migration must be installed before this route is enabled.
+    // Never fall back to a service-role UPDATE if the RPC is unavailable.
+    const { data: reviewed, error: updateError } = await supabase
+      .rpc('legacy_review_booking', {
+        p_org_id: access.orgId,
+        p_booking_id: bookingId,
+        p_reviewer: access.userId,
+        p_status: status,
+        p_notes: notes || null
       })
-      .eq('id', bookingId)
-      .eq('org_id', access.orgId)
-      .select(`
-        *,
-        organizations (
-          id,
-          name,
-          slug
-        )
-      `)
-      .single();
+      .maybeSingle();
 
     if (updateError) {
-      console.error('❌ Booking Update API: Error updating booking:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update booking', },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Booking review unavailable' }, { status: 503 });
     }
+    if (!reviewed) {
+      return NextResponse.json({ error: 'Booking not found or review not authorized' }, { status: 404 });
+    }
+    const { data: organization } = await supabase.from('organizations')
+      .select('id,name,slug').eq('id', access.orgId).maybeSingle();
+    const booking = { ...reviewed, organizations: organization ?? { id: access.orgId, name: 'Organization', slug: null } };
 
     console.log('✅ Booking Update API: Booking updated successfully:', booking.id);
 
