@@ -6,32 +6,13 @@ on:
 permissions:
   contents: read
 jobs:
-  baseline:
-    name: Node 22 baseline (unchanged lock)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - run: npm ci
-      - run: npm run type-check && npm run lint && npm test -- --runInBand
-        env:
-          NODE_OPTIONS: --max-old-space-size=4096
-      - run: npm run build:career
-        env:
-          NODE_OPTIONS: --max-old-space-size=4096
-          CIRCLE_NODE_TOTAL: '2'
-          NEXT_TELEMETRY_DISABLED: '1'
   resolve:
     name: Resolve exact candidate locks (no lifecycle scripts)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        lane: [compatible, next15, next15-clerk7]
+        lane: [next15-clerk7]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -69,7 +50,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        lane: [compatible, next15, next15-clerk7]
+        lane: [next15-clerk7]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -101,8 +82,8 @@ jobs:
       - name: Production severity gate
         run: |
           node -e "const r=require('./candidate/evidence/production.json'); if(r.error || !r.metadata?.vulnerabilities || r.metadata.vulnerabilities.high || r.metadata.vulnerabilities.critical) process.exit(1)"
-  persist-compatible:
-    name: Commit resolved compatible dependency candidate to isolated branch
+  persist-migrated:
+    name: Commit resolved Next 15 / Clerk 7 dependency candidate to isolated branch
     needs: resolve
     if: ${{ always() && github.ref == 'refs/heads/security/dcc-dependency-remediation-20261126' }}
     runs-on: ubuntu-latest
@@ -114,7 +95,7 @@ jobs:
           ref: ${{ github.sha }}
       - uses: actions/download-artifact@v4
         with:
-          name: candidate-compatible
+          name: candidate-next15-clerk7
           path: candidate
       - name: Verify and commit only dependency files (no dependency execution)
         shell: bash
@@ -126,5 +107,5 @@ jobs:
           git diff --stat -- package.json package-lock.json
           git add -- package.json package-lock.json
           if git diff --cached --quiet; then exit 0; fi
-          git -c user.name='DCC dependency CI' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'security: resolve compatible dependency upgrades; validate separately'
+          git -c user.name='DCC dependency CI' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'security: pin Next 15 and Clerk 7 candidate; validate separately'
           git push origin HEAD:refs/heads/security/dcc-dependency-remediation-20261126

@@ -25,7 +25,7 @@ beforeEach(() => {
     DCC_MEMBER_CUTOVER_ISO:'2026-11-01T00:00:00Z'}
   process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.test'
   process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-only'
-  staff.mockReturnValue('user_test_steward')
+  staff.mockResolvedValue('user_test_steward')
 })
 afterEach(() => {
   process.env=originalEnv

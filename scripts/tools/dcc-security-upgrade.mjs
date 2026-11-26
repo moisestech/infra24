@@ -20,7 +20,13 @@ manifest.devDependencies.postcss=latestStable('postcss','>=8.5.23 <9')
 if(lane!=='compatible'){
   manifest.dependencies.next=latestStable('next','>=15.5.29 <16')
   manifest.devDependencies['eslint-config-next']=manifest.dependencies.next
-  if(lane==='next15-clerk7') manifest.dependencies['@clerk/nextjs']=latestStable('@clerk/nextjs','>=7.10.10 <8')
+  if(lane==='next15-clerk7') {
+    manifest.dependencies['@clerk/nextjs']=latestStable('@clerk/nextjs','>=7.10.10 <8')
+    // The remaining high production finding is Next's nested PostCSS.
+    // Test a scoped 8.x patch override, not an unrelated global upgrade.
+    manifest.overrides={...manifest.overrides,next:{postcss:manifest.devDependencies.postcss}}
+    manifest.engines={node:'22.x',npm:'>=10'}
+  }
 }
 // Keep other direct ranges unchanged. Compatible resolver repairs only
 // reachable versions within declared constraints; review the lock diff.

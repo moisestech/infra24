@@ -18,7 +18,7 @@ jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn(() => ({ from:
 jest.mock('@/lib/supabase', () => ({ getSupabaseAdmin: jest.fn(), supabaseClient: {from:jest.fn()}, createClient:jest.fn() }))
 jest.mock('@/lib/email/email-service', () => ({sendBookingConfirmationEmail:jest.fn(),sendHostNotificationEmail:jest.fn()}))
 
-const clerk = auth as jest.Mock
+const clerk = auth as unknown as jest.Mock
 const authorized = requireOrganizationStaff as jest.Mock
 const clients = (createClient as jest.Mock).mock.results.map(result => result.value)
 const insert = jest.fn()
@@ -29,7 +29,7 @@ const orgId = 'aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa'
 
 beforeEach(() => {
   jest.clearAllMocks()
-  clerk.mockReturnValue({ userId: null })
+  clerk.mockResolvedValue({ userId: null })
   authorized.mockResolvedValue({ ok: false, error: 'Sign in required', status: 401 })
   single.mockResolvedValue({ data: { id:'created', status:'pending' }, error:null })
   select.mockReturnValue({ single })

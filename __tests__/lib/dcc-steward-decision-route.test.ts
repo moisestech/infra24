@@ -23,7 +23,7 @@ function req(payload:unknown,origin:string|null='https://dcc.miami') {
 beforeEach(()=>{
   jest.clearAllMocks()
   process.env.DCC_STEWARD_PUBLICATION_ENABLED='true'
-  requireStaff.mockReturnValue('user_staff_subject')
+  requireStaff.mockResolvedValue('user_staff_subject')
   decide.mockResolvedValue({state:'approved',public:true,slug:'artist-example'})
 })
 afterAll(()=>{
@@ -32,7 +32,7 @@ afterAll(()=>{
 })
 describe('DCC human publication decision HTTP boundary',()=>{
   it('blocks caller without staff identity before any external write',async()=>{
-    requireStaff.mockImplementation(()=>{throw new MemberAccessError(403,'staff_access_required')})
+    requireStaff.mockImplementation(async()=>{throw new MemberAccessError(403,'staff_access_required')})
     const response=await POST(req(body))
     expect(response.status).toBe(403)
     expect(decide).not.toHaveBeenCalled()
