@@ -87,7 +87,7 @@ export class GroupBookingService {
       const { data: booking, error } = await supabase
         .from('bookings')
         .insert({
-          organization_id: params.organizationId,
+          org_id: params.organizationId,
           user_id: params.userId,
           resource_type: params.resourceType,
           resource_id: params.resourceId,
@@ -484,15 +484,11 @@ export class GroupBookingService {
       const { data: bookings, error } = await supabase
         .from('bookings')
         .select(`
-          *,
-          resources (
-            id,
-            name,
-            type,
-            description
-          )
+          id,title,description,start_time,end_time,capacity,current_participants,available_spots,is_group_booking,group_size,waitlist_enabled,group_booking_type,price,
+          resources (id,title,type,description)
         `)
-        .eq('organization_id', organizationId)
+        .eq('org_id', organizationId)
+        .eq('group_booking_type', 'public')
         .eq('is_group_booking', true)
         .eq('status', 'confirmed')
         .gt('available_spots', 0)
