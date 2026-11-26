@@ -55,7 +55,7 @@ export const TOUCHING_GRASS_EXHIBITION: EdgeZonesExhibitionConfig = {
   curatorImageUrl: JORDAN_HORTON_PORTRAIT_URL,
   partnership: {
     host: 'Edge Zones Gallery',
-    digital: 'DCC Miami',
+    digital: 'No institutional digital partner confirmed',
   },
   partnershipImages: {
     host: {
@@ -70,19 +70,19 @@ export const TOUCHING_GRASS_EXHIBITION: EdgeZonesExhibitionConfig = {
     },
     digital: {
       url: DCC_MIAMI_LOGO_URL_LIGHT,
-      alt: 'DCC.miami — Digital Culture Center Miami',
+      alt: 'Former DCC concept image — not an approved partner',
       fit: 'contain',
     },
   },
   location: 'Edge Zones Gallery, Miami',
   dates: 'Dates TBD',
-  ctaUrl: '/edgezones#concept',
+  ctaUrl: 'https://edgezones.org',
   artistNames: EXHIBITION_ARTIST_NAMES,
   curatorialBlurb: JORDAN_HORTON_CURATOR_STATEMENT,
-  spokenAnswer: `Touching Grass is a group exhibition curated by Jordan Horton at Edge Zones Gallery, supported by DCC Miami. Dates are still being confirmed. Jordan Horton writes: "${JORDAN_HORTON_CURATOR_STATEMENT.slice(0, 120)}…" Featuring ${EXHIBITION_ARTIST_NAMES.join(', ')}.`,
+  spokenAnswer: `Touching Grass is a proposed group exhibition at Edge Zones Gallery. The final roster and exhibition details require organizer confirmation. Jordan Horton writes: "${JORDAN_HORTON_CURATOR_STATEMENT.slice(0, 120)}…" Featuring ${EXHIBITION_ARTIST_NAMES.join(', ')}.`,
   displayAnswer: `Touching Grass (working title)
 
-Curated by Jordan Horton · Edge Zones Gallery · DCC Miami
+Proposed at Edge Zones Gallery · curatorial details subject to organizer confirmation
 Dates TBD
 
 Curator's statement — Jordan Horton
@@ -91,7 +91,7 @@ Curator's statement — Jordan Horton
 
 Featuring ${EXHIBITION_ARTIST_NAMES.join(', ')}.
 
-Partnership: Edge Zones Gallery (physical host) · Jordan Horton (curatorial vision) · DCC Miami (digital platform and support layer).
+Institutional presentation and all exhibition information are controlled by Edge Zones. There is no DCC institutional role in this exhibition.
 
 Location: Edge Zones Gallery, Miami`,
   followUps: [
