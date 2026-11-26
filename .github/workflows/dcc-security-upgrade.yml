@@ -2,8 +2,6 @@ name: DCC pinned security candidate (Node 22)
 on:
   push:
     branches: ['security/dcc-dependency-remediation-20261126']
-  pull_request:
-    branches: ['spec/unified-website-membership-node-rfc-20261122']
 permissions:
   contents: read
 concurrency:
