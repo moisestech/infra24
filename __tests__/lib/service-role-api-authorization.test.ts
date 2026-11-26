@@ -11,6 +11,10 @@ import { POST as createResource } from '@/app/api/organizations/[orgId]/resource
 import { GET as listFullResources, POST as createFullResource } from '@/app/api/organizations/by-id/resources/route'
 import { GET as listSubmissions } from '@/app/api/organizations/by-id/submissions/route'
 import { GET as listForms, POST as createForm } from '@/app/api/organizations/by-id/submission-forms/route'
+import { GET as listArtists, POST as createArtist } from '@/app/api/organizations/by-id/artists/route'
+import { GET as listUsers } from '@/app/api/organizations/by-id/users/route'
+import { GET as listAnnouncements } from '@/app/api/organizations/by-id/announcements/route'
+import { GET as listAnalytics } from '@/app/api/organizations/by-id/analytics/route'
 
 jest.mock('@clerk/nextjs/server', () => ({ auth: jest.fn() }))
 jest.mock('@/lib/security/require-organization-staff', () => ({ requireOrganizationStaff: jest.fn() }))
@@ -84,15 +88,32 @@ describe('service-role endpoint boundary', () => {
 describe('legacy tenant boundaries', () => {
   it.each([401,403])('denies unapproved staff access (%i) before tenant data is read or written', async status => {
     authorized.mockResolvedValue({ok:false,status,error:'denied'})
+    clerk.mockResolvedValue({userId:'user_test'})
     const req = new NextRequest('https://example.test/api/bookings?org_id='+orgId)
-    const write = () => new NextRequest('https://example.test/api/resources',{method:'POST',body:JSON.stringify({title:'Synthetic',type:'space',org_id:'other'})})
+    const write = () => new NextRequest('https://example.test/api/resources?org_id='+orgId,{method:'POST',body:JSON.stringify({title:'Synthetic',type:'space',org_id:'other'})})
     const params = {params:Promise.resolve({orgId})}
     const responses = await Promise.all([
-      listLegacyBookings(req), createResource(write(),{params:{orgId}}),
-      listFullResources(req,params),createFullResource(write(),params),
-      listSubmissions(req,params),listForms(req,params),createForm(write(),params),
+      listLegacyBookings(req), createResource(write(),params),
+      listFullResources(req),createFullResource(write()),
+      listSubmissions(req),listForms(req),createForm(write()),listArtists(req),createArtist(write()),listUsers(req),listAnnouncements(req),listAnalytics(req),
     ])
-    expect(responses.map(r=>r.status)).toEqual(Array(7).fill(status))
+    expect(responses.map(r=>r.status)).toEqual(Array(12).fill(status))
+    expect(from).not.toHaveBeenCalled()
+  })
+})
+
+describe('static by-id tenant selector',()=>{
+  it('passes URL tenant selector, never a body organization override, to staff authorization',async()=>{
+    const request=new NextRequest('https://example.test/api/organizations/by-id/artists?org_id='+orgId,{method:'POST',body:JSON.stringify({name:'Synthetic',organization_id:'different-tenant'})})
+    expect((await createArtist(request)).status).toBe(401)
+    expect(authorized).toHaveBeenCalledWith(orgId)
+    expect(from).not.toHaveBeenCalled()
+  })
+  it('does not obtain a tenant from missing dynamic params',async()=>{
+    authorized.mockResolvedValue({ok:false,status:400,error:'A valid organization ID is required'})
+    const request=new NextRequest('https://example.test/api/organizations/by-id/submission-forms')
+    expect((await listForms(request)).status).toBe(400)
+    expect(authorized).toHaveBeenCalledWith(null)
     expect(from).not.toHaveBeenCalled()
   })
 })

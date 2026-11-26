@@ -25,9 +25,10 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const id = new URL(request.url).searchParams.get('org_id')
-    const access = await requireOrganizationStaff(id)
+    const requestedOrgId = new URL(request.url).searchParams.get('org_id')
+    const access = await requireOrganizationStaff(requestedOrgId)
     if (!access.ok) return NextResponse.json({error:access.error},{status:access.status,headers:{'Cache-Control':'private, no-store'}})
+    const id = access.orgId
 
     // First, get the organization by ID
     const { data: organization, error: orgError } = await supabase

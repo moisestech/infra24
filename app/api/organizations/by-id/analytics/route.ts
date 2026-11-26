@@ -15,9 +15,10 @@ export async function GET(
     }
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-    const orgId = new URL(request.url).searchParams.get('org_id')
-    const access = await requireOrganizationStaff(orgId)
+    const requestedOrgId = new URL(request.url).searchParams.get('org_id')
+    const access = await requireOrganizationStaff(requestedOrgId)
     if (!access.ok) return NextResponse.json({error:access.error},{status:access.status,headers:{'Cache-Control':'private, no-store'}})
+    const orgId = access.orgId
     const { searchParams } = new URL(request.url);
     
     const startDate = searchParams.get('start_date') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
