@@ -10,7 +10,7 @@ import {
 } from '@/lib/workshop-engine/resin-printing'
 import { cn } from '@/lib/utils'
 
-type Props = { params: Promise<{ slug: string }> | { slug: string } }
+type Props = { params: Promise<{ slug: string }> }
 
 async function resolveParams(params: Props['params']) {
   return await Promise.resolve(params)

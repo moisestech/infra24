@@ -4,7 +4,7 @@ import { ParticipantSessionClient } from '@/components/workshop-engine/Participa
 import { getLiveSessionByCode } from '@/lib/workshop-engine/session-store'
 import { normalizeJoinCode } from '@/lib/workshop-engine/join-code'
 
-type Props = { params: Promise<{ code: string }> | { code: string } }
+type Props = { params: Promise<{ code: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { code } = await Promise.resolve(params)

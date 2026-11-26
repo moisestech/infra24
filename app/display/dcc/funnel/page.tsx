@@ -8,10 +8,11 @@ export const metadata: Metadata = {
 }
 
 type Props = {
-  searchParams?: { controls?: string }
+  searchParams?: Promise<{ controls?: string }>
 }
 
-export default function DccTvFunnelPage({ searchParams }: Props) {
+export default async function DccTvFunnelPage({ searchParams: pendingSearchParams }: Props) {
+  const searchParams = await pendingSearchParams
   const showControls = searchParams?.controls === '1'
   return <DccTvFunnelPlayer showControls={showControls} />
 }
