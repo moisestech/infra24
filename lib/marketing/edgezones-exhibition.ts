@@ -80,20 +80,7 @@ export const TOUCHING_GRASS_EXHIBITION: EdgeZonesExhibitionConfig = {
   artistNames: EXHIBITION_ARTIST_NAMES,
   curatorialBlurb: JORDAN_HORTON_CURATOR_STATEMENT,
   spokenAnswer: `Touching Grass is a proposed group exhibition at Edge Zones Gallery. The final roster and exhibition details require organizer confirmation. Jordan Horton writes: "${JORDAN_HORTON_CURATOR_STATEMENT.slice(0, 120)}…" Featuring ${EXHIBITION_ARTIST_NAMES.join(', ')}.`,
-  displayAnswer: `Touching Grass (working title)
-
-Proposed at Edge Zones Gallery · curatorial details subject to organizer confirmation
-Dates TBD
-
-Curator's statement — Jordan Horton
-
-"${JORDAN_HORTON_CURATOR_STATEMENT}"
-
-Featuring ${EXHIBITION_ARTIST_NAMES.join(', ')}.
-
-Institutional presentation and all exhibition information are controlled by Edge Zones. There is no DCC institutional role in this exhibition.
-
-Location: Edge Zones Gallery, Miami`,
+  displayAnswer: `Touching Grass (working title)\n\nProposed at Edge Zones Gallery. Institutional information, curatorial details, roster, and dates should be verified with Edge Zones directly. DCC Miami is not an institutional partner.\n\nOfficial venue: https://edgezones.org`,
   followUps: [
     'Who is curating Touching Grass?',
     'Tell me about Fabiola Larios.',
@@ -101,7 +88,7 @@ Location: Edge Zones Gallery, Miami`,
     'Which artists work with new media in Miami?',
     "Join Miami's Digital Culture Map",
   ],
-  galleryImages: edgeZonesGalleryForMemoryAgent(),
+  galleryImages: [],
 }
 
 export const EDGE_ZONES_EXHIBITION_SUGGESTED_QUESTIONS = [
