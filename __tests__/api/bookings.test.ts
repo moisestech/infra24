@@ -4,6 +4,7 @@ import { POST } from '@/app/api/bookings/route'
 
 // Explicit route-boundary mocks; no real Supabase or outbound email.
 const mockResource = jest.fn()
+const mockOrganization = jest.fn()
 const mockConflict = jest.fn()
 const mockBooking = jest.fn()
 const mockInsert = jest.fn()
@@ -14,7 +15,7 @@ jest.mock('@/lib/supabase', () => ({
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
         insert: mockInsert,
-        single: table === 'resources' ? mockResource : mockBooking,
+        single: table === 'resources' ? mockResource : table === 'organizations' ? mockOrganization : mockBooking,
         or: mockConflict,
       }
       mockInsert.mockImplementation(() => Object.assign(Promise.resolve({error:null}), {
@@ -32,7 +33,8 @@ jest.mock('@/lib/email/email-service', () => ({
 describe('/api/bookings', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockResource.mockReset().mockResolvedValue({data:{id:'test-resource-id',title:'Test Resource',metadata:{}},error:null})
+    mockResource.mockReset().mockResolvedValue({data:{id:'test-resource-id',title:'Test Resource',metadata:{default_hosts:['host@example.com']}},error:null})
+    mockOrganization.mockReset().mockResolvedValue({data:{name:'Synthetic organization'},error:null})
     mockConflict.mockReset().mockResolvedValue({data:[],error:null})
     mockBooking.mockReset().mockResolvedValue({data:{id:'test-booking-id'},error:null})
   })
@@ -165,3 +167,16 @@ describe('/api/bookings', () => {
 
 
 
+
+ test('missing tenant host fails closed before insertion',async()=>{
+  mockResource.mockResolvedValueOnce({data:{id:'resource',title:'Resource',metadata:{}},error:null})
+  const response=await POST(new NextRequest('http://localhost/api/bookings',{method:'POST',body:JSON.stringify({org_id:'org',resource_id:'resource',start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T11:00:00Z',artist_name:'Test',artist_email:'guest@example.com'})}))
+  expect(response.status).toBe(503)
+  expect(mockInsert).not.toHaveBeenCalled()
+ })
+ test('availability database error prevents insertion',async()=>{
+  mockConflict.mockResolvedValueOnce({data:null,error:{message:'synthetic'}})
+  const response=await POST(new NextRequest('http://localhost/api/bookings',{method:'POST',body:JSON.stringify({org_id:'org',resource_id:'resource',start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T11:00:00Z',artist_name:'Test',artist_email:'guest@example.com'})}))
+  expect(response.status).toBe(409)
+  expect(mockInsert).not.toHaveBeenCalled()
+ })
