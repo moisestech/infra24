@@ -1,5 +1,5 @@
 import {
-  ownerPassportSchema, mayEditOwnerPassport, mayRequestPublicPassport,
+  ownerPassportSchema, ownerPassportSaveSchema, mayEditOwnerPassport, mayRequestPublicPassport,
   requestPublicPassportSchema, DCC_PUBLIC_PROFILE_DISCLOSURE,
 } from '@/lib/dcc/membership/profile-schema'
 
@@ -33,10 +33,13 @@ describe('BDD — owner Passport is private until independently approved', () =>
   })
   it('has a separate, exact and opt-in public publication grant', () => {
     expect(requestPublicPassportSchema.safeParse({
-      consent:true,disclosureVersion:DCC_PUBLIC_PROFILE_DISCLOSURE,
+      revision:1,consent:true,disclosureVersion:DCC_PUBLIC_PROFILE_DISCLOSURE,
     }).success).toBe(true)
-    expect(requestPublicPassportSchema.safeParse({consent:false,disclosureVersion:DCC_PUBLIC_PROFILE_DISCLOSURE}).success).toBe(false)
-    expect(requestPublicPassportSchema.safeParse({consent:true,disclosureVersion:'old'}).success).toBe(false)
+    expect(ownerPassportSaveSchema.safeParse({...sample,revision:0}).success).toBe(true)
+    expect(ownerPassportSaveSchema.safeParse(sample).success).toBe(false)
+    expect(requestPublicPassportSchema.safeParse({consent:true,disclosureVersion:DCC_PUBLIC_PROFILE_DISCLOSURE}).success).toBe(false)
+    expect(requestPublicPassportSchema.safeParse({revision:1,consent:false,disclosureVersion:DCC_PUBLIC_PROFILE_DISCLOSURE}).success).toBe(false)
+    expect(requestPublicPassportSchema.safeParse({revision:1,consent:true,disclosureVersion:'old'}).success).toBe(false)
   })
   it('rejects links that include credentials, non-https URL or unknown properties', () => {
     expect(ownerPassportSchema.safeParse({...sample, links:[{label:'x',url:'http://example.org'}]}).success).toBe(false)

@@ -9,6 +9,11 @@ export type MemberDb = SupabaseClient<any>
 const PRIVATE_HEADERS = { 'Cache-Control': 'private, no-store, max-age=0' }
 export { PRIVATE_HEADERS }
 
+export function requireOwnerMutationOrigin(request: Request) {
+  const origin = request.headers.get('origin')
+  if (!origin || origin !== new URL(request.url).origin)
+    throw new MemberAccessError(403, 'origin_not_allowed')
+}
 export type PassportBinding = { id: string; state: string; airtablePersonId: string | null }
 export class MemberAccessError extends Error {
   constructor(public status: number, public code: string) { super(code) }
@@ -52,13 +57,15 @@ export async function memberPassportContext(): Promise<{
 
 export function ownerPassportPayload(row: Record<string, any> | null) {
   return {
+    revision: typeof row?.revision === 'number' ? row.revision : 0,
     displayName: typeof row?.display_name === 'string' ? row.display_name : '',
     summary: typeof row?.summary === 'string' ? row.summary : '',
     practices: Array.isArray(row?.practices) ? row.practices : [],
     interests: Array.isArray(row?.interests) ? row.interests : [],
     links: Array.isArray(row?.public_links) ? row.public_links : [],
     publication: row?.public_request_state === 'pending_review'
-      ? 'pending_review' : row?.public_request_state === 'withdrawal_requested'
+      ? 'pending_review' : row?.public_request_state === 'review_processing'
+        ? 'review_processing' : row?.public_request_state === 'withdrawal_requested'
         ? 'withdrawal_requested' : 'private',
   }
 }
@@ -67,7 +74,7 @@ export async function readOwnerPassport(
   db: MemberDb, binding: PassportBinding,
 ) {
   const { data, error } = await db.from('dcc_member_profile_drafts')
-    .select('display_name,summary,practices,interests,public_links,public_request_state')
+    .select('display_name,summary,practices,interests,public_links,public_request_state,revision')
     .eq('binding_id', binding.id).maybeSingle()
   if (error) throw new MemberAccessError(503, 'profile_read_failed')
   return ownerPassportPayload(data)
@@ -75,25 +82,16 @@ export async function readOwnerPassport(
 
 /** Server-owned binding ID prevents IDOR even when the caller tampers with JSON. */
 export async function saveOwnerPassport(
-  db: MemberDb, binding: PassportBinding, draft: OwnerPassport,
+  db: MemberDb, binding: PassportBinding, draft: OwnerPassport, revision: number,
 ) {
-  const row = {
-    binding_id: binding.id,
-    display_name: draft.displayName,
-    summary: draft.summary,
-    practices: draft.practices,
-    interests: draft.interests,
-    public_links: draft.links,
-    public_request_state: 'private',
-    request_disclosure_version: null,
-    public_requested_at: null,
-    updated_at: new Date().toISOString(),
-  }
-  // Editing a private draft always resets any pending request. It never changes
-  // already-approved Airtable publication; that requires a separate revocation
-  // and cache-invalidation workflow, gated before live public publication.
-  const { error } = await db.from('dcc_member_profile_drafts')
-    .upsert(row, { onConflict: 'binding_id' })
+  const { data, error } = await db.rpc('dcc_save_owner_passport', {
+    p_binding: binding.id, p_revision: revision, p_display_name: draft.displayName,
+    p_summary: draft.summary, p_practices: draft.practices,
+    p_interests: draft.interests, p_links: draft.links,
+  })
   if (error) throw new MemberAccessError(503, 'profile_save_failed')
-  return { saved: true as const, publication: 'private' as const }
+  if (data === null) throw new MemberAccessError(409, 'profile_revision_conflict')
+  if (typeof data !== 'number' || data <= revision)
+    throw new MemberAccessError(503, 'profile_save_failed')
+  return { saved: true as const, publication: 'private' as const, revision: data }
 }

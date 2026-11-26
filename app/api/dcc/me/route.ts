@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fetchAllRecords } from '@/lib/airtable/client'
 import { memberPassportContext, MemberAccessError, PRIVATE_HEADERS,
-  readOwnerPassport, saveOwnerPassport } from '@/lib/dcc/membership/profile-store'
-import { ownerPassportSchema, mayEditOwnerPassport } from '@/lib/dcc/membership/profile-schema'
+  readOwnerPassport, saveOwnerPassport, requireOwnerMutationOrigin } from '@/lib/dcc/membership/profile-store'
+import { ownerPassportSaveSchema, mayEditOwnerPassport } from '@/lib/dcc/membership/profile-schema'
 
 export const dynamic = 'force-dynamic'
 function failure(error: unknown) {
@@ -60,6 +60,7 @@ export async function GET() {
 }
 export async function PATCH(request: NextRequest) {
   try {
+    requireOwnerMutationOrigin(request)
     const { db, binding } = await memberPassportContext()
     if (!mayEditOwnerPassport(binding.state as 'active' | 'pending_reconciliation')) {
       return NextResponse.json({ error: 'edit_not_allowed' }, { status: 403, headers: PRIVATE_HEADERS })
@@ -73,9 +74,10 @@ export async function PATCH(request: NextRequest) {
     try { payload = JSON.parse(raw) } catch {
       return NextResponse.json({ error: 'invalid_json' }, { status: 400, headers: PRIVATE_HEADERS })
     }
-    const parsed = ownerPassportSchema.safeParse(payload)
+    const parsed = ownerPassportSaveSchema.safeParse(payload)
     if (!parsed.success) return NextResponse.json({ error: 'invalid_profile' }, { status: 400, headers: PRIVATE_HEADERS })
-    const result = await saveOwnerPassport(db, binding, parsed.data)
+    const { revision, ...draft } = parsed.data
+    const result = await saveOwnerPassport(db, binding, draft, revision)
     return NextResponse.json(result, { headers: PRIVATE_HEADERS })
   } catch (e) { return failure(e) }
 }

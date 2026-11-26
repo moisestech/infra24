@@ -7,15 +7,16 @@ import { DCC_PUBLIC_PROFILE_DISCLOSURE } from '@/lib/dcc/membership/profile-sche
 import { YourConstellationPreview } from './YourConstellationPreview'
 
 type Draft = {
+  revision: number
   displayName: string
   summary: string
   practices: string[]
   interests: InterestId[]
   links: { label: string; url: string }[]
-  publication: 'private' | 'pending_review' | 'withdrawal_requested'
+  publication: 'private' | 'pending_review' | 'review_processing' | 'withdrawal_requested'
 }
 const empty: Draft = {
-  displayName: '',summary:'',practices:[],interests:[],links:[],publication:'private',
+  revision: 0,displayName: '',summary:'',practices:[],interests:[],links:[],publication:'private',
 }
 type Membership = 'active' | 'pending_reconciliation'
 function humanizeError(code: string) {
@@ -26,6 +27,7 @@ function humanizeError(code: string) {
     verify_account_first: 'Verify your account email before editing your DCC profile.',
     identity_review_required: 'We need to verify an existing DCC identity before editing.',
     membership_restricted: 'This membership cannot currently be edited.',
+    profile_revision_conflict: 'Your saved profile changed or is not eligible for review. Copy any unsaved changes, then reload the profile before trying again.',
     profile_save_failed: 'We could not save your changes. Your form remains here for another attempt.',
     request_unavailable: 'The member service is temporarily unavailable.',
   }
@@ -40,6 +42,7 @@ export function YourDccProfile() {
   const [practiceInput,setPracticeInput] = useState('')
   const [linkUrl,setLinkUrl] = useState('')
   const [busy,setBusy] = useState(false)
+  const [reloadRequired,setReloadRequired] = useState(false)
   const [dirty,setDirty] = useState(false)
   const [feedback,setFeedback] = useState('')
   const [publicConsent,setPublicConsent] = useState(false)
@@ -54,6 +57,9 @@ export function YourDccProfile() {
       if (!response.ok) { setStatus('unavailable');setFeedback(humanizeError(body.error));return }
       setMembership(body.membership)
       setDraft(body.profile)
+      setReloadRequired(false)
+      setDirty(false)
+      setPublicConsent(false)
       setCurrentlyPublic(typeof body.currentlyPublic==='boolean' ? body.currentlyPublic : null)
       setPublicSlug(typeof body.publicSlug==='string' ? body.publicSlug : null)
       setStatus('ready')
@@ -107,10 +113,11 @@ export function YourDccProfile() {
   }
   async function save(event:FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (busy || status!=='ready') return
+    if (busy || reloadRequired || status!=='ready') return
     setBusy(true);setFeedback('')
     try {
       const response=await fetch('/api/dcc/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        revision:draft.revision,
         displayName:draft.displayName.trim(),
         summary:draft.summary.trim(),
         practices:draft.practices,
@@ -118,9 +125,9 @@ export function YourDccProfile() {
         links:draft.links,
       })})
       const result=await response.json()
-      if (!response.ok || result.saved!==true) {setFeedback(humanizeError(result.error));return}
+      if (!response.ok || result.saved!==true || !Number.isInteger(result.revision)) {if(response.status===409)setReloadRequired(true);setFeedback(humanizeError(result.error));return}
       setDirty(false)
-      setDraft(old=>({...old,publication:'private'}))
+      setDraft(old=>({...old,revision:result.revision,publication:'private'}))
       setFeedback('Private profile saved. It is not public or part of the named sculpture yet.')
     } catch {setFeedback('Could not confirm save. Your changes remain on this screen.')}
     finally {setBusy(false)}
@@ -135,6 +142,7 @@ export function YourDccProfile() {
         setFeedback(humanizeError(result.error))
         return
       }
+      setReloadRequired(true)
       setCurrentlyPublic(false)
       setPublicSlug(null)
       setPublicConsent(false)
@@ -145,15 +153,15 @@ export function YourDccProfile() {
     }finally{setBusy(false)}
   }
   async function requestPublic() {
-    if (busy || dirty || membership!=='active' || !publicConsent) return
+    if (busy || reloadRequired || dirty || draft.revision<1 || draft.publication!=='private' || membership!=='active' || !publicConsent) return
     setBusy(true);setFeedback('')
     try {
       const response=await fetch('/api/dcc/me/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-        consent:true,disclosureVersion:DCC_PUBLIC_PROFILE_DISCLOSURE,
+        revision:draft.revision,consent:true,disclosureVersion:DCC_PUBLIC_PROFILE_DISCLOSURE,
       })})
       const result=await response.json()
-      if (!response.ok || result.status!=='pending_review') {setFeedback(humanizeError(result.error));return}
-      setDraft(old=>({...old,publication:'pending_review'}))
+      if (!response.ok || result.status!=='pending_review' || !Number.isInteger(result.revision)) {if(response.status===409)setReloadRequired(true);setFeedback(humanizeError(result.error));return}
+      setDraft(old=>({...old,revision:result.revision,publication:'pending_review'}))
       setPublicConsent(false)
       setFeedback('Sent for identity and content review. Nothing has been made public yet.')
     } catch {setFeedback('We could not confirm your request. Please try again.')}
@@ -187,7 +195,7 @@ export function YourDccProfile() {
           <p className="mt-1 text-lg">{membership==='active'?'Verified DCC website member':'Identity reconciliation in progress'}</p>
           <p className="mt-2 text-sm text-[var(--dn-muted)]">Your profile draft is private. Joining alone never publishes your name, email or practice connections. An anonymous aggregate may eventually contribute to the artwork in a delayed batch after verified activation.</p>
         </div>
-        <form className="space-y-6" onSubmit={save}>
+        <form onSubmit={save}><fieldset disabled={busy||reloadRequired} className="space-y-6">
           <div><label htmlFor="dcc-display-name" className="mb-2 block text-sm font-medium">Display name</label>
             <input id="dcc-display-name" className={inputClass} value={draft.displayName} required maxLength={80} autoComplete="name" onChange={e=>change('displayName',e.target.value)} /></div>
           <div><label htmlFor="dcc-summary" className="mb-2 block text-sm font-medium">What do you make, teach, or explore?</label>
@@ -209,7 +217,7 @@ export function YourDccProfile() {
               <span className="min-w-0 truncate">{l.url}</span><button type="button" className="min-h-11 px-3" onClick={()=>change('links',draft.links.filter(x=>x.url!==l.url))}>Remove</button>
             </div>)}</div></div>
           <button className={buttonClass} disabled={busy || !draft.displayName.trim()} type="submit">{busy?'Saving…':dirty?'Save private draft':'Save profile'}</button>
-        </form>
+        </fieldset></form>
         <div className="rounded-2xl border border-[var(--dn-line)] bg-[var(--dn-panel)] p-5">
           <p className="font-mono text-xs uppercase tracking-wide text-[var(--dn-subtle)]">Visibility and sculpture</p>
           <h2 className="mt-2 text-2xl font-light">Be discoverable, on your terms.</h2>
@@ -229,18 +237,19 @@ export function YourDccProfile() {
             Your latest public listing request is pending review; this action did not publish new information.
           </p>}
           {membership!=='active' && <p className="mt-3 text-sm" role="status">Public profile requests become available after your membership is verified.</p>}
-          <label className="mt-5 flex items-start gap-3 text-sm leading-relaxed"><input type="checkbox" className="mt-1 h-5 w-5 shrink-0" checked={publicConsent} onChange={e=>setPublicConsent(e.target.checked)} disabled={membership!=='active'||dirty}/>
+          <label className="mt-5 flex items-start gap-3 text-sm leading-relaxed"><input type="checkbox" className="mt-1 h-5 w-5 shrink-0" checked={publicConsent} onChange={e=>setPublicConsent(e.target.checked)} disabled={busy||reloadRequired||membership!=='active'||dirty||draft.revision<1||draft.publication!=='private'}/>
             I ask DCC to review my display name, summary, practices, categories and public links for publication in the public directory and artwork. This is separate from membership and marketing, and does not authorize person-to-person links.</label>
           <div className="mt-5 flex flex-wrap gap-3">
-            <button type="button" className={buttonClass} disabled={busy||dirty||membership!=='active'||!publicConsent} onClick={()=>void requestPublic()}>Request public listing</button>
+            <button type="button" className={buttonClass} disabled={busy||reloadRequired||dirty||membership!=='active'||!publicConsent||draft.revision<1||draft.publication!=='private'} onClick={()=>void requestPublic()}>Request public listing</button>
             <button type="button" className="min-h-11 rounded-full border border-[var(--dn-line)] px-5 py-3 text-sm" disabled={busy} onClick={()=>void withdrawPublic()}>
               Withdraw public listing
             </button>
           </div>
           {dirty && <p className="mt-2 text-xs text-[var(--dn-subtle)]">Save your private changes before requesting review.</p>}
         </div>
+        {reloadRequired && <button type="button" className="min-h-11 underline" disabled={busy} onClick={()=>void fetchMember()}>Reload saved profile (discards unsaved changes)</button>}
         {feedback && <p role="status" className="text-sm text-[var(--dn-link)]">{feedback}</p>}
-        <p className="text-xs text-[var(--dn-muted)]">You can return and edit your draft. If an older profile was already published, a new draft does not automatically replace or withdraw it. Contact DCC to correct or remove approved public information until a verified revocation workflow is available.</p>
+        <p className="text-xs text-[var(--dn-muted)]">You can return and edit your draft. If an older profile was already published, a new draft does not automatically replace or withdraw it. Use Withdraw public listing to remove an approved listing; contact DCC if confirmation fails.</p>
       </div>}
     </div>
   </section>

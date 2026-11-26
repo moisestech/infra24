@@ -22,9 +22,11 @@ export const ownerPassportSchema = z.object({
 
 export const DCC_PUBLIC_PROFILE_DISCLOSURE = 'dcc-public-profile-request-v1-2026-11-22'
 export const requestPublicPassportSchema = z.object({
+  revision: z.number().int().min(1).max(2147483646),
   consent: z.literal(true),
   disclosureVersion: z.literal(DCC_PUBLIC_PROFILE_DISCLOSURE),
 }).strict()
+export const ownerPassportSaveSchema = ownerPassportSchema.extend({ revision: z.number().int().min(0).max(2147483646) })
 export type OwnerPassport = z.infer<typeof ownerPassportSchema>
 
 export type OwnerMembershipState =

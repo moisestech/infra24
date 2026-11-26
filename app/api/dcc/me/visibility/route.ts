@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
-import { memberPassportContext, MemberAccessError, PRIVATE_HEADERS } from '@/lib/dcc/membership/profile-store'
+import { NextRequest, NextResponse } from 'next/server'
+import { memberPassportContext, MemberAccessError, PRIVATE_HEADERS, requireOwnerMutationOrigin } from '@/lib/dcc/membership/profile-store'
 import { fetchAllRecords, patchAirtableRecord } from '@/lib/airtable/client'
 
 export const dynamic = 'force-dynamic'
@@ -9,8 +9,9 @@ export const dynamic = 'force-dynamic'
  * Disables Airtable's allowlisted public projection BEFORE acknowledging success.
  * Never accepts a browser-supplied Airtable record identifier or binding ID.
  */
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
+    requireOwnerMutationOrigin(request)
     const { db, binding }=await memberPassportContext()
     // Every authenticated member withdrawal revokes the authoritative grant
     // FIRST. The independent publication flag is a kill switch, not a reason
@@ -37,15 +38,6 @@ export async function POST() {
         'Atlas Publication State':'Withdrawn',
       })
     }
-    const {error}=await db.from('dcc_member_profile_drafts')
-      .update({
-        public_request_state:'withdrawal_requested',
-        request_disclosure_version:null,
-        public_requested_at:null,
-        updated_at:new Date().toISOString(),
-      })
-      .eq('binding_id',binding.id)
-    if(error)throw new MemberAccessError(503,'visibility_update_unavailable')
     return NextResponse.json({
       status:'withdrawn',public:false,
       message:'Your public directory and artwork listing is withdrawn. Your private DCC membership remains.',
