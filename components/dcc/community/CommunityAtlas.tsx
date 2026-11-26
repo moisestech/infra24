@@ -4,18 +4,15 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import * as Avatar from '@radix-ui/react-avatar'
 import { ArrowUpRight, ExternalLink, Search, UserRoundPlus, RefreshCw } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  INTERESTS, filterProfiles, PASSPORT_PREVIEW_KEY,
-  readPassportPreview, type InterestId, type PassportPreview, type AtlasProfile,
+  INTERESTS, filterProfiles, type InterestId, type AtlasProfile,
 } from '@/lib/dcc/community/atlas'
 import { PollPulse } from './PollPulse'
 import { NetworkGraphBoundary } from '@/components/dcc/artwork/NetworkGraphBoundary'
 import { PUBLIC_ARTISTS } from '@/lib/dcc/artwork/member-presence'
 import { isDiscoveryChoice, type DiscoveryPollChoiceId } from '@/lib/dcc/artwork/discovery-poll'
 import { INTEREST_POLL_CATEGORIES } from '@/lib/dcc/artwork/people-practice-graph'
-import { AtlasProfileForm } from './AtlasProfileForm'
-import styles from './community.module.css'
 
 const Field = dynamic(() => import('@/components/dcc/artwork/PeopleNetworkField'), {
   ssr: false,
@@ -52,17 +49,10 @@ export function CommunityAtlas() {
   const [sourceProfiles, setSourceProfiles] = useState<AtlasProfile[]>([])
   const [websitePresenceMarks, setWebsitePresenceMarks] = useState(0)
   const [mode, setMode] = useState<'preview' | 'live' | 'loading' | 'unavailable'>('loading')
-  const [intakeEnabled, setIntakeEnabled] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [loadError, setLoadError] = useState('')
   const [selected, setSelected] = useState('moises-sanabria')
   const [graphFocus, setGraphFocus] = useState<GraphSelection>(null)
-  const [showProfileForm, setShowProfileForm] = useState(false)
-  const [showPassport, setShowPassport] = useState(false)
-  const [passport, setPassport] = useState<PassportPreview | null>(null)
-  const [notice, setNotice] = useState('')
-  const profileDialog = useRef<HTMLDialogElement>(null)
-  const passportDialog = useRef<HTMLDialogElement>(null)
   const detailRef = useRef<HTMLDivElement>(null)
   const loadId = useRef(0)
 
@@ -88,14 +78,12 @@ export function CommunityAtlas() {
       setSourceProfiles(data.profiles)
       setWebsitePresenceMarks(data.websitePresence?.status === 'coarsened' ? data.websitePresence.markCount : 0)
       setMode(data.mode)
-      setIntakeEnabled(data.intakeEnabled === true)
       setLoadError('')
     } catch {
       if (!signal?.aborted && load === loadId.current) {
         setSourceProfiles([])
         setWebsitePresenceMarks(0)
         setMode('unavailable')
-        setIntakeEnabled(false)
         setLoadError('Public profiles are temporarily unavailable. Please try again.')
       }
     } finally {
@@ -117,21 +105,12 @@ export function CommunityAtlas() {
   }, [refreshProfiles])
 
   useEffect(() => {
-    try { setPassport(readPassportPreview(sessionStorage.getItem(PASSPORT_PREVIEW_KEY))) }
-    catch { /* Private browsing may block local storage. */ }
     const requested = new URL(window.location.href).searchParams.get('profile')
     if (requested && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(requested)) {
       setSelected(requested)
       if (isPublicArtist(requested)) setGraphFocus(requested)
     }
   }, [])
-
-  useEffect(() => {
-    if (showProfileForm && profileDialog.current && !profileDialog.current.open) profileDialog.current.showModal()
-  }, [showProfileForm])
-  useEffect(() => {
-    if (showPassport && passportDialog.current && !passportDialog.current.open) passportDialog.current.showModal()
-  }, [showPassport])
 
   function selectProfile(slug: string, scroll = true) {
     setSelected(slug)
@@ -163,33 +142,6 @@ export function CommunityAtlas() {
       ? graphFocus.slice(9) as DiscoveryPollChoiceId : null
   function toggleInterest(id: InterestId) {
     setInterests((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
-  }
-  function savePassport(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const draft = readPassportPreview(JSON.stringify({
-      name: String(form.get('name') ?? '').trim(),
-      interests: form.getAll('interests'),
-      visibility: form.get('visibility'),
-    }))
-    if (!draft) { setNotice('Add a display name to save your Passport draft.'); return }
-    setPassport(draft)
-    try {
-      sessionStorage.setItem(PASSPORT_PREVIEW_KEY, JSON.stringify(draft))
-      setNotice('Your Passport draft is saved in this browser. You can use it to start a public profile.')
-    } catch { setNotice('Your Passport draft is available for this visit.') }
-    passportDialog.current?.close()
-    setShowPassport(false)
-  }
-  function clearPassport() {
-    try { sessionStorage.removeItem(PASSPORT_PREVIEW_KEY) } catch { /* Already local-only. */ }
-    setPassport(null)
-    setNotice('Passport draft cleared.')
-  }
-  function continueToProfile() {
-    passportDialog.current?.close()
-    setShowPassport(false)
-    setShowProfileForm(true)
   }
 
   return (
@@ -368,66 +320,21 @@ export function CommunityAtlas() {
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-[color:var(--dn-muted)]">
               Explore your interests and preview your profile. Public listing requires verified ownership, explicit consent and human review.
             </p>
-            {passport ? <p className="mt-4 text-xs text-[color:var(--dn-link)]">Draft for {passport.name} · {passport.interests.length} interests saved in this browser</p> : null}
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/network/your-profile"
               className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--dn-line)] px-5 py-3 text-sm text-[color:var(--dn-ink)] hover:border-[color:var(--dn-line-strong)]">
-              Edit your Profile / Passport
+              Open your Passport
             </Link>
-            <Link href="/network/your-profile"
+            <Link href="/join"
               className="inline-flex min-h-11 items-center rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] hover:bg-[var(--dn-accent-hover)]">
-              Review listing options
+              Join DCC
             </Link>
-            {passport ? <button type="button" onClick={clearPassport} className="px-2 text-xs text-[color:var(--dn-subtle)] hover:text-[color:var(--dn-ink)]">Clear draft</button> : null}
           </div>
         </section>
 
-        <p aria-live="polite" role="status" className="mt-5 text-xs text-[color:var(--dn-link)]">{notice}</p>
       </div>
 
-      {showProfileForm ? (
-        <dialog ref={profileDialog} className={styles.modalShade} onCancel={() => setShowProfileForm(false)} onClose={() => setShowProfileForm(false)} aria-labelledby="atlas-form-title">
-          <section className={styles.passportForm}>
-            <div className={styles.modalTop}>
-              <span className={styles.eyebrow}>Public artist profile</span>
-              <button onClick={() => { profileDialog.current?.close(); setShowProfileForm(false) }} aria-label="Close profile form">Close</button>
-            </div>
-            <AtlasProfileForm enabled={intakeEnabled} initialName={passport?.name} initialInterests={passport?.interests} />
-          </section>
-        </dialog>
-      ) : null}
-
-      {showPassport ? (
-        <dialog ref={passportDialog} className={styles.modalShade} onCancel={() => setShowPassport(false)} onClose={() => setShowPassport(false)} aria-labelledby="passport-title">
-          <section className={styles.passportForm}>
-            <div className={styles.modalTop}>
-              <span className={styles.eyebrow}>Your Passport</span>
-              <button onClick={() => { passportDialog.current?.close(); setShowPassport(false) }} aria-label="Close Passport">Close</button>
-            </div>
-            <h2 id="passport-title">Start with your curiosity.</h2>
-            <p>Choose what you explore. You can carry this draft into your public profile.</p>
-            <form onSubmit={savePassport} key={passport?.name ?? 'new'}>
-              <label>Display name<input name="name" maxLength={80} required defaultValue={passport?.name ?? ''} autoComplete="name" /></label>
-              <fieldset>
-                <legend>Interests</legend>
-                {INTERESTS.map((item) => (
-                  <label key={item.id}><input type="checkbox" name="interests" value={item.id} defaultChecked={passport?.interests.includes(item.id) ?? false} />{item.label}</label>
-                ))}
-              </fieldset>
-              <label>Profile visibility
-                <select name="visibility" defaultValue={passport?.visibility ?? 'private'}>
-                  <option value="private">Private draft</option>
-                  <option value="members">Visible to members after enrollment</option>
-                  <option value="public">Public when approved</option>
-                </select>
-              </label>
-              <button className={styles.primary} type="submit">Save Passport draft</button>
-            </form>
-            {passport ? <button type="button" onClick={continueToProfile} className={styles.textButton}>Continue to public profile</button> : null}
-          </section>
-        </dialog>
-      ) : null}
     </section>
   )
 }
