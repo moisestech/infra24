@@ -5,8 +5,8 @@ export const dccClerkAppearance = {
   variables: {
     colorPrimary: '#265b45',
     colorBackground: '#ffffff',
-    colorText: '#192c25',
-    colorTextSecondary: '#52685d',
+    colorForeground: '#192c25',
+    colorMutedForeground: '#52685d',
   },
   elements: {
     rootBox: 'mx-auto w-full max-w-[420px]',

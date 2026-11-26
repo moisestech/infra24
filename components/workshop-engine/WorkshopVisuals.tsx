@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { LucideIcon } from 'lucide-react'
 import {
   CircleDot,
@@ -375,7 +376,7 @@ export function ModuleRelatedMediaStrip({ moduleId }: { moduleId: string }) {
       </p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:gap-3">
         {shown.map((assetId) => (
-          <a
+          <Link
             key={assetId}
             href="/workshop/resin-printing/media"
             className={cn(
@@ -387,7 +388,7 @@ export function ModuleRelatedMediaStrip({ moduleId }: { moduleId: string }) {
             <span className="font-mono text-[9px] uppercase tracking-wide text-slate-600">
               {assetId}
             </span>
-          </a>
+          </Link>
         ))}
       </div>
     </section>

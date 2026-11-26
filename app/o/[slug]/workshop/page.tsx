@@ -1,3 +1,5 @@
-import WorkshopsPage from '@/app/o/[slug]/workshops/page'
+import WorkshopsCatalogPageClient from '@/components/workshops/marketing/WorkshopsCatalogPageClient'
 
-export default WorkshopsPage
+export default function WorkshopsPage() {
+  return <WorkshopsCatalogPageClient />
+}

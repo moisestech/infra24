@@ -23,7 +23,7 @@ export async function memberPassportContext(): Promise<{
   binding: PassportBinding
 }> {
   // Never authorize based on a browser payload, claimed email or URL parameter.
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) throw new MemberAccessError(401, 'sign_in_required')
   if (process.env.DCC_MEMBER_PROFILE_ENABLED !== 'true') {
     throw new MemberAccessError(503, 'profile_not_enabled')

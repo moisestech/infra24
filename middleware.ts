@@ -1,21 +1,15 @@
-import { authMiddleware } from '@clerk/nextjs'
+import { clerkMiddleware } from '@clerk/nextjs/server'
 import { isPublicRoute } from '@/lib/auth/public-routes'
 
-export default authMiddleware({
-  publicRoutes: (req) => isPublicRoute(req.nextUrl.pathname),
-  // Bypass Clerk entirely for live-session APIs (public join/facilitate sync).
-  ignoredRoutes: ['/api/workshop-live-sessions(.*)'],
-  afterAuth: (auth, req) => {
-    const { pathname } = req.nextUrl
-    const { userId } = auth
-
-    if (!isPublicRoute(pathname) && !userId) {
-      const signIn = new URL('/sign-in', req.url)
-      const returnPath = `${pathname}${req.nextUrl.search || ''}`
-      signIn.searchParams.set('redirect_url', returnPath)
-      return Response.redirect(signIn)
-    }
-  },
+export default clerkMiddleware(async (auth, req) => {
+  const { pathname } = req.nextUrl
+  if (isPublicRoute(pathname)) return
+  const { userId } = await auth()
+  if (!userId) {
+    const signIn = new URL('/sign-in', req.url)
+    signIn.searchParams.set('redirect_url', pathname + (req.nextUrl.search || ''))
+    return Response.redirect(signIn)
+  }
 })
 
 export const config = {

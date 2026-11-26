@@ -8,7 +8,7 @@ import { getSupabaseAdmin } from '@/lib/supabase'
  * A client-provided organization ID is only a filter, never proof of access.
  */
 export async function requireOrganizationStaff(orgId: string | null | undefined) {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) return { ok: false as const, status: 401, error: 'Sign in required' }
   if (!orgId || !/^[0-9a-f-]{36}$/i.test(orgId)) {
     return { ok: false as const, status: 400, error: 'A valid organization ID is required' }

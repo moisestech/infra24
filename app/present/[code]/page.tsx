@@ -5,7 +5,7 @@ import { TvPresentationClient } from '@/components/workshop-engine/TvPresentatio
 import { getLiveSessionByCode } from '@/lib/workshop-engine/session-store'
 import { normalizeJoinCode } from '@/lib/workshop-engine/join-code'
 
-type Props = { params: Promise<{ code: string }> | { code: string } }
+type Props = { params: Promise<{ code: string }> }
 
 function originFromHeaders(h: Headers): string {
   const host = h.get('x-forwarded-host') || h.get('host')

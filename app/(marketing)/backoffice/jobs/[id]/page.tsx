@@ -9,10 +9,11 @@ import type { DccJob } from '@/lib/dcc/jobs'
 export const dynamic = 'force-dynamic'
 
 type JobDetailPageProps = {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-export async function generateMetadata({ params }: JobDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: JobDetailPageProps): Promise<Metadata> {
+  const params = await pendingParams
   return { title: `Job ${params.id}` }
 }
 
@@ -39,7 +40,8 @@ function facts(job: DccJob): { label: string; value: string }[] {
   ].filter((fact): fact is { label: string; value: string } => Boolean(fact.value))
 }
 
-export default async function JobDetailPage({ params }: JobDetailPageProps) {
+export default async function JobDetailPage({ params: pendingParams }: JobDetailPageProps) {
+  const params = await pendingParams
   const [read, people] = await Promise.all([readJobs(), readPeople()])
   const notice = noticeFromRead(read)
   const job = read.status === 'records' ? read.records.find((row) => row.id === params.id) : undefined

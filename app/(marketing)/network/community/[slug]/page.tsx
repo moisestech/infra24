@@ -7,7 +7,7 @@ import { INTERESTS } from '@/lib/dcc/community/atlas'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-type Props = { params: { slug: string } }
+type Props = { params: Promise<{ slug: string }> }
 
 /**
  * Only the reviewed, consented allowlist is eligible for a public permalink.
@@ -20,7 +20,8 @@ async function publicProfile(slug: string) {
   return profiles.find(profile => profile.slug === slug) ?? null
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   // On outage, don't produce stale name-based HTML metadata.
   try {
     const profile = await publicProfile(params.slug)
@@ -45,7 +46,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function PublicAtlasProfilePage({ params }: Props) {
+export default async function PublicAtlasProfilePage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const profile = await publicProfile(params.slug)
   if (!profile) notFound()
   return <main className="dcc-network-theme min-h-screen bg-[var(--dn-bg)] px-4 py-10 text-[var(--dn-ink)] sm:px-6 sm:py-14">

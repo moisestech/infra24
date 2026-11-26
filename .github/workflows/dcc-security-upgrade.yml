@@ -1,0 +1,76 @@
+name: DCC pinned security candidate (Node 22)
+on:
+  push:
+    branches: ['security/dcc-dependency-remediation-20261126', 'spec/unified-website-membership-node-rfc-20261122', main]
+permissions:
+  contents: read
+concurrency:
+  group: dcc-security-pinned-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Audit committed lockfile (no dependency execution)
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          git rev-parse HEAD > evidence/commit.txt
+          sha256sum package-lock.json > evidence/lockfile.sha256
+          npm audit --package-lock-only --omit=dev --json > evidence/production.json || true
+          node -e "const r=require('./evidence/production.json'); if(r.error || !r.metadata?.vulnerabilities || !r.vulnerabilities) throw Error('Audit unavailable'); console.log(JSON.stringify(r.metadata.vulnerabilities)); for(const v of Object.values(r.vulnerabilities)) console.log(JSON.stringify({name:v.name,severity:v.severity,fix:v.fixAvailable})); if(r.metadata.vulnerabilities.high || r.metadata.vulnerabilities.critical) process.exit(1)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pinned-production-audit
+          path: evidence/
+          retention-days: 14
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install exact dependencies
+        id: install
+        run: npm ci
+      - run: npm run secret-scan && npm run type-check
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+      - name: Generate and validate Next route contracts before build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npx --no-install next typegen && npm run type-check
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+      - run: npm run lint
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: npm test -- --runInBand
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: npm run build
+        id: build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+          CIRCLE_NODE_TOTAL: '2'
+          NEXT_TELEMETRY_DISABLED: '1'
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsucHJldmlldy5leGFtcGxlJA
+          CLERK_SECRET_KEY: local-dummy
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:65432
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: local-placeholder
+          SUPABASE_SERVICE_ROLE_KEY: local-placeholder
+          RESEND_API_KEY: re_local_only
+      - name: Type check generated Next route contracts
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run type-check
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096

@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
-    const actor = requireDccSteward()
+    const actor = await requireDccSteward()
     const input = await identityRequest(request, founderDecision)
     return NextResponse.json(await decideFounderIdentity(input,actor), {headers:PRIVATE_HEADERS})
   } catch (error) { return identityError(error) }

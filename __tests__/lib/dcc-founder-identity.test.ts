@@ -8,7 +8,7 @@ import { requireDccSteward } from '@/lib/dcc/membership/steward-access'
 import { POST } from '@/app/api/dcc/steward/identity-decision/route'
 import { auth } from '@clerk/nextjs/server'
 jest.mock('server-only',()=>({}))
-jest.mock('@clerk/nextjs/server',()=>({auth:jest.fn(),clerkClient:{users:{getUser:jest.fn()}}}))
+jest.mock('@clerk/nextjs/server',()=>({auth:jest.fn(),clerkClient:jest.fn()}))
 jest.mock('@supabase/supabase-js',()=>({createClient:jest.fn()}))
 jest.mock('@/lib/airtable/client',()=>({fetchAllRecords:jest.fn(),patchAirtableRecord:jest.fn()}))
 const id='419780ec-ba1b-4980-87c0-899e475998a3'
@@ -18,6 +18,7 @@ const founder='user_founder_ci'
 const primary={id:subject,primaryEmailAddressId:'email_ci',emailAddresses:[
   {id:'email_ci',emailAddress:'ci@example.test',verification:{status:'verified'}}]}
 const stamp=createHash('sha256').update([subject,'email_ci','ci@example.test'].join('\0')).digest('hex')
+const getUser=jest.fn()
 const rpc=jest.fn()
 const fetchRows=fetchAllRecords as jest.Mock
 const patch=patchAirtableRecord as jest.Mock
@@ -30,8 +31,9 @@ beforeEach(()=>{
     DCC_STEWARD_CLERK_USER_IDS:founder,AIRTABLE_DCC_ATLAS_BASE_ID:'base',AIRTABLE_DCC_ATLAS_PEOPLE_TABLE:'people',
     AIRTABLE_DCC_ATLAS_API_KEY:'test-only',SUPABASE_SERVICE_ROLE_KEY:'test-only',NEXT_PUBLIC_SUPABASE_URL:'https://example.test'}
   stage='proven';bound=undefined
-  ;(auth as jest.Mock).mockReturnValue({userId:founder})
-  ;(clerkClient.users.getUser as jest.Mock).mockResolvedValue(primary)
+  ;(auth as unknown as jest.Mock).mockResolvedValue({userId:founder})
+  ;(clerkClient as jest.Mock).mockResolvedValue({users:{getUser}})
+  getUser.mockResolvedValue(primary)
   ;(createClient as jest.Mock).mockReturnValue({rpc,from:(table:string)=>{
     const query={select:jest.fn().mockReturnThis(),eq:jest.fn().mockReturnThis(),maybeSingle:async()=>({
       data:table==='dcc_identity_reviews'?{person_id:person,version:2,stage,primary_stamp:stamp}:
@@ -47,10 +49,10 @@ beforeEach(()=>{
 })
 afterEach(()=>{process.env=original})
 const decision=(action:'approve'|'recover')=>decideFounderIdentity({requestId:id,version:2,action},founder)
-it('takes reviewer identity only from the exact server-side subject allowlist',()=>{
-  expect(requireDccSteward()).toBe(founder)
-  ;(auth as jest.Mock).mockReturnValue({userId:'user_other',email:founder,publicMetadata:{role:'founder'}})
-  expect(()=>requireDccSteward()).toThrow('staff_access_required')
+it('takes reviewer identity only from the exact server-side subject allowlist',async()=>{
+  await expect(requireDccSteward()).resolves.toBe(founder)
+  ;(auth as unknown as jest.Mock).mockResolvedValue({userId:'user_other',email:founder,publicMetadata:{role:'founder'}})
+  await expect(requireDccSteward()).rejects.toThrow('staff_access_required')
 })
 it('denies cross-origin requests before provider access',async()=>{
   const result=await POST(new Request('https://preview.example.test/api/dcc/steward/identity-decision',{
@@ -70,7 +72,7 @@ it('denies a mismatched verified primary or a person already linked elsewhere',a
   bound='other-binding'
   await expect(decision('approve')).rejects.toMatchObject({status:409})
   expect(patch).not.toHaveBeenCalled()
-  ;(clerkClient.users.getUser as jest.Mock).mockResolvedValue({...primary,primaryEmailAddressId:'changed'})
+  ;getUser.mockResolvedValue({...primary,primaryEmailAddressId:'changed'})
   await expect(decision('approve')).rejects.toMatchObject({status:409})
   expect(rpc).not.toHaveBeenCalled()
 })
@@ -78,7 +80,7 @@ it('binds privately only after independent provider readback, without writing pu
   await expect(decision('approve')).resolves.toEqual({state:'resolved'})
   expect(patch.mock.calls[0][4]).toEqual({'DCC Website Member Binding ID':id,'Atlas Identity Verified':true})
   expect(rpc.mock.calls.map(c=>c[1].p_action)).toEqual(['approve','confirm'])
-  expect(clerkClient.users.getUser).toHaveBeenCalledTimes(2)
+  expect(getUser).toHaveBeenCalledTimes(2)
 })
 it('recovers a lost write response by reading both directions without a second patch',async()=>{
   patch.mockImplementationOnce(async()=>{bound=id;throw Error('response lost')})
@@ -94,7 +96,7 @@ it('leaves an unconfirmed provider outcome held and never recreates or repeats t
   expect(patch).not.toHaveBeenCalled();expect(rpc).not.toHaveBeenCalled()
 })
 it('refuses proof that an earlier Clerk primary address supplied',async()=>{
-  ;(clerkClient.users.getUser as jest.Mock).mockResolvedValue({...primary,emailAddresses:[{
+  ;getUser.mockResolvedValue({...primary,emailAddresses:[{
     ...primary.emailAddresses[0],emailAddress:'changed@example.test'}]})
   await expect(decision('approve')).rejects.toMatchObject({status:409})
   expect(patch).not.toHaveBeenCalled()

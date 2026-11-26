@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link'
 import { useEffect, useState, Suspense } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { OrbitingCircles } from '@/components/magicui/orbiting-circles';
@@ -214,13 +215,13 @@ function HomePageContent() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 xl:gap-6 justify-center mb-12 xl:mb-16">
-            <a
+            <Link
               href="/sign-up"
               className="inline-flex items-center px-8 xl:px-12 py-4 xl:py-6 text-lg xl:text-xl 2xl:text-2xl font-semibold bg-white text-blue-600 rounded-lg xl:rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg xl:shadow-xl"
             >
               Get Started
               <ArrowRight className="ml-2 w-5 h-5 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8" />
-            </a>
+            </Link>
             <a
               href="#organizations"
               className="inline-flex items-center px-8 xl:px-12 py-4 xl:py-6 text-lg xl:text-xl 2xl:text-2xl font-semibold border-2 border-white text-white rounded-lg xl:rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105"
@@ -359,12 +360,12 @@ function HomePageContent() {
             
             {/* Smart Sign icon in the center */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <a 
+              <Link 
                 href="/o/bakehouse"
                 className="flex h-20 w-20 xl:h-24 xl:w-24 2xl:h-28 2xl:w-28 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-purple-600 shadow-2xl border-4 xl:border-6 2xl:border-8 border-white dark:border-gray-800 hover:shadow-blue-500/50 hover:shadow-2xl transition-all duration-300 transform hover:scale-110 hover:rotate-6 cursor-pointer group"
               >
                 <MessageSquare className="h-10 w-10 xl:h-12 xl:w-12 2xl:h-14 2xl:w-14 text-white group-hover:animate-pulse" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -577,13 +578,13 @@ function HomePageContent() {
 
             {/* Call to Action */}
             <div className="text-center mt-12 xl:mt-16 2xl:mt-20">
-              <a
+              <Link
                 href="/sign-up"
                 className="inline-flex items-center px-8 xl:px-12 py-4 xl:py-6 text-lg xl:text-xl 2xl:text-2xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg xl:rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg xl:shadow-xl"
               >
                 Start Your Free Trial
                 <ArrowRight className="ml-2 w-5 h-5 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -789,19 +790,19 @@ function HomePageContent() {
             Join the organizations already using Infra24 to power their digital infrastructure with Smart Signs, interactive maps, and community engagement tools.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 xl:gap-6 justify-center">
-            <a
+            <Link
               href="/sign-up"
               className="inline-flex items-center px-8 xl:px-12 py-4 xl:py-6 text-lg xl:text-xl 2xl:text-2xl font-semibold bg-white text-blue-600 rounded-lg xl:rounded-xl hover:bg-gray-100 dark:hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-lg xl:shadow-xl"
             >
               Get Started Today
               <ArrowRight className="ml-2 w-5 h-5 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8" />
-            </a>
-            <a
+            </Link>
+            <Link
               href="/contact"
               className="inline-flex items-center px-8 xl:px-12 py-4 xl:py-6 text-lg xl:text-xl 2xl:text-2xl font-semibold border-2 border-white text-white rounded-lg xl:rounded-xl hover:bg-white hover:text-blue-600 dark:hover:text-blue-700 transition-all duration-300 transform hover:scale-105"
             >
               Contact Us
-            </a>
+            </Link>
           </div>
         </div>
       </section>

@@ -6,7 +6,7 @@ import { getCdcPageByPath, getProgramCategorySlugs, getProgramLeaves } from '@/l
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 import { getListedProgramBySlug } from '@/lib/dcc/culture';
 
-type Props = { params: { category: string; slug: string } };
+type Props = { params: Promise<{ category: string; slug: string }> };
 
 /**
  * Slugs that have a literal static page file under `app/(marketing)/programs/<category>/<slug>/page.tsx`.
@@ -31,7 +31,8 @@ export function generateStaticParams() {
   return out;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const cultureProgram = getListedProgramBySlug(params.slug);
   if (cultureProgram) {
     return cdcPageMetadata(`/programs/${params.category}/${params.slug}`);
@@ -40,7 +41,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return cdcPageMetadata(path);
 }
 
-export default function ProgramLeafPage({ params }: Props) {
+export default async function ProgramLeafPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const cultureProgram = getListedProgramBySlug(params.slug);
   if (cultureProgram) {
     return <ProgramDetail program={cultureProgram} />;

@@ -402,7 +402,7 @@ export default function OrganizationPage() {
         {/* Oolite — friendly AI agent CTA (Memory Agent) */}
         {organization.slug === 'oolite' && (
           <div className="mb-8 xl:mb-10">
-            <a
+            <Link
               href="/o/oolite/memory-agent"
               aria-label="Talk to an AI Agent — open the Oolite Memory Agent"
               className="group relative flex flex-col overflow-hidden rounded-2xl border-2 border-teal-200/90 bg-gradient-to-br from-teal-50 via-cyan-50 to-sky-50 p-6 shadow-lg ring-1 ring-teal-100/80 transition-all duration-300 hover:border-teal-300 hover:shadow-xl dark:border-teal-800/60 dark:from-teal-950/50 dark:via-cyan-950/40 dark:to-slate-900/80 dark:ring-teal-900/40 md:flex-row md:items-center md:gap-8 md:p-8"
@@ -440,7 +440,7 @@ export default function OrganizationPage() {
                   </span>
                 </div>
               </div>
-            </a>
+            </Link>
           </div>
         )}
 
@@ -458,18 +458,18 @@ export default function OrganizationPage() {
                   </p>
                 </div>
                 <div className="flex space-x-3">
-                  <a
+                  <Link
                     href="/sign-in"
                     className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
                   >
                     Sign In
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/sign-up"
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-400 transition-colors"
                   >
                     Join Now
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -913,14 +913,14 @@ export default function OrganizationPage() {
                       {/* Survey Action Button */}
                       {isSurveyAnn && (
                         <div className="px-3 pb-3">
-                          <a
+                          <Link
                             href="/o/oolite/surveys"
                             className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <FileCheck className="w-3 h-3 mr-1" />
                             Take Survey
-                          </a>
+                          </Link>
                         </div>
                       )}
                     </div>

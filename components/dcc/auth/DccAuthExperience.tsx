@@ -74,8 +74,8 @@ export function DccAuthExperience({
             {mode==='sign-up'?'Create your account':'Member sign in'}
           </p>
           {mode==='sign-in'
-            ? <SignIn redirectUrl={destination} appearance={dccClerkAppearance}/>
-            : <SignUp redirectUrl={destination} appearance={dccClerkAppearance}/>}
+            ? <SignIn forceRedirectUrl={destination} appearance={dccClerkAppearance}/>
+            : <SignUp forceRedirectUrl={destination} appearance={dccClerkAppearance}/>}
           <p className="mt-5 text-center text-sm text-[#52685d]">
             {mode==='sign-in'?'New to DCC?':'Already have an account?'}{' '}
             <Link href={otherUrl} className="min-h-[44px] font-semibold text-[#265b45] underline underline-offset-4">

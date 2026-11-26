@@ -49,10 +49,10 @@ export async function readPublicAtlas() {
   // never from mutable Airtable profile fields or the current private draft.
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const mustCheck = websiteProfilesPublic || process.env.DCC_STEWARD_PUBLICATION_ENABLED === 'true'
-    || process.env.DCC_MEMBER_EVENT_CAPTURE_ENABLED === 'true'
-    || records.some(r => Boolean(r.fields['DCC Website Member Binding ID']))
-  if (mustCheck && (!url || !key)) throw new Error('ATLAS_PUBLICATION_GUARD_UNAVAILABLE')
+  // An absent provider marker does not establish that a CRM record is unbound.
+  if ((records.length || websiteProfilesPublic) && (!url || !key)) {
+    throw new Error('ATLAS_PUBLICATION_GUARD_UNAVAILABLE')
+  }
   const boundRecords = new Set<string>()
   const snapshots: NonNullable<ReturnType<typeof approvedAirtableProfile>>[] = []
   if (url && key) {
@@ -61,8 +61,8 @@ export async function readPublicAtlas() {
     for (let i=0;i<records.length;i+=40) {
       const {data,error}=await db.from('dcc_platform_member_bindings')
         .select('airtable_person_id').in('airtable_person_id',records.slice(i,i+40).map(r=>r.id))
-      if(error) throw new Error('ATLAS_PUBLICATION_GUARD_UNAVAILABLE')
-      for (const row of data??[]) if(row.airtable_person_id) boundRecords.add(row.airtable_person_id)
+      if(error || !Array.isArray(data)) throw new Error('ATLAS_PUBLICATION_GUARD_UNAVAILABLE')
+      for (const row of data) if(row.airtable_person_id) boundRecords.add(row.airtable_person_id)
     }
     if (websiteProfilesPublic) {
       const {data,error}=await db.rpc('dcc_list_approved_passports')

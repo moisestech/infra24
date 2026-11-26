@@ -5,8 +5,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params: pendingParams }: { params: Promise<{ orgId: string }> }
 ) {
+  const params = await pendingParams
   try {
     console.log('🔍 AppSheet Requests API: Starting GET request')
     console.log('🔍 AppSheet Requests API: orgId =', params.orgId)

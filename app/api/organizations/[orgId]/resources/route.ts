@@ -6,8 +6,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params: pendingParams }: { params: Promise<{ orgId: string }> }
 ) {
+  const params = await pendingParams
   try {
     console.log('🔍 Resources API: Starting GET request')
     console.log('🔍 Resources API: orgId =', params.orgId)
@@ -53,8 +54,9 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params: pendingParams }: { params: Promise<{ orgId: string }> }
 ) {
+  const params = await pendingParams
   try {
     const access = await requireOrganizationStaff(params.orgId)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status, headers: { 'Cache-Control': 'private, no-store' } })

@@ -11,7 +11,7 @@ export const dynamic='force-dynamic'
  */
 export async function POST(request:NextRequest) {
   try {
-    const reviewer=requireDccSteward()
+    const reviewer=await requireDccSteward()
     if(process.env.DCC_STEWARD_PUBLICATION_ENABLED!=='true')
       throw new MemberAccessError(503,'publication_not_enabled')
     // Fail-closed cross-site submission guard for cookie-authenticated admin actions.

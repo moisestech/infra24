@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { SignUp } from '@clerk/nextjs'
 import { useSearchParams } from 'next/navigation'
 
@@ -40,28 +41,28 @@ export function DccSignUpExperience({ membershipLive }: { membershipLive: boolea
               {membershipLive
                 ? 'Your signup never creates an identifiable public sculpture dot. Verified membership may appear only in delayed anonymous community batches; named practice links require your consent and review. '
                 : 'DCC enrollment is not yet enabled; this signup currently creates a Smart Sign account only. '}
-              <a href="/network/community" className="underline underline-offset-2 hover:text-white">
+              <Link href="/network/community" className="underline underline-offset-2 hover:text-white">
                 Explore community examples
-              </a>
+              </Link>
               {' '}·{' '}
-              <a href="/network/artwork" className="underline underline-offset-2 hover:text-white">
+              <Link href="/network/artwork" className="underline underline-offset-2 hover:text-white">
                 View the sculpture
-              </a>
+              </Link>
               {' '}·{' '}
-              <a href="/privacy" className="underline underline-offset-2 hover:text-white">
+              <Link href="/privacy" className="underline underline-offset-2 hover:text-white">
                 Privacy details
-              </a>
+              </Link>
             </p>
           </div>
           
           <SignUp 
-            redirectUrl={redirectTo}
+            forceRedirectUrl={redirectTo}
             appearance={{
               variables: {
                 colorPrimary: '#3b82f6',
                 colorBackground: '#000000',
-                colorText: '#ffffff',
-                colorTextSecondary: '#9ca3af'
+                colorForeground: '#ffffff',
+                colorMutedForeground: '#9ca3af'
               },
               elements: {
                 rootBox: "mx-auto",

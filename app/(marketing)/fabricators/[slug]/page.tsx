@@ -6,10 +6,11 @@ import { getFabricationColor } from '@/lib/dcc/fabrication/theme'
 import { cn } from '@/lib/utils'
 
 type FabricatorProfilePageProps = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
-export async function generateMetadata({ params }: FabricatorProfilePageProps): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: FabricatorProfilePageProps): Promise<Metadata> {
+  const params = await pendingParams
   const name = publicOperatorName(params.slug)
   return {
     title: name ?? 'Fabricator profile',
@@ -19,7 +20,8 @@ export async function generateMetadata({ params }: FabricatorProfilePageProps): 
   }
 }
 
-export default function FabricatorProfilePage({ params }: FabricatorProfilePageProps) {
+export default async function FabricatorProfilePage({ params: pendingParams }: FabricatorProfilePageProps) {
+  const params = await pendingParams
   const name = publicOperatorName(params.slug)
   const color = getFabricationColor(name ? 'teal' : 'slate')
   return (

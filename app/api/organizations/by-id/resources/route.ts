@@ -5,11 +5,10 @@ export const dynamic = 'force-dynamic';
 
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ orgId: string }> }
+  request: NextRequest
 ) {
   try {
-    const { orgId } = await params;
+    const orgId = new URL(request.url).searchParams.get('org_id')
 
     if (!orgId) {
       return NextResponse.json(
@@ -47,11 +46,10 @@ export async function GET(
 }
 
 export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ orgId: string }> }
+  request: NextRequest
 ) {
   try {
-    const { orgId } = await params
+    const orgId = new URL(request.url).searchParams.get('org_id')
     const access = await requireOrganizationStaff(orgId)
     if (!access.ok) return NextResponse.json({error:access.error},{status:access.status,headers:{'Cache-Control':'private, no-store'}})
     const {title,description,type,capacity,is_bookable} = await request.json()

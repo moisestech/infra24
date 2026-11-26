@@ -14,7 +14,7 @@ export const metadata: Metadata = cdcPageMetadata(path);
 const SIGNAL_BAR_HEIGHTS = [38, 72, 48, 88, 56, 96, 44] as const;
 
 type Props = {
-  searchParams: { email?: string; source?: string };
+  searchParams: Promise<{ email?: string; source?: string }>;
 };
 
 function NewsletterHeroSignal() {
@@ -55,7 +55,8 @@ function NewsletterHeroSignal() {
   );
 }
 
-export default function NewsletterPage({ searchParams }: Props) {
+export default async function NewsletterPage({ searchParams: pendingSearchParams }: Props) {
+  const searchParams = await pendingSearchParams
   const initialEmail = typeof searchParams.email === 'string' ? searchParams.email : '';
   const source = typeof searchParams.source === 'string' ? searchParams.source : '';
   const interest = parseWorkshopInterestSource(source);

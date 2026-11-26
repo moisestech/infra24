@@ -9,7 +9,7 @@ const reasons = new Set(['clerk_verified_email_missing','invalid_verified_email'
 
 export async function GET() {
   try {
-    requireDccSteward()
+    await requireDccSteward()
     const {db,instance} = identityStore()
     const {data,error} = await db.rpc('dcc_founder_identity_queue', {p_instance:instance})
     if (error) throw new MemberAccessError(503,'identity_store_unavailable')

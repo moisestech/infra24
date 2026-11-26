@@ -1,21 +1,9 @@
 import type { Metadata } from 'next'
-import nextDynamic from 'next/dynamic'
+import { MemoryAgentShell } from '@/components/memory-agent/MemoryAgentShellClient'
 import { redirect } from 'next/navigation'
 
-import { MemoryAgentPageSkeleton } from '@/components/memory-agent/MemoryAgentPageSkeleton'
 import { getMemoryAgentBranding } from '@/lib/memory-agent/org-branding'
 import { getTenantConfig } from '@/lib/tenant'
-
-const MemoryAgentShell = nextDynamic(
-  () =>
-    import('@/components/memory-agent/MemoryAgentShell').then((m) => m.MemoryAgentShell),
-  {
-    ssr: false,
-    loading: () => (
-      <MemoryAgentPageSkeleton slug="…" orgName="Memory Agent" />
-    ),
-  }
-)
 
 export const dynamic = 'force-dynamic'
 

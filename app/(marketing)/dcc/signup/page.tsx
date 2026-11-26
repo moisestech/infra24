@@ -11,10 +11,11 @@ const path = '/dcc/signup'
 export const metadata: Metadata = cdcPageMetadata(path)
 
 type Props = {
-  searchParams?: { source?: string; pathway?: string; form?: string }
+  searchParams?: Promise<{ source?: string; pathway?: string; form?: string }>
 }
 
-export default function DccSignupPage({ searchParams }: Props) {
+export default async function DccSignupPage({ searchParams: pendingSearchParams }: Props) {
+  const searchParams = await pendingSearchParams
   const source = searchParams?.source
   const pathway = parsePathwayParam(searchParams?.pathway)
   const formMode = parseSignupFormMode(searchParams?.form)

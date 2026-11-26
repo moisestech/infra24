@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { EditorialDetail } from '@/components/dcc/culture/EditorialDetail';
@@ -11,13 +12,14 @@ import {
 } from '@/lib/dcc/culture';
 import { compileEditorialBody } from '@/lib/dcc/culture/load-editorial-body';
 
-type Props = { params: { category: string; slug: string } };
+type Props = { params: Promise<{ category: string; slug: string }> };
 
 export function generateStaticParams() {
   return getAllJournalPosts().map((p) => ({ category: p.category, slug: p.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const cultureEntry = getPublishedEditorialBySlug(params.slug);
   if (cultureEntry) {
     const path = getEditorialPublicPath(cultureEntry);
@@ -42,7 +44,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return cdcPageMetadata(path);
 }
 
-export default async function JournalPostPage({ params }: Props) {
+export default async function JournalPostPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const cultureEntry = getPublishedEditorialBySlug(params.slug);
   if (cultureEntry) {
     const mdx = await compileEditorialBody(cultureEntry);
@@ -68,12 +71,12 @@ export default async function JournalPostPage({ params }: Props) {
         </p>
       </Section>
       <Section className={`${cdcSectionPaper} pb-16`}>
-        <a
+        <Link
           href="/journal"
           className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
         >
           ← Journal home
-        </a>
+        </Link>
       </Section>
     </>
   );

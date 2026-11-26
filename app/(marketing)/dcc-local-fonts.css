@@ -1,0 +1,5 @@
+/* Self-hosted OFL fonts; no Google Fonts request at build or runtime. */
+.dcc-local-fonts {
+  --font-dcc-display: 'Space Grotesk Variable', 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-dcc-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}

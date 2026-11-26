@@ -5,8 +5,9 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string; conflictId: string } }
+  { params: pendingParams }: { params: Promise<{ orgId: string; conflictId: string }> }
 ) {
+  const params = await pendingParams
   try {
     console.log('🔍 Conflict Resolution API: Starting POST request')
     console.log('🔍 Conflict Resolution API: orgId =', params.orgId)

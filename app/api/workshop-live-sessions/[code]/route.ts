@@ -8,7 +8,7 @@ import { normalizeJoinCode } from '@/lib/workshop-engine/join-code'
 
 export const dynamic = 'force-dynamic'
 
-type Ctx = { params: Promise<{ code: string }> | { code: string } }
+type Ctx = { params: Promise<{ code: string }> }
 
 async function resolveCode(params: Ctx['params']) {
   const resolved = await Promise.resolve(params)

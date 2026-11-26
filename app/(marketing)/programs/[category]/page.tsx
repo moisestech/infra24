@@ -8,18 +8,20 @@ import {
 } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
-type Props = { params: { category: string } };
+type Props = { params: Promise<{ category: string }> };
 
 export function generateStaticParams() {
   return getProgramCategorySlugs().map((category) => ({ category }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const path = `/programs/${params.category}`;
   return cdcPageMetadata(path);
 }
 
-export default function ProgramCategoryPage({ params }: Props) {
+export default async function ProgramCategoryPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const path = `/programs/${params.category}`;
   const def = getCdcPageByPath(path);
   if (!def) notFound();

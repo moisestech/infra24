@@ -46,7 +46,7 @@ export async function reconcileOneVerifiedDccMember():Promise<ReconcileOutcome> 
   try {
     // Clerk is the authority for ownership, not a webhook's archived email.
     // This provider request is intentionally after the database's unique claim.
-    const user=await clerkClient.users.getUser(claim.clerk_subject)
+    const user=await (await clerkClient()).users.getUser(claim.clerk_subject)
     const emailAddress=user.emailAddresses.find(e=>e.id===user.primaryEmailAddressId)
     if(emailAddress?.verification?.status!=='verified' || !emailAddress.emailAddress) {
       await finish('review_required',undefined,'clerk_verified_email_missing')
