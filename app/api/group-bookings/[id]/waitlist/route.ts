@@ -29,6 +29,9 @@ export async function POST(
     const body = await request.json()
     const { waitlistId } = promoteWaitlistSchema.parse(body)
 
+    const {data:entry,error:entryError} = await access.db.from('booking_waitlist').select('id').eq('id',waitlistId).eq('booking_id',bookingId).eq('status','waiting').maybeSingle()
+    if (entryError) return NextResponse.json({error:'Waitlist verification unavailable'},{status:503})
+    if (!entry) return NextResponse.json({error:'Waitlist entry not found'},{status:404})
     const result = await GroupBookingService.promoteWaitlistParticipant(bookingId, waitlistId)
 
     if (!result.success) {
