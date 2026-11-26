@@ -195,6 +195,27 @@ jobs:
             fi
           done
 
+
+      - name: Validate group booking atomic migration and concurrent capacity in disposable database
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGPASSWORD: local-ci-only
+          PGDATABASE: dcc_legacy_permissions_test
+        run: |
+          set -euo pipefail
+          unset PGOPTIONS PGSERVICE PGSERVICEFILE PGHOSTADDR
+          test "$PGHOST" = 127.0.0.1 && test "$PGDATABASE" = dcc_legacy_permissions_test
+          psql -X -v ON_ERROR_STOP=1 -c "ALTER TABLE public.bookings ADD COLUMN start_time timestamptz; ALTER TABLE public.bookings ADD COLUMN capacity integer; ALTER TABLE public.bookings ADD COLUMN current_participants integer DEFAULT 0;"
+          for attempt in 1 2; do
+            psql -X -v ON_ERROR_STOP=1 -f supabase/staged/20261126220000_group_booking_server_only.sql
+          done
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/legacy/group_booking_fixture.sql
+          python3 -m venv "$RUNNER_TEMP/group-booking"
+          "$RUNNER_TEMP/group-booking/bin/pip" install 'psycopg[binary]==3.2.13'
+          "$RUNNER_TEMP/group-booking/bin/python" supabase/tests/legacy/group_booking_concurrency.py
+
   test:
     runs-on: ubuntu-latest
 
