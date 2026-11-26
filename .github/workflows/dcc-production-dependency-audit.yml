@@ -1,0 +1,53 @@
+name: DCC dependency audit (isolated)
+on:
+  push:
+    branches: ['audit/dcc-production-dependencies-20261126']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Audit the exact lockfile without running dependency scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audit-evidence
+          git rev-parse HEAD > audit-evidence/commit.txt
+          sha256sum package-lock.json > audit-evidence/lockfile.sha256
+          npm --version
+          for scope in all production; do
+            args=()
+            if [ "$scope" = production ]; then args+=(--omit=dev); fi
+            set +e
+            npm audit --package-lock-only --json "${args[@]}" > "audit-evidence/$scope.json"
+            code=$?
+            set -e
+            echo "$scope audit exit=$code"
+            node - "$scope" <<'NODE'
+          const fs = require('node:fs');
+          const scope=process.argv[2];
+          const report=JSON.parse(fs.readFileSync('audit-evidence/'+scope+'.json','utf8'));
+          if(report.error || !report.metadata?.vulnerabilities || !report.vulnerabilities) throw Error('Audit unavailable or invalid');
+          console.log(scope, JSON.stringify(report.metadata.vulnerabilities));
+          for(const v of Object.values(report.vulnerabilities)) {
+            console.log(JSON.stringify({name:v.name,severity:v.severity,isDirect:v.isDirect,range:v.range,nodes:v.nodes,via:v.via.map(a=>typeof a==='string'?a:{title:a.title,url:a.url,severity:a.severity,range:a.range}),effects:v.effects,fixAvailable:v.fixAvailable}));
+          }
+          NODE
+          done
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dcc-lockfile-audit
+          path: audit-evidence/
+          retention-days: 14
+      - name: Reject unresolved high or critical production findings
+        run: |
+          node -e "const r=require('./audit-evidence/production.json'); if(r.error || !r.metadata?.vulnerabilities || r.metadata.vulnerabilities.high || r.metadata.vulnerabilities.critical) process.exit(1)"
