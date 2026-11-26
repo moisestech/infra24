@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { auth } from '@clerk/nextjs/server'
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { conflictDetectionService } from '@/lib/conflict-detection'
 
 export const dynamic = 'force-dynamic';
@@ -21,7 +22,9 @@ export async function GET(
     console.log('🔍 Bookings API: orgId =', orgId)
     console.log('🔍 Bookings API: Query params:', { status, resourceId, startDate, endDate })
 
-    const supabase = createClient()
+    const access = await requireOrganizationStaff(orgId)
+    if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+    const supabase = access.db
 
     let query = supabase
       .from('bookings')
@@ -107,11 +110,9 @@ export async function POST(
     
     console.log('🔍 Bookings API: Starting POST request')
     console.log('🔍 Bookings API: orgId =', orgId)
-    console.log('🔍 Bookings API: Request body:', body)
     
     // Get user info from Clerk (optional for public bookings)
     const { userId } = await auth()
-    console.log('🔍 Bookings API: User ID from auth:', userId)
     
     // If user is authenticated, get their email from Clerk
     let clerkUserEmail = null;
@@ -120,9 +121,7 @@ export async function POST(
         const { currentUser } = await import('@clerk/nextjs/server');
         const user = await currentUser();
         clerkUserEmail = user?.emailAddresses?.[0]?.emailAddress;
-        console.log('🔍 Bookings API: Clerk user email:', clerkUserEmail);
       } catch (error) {
-        console.error('❌ Bookings API: Error getting Clerk user email:', error);
       }
     }
     
@@ -159,6 +158,9 @@ export async function POST(
       .from('resources')
       .select('price, currency, title')
       .eq('id', resource_id)
+      .eq('org_id', orgId)
+      .eq('is_active', true)
+      .eq('is_bookable', true)
       .single()
 
     console.log('🔍 Bookings API: Resource query result:', { resource, resourceError })
@@ -188,7 +190,6 @@ export async function POST(
       console.log('🔍 Bookings API: Conflict check result:', { conflicts: conflicts.length })
 
       if (conflicts.length > 0) {
-        console.warn('⚠️ Bookings API: Conflicts detected:', conflicts)
         
         // Log conflicts for tracking
         for (const conflict of conflicts) {
@@ -208,7 +209,7 @@ export async function POST(
         return NextResponse.json(
           { 
             error: 'Booking conflicts detected',
-            conflicts: conflicts,
+            conflictCount: conflicts.length,
             message: 'Please resolve conflicts before creating the booking'
           },
           { status: 409 }
@@ -305,7 +306,6 @@ export async function POST(
       const resend = new Resend(process.env.RESEND_API_KEY)
 
       // Send confirmation email to user
-      console.log('🔍 Bookings API: Sending confirmation email to:', booking.user_email)
       const userEmailData = {
         from: 'noreply@bakehouse-news.com',
         to: booking.user_email,

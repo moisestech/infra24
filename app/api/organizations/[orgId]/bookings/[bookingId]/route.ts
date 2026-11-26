@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/supabase';
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,12 +9,18 @@ export async function PATCH(
 ) {
   try {
     const { orgId, bookingId } = await params;
+    const access = await requireOrganizationStaff(orgId);
+    if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
     const body = await request.json();
-    const { status, notes, updated_by } = body;
+    const { status, notes } = body;
+    if (!['pending','confirmed','cancelled','completed','no_show','rejected'].includes(status) ||
+        (notes != null && typeof notes !== 'string')) {
+      return NextResponse.json({ error: 'Invalid booking review' }, { status: 400 });
+    }
 
     console.log('🔍 Booking Update API: Updating booking', bookingId, 'with status:', status);
 
-    const supabase = getSupabaseAdmin();
+    const supabase = access.db;
 
     // Update the booking
     const { data: booking, error: updateError } = await supabase
@@ -23,19 +29,12 @@ export async function PATCH(
         status,
         notes: notes || null,
         updated_at: new Date().toISOString(),
-        updated_by_clerk_id: updated_by || 'admin'
+        updated_by: access.userId
       })
       .eq('id', bookingId)
-      .eq('org_id', orgId)
+      .eq('org_id', access.orgId)
       .select(`
         *,
-        resources (
-          id,
-          title,
-          type,
-          category,
-          location
-        ),
         organizations (
           id,
           name,
@@ -47,7 +46,7 @@ export async function PATCH(
     if (updateError) {
       console.error('❌ Booking Update API: Error updating booking:', updateError);
       return NextResponse.json(
-        { error: 'Failed to update booking', details: updateError.message },
+        { error: 'Failed to update booking', },
         { status: 500 }
       );
     }
@@ -98,8 +97,8 @@ export async function PATCH(
 
     return NextResponse.json({ 
       success: true,
-      booking 
-    });
+      booking
+    }, { headers: { 'Cache-Control': 'private, no-store' } });
 
   } catch (error) {
     console.error('❌ Booking Update API: Error in PATCH request:', error);
