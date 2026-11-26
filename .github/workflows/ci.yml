@@ -135,7 +135,7 @@ jobs:
         run: npm run build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-          # Next 14 uses this to size its static page worker pool.
+          # Limit static page worker concurrency.
           CIRCLE_NODE_TOTAL: '2'
           NEXT_TELEMETRY_DISABLED: '1'
           # Compile with offline fixtures. Provider integration runs in protected preview.
@@ -145,3 +145,8 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: local-placeholder
           SUPABASE_SERVICE_ROLE_KEY: local-placeholder
           RESEND_API_KEY: re_local_only
+
+      - name: Type check generated Next route contracts after build
+        run: npm run type-check
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096

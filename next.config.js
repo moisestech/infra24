@@ -7,9 +7,9 @@ const nextConfig = {
   // External Node resolution can otherwise return React 18 elements to RSC.
   transpilePackages: ['three', '@react-three/fiber', 'next-mdx-remote'],
 
+  // Enforce Next.js generated route contracts during production builds.
   typescript: {
-    // Repo has TS errors in tests/features outside the app bundle; Vercel runs `tsc` during build
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
   eslint: {
