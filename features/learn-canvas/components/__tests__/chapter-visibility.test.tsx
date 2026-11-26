@@ -7,6 +7,8 @@ import { WorkshopDetail } from '../WorkshopDetail'
 import { ChapterCard } from '../ChapterCard'
 import { ChapterReader } from '../ChapterReader'
 // Isolate the external MDX compiler/runtime and auth/router boundaries only.
+// Presentation media playback is outside chapter visibility; isolate the player boundary.
+jest.mock('../presentation/SlideVideo', () => ({ SlideVideo: () => <div data-testid="slide-video" /> }))
 jest.mock('next-mdx-remote', () => ({ MDXRemote: () => <div>Mock MDX content</div> }))
 jest.mock('@clerk/nextjs', () => ({useAuth:()=>({isSignedIn:false}),useUser:()=>({isSignedIn:false,user:null}),SignInButton:({children}:any)=>children,SignUpButton:({children}:any)=>children}))
 jest.mock('next/navigation', () => {const push=jest.fn();return {useRouter:()=>({push}),usePathname:()=>'/learn/ethical-ai-journalism'}})
