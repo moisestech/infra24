@@ -70,6 +70,8 @@ describe('immutable approved website Passport snapshots',()=>{
   })
   it('holds unmarked legacy profiles when canonical membership cannot be checked', async () => {
     delete process.env.SUPABASE_SERVICE_ROLE_KEY
+    process.env.DCC_STEWARD_PUBLICATION_ENABLED = 'false'
+    process.env.DCC_MEMBER_EVENT_CAPTURE_ENABLED = 'false'
     process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED = 'false'
     fetcher.mockResolvedValueOnce(new Response(JSON.stringify({
       records: [{ id: recordId, fields: { ...mutated, 'DCC Website Member Binding ID': undefined } }],
