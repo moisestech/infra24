@@ -48,3 +48,11 @@ Staged-only migration supabase/staged/20261126220000_group_booking_server_only.s
 
 ## Handoff practice for every new model
 Read this file and the canonical Drive spec. Fetch live GitHub PR/head/CI and Vercel; compare migration history and Airtable before writing. Separate VERIFIED vs STAGED vs BLOCKED, state exact SHA and URLs. Preserve privacy/consent and Smart Sign compatibility. Prefer small tested commits, no build bypasses. After any major milestone, update this file, the Drive engineering memory and MVP issue with what changed, decisions, blockers, tests and next action. Do not merge, turn on flags or spend money just because a previous model requested it.
+
+
+## 2026-11-26 — additive booking compatibility checkpoint
+
+- Exact tested SHA `dae0ca943bdaa613db5d3dfea0d53d6c996cd21b`: CI run [45905311353](https://github.com/moisestech/infra24/actions/runs/45905311353), all four jobs successful. Matching preview READY: https://infra24-mil1e91rl-moises-sanabrias-projects.vercel.app.
+- Public booking insert now uses hosted `created_by` / `updated_by`. Standalone staged `supabase/staged/legacy_booking_additive_compatibility.sql` and independent fixture regression run before the broader cutover; neither staged migration has been applied by this sprint.
+- Hosted catalog read-only evidence: all seven legacy tables (bookings, resources, booking_participants, submission_forms, submissions, artist_tips, organization_donations) have RLS disabled and anon/authenticated table UPDATE privileges. Service role has SELECT/UPDATE on bookings, resources and org_memberships. Org_memberships has RLS enabled; its policies were not evaluated here. Data API exposure and exploitation have not been established. The additive RPC is not a substitute for securing direct table access.
+- Release gate: map all seven tables' browser/server/RPC consumers, inspect policies and exposure, test replacements before revocation, verify backup and recovery, obtain explicit hosted cutover approval. Do not merge main or enable production flags. Keep Phase A Passport authorization separate from legacy DDL. No hosted writes performed.
