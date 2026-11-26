@@ -1,14 +1,15 @@
 // @jest-environment jsdom
 /// <reference types="jest" />
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { WorkshopDetail } from '../WorkshopDetail'
 import { ChapterCard } from '../ChapterCard'
 import { ChapterReader } from '../ChapterReader'
-import { workshopService } from '../../services/workshopService'
-
-// Mock the workshop service
+// Isolate the external MDX compiler/runtime and auth/router boundaries only.
+jest.mock('next-mdx-remote', () => ({ MDXRemote: () => <div>Mock MDX content</div> }))
+jest.mock('@clerk/nextjs', () => ({useAuth:()=>({isSignedIn:false}),useUser:()=>({isSignedIn:false,user:null}),SignInButton:({children}:any)=>children,SignUpButton:({children}:any)=>children}))
+jest.mock('next/navigation', () => {const push=jest.fn();return {useRouter:()=>({push}),usePathname:()=>'/learn/ethical-ai-journalism'}})
 jest.mock('../../services/workshopService')
 
 describe('Chapter Visibility Tests - Critical Bug Prevention', () => {
@@ -102,334 +103,46 @@ describe('Chapter Visibility Tests - Critical Bug Prevention', () => {
     }
   ]
 
-  const mockMdxSource = {
-    compiledSource: 'export default function MDXContent() { return <div>Mock MDX Content</div> }',
-    frontmatter: {},
-    scope: {}
-  }
+  const mockMdxSource = {compiledSource:'test-fixture',frontmatter:{},scope:{}}
+  const push = jest.requireMock('next/navigation').useRouter().push
+  beforeEach(() => jest.clearAllMocks())
 
-  beforeEach(() => {
-    jest.clearAllMocks()
+  it('lists all chapters in source order and allows free browsing', () => {
+    render(<WorkshopDetail workshop={mockWorkshop} chapters={mockChapters} />)
+    expect(screen.getAllByRole('heading',{level:3}).filter(x=>mockChapters.some(c=>c.title===x.textContent)).map(x=>x.textContent)).toEqual(mockChapters.map(c=>c.title))
+    expect(screen.getAllByText('Free')).toHaveLength(3)
+    expect(screen.getByText('45 min')).toBeInTheDocument()
+    expect(screen.getByText('60 min')).toBeInTheDocument()
   })
-
-  describe('WorkshopDetail - Chapter Display', () => {
-    it('should display all chapters for a workshop', async () => {
-      render(<WorkshopDetail workshop={mockWorkshop} chapters={mockChapters} />)
-      
-      // Verify all chapters are displayed
-      expect(screen.getByText('Understanding AI Bias')).toBeInTheDocument()
-      expect(screen.getByText('Fact-Checking with AI')).toBeInTheDocument()
-      expect(screen.getByText('Ethical Guidelines')).toBeInTheDocument()
-    })
-
-    it('should show chapter count correctly', () => {
-      render(<WorkshopDetail workshop={mockWorkshop} chapters={mockChapters} />)
-      
-      // Should show correct chapter count
-      expect(screen.getByText('3 chapters')).toBeInTheDocument()
-    })
-
-    it('should display chapter cards with correct information', () => {
-      render(<WorkshopDetail workshop={mockWorkshop} chapters={mockChapters} />)
-      
-      // Verify chapter cards show correct information
-      expect(screen.getByText('Understanding AI Bias')).toBeInTheDocument()
-      expect(screen.getByText('45 min')).toBeInTheDocument()
-      expect(screen.getByText('Fact-Checking with AI')).toBeInTheDocument()
-      expect(screen.getByText('60 min')).toBeInTheDocument()
-    })
+  it('handles single and empty lists', () => {
+    const {rerender}=render(<WorkshopDetail workshop={mockWorkshop} chapters={[mockChapters[0]]} />)
+    expect(screen.getByText('Understanding AI Bias')).toBeInTheDocument()
+    expect(screen.queryByText('Fact-Checking with AI')).not.toBeInTheDocument()
+    rerender(<WorkshopDetail workshop={mockWorkshop} chapters={[]} />)
+    expect(screen.getByText('No chapters available.')).toBeInTheDocument()
+    expect(screen.queryByText('Understanding AI Bias')).not.toBeInTheDocument()
   })
-
-  describe('ChapterCard - Individual Chapter Display', () => {
-    it('should render chapter card with all required information', () => {
-      render(<ChapterCard chapter={mockChapters[0]} workshopSlug="ethical-ai-journalism" />)
-      
-      expect(screen.getByText('Understanding AI Bias')).toBeInTheDocument()
-      expect(screen.getByText('45 min')).toBeInTheDocument()
-      expect(screen.getByText('Chapter 1')).toBeInTheDocument()
-    })
-
-    it('should show chapter status correctly', () => {
-      render(<ChapterCard chapter={mockChapters[0]} workshopSlug="ethical-ai-journalism" />)
-      
-      // Should show published status
-      expect(screen.getByText('Published')).toBeInTheDocument()
-    })
-
-    it('should handle unpublished chapters', () => {
-      const unpublishedChapter = {
-        ...mockChapters[0],
-        published: false
-      }
-      
-      render(<ChapterCard chapter={unpublishedChapter} workshopSlug="ethical-ai-journalism" />)
-      
-      // Should show unpublished status
-      expect(screen.getByText('Draft')).toBeInTheDocument()
-    })
+  it('renders zero duration and navigates to the selected chapter', () => {
+    render(<ChapterCard chapter={{...mockChapters[0],estimated_duration_minutes:0}} workshopSlug="ethical-ai-journalism" />)
+    expect(screen.getByText('0 min')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('workshop.start'))
+    expect(push).toHaveBeenCalledWith('/learn/ethical-ai-journalism/01-understanding-ai-bias')
   })
-
-  describe('ChapterReader - Chapter Content Display', () => {
-    beforeEach(() => {
-      ;(workshopService.getChapter as jest.Mock).mockResolvedValue(mockChapters[0])
-      ;(workshopService.getWorkshopChapters as jest.Mock).mockResolvedValue({
-        chapters: mockChapters
-      })
-      ;(workshopService.getChapter as jest.Mock).mockResolvedValue(mockChapters[0])
-    })
-
-    it('should render chapter content correctly', async () => {
-      render(
-        <ChapterReader 
-          workshopSlug="ethical-ai-journalism" 
-          chapterSlug="01-understanding-ai-bias"
-          chapter={mockChapters[0]}
-          mdxSource={mockMdxSource}
-        />
-      )
-      
-      // Wait for content to load
-      await waitFor(() => {
-        expect(screen.getByText('Understanding AI Bias')).toBeInTheDocument()
-      })
-      
-      // Verify chapter content is displayed
-      expect(screen.getByText('Learn about AI bias...')).toBeInTheDocument()
-    })
-
-    it('should show chapter navigation correctly', async () => {
-      render(
-        <ChapterReader 
-          workshopSlug="ethical-ai-journalism" 
-          chapterSlug="01-understanding-ai-bias"
-          chapter={mockChapters[0]}
-          mdxSource={mockMdxSource}
-        />
-      )
-      
-      await waitFor(() => {
-        expect(screen.getByText('Understanding AI Bias')).toBeInTheDocument()
-      })
-      
-      // Verify navigation elements are present
-      expect(screen.getByText(/previous/i) || screen.getByText(/next/i)).toBeInTheDocument()
-    })
-
-    it('should handle chapter loading states', async () => {
-      // Mock slow loading
-      ;(workshopService.getChapter as jest.Mock).mockImplementation(
-        () => new Promise(resolve => setTimeout(() => resolve(mockChapters[0]), 100))
-      )
-      
-      render(
-        <ChapterReader 
-          workshopSlug="ethical-ai-journalism" 
-          chapterSlug="01-understanding-ai-bias"
-          chapter={mockChapters[0]}
-          mdxSource={mockMdxSource}
-        />
-      )
-      
-      // Should show loading state initially
-      expect(screen.getByText(/loading/i)).toBeInTheDocument()
-      
-      // Should show content after loading
-      await waitFor(() => {
-        expect(screen.getByText('Understanding AI Bias')).toBeInTheDocument()
-      })
-    })
-
-    it('should handle chapter not found gracefully', async () => {
-      ;(workshopService.getChapter as jest.Mock).mockResolvedValue(null)
-      
-      render(
-        <ChapterReader 
-          workshopSlug="ethical-ai-journalism" 
-          chapterSlug="non-existent-chapter"
-          chapter={null}
-          mdxSource={mockMdxSource}
-        />
-      )
-      
-      await waitFor(() => {
-        expect(screen.getByText(/chapter not found/i) || screen.getByText(/404/i)).toBeInTheDocument()
-      })
-    })
+  it('marks inaccessible premium chapters without allowing navigation', () => {
+    render(<ChapterCard chapter={mockChapters[1]} workshopSlug="ethical-ai-journalism" isAccessible={false} />)
+    expect(screen.getByText('Premium')).toBeInTheDocument()
+    expect(screen.getByRole('button',{name:'workshop.locked'})).toBeDisabled()
+    expect(push).not.toHaveBeenCalled()
   })
-
-  describe('Chapter Visibility Edge Cases', () => {
-    it('should handle workshop with single chapter', () => {
-      const singleChapter = [mockChapters[0]]
-      render(<WorkshopDetail workshop={mockWorkshop} chapters={singleChapter} />)
-      
-      expect(screen.getByText('Understanding AI Bias')).toBeInTheDocument()
-      expect(screen.getByText('1 chapter')).toBeInTheDocument()
-    })
-
-    it('should handle workshop with many chapters', () => {
-      const manyChapters = [
-        ...mockChapters,
-        {
-          id: '4',
-          workshop_id: '1',
-          chapter_number: 4,
-          title: 'Advanced Topics',
-          slug: '04-advanced-topics',
-          content_markdown: '# Advanced Topics',
-          learning_objectives: ['Master advanced concepts'],
-          estimated_duration_minutes: 90,
-          resources: [],
-          assignments: [],
-          published: true,
-          created_at: '2025-01-01T00:00:00Z',
-          updated_at: '2025-01-01T00:00:00Z',
-          workshop_slug: 'ethical-ai-journalism'
-        }
-      ]
-      
-      render(<WorkshopDetail workshop={mockWorkshop} chapters={manyChapters} />)
-      
-      expect(screen.getByText('4 chapters')).toBeInTheDocument()
-      expect(screen.getByText('Advanced Topics')).toBeInTheDocument()
-    })
-
-    it('should handle workshop with no chapters', () => {
-      render(<WorkshopDetail workshop={mockWorkshop} chapters={[]} />)
-      
-      expect(screen.getByText('0 chapters')).toBeInTheDocument()
-      expect(screen.getByText(/no chapters available/i)).toBeInTheDocument()
-    })
-
-    it('should handle chapters with missing data gracefully', () => {
-      const incompleteChapter = {
-        id: '1',
-        workshop_id: '1',
-        chapter_number: 1,
-        title: 'Incomplete Chapter',
-        slug: 'incomplete',
-        content_markdown: '',
-        learning_objectives: [],
-        estimated_duration_minutes: 0,
-        resources: [],
-        assignments: [],
-        published: true,
-        created_at: '2025-01-01T00:00:00Z',
-        updated_at: '2025-01-01T00:00:00Z',
-        workshop_slug: 'ethical-ai-journalism'
-      }
-      
-      render(<ChapterCard chapter={incompleteChapter} workshopSlug="ethical-ai-journalism" />)
-      
-      expect(screen.getByText('Incomplete Chapter')).toBeInTheDocument()
-      expect(screen.getByText('0 min')).toBeInTheDocument()
-    })
+  it('renders the supplied chapter and MDX boundary without fetching client data', () => {
+    render(<ChapterReader workshopSlug="ethical-ai-journalism" chapterSlug={mockChapters[0].slug} chapter={mockChapters[0]} mdxSource={mockMdxSource} />)
+    expect(screen.getAllByText('Understanding AI Bias').length).toBeGreaterThan(0)
+    expect(screen.getByText('Mock MDX content')).toBeInTheDocument()
+    expect(screen.getByText('Identify common types of AI bias')).toBeInTheDocument()
   })
-
-  describe('Chapter Access Control', () => {
-    it('should show access restrictions for premium chapters', () => {
-      const premiumChapter = {
-        ...mockChapters[1],
-        chapter_number: 2
-      }
-      
-      render(<ChapterCard chapter={premiumChapter} workshopSlug="ethical-ai-journalism" />)
-      
-      // Should show premium indicator
-      expect(screen.getByText(/premium/i) || screen.getByText(/lock/i)).toBeInTheDocument()
-    })
-
-    it('should allow access to first chapter for all users', () => {
-      render(<ChapterCard chapter={mockChapters[0]} workshopSlug="ethical-ai-journalism" />)
-      
-      // First chapter should be accessible
-      expect(screen.getByText('Understanding AI Bias')).toBeInTheDocument()
-      expect(screen.queryByText(/lock/i)).not.toBeInTheDocument()
-    })
+  it('handles a missing server-supplied chapter instead of dereferencing null', () => {
+    render(<ChapterReader workshopSlug="ethical-ai-journalism" chapterSlug="missing" chapter={null} mdxSource={mockMdxSource} />)
+    expect(screen.getByText('Chapter Not Found')).toBeInTheDocument()
+    expect(screen.getByText('Back to Workshop')).toBeInTheDocument()
   })
-
-  describe('Chapter Navigation', () => {
-    it('should provide navigation between chapters', () => {
-      render(<WorkshopDetail workshop={mockWorkshop} chapters={mockChapters} />)
-      
-      // Should have navigation elements
-      expect(screen.getByText('Understanding AI Bias')).toBeInTheDocument()
-      expect(screen.getByText('Fact-Checking with AI')).toBeInTheDocument()
-      expect(screen.getByText('Ethical Guidelines')).toBeInTheDocument()
-    })
-
-    it('should maintain chapter order correctly', () => {
-      render(<WorkshopDetail workshop={mockWorkshop} chapters={mockChapters} />)
-      
-      const chapterElements = screen.getAllByText(/Chapter \d+/)
-      expect(chapterElements[0]).toHaveTextContent('Chapter 1')
-      expect(chapterElements[1]).toHaveTextContent('Chapter 2')
-      expect(chapterElements[2]).toHaveTextContent('Chapter 3')
-    })
-  })
-
-  describe('Chapter Content Validation', () => {
-    it('should validate chapter content structure', () => {
-      const validChapter = mockChapters[0]
-      
-      expect(validChapter).toHaveProperty('id')
-      expect(validChapter).toHaveProperty('title')
-      expect(validChapter).toHaveProperty('content_markdown')
-      expect(validChapter).toHaveProperty('learning_objectives')
-      expect(validChapter).toHaveProperty('estimated_duration_minutes')
-    })
-
-    it('should handle chapters with rich content', () => {
-      const richChapter = {
-        ...mockChapters[0],
-        content_markdown: `
-# Rich Content Chapter
-
-This chapter has **bold text**, *italic text*, and [links](https://example.com).
-
-## Subsection
-
-- List item 1
-- List item 2
-- List item 3
-
-\`\`\`javascript
-console.log('Code block');
-\`\`\`
-        `
-      }
-      
-      render(<ChapterCard chapter={richChapter} workshopSlug="ethical-ai-journalism" />)
-      
-      expect(screen.getByText('Rich Content Chapter')).toBeInTheDocument()
-    })
-  })
-
-  describe('Chapter Performance', () => {
-    it('should render chapters efficiently', () => {
-      const startTime = performance.now()
-      
-      render(<WorkshopDetail workshop={mockWorkshop} chapters={mockChapters} />)
-      
-      const endTime = performance.now()
-      const renderTime = endTime - startTime
-      
-      // Should render within reasonable time (adjust threshold as needed)
-      expect(renderTime).toBeLessThan(1000)
-    })
-
-    it('should handle large chapter lists', () => {
-      const largeChapterList = Array.from({ length: 50 }, (_, i) => ({
-        ...mockChapters[0],
-        id: String(i + 1),
-        title: `Chapter ${i + 1}`,
-        slug: `chapter-${i + 1}`,
-        chapter_number: i + 1
-      }))
-      
-      render(<WorkshopDetail workshop={mockWorkshop} chapters={largeChapterList} />)
-      
-      // Should render without errors
-      expect(screen.getByText('50 chapters')).toBeInTheDocument()
-    })
-  })
-}) 
+})

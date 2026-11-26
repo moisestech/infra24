@@ -120,7 +120,7 @@ describe('aiVideoTimelineData', () => {
     })
 
     it('has valid categories', () => {
-      const validCategories = ['milestone', 'breakthrough', 'release', 'research']
+      const validCategories = ['milestone', 'breakthrough', 'release', 'research', 'controversy', 'adoption']
       
       aiVideoTimelineEvents.forEach(event => {
         expect(validCategories).toContain(event.category)

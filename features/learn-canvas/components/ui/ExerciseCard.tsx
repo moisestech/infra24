@@ -54,7 +54,7 @@ export function ExerciseCard({
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set())
   
   const config = difficultyConfig[difficulty]
-  const progress = (completedSteps.size / steps.length) * 100
+  const progress = steps.length ? (completedSteps.size / steps.length) * 100 : 0
 
   const handleStepToggle = (stepIndex: number) => {
     const newCompletedSteps = new Set(completedSteps)
@@ -106,6 +106,9 @@ export function ExerciseCard({
           </div>
           
           <button
+            type="button"
+            aria-label={isExpanded ? 'Hide exercise steps' : 'Show exercise steps'}
+            aria-expanded={isExpanded}
             onClick={() => setIsExpanded(!isExpanded)}
             className="p-2 hover:bg-white/10 rounded-lg transition-colors"
           >
@@ -154,6 +157,9 @@ export function ExerciseCard({
                       className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors"
                     >
                       <button
+                        type="button"
+                        aria-label={`${completedSteps.has(index) ? 'Undo' : 'Complete'} step ${index + 1}`}
+                        aria-pressed={completedSteps.has(index)}
                         onClick={() => handleStepToggle(index)}
                         className={cn(
                           "w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors",

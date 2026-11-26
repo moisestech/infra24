@@ -98,6 +98,7 @@ export function ChapterReader({ workshopSlug, chapterSlug, chapter, chapterConte
 
   // Get translated content for workshop chapters
   const getTranslatedChapterContent = () => {
+    if (!chapter) return { title:'', subtitle:'', learning_objectives:[] }
     // AI Video Production Workshop
     if (workshopSlug === 'ai-video-production') {
       // Get the translated learning objectives array
@@ -116,7 +117,7 @@ export function ChapterReader({ workshopSlug, chapterSlug, chapter, chapterConte
       const courseKey = workshopSlug.replace(/-/g, '_');
       
       return {
-        title: t(`courses.${courseKey}.chapters.${chapterSlug}.title`) || chapter.title,
+        title: chapter.title,
         subtitle: chapter.subtitle,
         learning_objectives: chapter.learning_objectives
       };
@@ -422,7 +423,7 @@ export function ChapterReader({ workshopSlug, chapterSlug, chapter, chapterConte
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
-            {translatedContent.learning_objectives.map((objective: string, index: number) => (
+            {(translatedContent.learning_objectives ?? []).map((objective: string, index: number) => (
               <li key={index} className="flex items-start gap-3">
                 <CheckCircle className="w-5 h-5 text-[#00ff00] mt-0.5 flex-shrink-0" />
                 <span className="text-gray-300 learn-body">{objective}</span>
@@ -577,7 +578,7 @@ export function ChapterReader({ workshopSlug, chapterSlug, chapter, chapterConte
       </div>
 
       {/* Resources */}
-      {chapter.resources.length > 0 && (
+      {(chapter.resources ?? []).length > 0 && (
         <div className="mt-12">
           <ResourceList
             title="Additional Resources"
@@ -592,7 +593,7 @@ export function ChapterReader({ workshopSlug, chapterSlug, chapter, chapterConte
       )}
 
       {/* Assignments */}
-      {chapter.assignments.length > 0 && (
+      {(chapter.assignments ?? []).length > 0 && (
         <div className="mt-8">
           <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2 learn-heading">
             <BookOpen className="w-5 h-5" />

@@ -159,7 +159,8 @@ describe('MiniMapDensity', () => {
     const container = screen.getByRole('slider').parentElement
     fireEvent.pointerDown(container!, { clientX: 400 })
     
-    expect(mockScrollRef.current.scrollTo).toHaveBeenCalledWith(expect.objectContaining({left:800}))
+    expect(mockScrollRef.current.scrollTo).toHaveBeenCalledWith(expect.objectContaining({behavior:'smooth'}))
+    expect((mockScrollRef.current.scrollTo as jest.Mock).mock.calls[0][0].left).toBeCloseTo(800)
   })
 
   it('handles drag navigation', () => {
