@@ -43,3 +43,6 @@ Future maintainers: update the issue and this RFC with evidence, decisions, test
 
 ## Sprint 1 checkpoint — 2026-11-26
 See [reconciliation evidence](SPRINT-1-RECONCILIATION.md) and [conditional import allowlist](ai-art-fundamentals-allowlist.json). All 53 chapter blobs inspected; six source-published, two conditional plain-Markdown adaptation candidates, 51 held. Zero authorized imports until editorial/rights approval and verified Passport release baseline. Existing public reader is Markdown-only, ignores chapter publication flag, and catalog tenant defaults to Oolite; address these explicitly before implementation. No application code or runtime changes.
+
+## Sprint 2 checkpoint — 2026-11-26
+See [editorial drafts, catalog reconciliation and ranked backlog](SPRINT-2-EDITORIAL-CATALOG-TAXONOMY.md) and [23-course taxonomy crosswalk](curriculum-taxonomy-crosswalk.json). Two revised lesson drafts for review, old source links omitted, no assets selected. Read-only DB inspection found no DCC/AI24 org row and only Oolite's two published workshop rows; do not reassign partner tenancy. Use synthetic isolated fixture pending owner and release approval. Passport acd368b exact-head CI green, draft still gated. Taxonomy maps offerings to aggregate discovery categories, never members or verified skills. No imports or runtime changes.
