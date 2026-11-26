@@ -1,46 +1,27 @@
+/** @jest-environment node */
 import { NextRequest } from 'next/server'
 import { GET } from '@/app/api/availability/route'
 
-// Mock Supabase
-const mockSupabase = {
-  from: jest.fn(() => ({
-    select: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnThis(),
-    single: jest.fn().mockResolvedValue({
-      data: {
-        id: 'test-resource-id',
-        name: 'Remote Studio Visit',
-        metadata: {
-          availability_rules: {
-            timezone: 'America/New_York',
-            slot_minutes: 30,
-            buffer_before: 10,
-            buffer_after: 10,
-            max_per_day_per_host: 4,
-            windows: [
-              {
-                by: 'host',
-                host: 'mo@oolite.org',
-                days: ['Tue', 'Wed', 'Thu'],
-                start: '12:00',
-                end: '16:00'
-              }
-            ]
-          }
-        }
-      },
-      error: null
-    })
-  }))
-}
-
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => mockSupabase)
+// Mock the server dependency, not the client module's eager initialization.
+const mockResource = jest.fn()
+const mockBookings = jest.fn()
+jest.mock('@/lib/supabase', () => ({
+  getSupabaseAdmin: () => ({
+    from: () => ({
+      select: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      gte: jest.fn().mockReturnThis(),
+      lte: mockBookings,
+      single: mockResource,
+    }),
+  }),
 }))
 
 describe('/api/availability', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockResource.mockReset().mockResolvedValue({data:{id:'test-resource-id',availability_rules:{timezone:'America/New_York',slot_minutes:30,windows:[{by:'host',host:'host@example.test',days:['Wednesday','Tuesday'],start:'12:00',end:'16:00'}]}},error:null})
+    mockBookings.mockReset().mockResolvedValue({data:[],error:null})
   })
 
   it('should return available slots for a resource', async () => {
@@ -56,6 +37,7 @@ describe('/api/availability', () => {
     expect(data).toHaveProperty('timezone', 'America/New_York')
     expect(data).toHaveProperty('slots')
     expect(Array.isArray(data.slots)).toBe(true)
+    expect(data.slots.length).toBeGreaterThan(0)
   })
 
   it('should return 400 for missing resource_id', async () => {
@@ -83,7 +65,7 @@ describe('/api/availability', () => {
   })
 
   it('should return 404 for non-existent resource', async () => {
-    mockSupabase.from().single.mockResolvedValueOnce({
+    mockResource.mockResolvedValueOnce({
       data: null,
       error: { message: 'Resource not found' }
     })

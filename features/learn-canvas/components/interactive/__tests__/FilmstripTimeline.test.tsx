@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { FilmstripTimeline, TimelineEvent } from '../FilmstripTimeline'
 
 // Mock Next.js Image component
@@ -76,7 +76,7 @@ describe('FilmstripTimeline', () => {
   it('renders with custom height', () => {
     render(<FilmstripTimeline events={mockEvents} height={300} />)
     
-    const timeline = screen.getByText('AI Video — 10-year timeline').closest('div')?.parentElement
+    const timeline = screen.getByRole('region', {name:'Timeline events'})
     expect(timeline).toHaveStyle({ height: '300px' })
   })
 
@@ -122,19 +122,13 @@ describe('FilmstripTimeline', () => {
   it('opens preview when event is clicked', async () => {
     render(<FilmstripTimeline events={mockEvents} />)
     
-    const eventButtons = screen.getAllByRole('button')
-    const eventButton = eventButtons.find(button => 
-      button.textContent?.includes('Test Event 1')
-    )
-    
-    if (eventButton) {
-      fireEvent.click(eventButton)
-      
-      await waitFor(() => {
-        // Check that the preview modal appears
-        expect(screen.getByText('Test Event 1')).toBeInTheDocument()
-      })
-    }
+    const eventButton = screen.getByText('Test Event 1').closest('button')!
+    expect(eventButton).toBeInTheDocument()
+    fireEvent.click(eventButton)
+    const dialog = await screen.findByRole('dialog', {name:'Test Event 1'})
+    expect(within(dialog).getByText('This is a test event')).toBeInTheDocument()
+    fireEvent.click(within(dialog).getByRole('button', {name:'Close preview'}))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   })
 
   it('handles keyboard navigation', () => {

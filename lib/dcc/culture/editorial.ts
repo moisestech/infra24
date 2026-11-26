@@ -519,7 +519,8 @@ export const JOURNAL_OPENING_SEQUENCE = [
   },
 ] as const
 
-export type JournalOpeningSequenceItem = (typeof JOURNAL_OPENING_SEQUENCE)[number]
+// Only the institutional lead carries the flag in the source data; other entries omit it.
+export type JournalOpeningSequenceItem = (typeof JOURNAL_OPENING_SEQUENCE)[number] & { readonly lead?: boolean }
 
 /**
  * Publication reading order for essay prev/next — not `publishedAt`.

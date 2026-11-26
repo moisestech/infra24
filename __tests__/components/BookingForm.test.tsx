@@ -1,173 +1,116 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { BookingForm } from '@/components/booking/BookingForm'
+import type { Resource } from '@/types/booking'
 
-// Mock the useTenant hook
-jest.mock('@/hooks/useTenant', () => ({
+// Match the actual tenant hook used by BookingForm (the former test mocked a
+// retired hook and tested a retired fetch-based form instead).
+jest.mock('@/components/tenant/TenantProvider', () => ({
   useTenant: () => ({
     tenantConfig: {
-      theme: {
-        primary: '#00BCD4',
-        primaryDark: '#0097A7',
-        primaryAlpha: 'rgba(0, 188, 212, 0.1)'
-      }
-    }
-  })
+      theme: { primaryColor: '#00BCD4', secondaryColor: '#0097A7' },
+    },
+  }),
 }))
 
-// Mock fetch
-global.fetch = jest.fn()
+const resourceId = 'e2a845d4-a421-4c27-a13e-80be430b1111'
+const maintenanceResourceId = 'e2a845d4-a421-4c27-a13e-80be430b2222'
 
-describe('BookingForm', () => {
-  const mockResources = [
-    {
-      id: 'resource-1',
-      name: 'Remote Studio Visit',
-      type: 'space',
-      is_bookable: true,
-      metadata: {
-        description: '30-minute remote consultation',
-        duration_minutes: 30
-      }
-    },
-    {
-      id: 'resource-2',
-      name: 'Print Room Consult',
-      type: 'space',
-      is_bookable: false,
-      metadata: {
-        description: 'Print room consultation',
-        duration_minutes: 30,
-        status: 'maintenance'
-      }
-    }
-  ]
+const availableEquipment: Resource = {
+  id: resourceId,
+  organization_id: 'org-test',
+  type: 'equipment',
+  title: 'Remote Studio Visit',
+  description: 'A remote consultation',
+  capacity: 1,
+  price: 0,
+  currency: 'USD',
+  is_active: true,
+  is_bookable: true,
+  metadata: { status: 'available' },
+  created_at: '2026-01-01T00:00:00Z',
+  updated_at: '2026-01-01T00:00:00Z',
+  created_by: 'test-user',
+  updated_by: 'test-user',
+}
+
+const maintenanceEquipment: Resource = {
+  ...availableEquipment,
+  id: maintenanceResourceId,
+  title: 'Print Room Consult',
+  is_bookable: false,
+  metadata: { status: 'maintenance' },
+}
+
+describe('BookingForm — current controlled booking contract', () => {
+  const onSubmit = jest.fn<Promise<void>, [unknown]>()
+  const onCancel = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
-    ;(fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockResources)
-    })
+    onSubmit.mockResolvedValue(undefined)
   })
 
-  it('renders booking form with resource selection', async () => {
-    render(<BookingForm />)
+  function renderBooking(props: { preSelectedResource?: string; resources?: Resource[] } = {}) {
+    return render(
+      <BookingForm
+        organizationId="org-test"
+        resources={props.resources ?? [availableEquipment, maintenanceEquipment]}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+        {...(props.preSelectedResource ? { preSelectedResource: props.preSelectedResource } : {})}
+      />
+    )
+  }
 
-    await waitFor(() => {
-      expect(screen.getByText('Select Equipment')).toBeInTheDocument()
-    })
-
-    expect(screen.getByText('Remote Studio Visit')).toBeInTheDocument()
-    expect(screen.getByText('Print Room Consult')).toBeInTheDocument()
+  it('renders the equipment booking form and its required title', () => {
+    renderBooking()
+    expect(screen.getByText('Equipment Booking')).toBeInTheDocument()
+    expect(screen.getByLabelText(/Booking Title/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Save Booking' })).toBeEnabled()
   })
 
-  it('shows equipment status badges', async () => {
-    render(<BookingForm />)
-
-    await waitFor(() => {
-      expect(screen.getByText('Available')).toBeInTheDocument()
-      expect(screen.getByText('Maintenance')).toBeInTheDocument()
-    })
+  it('shows the selected available equipment status', async () => {
+    renderBooking({ preSelectedResource: resourceId })
+    expect(await screen.findByText('This equipment is available for booking')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Save Booking' })).toBeEnabled()
   })
 
-  it('disables unbookable equipment', async () => {
-    render(<BookingForm />)
-
+  it('prevents saving unavailable or maintenance equipment', async () => {
+    renderBooking({ preSelectedResource: maintenanceResourceId })
     await waitFor(() => {
-      const printRoomOption = screen.getByText('Print Room Consult')
-      expect(printRoomOption.closest('button')).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Save Booking' })).toBeDisabled()
     })
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  it('shows status information for selected equipment', async () => {
-    render(<BookingForm />)
-
-    await waitFor(() => {
-      const remoteVisitOption = screen.getByText('Remote Studio Visit')
-      fireEvent.click(remoteVisitOption)
-    })
-
-    await waitFor(() => {
-      expect(screen.getByText('Equipment Status')).toBeInTheDocument()
-      expect(screen.getByText('Available')).toBeInTheDocument()
-    })
+  it('calls the supplied cancel callback', () => {
+    renderBooking()
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect(onCancel).toHaveBeenCalledTimes(1)
   })
 
-  it('prevents submission for unbookable equipment', async () => {
-    render(<BookingForm />)
-
-    await waitFor(() => {
-      const printRoomOption = screen.getByText('Print Room Consult')
-      fireEvent.click(printRoomOption)
-    })
-
-    await waitFor(() => {
-      const submitButton = screen.getByRole('button', { name: /book consultation/i })
-      expect(submitButton).toBeDisabled()
-    })
+  it('requires a title before invoking the booking callback', async () => {
+    renderBooking({ preSelectedResource: resourceId })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Booking' }))
+    expect(await screen.findByText('Title is required')).toBeInTheDocument()
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 
-  it('submits booking form with valid data', async () => {
-    ;(fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockResources)
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          booking_id: 'test-booking-id',
-          confirmation_url: '/bookings/confirmation/test-booking-id'
-        })
-      })
-
-    render(<BookingForm />)
-
+  it('submits a validated booking through onSubmit, not fetch', async () => {
+    renderBooking({ preSelectedResource: resourceId })
+    fireEvent.change(screen.getByLabelText(/Booking Title/i), {
+      target: { value: 'Portfolio review' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Booking' }))
     await waitFor(() => {
-      const remoteVisitOption = screen.getByText('Remote Studio Visit')
-      fireEvent.click(remoteVisitOption)
-    })
-
-    // Fill out form
-    fireEvent.change(screen.getByLabelText(/artist name/i), {
-      target: { value: 'Test Artist' }
-    })
-    fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: 'test@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText(/goal/i), {
-      target: { value: 'Portfolio review' }
-    })
-
-    // Submit form
-    const submitButton = screen.getByRole('button', { name: /book consultation/i })
-    fireEvent.click(submitButton)
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('/api/bookings', expect.objectContaining({
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: expect.stringContaining('Test Artist')
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({
+        organizationId: 'org-test',
+        resourceId,
+        title: 'Portfolio review',
+        startTime: expect.any(String),
+        endTime: expect.any(String),
       }))
     })
+    expect(onSubmit).toHaveBeenCalledTimes(1)
   })
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

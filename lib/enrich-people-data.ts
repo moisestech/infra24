@@ -80,7 +80,9 @@ function mergeArtistProfileIntoPerson(
 
 function withParticipantDefaults(person: Record<string, unknown>): AnnouncementPerson {
   return {
-    ...(person as AnnouncementPerson),
+    ...person,
+    id: typeof person.id === 'string' ? person.id : '',
+    name: typeof person.name === 'string' ? person.name : '',
     is_member: false,
     relationship_type:
       (person.relationship_type as AnnouncementPerson['relationship_type']) || 'participant',

@@ -8,7 +8,7 @@ export { getPathwayById, SIGNUP_PATHWAYS } from '@/lib/dcc/signup/pathways'
 
 import { getPathwayById } from '@/lib/dcc/signup/pathways'
 import { mapSignupToAirtableFields } from '@/lib/dcc/signup/map-to-airtable'
-import type { DccSignupFormInput } from '@/lib/dcc/signup/schema'
+import { dccSignupFormSchema, type DccSignupFormInput } from '@/lib/dcc/signup/schema'
 
 /** @deprecated use dccSignupFormSchema */
 export { dccSignupFormSchema as dccIndexSignupSchema }

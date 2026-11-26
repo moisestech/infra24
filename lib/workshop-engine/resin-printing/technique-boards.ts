@@ -13,7 +13,7 @@ function board(
   id: keyof typeof RESIN_CONCEPT_CDN,
   partial: Omit<
     WorkshopMedia,
-    'id' | 'src' | 'width' | 'height' | 'kind' | 'evidenceLevel' | 'productionStatus'
+    'id' | 'src' | 'width' | 'height' | 'kind' | 'evidenceLevel' | 'productionStatus' | 'role'
   > & {
     role?: WorkshopMedia['role']
   }

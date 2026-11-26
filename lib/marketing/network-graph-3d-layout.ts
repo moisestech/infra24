@@ -145,11 +145,11 @@ function runForceLayout(
 
   const links = edges.map((e) => ({ source: e.source, target: e.target, weight: e.weight ?? 1 }))
 
-  const sim = forceSimulation(simNodes as SimNode & { index?: number }[])
+  const sim = forceSimulation(simNodes)
     .force(
       'link',
-      forceLink(links)
-        .id((d: SimNode) => d.id)
+      forceLink<SimNode, (typeof links)[number]>(links)
+        .id((d) => d.id)
         .distance((l: { weight?: number }) => 12 + 40 / (1 + (l.weight ?? 1)))
         .strength(0.4)
     )

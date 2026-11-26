@@ -337,9 +337,10 @@ export function scoreNetworkReadiness(
 
 export function scoreAllContacts(
   contacts: NetworkContact[],
-  opts?: { staleDays?: number; readinessThreshold?: number }
+  opts?: { staleDays?: number; readinessThreshold?: number; now?: Date }
 ): NetworkReadinessScore[] {
-  return contacts.map((c) => scoreNetworkReadiness(c, opts))
+  const now = opts?.now ?? new Date()
+  return contacts.map((c) => scoreNetworkReadiness(c, { ...opts, now }))
 }
 
 export function detectMissingFields(scores: NetworkReadinessScore[]): Map<string, number> {

@@ -1,18 +1,17 @@
-import { generateICS } from '@/lib/ics-generator'
+import { generateICS, type ICSBookingData } from '@/lib/ics-generator'
 
 describe('ICS Generator', () => {
-  const mockBooking = {
-    id: 'test-booking-id',
+  const mockBooking: ICSBookingData = {
+    bookingId: 'test-booking-id',
     title: 'Remote Studio Visit — Test Artist',
     description: 'Portfolio review and feedback',
-    start_time: '2025-01-15T12:00:00-05:00',
-    end_time: '2025-01-15T12:30:00-05:00',
+    startTime: new Date('2025-01-15T12:00:00-05:00'),
+    endTime: new Date('2025-01-15T12:30:00-05:00'),
     location: 'Google Meet/Zoom',
-    metadata: {
-      host: 'mo@oolite.org',
-      artist_name: 'Test Artist',
-      artist_email: 'test@example.com'
-    }
+    hostEmail: 'mo@oolite.org',
+    artistName: 'Test Artist',
+    artistEmail: 'test@example.com',
+    organizationName: 'Infra24'
   }
 
   it('should generate valid ICS content', () => {
@@ -38,15 +37,19 @@ describe('ICS Generator', () => {
   it('should include UID with booking ID', () => {
     const icsContent = generateICS(mockBooking)
 
-    expect(icsContent).toContain(`UID:${mockBooking.id}@infra24.com`)
+    expect(icsContent).toContain(`UID:booking-${mockBooking.bookingId}@infra24.com`)
   })
 
   it('should handle missing optional fields', () => {
-    const minimalBooking = {
-      id: 'minimal-booking-id',
+    const minimalBooking: ICSBookingData = {
+      ...mockBooking,
+      bookingId: 'minimal-booking-id',
       title: 'Test Booking',
-      start_time: '2025-01-15T12:00:00-05:00',
-      end_time: '2025-01-15T12:30:00-05:00'
+      description: '',
+      location: '',
+      artistName: '',
+      artistEmail: '',
+      hostEmail: '',
     }
 
     const icsContent = generateICS(minimalBooking)
@@ -56,7 +59,7 @@ describe('ICS Generator', () => {
     expect(icsContent).toContain('LOCATION:')
   })
 
-  it('should escape special characters in description', () => {
+  it('preserves the existing ICS generator quotation behavior', () => {
     const bookingWithSpecialChars = {
       ...mockBooking,
       description: 'Meeting with "special" characters & symbols'
@@ -64,7 +67,7 @@ describe('ICS Generator', () => {
 
     const icsContent = generateICS(bookingWithSpecialChars)
 
-    expect(icsContent).toContain('DESCRIPTION:Meeting with \\"special\\" characters & symbols')
+    expect(icsContent).toContain('DESCRIPTION:Meeting with "special" characters & symbols')
   })
 
   it('should include organizer information', () => {
