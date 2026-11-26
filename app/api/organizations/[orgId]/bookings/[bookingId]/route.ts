@@ -40,9 +40,16 @@ export async function PATCH(
     if (!reviewed) {
       return NextResponse.json({ error: 'Booking not found or review not authorized' }, { status: 404 });
     }
+    // Validate the untyped legacy RPC response before using it.
+    if (typeof reviewed !== 'object' || !('id' in reviewed) ||
+        reviewed.id !== bookingId || !('org_id' in reviewed) || reviewed.org_id !== access.orgId ||
+        !('title' in reviewed) || typeof reviewed.title !== 'string') {
+      return NextResponse.json({ error: 'Invalid booking review response' }, { status: 503 });
+    }
+    const userEmail = 'user_email' in reviewed && typeof reviewed.user_email === 'string' ? reviewed.user_email : null;
     const { data: organization } = await supabase.from('organizations')
       .select('id,name,slug').eq('id', access.orgId).maybeSingle();
-    const booking = { ...reviewed, organizations: organization ?? { id: access.orgId, name: 'Organization', slug: null } };
+    const booking = { ...reviewed, id: reviewed.id, title: reviewed.title, user_email: userEmail, organizations: organization ?? { id: access.orgId, name: 'Organization', slug: null } };
 
     console.log('✅ Booking Update API: Booking updated successfully:', booking.id);
 
