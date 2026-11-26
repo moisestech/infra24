@@ -40,7 +40,7 @@ suite('Passport application store against disposable PostgREST', () => {
     expect(await readOwnerPassport(client(), binding)).toMatchObject({ displayName: 'Resumed maker', revision: 2, publication: 'private' })
     // Exercise the actual HTTP handlers and ownership lookup. Only Clerk identity
     // and the local transport adapter are substituted; no production credentials.
-    const keys = ['DCC_MEMBER_PROFILE_ENABLED','DCC_MEMBER_EVENT_CAPTURE_ENABLED','DCC_CLERK_INSTANCE_ID','DCC_MEMBER_CUTOVER_ISO','NEXT_PUBLIC_SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED','CLERK_WEBHOOK_SECRET'] as const
+    const keys = ['DCC_MEMBER_PROFILE_ENABLED','DCC_MEMBER_EVENT_CAPTURE_ENABLED','DCC_CLERK_INSTANCE_ID','DCC_MEMBER_CUTOVER_ISO','NEXT_PUBLIC_SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED','CLERK_WEBHOOK_SECRET','CLERK_LEGACY_ORG_MEMBERSHIP_ENABLED'] as const
     const previous = keys.map(key => process.env[key])
     const originalFetch = global.fetch
     try {
@@ -48,7 +48,7 @@ suite('Passport application store against disposable PostgREST', () => {
         DCC_MEMBER_PROFILE_ENABLED: 'true', DCC_MEMBER_EVENT_CAPTURE_ENABLED: 'true',
         DCC_CLERK_INSTANCE_ID: 'synthetic-store-ci', DCC_MEMBER_CUTOVER_ISO: '2026-11-22T00:00:00Z',
         NEXT_PUBLIC_SUPABASE_URL: url, SUPABASE_SERVICE_ROLE_KEY: 'local-only',
-        DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED: 'false',
+        DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED: 'false', CLERK_LEGACY_ORG_MEMBERSHIP_ENABLED: 'false',
       })
       global.fetch = (input, init) => {
         const target = new URL(String(input))
@@ -100,6 +100,9 @@ suite('Passport application store against disposable PostgREST', () => {
       expect((await GET()).status).toBe(409)
       expect((await send('user.created','msg_created_ci',false)).status).toBe(200)
       expect(await (await GET()).json()).toEqual({ error: 'verify_account_first' })
+      const duringSignup = await client().from('org_memberships').select('id').eq('clerk_user_id',subject)
+      expect(duringSignup.error).toBeNull()
+      expect(duringSignup.data).toEqual([])
       expect((await send('user.created','msg_created_ci',false)).status).toBe(200)
       expect((await send('user.updated','msg_verified_ci',true)).status).toBe(200)
       expect(await (await GET()).json()).toMatchObject({ membership: 'pending_reconciliation', profile: { revision: 0 }, currentlyPublic: false })
@@ -112,6 +115,11 @@ suite('Passport application store against disposable PostgREST', () => {
       const { data: legacy, error: legacyError } = await client().from('org_memberships').select('id').eq('clerk_user_id',subject)
       expect(legacyError).toBeNull()
       expect(legacy).toEqual([])
+      process.env.DCC_MEMBER_EVENT_CAPTURE_ENABLED = 'false'
+      expect((await send('user.created','msg_capture_disabled_ci',true)).status).toBe(200)
+      const disabled = await client().from('org_memberships').select('id').eq('clerk_user_id',subject)
+      expect(disabled.error).toBeNull()
+      expect(disabled.data).toEqual([])
 
     } finally {
       global.fetch = originalFetch
