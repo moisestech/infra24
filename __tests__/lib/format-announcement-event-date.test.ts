@@ -39,8 +39,9 @@ describe('formatCardEventDateDisplay', () => {
     const ann: Announcement = {
       ...base,
       sub_type: 'exhibition',
-      starts_at: '2026-02-25T18:00:00-05:00',
-      ends_at: '2026-05-24T23:59:59-04:00',
+      // Smart Sign uses the display's local clock, not an implicit Miami TZ.
+      starts_at: '2026-02-25T18:00:00',
+      ends_at: '2026-05-24T23:59:59',
     };
     const result = formatCardEventDateDisplay(ann);
     expect(result?.primary).toBe('On view Feb 25 – May 24, 2026');

@@ -34,6 +34,7 @@ const SOURCE_LABEL: Record<MemoryAgentEventCard['source'], string> = {
   workshop: 'Workshop',
   cms_story: 'Editorial',
   soho_record: 'Soho demo',
+  curated_showcase: 'Curated showcase',
 }
 
 function formatWhen(card: MemoryAgentEventCard): string | null {

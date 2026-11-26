@@ -1,12 +1,8 @@
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function GET(
   request: NextRequest,
@@ -22,11 +18,13 @@ export async function GET(
       );
     }
 
-    // Get resources for the organization
-    const { data: resources, error } = await supabase
+    const access = await requireOrganizationStaff(orgId)
+    if (!access.ok) return NextResponse.json({error:access.error},{status:access.status,headers:{'Cache-Control':'private, no-store'}})
+    // Staff-only full resource records.
+    const { data: resources, error } = await access.db
       .from('resources')
       .select('*')
-      .eq('organization_id', orgId)
+      .eq('org_id', access.orgId)
       .eq('is_active', true)
       .order('title');
 
@@ -38,7 +36,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ resources });
+    return NextResponse.json({ resources },{headers:{'Cache-Control':'private, no-store'}});
   } catch (error) {
     console.error('Error in resources API:', error);
     return NextResponse.json(
@@ -53,40 +51,22 @@ export async function POST(
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   try {
-    const { orgId } = await params;
-    const body = await request.json();
-
-    if (!orgId) {
-      return NextResponse.json(
-        { error: 'Organization ID is required' },
-        { status: 400 }
-      );
+    const { orgId } = await params
+    const access = await requireOrganizationStaff(orgId)
+    if (!access.ok) return NextResponse.json({error:access.error},{status:access.status,headers:{'Cache-Control':'private, no-store'}})
+    const {title,description,type,capacity,is_bookable} = await request.json()
+    if (typeof title !== 'string' || !title.trim() || !['space','equipment','person','other'].includes(type)
+      || (capacity !== undefined && (!Number.isInteger(capacity) || capacity < 1))) {
+      return NextResponse.json({error:'Invalid resource'},{status:400})
     }
-
-    // Create new resource
-    const { data: resource, error } = await supabase
-      .from('resources')
-      .insert({
-        organization_id: orgId,
-        ...body
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating resource:', error);
-      return NextResponse.json(
-        { error: 'Failed to create resource' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(resource, { status: 201 });
-  } catch (error) {
-    console.error('Error in resources POST API:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    const {data:resource,error}=await access.db.from('resources').insert({
+      org_id:access.orgId,title:title.trim(),type,
+      description:typeof description==='string'?description:'',
+      capacity:capacity??1,is_bookable:is_bookable===true,
+    }).select().single()
+    if(error)return NextResponse.json({error:'Failed to create resource'},{status:500})
+    return NextResponse.json(resource,{status:201,headers:{'Cache-Control':'private, no-store'}})
+  }catch{
+    return NextResponse.json({error:'Internal server error'},{status:500})
   }
 }

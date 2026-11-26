@@ -32,7 +32,7 @@ import {
 
 describe('network-graph-3d-layout', () => {
   it('builds graph with positioned nodes and edges from fixture', () => {
-    const payload = getSampleGraphPayload('explorer')
+    const payload = getSampleGraphPayload({ surface: 'explorer', mode: 'admin', visibility: 'internal' })
     const graph = buildGraph3D(payload, 'organic', 'kind')
     expect(graph.nodes.length).toBeGreaterThan(0)
     expect(graph.edges.length).toBeGreaterThan(0)
@@ -45,13 +45,13 @@ describe('network-graph-3d-layout', () => {
   })
 
   it('caps immersive graph size', () => {
-    const payload = getSampleGraphPayload('explorer')
+    const payload = getSampleGraphPayload({ surface: 'explorer', mode: 'admin', visibility: 'internal' })
     const { nodes } = filterGraphForImmersive3D(payload, 10)
     expect(nodes.length).toBeLessThanOrEqual(10)
   })
 
   it('returns ego network with neighbors', () => {
-    const payload = getSampleGraphPayload('explorer')
+    const payload = getSampleGraphPayload({ surface: 'explorer', mode: 'admin', visibility: 'internal' })
     const graph = buildGraph3D(payload, 'organic', 'kind')
     const person = graph.nodes.find((n) => n.data.kind === 'person')
     expect(person).toBeDefined()

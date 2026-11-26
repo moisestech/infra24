@@ -1,7 +1,7 @@
 // @jest-environment jsdom
 /// <reference types="jest" />
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { HeroBanner } from '../ui/HeroBanner'
 import { Callout } from '../ui/Callout'
@@ -86,9 +86,8 @@ describe('Course Components - UI Elements', () => {
 
   describe('VideoEmbed', () => {
     it('should render with video source', () => {
-      render(<VideoEmbed src="https://example.com/video.mp4" />)
-      
-      expect(screen.getByRole('video')).toBeInTheDocument()
+      const {container}=render(<VideoEmbed src="https://example.com/video.mp4" />)
+      expect(container.querySelector('video')).toHaveAttribute('src','https://example.com/video.mp4')
     })
 
     it('should render with caption', () => {
@@ -113,7 +112,10 @@ describe('Course Components - UI Elements', () => {
       render(<ExerciseCard title="Test Exercise" steps={mockSteps} estTime="5 min" />)
       
       expect(screen.getByText('Test Exercise')).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button',{name:'Show exercise steps'}))
       expect(screen.getByText('Step 1')).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button',{name:'Complete step 1'}))
+      expect(screen.getByText('1 of 2 steps')).toBeInTheDocument()
       expect(screen.getByText('Step 2')).toBeInTheDocument()
     })
 
@@ -133,7 +135,7 @@ describe('Course Components - UI Elements', () => {
         />
       )
       
-      expect(screen.getByText('intermediate')).toBeInTheDocument()
+      expect(screen.getByText('Intermediate')).toBeInTheDocument()
     })
 
     it('should handle single step', () => {
@@ -141,6 +143,7 @@ describe('Course Components - UI Elements', () => {
       
       render(<ExerciseCard title="Single Step Exercise" steps={singleStep} estTime="5 min" />)
       
+      fireEvent.click(screen.getByRole('button',{name:'Show exercise steps'}))
       expect(screen.getByText('Single Step')).toBeInTheDocument()
     })
 
@@ -148,6 +151,7 @@ describe('Course Components - UI Elements', () => {
       render(<ExerciseCard title="Empty Exercise" steps={[]} estTime="5 min" />)
       
       expect(screen.getByText('Empty Exercise')).toBeInTheDocument()
+      expect(screen.getByText('0 of 0 steps')).toBeInTheDocument()
     })
   })
 
@@ -171,9 +175,8 @@ describe('Course Components - UI Elements', () => {
     })
 
     it('should handle empty resources', () => {
-      render(<ResourceList items={[]} />)
-      
-      expect(screen.getByText(/no resources/i)).toBeInTheDocument()
+      const {container}=render(<ResourceList items={[]} />)
+      expect(container).toBeEmptyDOMElement()
     })
 
     it('should handle different resource types', () => {
@@ -197,9 +200,8 @@ describe('Course Components - UI Elements', () => {
 
   describe('IconDivider', () => {
     it('should render with icon', () => {
-      render(<IconDivider icon="palette" />)
-      
-      expect(screen.getByTestId('icon-divider')).toBeInTheDocument()
+      const {container}=render(<IconDivider icon="palette" />)
+      expect(container.querySelector('svg')).toBeInTheDocument()
     })
 
     it('should render with text', () => {
@@ -231,9 +233,11 @@ describe('Course Components - UI Elements', () => {
   describe('Interactive Components', () => {
     describe('Quiz', () => {
       it('should render with questions', () => {
-        render(<Quiz questions={[]} />)
-        
-        expect(screen.getByText('Quiz')).toBeInTheDocument()
+        const {container,rerender}=render(<Quiz questions={[]} />)
+        expect(container).toBeEmptyDOMElement()
+        rerender(<Quiz questions={[{q:'Which is correct?',choices:['A','B'],answerIdx:0}]} />)
+        expect(screen.getByText('Knowledge Check')).toBeInTheDocument()
+        expect(screen.getByText('Which is correct?')).toBeInTheDocument()
       })
     })
 
@@ -255,9 +259,11 @@ describe('Course Components - UI Elements', () => {
 
     describe('Timeline', () => {
       it('should render with events', () => {
-        render(<Timeline events={[]} />)
-        
-        expect(screen.getByText('Timeline')).toBeInTheDocument()
+        const {container,rerender}=render(<Timeline events={[]} />)
+        expect(container).toBeEmptyDOMElement()
+        rerender(<Timeline events={[{year:'2025',title:'Test event',description:'Test description',category:'controversy'}]} />)
+        expect(screen.getByText('Test event')).toBeInTheDocument()
+        expect(screen.getByText('Test description')).toBeInTheDocument()
       })
     })
 
@@ -270,15 +276,20 @@ describe('Course Components - UI Elements', () => {
           />
         )
         
-        expect(screen.getByText('Before/After')).toBeInTheDocument()
+        expect(screen.getByText('Before & After Comparison')).toBeInTheDocument()
+        expect(screen.getByAltText('Before')).toHaveAttribute('src','before.jpg')
+        expect(screen.getByAltText('After')).toHaveAttribute('src','after.jpg')
       })
     })
 
     describe('CompareGrid', () => {
       it('should render with tools and features', () => {
-        render(<CompareGrid tools={[]} features={[]} />)
-        
-        expect(screen.getByText('Comparison')).toBeInTheDocument()
+        const {container,rerender}=render(<CompareGrid tools={[]} features={[]} />)
+        expect(container).toBeEmptyDOMElement()
+        rerender(<CompareGrid tools={['Tool A']} features={[{name:'Cost',values:['Free']}]} />)
+        expect(screen.getByText('Tool A')).toBeInTheDocument()
+        expect(screen.getByText('Cost')).toBeInTheDocument()
+        expect(screen.getByText('Free')).toBeInTheDocument()
       })
     })
   })

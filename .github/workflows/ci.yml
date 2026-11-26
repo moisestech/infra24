@@ -27,6 +27,10 @@ jobs:
 
       - name: Run type check
         run: npm run type-check
+        env:
+          # This repository's TS program exceeds Node 18's ~2 GiB default V8 heap.
+          # Keep strict checking enabled; do not suppress diagnostics.
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Run linting
         run: npm run lint
@@ -49,8 +53,14 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NODE_OPTIONS: --max-old-space-size=4096
+          # Next 14 uses this to size its static page worker pool.
+          CIRCLE_NODE_TOTAL: '2'
+          NEXT_TELEMETRY_DISABLED: '1'
+          # Compile with offline fixtures. Provider integration runs in protected preview.
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsucHJldmlldy5leGFtcGxlJA
+          CLERK_SECRET_KEY: local-dummy
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:65432
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: local-placeholder
+          SUPABASE_SERVICE_ROLE_KEY: local-placeholder
+          RESEND_API_KEY: re_local_only

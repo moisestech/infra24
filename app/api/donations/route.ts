@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate amount
-    if (amount <= 0) {
+    if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) {
       return NextResponse.json(
         { error: 'Amount must be greater than 0' },
         { status: 400 }
@@ -55,7 +56,8 @@ export async function POST(request: NextRequest) {
         is_anonymous: is_anonymous || false,
         is_recurring: is_recurring || false,
         recurring_frequency: is_recurring ? recurring_frequency : null,
-        status: status || 'pending',
+        // An anonymous client can only create a pending intent, never mark money as paid.
+        status: 'pending',
         metadata: {}
       })
       .select()
@@ -83,6 +85,8 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const orgId = searchParams.get('org_id');
+    const access = await requireOrganizationStaff(orgId);
+    if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
     const status = searchParams.get('status');
     const isRecurring = searchParams.get('is_recurring');
 
@@ -92,11 +96,9 @@ export async function GET(request: NextRequest) {
         *,
         organizations!inner(name, slug)
       `)
-      .order('created_at', { ascending: false });
-
-    if (orgId) {
-      query = query.eq('org_id', orgId);
-    }
+      .eq('org_id', orgId!)
+      .order('created_at', { ascending: false })
+      .limit(100);
 
     if (status) {
       query = query.eq('status', status);

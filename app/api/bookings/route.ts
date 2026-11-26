@@ -1,3 +1,4 @@
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { generateScheduledGoogleMeetLink } from '@/lib/google-meet'
@@ -34,7 +35,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const supabaseAdmin = getSupabaseAdmin()
+    const access = await requireOrganizationStaff(orgId)
+    if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status, headers: { 'Cache-Control': 'private, no-store' } })
+    const supabaseAdmin = access.db
 
     // Build date range based on 'when' parameter
     let startDate: Date
@@ -106,7 +109,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ bookings })
+    return NextResponse.json({ bookings }, { headers: { 'Cache-Control': 'private, no-store' } })
 
   } catch (error) {
     console.error('Error in bookings GET API:', error)

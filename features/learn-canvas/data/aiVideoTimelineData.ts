@@ -89,5 +89,5 @@ export const aiVideoTimelineEvents = aiVideoTimelineData.map(event => ({
   year: new Date(event.date).getFullYear().toString(),
   title: event.title,
   description: event.summary,
-  category: event.category as 'milestone' | 'breakthrough' | 'release' | 'research'
+  category: event.category
 }))

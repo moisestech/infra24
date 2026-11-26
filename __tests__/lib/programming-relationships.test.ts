@@ -8,6 +8,8 @@ import type { KnowledgeRecord } from '@/lib/memory-agent/knowledge-record'
 
 const sitesRecord: KnowledgeRecord = {
   id: 'airtable_programming:recSites',
+  visibility: 'public',
+  sourceRecordId: 'recSites',
   orgSlug: 'oolite',
   source: 'airtable_programming',
   recordKind: 'exhibition',
@@ -36,6 +38,8 @@ describe('programming relationship context', () => {
   it('prioritizes Sites of the Self for curator and management questions', () => {
     const workshop: KnowledgeRecord = {
       id: 'airtable_programming:recWorkshop',
+      visibility: 'public',
+      sourceRecordId: 'recWorkshop',
       orgSlug: 'oolite',
       source: 'airtable_programming',
       recordKind: 'workshop',

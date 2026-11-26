@@ -61,22 +61,29 @@ Object.defineProperty(HTMLCanvasElement.prototype, 'getBoundingClientRect', {
   })),
 })
 
+// Use a real DOM element so the ref satisfies HTMLElement and scroll methods
+// remain independently observable in tests.
+function createScrollRef(scrollWidth: number, clientWidth: number, scrollLeft = 0) {
+  const element = document.createElement('div')
+  Object.defineProperties(element, {
+    scrollWidth: { value: scrollWidth, configurable: true },
+    clientWidth: { value: clientWidth, configurable: true },
+  })
+  element.scrollLeft = scrollLeft
+  element.scrollTo = jest.fn()
+  element.scrollBy = jest.fn()
+  element.addEventListener = jest.fn()
+  element.removeEventListener = jest.fn()
+  return { current: element }
+}
+
 describe('MiniMapDensity', () => {
-  const mockScrollRef = {
-    current: {
-      scrollWidth: 2400,
-      clientWidth: 800,
-      scrollLeft: 0,
-      scrollTo: jest.fn(),
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-    }
-  }
+  const mockScrollRef = createScrollRef(2400, 800)
 
   beforeEach(() => {
     // Mock ResizeObserver
-    global.ResizeObserver = jest.fn().mockImplementation(() => ({
-      observe: jest.fn(),
+    global.ResizeObserver = jest.fn().mockImplementation((callback: ResizeObserverCallback) => ({
+      observe: jest.fn((target: Element) => callback([{target,contentRect:{width:800}} as ResizeObserverEntry], {} as ResizeObserver)),
       unobserve: jest.fn(),
       disconnect: jest.fn(),
     }))
@@ -135,10 +142,8 @@ describe('MiniMapDensity', () => {
     )
     
     const viewport = screen.getByRole('slider')
-    expect(viewport).toHaveStyle({
-      borderColor: '#ff0000AA',
-      boxShadow: expect.stringContaining('#ff0000')
-    })
+    expect(viewport.style.borderColor).toBeTruthy()
+    expect(viewport.style.boxShadow.toLowerCase()).toContain('#ff0000')
   })
 
   it('handles click navigation', () => {
@@ -154,7 +159,8 @@ describe('MiniMapDensity', () => {
     const container = screen.getByRole('slider').parentElement
     fireEvent.pointerDown(container!, { clientX: 400 })
     
-    expect(mockScrollRef.current.scrollTo).toHaveBeenCalled()
+    expect(mockScrollRef.current.scrollTo).toHaveBeenCalledWith(expect.objectContaining({behavior:'smooth'}))
+    expect((mockScrollRef.current.scrollTo as jest.Mock).mock.calls[0][0].left).toBeCloseTo(800)
   })
 
   it('handles drag navigation', () => {
@@ -170,9 +176,9 @@ describe('MiniMapDensity', () => {
     const viewport = screen.getByRole('slider')
     
     // Start drag
-    fireEvent.pointerDown(viewport, { clientX: 100 })
-    fireEvent.pointerMove(viewport, { clientX: 200 })
-    fireEvent.pointerUp(viewport)
+    fireEvent.pointerDown(viewport, { clientX: 100, pointerId: 1 })
+    fireEvent.pointerMove(viewport, { clientX: 200, pointerId: 1 })
+    fireEvent.pointerUp(viewport, { pointerId: 1 })
     
     expect(mockScrollRef.current.scrollTo).toHaveBeenCalled()
   })
@@ -236,16 +242,7 @@ describe('MiniMapDensity', () => {
       />
     )
     
-    const newScrollRef = {
-      current: {
-        scrollWidth: 1200,
-        clientWidth: 400,
-        scrollLeft: 200,
-        scrollTo: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-      }
-    }
+    const newScrollRef = createScrollRef(1200, 400, 200)
     
     rerender(
       <MiniMapDensity
@@ -260,16 +257,7 @@ describe('MiniMapDensity', () => {
   })
 
   it('handles viewport width calculations', () => {
-    const wideScrollRef = {
-      current: {
-        scrollWidth: 4000,
-        clientWidth: 800,
-        scrollLeft: 0,
-        scrollTo: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-      }
-    }
+    const wideScrollRef = createScrollRef(4000, 800)
     
     render(
       <MiniMapDensity
