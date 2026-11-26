@@ -18,8 +18,6 @@ export async function GET(
     const startDate = searchParams.get('start_date')
     const endDate = searchParams.get('end_date')
 
-
-
     const access = await requireOrganizationStaff(orgId)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     const supabase = access.db
@@ -65,7 +63,7 @@ export async function GET(
     return NextResponse.json({ 
       bookings: bookings || [],
       count: bookings?.length || 0
-    })
+    }, { headers: { 'Cache-Control': 'private, no-store' } })
   } catch (error) {
 
     return NextResponse.json(
@@ -85,17 +83,16 @@ export async function POST(
     const { orgId } = await params
     const body = await request.json()
 
-
     // Get user info from Clerk (optional for public bookings)
     const { userId } = await auth()
     
     // If user is authenticated, get their email from Clerk
-    let clerkUserEmail = null;
+    let clerkUserEmail: string | undefined;
     if (userId) {
       try {
         const { currentUser } = await import('@clerk/nextjs/server');
         const user = await currentUser();
-        clerkUserEmail = user?.emailAddresses?.[0]?.emailAddress;
+        clerkUserEmail = user?.emailAddresses?.find(email => email.id === user.primaryEmailAddressId && email.verification?.status === 'verified')?.emailAddress;
       } catch (error) {
       }
     }
@@ -148,7 +145,6 @@ export async function POST(
     }
 
     // Check for conflicts using enhanced conflict detection service
-
 
     try {
       const conflicts = await conflictDetectionService.checkBookingConflicts(
@@ -231,8 +227,7 @@ export async function POST(
 
       return NextResponse.json(
         { 
-          error: 'Failed to create booking',
-          details: bookingError.message 
+          error: 'Failed to create booking'
         },
         { status: 500 }
       )
@@ -243,7 +238,7 @@ export async function POST(
     return NextResponse.json({ 
       booking: { ...booking, user_name: user_name.trim(), user_email: contactEmail },
       message: 'Booking created successfully'
-    }, { status: 201 })
+    }, { status: 201, headers: { 'Cache-Control': 'private, no-store' } })
   } catch (error) {
 
     return NextResponse.json(
