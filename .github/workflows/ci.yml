@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
@@ -96,7 +96,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -108,7 +108,7 @@ jobs:
       - name: Run type check
         run: npm run type-check
         env:
-          # This repository's TS program exceeds Node 18's ~2 GiB default V8 heap.
+          # This repository's TS program exceeds the runner's default V8 heap.
           # Keep strict checking enabled; do not suppress diagnostics.
           NODE_OPTIONS: --max-old-space-size=4096
 

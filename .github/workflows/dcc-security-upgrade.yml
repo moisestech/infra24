@@ -1,18 +1,17 @@
-name: DCC security upgrade candidates (Node 22)
+name: DCC pinned security candidate (Node 22)
 on:
   push:
     branches: ['security/dcc-dependency-remediation-20261126']
-    paths: ['.github/workflows/dcc-security-upgrade.yml', 'scripts/tools/dcc-security-upgrade.mjs']
+  pull_request:
+    branches: ['spec/unified-website-membership-node-rfc-20261122']
 permissions:
   contents: read
+concurrency:
+  group: dcc-security-pinned-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 jobs:
-  resolve:
-    name: Resolve exact candidate locks (no lifecycle scripts)
+  audit:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        lane: [next15-clerk7]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,37 +19,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Resolve candidate
-        run: node scripts/tools/dcc-security-upgrade.mjs "${{ matrix.lane }}"
-      - name: Audit candidate
-        shell: bash
+      - name: Audit committed lockfile (no dependency execution)
         run: |
           set -euo pipefail
           mkdir -p evidence
-          code=0
-          npm audit --package-lock-only --omit=dev --json > evidence/production.json || code=$?
-          node -e "const r=require('./evidence/production.json'); if(r.error || !r.metadata?.vulnerabilities) throw Error('Invalid audit'); console.log(JSON.stringify(r.metadata.vulnerabilities)); for(const v of Object.values(r.vulnerabilities)) console.log(JSON.stringify({name:v.name,severity:v.severity,range:v.range,fix:v.fixAvailable,nodes:v.nodes}));"
-          echo "audit exit=$code"
-          cp package.json package-lock.json evidence/
-          sha256sum package.json package-lock.json > evidence/sha256.txt
+          git rev-parse HEAD > evidence/commit.txt
+          sha256sum package-lock.json > evidence/lockfile.sha256
+          npm audit --package-lock-only --omit=dev --json > evidence/production.json || true
+          node -e "const r=require('./evidence/production.json'); if(r.error || !r.metadata?.vulnerabilities || !r.vulnerabilities) throw Error('Audit unavailable'); console.log(JSON.stringify(r.metadata.vulnerabilities)); for(const v of Object.values(r.vulnerabilities)) console.log(JSON.stringify({name:v.name,severity:v.severity,fix:v.fixAvailable})); if(r.metadata.vulnerabilities.high || r.metadata.vulnerabilities.critical) process.exit(1)"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: candidate-${{ matrix.lane }}
-          path: |
-            evidence/
-            package.json
-            package-lock.json
+          name: pinned-production-audit
+          path: evidence/
           retention-days: 14
   validate:
-    name: Validate candidate (Node 22)
-    needs: resolve
-    if: ${{ always() }}
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        lane: [next15-clerk7]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,54 +42,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - uses: actions/download-artifact@v4
-        with:
-          name: candidate-${{ matrix.lane }}
-          path: candidate
-      - name: Verify resolver succeeded and install exact candidate
-        run: |
-          test -f candidate/evidence/sha256.txt
-          cp candidate/evidence/package.json candidate/evidence/package-lock.json .
-          sha256sum -c candidate/evidence/sha256.txt
-          npm ci
-      - name: Secret scan and type check
-        run: npm run secret-scan && npm run type-check
+          cache: npm
+      - run: npm ci
+      - run: npm run secret-scan && npm run type-check
         env:
           NODE_OPTIONS: --max-old-space-size=4096
       - run: npm run lint
       - run: npm test -- --runInBand
-      - run: npm run build:career
+      - run: npm run build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
           CIRCLE_NODE_TOTAL: '2'
           NEXT_TELEMETRY_DISABLED: '1'
-      - name: Production severity gate
-        run: |
-          node -e "const r=require('./candidate/evidence/production.json'); if(r.error || !r.metadata?.vulnerabilities || r.metadata.vulnerabilities.high || r.metadata.vulnerabilities.critical) process.exit(1)"
-  persist-migrated:
-    name: Commit resolved Next 15 / Clerk 7 dependency candidate to isolated branch
-    needs: resolve
-    if: ${{ always() && github.ref == 'refs/heads/security/dcc-dependency-remediation-20261126' }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: candidate-next15-clerk7
-          path: candidate
-      - name: Verify and commit only dependency files (no dependency execution)
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f candidate/evidence/sha256.txt
-          cp candidate/evidence/package.json candidate/evidence/package-lock.json .
-          sha256sum -c candidate/evidence/sha256.txt
-          git diff --stat -- package.json package-lock.json
-          git add -- package.json package-lock.json
-          if git diff --cached --quiet; then exit 0; fi
-          git -c user.name='DCC dependency CI' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'security: pin Next 15 and Clerk 7 candidate; validate separately'
-          git push origin HEAD:refs/heads/security/dcc-dependency-remediation-20261126
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsucHJldmlldy5leGFtcGxlJA
+          CLERK_SECRET_KEY: local-dummy
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:65432
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: local-placeholder
+          SUPABASE_SERVICE_ROLE_KEY: local-placeholder
+          RESEND_API_KEY: re_local_only
+      - name: Type check generated Next route contracts
+        run: npm run type-check
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096

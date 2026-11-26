@@ -10,10 +10,11 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic'
 
-export default function PortalProjectPage({ params }: { params: { jobCode: string } }) {
+export default async function PortalProjectPage({ params }: { params: Promise<{ jobCode: string }> }) {
+  const { jobCode } = await params
   const { userId } = await auth()
   if (!userId) {
-    redirect(`/sign-in?redirect_url=${encodeURIComponent(`/portal/projects/${params.jobCode}`)}`)
+    redirect(`/sign-in?redirect_url=${encodeURIComponent(`/portal/projects/${jobCode}`)}`)
   }
-  return <PortalUnlinked jobCode={params.jobCode} />
+  return <PortalUnlinked jobCode={jobCode} />
 }
