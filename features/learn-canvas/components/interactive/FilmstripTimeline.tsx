@@ -93,6 +93,8 @@ export function FilmstripTimeline({
       {/* Filmstrip rail */}
       <div
         ref={railRef}
+        role="region"
+        aria-label="Timeline events"
         className="relative overflow-x-auto overflow-y-visible snap-x snap-mandatory
                    scrollbar-thin scrollbar-thumb-white/20"
         style={{ height }}
@@ -172,6 +174,9 @@ function PreviewPortal({ children, onClose }:{children:React.ReactNode; onClose:
 function PreviewCard({ event, onClose, neon }:{ event:TimelineEvent; onClose:()=>void; neon:string }) {
   return (
     <motion.div
+      role="dialog"
+      aria-modal="true"
+      aria-label={event.title}
       onClick={(e)=>e.stopPropagation()}
       initial={{ opacity:0, scale:.96 }}
       animate={{ opacity:1, scale:1 }}
@@ -184,7 +189,7 @@ function PreviewCard({ event, onClose, neon }:{ event:TimelineEvent; onClose:()=
       <div className="relative h-1/2">
         {event.image && <Image src={event.image} alt={event.title} fill className="object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        <button onClick={onClose} className="absolute top-3 right-3 h-8 w-8 rounded-full bg-black/60 text-white grid place-items-center">
+        <button aria-label="Close preview" onClick={onClose} className="absolute top-3 right-3 h-8 w-8 rounded-full bg-black/60 text-white grid place-items-center">
           <X className="h-4 w-4" />
         </button>
       </div>

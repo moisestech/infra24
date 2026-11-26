@@ -33,7 +33,7 @@ export async function POST(
     return NextResponse.json({ ok: false, error: synth.message }, { status: 503 })
   }
 
-  return new NextResponse(synth.buffer, {
+  return new NextResponse(new Uint8Array(synth.buffer), {
     status: 200,
     headers: {
       'Content-Type': 'audio/mpeg',

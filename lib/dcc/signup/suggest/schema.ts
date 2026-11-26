@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { PRACTICE_TAG_OPTIONS } from '@/lib/network-builder/demo-select-options'
 
 export const dccSuggestFormSchema = z.object({
   suggestedName: z.string().trim().min(2, 'Name or reference is required'),
@@ -18,4 +17,5 @@ export const dccSuggestFormSchema = z.object({
 
 export type DccSuggestFormInput = z.infer<typeof dccSuggestFormSchema>
 
-export { PRACTICE_TAG_OPTIONS, MIAMI_CONNECTION_TYPE_OPTIONS } from '@/lib/network-builder/demo-select-options'
+export { PRACTICE_TAG_OPTIONS } from '@/lib/network-builder/people-select-options'
+export { MIAMI_CONNECTION_TYPE_OPTIONS } from '@/lib/network-builder/demo-select-options'

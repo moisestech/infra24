@@ -9,6 +9,12 @@ function buildCapitalCampaignEventCard(): MemoryAgentEventCard {
   return {
     id: `showcase_${CAPITAL_CAMPAIGN_SHOWCASE.key}`,
     title: CAPITAL_CAMPAIGN_SHOWCASE.title,
+    recordKind: 'opportunity',
+    source: 'curated_showcase',
+    sourceRecordId: `showcase_${CAPITAL_CAMPAIGN_SHOWCASE.key}`,
+    bookable: false,
+    publicSafe: true,
+    allowPublicActions: true,
     summary:
       '26,850 sq ft Little River campus by Barozzi Veiga — studios, fabrication, classrooms, and public exhibition spaces.',
     location: CAPITAL_CAMPAIGN_SHOWCASE.location,

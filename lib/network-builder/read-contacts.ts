@@ -266,6 +266,7 @@ export function getFixtureNetworkContacts(): NetworkContact[] {
     {
       recordId: 'rec_fixture_004',
       fullName: 'Sam Creative Technologist',
+      organizationAffiliations: [],
       email: 'sam@example.com',
       titleRole: 'Creative Technologist',
       contactCategory: 'Creative Technologist',

@@ -129,7 +129,7 @@ export function MemoryAgentVoicePipelineCard({
               )}
             >
               <span className="sr-only">Transcribed question: </span>
-              “{transcript.trim()}”
+              “{transcript?.trim() ?? ''}”
             </blockquote>
           ) : phase === 'transcribing' || phase === 'processing' ? (
             <div

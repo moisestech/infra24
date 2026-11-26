@@ -134,7 +134,8 @@ function personRole(fields: Record<string, unknown>): string | undefined {
 function personEligibleForPublicGraph(fields: Record<string, unknown>): boolean {
   const consent = asString(fields[F.people.publicProfileConsent])
   const layer = asString(fields[F.people.graphLayer])
-  if (!consent && !layer) return true
+  // Missing consent is never public consent. Editorial examples use a separate, explicitly approved projection.
+  if (!consent || !layer) return false
   return isPublicGraphEligible(consent, layer)
 }
 

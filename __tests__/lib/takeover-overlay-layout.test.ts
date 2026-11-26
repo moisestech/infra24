@@ -13,8 +13,9 @@ describe('takeover-overlay-layout', () => {
 
   it('formats compact date and time range for overlay copy', () => {
     const announcement = {
-      starts_at: '2026-06-25T23:00:00.000Z',
-      ends_at: '2026-06-26T01:00:00.000Z',
+      // Display-local times: independent of the CI runner's time zone.
+      starts_at: '2026-06-25T19:00:00',
+      ends_at: '2026-06-25T21:00:00',
     } as Announcement;
 
     const { dateLine, timeLine } = formatTakeoverOverlaySchedule(announcement);

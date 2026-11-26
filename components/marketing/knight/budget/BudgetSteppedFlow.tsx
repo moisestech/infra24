@@ -21,7 +21,7 @@ export function BudgetSteppedFlow() {
                   className="rounded-lg border border-neutral-100 bg-[#fafafa] px-3 py-2 text-sm dark:border-neutral-800 dark:bg-neutral-950/80"
                 >
                   <p className="font-medium text-neutral-900 dark:text-neutral-100">{item.label}</p>
-                  {item.hint ? (
+                  {'hint' in item && item.hint ? (
                     <p className="mt-0.5 text-xs tabular-nums text-neutral-600 dark:text-neutral-400">{item.hint}</p>
                   ) : null}
                 </li>

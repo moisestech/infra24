@@ -231,7 +231,7 @@ export function resolveCinematicSegmentTakeover(
   return ranked[0]?.ann ?? null;
 }
 
-function smartSignPriorityRank(priority: Announcement['priority']): number {
+function smartSignPriorityRank(priority: Announcement['priority'] | string): number {
   if (typeof priority === 'number' && Number.isFinite(priority)) return priority;
   if (typeof priority === 'string') {
     const map: Record<string, number> = { urgent: 3, high: 2, normal: 1, low: 0 };

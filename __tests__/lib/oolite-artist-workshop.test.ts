@@ -34,6 +34,8 @@ describe('Bex McCharen CRM People mapping', () => {
         practiceTags: 'Practice Tags',
         publicAiApproved: 'Public AI Approved',
         doNotUseInAi: 'Do Not Use In AI',
+        programming: 'Programming',
+        instagram: 'Instagram',
       }
     )
 
