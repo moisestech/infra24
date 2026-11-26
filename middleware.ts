@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server'
 import { clerkMiddleware } from '@clerk/nextjs/server'
 import { isPublicRoute } from '@/lib/auth/public-routes'
 
@@ -6,9 +7,12 @@ export default clerkMiddleware(async (auth, req) => {
   if (isPublicRoute(pathname)) return
   const { userId } = await auth()
   if (!userId) {
+    if (pathname.startsWith('/api/') || pathname.startsWith('/trpc/')) {
+      return NextResponse.json({ error: 'Sign in required' }, { status: 401, headers: { 'Cache-Control': 'private, no-store' } })
+    }
     const signIn = new URL('/sign-in', req.url)
     signIn.searchParams.set('redirect_url', pathname + (req.nextUrl.search || ''))
-    return Response.redirect(signIn)
+    return NextResponse.redirect(signIn)
   }
 })
 
