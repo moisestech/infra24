@@ -1,0 +1,1120 @@
+{
+  "schema_version": 1,
+  "status": "design-only proposed policy and synthetic vectors; not application code or runtime evidence",
+  "source_head": "dae0ca943bdaa613db5d3dfea0d53d6c996cd21b",
+  "defaults": {
+    "environment": "isolated",
+    "actor": "anonymous",
+    "activeOrg": true,
+    "tenantMatch": true,
+    "listingApproved": true,
+    "status": "published",
+    "isPublic": true,
+    "isActive": true,
+    "versionApproved": true,
+    "chapterApproved": true,
+    "chapterMatches": true,
+    "canonicalPath": true,
+    "rightsApproved": true,
+    "memberActive": false,
+    "staffAuthorized": false,
+    "enrolled": false,
+    "ownsRecord": false,
+    "grantValid": false,
+    "grantScopeMatches": false,
+    "facilitatorAuthorized": false,
+    "sessionReadAllowed": false,
+    "mailSink": false,
+    "workerAuthorized": false,
+    "requestValid": true
+  },
+  "actions": [
+    "public_list",
+    "public_detail",
+    "public_chapter",
+    "member_list",
+    "member_chapter",
+    "staff_review",
+    "staff_write",
+    "own_progress",
+    "staff_analytics",
+    "partner_delivery",
+    "facilitator_write",
+    "participant_read",
+    "test_mail",
+    "scheduled_mail",
+    "disabled_legacy"
+  ],
+  "routes": [
+    {
+      "path": "app/api/admin/workshop-sharing/[id]/route.ts",
+      "source_blob_sha": "0216405255a86524cd5151d75e6dd201caf69646",
+      "methods": [
+        {
+          "method": "PUT",
+          "proposed_action": "staff_review",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "DELETE",
+          "proposed_action": "staff_write",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/admin/workshop-sharing/route.ts",
+      "source_blob_sha": "9aca4344d0046741d81c547266bb9dded3220be2",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "staff_review",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "staff_write",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/analytics/workshops/route.ts",
+      "source_blob_sha": "9f474c47ddc184bcf869ce5d4bc87054f53cabbb",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "staff_analytics",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/announcements/workshop/route.ts",
+      "source_blob_sha": "e8a558c75df57e0e35f68b29bd80341865bdc696",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "member_list",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "staff_write",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/content/workshops/[workshopId]/chapters/[chapterSlug]/route.ts",
+      "source_blob_sha": "a57071a7a90d31429a33b1a7100cc777a12ca383",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/courses/[courseId]/enrollments/route.ts",
+      "source_blob_sha": "be8fba13676bc1f9b7fe5ab8c34e0896cc70e398",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "PUT",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/courses/[courseId]/lessons/route.ts",
+      "source_blob_sha": "fb221957794cc534c109288613fc39c3d3ccb26a",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/courses/route.ts",
+      "source_blob_sha": "5b4089982443f00dda4cf883b8f68fce49c05822",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/learn/workshops/[workshopId]/chapters/[chapterSlug]/route.ts",
+      "source_blob_sha": "411adfd968b1189ffd1fd908d77919e821d7ad8f",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "member_chapter",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/learn/workshops/[workshopId]/chapters/route.ts",
+      "source_blob_sha": "164612f7e334cf28ca313c6074da530681053108",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "member_chapter",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/marketing/workshops/[slug]/chapters/route.ts",
+      "source_blob_sha": "85da3c7df3d9676019a61afec99728d80c51422b",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "public_chapter",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/organizations/[orgId]/workshop-categories/vote/route.ts",
+      "source_blob_sha": "eea88e6efef7cbbd507a034f1e75baac52a987f8",
+      "methods": [
+        {
+          "method": "POST",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/organizations/[orgId]/workshop-categories/votes/route.ts",
+      "source_blob_sha": "e0505e89dbc75728c60eabeeeacf96925a0217a3",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/organizations/[orgId]/workshops/[id]/route.ts",
+      "source_blob_sha": "50ec41b218db6caaf342b9d0a6a0178f90d16282",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "member_list",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/organizations/[orgId]/workshops/analytics/route.ts",
+      "source_blob_sha": "22c68517140ebcf56f9c07bfeb4200bf5c94ced4",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "staff_analytics",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/organizations/[orgId]/workshops/route.ts",
+      "source_blob_sha": "e33a0dc1d629b536b9dac676bba21f6f6f2a02e6",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "member_list",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/organizations/by-slug/[slug]/workshops/by-slug/[workshopSlug]/route.ts",
+      "source_blob_sha": "862144e5997330afd426ae2f25fe62a65a9e37a5",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "public_detail",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/test-workshop-email/route.ts",
+      "source_blob_sha": "a77bef81df0a50059cd8ab2954d323c367e1275b",
+      "methods": [
+        {
+          "method": "POST",
+          "proposed_action": "test_mail",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshop-live-sessions/[code]/route.ts",
+      "source_blob_sha": "30c009f002e21561b83a69ae55853e93b8aa949a",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "participant_read",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "PATCH",
+          "proposed_action": "facilitator_write",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshop-live-sessions/route.ts",
+      "source_blob_sha": "e9f56a829adacea0ee68d90c19867c08ce14482d",
+      "methods": [
+        {
+          "method": "POST",
+          "proposed_action": "facilitator_write",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshop-registrations/route.ts",
+      "source_blob_sha": "5e2ed680467b94e5218912578a55ed5733b7c854",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshop-reminders/route.ts",
+      "source_blob_sha": "6405a019f204408d35d51383274cf7f119d80b1b",
+      "methods": [
+        {
+          "method": "POST",
+          "proposed_action": "scheduled_mail",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshops/[id]/calendar/route.ts",
+      "source_blob_sha": "10e50560711e2bf71032226676b8c2a8600c3c11",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "member_list",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "member_list",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshops/[id]/chapters/[chapterSlug]/content/route.ts",
+      "source_blob_sha": "efd5d7f46662664952fd76de09ccaa3009de491d",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "member_chapter",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshops/[id]/chapters/route.ts",
+      "source_blob_sha": "6478c5365da17cce65001a9d30b93d49f5bba427",
+      "methods": [
+        {
+          "method": "POST",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshops/[id]/enable-learn/route.ts",
+      "source_blob_sha": "e5fcdb5e02c3fc8e2b8680cc510d306dfe618692",
+      "methods": [
+        {
+          "method": "POST",
+          "proposed_action": "staff_write",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshops/[id]/interest/route.ts",
+      "source_blob_sha": "20b7123c52df22a2c3464454d1c1b1db6614d650",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshops/[id]/progress/route.ts",
+      "source_blob_sha": "654d5679064b587f06c86b3a1b76c52c3af0fe2e",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "own_progress",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "own_progress",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshops/[id]/route.ts",
+      "source_blob_sha": "630922198b21dbd8e5213db80ba0722eaa32807e",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "staff_review",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "PUT",
+          "proposed_action": "staff_write",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "DELETE",
+          "proposed_action": "staff_write",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshops/[id]/sessions/route.ts",
+      "source_blob_sha": "fdfa56deda79e7e0518d0e534d0f5d75db27edd1",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "disabled_legacy",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workshops/route.ts",
+      "source_blob_sha": "a6d5d221362682bdd35f2cb997468cc383ac6acd",
+      "methods": [
+        {
+          "method": "GET",
+          "proposed_action": "member_list",
+          "status": "proposed; legacy compatibility approval required"
+        },
+        {
+          "method": "POST",
+          "proposed_action": "staff_write",
+          "status": "proposed; legacy compatibility approval required"
+        }
+      ]
+    }
+  ],
+  "public_dto": {
+    "envelope": {
+      "list": {
+        "organization": [
+          "id",
+          "name",
+          "slug"
+        ],
+        "workshops": "public row array"
+      },
+      "detail": {
+        "success": true,
+        "data": "public row"
+      }
+    },
+    "required": [
+      "id",
+      "organization_id",
+      "title",
+      "status",
+      "is_active",
+      "is_public",
+      "metadata"
+    ],
+    "optional_reviewed": [
+      "description",
+      "category",
+      "type",
+      "level",
+      "duration_minutes",
+      "max_participants",
+      "price",
+      "instructor",
+      "outcomes",
+      "prerequisites",
+      "materials",
+      "image_url",
+      "featured",
+      "has_learn_content",
+      "learn_difficulty",
+      "learning_objectives",
+      "estimated_learn_time",
+      "what_youll_learn",
+      "materials_needed",
+      "created_at",
+      "updated_at"
+    ],
+    "metadata_allowlist": [
+      "slug",
+      "format",
+      "track",
+      "tags",
+      "heroTitle",
+      "subtitle",
+      "shortDescription",
+      "audienceTags",
+      "skillsYoullLearn",
+      "releaseStatus",
+      "sessionFormat",
+      "marketingLevel",
+      "websiteReadiness",
+      "resourcesAvailability",
+      "durationBucket",
+      "headerImageUrl",
+      "galleryImageUrls",
+      "sessionStartDate",
+      "sessionEndDate",
+      "displaySchedule",
+      "materialsRequired",
+      "materialsProvided",
+      "agenda",
+      "instructors",
+      "whoFor",
+      "whoNotFor",
+      "faq",
+      "ctas",
+      "catalogListingExternalUrl",
+      "publicListPriceUsd",
+      "ooliteRegistrationUsd",
+      "catalog",
+      "relatedWorkshopIds",
+      "catalogContentUpdatedAt",
+      "modulesPreview"
+    ],
+    "always_exclude": [
+      "created_by",
+      "created_by_email",
+      "raw content",
+      "unreviewed metadata",
+      "internal prompts",
+      "internal notes",
+      "unapproved media or link",
+      "private learner data",
+      "coupon code by default"
+    ],
+    "conditions": "Validate nested fields and URLs; approved public identifiers only; related IDs must independently pass visibility; price null unknown, never default to free; has_learn_content computed from approved manifest; conditional public packet/testimonial/coupon/aggregate compatibility only after explicit field review."
+  },
+  "cases": [
+    {
+      "id": "CAT-01",
+      "action": "public_list",
+      "overrides": {},
+      "expected": "allow"
+    },
+    {
+      "id": "CAT-02",
+      "action": "public_detail",
+      "overrides": {
+        "status": "draft"
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CAT-03",
+      "action": "public_list",
+      "overrides": {
+        "status": "available"
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CAT-04",
+      "action": "public_list",
+      "overrides": {
+        "status": null
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CAT-05",
+      "action": "public_detail",
+      "overrides": {
+        "isPublic": null
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CAT-06",
+      "action": "public_list",
+      "overrides": {
+        "isActive": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CAT-07",
+      "action": "public_detail",
+      "overrides": {
+        "listingApproved": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CAT-08",
+      "action": "public_detail",
+      "overrides": {
+        "tenantMatch": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CAT-09",
+      "action": "public_list",
+      "overrides": {
+        "activeOrg": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CAT-10",
+      "action": "public_list",
+      "overrides": {
+        "versionApproved": false
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "CH-01",
+      "action": "public_chapter",
+      "overrides": {},
+      "expected": "allow"
+    },
+    {
+      "id": "CH-02",
+      "action": "public_chapter",
+      "overrides": {
+        "chapterApproved": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CH-03",
+      "action": "public_chapter",
+      "overrides": {
+        "versionApproved": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CH-04",
+      "action": "public_chapter",
+      "overrides": {
+        "rightsApproved": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CH-05",
+      "action": "public_chapter",
+      "overrides": {
+        "chapterMatches": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CH-06",
+      "action": "public_chapter",
+      "overrides": {
+        "canonicalPath": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CH-07",
+      "action": "public_chapter",
+      "overrides": {
+        "status": "draft"
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CH-08",
+      "action": "member_chapter",
+      "overrides": {},
+      "expected": "allow"
+    },
+    {
+      "id": "CH-09",
+      "action": "member_chapter",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true,
+        "isPublic": false
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "CH-10",
+      "action": "member_chapter",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": false,
+        "ownsRecord": true,
+        "isPublic": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CH-11",
+      "action": "member_chapter",
+      "overrides": {
+        "actor": "member",
+        "memberActive": false,
+        "enrolled": true,
+        "ownsRecord": true,
+        "isPublic": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CH-12",
+      "action": "member_chapter",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true,
+        "isPublic": false,
+        "chapterApproved": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "CH-13",
+      "action": "member_chapter",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true,
+        "isPublic": false,
+        "tenantMatch": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "ORG-01",
+      "action": "member_list",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true,
+        "isPublic": false
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "ORG-02",
+      "action": "member_list",
+      "overrides": {
+        "actor": "member",
+        "memberActive": false,
+        "isPublic": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "ORG-03",
+      "action": "member_list",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true,
+        "tenantMatch": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "ORG-04",
+      "action": "member_list",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true,
+        "status": "draft"
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "ORG-05",
+      "action": "staff_review",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "status": "draft",
+        "versionApproved": false,
+        "rightsApproved": false
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "ORG-06",
+      "action": "staff_review",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "tenantMatch": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "ORG-07",
+      "action": "staff_write",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "ORG-08",
+      "action": "staff_write",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "ORG-09",
+      "action": "staff_write",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": false,
+        "staffAuthorized": true
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "ORG-10",
+      "action": "staff_write",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "requestValid": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "PROG-01",
+      "action": "own_progress",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "PROG-02",
+      "action": "own_progress",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "PROG-03",
+      "action": "own_progress",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true,
+        "chapterMatches": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "PROG-04",
+      "action": "own_progress",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": false,
+        "ownsRecord": true
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "PROG-05",
+      "action": "own_progress",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true,
+        "requestValid": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "PROG-06",
+      "action": "own_progress",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "ownsRecord": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "GRANT-01",
+      "action": "partner_delivery",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "grantValid": true,
+        "grantScopeMatches": true
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "GRANT-02",
+      "action": "partner_delivery",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "grantValid": false,
+        "grantScopeMatches": true
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "GRANT-03",
+      "action": "partner_delivery",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "grantValid": true,
+        "grantScopeMatches": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "GRANT-04",
+      "action": "partner_delivery",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "grantValid": true,
+        "grantScopeMatches": true,
+        "versionApproved": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "LIVE-01",
+      "action": "participant_read",
+      "overrides": {
+        "sessionReadAllowed": true
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "LIVE-02",
+      "action": "facilitator_write",
+      "overrides": {
+        "sessionReadAllowed": true
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "LIVE-03",
+      "action": "facilitator_write",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "facilitatorAuthorized": true
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "AN-01",
+      "action": "staff_analytics",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "AN-02",
+      "action": "staff_analytics",
+      "overrides": {
+        "actor": "member",
+        "memberActive": true,
+        "enrolled": true,
+        "ownsRecord": true
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "MAIL-01",
+      "action": "test_mail",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "mailSink": true
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "MAIL-02",
+      "action": "test_mail",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true,
+        "environment": "production",
+        "mailSink": true
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "MAIL-03",
+      "action": "scheduled_mail",
+      "overrides": {
+        "workerAuthorized": true,
+        "mailSink": true
+      },
+      "expected": "allow"
+    },
+    {
+      "id": "MAIL-04",
+      "action": "scheduled_mail",
+      "overrides": {
+        "workerAuthorized": true,
+        "mailSink": false
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "LEG-01",
+      "action": "disabled_legacy",
+      "overrides": {
+        "actor": "staff",
+        "memberActive": true,
+        "staffAuthorized": true
+      },
+      "expected": "deny"
+    },
+    {
+      "id": "BASE-01",
+      "action": "public_detail",
+      "overrides": {
+        "requestValid": false
+      },
+      "expected": "deny"
+    }
+  ],
+  "verification": {
+    "method": "evaluated a pure proposed predicate over synthetic cases in this authoring session; no repository code executed",
+    "total": 54,
+    "passed": 54,
+    "failed": 0,
+    "route_files": 31,
+    "method_count": 48,
+    "limitations": "Not an implementation test; route actions provisional, mixed public/member and staff routes require explicit split; production mail intentionally out of scope. Each allowed decision still requires actual data projection and input validation."
+  }
+}
