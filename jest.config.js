@@ -1,53 +1,22 @@
 const nextJest = require('next/jest')
 
 const createJestConfig = nextJest({
-  // Provide the path to your Next.js app to load next.config.js and .env files
   dir: './',
 })
 
-// Add any custom config to be passed to Jest
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  // Browser suites belong to playwright.config.ts (npm run test:e2e).
+  // Browser suites are executed separately by npm run test:e2e.
   // The legacy setup helper is not itself a test suite.
   testPathIgnorePatterns: [
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
     '<rootDir>/__tests__/integration/',
-    '<rootDir>/__tests__/setup\\.ts
-  collectCoverageFrom: [
-    'app/**/*.{js,jsx,ts,tsx}',
-    'components/**/*.{js,jsx,ts,tsx}',
-    'lib/**/*.{js,jsx,ts,tsx}',
-    '!**/*.d.ts',
-    '!**/node_modules/**',
-  ],
-}
-
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-,
+    '<rootDir>/__tests__/setup[.]ts$',
   ],
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',
@@ -58,22 +27,4 @@ module.exports = createJestConfig(customJestConfig)
   ],
 }
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 module.exports = createJestConfig(customJestConfig)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
