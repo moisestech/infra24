@@ -6,11 +6,17 @@ import { GET as listBookings, PATCH as updateBooking, DELETE as deleteBooking } 
 import { GET as getDonations, POST as postDonation } from '@/app/api/donations/route'
 import { GET as getTips, POST as postTip } from '@/app/api/tips/route'
 import { createClient } from '@supabase/supabase-js'
+import { GET as listLegacyBookings } from '@/app/api/bookings/route'
+import { POST as createResource } from '@/app/api/organizations/[orgId]/resources/route'
+import { GET as listFullResources, POST as createFullResource } from '@/app/api/organizations/by-id/resources/route'
+import { GET as listSubmissions } from '@/app/api/organizations/by-id/submissions/route'
+import { GET as listForms, POST as createForm } from '@/app/api/organizations/by-id/submission-forms/route'
 
 jest.mock('@clerk/nextjs/server', () => ({ auth: jest.fn() }))
 jest.mock('@/lib/security/require-organization-staff', () => ({ requireOrganizationStaff: jest.fn() }))
 jest.mock('@supabase/supabase-js', () => ({ createClient: jest.fn(() => ({ from: jest.fn() })) }))
-jest.mock('@/lib/supabase', () => ({ getSupabaseAdmin: jest.fn() }))
+jest.mock('@/lib/supabase', () => ({ getSupabaseAdmin: jest.fn(), supabaseClient: {from:jest.fn()}, createClient:jest.fn() }))
+jest.mock('@/lib/email/email-service', () => ({sendBookingConfirmationEmail:jest.fn(),sendHostNotificationEmail:jest.fn()}))
 
 const clerk = auth as jest.Mock
 const authorized = requireOrganizationStaff as jest.Mock
@@ -72,5 +78,21 @@ describe('service-role endpoint boundary', () => {
     }))
     expect(response.status).toBe(201)
     expect(insert).toHaveBeenCalledWith(expect.objectContaining({status:'pending'}))
+  })
+})
+
+describe('legacy tenant boundaries', () => {
+  it.each([401,403])('denies unapproved staff access (%i) before tenant data is read or written', async status => {
+    authorized.mockResolvedValue({ok:false,status,error:'denied'})
+    const req = new NextRequest('https://example.test/api/bookings?org_id='+orgId)
+    const write = () => new NextRequest('https://example.test/api/resources',{method:'POST',body:JSON.stringify({title:'Synthetic',type:'space',org_id:'other'})})
+    const params = {params:Promise.resolve({orgId})}
+    const responses = await Promise.all([
+      listLegacyBookings(req), createResource(write(),{params:{orgId}}),
+      listFullResources(req,params),createFullResource(write(),params),
+      listSubmissions(req,params),listForms(req,params),createForm(write(),params),
+    ])
+    expect(responses.map(r=>r.status)).toEqual(Array(7).fill(status))
+    expect(from).not.toHaveBeenCalled()
   })
 })
