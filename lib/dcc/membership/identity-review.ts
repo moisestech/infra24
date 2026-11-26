@@ -34,7 +34,7 @@ function requireIdentityWrites() {
 function digest(value: string) { return createHash('sha256').update(value).digest('hex') }
 
 async function currentPrimary(subject: string) {
-  const user = await clerkClient.users.getUser(subject)
+  const user = await (await clerkClient()).users.getUser(subject)
   const primary = user.emailAddresses.find(entry => entry.id === user.primaryEmailAddressId)
   if (user.id !== subject || primary?.verification?.status !== 'verified' || !primary.emailAddress)
     throw new MemberAccessError(409,'verified_primary_required')

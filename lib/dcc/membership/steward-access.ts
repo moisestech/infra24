@@ -6,8 +6,8 @@ import { MemberAccessError } from '@/lib/dcc/membership/profile-store'
  * Explicit allowlist of Clerk subject IDs, not emails, user-editable
  * metadata or client-supplied roles. Disabled until staff verification.
  */
-export function requireDccSteward(): string {
-  const { userId } = auth()
+export async function requireDccSteward(): Promise<string> {
+  const { userId } = await auth()
   if (!userId) throw new MemberAccessError(401,'sign_in_required')
   if (process.env.DCC_STEWARD_REVIEW_ENABLED !== 'true') {
     throw new MemberAccessError(503,'steward_review_not_enabled')

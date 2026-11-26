@@ -91,9 +91,9 @@ function cookieName(code: string): string {
   return `${COOKIE_PREFIX}${code}`
 }
 
-function readCookieSession(code: string): WorkshopLiveSession | null {
+async function readCookieSession(code: string): Promise<WorkshopLiveSession | null> {
   try {
-    const raw = cookies().get(cookieName(code))?.value
+    const raw = (await cookies()).get(cookieName(code))?.value
     if (!raw) return null
     return JSON.parse(decodeURIComponent(raw)) as WorkshopLiveSession
   } catch {
@@ -101,9 +101,9 @@ function readCookieSession(code: string): WorkshopLiveSession | null {
   }
 }
 
-function writeCookieSession(session: WorkshopLiveSession): void {
+async function writeCookieSession(session: WorkshopLiveSession): Promise<void> {
   try {
-    cookies().set(cookieName(session.joinCode), encodeURIComponent(JSON.stringify(session)), {
+    (await cookies()).set(cookieName(session.joinCode), encodeURIComponent(JSON.stringify(session)), {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
@@ -223,7 +223,7 @@ export async function createLiveSession(
     const candidate = newSession(input)
     const fromDb = await trySupabaseCreate(candidate)
     if (fromDb) {
-      writeCookieSession(fromDb)
+      await writeCookieSession(fromDb)
       memoryStore().set(fromDb.joinCode, fromDb)
       return { session: fromDb, storage: 'supabase' }
     }
@@ -231,7 +231,7 @@ export async function createLiveSession(
     const store = memoryStore()
     if (Array.from(store.values()).some((s) => s.joinCode === candidate.joinCode)) continue
     store.set(candidate.joinCode, candidate)
-    writeCookieSession(candidate)
+    await writeCookieSession(candidate)
     return { session: candidate, storage: 'memory' }
   }
   throw new Error('Could not allocate a unique join code')
@@ -252,7 +252,7 @@ export async function getLiveSessionByCode(
   const fromMemory = memoryStore().get(code)
   if (fromMemory) return fromMemory
 
-  const fromCookie = readCookieSession(code)
+  const fromCookie = await readCookieSession(code)
   if (fromCookie) {
     memoryStore().set(code, fromCookie)
     return fromCookie
@@ -271,12 +271,12 @@ export async function patchLiveSession(
   const fromDb = await trySupabaseUpdate(code, patch)
   if (fromDb) {
     memoryStore().set(code, fromDb)
-    writeCookieSession(fromDb)
+    await writeCookieSession(fromDb)
     return fromDb
   }
 
   const existing =
-    memoryStore().get(code) ?? readCookieSession(code)
+    memoryStore().get(code) ?? await readCookieSession(code)
   if (!existing) return null
 
   const next: WorkshopLiveSession = {
@@ -285,6 +285,6 @@ export async function patchLiveSession(
     updatedAt: new Date().toISOString(),
   }
   memoryStore().set(code, next)
-  writeCookieSession(next)
+  await writeCookieSession(next)
   return next
 }
