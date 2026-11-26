@@ -109,6 +109,8 @@ jobs:
           unset PGOPTIONS PGSERVICE PGSERVICEFILE PGHOSTADDR
           test "$PGHOST" = 127.0.0.1 && test "$PGDATABASE" = dcc_test
           psql -X -v ON_ERROR_STOP=1 -c "CREATE ROLE dcc_local_gateway LOGIN NOINHERIT PASSWORD 'local-gateway-only'; GRANT service_role TO dcc_local_gateway;"
+          # Minimal synthetic legacy contract used by the existing Clerk handler.
+          psql -X -v ON_ERROR_STOP=1 -c "CREATE TABLE public.org_memberships (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), clerk_user_id text NOT NULL, role text NOT NULL, org_id uuid, joined_at timestamptz NOT NULL); CREATE UNIQUE INDEX synthetic_org_member_unique ON public.org_memberships(clerk_user_id) WHERE org_id IS NULL; ALTER TABLE public.org_memberships ENABLE ROW LEVEL SECURITY; GRANT SELECT, INSERT, DELETE ON public.org_memberships TO service_role;"
           export DCC_TEST_BINDING_ID=$(psql -X -At -v ON_ERROR_STOP=1 -c "INSERT INTO public.dcc_platform_member_bindings(clerk_instance,clerk_user_id,state,verified_at) VALUES ('synthetic-store-ci','user_store_ci','pending_reconciliation',now()) RETURNING id" | head -n 1)
           trap 'docker rm -f dcc-local-rest >/dev/null 2>&1 || true' EXIT
           docker run -d --name dcc-local-rest --network host \
