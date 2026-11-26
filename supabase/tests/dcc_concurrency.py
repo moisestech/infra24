@@ -74,6 +74,26 @@ class ConcurrentConsent(unittest.TestCase):
                 ('select public.dcc_finalize_steward_publication(%s,%s,true)', (self.binding, claim)))
         self.assert_withdrawn()
 
+    def test_withdrawal_races_replacement_of_approved_snapshot(self):
+        self.db.execute(REQUEST, (self.binding, 1, DISCLOSURE))
+        slug = 'test-' + self.binding.hex
+        claim = self.db.execute('select public.dcc_claim_steward_publication(%s,2,%s,%s)',
+            (self.binding, slug, 'user_test_steward')).fetchone()[0]
+        self.assertEqual(self.db.execute('select public.dcc_finalize_steward_publication(%s,%s,true)',
+            (self.binding, claim)).fetchone()[0], 'approved')
+        self.assertEqual(self.db.execute(SAVE, (self.binding, 4)).fetchone()[0], 5)
+        self.assertEqual(self.db.execute(REQUEST, (self.binding, 5, DISCLOSURE)).fetchone()[0], 6)
+        replacement = self.db.execute('select public.dcc_claim_steward_publication(%s,6,%s,%s)',
+            (self.binding, slug + '-new', 'user_test_steward')).fetchone()[0]
+        self.assertEqual(self.db.execute('select slug from public.dcc_list_approved_passports() where slug=%s',
+            (slug,)).fetchone()[0], slug)
+        with self.assertRaises(psycopg.errors.CheckViolation):
+            self.contend((WITHDRAW, (self.binding,)),
+                ('select public.dcc_finalize_steward_publication(%s,%s,true)', (self.binding, replacement)))
+        self.assertIsNone(self.db.execute('select slug from public.dcc_approved_passport_snapshots where binding_id=%s',
+            (self.binding,)).fetchone())
+        self.assert_withdrawn()
+
     def assert_withdrawn(self):
         self.assertEqual(self.db.execute("""select g.state, g.approved_at, d.public_request_state
             from public.dcc_member_publication_grants g join public.dcc_member_profile_drafts d

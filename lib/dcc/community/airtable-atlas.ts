@@ -7,7 +7,8 @@ const credential = () => process.env.AIRTABLE_DCC_ATLAS_API_KEY?.trim()
 const base = () => process.env.AIRTABLE_DCC_ATLAS_BASE_ID?.trim()
 const people = () => process.env.AIRTABLE_DCC_ATLAS_PEOPLE_TABLE?.trim()
 const intake = () => process.env.AIRTABLE_DCC_ATLAS_INTAKE_TABLE?.trim()
-export const atlasReadConfigured = () => Boolean(credential() && base() && people())
+const legacyAtlasReadConfigured = () => Boolean(credential() && base() && people())
+export const atlasReadConfigured = () => legacyAtlasReadConfigured() || process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED === 'true'
 export const atlasIntakeConfigured = () => Boolean(process.env.DCC_ATLAS_INTAKE_ENABLED === 'true' && credential() && base() && people() && intake())
 
 function tableUrl(table: string) {
@@ -23,9 +24,13 @@ async function request(url: URL, init: RequestInit = {}) {
 export async function readPublicAtlas() {
   if (!atlasReadConfigured()) throw new Error('ATLAS_NOT_CONFIGURED')
   const records: Array<{ id: string; fields: Record<string, unknown> }> = []
-  let offset: string | undefined
-  let pages = 0
-  do {
+  const websiteProfilesPublic = process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED === 'true'
+  // A legacy provider outage does not revoke an already approved SQL snapshot.
+  // Drop partial legacy results on error; the SQL visibility check remains mandatory.
+  if (legacyAtlasReadConfigured()) try {
+    let offset: string | undefined
+    let pages = 0
+    do {
     const url = tableUrl(people()!)
     PUBLIC_FIELDS.forEach((field) => url.searchParams.append('fields[]', field))
     url.searchParams.set('filterByFormula', 'AND({Atlas Publication State}="Approved",{Atlas Public Consent}=1,{Atlas Identity Verified}=1,{Public Profile?}=1)')
@@ -35,10 +40,13 @@ export async function readPublicAtlas() {
     offset = page.offset
     pages++
     if (offset && pages >= 20) throw new Error('ATLAS_PAGE_LIMIT')
-  } while (offset)
+    } while (offset)
+  } catch (error) {
+    if (!websiteProfilesPublic) throw error
+    records.length=0
+  }
   // Website members are served exclusively from the reviewed SQL snapshot,
   // never from mutable Airtable profile fields or the current private draft.
-  const websiteProfilesPublic = process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED === 'true'
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
   const mustCheck = websiteProfilesPublic || process.env.DCC_STEWARD_PUBLICATION_ENABLED === 'true'

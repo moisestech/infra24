@@ -45,6 +45,10 @@ describe('immutable approved website Passport snapshots',()=>{
     fetcher.mockResolvedValueOnce(new Response(JSON.stringify({records:[]})))
     expect(await readPublicAtlas()).toHaveLength(1)
   })
+  it('preserves SQL publication during a legacy Airtable outage',async()=>{
+    fetcher.mockRejectedValueOnce(new Error('provider unavailable'))
+    expect((await readPublicAtlas()).map(profile=>profile.slug)).toEqual([snapshot.slug])
+  })
   it('never exposes a bound CRM record after withdrawal, even if its marker is removed',async()=>{
     setRows([])
     fetcher.mockResolvedValueOnce(new Response(JSON.stringify({records:[{id:recordId,fields:{...mutated,'DCC Website Member Binding ID':undefined}}]})))
