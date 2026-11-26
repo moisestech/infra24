@@ -4,7 +4,7 @@ import { CaseStudyLayout } from '@/components/marketing/cdc';
 import { getCdcPageByPath, getProjectEntry, getProjectSlugs } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 /** Slugs that have a literal static page file under `app/(marketing)/projects/<slug>/page.tsx`. */
 const STATIC_OVERRIDE_SLUGS: ReadonlyArray<string> = ['public-interfaces'];
@@ -15,12 +15,14 @@ export function generateStaticParams() {
     .map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const path = `/projects/${params.slug}`;
   return cdcPageMetadata(path);
 }
 
-export default function ProjectPage({ params }: Props) {
+export default async function ProjectPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const path = `/projects/${params.slug}`;
   const def = getCdcPageByPath(path);
   if (!def) notFound();

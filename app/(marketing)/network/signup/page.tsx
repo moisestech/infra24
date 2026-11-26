@@ -13,10 +13,11 @@ const path = '/network/signup'
 export const metadata: Metadata = cdcPageMetadata(path)
 
 type Props = {
-  searchParams?: { source?: string; pathway?: string; form?: string; utm_campaign?: string }
+  searchParams?: Promise<{ source?: string; pathway?: string; form?: string; utm_campaign?: string }>
 }
 
-export default function NetworkSignupPage({ searchParams }: Props) {
+export default async function NetworkSignupPage({ searchParams: pendingSearchParams }: Props) {
+  const searchParams = await pendingSearchParams
   const source = searchParams?.source
   const pathway = parsePathwayParam(searchParams?.pathway)
   const formMode = parseSignupFormMode(searchParams?.form)

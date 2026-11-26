@@ -9,14 +9,15 @@ import {
 import { dccSiteMeta } from '@/lib/marketing/content'
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export function generateStaticParams() {
   return listCurriculumWorkshopSlugs().map((slug) => ({ slug }))
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const workshop = getCurriculumWorkshopBySlug(params.slug)
   if (!workshop) {
     return { title: 'Workshop' }
@@ -33,7 +34,8 @@ export function generateMetadata({ params }: Props): Metadata {
   }
 }
 
-export default function ThreeDSchoolWorkshopPage({ params }: Props) {
+export default async function ThreeDSchoolWorkshopPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const workshop = getCurriculumWorkshopBySlug(params.slug)
   if (!workshop) notFound()
 
