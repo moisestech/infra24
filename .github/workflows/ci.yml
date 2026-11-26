@@ -71,7 +71,7 @@ jobs:
           set -euo pipefail
           unset PGOPTIONS PGSERVICE PGSERVICEFILE PGHOSTADDR
           test "$PGHOST" = 127.0.0.1 && test "$PGDATABASE" = dcc_test
-          psql -X -v ON_ERROR_STOP=1 -c 'CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE service_role NOLOGIN;'
+          psql -X -v ON_ERROR_STOP=1 -c 'CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE service_role NOLOGIN BYPASSRLS;'
           for migration in \
             supabase/migrations/20261124130727_dcc_platform_member_event_ledger_20261122220000.sql \
             supabase/migrations/20261124130801_dcc_private_profile_and_sculpture_snapshots_20261122233000.sql \
