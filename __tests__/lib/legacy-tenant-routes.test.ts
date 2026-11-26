@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { GET, POST } from '@/app/api/organizations/[orgId]/resources/route'
 import { POST as POSTById } from '@/app/api/organizations/by-id/resources/route'
+import { GET as GETAnalytics } from '@/app/api/analytics/bookings/overview/route'
 import { PATCH } from '@/app/api/organizations/[orgId]/bookings/[bookingId]/route'
 jest.mock('@/lib/security/require-organization-staff', () => ({ requireOrganizationStaff: jest.fn() }))
 const guard = requireOrganizationStaff as jest.Mock
@@ -74,5 +75,22 @@ test.each([{title:'Test',type:'equipment',capacity:0},{title:' ',type:'equipment
   const from = jest.fn()
   guard.mockResolvedValue({ok:true,orgId,db:{from}})
   expect((await POSTById(byIdResource(body))).status).toBe(400)
+  expect(from).not.toHaveBeenCalled()
+})
+
+test('legacy analytics requires organization and denies unauthorized access', async () => {
+  expect((await GETAnalytics(get())).status).toBe(400)
+  expect(guard).not.toHaveBeenCalled()
+  guard.mockResolvedValue({ok:false,status:403,error:'Forbidden'})
+  expect((await GETAnalytics(new NextRequest('http://localhost/api/test?org_id='+orgId))).status).toBe(403)
+})
+test('legacy analytics fails closed without privileged database execution', async () => {
+  const rpc = jest.fn()
+  const from = jest.fn()
+  guard.mockResolvedValue({ok:true,orgId,db:{rpc,from}})
+  const response = await GETAnalytics(new NextRequest('http://localhost/api/test?org_id='+orgId))
+  expect(response.status).toBe(503)
+  expect(response.headers.get('cache-control')).toContain('no-store')
+  expect(rpc).not.toHaveBeenCalled()
   expect(from).not.toHaveBeenCalled()
 })
