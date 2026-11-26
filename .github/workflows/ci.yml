@@ -84,6 +84,7 @@ jobs:
             psql -v ON_ERROR_STOP=1 -f "$migration"
           done
           psql -v ON_ERROR_STOP=1 -f supabase/tests/dcc_owner_passport_revision_cas.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/dcc_passport_session_resume.sql
           psql -v ON_ERROR_STOP=1 -f supabase/tests/dcc_founder_identity_review.sql
           psql -v ON_ERROR_STOP=1 -f supabase/tests/dcc_approved_passport_snapshots.sql
           python3 -m venv "$RUNNER_TEMP/dcc-sql"
