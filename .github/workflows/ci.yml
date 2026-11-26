@@ -91,6 +91,38 @@ jobs:
           "$RUNNER_TEMP/dcc-sql/bin/pip" install 'psycopg[binary]==3.2.13'
           "$RUNNER_TEMP/dcc-sql/bin/python" supabase/tests/dcc_concurrency.py
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Exercise application store through local PostgREST
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGPASSWORD: local-ci-only
+          PGDATABASE: dcc_test
+          DCC_LOCAL_STORE_TEST: '1'
+        run: |
+          set -euo pipefail
+          unset PGOPTIONS PGSERVICE PGSERVICEFILE PGHOSTADDR
+          test "$PGHOST" = 127.0.0.1 && test "$PGDATABASE" = dcc_test
+          psql -X -v ON_ERROR_STOP=1 -c "CREATE ROLE dcc_local_gateway LOGIN NOINHERIT PASSWORD 'local-gateway-only'; GRANT service_role TO dcc_local_gateway;"
+          export DCC_TEST_BINDING_ID=$(psql -X -At -v ON_ERROR_STOP=1 -c "INSERT INTO public.dcc_platform_member_bindings(clerk_instance,clerk_user_id,state,verified_at) VALUES ('synthetic-store-ci','user_store_ci','pending_reconciliation',now()) RETURNING id" | head -n 1)
+          trap 'docker rm -f dcc-local-rest >/dev/null 2>&1 || true' EXIT
+          docker run -d --name dcc-local-rest --network host \
+            -e PGRST_DB_URI=postgres://dcc_local_gateway:local-gateway-only@127.0.0.1:5432/dcc_test \
+            -e PGRST_DB_SCHEMAS=public -e PGRST_DB_ANON_ROLE=service_role \
+            -e PGRST_SERVER_HOST=127.0.0.1 -e PGRST_SERVER_PORT=3009 \
+            postgrest/postgrest:v12.2.3
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3009/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3009/ >/dev/null
+          npx jest --runInBand --ci __tests__/lib/dcc-passport-local-store.test.ts
+
   dcc-legacy-sql:
     name: DCC legacy tenant permission regression
     runs-on: ubuntu-latest
