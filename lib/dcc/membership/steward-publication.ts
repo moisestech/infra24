@@ -75,6 +75,14 @@ async function verifyPeopleRecord(
     throw new MemberAccessError(409,'public_slug_already_used')
 }
 
+// Airtable may omit an empty multi-select field or reorder its choices.
+// Do not approve a partial echo or a provider-added value.
+function sameSelectChoices(actual: unknown, expected: readonly string[]) {
+  if (actual === undefined || actual === null) return expected.length === 0
+  if (!Array.isArray(actual) || actual.some(value => typeof value !== 'string')) return false
+  return JSON.stringify([...actual].sort()) === JSON.stringify([...expected].sort())
+}
+
 export async function decideStewardPublication(
   input:StewardDecision,reviewerSubject:string,
 ) {
@@ -113,6 +121,9 @@ export async function decideStewardPublication(
       && updated.fields['Profile Slug']===slug
       && updated.fields['Display Name']===publicFields['Display Name']
       && updated.fields['Short Bio']===publicFields['Short Bio']
+      && sameSelectChoices(updated.fields['Public Skills'],publicFields['Public Skills'])
+      && sameSelectChoices(updated.fields['Atlas Interests'],publicFields['Atlas Interests'])
+      && updated.fields['Atlas Public Links']===publicFields['Atlas Public Links']
       && updated.fields['Atlas Publication State']==='Approved'
       && updated.fields['Atlas Identity Verified']===true
       && updated.fields['Public Profile?']===true

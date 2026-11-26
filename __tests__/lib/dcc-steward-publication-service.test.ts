@@ -120,6 +120,20 @@ describe('DCC BDD — actual steward to Airtable publication orchestration',()=>
     expect(patchPerson).not.toHaveBeenCalled()
   })
 
+  it.each([
+    ['Public Skills',['Unreviewed Skill']],
+    ['Atlas Interests',['learning']],
+    ['Atlas Public Links','[{"label":"Unreviewed","url":"https://example.net/"}]'],
+  ])('does not approve a provider echo that changes %s',async(field,unexpected)=>{
+    patchPerson.mockImplementationOnce(async(_base:string,_table:string,_key:string,_id:string,fields:Record<string,unknown>)=>({
+      id:personId,fields:{...fields,'DCC Website Member Binding ID':bindingId,[field as string]:unexpected},
+    }))
+    await expect(decideStewardPublication(request,reviewer))
+      .rejects.toMatchObject({status:503,code:'publication_provider_uncertain'})
+    expect(rpc).toHaveBeenCalledWith('dcc_finalize_steward_publication',expect.objectContaining({p_success:false}))
+    expect(rpc).not.toHaveBeenCalledWith('dcc_finalize_steward_publication',expect.objectContaining({p_success:true}))
+  })
+
   it('holds provider failures as uncertain and never declares approval',async()=>{
     patchPerson.mockRejectedValueOnce(new Error('unknown provider outcome'))
     rpc.mockImplementation(async(name:string)=>({
