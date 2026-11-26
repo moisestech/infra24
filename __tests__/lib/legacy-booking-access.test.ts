@@ -19,12 +19,12 @@ const get=()=>new NextRequest('http://localhost/api/test')
 const post=(body:object)=>new NextRequest('http://localhost/api/test',{method:'POST',body:JSON.stringify(body)})
 beforeEach(()=>jest.resetAllMocks())
 test.each([ics,urls])('calendar rejects signed-out request before database access',async handler=>{
-  (auth as jest.Mock).mockResolvedValue({userId:null})
+  (auth as unknown as jest.Mock).mockResolvedValue({userId:null})
   expect((await handler(get(),{params})).status).toBe(401)
   expect(getSupabaseAdmin).not.toHaveBeenCalled()
 })
 test.each([ics,urls])('calendar rejects unrelated signed-in identity',async handler=>{
-  (auth as jest.Mock).mockResolvedValue({userId:'other-user'})
+  (auth as unknown as jest.Mock).mockResolvedValue({userId:'other-user'})
   const q={select:jest.fn().mockReturnThis(),eq:jest.fn().mockReturnThis(),single:jest.fn().mockResolvedValue({data:{id,org_id:org,user_id:'owner'},error:null})}
   const from=jest.fn().mockReturnValue(q)
   ;(getSupabaseAdmin as jest.Mock).mockReturnValue({from})
