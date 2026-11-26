@@ -18,7 +18,7 @@ export async function GET(
     return NextResponse.json({ resources: resources || [], count: resources?.length || 0 }, { headers })
 
   } catch {
-    console.error('❌ Resources API: Unexpected error:', err)
+    console.error('Resources API: Unexpected error')
     return NextResponse.json(
       { 
         error: 'Internal server error',
