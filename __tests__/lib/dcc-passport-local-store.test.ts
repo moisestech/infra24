@@ -1,6 +1,10 @@
 /** @jest-environment node */
 jest.mock('server-only', () => ({}))
 jest.mock('@clerk/nextjs/server', () => ({ auth: jest.fn() }))
+jest.mock('next/headers', () => ({ headers: jest.fn() }))
+import { headers } from 'next/headers'
+import { Webhook } from 'svix'
+import { POST as webhook } from '@/app/api/webhooks/clerk/route'
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest } from 'next/server'
 import { GET, PATCH } from '@/app/api/dcc/me/route'
@@ -35,7 +39,7 @@ suite('Passport application store against disposable PostgREST', () => {
     expect(await readOwnerPassport(client(), binding)).toMatchObject({ displayName: 'Resumed maker', revision: 2, publication: 'private' })
     // Exercise the actual HTTP handlers and ownership lookup. Only Clerk identity
     // and the local transport adapter are substituted; no production credentials.
-    const keys = ['DCC_MEMBER_PROFILE_ENABLED','DCC_MEMBER_EVENT_CAPTURE_ENABLED','DCC_CLERK_INSTANCE_ID','DCC_MEMBER_CUTOVER_ISO','NEXT_PUBLIC_SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED'] as const
+    const keys = ['DCC_MEMBER_PROFILE_ENABLED','DCC_MEMBER_EVENT_CAPTURE_ENABLED','DCC_CLERK_INSTANCE_ID','DCC_MEMBER_CUTOVER_ISO','NEXT_PUBLIC_SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED','CLERK_WEBHOOK_SECRET'] as const
     const previous = keys.map(key => process.env[key])
     const originalFetch = global.fetch
     try {
@@ -75,6 +79,39 @@ suite('Passport application store against disposable PostgREST', () => {
       expect((await GET()).status).toBe(401)
       identity.mockResolvedValue({ userId: 'user_store_ci' })
       expect(await (await GET()).json()).toMatchObject({ profile: { displayName: 'HTTP resumed maker', revision: 3 }, currentlyPublic: false })
+      // Real Svix verification, real webhook handler and real database RPC.
+      const secret = 'whsec_' + Buffer.from('synthetic-local-signing-material').toString('base64')
+      process.env.CLERK_WEBHOOK_SECRET = secret
+      const signer = new Webhook(secret)
+      const subject = 'user_signed_ci'
+      const send = async (type: string, id: string, verified: boolean, tamper = false) => {
+        const payload = JSON.stringify({ type, data: { id: subject, created_at: Date.now(),
+          primary_email_address_id: 'email_synthetic', email_addresses: [{ id: 'email_synthetic', verification: { status: verified ? 'verified' : 'unverified' } }] } })
+        const time = new Date()
+        const signature = signer.sign(id, time, payload)
+        ;(headers as unknown as jest.Mock).mockResolvedValue(new Headers({
+          'svix-id': id, 'svix-timestamp': String(Math.floor(time.getTime()/1000)), 'svix-signature': signature,
+        }))
+        return webhook(new Request('https://dcc.example/api/webhooks/clerk', { method: 'POST', body: tamper ? payload + ' ' : payload }))
+      }
+      identity.mockResolvedValue({ userId: subject })
+      expect((await send('user.created','msg_invalid_ci',true,true)).status).toBe(400)
+      expect((await GET()).status).toBe(409)
+      expect((await send('user.created','msg_created_ci',false)).status).toBe(200)
+      expect(await (await GET()).json()).toEqual({ error: 'verify_account_first' })
+      expect((await send('user.created','msg_created_ci',false)).status).toBe(200)
+      expect((await send('user.updated','msg_verified_ci',true)).status).toBe(200)
+      expect(await (await GET()).json()).toMatchObject({ membership: 'pending_reconciliation', profile: { revision: 0 }, currentlyPublic: false })
+      expect((await PATCH(patch({ ...draft, revision: 0 }))).status).toBe(200)
+      expect(await (await GET()).json()).toMatchObject({ profile: { revision: 1, publication: 'private' } })
+      expect((await send('user.deleted','msg_deleted_ci',true)).status).toBe(200)
+      expect((await GET()).status).toBe(403)
+      expect((await send('user.created','msg_created_ci',false)).status).toBe(200)
+      expect((await GET()).status).toBe(403)
+      const { data: legacy, error: legacyError } = await client().from('org_memberships').select('id').eq('clerk_user_id',subject)
+      expect(legacyError).toBeNull()
+      expect(legacy).toEqual([])
+
     } finally {
       global.fetch = originalFetch
       keys.forEach((key, index) => { const value = previous[index]; if (value === undefined) delete process.env[key]; else process.env[key] = value })
