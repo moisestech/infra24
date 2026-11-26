@@ -2,35 +2,39 @@
 import { NextRequest } from 'next/server'
 import { POST } from '@/app/api/bookings/route'
 
-// Mock Supabase
-const mockSupabase = {
-  from: jest.fn(() => ({
-    select: jest.fn().mockReturnThis(),
-    insert: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnThis(),
-    single: jest.fn().mockResolvedValue({
-      data: {
-        id: 'test-booking-id',
-        org_id: 'test-org-id',
-        resource_id: 'test-resource-id',
-        title: 'Test Booking',
-        start_time: '2025-01-15T12:00:00Z',
-        end_time: '2025-01-15T12:30:00Z',
-        status: 'confirmed'
-      },
-      error: null
-    }),
-    then: jest.fn().mockResolvedValue({ data: [], error: null })
-  }))
-}
-
-jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => mockSupabase)
+// Explicit route-boundary mocks; no real Supabase or outbound email.
+const mockResource = jest.fn()
+const mockConflict = jest.fn()
+const mockBooking = jest.fn()
+const mockInsert = jest.fn()
+jest.mock('@/lib/supabase', () => ({
+  getSupabaseAdmin: () => ({
+    from: (table: string) => {
+      const query = {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        insert: mockInsert,
+        single: table === 'resources' ? mockResource : mockBooking,
+        or: mockConflict,
+      }
+      mockInsert.mockImplementation(() => Object.assign(Promise.resolve({error:null}), {
+        select: () => query,
+      }))
+      return query
+    },
+  }),
+}))
+jest.mock('@/lib/email/email-service', () => ({
+  sendBookingConfirmationEmail: jest.fn().mockResolvedValue({success:true}),
+  sendHostNotificationEmail: jest.fn().mockResolvedValue({success:true}),
 }))
 
 describe('/api/bookings', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockResource.mockReset().mockResolvedValue({data:{id:'test-resource-id',title:'Test Resource',metadata:{}},error:null})
+    mockConflict.mockReset().mockResolvedValue({data:[],error:null})
+    mockBooking.mockReset().mockResolvedValue({data:{id:'test-booking-id'},error:null})
   })
 
   it('should create a booking successfully', async () => {
@@ -85,7 +89,7 @@ describe('/api/bookings', () => {
   })
 
   it('should return 404 for non-existent resource', async () => {
-    mockSupabase.from().single.mockResolvedValueOnce({
+    mockResource.mockResolvedValueOnce({
       data: null,
       error: { message: 'Resource not found' }
     })
@@ -116,21 +120,7 @@ describe('/api/bookings', () => {
   })
 
   it('should return 409 for unavailable slot', async () => {
-    // Mock resource as found but slot unavailable
-    mockSupabase.from().single.mockResolvedValueOnce({
-      data: {
-        id: 'test-resource-id',
-        name: 'Remote Studio Visit',
-        is_bookable: true,
-        metadata: {
-          availability_rules: {
-            timezone: 'America/New_York',
-            slot_minutes: 30
-          }
-        }
-      },
-      error: null
-    })
+    mockConflict.mockResolvedValueOnce({data:[{id:'existing-booking'}],error:null})
 
     const bookingData = {
       org_id: 'test-org-id',
@@ -153,8 +143,9 @@ describe('/api/bookings', () => {
     const response = await POST(request)
     const data = await response.json()
 
-    // This might return 409 or 200 depending on slot availability logic
-    expect([200, 409]).toContain(response.status)
+    expect(response.status).toBe(409)
+    expect(data.error).toBe('Time slot is already booked')
+    expect(mockInsert).not.toHaveBeenCalled()
   })
 })
 

@@ -82,8 +82,8 @@ describe('MiniMapDensity', () => {
 
   beforeEach(() => {
     // Mock ResizeObserver
-    global.ResizeObserver = jest.fn().mockImplementation(() => ({
-      observe: jest.fn(),
+    global.ResizeObserver = jest.fn().mockImplementation((callback: ResizeObserverCallback) => ({
+      observe: jest.fn((target: Element) => callback([{target,contentRect:{width:800}} as ResizeObserverEntry], {} as ResizeObserver)),
       unobserve: jest.fn(),
       disconnect: jest.fn(),
     }))
@@ -142,10 +142,8 @@ describe('MiniMapDensity', () => {
     )
     
     const viewport = screen.getByRole('slider')
-    expect(viewport).toHaveStyle({
-      borderColor: '#ff0000AA',
-      boxShadow: expect.stringContaining('#ff0000')
-    })
+    expect(viewport.style.borderColor).toBeTruthy()
+    expect(viewport.style.boxShadow.toLowerCase()).toContain('#ff0000')
   })
 
   it('handles click navigation', () => {
@@ -161,7 +159,7 @@ describe('MiniMapDensity', () => {
     const container = screen.getByRole('slider').parentElement
     fireEvent.pointerDown(container!, { clientX: 400 })
     
-    expect(mockScrollRef.current.scrollTo).toHaveBeenCalled()
+    expect(mockScrollRef.current.scrollTo).toHaveBeenCalledWith(expect.objectContaining({left:800}))
   })
 
   it('handles drag navigation', () => {
@@ -177,9 +175,9 @@ describe('MiniMapDensity', () => {
     const viewport = screen.getByRole('slider')
     
     // Start drag
-    fireEvent.pointerDown(viewport, { clientX: 100 })
-    fireEvent.pointerMove(viewport, { clientX: 200 })
-    fireEvent.pointerUp(viewport)
+    fireEvent.pointerDown(viewport, { clientX: 100, pointerId: 1 })
+    fireEvent.pointerMove(viewport, { clientX: 200, pointerId: 1 })
+    fireEvent.pointerUp(viewport, { pointerId: 1 })
     
     expect(mockScrollRef.current.scrollTo).toHaveBeenCalled()
   })

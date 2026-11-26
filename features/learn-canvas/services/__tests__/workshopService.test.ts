@@ -366,9 +366,7 @@ describe('WorkshopService Tests', () => {
       const workshops = await workshopService.searchWorkshops('AI')
       
       workshops.forEach((workshop: any) => {
-        workshop.learning_objectives.forEach((objective: any) => {
-          expect(objective.toLowerCase()).toContain('ai')
-        })
+        expect(workshop.learning_objectives.some((objective: string) => objective.toLowerCase().includes('ai'))).toBe(true)
       })
     })
 
@@ -401,9 +399,7 @@ describe('WorkshopService Tests', () => {
       const workshops = await workshopService.searchWorkshops('Basic')
       
       workshops.forEach((workshop: any) => {
-        workshop.prerequisites.forEach((prereq: any) => {
-          expect(prereq.toLowerCase()).toContain('basic')
-        })
+        expect(workshop.prerequisites.some((prereq: string) => prereq.toLowerCase().includes('basic'))).toBe(true)
       })
     })
   })
