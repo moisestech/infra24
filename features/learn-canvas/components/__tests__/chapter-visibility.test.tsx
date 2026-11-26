@@ -1,7 +1,7 @@
 // @jest-environment jsdom
 /// <reference types="jest" />
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { WorkshopDetail } from '../WorkshopDetail'
 import { ChapterCard } from '../ChapterCard'
@@ -112,9 +112,11 @@ describe('Chapter Visibility Tests - Critical Bug Prevention', () => {
   it('lists all chapters in source order and allows free browsing', () => {
     render(<WorkshopDetail workshop={mockWorkshop} chapters={mockChapters} />)
     expect(screen.getAllByRole('heading',{level:3}).filter(x=>mockChapters.some(c=>c.title===x.textContent)).map(x=>x.textContent)).toEqual(mockChapters.map(c=>c.title))
-    expect(screen.getAllByText('Free')).toHaveLength(3)
-    expect(screen.getByText('45 min')).toBeInTheDocument()
-    expect(screen.getByText('60 min')).toBeInTheDocument()
+    for (const chapter of mockChapters) {
+      const card = within(screen.getByRole('button', { name: new RegExp(chapter.title) }))
+      expect(card.getByText('Free')).toBeInTheDocument()
+      expect(card.getByText(`${chapter.estimated_duration_minutes} min`)).toBeInTheDocument()
+    }
   })
   it('handles single and empty lists', () => {
     const {rerender}=render(<WorkshopDetail workshop={mockWorkshop} chapters={[mockChapters[0]]} />)
