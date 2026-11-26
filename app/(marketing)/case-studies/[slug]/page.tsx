@@ -5,13 +5,14 @@ import { MarketingSection } from '@/components/marketing/MarketingSection';
 import { CtaBand } from '@/components/marketing/CtaBand';
 import { caseStudyPreviews } from '@/lib/marketing/content';
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
   return caseStudyPreviews.map((c) => ({ slug: c.slug }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const c = caseStudyPreviews.find((x) => x.slug === params.slug);
   if (!c) return { title: 'Case study' };
   return {
@@ -20,7 +21,8 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function CaseStudyDetailPage({ params }: Props) {
+export default async function CaseStudyDetailPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const c = caseStudyPreviews.find((x) => x.slug === params.slug);
   if (!c) notFound();
 

@@ -5,18 +5,20 @@ import { PageHero, Section } from '@/components/marketing/cdc';
 import { getCdcBreadcrumbs, getCdcPageByPath, getContactAudienceSlugs } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
-type Props = { params: { audience: string } };
+type Props = { params: Promise<{ audience: string }> };
 
 export function generateStaticParams() {
   return getContactAudienceSlugs().map((audience) => ({ audience }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const path = `/contact/${params.audience}`;
   return cdcPageMetadata(path);
 }
 
-export default function ContactAudiencePage({ params }: Props) {
+export default async function ContactAudiencePage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const path = `/contact/${params.audience}`;
   const def = getCdcPageByPath(path);
   if (!def) notFound();
