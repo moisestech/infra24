@@ -164,6 +164,7 @@ export function ChapterReader({ workshopSlug, chapterSlug, chapter, chapterConte
 
   // Generate slides for presentation mode
   const slides = useMemo(() => {
+    if (!chapter) return []
     if (workshopSlug === 'ai-video-production') {
       // Use Spanish slides if language is Spanish
       if (language === 'es' && aiVideoWorkshopSlidesES[chapterSlug as keyof typeof aiVideoWorkshopSlidesES]) {
