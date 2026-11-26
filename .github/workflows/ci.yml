@@ -159,6 +159,8 @@ jobs:
           unset PGOPTIONS PGSERVICE PGSERVICEFILE PGHOSTADDR
           psql -X -v ON_ERROR_STOP=1 -c 'CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE service_role NOLOGIN BYPASSRLS;'
           psql -X -v ON_ERROR_STOP=1 -f supabase/tests/legacy/fixture.sql
+          test "$PGHOST" = 127.0.0.1 && test "$PGDATABASE" = dcc_legacy_permissions_test
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/legacy/additive_booking_compatibility.sql
           for attempt in 1 2; do
             echo "Legacy migration pass $attempt"
             psql -X -v ON_ERROR_STOP=1 -f supabase/staged/20261126170000_legacy_tenant_permissions.sql
