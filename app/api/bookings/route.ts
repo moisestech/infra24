@@ -234,8 +234,8 @@ export async function POST(request: NextRequest) {
           meeting_code: meetingCode,
           meeting_platform: resource.metadata?.meeting_platform || 'google_meet'
         },
-        created_by_clerk_id: 'public_booking',
-        updated_by_clerk_id: 'public_booking'
+        created_by: 'public_booking',
+        updated_by: 'public_booking'
       })
       .select()
       .single()
