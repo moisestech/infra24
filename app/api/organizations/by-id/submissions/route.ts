@@ -1,3 +1,4 @@
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { createClient } from '@/lib/supabase';
@@ -9,13 +10,10 @@ export async function GET(
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
     const { orgId } = await params;
+    const access = await requireOrganizationStaff(orgId);
+    if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status, headers: { 'Cache-Control': 'private, no-store' } });
+    const supabase = access.db;
     const { searchParams } = new URL(request.url);
     
     const formId = searchParams.get('form_id');
@@ -35,7 +33,7 @@ export async function GET(
         submission_reviews(*),
         submission_comments(*)
       `)
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -70,7 +68,7 @@ export async function GET(
         total: count,
         totalPages: Math.ceil((count || 0) / limit)
       }
-    });
+    }, { headers: { 'Cache-Control': 'private, no-store' } });
 
   } catch (error) {
     console.error('Error in submissions GET:', error);
@@ -112,11 +110,17 @@ export async function POST(
       .from('submission_forms')
       .select('*')
       .eq('id', form_id)
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
       .single();
 
     if (formError || !form) {
       return NextResponse.json({ error: 'Form not found' }, { status: 404 });
+    }
+
+    // A private form cannot be submitted by an arbitrary signed-in user.
+    if (form.is_public !== true) {
+      const access = await requireOrganizationStaff(orgId);
+      if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
     }
 
     // Check if form is active and not past deadline
@@ -152,7 +156,7 @@ export async function POST(
     const { data: submission, error } = await supabase
       .from('submissions')
       .insert({
-        organization_id: orgId,
+        org_id: orgId,
         form_id,
         user_id: userId,
         title,

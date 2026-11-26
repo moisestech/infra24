@@ -1,6 +1,5 @@
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { createClient } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,13 +8,10 @@ export async function GET(
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
     const { orgId } = await params;
+    const access = await requireOrganizationStaff(orgId);
+    if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status, headers: { 'Cache-Control': 'private, no-store' } });
+    const supabase = access.db;
     const { searchParams } = new URL(request.url);
     
     const type = searchParams.get('type');
@@ -27,7 +23,7 @@ export async function GET(
     let query = supabase
       .from('submission_forms')
       .select('*')
-      .eq('organization_id', orgId)
+      .eq('org_id', orgId)
       .order('created_at', { ascending: false });
 
     if (type) {
@@ -53,7 +49,7 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to fetch submission forms' }, { status: 500 });
     }
 
-    return NextResponse.json({ forms });
+    return NextResponse.json({ forms }, { headers: { 'Cache-Control': 'private, no-store' } });
 
   } catch (error) {
     console.error('Error in submission forms GET:', error);
@@ -66,13 +62,11 @@ export async function POST(
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
     const { orgId } = await params;
+    const access = await requireOrganizationStaff(orgId);
+    if (!access.ok) return NextResponse.json({error:access.error},{status:access.status});
+    const supabase = access.db;
+    const userId = access.userId;
     const body = await request.json();
 
     const {
@@ -98,23 +92,11 @@ export async function POST(
       }, { status: 400 });
     }
 
-    // Check if user has permission to create forms for this organization
-    const { data: membership } = await supabase
-      .from('org_memberships')
-      .select('role')
-      .eq('org_id', orgId)
-      .eq('user_id', userId)
-      .single();
-
-    if (!membership || !['admin', 'manager'].includes(membership.role)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
-    }
-
     // Create submission form
     const { data: form, error } = await supabase
       .from('submission_forms')
       .insert({
-        organization_id: orgId,
+        org_id: orgId,
         title,
         description,
         type,
