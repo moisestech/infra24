@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'
 
 export default function PortalProjectPage({ params }: { params: { jobCode: string } }) {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) {
     redirect(`/sign-in?redirect_url=${encodeURIComponent(`/portal/projects/${params.jobCode}`)}`)
   }

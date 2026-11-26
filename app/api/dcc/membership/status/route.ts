@@ -28,7 +28,7 @@ function safeStatus(state: unknown): PublicState {
  * Do not use to prove approval for directory access; that has its own gate.
  */
 export async function GET() {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Sign in required' }, { status: 401, headers: noStore })
 
   try {

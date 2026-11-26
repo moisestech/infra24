@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
-    const {userId} = auth()
+    const {userId} = await auth()
     if (!userId) throw new MemberAccessError(401,'sign_in_required')
     const {code} = await identityRequest(request,ownerProof)
     return NextResponse.json(await proveOwnerIdentity(userId,code), {headers:PRIVATE_HEADERS})
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const {userId} = auth()
+    const {userId} = await auth()
     if (!userId) throw new MemberAccessError(401,'sign_in_required')
     return NextResponse.json(await ownerIdentityCase(userId), {headers:PRIVATE_HEADERS})
   } catch (error) { return identityError(error) }

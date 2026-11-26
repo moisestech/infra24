@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
 }
 
 async function authorizedBooking(id: unknown) {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) return { response: error('Sign in required', 401) }
   if (typeof id !== 'string' || !/^[0-9a-f-]{36}$/i.test(id)) {
     return { response: error('Valid booking ID required', 400) }
