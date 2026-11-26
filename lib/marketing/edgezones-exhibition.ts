@@ -1,13 +1,11 @@
 import { normalizeSuggestedQuestionKey } from '@/lib/memory-agent/normalize-suggested-question-key'
 import type { MemoryAgentGalleryImage } from '@/types/memory-agent'
-import { DCC_MIAMI_LOGO_URL_LIGHT } from '@/lib/marketing/cdc-brand'
 import {
   EDGE_ZONES_GALLERY_MARK_URL,
   JORDAN_HORTON_PORTRAIT_URL,
   edgeZonesNetworkIndex,
   staticProfilesToArtistProfiles,
 } from '@/lib/marketing/edgezones-network-index'
-import { edgeZonesGalleryForMemoryAgent } from '@/lib/marketing/edgezones-media'
 
 export type EdgeZonesExhibitionConfig = {
   key: string
@@ -69,7 +67,7 @@ export const TOUCHING_GRASS_EXHIBITION: EdgeZonesExhibitionConfig = {
       fit: 'cover',
     },
     digital: {
-      url: DCC_MIAMI_LOGO_URL_LIGHT,
+      url: '',
       alt: 'Former DCC concept image — not an approved partner',
       fit: 'contain',
     },
@@ -79,7 +77,7 @@ export const TOUCHING_GRASS_EXHIBITION: EdgeZonesExhibitionConfig = {
   ctaUrl: 'https://edgezones.org',
   artistNames: EXHIBITION_ARTIST_NAMES,
   curatorialBlurb: JORDAN_HORTON_CURATOR_STATEMENT,
-  spokenAnswer: `Touching Grass is a proposed group exhibition at Edge Zones Gallery. The final roster and exhibition details require organizer confirmation. Jordan Horton writes: "${JORDAN_HORTON_CURATOR_STATEMENT.slice(0, 120)}…" Featuring ${EXHIBITION_ARTIST_NAMES.join(', ')}.`,
+  spokenAnswer: 'Touching Grass is a proposed exhibition at Edge Zones. For confirmed information, consult the gallery directly. DCC is not an exhibition organizer.',
   displayAnswer: `Touching Grass (working title)\n\nProposed at Edge Zones Gallery. Institutional information, curatorial details, roster, and dates should be verified with Edge Zones directly. DCC Miami is not an institutional partner.\n\nOfficial venue: https://edgezones.org`,
   followUps: [
     'Who is curating Touching Grass?',
