@@ -18,7 +18,7 @@ suite('Passport application store against disposable PostgREST', () => {
     const localFetch: typeof fetch = (input, init) => {
       const target = new URL(String(input))
       if (target.origin !== url || !target.pathname.startsWith('/rest/v1/')) throw new Error('Nonlocal request refused')
-      target.pathname = target.pathname.replace(/^\/rest\/v1/, '')
+      target.pathname = target.pathname.slice('/rest/v1'.length)
       const headers = new Headers(init?.headers)
       headers.delete('authorization')
       headers.delete('apikey')
@@ -48,7 +48,7 @@ suite('Passport application store against disposable PostgREST', () => {
       global.fetch = (input, init) => {
         const target = new URL(String(input))
         if (target.origin !== url || !target.pathname.startsWith('/rest/v1/')) throw new Error('Nonlocal request refused')
-        target.pathname = target.pathname.replace(/^\\/rest\\/v1/, '')
+        target.pathname = target.pathname.slice('/rest/v1'.length)
         const headers = new Headers(init?.headers)
         headers.delete('authorization')
         headers.delete('apikey')
