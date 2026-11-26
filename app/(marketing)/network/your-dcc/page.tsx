@@ -5,5 +5,5 @@ export default function YourDccPage(){
   const membershipLive=process.env.DCC_MEMBER_EVENT_CAPTURE_ENABLED==='true' &&
     process.env.DCC_MEMBER_RECONCILIATION_ENABLED==='true' &&
     process.env.DCC_MEMBER_PROFILE_ENABLED==='true'
-  return <YourDccHome membershipLive={membershipLive}/>
+  return <YourDccHome membershipLive={membershipLive} identityLive={process.env.DCC_STEWARD_IDENTITY_RESOLUTION_ENABLED==='true'}/>
 }

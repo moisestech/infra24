@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { DccIdentityReview } from './DccIdentityReview'
 import { INTERESTS } from '@/lib/dcc/community/atlas'
 import { slugFromName } from '@/lib/dcc/membership/steward-publication-schema'
 
@@ -19,7 +20,7 @@ type Request = {
     links:{label:string,url:string}[]
   }
 }
-export function DccStewardReview({canWrite}:{canWrite:boolean}) {
+export function DccStewardReview({canWrite,canResolveIdentity=false}:{canWrite:boolean;canResolveIdentity?:boolean}) {
   const [items,setItems]=useState<Request[]>([])
   const [status,setStatus]=useState<'loading'|'ready'|'unavailable'>('loading')
   const [message,setMessage]=useState('')
@@ -83,6 +84,7 @@ export function DccStewardReview({canWrite}:{canWrite:boolean}) {
         'Publication decisions are disabled until the database and provider acceptance tests pass. You can inspect the private review queue without publishing.'}
     </div>
     {message && <p role="status" className="mt-4 rounded-lg border px-4 py-3 text-sm">{message}</p>}
+    {canResolveIdentity&&<DccIdentityReview/>}
     <div className="mt-6 flex items-center justify-between gap-3">
       <p className="text-sm">{status==='ready'?items.length+' requests awaiting review':'Review queue'}</p>
       <button onClick={()=>void load()} className="min-h-11 rounded-full border px-5 py-2 text-sm">Refresh</button>

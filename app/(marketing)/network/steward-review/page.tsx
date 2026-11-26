@@ -6,5 +6,5 @@ export default function DccStewardReviewPage() {
   // Authorization is checked again by the write endpoint.
   const canWrite=process.env.DCC_STEWARD_REVIEW_ENABLED==='true' &&
     process.env.DCC_STEWARD_PUBLICATION_ENABLED==='true'
-  return <DccStewardReview canWrite={canWrite}/>
+  return <DccStewardReview canWrite={canWrite} canResolveIdentity={process.env.DCC_STEWARD_REVIEW_ENABLED==='true' && process.env.DCC_STEWARD_IDENTITY_RESOLUTION_ENABLED==='true'}/>
 }

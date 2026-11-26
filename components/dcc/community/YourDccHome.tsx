@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { DccOwnerIdentityProof } from './DccIdentityReview'
 import { useEffect, useState } from 'react'
 
 type State = 'checking'|'signed_out'|'not_available'|'pending_sync'|'verification_required'|
@@ -18,7 +19,7 @@ const labels:Record<State,{title:string;description:string}>={
   restricted:{title:'Your membership needs attention',description:'Profile editing is unavailable in this account state. Contact DCC to resolve an identity or membership issue.'},
   unavailable:{title:'Membership status unavailable',description:'Your account remains unchanged. You can explore the public network while we verify the service.'},
 }
-export function YourDccHome({membershipLive}:{membershipLive:boolean}) {
+export function YourDccHome({membershipLive,identityLive=false}:{membershipLive:boolean;identityLive?:boolean}) {
   const [state,setState]=useState<State>(membershipLive?'checking':'not_available')
   useEffect(()=>{
     if(!membershipLive)return
@@ -59,6 +60,7 @@ export function YourDccHome({membershipLive}:{membershipLive:boolean}) {
         <p className="font-mono text-xs uppercase tracking-widest text-[#607d6c]">Membership</p>
         <h2 className="mt-3 text-2xl font-medium">{current.title}</h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#52685d]">{current.description}</p>
+        {identityLive&&(state==='identity_review'||state==='pending_review')&&<DccOwnerIdentityProof/>}
         {state==='signed_out'&&<Link href="/sign-in?redirect_url=%2Fnetwork%2Fyour-dcc" className="mt-5 inline-flex min-h-[44px] items-center rounded-full bg-[#265b45] px-6 text-sm font-semibold text-white">Sign in</Link>}
         {state==='pending_sync'&&<p className="mt-4 text-xs text-[#61776b]">You do not need to create another account. Membership status will update after provider synchronization.</p>}
       </section>

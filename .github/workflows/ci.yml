@@ -29,6 +29,7 @@ jobs:
             __tests__/lib/dcc-membership-lifecycle.test.ts \
             __tests__/lib/dcc-passport-owner.test.ts \
             __tests__/lib/dcc-steward-review.test.ts \
+            __tests__/lib/dcc-founder-identity.test.ts \
             __tests__/lib/dcc-steward-identity-queue.test.ts \
             __tests__/lib/dcc-steward-publication.test.ts \
             __tests__/lib/dcc-steward-publication-service.test.ts \
@@ -71,12 +72,15 @@ jobs:
           for migration in \
             supabase/migrations/20261124130727_dcc_platform_member_event_ledger_20261122220000.sql \
             supabase/migrations/20261124130801_dcc_private_profile_and_sculpture_snapshots_20261122233000.sql \
+            supabase/migrations/20261124130802_dcc_member_reconciliation_queue_20261122235000.sql \
             supabase/migrations/20261125205617_dcc_steward_publication_grants_20261125214000.sql \
-            supabase/migrations/20261126021500_dcc_owner_passport_revision_cas.sql
+            supabase/migrations/20261126021500_dcc_owner_passport_revision_cas.sql \
+            supabase/migrations/20261126110000_dcc_founder_identity_review.sql
           do
             psql -v ON_ERROR_STOP=1 -f "$migration"
           done
           psql -v ON_ERROR_STOP=1 -f supabase/tests/dcc_owner_passport_revision_cas.sql
+          psql -v ON_ERROR_STOP=1 -f supabase/tests/dcc_founder_identity_review.sql
           python3 -m venv "$RUNNER_TEMP/dcc-sql"
           "$RUNNER_TEMP/dcc-sql/bin/pip" install 'psycopg[binary]==3.2.13'
           "$RUNNER_TEMP/dcc-sql/bin/python" supabase/tests/dcc_concurrency.py
