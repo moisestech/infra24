@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { EditorialDetail } from '@/components/dcc/culture/EditorialDetail';
@@ -68,12 +69,12 @@ export default async function JournalPostPage({ params }: Props) {
         </p>
       </Section>
       <Section className={`${cdcSectionPaper} pb-16`}>
-        <a
+        <Link
           href="/journal"
           className="text-sm font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
         >
           ← Journal home
-        </a>
+        </Link>
       </Section>
     </>
   );

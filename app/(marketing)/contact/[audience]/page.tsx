@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { PageHero, Section } from '@/components/marketing/cdc';
@@ -34,9 +35,9 @@ export default function ContactAudiencePage({ params }: Props) {
           <span className="font-mono text-neutral-800">[{def.title}]</span>
         </p>
         <p className="mt-6 text-sm">
-          <a href="/contact" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
+          <Link href="/contact" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
             ← All contact paths
-          </a>
+          </Link>
         </p>
       </Section>
     </>
