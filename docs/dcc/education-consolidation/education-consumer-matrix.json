@@ -1,0 +1,401 @@
+{
+  "schema_version": 1,
+  "status": "filename-scoped static route inventory; no exploitation or remediation performed",
+  "source_commit": "dae0ca943bdaa613db5d3dfea0d53d6c996cd21b",
+  "coverage": {
+    "matched_api_files": 31,
+    "mapped_api_files": 31,
+    "adjacent_dynamic_consumers": "not exhaustive; see Sprint 4 report"
+  },
+  "matrix": [
+    {
+      "path": "app/api/admin/workshop-sharing/[id]/route.ts",
+      "source_blob_sha": "0216405255a86524cd5151d75e6dd201caf69646",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ],
+      "intended_audience": "platform steward",
+      "static_review": "legacy role/relations absent",
+      "proposed_contract": "hold; version-scoped grant/revocation",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/admin/workshop-sharing/route.ts",
+      "source_blob_sha": "9aca4344d0046741d81c547266bb9dded3220be2",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "platform steward",
+      "static_review": "legacy role/relations absent",
+      "proposed_contract": "hold; explicit rights approval",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/analytics/workshops/route.ts",
+      "source_blob_sha": "9f474c47ddc184bcf869ce5d4bc87054f53cabbb",
+      "methods": [
+        "GET"
+      ],
+      "intended_audience": "org staff",
+      "static_review": "session; tenant authorization review",
+      "proposed_contract": "aggregate DTO; server-derived org scope",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/announcements/workshop/route.ts",
+      "source_blob_sha": "e8a558c75df57e0e35f68b29bd80341865bdc696",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "org member/staff",
+      "static_review": "membership; role check on creation; active review",
+      "proposed_contract": "tenant role and publish permissions",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/content/workshops/[workshopId]/chapters/[chapterSlug]/route.ts",
+      "source_blob_sha": "a57071a7a90d31429a33b1a7100cc777a12ca383",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "staff editor",
+      "static_review": "session only; legacy filesystem authoring",
+      "proposed_contract": "retire runtime write; Git-reviewed authoring; safe scoped reads",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/courses/[courseId]/enrollments/route.ts",
+      "source_blob_sha": "be8fba13676bc1f9b7fe5ab8c34e0896cc70e398",
+      "methods": [
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "intended_audience": "learner/staff",
+      "static_review": "session; partial membership checks; absent relation",
+      "proposed_contract": "hold; canonical offering enrollment and ownership",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/courses/[courseId]/lessons/route.ts",
+      "source_blob_sha": "fb221957794cc534c109288613fc39c3d3ccb26a",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "learner/staff",
+      "static_review": "session; role check on create; absent relation",
+      "proposed_contract": "hold; offering/lesson tenant binding",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/courses/route.ts",
+      "source_blob_sha": "5b4089982443f00dda4cf883b8f68fce49c05822",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "member/staff",
+      "static_review": "active membership and staff create; absent relation",
+      "proposed_contract": "hold parallel course model",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/learn/workshops/[workshopId]/chapters/[chapterSlug]/route.ts",
+      "source_blob_sha": "411adfd968b1189ffd1fd908d77919e821d7ad8f",
+      "methods": [
+        "GET"
+      ],
+      "intended_audience": "approved public or entitled member",
+      "static_review": "session middleware; disk resolver; no explicit publication check",
+      "proposed_contract": "central version/chapter access and safe renderer",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/learn/workshops/[workshopId]/chapters/route.ts",
+      "source_blob_sha": "164612f7e334cf28ca313c6074da530681053108",
+      "methods": [
+        "GET"
+      ],
+      "intended_audience": "approved public or entitled member",
+      "static_review": "session middleware; disk resolver",
+      "proposed_contract": "same policy as detail, no draft metadata",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/marketing/workshops/[slug]/chapters/route.ts",
+      "source_blob_sha": "85da3c7df3d9676019a61afec99728d80c51422b",
+      "methods": [
+        "GET"
+      ],
+      "intended_audience": "public",
+      "static_review": "public slug helper",
+      "proposed_contract": "exact approved chapter manifest",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/workshop-categories/vote/route.ts",
+      "source_blob_sha": "eea88e6efef7cbbd507a034f1e75baac52a987f8",
+      "methods": [
+        "POST"
+      ],
+      "intended_audience": "verified member",
+      "static_review": "caller identity; missing relation",
+      "proposed_contract": "hold; server identity and membership",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/workshop-categories/votes/route.ts",
+      "source_blob_sha": "e0505e89dbc75728c60eabeeeacf96925a0217a3",
+      "methods": [
+        "GET"
+      ],
+      "intended_audience": "org member/staff aggregate",
+      "static_review": "privileged read; absent relation",
+      "proposed_contract": "hold; aggregate-only projection",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/workshops/[id]/route.ts",
+      "source_blob_sha": "50ec41b218db6caaf342b9d0a6a0178f90d16282",
+      "methods": [
+        "GET"
+      ],
+      "intended_audience": "public DTO or authorized member/staff",
+      "static_review": "privileged org/id query; no publication/role check",
+      "proposed_contract": "explicit public projection vs staff detail",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/workshops/analytics/route.ts",
+      "source_blob_sha": "22c68517140ebcf56f9c07bfeb4200bf5c94ced4",
+      "methods": [
+        "GET"
+      ],
+      "intended_audience": "org staff",
+      "static_review": "privileged aggregate; no explicit auth/role",
+      "proposed_contract": "staff tenant guard; privacy-safe aggregate",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/workshops/route.ts",
+      "source_blob_sha": "e33a0dc1d629b536b9dac676bba21f6f6f2a02e6",
+      "methods": [
+        "GET"
+      ],
+      "intended_audience": "public DTO or authorized member/staff",
+      "static_review": "privileged org list; no publication/role check",
+      "proposed_contract": "split public and private projections",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/organizations/by-slug/[slug]/workshops/by-slug/[workshopSlug]/route.ts",
+      "source_blob_sha": "862144e5997330afd426ae2f25fe62a65a9e37a5",
+      "methods": [
+        "GET"
+      ],
+      "intended_audience": "public",
+      "static_review": "privileged tenant/slug lookup without publication filter",
+      "proposed_contract": "validated slug and approved public DTO",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/test-workshop-email/route.ts",
+      "source_blob_sha": "a77bef81df0a50059cd8ab2954d323c367e1275b",
+      "methods": [
+        "POST"
+      ],
+      "intended_audience": "isolated authorized test operator",
+      "static_review": "session; outbound mail",
+      "proposed_contract": "disable in production, synthetic sink",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshop-live-sessions/[code]/route.ts",
+      "source_blob_sha": "30c009f002e21561b83a69ae55853e93b8aa949a",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "intended_audience": "join participant / verified facilitator",
+      "static_review": "public route; session store; role separation unproven",
+      "proposed_contract": "preserve join/read; facilitator authority on writes",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshop-live-sessions/route.ts",
+      "source_blob_sha": "e9f56a829adacea0ee68d90c19867c08ce14482d",
+      "methods": [
+        "POST"
+      ],
+      "intended_audience": "authorized facilitator",
+      "static_review": "public route; session store fallback",
+      "proposed_contract": "authorized creation; rate limits, isolation",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshop-registrations/route.ts",
+      "source_blob_sha": "5e2ed680467b94e5218912578a55ed5733b7c854",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "learner/staff",
+      "static_review": "session and membership; missing relations",
+      "proposed_contract": "hold; self/staff separation, transactional capacity",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshop-reminders/route.ts",
+      "source_blob_sha": "6405a019f204408d35d51383274cf7f119d80b1b",
+      "methods": [
+        "POST"
+      ],
+      "intended_audience": "authorized scheduler/staff",
+      "static_review": "session; mail side effect",
+      "proposed_contract": "tenant-role or scoped worker, dedupe, mail sink",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshops/[id]/calendar/route.ts",
+      "source_blob_sha": "10e50560711e2bf71032226676b8c2a8600c3c11",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "public event or owner registration",
+      "static_review": "session; registration reference not owner-bound in inspected query",
+      "proposed_contract": "public schedule DTO; personal export owner/staff only",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshops/[id]/chapters/[chapterSlug]/content/route.ts",
+      "source_blob_sha": "efd5d7f46662664952fd76de09ccaa3009de491d",
+      "methods": [
+        "GET"
+      ],
+      "intended_audience": "approved public or entitled member",
+      "static_review": "privileged parent/child lookup and filesystem; no explicit publication check",
+      "proposed_contract": "central chapter gate and safe rendering",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshops/[id]/chapters/route.ts",
+      "source_blob_sha": "6478c5365da17cce65001a9d30b93d49f5bba427",
+      "methods": [
+        "POST"
+      ],
+      "intended_audience": "org editor",
+      "static_review": "privileged legacy insert; absent relation",
+      "proposed_contract": "hold write; authorize and validate canonical chapter index",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshops/[id]/enable-learn/route.ts",
+      "source_blob_sha": "e5fcdb5e02c3fc8e2b8680cc510d306dfe618692",
+      "methods": [
+        "POST"
+      ],
+      "intended_audience": "org editor",
+      "static_review": "privileged mutation; no explicit role",
+      "proposed_contract": "staff authorization and reviewed publication transition",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshops/[id]/interest/route.ts",
+      "source_blob_sha": "20b7123c52df22a2c3464454d1c1b1db6614d650",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "verified member",
+      "static_review": "session; absent interest relation",
+      "proposed_contract": "hold; verified actor and offering policy",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshops/[id]/progress/route.ts",
+      "source_blob_sha": "654d5679064b587f06c86b3a1b76c52c3af0fe2e",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "learner owner",
+      "static_review": "session; service role; parent/enrollment validation gap",
+      "proposed_contract": "own enrollment, parent integrity, validated idempotent progress",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshops/[id]/route.ts",
+      "source_blob_sha": "630922198b21dbd8e5213db80ba0722eaa32807e",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "intended_audience": "public DTO / org staff",
+      "static_review": "GET lacks publication/role; PUT/DELETE active membership + admin",
+      "proposed_contract": "split read; preserve scoped writes and validate fields",
+      "priority": "P0",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshops/[id]/sessions/route.ts",
+      "source_blob_sha": "fdfa56deda79e7e0518d0e534d0f5d75db27edd1",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "public schedule / authorized scheduler",
+      "static_review": "session; admin create; booking side effects and absent session relation",
+      "proposed_contract": "hold create; verify resource tenant and atomic booking",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    },
+    {
+      "path": "app/api/workshops/route.ts",
+      "source_blob_sha": "a6d5d221362682bdd35f2cb997468cc383ac6acd",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "intended_audience": "active member / org staff",
+      "static_review": "active membership; admin creation; legacy field drift",
+      "proposed_contract": "preserve role checks; draft staff-only and schema DTO",
+      "priority": "P1",
+      "verification": "static only; runtime tests pending"
+    }
+  ]
+}
