@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate amount
-    if (amount <= 0) {
+    if (typeof amount !== 'number' || !Number.isFinite(amount) || amount <= 0) {
       return NextResponse.json(
         { error: 'Amount must be greater than 0' },
         { status: 400 }
@@ -38,7 +39,8 @@ export async function POST(request: NextRequest) {
         amount,
         message: message || null,
         is_anonymous: is_anonymous || false,
-        status: status || 'pending',
+        // An anonymous client can only create a pending intent, never mark money as paid.
+        status: 'pending',
         metadata: {}
       })
       .select()
@@ -66,6 +68,8 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const orgId = searchParams.get('org_id');
+    const access = await requireOrganizationStaff(orgId);
+    if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
     const artistId = searchParams.get('artist_id');
     const status = searchParams.get('status');
 
@@ -75,11 +79,9 @@ export async function GET(request: NextRequest) {
         *,
         artist_profiles!inner(name, profile_image)
       `)
-      .order('created_at', { ascending: false });
-
-    if (orgId) {
-      query = query.eq('org_id', orgId);
-    }
+      .eq('org_id', orgId!)
+      .order('created_at', { ascending: false })
+      .limit(100);
 
     if (artistId) {
       query = query.eq('artist_profile_id', artistId);
