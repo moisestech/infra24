@@ -13,14 +13,14 @@ export async function POST(
     const { id: bookingId } = await params
     const { token, start_time, end_time, notes } = await request.json()
 
-    if (!token) {
+    if (typeof token !== 'string' || !token.trim()) {
       return NextResponse.json(
         { error: 'Reschedule token is required' },
         { status: 400 }
       )
     }
 
-    if (!start_time || !end_time) {
+    if (typeof start_time !== 'string' || typeof end_time !== 'string' || !Number.isFinite(Date.parse(start_time)) || !Number.isFinite(Date.parse(end_time)) || Date.parse(end_time) <= Date.parse(start_time)) {
       return NextResponse.json(
         { error: 'New start_time and end_time are required' },
         { status: 400 }
@@ -88,13 +88,17 @@ export async function POST(
     }
 
     // Simple availability check - in a real system, you'd use the availability API
-    const { data: conflictingBookings } = await supabaseAdmin
+    const { data: conflictingBookings, error: conflictError } = await supabaseAdmin
       .from('bookings')
       .select('id')
       .eq('resource_id', resource.id)
+      .eq('org_id', booking.org_id)
       .eq('status', 'confirmed')
       .neq('id', bookingId)
-      .or(`and(start_time.lt.${end_time},end_time.gt.${start_time})`)
+      .lt('start_time', new Date(end_time).toISOString())
+      .gt('end_time', newStartTime.toISOString())
+
+    if (conflictError) return NextResponse.json({error:'Availability check failed'},{status:503})
 
     if (conflictingBookings && conflictingBookings.length > 0) {
       return NextResponse.json(
@@ -145,6 +149,9 @@ export async function POST(
         }
       })
       .eq('id', bookingId)
+      .eq('org_id', booking.org_id)
+      .eq('metadata->>reschedule_token', token)
+      .eq('status', booking.status)
       .select()
       .single()
 
