@@ -3,7 +3,9 @@
 // Keep all build-critical options here (Vercel reads this file).
 
 const nextConfig = {
-  transpilePackages: ['three', '@react-three/fiber'],
+  // Bundle the MDX RSC runtime with Next's App Router React renderer.
+  // External Node resolution can otherwise return React 18 elements to RSC.
+  transpilePackages: ['three', '@react-three/fiber', 'next-mdx-remote'],
 
   typescript: {
     // Repo has TS errors in tests/features outside the app bundle; Vercel runs `tsc` during build
