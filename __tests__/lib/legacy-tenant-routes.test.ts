@@ -2,6 +2,7 @@
 import { NextRequest } from 'next/server'
 import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { GET, POST } from '@/app/api/organizations/[orgId]/resources/route'
+import { POST as POSTById } from '@/app/api/organizations/by-id/resources/route'
 import { PATCH } from '@/app/api/organizations/[orgId]/bookings/[bookingId]/route'
 jest.mock('@/lib/security/require-organization-staff', () => ({ requireOrganizationStaff: jest.fn() }))
 const guard = requireOrganizationStaff as jest.Mock
@@ -52,5 +53,26 @@ test('resource creation rejects invalid capacity without database access', async
   const from = jest.fn()
   guard.mockResolvedValue({ok:true,orgId,db:{from}})
   expect((await POST(createResource({title:'Test',type:'equipment',capacity:0}),{params})).status).toBe(400)
+  expect(from).not.toHaveBeenCalled()
+})
+
+const byIdResource = (body: object) => new NextRequest('http://localhost/api/test?org_id='+orgId,{method:'POST',body:JSON.stringify(body)})
+test('by-id resource creation uses guarded tenant and private default', async () => {
+  const q = {insert:jest.fn().mockReturnThis(),select:jest.fn().mockReturnThis(),single:jest.fn().mockResolvedValue({data:{id:'synthetic-resource'},error:null})}
+  guard.mockResolvedValue({ok:true,orgId,db:{from:jest.fn().mockReturnValue(q)}})
+  const response = await POSTById(byIdResource({title:' Test ',type:'equipment',org_id:'wrong'}))
+  expect(response.status).toBe(201)
+  expect(response.headers.get('cache-control')).toContain('no-store')
+  expect(guard).toHaveBeenCalledWith(orgId)
+  expect(q.insert).toHaveBeenCalledWith({org_id:orgId,title:'Test',type:'equipment',description:'',capacity:1,is_bookable:false})
+})
+test('by-id resource creation rejects unauthorized staff', async () => {
+  guard.mockResolvedValue({ok:false,status:403,error:'Forbidden'})
+  expect((await POSTById(byIdResource({title:'Test',type:'equipment'}))).status).toBe(403)
+})
+test.each([{title:'Test',type:'equipment',capacity:0},{title:' ',type:'equipment'},{title:'Test',type:'invalid'}])('by-id invalid resource never reaches database', async body => {
+  const from = jest.fn()
+  guard.mockResolvedValue({ok:true,orgId,db:{from}})
+  expect((await POSTById(byIdResource(body))).status).toBe(400)
   expect(from).not.toHaveBeenCalled()
 })
