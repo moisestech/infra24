@@ -14,7 +14,7 @@ export const dynamic='force-dynamic'
  */
 export async function GET() {
   try {
-    requireDccSteward()
+    await requireDccSteward()
     const url=process.env.NEXT_PUBLIC_SUPABASE_URL
     const key=process.env.SUPABASE_SERVICE_ROLE_KEY
     if(!url||!key)throw new MemberAccessError(503,'review_store_unavailable')

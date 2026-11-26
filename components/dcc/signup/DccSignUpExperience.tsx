@@ -55,13 +55,13 @@ export function DccSignUpExperience({ membershipLive }: { membershipLive: boolea
           </div>
           
           <SignUp 
-            redirectUrl={redirectTo}
+            forceRedirectUrl={redirectTo}
             appearance={{
               variables: {
                 colorPrimary: '#3b82f6',
                 colorBackground: '#000000',
-                colorText: '#ffffff',
-                colorTextSecondary: '#9ca3af'
+                colorForeground: '#ffffff',
+                colorMutedForeground: '#9ca3af'
               },
               elements: {
                 rootBox: "mx-auto",
