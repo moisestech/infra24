@@ -3,6 +3,7 @@ import concurrent.futures
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import runpy
 import subprocess
@@ -21,6 +22,12 @@ ENV = {"PATH": os.environ["PATH"], "PGPASSWORD": "archive-test-only",
 def cmd(program, database=DB):
     if database not in (DB, RESTORE):
         raise ValueError("disposable databases only")
+    container = os.environ.get("DCC_ARCHIVE_TEST_CONTAINER")
+    if container:
+        if not re.fullmatch(r"[a-f0-9]{12,64}", container):
+            raise ValueError("invalid disposable container id")
+        return ["docker", "exec", "-i", "-e", "PGPASSWORD=archive-test-only", container, program,
+                "-h", "127.0.0.1", "-p", "5432", "-U", "postgres", "-d", database]
     return [program, "-h", "127.0.0.1", "-p", "55432", "-U", "postgres", "-d", database]
 
 
