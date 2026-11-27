@@ -15,7 +15,8 @@ export function generateStaticParams() {
   return listPublicProjects().map((p) => ({ slug: p.slug }))
 }
 
-export function generateMetadata({ params }: { params: Params }): Metadata {
+export async function generateMetadata({ params: pendingParams }: { params: Promise<Params> }): Promise<Metadata> {
+  const params = await pendingParams
   const project = getPublicProject(params.slug)
   if (!project) return { title: 'Fabrication project' }
   return {
@@ -28,7 +29,8 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   }
 }
 
-export default function FabricateProjectDetailPage({ params }: { params: Params }) {
+export default async function FabricateProjectDetailPage({ params: pendingParams }: { params: Promise<Params> }) {
+  const params = await pendingParams
   const project = getPublicProject(params.slug)
   if (!project) notFound()
   const economics = projectEconomics(project)

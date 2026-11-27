@@ -352,7 +352,7 @@ export function ClientQuoteBreakdown({
           {lines.map((line, index) => (
             <span key={line.id} className="flex items-center gap-2">
               <span className="rounded-lg border border-[var(--cdc-border)] bg-neutral-50 px-2 py-1 dark:bg-neutral-900/40">
-                {line.shortLabel} {formatUsd(line.amount)}
+                {line.shortLabel} {formatLineAmount(line)}
               </span>
               {index < lines.length - 1 ? (
                 <span aria-hidden className="text-neutral-400">

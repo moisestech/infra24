@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto'
-import type { NetworkContact } from '@/lib/network-builder/read-contacts'
+import type { NetworkContact } from '@/lib/network-builder/types'
 import type {
   NetworkReadinessScore,
   ProposedRelationshipAction,

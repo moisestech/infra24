@@ -295,7 +295,7 @@ export function AnnouncementDateDisplay({
       )}
 
       {/* Date Range if multi-day event */}
-      {shouldShowDate && getDateRange(eventDate, eventEndDate) && (
+      {shouldShowDate && eventDate && eventEndDate && getDateRange(eventDate, eventEndDate) && (
         <div 
           className={cn(
             "text-white/40 font-medium tracking-tight mt-1",

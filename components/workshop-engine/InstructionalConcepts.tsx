@@ -12,7 +12,7 @@ import {
   Layers3,
   ListChecks,
   Network,
-  OctagonAlert,
+  AlertOctagon,
   Printer,
   Rotate3d,
   Ruler,
@@ -47,7 +47,7 @@ const ICON_MAP: Record<NonNullable<WorkshopMedia['iconKey']>, LucideIcon> = {
   droplets: Droplets,
   shield: Shield,
   'file-stack': FileStack,
-  'octagon-alert': OctagonAlert,
+  'octagon-alert': AlertOctagon,
   scale: Scale,
   hammer: Hammer,
 }

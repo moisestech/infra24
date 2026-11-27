@@ -4,18 +4,20 @@ import { SupportLayout, Section, CtaBlock } from '@/components/marketing/cdc';
 import { getCdcPageByPath, getSupportPrioritySlugs } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
   return getSupportPrioritySlugs().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const path = `/grants/priorities/${params.slug}`;
   return cdcPageMetadata(path);
 }
 
-export default function SupportPriorityPage({ params }: Props) {
+export default async function SupportPriorityPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const path = `/grants/priorities/${params.slug}`;
   const def = getCdcPageByPath(path);
   if (!def) notFound();

@@ -83,7 +83,6 @@ export function ArtistBookingForm({
 
   const handleSubmit = async (data: ArtistBookingFormData) => {
     try {
-      console.log('🔍 ArtistBookingForm: Submitting booking data:', data)
       setIsSubmitting(true)
       
       // Combine date and time
@@ -105,7 +104,6 @@ export function ArtistBookingForm({
         status: 'pending'
       }
 
-      console.log('🔍 ArtistBookingForm: Final booking data:', bookingData)
       await onSubmit(bookingData)
     } catch (error) {
       console.error('❌ ArtistBookingForm: Error submitting booking:', error)

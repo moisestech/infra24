@@ -8,7 +8,7 @@ type Props = {
 export function DccSignupSuccess({ message, onSubmitAnother }: Props) {
   return (
     <div className="rounded-xl border border-teal-200 bg-teal-50 p-6 text-sm leading-relaxed text-teal-950 dark:border-teal-800 dark:bg-teal-950/40 dark:text-teal-100">
-      <p className="text-base font-semibold">You&apos;re in.</p>
+      <p className="text-base font-semibold">Received for review.</p>
       <p className="mt-2 whitespace-pre-line">{message}</p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link

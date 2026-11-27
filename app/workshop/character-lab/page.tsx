@@ -68,9 +68,10 @@ const outcomes = [
   { kicker: 'AFTERWARD', title: 'A reusable creative workflow', body: 'Take away preparation materials and the tools to continue creating beyond the lab.' },
 ] as const
 
-type Props = { searchParams?: { via?: string; utm_source?: string } }
+type Props = { searchParams?: Promise<{ via?: string; utm_source?: string }> }
 
-export default function CharacterLabConceptPage({ searchParams }: Props) {
+export default async function CharacterLabConceptPage({ searchParams: pendingSearchParams }: Props) {
+  const searchParams = await pendingSearchParams
   const source = (searchParams?.via || searchParams?.utm_source || 'character-lab-direct').slice(0, 120)
 
   return (

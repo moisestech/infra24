@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { ReactNode } from 'react';
 import { PageHero } from './PageHero';
 import { Section } from './Section';
@@ -27,9 +28,9 @@ export function ProgramLayout({ path, title, description, eyebrow, children }: P
           <p className="max-w-2xl text-sm leading-relaxed text-neutral-600">
             Program details and scheduling will appear here as offerings are announced. For
             partnerships or grant-aligned pilots, use{' '}
-            <a href="/contact/partnerships" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
+            <Link href="/contact/partnerships" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
               partnership contact
-            </a>
+            </Link>
             .
           </p>
         </Section>

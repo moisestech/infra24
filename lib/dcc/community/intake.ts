@@ -53,6 +53,7 @@ export function approvedAirtableProfile(fields: Record<string, unknown>): (Atlas
   const practice = Array.isArray(fields['Public Skills']) ? fields['Public Skills'].filter((v): v is string => typeof v === 'string').slice(0, 10) : []
   const interests = Array.isArray(fields['Atlas Interests']) ? fields['Atlas Interests'].filter((v): v is InterestId => typeof v === 'string' && isInterestId(v)) : []
   const links = approvedLinks(fields['Atlas Public Links'])
-  if (!links.length) return null
+  // A portfolio link is helpful but not required for an approved public profile.
+  // Member onboarding should not demand a website before someone is discoverable.
   return { slug, name: name.slice(0, 80), summary: summary.slice(0, 280), practice, interests, links, ...(links[0] ? { website: links[0].url } : {}) }
 }

@@ -132,6 +132,10 @@ function personRole(fields: Record<string, unknown>): string | undefined {
 }
 
 function personEligibleForPublicGraph(fields: Record<string, unknown>): boolean {
+  // Website membership has a separate, revision-bound publication grant. This
+  // legacy CRM graph must never expose those identities via older consent fields.
+  // Approved website-member profiles appear exclusively through the guarded Atlas.
+  if (fields['DCC Website Member Binding ID']) return false
   const consent = asString(fields[F.people.publicProfileConsent])
   const layer = asString(fields[F.people.graphLayer])
   // Missing consent is never public consent. Editorial examples use a separate, explicitly approved projection.
@@ -333,6 +337,7 @@ export function buildCrmGraphElements(
 
   if (includePeople) {
     for (const r of tables.people) {
+      if (visibility === 'public' && !personPassesActiveFilter(r.fields, mode, visibility)) continue
       for (const instId of linkedIds(r.fields[F.people.institution])) {
         const tid = nodeId('institution', instId)
         if (nodes.has(tid)) continue

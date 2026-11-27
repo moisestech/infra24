@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { SaturdayLabMarkdown, SaturdayLabShell } from '@/components/workshop/SaturdayLabShell'
@@ -18,9 +19,9 @@ export default async function SaturdayLabFacilitatorPage() {
     <SaturdayLabShell currentPath="/workshop/saturday-lab/facilitator">
       <p className="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 print:hidden">
         Facilitator-only page. Students should use{' '}
-        <a href="/workshop/saturday-lab" className="font-medium underline">
+        <Link href="/workshop/saturday-lab" className="font-medium underline">
           Start Here
-        </a>{' '}
+        </Link>{' '}
         and printed cheat sheets.
       </p>
       <SaturdayLabMarkdown html={doc.html} />

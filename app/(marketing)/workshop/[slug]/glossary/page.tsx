@@ -8,7 +8,7 @@ import { VcnGlossaryPageClient } from '@/components/vcn-course/VcnGlossaryPageCl
 
 type Props = {
   params: Promise<{ slug: string }>
-  searchParams?: Record<string, string | string[] | undefined>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }
 
 export async function generateStaticParams() {
@@ -28,7 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function VcnGlossaryPage({ params, searchParams }: Props) {
+export default async function VcnGlossaryPage({ params, searchParams: pendingSearchParams }: Props) {
+  const searchParams = await pendingSearchParams
   const { slug: raw } = await params
   const slug = canonicalWorkshopMarketingSlug(decodeURIComponent(raw))
   if (slug !== VIBE_NET_ART_WORKSHOP_SLUG) {

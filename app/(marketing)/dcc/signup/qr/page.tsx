@@ -7,10 +7,11 @@ export const metadata: Metadata = {
 }
 
 type Props = {
-  searchParams?: { source?: string }
+  searchParams?: Promise<{ source?: string }>
 }
 
-export default function DccSignupQrPage({ searchParams }: Props) {
+export default async function DccSignupQrPage({ searchParams: pendingSearchParams }: Props) {
+  const searchParams = await pendingSearchParams
   const source = searchParams?.source?.trim() || 'born-digital-era-may'
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-neutral-100 px-4 py-12 dark:bg-neutral-950">

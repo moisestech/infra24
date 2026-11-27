@@ -9,13 +9,14 @@ import {
   looksLikeUuid,
 } from '@/lib/dcc/culture';
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
   return listArtists().map((artist) => ({ slug: artist.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const artist = getPublishedArtistBySlug(params.slug);
   if (!artist) {
     return { title: looksLikeUuid(params.slug) ? 'Artist profile' : 'Artist' };
@@ -28,7 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default function ArtistSlugPage({ params }: Props) {
+export default async function ArtistSlugPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const artist = getPublishedArtistBySlug(params.slug);
   if (artist) {
     return <ArtistDetail artist={artist} />;

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Badge } from '@/components/ui/badge';
@@ -139,12 +140,12 @@ export function ArtistDirectoryProfileClient({ artistId }: { artistId: string })
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             {error || 'Artist not found'}
           </h1>
-          <a
+          <Link
             href="/artists"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
             Back to Artists
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -155,12 +156,12 @@ export function ArtistDirectoryProfileClient({ artistId }: { artistId: string })
       <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <a
+          <Link
             href="/artists"
             className="inline-flex items-center text-blue-600 hover:text-blue-500 mb-4"
           >
             ← Back to Artists
-          </a>
+          </Link>
         </div>
 
         {/* Artist Header */}

@@ -1,11 +1,12 @@
 import { redirect } from 'next/navigation'
 
 type Props = {
-  searchParams?: Record<string, string | string[] | undefined>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }
 
 /** Canonical short link → network signup (preserves campaign query params). */
-export default function JoinRedirectPage({ searchParams }: Props) {
+export default async function JoinRedirectPage({ searchParams: pendingSearchParams }: Props) {
+  const searchParams = await pendingSearchParams
   const params = new URLSearchParams()
   if (searchParams) {
     for (const [key, value] of Object.entries(searchParams)) {
@@ -18,6 +19,18 @@ export default function JoinRedirectPage({ searchParams }: Props) {
     params.set('utm_medium', 'link')
     params.set('utm_campaign', 'dcc_general')
   }
+  // Once real verified owner membership is enabled, every Join link uses the
+  // same account/Profile journey, preserving campaign context for private audit.
+  if (process.env.DCC_MEMBER_EVENT_CAPTURE_ENABLED === 'true' &&
+      process.env.DCC_MEMBER_RECONCILIATION_ENABLED === 'true' &&
+      process.env.DCC_MEMBER_PROFILE_ENABLED === 'true') {
+    params.set('entry', 'join')
+    const query = params.toString()
+    const destination = '/network/your-dcc' + (query ? '?' + query : '')
+    redirect('/sign-up?redirect_url=' + encodeURIComponent(destination))
+  }
+  // Until then, keep the existing CRM lead-capture route intact and do not
+  // imply that its self-entered email creates an active membership.
   const qs = params.toString()
   redirect(qs ? `/network/signup?${qs}` : '/network/signup')
 }

@@ -5,8 +5,9 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string; requestId: string } }
+  { params: pendingParams }: { params: Promise<{ orgId: string; requestId: string }> }
 ) {
+  const params = await pendingParams
   try {
     console.log('🔍 AppSheet Approve API: Starting POST request')
     console.log('🔍 AppSheet Approve API: orgId =', params.orgId)

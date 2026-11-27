@@ -4,18 +4,15 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import * as Avatar from '@radix-ui/react-avatar'
 import { ArrowUpRight, ExternalLink, Search, UserRoundPlus, RefreshCw } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  INTERESTS, PILOT_PREVIEWS, filterProfiles, PASSPORT_PREVIEW_KEY,
-  readPassportPreview, type InterestId, type PassportPreview, type AtlasProfile,
+  INTERESTS, filterProfiles, type InterestId, type AtlasProfile,
 } from '@/lib/dcc/community/atlas'
 import { PollPulse } from './PollPulse'
 import { NetworkGraphBoundary } from '@/components/dcc/artwork/NetworkGraphBoundary'
 import { PUBLIC_ARTISTS } from '@/lib/dcc/artwork/member-presence'
 import { isDiscoveryChoice, type DiscoveryPollChoiceId } from '@/lib/dcc/artwork/discovery-poll'
 import { INTEREST_POLL_CATEGORIES } from '@/lib/dcc/artwork/people-practice-graph'
-import { AtlasProfileForm } from './AtlasProfileForm'
-import styles from './community.module.css'
 
 const Field = dynamic(() => import('@/components/dcc/artwork/PeopleNetworkField'), {
   ssr: false,
@@ -49,51 +46,45 @@ function Portrait({ profile, size = 'card' }: { profile: AtlasProfile; size?: 'c
 export function CommunityAtlas() {
   const [query, setQuery] = useState('')
   const [interests, setInterests] = useState<InterestId[]>([])
-  const [sourceProfiles, setSourceProfiles] = useState<AtlasProfile[]>(PILOT_PREVIEWS)
-  const [mode, setMode] = useState<'preview' | 'live'>('preview')
-  const [intakeEnabled, setIntakeEnabled] = useState(false)
+  const [sourceProfiles, setSourceProfiles] = useState<AtlasProfile[]>([])
+  const [websitePresenceMarks, setWebsitePresenceMarks] = useState(0)
+  const [mode, setMode] = useState<'preview' | 'live' | 'loading' | 'unavailable'>('loading')
   const [refreshing, setRefreshing] = useState(false)
   const [loadError, setLoadError] = useState('')
   const [selected, setSelected] = useState('moises-sanabria')
   const [graphFocus, setGraphFocus] = useState<GraphSelection>(null)
-  const [showProfileForm, setShowProfileForm] = useState(false)
-  const [showPassport, setShowPassport] = useState(false)
-  const [passport, setPassport] = useState<PassportPreview | null>(null)
-  const [notice, setNotice] = useState('')
-  const profileDialog = useRef<HTMLDialogElement>(null)
-  const passportDialog = useRef<HTMLDialogElement>(null)
   const detailRef = useRef<HTMLDivElement>(null)
   const loadId = useRef(0)
 
-  // Featured editorial profiles always appear. The public API may also return
-  // independently reviewed opt-in profiles, but the graph never maps private CRM IDs.
-  const allProfiles = useMemo(() => [
-    ...sourceProfiles,
-    ...PILOT_PREVIEWS.filter((p) => !sourceProfiles.some((record) => record.slug === p.slug)),
-  ], [sourceProfiles])
+  // Only the most recent successful public feed can populate the directory.
+  const allProfiles = sourceProfiles
   const profiles = useMemo(
     () => filterProfiles(allProfiles, interests, query),
     [allProfiles, interests, query],
   )
   const profile = profiles.find((p) => p.slug === selected) ?? profiles[0] ?? null
+  const isVisiblePublicPerson = (id: string | null) => Boolean(id && allProfiles.some(p=>p.slug===id))
 
   const refreshProfiles = useCallback(async (signal?: AbortSignal) => {
     const load = ++loadId.current
     setRefreshing(true)
     try {
-      const response = await fetch('/api/marketing/community-atlas', { cache: 'no-store', signal })
+      const response = await fetch('/api/dcc/sculpture/public', { cache: 'no-store', signal })
       const data = await response.json()
       if (!response.ok || !Array.isArray(data.profiles) || !['preview', 'live'].includes(data.mode)) {
         throw new Error('Unable to load new profiles')
       }
       if (signal?.aborted || load !== loadId.current) return
       setSourceProfiles(data.profiles)
+      setWebsitePresenceMarks(data.websitePresence?.status === 'coarsened' ? data.websitePresence.markCount : 0)
       setMode(data.mode)
-      setIntakeEnabled(data.intakeEnabled === true)
       setLoadError('')
     } catch {
       if (!signal?.aborted && load === loadId.current) {
-        setLoadError('New profiles are temporarily unavailable. Featured artists are still accessible.')
+        setSourceProfiles([])
+        setWebsitePresenceMarks(0)
+        setMode('unavailable')
+        setLoadError('Public profiles are temporarily unavailable. Please try again.')
       }
     } finally {
       if (load === loadId.current) setRefreshing(false)
@@ -114,8 +105,6 @@ export function CommunityAtlas() {
   }, [refreshProfiles])
 
   useEffect(() => {
-    try { setPassport(readPassportPreview(sessionStorage.getItem(PASSPORT_PREVIEW_KEY))) }
-    catch { /* Private browsing may block local storage. */ }
     const requested = new URL(window.location.href).searchParams.get('profile')
     if (requested && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(requested)) {
       setSelected(requested)
@@ -123,16 +112,9 @@ export function CommunityAtlas() {
     }
   }, [])
 
-  useEffect(() => {
-    if (showProfileForm && profileDialog.current && !profileDialog.current.open) profileDialog.current.showModal()
-  }, [showProfileForm])
-  useEffect(() => {
-    if (showPassport && passportDialog.current && !passportDialog.current.open) passportDialog.current.showModal()
-  }, [showPassport])
-
   function selectProfile(slug: string, scroll = true) {
     setSelected(slug)
-    setGraphFocus(isPublicArtist(slug) ? slug : null)
+    setGraphFocus(isVisiblePublicPerson(slug) ? slug : null)
     const url = new URL(window.location.href)
     url.searchParams.set('profile', slug)
     window.history.replaceState(null, '', url)
@@ -142,7 +124,7 @@ export function CommunityAtlas() {
   }
   function chooseGraphNode(id: GraphSelection) {
     setGraphFocus(id)
-    if (id && isPublicArtist(id)) {
+    if (id && isVisiblePublicPerson(id)) {
       selectProfile(id, false)
     } else if (id?.startsWith('practice-')) {
       const choice = id.slice('practice-'.length)
@@ -160,33 +142,6 @@ export function CommunityAtlas() {
       ? graphFocus.slice(9) as DiscoveryPollChoiceId : null
   function toggleInterest(id: InterestId) {
     setInterests((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
-  }
-  function savePassport(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const draft = readPassportPreview(JSON.stringify({
-      name: String(form.get('name') ?? '').trim(),
-      interests: form.getAll('interests'),
-      visibility: form.get('visibility'),
-    }))
-    if (!draft) { setNotice('Add a display name to save your Passport draft.'); return }
-    setPassport(draft)
-    try {
-      sessionStorage.setItem(PASSPORT_PREVIEW_KEY, JSON.stringify(draft))
-      setNotice('Your Passport draft is saved in this browser. You can use it to start a public profile.')
-    } catch { setNotice('Your Passport draft is available for this visit.') }
-    passportDialog.current?.close()
-    setShowPassport(false)
-  }
-  function clearPassport() {
-    try { sessionStorage.removeItem(PASSPORT_PREVIEW_KEY) } catch { /* Already local-only. */ }
-    setPassport(null)
-    setNotice('Passport draft cleared.')
-  }
-  function continueToProfile() {
-    passportDialog.current?.close()
-    setShowPassport(false)
-    setShowProfileForm(true)
   }
 
   return (
@@ -206,16 +161,21 @@ export function CommunityAtlas() {
             <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-[color:var(--dn-muted)]">
               Discover artists, practices and ways to connect across the network.
             </p>
+            {mode === 'preview' ? (
+              <p role="status" className="mt-4 max-w-xl text-sm leading-relaxed text-[color:var(--dn-subtle)]">
+                You’re exploring a curated preview, not the complete DCC member directory. Private community contacts and unapproved profiles are not shown.
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => setShowProfileForm(true)}
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] transition hover:bg-[var(--dn-accent-hover)]">
-              <UserRoundPlus size={17} /> Add your profile
-            </button>
-            <button type="button" onClick={() => setShowPassport(true)}
-              className="rounded-full border border-[color:var(--dn-line)] px-5 py-3 text-sm text-[color:var(--dn-muted)] transition hover:border-[color:var(--dn-line-strong)]">
-              Your Passport
-            </button>
+            <Link href="/network/your-profile"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] transition hover:bg-[var(--dn-accent-hover)]">
+              <UserRoundPlus size={17} /> Explore your profile
+            </Link>
+            <Link href="/join"
+              className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--dn-line)] px-5 py-3 text-sm text-[color:var(--dn-muted)] transition hover:border-[color:var(--dn-line-strong)]">
+              Join DCC
+            </Link>
           </div>
         </header>
 
@@ -226,7 +186,7 @@ export function CommunityAtlas() {
               <p className="mt-1 text-xs text-[color:var(--dn-subtle)]">Circles: people · hexagons: practices · colored lines: poll selections</p>
             </div>
             <div className="h-[420px] w-full sm:h-[540px] lg:h-[560px]">
-              <NetworkGraphBoundary><Field selected={graphFocus} onSelect={chooseGraphNode} /></NetworkGraphBoundary>
+              <NetworkGraphBoundary><Field selected={graphFocus} onSelect={chooseGraphNode} profiles={allProfiles} websitePresenceMarks={websitePresenceMarks} /></NetworkGraphBoundary>
             </div>
             <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 border-t border-[color:var(--dn-line)] p-3 sm:p-4">
               <div className="dn-mobile-scroller flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-[color:var(--dn-line)] bg-[var(--dn-panel)] p-1"
@@ -245,7 +205,7 @@ export function CommunityAtlas() {
                   </button>
                 ))}
               </div>
-              <Link href={graphFocus && isPublicArtist(graphFocus) ? '/network/artwork?person=' + graphFocus : selectedChoice ? '/network/artwork?practice=' + selectedChoice : '/network/artwork'}
+              <Link href={graphFocus && isVisiblePublicPerson(graphFocus) ? '/network/artwork?person=' + graphFocus : selectedChoice ? '/network/artwork?practice=' + selectedChoice : '/network/artwork'}
                 className="inline-flex items-center gap-1 text-xs text-[color:var(--dn-link)] hover:underline">
                 Open artwork <ArrowUpRight size={14} />
               </Link>
@@ -273,10 +233,14 @@ export function CommunityAtlas() {
                     Visit website <ExternalLink size={15} />
                   </a>
                 ) : null}
+                {mode === 'live' && <Link href={'/network/community/' + profile.slug}
+                  className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full border border-[color:var(--dn-line)] px-5 text-sm font-semibold text-[color:var(--dn-link)] hover:border-[color:var(--dn-line-strong)]">
+                  Open shareable profile <ExternalLink size={14} />
+                </Link>}
               </div>
             ) : <p className="mt-7 text-sm text-[color:var(--dn-muted)]">No profile matches those filters.</p>}
             <div className="mt-9 border-t border-[color:var(--dn-line)] pt-5 text-xs leading-relaxed text-[color:var(--dn-subtle)]">
-              Curated artist examples and approved public profiles. New profiles can be submitted for review.
+              {mode === 'preview' ? 'Curated public artist examples only. The complete member directory is not live.' : 'Only independently approved and consented public profiles are shown. New profiles require review.'}
             </div>
           </aside>
         </div>
@@ -354,68 +318,23 @@ export function CommunityAtlas() {
               Give your practice a place in the network.
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-[color:var(--dn-muted)]">
-              Start with your interests. Build a profile, connect to people and develop it as your work changes.
+              Explore your interests and preview your profile. Public listing requires verified ownership, explicit consent and human review.
             </p>
-            {passport ? <p className="mt-4 text-xs text-[color:var(--dn-link)]">Draft for {passport.name} · {passport.interests.length} interests saved in this browser</p> : null}
           </div>
           <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => setShowPassport(true)}
-              className="rounded-full border border-[color:var(--dn-line)] px-5 py-3 text-sm text-[color:var(--dn-ink)] hover:border-[color:var(--dn-line-strong)]">
-              {passport ? 'Edit Passport' : 'Start Passport'}
-            </button>
-            <button type="button" onClick={() => setShowProfileForm(true)}
-              className="rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] hover:bg-[var(--dn-accent-hover)]">
-              Add public profile
-            </button>
-            {passport ? <button type="button" onClick={clearPassport} className="px-2 text-xs text-[color:var(--dn-subtle)] hover:text-[color:var(--dn-ink)]">Clear draft</button> : null}
+            <Link href="/network/your-profile"
+              className="inline-flex min-h-11 items-center rounded-full border border-[color:var(--dn-line)] px-5 py-3 text-sm text-[color:var(--dn-ink)] hover:border-[color:var(--dn-line-strong)]">
+              Open your Passport
+            </Link>
+            <Link href="/join"
+              className="inline-flex min-h-11 items-center rounded-full bg-[var(--dn-accent)] px-5 py-3 text-sm font-semibold text-[color:var(--dn-accent-ink)] hover:bg-[var(--dn-accent-hover)]">
+              Join DCC
+            </Link>
           </div>
         </section>
 
-        <p aria-live="polite" role="status" className="mt-5 text-xs text-[color:var(--dn-link)]">{notice}</p>
       </div>
 
-      {showProfileForm ? (
-        <dialog ref={profileDialog} className={styles.modalShade} onCancel={() => setShowProfileForm(false)} onClose={() => setShowProfileForm(false)} aria-labelledby="atlas-form-title">
-          <section className={styles.passportForm}>
-            <div className={styles.modalTop}>
-              <span className={styles.eyebrow}>Public artist profile</span>
-              <button onClick={() => { profileDialog.current?.close(); setShowProfileForm(false) }} aria-label="Close profile form">Close</button>
-            </div>
-            <AtlasProfileForm enabled={intakeEnabled} initialName={passport?.name} initialInterests={passport?.interests} />
-          </section>
-        </dialog>
-      ) : null}
-
-      {showPassport ? (
-        <dialog ref={passportDialog} className={styles.modalShade} onCancel={() => setShowPassport(false)} onClose={() => setShowPassport(false)} aria-labelledby="passport-title">
-          <section className={styles.passportForm}>
-            <div className={styles.modalTop}>
-              <span className={styles.eyebrow}>Your Passport</span>
-              <button onClick={() => { passportDialog.current?.close(); setShowPassport(false) }} aria-label="Close Passport">Close</button>
-            </div>
-            <h2 id="passport-title">Start with your curiosity.</h2>
-            <p>Choose what you explore. You can carry this draft into your public profile.</p>
-            <form onSubmit={savePassport} key={passport?.name ?? 'new'}>
-              <label>Display name<input name="name" maxLength={80} required defaultValue={passport?.name ?? ''} autoComplete="name" /></label>
-              <fieldset>
-                <legend>Interests</legend>
-                {INTERESTS.map((item) => (
-                  <label key={item.id}><input type="checkbox" name="interests" value={item.id} defaultChecked={passport?.interests.includes(item.id) ?? false} />{item.label}</label>
-                ))}
-              </fieldset>
-              <label>Profile visibility
-                <select name="visibility" defaultValue={passport?.visibility ?? 'private'}>
-                  <option value="private">Private draft</option>
-                  <option value="members">Visible to members after enrollment</option>
-                  <option value="public">Public when approved</option>
-                </select>
-              </label>
-              <button className={styles.primary} type="submit">Save Passport draft</button>
-            </form>
-            {passport ? <button type="button" onClick={continueToProfile} className={styles.textButton}>Continue to public profile</button> : null}
-          </section>
-        </dialog>
-      ) : null}
     </section>
   )
 }

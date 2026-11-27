@@ -94,10 +94,6 @@ export function AnnouncementContent({
   const isCardLayout = layoutType === 'card';
   const fg = lightCardSurface ? 'text-gray-900' : styles.text || 'text-white';
   const fgSoft = lightCardSurface ? 'text-gray-600' : styles.text || 'text-white';
-  if (isImageOnly && getTakeoverMode(announcement?.metadata) !== 'overlay') {
-    return null;
-  }
-
   const showTypeBadge = contentBlocks?.show_type_badge !== false;
   const showTitle = contentBlocks?.show_title !== false;
   const showBody = contentBlocks?.show_body !== false;
@@ -215,6 +211,12 @@ export function AnnouncementContent({
       setScanOrigin(window.location.origin);
     }
   }, []);
+
+  // Render suppression comes after all hooks: React must call them in the
+  // same order even when an image-only takeover has no text overlay.
+  if (isImageOnly && getTakeoverMode(announcement?.metadata) !== 'overlay') {
+    return null;
+  }
 
   const stableScanUrl =
     scanOrigin && organizationSlug && announcement.id

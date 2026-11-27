@@ -39,21 +39,6 @@ function OoliteBookingsPageContent() {
   const [selectedBooking, setSelectedBooking] = useState<LocalBooking | null>(null);
   const [showBookingForm, setShowBookingForm] = useState(false);
   
-  // Debug modal state changes
-  React.useEffect(() => {
-    console.log('🔍 Modal state changed: showBookingForm =', showBookingForm)
-  }, [showBookingForm]);
-
-  // Log current user information
-  React.useEffect(() => {
-    console.log('👤 Current User Info:', {
-      isSignedIn,
-      userId,
-      userEmail: user?.emailAddresses?.[0]?.emailAddress,
-      userName: user?.fullName || user?.firstName,
-      hasUser: !!user
-    });
-  }, [isSignedIn, userId, user]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationBooking, setConfirmationBooking] = useState<any>(null);
   const [bookingType, setBookingType] = useState<BookingType>('equipment');
@@ -82,18 +67,7 @@ function OoliteBookingsPageContent() {
 
   const services = getServicesForBookingType(bookingType);
   
-  // Fallback services if no resources are available
-  const fallbackServices = [
-    {
-      id: 'fallback-1',
-      name: `${bookingType.charAt(0).toUpperCase() + bookingType.slice(1)} Booking`,
-      price: 0.00,
-      duration: 60,
-      description: `Book ${bookingType} for your project`
-    }
-  ];
-  
-  const finalServices = services.length > 0 ? services : fallbackServices;
+  const finalServices = services;
 
   // Sample staff data - in a real app, this would come from your API
   const staff = [
@@ -204,266 +178,29 @@ function OoliteBookingsPageContent() {
   };
 
   const fetchBookings = async () => {
+    setLoading(true);
+    setResources([]);
+    setBookings([]);
     try {
-      setLoading(true);
-      console.log('🔄 Starting fetchBookings...');
-      
-      // Fetch real resources from database
-      console.log('📦 Fetching resources from API...');
-      const resourcesUrl = `/api/organizations/cf088ac1-39a5-4948-a72c-d8059c1ab739/resources`;
-      console.log('📦 Resources URL:', resourcesUrl);
-      
-      const resourcesResponse = await fetch(resourcesUrl);
-      console.log('📦 Resources response status:', resourcesResponse.status);
-      console.log('📦 Resources response ok:', resourcesResponse.ok);
-      
-      if (!resourcesResponse.ok) {
-        const errorText = await resourcesResponse.text();
-        console.error('📦 Resources API error:', errorText);
-        throw new Error(`Failed to fetch resources: ${resourcesResponse.status} - ${errorText}`);
-      }
-      
-      const resourcesData = await resourcesResponse.json();
-      console.log('📦 Resources data:', resourcesData);
-      const realResources: Resource[] = resourcesData.resources || [];
-      console.log('📦 Parsed resources:', realResources);
-      
-      // Fetch real bookings from database
-      console.log('📅 Fetching bookings from API...');
-      const bookingsUrl = `/api/organizations/cf088ac1-39a5-4948-a72c-d8059c1ab739/bookings`;
-      console.log('📅 Bookings URL:', bookingsUrl);
-      
-      const bookingsResponse = await fetch(bookingsUrl);
-      console.log('📅 Bookings response status:', bookingsResponse.status);
-      console.log('📅 Bookings response ok:', bookingsResponse.ok);
-      
-      if (!bookingsResponse.ok) {
-        const errorText = await bookingsResponse.text();
-        console.error('📅 Bookings API error:', errorText);
-        throw new Error(`Failed to fetch bookings: ${bookingsResponse.status} - ${errorText}`);
-      }
-      
-      const bookingsData = await bookingsResponse.json();
-      console.log('📅 Bookings data:', bookingsData);
-      const realBookings: LocalBooking[] = (bookingsData.bookings || []).map((booking: any) => ({
-        id: booking.id,
-        title: booking.title || 'Untitled Booking',
-        description: booking.description || '',
-        start_time: new Date(booking.start_time),
-        end_time: new Date(booking.end_time),
-        status: booking.status,
-        resource_id: booking.resource_id,
-        created_by_clerk_id: booking.created_by_clerk_id
-      }));
-      console.log('📅 Parsed bookings:', realBookings);
-      
-      // Debug logging
-      console.log('📊 Booking Stats Debug:');
-      console.log(`- Total Resources: ${realResources.length}`);
-      console.log(`- Total Bookings: ${realBookings.length}`);
-      console.log(`- Currently Active Bookings: ${realBookings.filter(isBookingCurrentlyActive).length}`);
-      console.log(`- Available Now: ${realResources.filter(resource => isResourceAvailableNow(resource, realBookings)).length}`);
-      console.log(`- Current Time: ${new Date().toLocaleString()}`);
-      
-      // Log resource information for debugging
-      console.log('🔧 Available Resources:', realResources.map(r => ({
-        id: r.id,
-        title: r.title,
-        type: r.type,
-        is_bookable: r.is_bookable
+      const start = new Date();
+      start.setHours(0,0,0,0);
+      const end = new Date(start);
+      end.setDate(end.getDate()+21);
+      const params = new URLSearchParams({start_date:start.toISOString(),end_date:end.toISOString()});
+      const response = await fetch('/api/organizations/cf088ac1-39a5-4948-a72c-d8059c1ab739/public-availability?' + params, {cache:'no-store'});
+      if (!response.ok) throw new Error('Calendar unavailable');
+      const data = await response.json();
+      setResources(data.resources || []);
+      setBookings((data.bookings || []).map((booking: LocalBooking) => ({
+        ...booking, start_time:new Date(booking.start_time),end_time:new Date(booking.end_time)
       })));
-      
-      // Log detailed booking information for today and tomorrow
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      
-      const todayBookings = realBookings.filter(b => {
-        const bookingDate = new Date(b.start_time);
-        return bookingDate.toDateString() === today.toDateString();
-      });
-      
-      const tomorrowBookings = realBookings.filter(b => {
-        const bookingDate = new Date(b.start_time);
-        return bookingDate.toDateString() === tomorrow.toDateString();
-      });
-      
-      console.log('📅 Today\'s Bookings:', {
-        date: today.toDateString(),
-        total: todayBookings.length,
-        confirmed: todayBookings.filter(b => b.status === 'confirmed').length,
-        pending: todayBookings.filter(b => b.status === 'pending').length,
-        bookings: todayBookings.map(b => ({
-          id: b.id,
-          title: b.title,
-          status: b.status,
-          start_time: b.start_time.toLocaleString(),
-          end_time: b.end_time.toLocaleString()
-        }))
-      });
-      
-      console.log('📅 Tomorrow\'s Bookings:', {
-        date: tomorrow.toDateString(),
-        total: tomorrowBookings.length,
-        confirmed: tomorrowBookings.filter(b => b.status === 'confirmed').length,
-        pending: tomorrowBookings.filter(b => b.status === 'pending').length,
-        bookings: tomorrowBookings.map(b => ({
-          id: b.id,
-          title: b.title,
-          status: b.status,
-          start_time: b.start_time.toLocaleString(),
-          end_time: b.end_time.toLocaleString()
-        }))
-      });
-      
-      // Log detailed information about confirmed bookings
-      const confirmedBookings = realBookings.filter(b => b.status === 'confirmed');
-      console.log('✅ Confirmed Bookings Details:', {
-        total_confirmed: confirmedBookings.length,
-        bookings: confirmedBookings.map(b => {
-          const now = new Date();
-          const isCurrentlyActive = now >= b.start_time && now <= b.end_time;
-          return {
-            id: b.id,
-            title: b.title,
-            status: b.status,
-            start_time: b.start_time.toLocaleString(),
-            end_time: b.end_time.toLocaleString(),
-            resource_id: b.resource_id,
-            is_currently_active: isCurrentlyActive,
-            current_time: now.toLocaleString(),
-            time_until_start: b.start_time > now ? `${Math.round((b.start_time.getTime() - now.getTime()) / (1000 * 60))} minutes` : 'Already started',
-            time_until_end: b.end_time > now ? `${Math.round((b.end_time.getTime() - now.getTime()) / (1000 * 60))} minutes` : 'Already ended'
-          };
-        })
-      });
-      
-      // Log the specific confirmed booking that should be showing
-      if (confirmedBookings.length > 0) {
-        const confirmedBooking = confirmedBookings[0];
-        const now = new Date();
-        console.log('🔍 Detailed Confirmed Booking Analysis:', {
-          booking_id: confirmedBooking.id,
-          title: confirmedBooking.title,
-          start_time: confirmedBooking.start_time.toLocaleString(),
-          end_time: confirmedBooking.end_time.toLocaleString(),
-          current_time: now.toLocaleString(),
-          is_currently_active: now >= confirmedBooking.start_time && now <= confirmedBooking.end_time,
-          start_time_utc: confirmedBooking.start_time.toISOString(),
-          end_time_utc: confirmedBooking.end_time.toISOString(),
-          current_time_utc: now.toISOString(),
-          time_until_start_hours: Math.round((confirmedBooking.start_time.getTime() - now.getTime()) / (1000 * 60 * 60)),
-          time_until_start_minutes: Math.round((confirmedBooking.start_time.getTime() - now.getTime()) / (1000 * 60))
-        });
-      }
-      
-      setResources(realResources);
-      setBookings(realBookings);
-      console.log('✅ fetchBookings completed successfully');
-    } catch (err) {
-      console.error('❌ Error in fetchBookings:', err);
-      console.error('❌ Error details:', {
-        message: err instanceof Error ? err.message : 'Unknown error',
-        stack: err instanceof Error ? err.stack : undefined,
-        name: err instanceof Error ? err.name : 'Unknown'
-      });
+    } catch {
+      setResources([]);
+      setBookings([]);
     } finally {
       setLoading(false);
-      console.log('🏁 fetchBookings finished (loading set to false)');
     }
   };
-
-  // Add test booking function for debugging
-  useEffect(() => {
-    if (typeof window !== 'undefined' && resources.length > 0) {
-      (window as any).createTestBooking = async () => {
-        const now = new Date();
-        const endTime = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
-        
-        const testBooking = {
-          resource_id: resources[0]?.id || 'test-resource',
-          title: 'Test Booking - Current Time',
-          description: 'Test booking for debugging Live Status',
-          start_time: now.toISOString(),
-          end_time: endTime.toISOString(),
-          capacity: 1,
-          location: 'Test Location',
-          notes: 'Debug test booking',
-          user_name: user?.fullName || 'Test User',
-          user_email: user?.emailAddresses?.[0]?.emailAddress || 'test@example.com',
-          metadata: {
-            created_via: 'debug_test'
-          }
-        };
-        
-        console.log('🧪 Creating test booking:', testBooking);
-        
-        try {
-          const response = await fetch(`/api/organizations/cf088ac1-39a5-4948-a72c-d8059c1ab739/bookings`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(testBooking)
-          });
-          
-          if (response.ok) {
-            console.log('✅ Test booking created successfully');
-            await fetchBookings(); // Refresh the data
-          } else {
-            console.error('❌ Failed to create test booking:', await response.text());
-          }
-        } catch (error) {
-          console.error('❌ Error creating test booking:', error);
-        }
-      };
-      
-      // Add function to create a booking for tomorrow during business hours
-      (window as any).createTomorrowBooking = async () => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(10, 0, 0, 0); // 10 AM tomorrow
-        const endTime = new Date(tomorrow.getTime() + 60 * 60 * 1000); // 1 hour later
-        
-        const testBooking = {
-          resource_id: resources[0]?.id || 'test-resource',
-          title: 'Test Booking - Tomorrow 10 AM',
-          description: 'Test booking for tomorrow during business hours',
-          start_time: tomorrow.toISOString(),
-          end_time: endTime.toISOString(),
-          capacity: 1,
-          location: 'Test Location',
-          notes: 'Debug test booking for tomorrow',
-          user_name: user?.fullName || 'Test User',
-          user_email: user?.emailAddresses?.[0]?.emailAddress || 'test@example.com',
-          metadata: {
-            created_via: 'debug_test_tomorrow'
-          }
-        };
-        
-        console.log('🧪 Creating tomorrow test booking:', testBooking);
-        
-        try {
-          const response = await fetch(`/api/organizations/cf088ac1-39a5-4948-a72c-d8059c1ab739/bookings`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(testBooking)
-          });
-          
-          if (response.ok) {
-            console.log('✅ Tomorrow test booking created successfully');
-            await fetchBookings(); // Refresh the data
-          } else {
-            console.error('❌ Failed to create tomorrow test booking:', await response.text());
-          }
-        } catch (error) {
-          console.error('❌ Error creating tomorrow test booking:', error);
-        }
-      };
-      
-      console.log('🧪 Test booking functions available:');
-      console.log('  - window.createTestBooking() - creates booking for right now');
-      console.log('  - window.createTomorrowBooking() - creates booking for tomorrow 10 AM');
-    }
-  }, [resources, user, fetchBookings]);
 
   const handleCreateBooking = () => {
     console.log('🔍 handleCreateBooking: Opening modal with bookingType:', bookingType)
@@ -512,7 +249,7 @@ function OoliteBookingsPageContent() {
 
   const handleBookingCreated = async (bookingData: any) => {
     try {
-      console.log('🔄 Creating booking with streamlined modal data:', bookingData);
+
       
       // Check if user is signed in
       if (!isSignedIn || !user) {
@@ -548,8 +285,7 @@ function OoliteBookingsPageContent() {
           created_via: 'streamlined_booking_modal'
         }
       };
-      
-      console.log('🔄 Sending booking to API:', apiBookingData);
+
       
       // Call the real booking API
       const response = await fetch(`/api/organizations/cf088ac1-39a5-4948-a72c-d8059c1ab739/bookings`, {
@@ -562,12 +298,12 @@ function OoliteBookingsPageContent() {
       
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('❌ API Error:', errorData);
+
         throw new Error(errorData.error || 'Failed to create booking');
       }
       
       const result = await response.json();
-      console.log('✅ Booking created successfully:', result);
+
       
       // Close the booking form modal
       setShowBookingForm(false);
@@ -581,7 +317,7 @@ function OoliteBookingsPageContent() {
       await fetchBookings();
       
     } catch (error) {
-      console.error('❌ Error creating booking:', error);
+
       alert(`Failed to create booking: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease try again or contact support if the issue persists.`);
     }
   };
@@ -841,6 +577,7 @@ function OoliteBookingsPageContent() {
           {/* Booking Calendar */}
           <div className="mb-8">
             <ResourceCalendar
+              publicAvailability
               orgId="cf088ac1-39a5-4948-a72c-d8059c1ab739"
               onBookingCreate={handleBookingCreated}
             />

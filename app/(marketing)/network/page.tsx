@@ -1,17 +1,9 @@
 import type { Metadata } from 'next'
-import dynamic from 'next/dynamic'
+import { NetworkGraph } from '@/components/marketing/dcc-network/NetworkGraphDeferred'
 import Link from 'next/link'
 import { UserPlus } from 'lucide-react'
 import { dccSiteMeta } from '@/lib/marketing/content'
 import { EraPill } from '@/components/era/EraPill'
-
-const NetworkGraph = dynamic(
-  () => import('@/components/marketing/dcc-network/NetworkGraphClient'),
-  {
-    ssr: false,
-    loading: () => <div className="min-h-[480px] animate-pulse rounded-xl bg-neutral-100 dark:bg-neutral-800" />,
-  }
-)
 
 export const metadata: Metadata = {
   title: 'Network',
@@ -53,7 +45,7 @@ export default function DccNetworkPage() {
         </p>
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Link
-            href="/network/signup?pathway=index&source=era-network"
+            href="/join?source=era-network"
             className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 dark:bg-neutral-100 dark:text-neutral-900"
           >
             <UserPlus className="h-4 w-4" aria-hidden />

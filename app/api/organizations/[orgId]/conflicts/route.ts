@@ -5,8 +5,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params: pendingParams }: { params: Promise<{ orgId: string }> }
 ) {
+  const params = await pendingParams
   try {
     console.log('🔍 Conflicts API: Starting GET request')
     console.log('🔍 Conflicts API: orgId =', params.orgId)
@@ -45,8 +46,9 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params: pendingParams }: { params: Promise<{ orgId: string }> }
 ) {
+  const params = await pendingParams
   try {
     console.log('🔍 Conflicts API: Starting POST request')
     console.log('🔍 Conflicts API: orgId =', params.orgId)

@@ -283,10 +283,14 @@ export function encodeDisplayProgramForUrl(program: DisplayProgram): string {
   return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-export function filterAnnouncementsByRecentWindow(
-  announcements: { created_at?: string; starts_at?: string; scheduled_at?: string }[],
+export function filterAnnouncementsByRecentWindow<T extends {
+  created_at?: string;
+  starts_at?: string;
+  scheduled_at?: string;
+}>(
+  announcements: T[],
   days: number
-): typeof announcements {
+): T[] {
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - days);
   return announcements.filter((a) => {

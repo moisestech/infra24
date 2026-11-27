@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/supabase';
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,48 +9,47 @@ export async function PATCH(
 ) {
   try {
     const { orgId, bookingId } = await params;
+    const access = await requireOrganizationStaff(orgId);
+    if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
     const body = await request.json();
-    const { status, notes, updated_by } = body;
+    const { status, notes } = body;
+    if (!['pending','confirmed','cancelled','completed','no_show','rejected'].includes(status) ||
+        (notes != null && typeof notes !== 'string')) {
+      return NextResponse.json({ error: 'Invalid booking review' }, { status: 400 });
+    }
 
     console.log('🔍 Booking Update API: Updating booking', bookingId, 'with status:', status);
 
-    const supabase = getSupabaseAdmin();
+    const supabase = access.db;
 
-    // Update the booking
-    const { data: booking, error: updateError } = await supabase
-      .from('bookings')
-      .update({
-        status,
-        notes: notes || null,
-        updated_at: new Date().toISOString(),
-        updated_by_clerk_id: updated_by || 'admin'
+    // The staged migration must be installed before this route is enabled.
+    // Never fall back to a service-role UPDATE if the RPC is unavailable.
+    const { data: reviewed, error: updateError } = await supabase
+      .rpc('legacy_review_booking', {
+        p_org_id: access.orgId,
+        p_booking_id: bookingId,
+        p_reviewer: access.userId,
+        p_status: status,
+        p_notes: notes || null
       })
-      .eq('id', bookingId)
-      .eq('org_id', orgId)
-      .select(`
-        *,
-        resources (
-          id,
-          title,
-          type,
-          category,
-          location
-        ),
-        organizations (
-          id,
-          name,
-          slug
-        )
-      `)
-      .single();
+      .maybeSingle();
 
     if (updateError) {
-      console.error('❌ Booking Update API: Error updating booking:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update booking', details: updateError.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Booking review unavailable' }, { status: 503 });
     }
+    if (!reviewed) {
+      return NextResponse.json({ error: 'Booking not found or review not authorized' }, { status: 404 });
+    }
+    // Validate the untyped legacy RPC response before using it.
+    if (typeof reviewed !== 'object' || !('id' in reviewed) ||
+        reviewed.id !== bookingId || !('org_id' in reviewed) || reviewed.org_id !== access.orgId ||
+        !('title' in reviewed) || typeof reviewed.title !== 'string') {
+      return NextResponse.json({ error: 'Invalid booking review response' }, { status: 503 });
+    }
+    const userEmail = 'user_email' in reviewed && typeof reviewed.user_email === 'string' ? reviewed.user_email : null;
+    const { data: organization } = await supabase.from('organizations')
+      .select('id,name,slug').eq('id', access.orgId).maybeSingle();
+    const booking = { ...reviewed, id: reviewed.id, title: reviewed.title, user_email: userEmail, organizations: organization ?? { id: access.orgId, name: 'Organization', slug: null } };
 
     console.log('✅ Booking Update API: Booking updated successfully:', booking.id);
 
@@ -98,8 +97,8 @@ export async function PATCH(
 
     return NextResponse.json({ 
       success: true,
-      booking 
-    });
+      booking
+    }, { headers: { 'Cache-Control': 'private, no-store' } });
 
   } catch (error) {
     console.error('❌ Booking Update API: Error in PATCH request:', error);

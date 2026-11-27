@@ -265,7 +265,7 @@ export function generateBookingConfirmationHTML(data: BookingConfirmationData): 
             <div class="calendar-buttons">
                 <a href="${data.calendarUrls.google}" class="calendar-btn" target="_blank">Google Calendar</a>
                 <a href="${data.calendarUrls.outlook}" class="calendar-btn outlook" target="_blank">Outlook</a>
-                <a href="${data.icsUrl}" class="calendar-btn" download>Download ICS</a>
+                <a href="${data.icsUrl}" class="calendar-btn">Open calendar receipt (ICS)</a>
             </div>
         </div>
 

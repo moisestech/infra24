@@ -13,6 +13,7 @@ import {
 
 describe('dcc signup mapping', () => {
   const validPayload = {
+    formMode: 'full' as const,
     fullName: 'Alex Rivera',
     email: 'alex@example.com',
     city: 'Miami',

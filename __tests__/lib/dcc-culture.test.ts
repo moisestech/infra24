@@ -145,9 +145,20 @@ describe('dcc culture public seed', () => {
     expect(now?.label).toBe('Read the journal')
   })
 
-  it('publishes five journal essays without placeholder shells or invented relations', () => {
-    expect(DCC_EDITORIAL).toHaveLength(5)
+  it('publishes eight entries and keeps two draft essays private', () => {
+    expect(DCC_EDITORIAL).toHaveLength(10)
+    expect(DCC_EDITORIAL.filter(entry => entry.status === 'draft').map(entry => entry.slug)).toEqual([
+      'capacity-exists-before-infrastructure-does', 'an-invitation-to-build-dcc-miami-with-us',
+    ])
+    for (const entry of listEditorial()) {
+      expect(entry.status).toBe('published')
+      expect(entry.bodyPath).toBeTruthy()
+      expect(existsSync(join(process.cwd(), entry.bodyPath!))).toBe(true)
+    }
     expect(listEditorial().map((entry) => entry.slug)).toEqual([
+      'the-institution-that-can-build-itself',
+      'you-cant-buy-digital-culture',
+      'building-node-001-studio-43',
       'what-does-it-cost-to-run-digital-culture',
       'when-public-art-becomes-infrastructure',
       'the-artist-doesnt-need-to-learn-everything',
@@ -205,6 +216,8 @@ describe('dcc culture public seed', () => {
       'what-does-it-cost-to-run-digital-culture'
     )
     expect(listJournalArchive().map((entry) => entry.slug)).toEqual([
+      'the-institution-that-can-build-itself',
+      'you-cant-buy-digital-culture',
       'the-artist-doesnt-need-to-learn-everything',
       'miami-doesnt-have-a-digital-art-problem',
     ])

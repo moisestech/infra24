@@ -89,7 +89,7 @@ describe('network-builder actions', () => {
 
   it('skips fully ready non-stale Sam when threshold met', () => {
     const contacts = getFixtureNetworkContacts()
-    const scores = scoreAllContacts(contacts, { staleDays: 60, readinessThreshold: 70 })
+    const scores = scoreAllContacts(contacts, { staleDays: 60, readinessThreshold: 70, now: new Date('2026-05-24T12:00:00Z') })
     const ranked = rankPriorityContacts(scores)
     const byId = new Map(contacts.map((c) => [c.recordId, c]))
     const actions = generateRelationshipActions(ranked, byId, 10)

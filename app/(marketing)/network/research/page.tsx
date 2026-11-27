@@ -1,20 +1,10 @@
 import type { Metadata } from 'next'
-import dynamic from 'next/dynamic'
+import { GraphExplorer } from '@/components/marketing/dcc-network/GraphExplorerClient'
 import Link from 'next/link'
 import { Breadcrumbs } from '@/components/marketing/cdc/Breadcrumbs'
 import { EraPill } from '@/components/era/EraPill'
 import { cdcPageMetadata } from '@/lib/cdc/metadata'
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes'
-
-const GraphExplorer = dynamic(
-  () => import('@/components/marketing/dcc-network/GraphExplorer').then((m) => m.GraphExplorer),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="min-h-[min(85dvh,720px)] w-full animate-pulse rounded-xl bg-neutral-900/60" aria-hidden />
-    ),
-  }
-)
 
 const path = '/network/research'
 
