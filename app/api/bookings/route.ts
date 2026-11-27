@@ -253,6 +253,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (bookingError?.code === '23P01') return NextResponse.json({error:'Time slot is already booked'},{status:409})
+    if (bookingError?.code === '40P01' || bookingError?.code === '40001') return NextResponse.json({error:'Booking contention; retry availability'},{status:503})
     if (bookingError) {
       console.error('Error creating booking:', bookingError)
       return NextResponse.json(

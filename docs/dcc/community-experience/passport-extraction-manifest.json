@@ -352,6 +352,7 @@
       "survey and analytics work",
       "education consolidation"
     ],
-    "status": "Existing draft candidate requires independent strict CI and shared auth/build closure; no production eligibility"
+    "status": "Phase A private owner journey constructed on draft PR 87; strict CI and provider acceptance pending",
+    "privatePilotCandidateHead": "def6fb9fe06a8d56a439ac307791fe5cca10b963"
   }
 }

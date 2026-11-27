@@ -153,6 +153,7 @@ export async function POST(
       .single()
 
     if(updateError?.code==='23P01')return NextResponse.json({error:'Time slot is not available'},{status:409})
+    if (updateError?.code === '40P01' || updateError?.code === '40001') return NextResponse.json({error:'Booking contention; retry availability'},{status:503})
     if (updateError) {
       console.error('Error updating booking:', updateError)
       return NextResponse.json(
