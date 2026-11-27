@@ -166,6 +166,9 @@ jobs:
             psql -X -v ON_ERROR_STOP=1 -f supabase/staged/20261126170000_legacy_tenant_permissions.sql
             psql -X -v ON_ERROR_STOP=1 -f supabase/tests/legacy/permissions.sql
           done
+      - name: Inventory legacy source consumers (paths only)
+        run: node scripts/tools/legacy-consumer-inventory.mjs
+
       - name: Verify actual direct client denial
         env:
           PGHOST: 127.0.0.1

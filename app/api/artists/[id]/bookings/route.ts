@@ -1,115 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/supabase';
+import { NextRequest, NextResponse } from 'next/server'
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
+const headers = { 'Cache-Control': 'private, no-store' }
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+// The hosted bookings resource_type constraint has no artist value. Do not
+// invent a space mapping, trust a caller's status, or store contact PII here.
+// Restore writes only after a reviewed artist booking contract and caller audit.
 export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  _request: NextRequest,
+  _context: { params: Promise<{ id: string }> }
 ) {
-  try {
-    console.log('🔍 Artist Booking API: Starting request');
-    const { id: artistId } = await params;
-    const body = await request.json();
-    
-    console.log('🔍 Artist Booking API: Artist ID:', artistId);
-    console.log('🔍 Artist Booking API: Booking data:', body);
-
-    const {
-      organizationId,
-      title,
-      description,
-      startTime,
-      endTime,
-      meetingType,
-      contactMethod,
-      bookerName,
-      bookerEmail,
-      bookerPhone,
-      status = 'pending'
-    } = body;
-
-    // Validate required fields
-    if (!organizationId || !title || !startTime || !endTime || !bookerName || !bookerEmail) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    const supabaseAdmin = getSupabaseAdmin();
-
-    // First, verify the artist exists and belongs to the organization
-    const { data: artist, error: artistError } = await supabaseAdmin
-      .from('artist_profiles')
-      .select('id, name, organization_id')
-      .eq('id', artistId)
-      .eq('organization_id', organizationId)
-      .single();
-
-    if (artistError || !artist) {
-      console.error('❌ Artist Booking API: Artist not found:', artistError);
-      return NextResponse.json(
-        { error: 'Artist not found or does not belong to this organization' },
-        { status: 404 }
-      );
-    }
-
-    console.log('🔍 Artist Booking API: Found artist:', artist.name);
-
-    // Create the booking
-    const bookingData = {
-      org_id: organizationId,
-      resource_id: artistId, // Using artist ID as resource ID
-      resource_label: `Artist: ${artist.name}`,
-      title,
-      description,
-      start_time: startTime,
-      end_time: endTime,
-      status,
-      booker_name: bookerName,
-      booker_email: bookerEmail,
-      booker_phone: bookerPhone,
-      metadata: {
-        artist_id: artistId,
-        artist_name: artist.name,
-        meeting_type: meetingType,
-        contact_method: contactMethod,
-        booking_type: 'artist_booking'
-      }
-    };
-
-    console.log('🔍 Artist Booking API: Creating booking with data:', bookingData);
-
-    const { data: booking, error: bookingError } = await supabaseAdmin
-      .from('bookings')
-      .insert(bookingData)
-      .select('id, title, start_time, end_time, status')
-      .single();
-
-    if (bookingError) {
-      console.error('❌ Artist Booking API: Error creating booking:', bookingError);
-      return NextResponse.json(
-        { error: 'Failed to create booking' },
-        { status: 500 }
-      );
-    }
-
-    console.log('🔍 Artist Booking API: Successfully created booking:', booking);
-
-    return NextResponse.json({
-      success: true,
-      booking,
-      message: 'Booking request submitted successfully'
-    }, { status: 201 });
-
-  } catch (error) {
-    console.error('❌ Artist Booking API: Unexpected error:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    { error: 'Legacy artist booking requests are unavailable' },
+    { status: 410, headers }
+  )
 }
 
 export async function GET(
@@ -117,50 +24,49 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('🔍 Artist Bookings API: Starting request');
-    const { id: artistId } = await params;
-    
-    console.log('🔍 Artist Bookings API: Fetching bookings for artist:', artistId);
-
-    const supabaseAdmin = getSupabaseAdmin();
-
-    // Get all bookings for this artist
-    const { data: bookings, error } = await supabaseAdmin
+    const orgId = request.nextUrl.searchParams.get('org_id')
+    const access = await requireOrganizationStaff(orgId)
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status, headers })
+    }
+    const { id: artistId } = await params
+    if (!uuid.test(artistId)) {
+      return NextResponse.json({ error: 'Invalid artist ID' }, { status: 400, headers })
+    }
+    const { data: artist, error: artistError } = await access.db
+      .from('artist_profiles')
+      .select('id')
+      .eq('id', artistId)
+      .eq('organization_id', access.orgId)
+      .maybeSingle()
+    if (artistError) {
+      return NextResponse.json({ error: 'Artist lookup unavailable' }, { status: 503, headers })
+    }
+    if (!artist) {
+      return NextResponse.json({ error: 'Artist not found' }, { status: 404, headers })
+    }
+    const { data: bookings, error } = await access.db
       .from('bookings')
-      .select(`
-        id,
-        title,
-        description,
-        start_time,
-        end_time,
-        status,
-        booker_name,
-        booker_email,
-        booker_phone,
-        metadata,
-        created_at
-      `)
+      .select('id,title,start_time,end_time,status,created_at')
+      .eq('org_id', access.orgId)
       .eq('resource_id', artistId)
       .eq('metadata->>booking_type', 'artist_booking')
-      .order('start_time', { ascending: true });
-
+      .order('start_time', { ascending: true })
     if (error) {
-      console.error('❌ Artist Bookings API: Error fetching bookings:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch bookings' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Booking lookup unavailable' }, { status: 503, headers })
     }
-
-    console.log('🔍 Artist Bookings API: Found', bookings?.length || 0, 'bookings');
-
-    return NextResponse.json({ bookings: bookings || [] }, { status: 200 });
-
-  } catch (error) {
-    console.error('❌ Artist Bookings API: Unexpected error:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    // Explicit projection: no contact data, free-form metadata or tenant IDs.
+    return NextResponse.json({
+      bookings: (bookings || []).map(booking => ({
+        id: booking.id,
+        title: booking.title,
+        start_time: booking.start_time,
+        end_time: booking.end_time,
+        status: booking.status,
+        created_at: booking.created_at,
+      })),
+    }, { headers })
+  } catch {
+    return NextResponse.json({ error: 'Booking lookup unavailable' }, { status: 500, headers })
   }
 }
