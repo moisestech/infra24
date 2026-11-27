@@ -4,18 +4,20 @@ import { PageHero, Section, CtaBlock } from '@/components/marketing/cdc';
 import { getCdcBreadcrumbs, getCdcPageByPath, getPartnerSegmentSlugs } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
-type Props = { params: { segment: string } };
+type Props = { params: Promise<{ segment: string }> };
 
 export function generateStaticParams() {
   return getPartnerSegmentSlugs().map((segment) => ({ segment }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const path = `/partners/${params.segment}`;
   return cdcPageMetadata(path);
 }
 
-export default function PartnerSegmentPage({ params }: Props) {
+export default async function PartnerSegmentPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const path = `/partners/${params.segment}`;
   const def = getCdcPageByPath(path);
   if (!def) notFound();
