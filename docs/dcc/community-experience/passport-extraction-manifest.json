@@ -352,8 +352,8 @@
       "survey and analytics work",
       "education consolidation"
     ],
-    "status": "Focused tests and dependency audit pass on latest pilot head; expanded two-account PostgREST and complete strict CI pending. Compatibility overlay is explicitly tracked, no Phase B/C or production eligibility.",
-    "privatePilotCandidateHead": "71b9810f6eb2321eaac3abce37f2114aba102abb",
+    "status": "Independent compatibility repair committed; fresh strict CI and preview pending. Two-account isolated acceptance passed on 71b9810. Provider isolation blocked.",
+    "privatePilotCandidateHead": "34d9b5138be4fc58e1ee826f04db5251d6c431f9",
     "compatibilityOverlay": {
       "source": "af86e2f388a8cd74a021eb9c83f32c7e537c540d",
       "files": 137,
@@ -371,6 +371,31 @@
       "result": "passed",
       "preview": "READY (nonproduction)",
       "remaining": "Full workflow pending; buffer-only overlap, host daily capacity, side effects and hosted preflight remain open"
+    },
+    "buildConvergence": {
+      "diagnosedHead": "71b9810f6eb2321eaac3abce37f2114aba102abb",
+      "parallelRepair": "7876dffc455a2d5aeeeec209fc083df91ba59089",
+      "candidate": "34d9b5138be4fc58e1ee826f04db5251d6c431f9",
+      "remainingBeforeRepair": {
+        "typeErrors": 3,
+        "generatedRouteErrors": 0,
+        "failedSuites": 2,
+        "failedTests": 12,
+        "buildErrors": 5
+      },
+      "integratedVerifiedHead": "c4d03fa68f683e54b0b71f4f02ba72460776daae",
+      "integratedRuns": [
+        45917795518,
+        45917789777,
+        45917789713
+      ],
+      "integratedResult": "All three CI workflows and Vercel passed"
+    },
+    "previewIsolation": {
+      "ssoProtection": "enabled; all previews",
+      "providerVariables": "Clerk, Supabase, Resend and other secrets assigned to preview and production; no branch-specific overrides returned for private pilot",
+      "status": "not isolated; no authenticated preview mutation",
+      "required": "separate test Clerk and database, notification sandbox/deny, branch-specific configuration and explicit approval"
     }
   }
 }
