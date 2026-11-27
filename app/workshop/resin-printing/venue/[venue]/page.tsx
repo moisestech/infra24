@@ -18,7 +18,7 @@ import { WorkshopImagePlaceholder } from '@/components/workshop-engine/WorkshopV
 import { weSpace, weTouch, weType } from '@/components/workshop-engine/responsive'
 import { cn } from '@/lib/utils'
 
-type Props = { params: Promise<{ venue: string }> | { venue: string } }
+type Props = { params: Promise<{ venue: string }> }
 
 async function resolveParams(params: Props['params']) {
   return await Promise.resolve(params)
