@@ -164,9 +164,17 @@ class PostgresAcceptance(unittest.TestCase):
         dump = subprocess.run(cmd("pg_dump") + ["--schema=dcc_archive_private","--no-owner"], env=ENV, capture_output=True, check=True, timeout=30)
         subprocess.run(cmd("psql",RESTORE)+["-X","-q","-v","ON_ERROR_STOP=1"], input=dump.stdout,env=ENV,capture_output=True,check=True,timeout=30)
         self.assertEqual(restore(b,RESTORE),[envelope(r) for r in rows])
-        self.assertEqual(execute("SELECT count(*) FROM dcc_archive_private.source_rows;",RESTORE),
-                         execute("SELECT count(*) FROM dcc_archive_private.source_rows;"))
-        execute("SET ROLE anon; SELECT * FROM dcc_archive_private.source_rows;",RESTORE,error="42501")
+        batches = execute("SELECT batch_id FROM dcc_archive_private.import_batches ORDER BY batch_id;").splitlines()
+        self.assertEqual(execute("SELECT batch_id FROM dcc_archive_private.import_batches ORDER BY batch_id;",RESTORE).splitlines(), batches)
+        for batch_id in batches:
+            self.assertEqual(restore(batch_id,RESTORE), restore(batch_id))
+        for table, order in (("source_rows","source_base,source_table,source_record"),
+                             ("import_batches","batch_id"), ("batch_rows","batch_id,source_base,source_table,source_record")):
+            query = f"SELECT jsonb_agg(to_jsonb(t) ORDER BY {order}) FROM dcc_archive_private.{table} t;"
+            self.assertEqual(json.loads(execute(query,RESTORE)),json.loads(execute(query)))
+        for role in ("anon","authenticated","service_role","archive_untrusted"):
+            execute(f"SET ROLE {role}; SELECT * FROM dcc_archive_private.source_rows;",RESTORE,error="42501")
+            execute(f"SET ROLE {role}; SELECT dcc_archive_private.restore_batch({lit(b)}::uuid);",RESTORE,error="42501")
 
 
 if __name__ == "__main__":
