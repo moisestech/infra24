@@ -146,6 +146,9 @@ export async function POST(
       .eq('is_bookable', true)
       .single()
 
+    if (resourceError?.code === '42703' || resourceError?.code === 'PGRST204') {
+      return NextResponse.json({error:'Booking resource configuration unavailable'},{status:503,headers:{'Cache-Control':'private, no-store'}})
+    }
     if (resourceError || !resource) {
 
       return NextResponse.json(

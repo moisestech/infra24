@@ -180,3 +180,9 @@ describe('/api/bookings', () => {
   expect(response.status).toBe(409)
   expect(mockInsert).not.toHaveBeenCalled()
  })
+
+test('missing hosted bookability column prevents booking insertion',async()=>{
+ mockResource.mockResolvedValue({data:null,error:{code:'42703'}});mockInsert.mockClear()
+ const res=await POST(new NextRequest('http://localhost/api/bookings',{method:'POST',body:JSON.stringify({org_id:'org',resource_id:'resource',start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T11:00:00Z',artist_name:'Test',artist_email:'guest@example.com'})}))
+ expect(res.status).toBe(503);expect(mockInsert).not.toHaveBeenCalled()
+})

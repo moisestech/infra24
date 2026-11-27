@@ -5,7 +5,7 @@ import { generateScheduledGoogleMeetLink } from '@/lib/google-meet'
 import { sendBookingConfirmationEmail, sendHostNotificationEmail, BookingEmailData } from '@/lib/email/email-service'
 import { auth } from '@clerk/nextjs/server'
 import crypto from 'crypto'
-import { bookingReceiptToken } from '@/lib/security/booking-receipt'
+import { bookingReceiptToken,bookingCalendarToken } from '@/lib/security/booking-receipt'
 
 export const dynamic = 'force-dynamic';
 
@@ -156,6 +156,9 @@ export async function POST(request: NextRequest) {
       .eq('is_bookable', true)
       .single()
 
+    if (resourceError?.code === '42703' || resourceError?.code === 'PGRST204') {
+      return NextResponse.json({error:'Booking resource configuration unavailable'},{status:503,headers:{'Cache-Control':'private, no-store'}})
+    }
     if (resourceError || !resource) {
       return NextResponse.json(
         { error: 'Resource not found or not bookable' },
@@ -317,11 +320,9 @@ export async function POST(request: NextRequest) {
     const confirmationUrl = `${baseUrl}/bookings/confirmation/${booking.id}#receipt=${bookingReceiptToken(booking.id,rescheduleToken)}`
     const rescheduleUrl = `${baseUrl}/bookings/reschedule/${booking.id}?token=${rescheduleToken}`
     const cancelUrl = `${baseUrl}/bookings/cancel/${booking.id}?token=${rescheduleToken}`
-    const icsUrl = `${baseUrl}/api/bookings/${booking.id}/ics`
-    const calendarUrls = {
-      google: `${baseUrl}/api/bookings/${booking.id}/calendar-urls?provider=google`,
-      outlook: `${baseUrl}/api/bookings/${booking.id}/calendar-urls?provider=outlook`
-    }
+    const calendarPage = `${baseUrl}/bookings/confirmation/${booking.id}#calendar=${bookingCalendarToken(booking.id,rescheduleToken)}`
+    const icsUrl = calendarPage
+    const calendarUrls = { google: calendarPage, outlook: calendarPage }
 
     // Send email notifications
     try {

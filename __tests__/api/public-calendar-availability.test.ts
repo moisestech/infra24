@@ -8,9 +8,9 @@ const params=Promise.resolve({orgId})
 const request=(end='2099-01-10')=>new NextRequest('http://localhost/api/test?start_date=2099-01-01&end_date='+end)
 const from=jest.fn()
 function query(result:object) {
-  const q={select:jest.fn(),eq:jest.fn(),in:jest.fn(),lt:jest.fn(),gt:jest.fn(),order:jest.fn(),maybeSingle:jest.fn()}
+  const q={select:jest.fn(),eq:jest.fn(),in:jest.fn(),lt:jest.fn(),gt:jest.fn(),order:jest.fn(),limit:jest.fn(),maybeSingle:jest.fn()}
   for(const method of ['select','eq','in','lt'] as const) q[method].mockReturnValue(q)
-  q.gt.mockResolvedValue(result);q.order.mockResolvedValue(result);q.maybeSingle.mockResolvedValue(result)
+  q.gt.mockReturnValue(q);q.order.mockReturnValue(q);q.limit.mockResolvedValue(result);q.maybeSingle.mockResolvedValue(result)
   return q
 }
 beforeEach(()=>{jest.resetAllMocks();(getSupabaseAdmin as jest.Mock).mockReturnValue({from})})
@@ -38,5 +38,17 @@ test('inactive or missing organization cannot read resources',async()=>{
 })
 test('database failure does not report empty availability',async()=>{
  from.mockReturnValue(query({data:null,error:{message:'private'}}))
+ expect((await GET(request(),{params})).status).toBe(503)
+})
+
+test('missing resource compatibility column is unavailable, not an empty calendar',async()=>{
+ const org=query({data:{id:orgId},error:null}),resources=query({data:null,error:{code:'42703'}})
+ from.mockImplementation(t=>t==='organizations'?org:resources)
+ expect((await GET(request(),{params})).status).toBe(503)
+ expect(from).not.toHaveBeenCalledWith('bookings')
+})
+test('truncated busy result fails closed',async()=>{
+ const org=query({data:{id:orgId},error:null}),resources=query({data:[{id:'resource',title:'Printer',type:'equipment',capacity:1}],error:null}),busy=query({data:Array.from({length:1000},()=>({resource_id:'resource'})),error:null})
+ from.mockImplementation(t=>t==='organizations'?org:t==='resources'?resources:busy)
  expect((await GET(request(),{params})).status).toBe(503)
 })

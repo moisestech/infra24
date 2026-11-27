@@ -106,3 +106,10 @@ it('fails closed on an incomplete booking query', async () => {
   const response=await GET(new NextRequest('http://localhost/api/availability?resource_id=test-resource-id&start_date=2025-01-15&end_date=2025-01-15'))
   expect(response.status).toBe(503)
 })
+
+it('reports missing bookability column as unavailable without fallback',async()=>{
+ mockResource.mockResolvedValue({data:null,error:{code:'42703'}})
+ mockBookings.mockClear()
+ const res=await GET(new NextRequest('http://localhost/api/availability?resource_id=test-resource-id&start_date=2025-01-15&end_date=2025-01-15'))
+ expect(res.status).toBe(503);expect(mockBookings).not.toHaveBeenCalled()
+})

@@ -24,15 +24,7 @@ export async function POST(
     // Get booking details
     const { data: booking, error: bookingError } = await supabaseAdmin
       .from('bookings')
-      .select(`
-        *,
-        resources (
-          id,
-          title,
-          location,
-          metadata
-        )
-      `)
+      .select('*')
       .eq('id', bookingId)
       .single()
 
@@ -66,6 +58,9 @@ export async function POST(
       )
     }
 
+    // Resource lookup is optional for cancellation; a missing resource must not prevent cancellation.
+    const {data: resource} = await supabaseAdmin.from('resources').select('title,location').eq('id',booking.resource_id).eq('org_id',booking.org_id).maybeSingle()
+
     // Update booking status to cancelled
     const { data: updatedBooking, error: updateError } = await supabaseAdmin
       .from('bookings')
@@ -98,7 +93,8 @@ export async function POST(
     const { data: announcement } = await supabaseAdmin
       .from('announcements')
       .select('id')
-      .eq('payload->booking_id', bookingId)
+      .eq('payload->>booking_id', bookingId)
+      .eq('org_id',booking.org_id)
       .single()
 
     if (announcement) {
@@ -110,20 +106,23 @@ export async function POST(
           updated_at: new Date().toISOString()
         })
         .eq('id', announcement.id)
+        .eq('org_id',booking.org_id)
     }
 
     // Send cancellation notification email
     try {
+      const host=booking.metadata?.host
+      if(typeof host!=='string'||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(host))throw Error('Booking host unavailable')
       const emailData: BookingEmailData = {
         bookingId: booking.id,
         artistName: booking.metadata?.artist_name || 'Unknown Artist',
         artistEmail: booking.metadata?.artist_email || booking.user_id,
         hostName: booking.metadata?.host?.split('@')[0] || 'Host',
-        hostEmail: booking.metadata?.host || 'mo@oolite.org',
-        resourceTitle: booking.resources?.title || 'Unknown Resource',
+        hostEmail: host,
+        resourceTitle: resource?.title || 'Unknown Resource',
         startTime: new Date(booking.start_time),
         endTime: new Date(booking.end_time),
-        location: booking.location || booking.resources?.location || 'TBD',
+        location: booking.location || resource?.location || 'TBD',
         meetingUrl: booking.metadata?.meeting_url,
         meetingCode: booking.metadata?.meeting_code,
         organizationName: 'Oolite Arts',

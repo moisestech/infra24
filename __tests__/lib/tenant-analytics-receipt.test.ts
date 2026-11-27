@@ -8,7 +8,7 @@ import { POST as receipt } from '@/app/api/bookings/[id]/confirmation/route'
 import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { auth } from '@clerk/nextjs/server'
-import { bookingReceiptToken,validBookingReceipt } from '@/lib/security/booking-receipt'
+import { bookingReceiptToken,validBookingReceipt,bookingCalendarToken,validBookingCalendar } from '@/lib/security/booking-receipt'
 jest.mock('@/lib/security/require-organization-staff',()=>({requireOrganizationStaff:jest.fn()}))
 jest.mock('@/lib/supabase',()=>({getSupabaseAdmin:jest.fn()}))
 jest.mock('@clerk/nextjs/server',()=>({auth:jest.fn()}))
@@ -77,4 +77,22 @@ it('receipt returns only minimal fields with valid capability',async()=>{
  const res=await receipt(new NextRequest('https://example.test',{method:'POST',body:JSON.stringify({token})}),context)
  expect(res.status).toBe(200);expect(await res.json()).toEqual({booking:{id,status:'confirmed',start_time:'start',end_time:'end'}})
  expect(res.headers.get('cache-control')).toBe('private, no-store')
+})
+
+it('calendar capability is distinct, ID-bound, upcoming only and expires',()=>{
+ const key='c'.repeat(64),now=Date.now(),created=new Date(now-2*86400000).toISOString(),end=new Date(now+86400000).toISOString(),token=bookingCalendarToken(id,key)
+ expect(validBookingCalendar(id,key,token,created,end,now)).toBe(true)
+ expect(validBookingCalendar(org,key,token,created,end,now)).toBe(false)
+ expect(validBookingCalendar(id,key,bookingReceiptToken(id,key),created,end,now)).toBe(false)
+ expect(validBookingCalendar(id,key,key,created,end,now)).toBe(false)
+ expect(validBookingReceipt(id,key,token,created,now)).toBe(false)
+ expect(validBookingCalendar(id,key,token,created,end,now+2*86400000)).toBe(false)
+ expect(validBookingCalendar(id,key,token,new Date(now-91*86400000).toISOString(),end,now)).toBe(false)
+})
+it.each(['confirmed','cancelled'])('calendar capability only returns confirmed minimal data (%s)',async status=>{
+ const key='d'.repeat(64),token=bookingCalendarToken(id,key),created_at=new Date(Date.now()-2*86400000).toISOString(),end_time=new Date(Date.now()+86400000).toISOString()
+ from.mockReturnValue(query({data:{id,status,created_at,end_time,start_time:new Date().toISOString(),metadata:{reschedule_token:key,artist_email:'private@example.test'}},error:null}))
+ const res=await receipt(new NextRequest('https://example.test',{method:'POST',body:JSON.stringify({token,purpose:'calendar'})}),context)
+ expect(res.status).toBe(status==='confirmed'?200:404)
+ const body=await res.json();if(status==='confirmed'){expect(Object.keys(body.booking).sort()).toEqual(['end_time','id','start_time','status']);expect(res.headers.get('cache-control')).toBe('private, no-store')}
 })
