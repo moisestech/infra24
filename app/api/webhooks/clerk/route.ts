@@ -1,136 +1,113 @@
-import { Webhook } from 'svix';
-import { headers } from 'next/headers';
-import { WebhookEvent } from '@clerk/nextjs/server';
-import { createClient } from '@supabase/supabase-js';
+import { Webhook } from 'svix'
+import { headers } from 'next/headers'
+import type { WebhookEvent } from '@clerk/nextjs/server'
+import { createClient } from '@supabase/supabase-js'
+import {
+  clerkMembershipCaptureConfig, normalizeClerkMembershipEvent,
+} from '@/lib/dcc/membership/clerk-event'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
-// Supabase client for server-side operations
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
+// Server-side only. No browser may reach service_role data or the event RPC.
+function getServerSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) throw new Error('Server database is not configured')
+  return createClient(url, key, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  })
+}
 
 export async function POST(req: Request) {
-  // Get the headers
-  const headerPayload = await headers();
-  const svix_id = headerPayload.get("svix-id");
-  const svix_timestamp = headerPayload.get("svix-timestamp");
-  const svix_signature = headerPayload.get("svix-signature");
+  const h = await headers()
+  const messageId = h.get('svix-id')
+  const timestamp = h.get('svix-timestamp')
+  const signature = h.get('svix-signature')
+  const secret = process.env.CLERK_WEBHOOK_SECRET
+  if (!messageId || !timestamp || !signature) return new Response('Missing webhook signature', { status: 400 })
+  if (!secret) return new Response('Webhook is not configured', { status: 503 })
 
-  // If there are no headers, error out
-  if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response('Error occured -- no svix headers', {
-      status: 400
-    });
-  }
-
-  // Get the body
-  const payload = await req.json();
-  const body = JSON.stringify(payload);
-
-  // Create a new Svix instance with your secret.
-  const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET || '');
-
-  let evt: WebhookEvent;
-
-  // Verify the payload with the headers
+  // Svix must verify the ORIGINAL raw bytes, not JSON parse + reserialization.
+  const rawBody = await req.text()
+  let evt: WebhookEvent
   try {
-    evt = wh.verify(body, {
-      "svix-id": svix_id,
-      "svix-timestamp": svix_timestamp,
-      "svix-signature": svix_signature,
-    }) as WebhookEvent;
-  } catch (err) {
-    console.error('Error verifying webhook:', err);
-    return new Response('Error occured', {
-      status: 400
-    });
+    evt = new Webhook(secret).verify(rawBody, {
+      'svix-id': messageId, 'svix-timestamp': timestamp, 'svix-signature': signature,
+    }) as WebhookEvent
+  } catch {
+    return new Response('Invalid webhook signature', { status: 400 })
   }
 
-  // Get the ID and type
-  const { id } = evt.data;
-  const eventType = evt.type;
+  // No raw event logs, email, full names or webhook payloads in application logs.
+  // The server-side event contract only records Clerk subject + verified boolean.
+  try {
+    const legacyEnabled = process.env.CLERK_LEGACY_ORG_MEMBERSHIP_ENABLED === 'true'
+    const config = clerkMembershipCaptureConfig(process.env)
+    const event = normalizeClerkMembershipEvent(evt, messageId, config)
+    // Dedicated DCC instances must not implicitly provision legacy organization roles.
+    if (!event && !legacyEnabled) return new Response('Webhook ignored', { status: 200 })
+    const supabase = getServerSupabase()
+    let dccState: string | null = null
+    if (event) {
+      const { data, error } = await supabase.rpc('dcc_capture_clerk_membership_event', event)
+      if (error) throw new Error('DCC member event persistence failed')
+      dccState = typeof data === 'string' ? data : null
+    }
 
-  console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
-  console.log('Webhook body:', body);
+    if (!legacyEnabled) return new Response('DCC event handled', { status: 200 })
 
-  if (eventType === 'user.created') {
-    const { id: userId, email_addresses, first_name, last_name, image_url } = evt.data;
-    
-    const primaryEmail = email_addresses?.find((email: any) => email.id === evt.data.primary_email_address_id);
-    
-    if (primaryEmail) {
-      try {
-        // Create user membership in org_memberships table
-        const { data, error } = await supabase
+    if (evt.type === 'user.created') {
+      // If a previously deleted account's CREATE arrived late, do not revive
+      // the legacy Smart Sign organization row. The private event ledger wins.
+      if (dccState === 'deleted') return new Response('Previously deleted account', { status: 200 })
+      const userId = evt.data.id
+      const primary = evt.data.email_addresses?.find(
+        (e) => e.id === evt.data.primary_email_address_id
+      )
+      // Preserve prior Smart Sign organization functionality without making
+      // an org role evidence of DCC People membership.
+      if (primary) {
+        const { data: existing, error: existingError } = await supabase
           .from('org_memberships')
-          .insert({
+          .select('id')
+          .eq('clerk_user_id', userId)
+          .is('org_id', null)
+          .limit(1)
+        if (existingError) throw new Error('Organization membership lookup failed')
+        if (!existing?.length) {
+          const { error } = await supabase.from('org_memberships').insert({
             clerk_user_id: userId,
-            role: 'resident', // Default role for new users
-            org_id: null, // No organization assigned initially
-            joined_at: new Date().toISOString()
+            role: 'resident',
+            org_id: null,
+            joined_at: new Date().toISOString(),
           })
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Error creating user from webhook:', error);
-          return new Response('Error creating user', { status: 500 });
+          // Concurrent delivery can race in the legacy org table. Its own
+          // unique constraint should be audited separately before activation.
+          if (error && error.code !== '23505') throw new Error('Organization membership insert failed')
         }
-
-        console.log(`Created user profile for ${primaryEmail.email_address}`);
-        return new Response('User created successfully', { status: 200 });
-      } catch (error) {
-        console.error('Error creating user profile from webhook:', error);
-        return new Response('Error creating user', { status: 500 });
       }
+      return new Response('Account creation handled', { status: 200 })
     }
-  }
 
-  if (eventType === 'user.updated') {
-    const { id: userId, email_addresses, first_name, last_name, image_url } = evt.data;
-    
-    try {
-      // Update user membership in org_memberships table
-      // Note: We don't store first_name, last_name, image_url in org_memberships
-      // These are stored in Clerk and accessed via Clerk SDK
-      console.log(`User ${userId} updated in Clerk - no action needed in org_memberships`);
-      return new Response('User updated successfully', { status: 200 });
-    } catch (error) {
-      console.error('Error updating user profile from webhook:', error);
-      return new Response('Error updating user', { status: 500 });
+    if (evt.type === 'user.updated') {
+      return new Response('Account update handled', { status: 200 })
     }
-  }
 
-  if (eventType === 'user.deleted') {
-    const { id: userId } = evt.data;
-    
-    try {
-      // Delete user membership from org_memberships table
+    if (evt.type === 'user.deleted') {
+      if (typeof evt.data.id !== 'string' || !evt.data.id) {
+        return new Response('Deleted account identifier missing', { status: 400 })
+      }
       const { error } = await supabase
         .from('org_memberships')
         .delete()
-        .eq('clerk_user_id', userId);
-
-      if (error) {
-        console.error('Error deleting user from webhook:', error);
-        return new Response('Error deleting user', { status: 500 });
-      }
-
-      console.log(`Deleted user profile for ${userId}`);
-      return new Response('User deleted successfully', { status: 200 });
-    } catch (error) {
-      console.error('Error deleting user profile from webhook:', error);
-      return new Response('Error deleting user', { status: 500 });
+        .eq('clerk_user_id', evt.data.id)
+      if (error) throw new Error('Organization membership removal failed')
+      return new Response('Account deletion handled', { status: 200 })
     }
-  }
 
-  return new Response('Webhook processed successfully', { status: 200 });
+    return new Response('Webhook ignored', { status: 200 })
+  } catch {
+    // Non-2xx prompts Clerk to retry. No false "member active" receipts.
+    return new Response('Webhook persistence unavailable', { status: 503 })
+  }
 }
