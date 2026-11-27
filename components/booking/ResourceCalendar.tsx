@@ -17,12 +17,13 @@ import interactionPlugin from '@fullcalendar/interaction'
 
 interface ResourceCalendarProps {
   orgId: string
+  publicAvailability?: boolean
   onBookingCreate?: (booking: CreateBookingRequest) => Promise<void>
   onBookingUpdate?: (booking: Booking) => Promise<void>
   onBookingDelete?: (bookingId: string) => Promise<void>
 }
 
-export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBookingDelete }: ResourceCalendarProps) {
+export function ResourceCalendar({ orgId, publicAvailability = false, onBookingCreate, onBookingUpdate, onBookingDelete }: ResourceCalendarProps) {
   const [resources, setResources] = useState<Resource[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
@@ -47,6 +48,14 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
       extendedEnd.setDate(extendedEnd.getDate() + 14)
       const base = '/api/organizations/' + encodeURIComponent(orgId)
       const params = new URLSearchParams({ start_date: weekStart.toISOString(), end_date: extendedEnd.toISOString() })
+      if (publicAvailability) {
+        const response = await fetch(base + '/public-availability?' + params, { cache: 'no-store' })
+        if (!response.ok) throw new Error('Calendar unavailable')
+        const data = await response.json()
+        setResources(data.resources || [])
+        setBookings((data.bookings || []).map((b: Booking) => ({ ...b, start_time: new Date(b.start_time), end_time: new Date(b.end_time) })))
+        return
+      }
       const [resourceResponse, bookingResponse] = await Promise.all([
         fetch(base + '/resources', { cache: 'no-store' }),
         fetch(base + '/bookings?' + params, { cache: 'no-store' })
@@ -59,11 +68,11 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
         ...b, start_time: new Date(b.start_time), end_time: new Date(b.end_time)
       })))
     } catch {
-      setError('Calendar unavailable. Organization staff access is required.')
+      setError('Calendar unavailable.')
     } finally {
       setLoading(false)
     }
-  }, [orgId])
+  }, [orgId, publicAvailability])
 
   useEffect(() => {
     fetchResourcesAndBookings()
@@ -99,7 +108,7 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
   }, [onBookingCreate, orgId, fetchResourcesAndBookings])
 
   const handleEventDrop = useCallback(async (eventInfo: any) => {
-    if (!onBookingUpdate) return
+    if (publicAvailability || !onBookingUpdate) { eventInfo.revert(); return }
 
     const booking = bookings.find(b => b.id === eventInfo.event.id)
     if (!booking) return
@@ -118,10 +127,10 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
       // Revert the event
       eventInfo.revert()
     }
-  }, [onBookingUpdate, bookings, fetchResourcesAndBookings])
+  }, [publicAvailability, onBookingUpdate, bookings, fetchResourcesAndBookings])
 
   const handleEventResize = useCallback(async (eventInfo: any) => {
-    if (!onBookingUpdate) return
+    if (publicAvailability || !onBookingUpdate) { eventInfo.revert(); return }
 
     const booking = bookings.find(b => b.id === eventInfo.event.id)
     if (!booking) return
@@ -140,7 +149,7 @@ export function ResourceCalendar({ orgId, onBookingCreate, onBookingUpdate, onBo
       // Revert the event
       eventInfo.revert()
     }
-  }, [onBookingUpdate, bookings, fetchResourcesAndBookings])
+  }, [publicAvailability, onBookingUpdate, bookings, fetchResourcesAndBookings])
 
   const handleEventClick = useCallback((eventInfo: any) => {
     const booking = bookings.find(b => b.id === eventInfo.event.id)
