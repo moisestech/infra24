@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { Metadata } from 'next';
 import { PageHero, Section } from '@/components/marketing/cdc';
 import { getCdcBreadcrumbs } from '@/lib/cdc/routes';
@@ -57,9 +58,9 @@ export default function MissionPage() {
       <Section className="border-t border-neutral-200 bg-white pb-16">
         <p className="max-w-2xl text-sm text-neutral-600">
           Delivery and systems work runs through{' '}
-          <a href="/infra24" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
+          <Link href="/infra24" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
             Infra24
-          </a>
+          </Link>
           , the implementation methodology behind DCC Miami programs and interfaces.
         </p>
       </Section>

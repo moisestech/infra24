@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { Eye, FileCheck, GraduationCap } from 'lucide-react'
 import { BackgroundPattern } from '@/components/BackgroundPattern'
 import { AnnouncementType, AnnouncementSubType } from '@/types/announcement'
@@ -154,24 +155,24 @@ export function AnnouncementCard({
                 </a>
                        {/* Survey Action Button - Inline */}
                        {announcement.title.toLowerCase().includes('survey') && (
-                         <a
+                         <Link
                            href="/o/oolite/surveys"
                            className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors ml-2 flex-shrink-0"
                          >
                            <FileCheck className="w-4 h-4 mr-1" />
                            Take Survey
-                         </a>
+                         </Link>
                        )}
                        
                        {/* Workshop Registration Button - Inline */}
                        {isWorkshopAnnouncement && (
-                         <a
+                         <Link
                            href="/o/oolite/workshop-catalog"
                            className="inline-flex items-center px-2 py-1 text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded-md hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors ml-2 flex-shrink-0"
                          >
                            <GraduationCap className="w-4 h-4 mr-1" />
                            Register
-                         </a>
+                         </Link>
                        )}
               </div>
               <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">

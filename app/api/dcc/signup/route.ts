@@ -33,16 +33,21 @@ function parseSignupBody(body: unknown) {
 }
 
 export async function handleDccSignupPost(body: unknown) {
-  const { mode, parsed } = parseSignupBody(body)
-  if (!parsed.success) {
+  const submission = parseSignupBody(body)
+  if (!submission.parsed.success) {
     return NextResponse.json(
-      { error: 'Invalid form data', details: parsed.error.flatten().fieldErrors },
+      { error: 'Invalid form data', details: submission.parsed.error.flatten().fieldErrors },
       { status: 400 }
     )
   }
 
-  const input = parsed.data
+  const { mode } = submission
+  const input = submission.parsed.data
   const pathway = getPathwayById(input.pathway)
+  // After verified enrollment launches, block email-only membership writes.
+  if (process.env.DCC_MEMBER_PROFILE_ENABLED === 'true' && pathway.id === 'join_dcc_index') {
+    return NextResponse.json({ error: 'Official DCC membership now uses verified accounts. Please use Join DCC.' }, { status: 410 })
+  }
   if (!pathway.enabled) {
     return NextResponse.json({ error: 'This signup pathway is not available yet.' }, { status: 400 })
   }
@@ -65,9 +70,9 @@ export async function handleDccSignupPost(body: unknown) {
   const existingRecord = await findPersonByEmail(baseId!, tablePeople!, apiKey!, input.email)
 
   let fields =
-    mode === 'full'
-      ? mapSignupToAirtableFields(input, pathway, submittedAt)
-      : mapQuickSignupToAirtableFields(input, pathway, submittedAt)
+    submission.mode === 'full'
+      ? mapSignupToAirtableFields(submission.parsed.data, pathway, submittedAt)
+      : mapQuickSignupToAirtableFields(submission.parsed.data, pathway, submittedAt)
 
   if (existingRecord) {
     fields = mergeSignupIntoExistingPerson(existingRecord, fields, {
@@ -92,10 +97,9 @@ export async function handleDccSignupPost(body: unknown) {
 
   return NextResponse.json({
     ok: true,
-    recordId: result.recordId,
     updated: result.updated,
     formMode: mode,
-    message: "You're in. Thanks for joining the DCC network.",
+    message: 'Your contact request was received for review, not as verified website membership.',
   })
 }
 

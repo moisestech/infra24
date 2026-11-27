@@ -13,8 +13,9 @@ type Params = { path: string[] }
 
 export async function GET(
   _req: Request,
-  { params }: { params: Params }
+  { params: pendingParams }: { params: Promise<Params> }
 ) {
+  const params = await pendingParams
   const unlocked = await hasFabricateProposalsAccess()
   if (!unlocked) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

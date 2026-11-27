@@ -8,6 +8,7 @@ import {
 function q(partial: Partial<MemoryAgentDemoQuestion> & { id: string; question: string }): MemoryAgentDemoQuestion {
   return {
     publicSafe: false,
+    showInApp: true,
     relatedRecognitionIds: [],
     group: 'working_now',
     ...partial,

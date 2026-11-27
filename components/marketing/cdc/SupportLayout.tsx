@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { ReactNode } from 'react';
 import { PageHero } from './PageHero';
 import { Section } from './Section';
@@ -50,12 +51,12 @@ export function SupportLayout({
           <p className="max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
             Funding narrative and downloadable materials are being prepared. For grantmaker
             conversations, email through{' '}
-            <a
+            <Link
               href="/contact/funders"
               className="font-medium text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-100"
             >
               funder contact
-            </a>
+            </Link>
             .
           </p>
         </Section>

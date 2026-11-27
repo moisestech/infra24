@@ -1,3 +1,4 @@
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { createClient } from '@supabase/supabase-js';
@@ -17,8 +18,7 @@ const supabase = createClient(
 );
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ orgId: string }> }
+  request: NextRequest
 ) {
   try {
     const { userId } = await auth();
@@ -26,7 +26,10 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { orgId: id } = await params;
+    const requestedOrgId = new URL(request.url).searchParams.get('org_id')
+    const access = await requireOrganizationStaff(requestedOrgId)
+    if (!access.ok) return NextResponse.json({error:access.error},{status:access.status,headers:{'Cache-Control':'private, no-store'}})
+    const id = access.orgId
 
     // First, get the organization by ID
     const { data: organization, error: orgError } = await supabase
@@ -132,8 +135,7 @@ export async function GET(
 }
 
 export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ orgId: string }> }
+  request: NextRequest
 ) {
   try {
     const { userId } = await auth();
@@ -141,7 +143,10 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { orgId: id } = await params;
+    const requestedOrgId = new URL(request.url).searchParams.get('org_id')
+    const access = await requireOrganizationStaff(requestedOrgId)
+    if (!access.ok) return NextResponse.json({error:access.error},{status:access.status,headers:{'Cache-Control':'private, no-store'}})
+    const id = access.orgId
     const body = await request.json();
 
     // First, get the organization by ID

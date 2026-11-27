@@ -5,8 +5,9 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params: pendingParams }: { params: Promise<{ orgId: string }> }
 ) {
+  const params = await pendingParams
   try {
     console.log('🔍 Calendar Connect API: Starting GET request')
     console.log('🔍 Calendar Connect API: orgId =', params.orgId)
@@ -30,8 +31,9 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params: pendingParams }: { params: Promise<{ orgId: string }> }
 ) {
+  const params = await pendingParams
   try {
     console.log('🔍 Calendar Connect API: Starting POST request')
     console.log('🔍 Calendar Connect API: orgId =', params.orgId)

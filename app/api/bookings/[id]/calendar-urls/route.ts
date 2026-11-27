@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import {
   generateGoogleCalendarUrl,
@@ -22,6 +24,8 @@ export async function GET(
       )
     }
 
+    const { userId } = await auth()
+    if (!userId) return NextResponse.json({error:'Authentication required'},{status:401,headers:{'Cache-Control':'private, no-store'}})
     const supabaseAdmin = getSupabaseAdmin()
 
     // Get booking details with participants
@@ -37,14 +41,19 @@ export async function GET(
       .eq('id', bookingId)
       .single()
 
-    console.log('Calendar URLs API - Booking query result:', { booking, bookingError })
 
     if (bookingError || !booking) {
-      console.log('Calendar URLs API - Booking not found:', { bookingError, booking })
+
       return NextResponse.json(
         { error: 'Booking not found' },
         { status: 404 }
       )
+    }
+
+    // Email addresses in legacy participant records are not Clerk identity proof.
+    if (booking.user_id !== userId) {
+      const access = await requireOrganizationStaff(booking.org_id)
+      if (!access.ok) return NextResponse.json({error:'Forbidden'},{status:403,headers:{'Cache-Control':'private, no-store'}})
     }
 
     // Get organization details
@@ -59,6 +68,7 @@ export async function GET(
       .from('resources')
       .select('title, location')
       .eq('id', booking.resource_id)
+      .eq('org_id', booking.org_id)
       .single()
 
     // Extract participant information
@@ -99,7 +109,7 @@ export async function GET(
     return NextResponse.json({
       booking_id: bookingId,
       calendar_urls: calendarUrls
-    })
+    },{headers:{'Cache-Control':'private, no-store'}})
 
   } catch (error) {
     console.error('Error generating calendar URLs:', error)

@@ -1,4 +1,5 @@
-import { fetchAllRecords, isAirtableConnectionConfigured } from '@/lib/airtable/client'
+import { createClient } from '@supabase/supabase-js'
+import { fetchAllRecords, isAirtableConnectionConfigured, type AirtableRecord } from '@/lib/airtable/client'
 import { buildCrmGraphElements } from '@/lib/airtable/crm-graph-transform'
 import { getDccOsConnection } from '@/lib/dcc/os-config'
 import { filterGraphForHome, HOME_GRAPH_MAX_TOTAL_NODES } from '@/lib/airtable/crm-graph-home-filter'
@@ -34,6 +35,29 @@ function peopleListOptions(): { viewId?: string } | undefined {
   const view =
     env('AIRTABLE_DCC_CRM_VIEW_PEOPLE')?.trim() || env('AIRTABLE_DCC_CRM_VIEW_ID')?.trim() || undefined
   return view ? { viewId: view } : undefined
+}
+
+/** Website identities are never published through the older CRM graph.
+ * Canonical SQL record ownership wins even if an Airtable marker was cleared.
+ * Missing credentials / failed reads suppress people rather than leak identity.
+ */
+export async function excludeWebsiteBoundPeople(people: AirtableRecord[]): Promise<AirtableRecord[]> {
+  const candidates=people.filter(person=>!person.fields['DCC Website Member Binding ID'])
+  if(!candidates.length) return []
+  const url=env('NEXT_PUBLIC_SUPABASE_URL')
+  const key=env('SUPABASE_SERVICE_ROLE_KEY')
+  if(!url || !key) return []
+  try {
+    const db=createClient<any>(url,key,{auth:{autoRefreshToken:false,persistSession:false}})
+    const bound=new Set<string>()
+    for(let i=0;i<candidates.length;i+=40) {
+      const {data,error}=await db.from('dcc_platform_member_bindings').select('airtable_person_id')
+        .in('airtable_person_id',candidates.slice(i,i+40).map(person=>person.id))
+      if(error || !Array.isArray(data)) return []
+      for(const row of data) if(row.airtable_person_id) bound.add(row.airtable_person_id)
+    }
+    return candidates.filter(person=>!bound.has(person.id))
+  } catch { return [] }
 }
 
 export type FetchDccCrmGraphOptions = {
@@ -78,8 +102,9 @@ export async function fetchDccCrmGraphPayload(
     tableCampaigns ? fetchAllRecords(baseId!, tableCampaigns, apiKey!) : Promise.resolve([]),
   ])
 
+  const visiblePeople = visibility==='public' ? await excludeWebsiteBoundPeople(people) : people
   const elements = buildCrmGraphElements(
-    { people, seedCandidates, institutions, opportunities, interactions, campaigns },
+    { people:visiblePeople, seedCandidates, institutions, opportunities, interactions, campaigns },
     { surface, mode, visibility }
   )
 

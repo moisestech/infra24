@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic'
 
-export default function PortalFabricatorPage() {
-  const { userId } = auth()
+export default async function PortalFabricatorPage() {
+  const { userId } = await auth()
   if (!userId) {
     redirect('/sign-in?redirect_url=%2Fportal%2Ffabricator')
   }

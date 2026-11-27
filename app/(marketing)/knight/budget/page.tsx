@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import dynamic from 'next/dynamic';
+import { FundingSourcesDonut } from '@/components/marketing/knight/budget/FundingSourcesDonutClient'
 import Link from 'next/link';
 import { PageHero, Section } from '@/components/marketing/cdc';
 import { AllocationHorizontalBar } from '@/components/marketing/knight/budget/AllocationHorizontalBar';
@@ -30,22 +30,6 @@ import {
   knightBudgetSummary,
 } from '@/lib/marketing/knight-budget';
 import { knightFoundationLogoSrc } from '@/lib/marketing/knight-packet';
-
-const FundingSourcesDonut = dynamic(
-  () =>
-    import('@/components/marketing/knight/budget/FundingSourcesDonut').then((m) => ({
-      default: m.FundingSourcesDonut,
-    })),
-  { ssr: false, loading: () => <ChartFallback /> }
-);
-
-function ChartFallback() {
-  return (
-    <div className="flex h-[280px] items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 text-sm text-neutral-500 dark:border-neutral-700 dark:bg-neutral-900/50 dark:text-neutral-400">
-      Loading chart…
-    </div>
-  );
-}
 
 function Callout({ children }: { children: ReactNode }) {
   return (

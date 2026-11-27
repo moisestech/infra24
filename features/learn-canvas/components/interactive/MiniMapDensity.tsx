@@ -142,7 +142,7 @@ export function MiniMapDensity({
     const rail = scrollRef.current as HTMLElement | null
     if (!rail) return
     const sw = rail.scrollWidth, cw = rail.clientWidth
-    if (sw <= cw) return
+    if (sw <= cw || w <= 0) return
     // target left so that viewport centers at centerX
     const targetLeft = (centerX - vpWidth/2) / w * sw
     rail.scrollTo({ left: clamp(targetLeft, 0, sw - cw), behavior: 'smooth' })
@@ -176,7 +176,9 @@ export function MiniMapDensity({
   }
 
   return (
-    <div ref={wrapRef} className="relative w-full select-none">
+    <div ref={wrapRef} className="relative w-full select-none touch-none"
+      onPointerDown={onPointerDown} onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp} onPointerCancel={onPointerUp}>
       {/* heatmap canvas */}
       <canvas ref={canvasRef} style={{ width: '100%', height }} />
 
@@ -195,9 +197,6 @@ export function MiniMapDensity({
           if (e.key === 'ArrowRight') rail.scrollBy({ left:  step, behavior: 'smooth' })
           if (e.key === 'ArrowLeft')  rail.scrollBy({ left: -step, behavior: 'smooth' })
         }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
         className="absolute top-0 h-full rounded-md border"
         style={{
           left: vpLeft,
