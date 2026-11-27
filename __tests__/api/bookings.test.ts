@@ -1,6 +1,7 @@
 /** @jest-environment node */
 import { NextRequest } from 'next/server'
 import { POST } from '@/app/api/bookings/route'
+import { sendBookingConfirmationEmail } from '@/lib/email/email-service'
 
 // Explicit route-boundary mocks; no real Supabase or outbound email.
 const mockResource = jest.fn()
@@ -66,6 +67,16 @@ describe('/api/bookings', () => {
     expect(data).toHaveProperty('confirmation_url')
     expect(data).toHaveProperty('reschedule_url')
     expect(data).toHaveProperty('cancel_url')
+    const receipt=new URL(data.confirmation_url), mutation=new URL(data.cancel_url)
+    const mail=(sendBookingConfirmationEmail as jest.Mock).mock.calls[0][0]
+    const calendar=new URL(mail.icsUrl)
+    expect(calendar.pathname).toBe(receipt.pathname)
+    expect(calendar.search).toBe('')
+    expect(calendar.hash).toMatch(/^#calendar=[a-f0-9]{64}$/)
+    expect(calendar.hash.slice(10)).not.toBe(mutation.searchParams.get('token'))
+    expect(calendar.hash.slice(10)).not.toBe(receipt.hash.slice(9))
+    expect(mail.calendarUrls.google).toBe(mail.icsUrl)
+    expect(mail.calendarUrls.outlook).toBe(mail.icsUrl)
   })
 
   it('should return 400 for missing required fields', async () => {

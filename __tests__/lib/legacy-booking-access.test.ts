@@ -41,3 +41,26 @@ test.each([{start_time:'invalid',end_time:'2099-01-02T00:00:00Z'},{start_time:'2
   expect((await reschedule(post({token:'synthetic',...times}),{params})).status).toBe(400)
   expect(getSupabaseAdmin).not.toHaveBeenCalled()
 })
+
+test('reschedule checks the explicit resource tenant after token verification',async()=>{
+ const resourceId='33333333-3333-4333-8333-333333333333'
+ const key='synthetic-mutation'
+ const booking={select:jest.fn().mockReturnThis(),eq:jest.fn().mockReturnThis(),single:jest.fn().mockResolvedValue({data:{id,org_id:org,resource_id:resourceId,status:'confirmed',metadata:{reschedule_token:key}},error:null}),update:jest.fn()}
+ const resource={select:jest.fn().mockReturnThis(),eq:jest.fn().mockReturnThis(),maybeSingle:jest.fn().mockResolvedValue({data:null,error:null})}
+ const from=jest.fn(t=>t==='bookings'?booking:resource)
+ ;(getSupabaseAdmin as jest.Mock).mockReturnValue({from})
+ const response=await reschedule(post({token:key,start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T11:00:00Z'}),{params})
+ expect(response.status).toBe(404)
+ expect(booking.select).toHaveBeenCalledWith('*')
+ expect(resource.eq).toHaveBeenCalledWith('id',resourceId)
+ expect(resource.eq).toHaveBeenCalledWith('org_id',org)
+ expect(resource.eq).toHaveBeenCalledWith('is_bookable',true)
+ expect(booking.update).not.toHaveBeenCalled()
+})
+test.each([cancel,reschedule])('wrong mutation token prevents even tenant resource lookup',async handler=>{
+ const q={select:jest.fn().mockReturnThis(),eq:jest.fn().mockReturnThis(),single:jest.fn().mockResolvedValue({data:{id,org_id:org,status:'confirmed',metadata:{reschedule_token:'different'}},error:null})}
+ const from=jest.fn().mockReturnValue(q)
+ ;(getSupabaseAdmin as jest.Mock).mockReturnValue({from})
+ const response=await handler(post({token:'wrong',start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T11:00:00Z'}),{params})
+ expect(response.status).toBe(403);expect(from).toHaveBeenCalledTimes(1);expect(from).not.toHaveBeenCalledWith('resources')
+})
