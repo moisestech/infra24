@@ -13,21 +13,12 @@ function failure(error: unknown) {
 export async function GET() {
   try {
     const { db, binding } = await memberPassportContext()
-    let currentlyPublic=false
-    let publicSlug: string | null=null
-    if(binding.state==='active' && binding.airtablePersonId &&
-       process.env.DCC_PUBLIC_ATLAS_MEMBER_VISIBILITY_ENABLED==='true') {
-      const {data,error}=await db.from('dcc_approved_passport_snapshots')
-        .select('slug,airtable_person_id').eq('binding_id',binding.id).maybeSingle()
-      if(error) throw new MemberAccessError(503,'publication_status_unavailable')
-      currentlyPublic=Boolean(data && data.airtable_person_id===binding.airtablePersonId)
-      publicSlug=currentlyPublic ? data!.slug : null
-    }
+    // Phase A: public snapshots are deliberately outside this release candidate.
     return NextResponse.json({
       membership: binding.state === 'active' ? 'active' : 'pending_reconciliation',
       profile: await readOwnerPassport(db, binding),
-      currentlyPublic,
-      publicSlug,
+      currentlyPublic:false,
+      publicSlug:null,
     }, { headers: PRIVATE_HEADERS })
   } catch (e) { return failure(e) }
 }

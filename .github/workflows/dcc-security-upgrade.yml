@@ -1,7 +1,7 @@
 name: DCC pinned security candidate (Node 22)
 on:
   push:
-    branches: ['security/dcc-dependency-remediation-20261126', 'spec/unified-website-membership-node-rfc-20261122', main]
+    branches: ['security/dcc-dependency-remediation-20261126', 'spec/unified-website-membership-node-rfc-20261122', 'release/dcc-passport-private-pilot', main]
 permissions:
   contents: read
 concurrency:

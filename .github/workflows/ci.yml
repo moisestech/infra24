@@ -2,11 +2,112 @@ name: CI
 
 on:
   push:
-    branches: [main, develop, 'career/**']
+    branches: [main, develop, 'career/**', 'security/dcc-dependency-remediation-20261126', 'spec/unified-website-membership-node-rfc-20261122', 'release/dcc-passport-private-pilot']
   pull_request:
     branches: [main, develop]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  dcc-mvp:
+    name: DCC private owner Passport regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: DCC focused Jest tests
+        run: |
+          npx jest --runInBand --ci \
+            __tests__/lib/dcc-membership-clerk-event.test.ts \
+            __tests__/lib/dcc-membership-lifecycle.test.ts \
+            __tests__/lib/dcc-passport-owner.test.ts \
+            __tests__/lib/dcc-auth-return-path.test.ts
+
+  dcc-sql:
+    name: DCC Phase A owner database regression
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: local-ci-only
+          POSTGRES_DB: dcc_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d dcc_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run isolated migration and rollback-only regression
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGPASSWORD: local-ci-only
+          PGDATABASE: dcc_test
+        run: |
+          set -euo pipefail
+          unset PGOPTIONS PGSERVICE PGSERVICEFILE PGHOSTADDR
+          test "$PGHOST" = 127.0.0.1 && test "$PGDATABASE" = dcc_test
+          psql -X -v ON_ERROR_STOP=1 -c 'CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE service_role NOLOGIN BYPASSRLS;'
+          for migration in \
+            supabase/migrations/20261124130727_dcc_platform_member_event_ledger_20261122220000.sql \
+            supabase/migrations/20261124130801_dcc_private_profile_and_sculpture_snapshots_20261122233000.sql \
+            supabase/migrations/20261124130802_dcc_member_reconciliation_queue_20261122235000.sql \
+            supabase/migrations/20261125205617_dcc_steward_publication_grants_20261125214000.sql \
+            supabase/migrations/20261126021500_dcc_owner_passport_revision_cas.sql
+          do
+            psql -v ON_ERROR_STOP=1 -f "$migration"
+          done
+          psql -v ON_ERROR_STOP=1 -f supabase/tests/dcc_owner_passport_revision_cas.sql
+          psql -X -v ON_ERROR_STOP=1 -f supabase/tests/dcc_passport_session_resume.sql
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Exercise application store through local PostgREST
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: '5432'
+          PGUSER: postgres
+          PGPASSWORD: local-ci-only
+          PGDATABASE: dcc_test
+          DCC_LOCAL_STORE_TEST: '1'
+        run: |
+          set -euo pipefail
+          unset PGOPTIONS PGSERVICE PGSERVICEFILE PGHOSTADDR
+          test "$PGHOST" = 127.0.0.1 && test "$PGDATABASE" = dcc_test
+          psql -X -v ON_ERROR_STOP=1 -c "CREATE ROLE dcc_local_gateway LOGIN NOINHERIT PASSWORD 'local-gateway-only'; GRANT service_role TO dcc_local_gateway;"
+          # Minimal synthetic legacy contract used by the existing Clerk handler.
+          psql -X -v ON_ERROR_STOP=1 -c "CREATE TABLE public.org_memberships (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), clerk_user_id text NOT NULL, role text NOT NULL, org_id uuid, joined_at timestamptz NOT NULL); CREATE UNIQUE INDEX synthetic_org_member_unique ON public.org_memberships(clerk_user_id) WHERE org_id IS NULL; ALTER TABLE public.org_memberships ENABLE ROW LEVEL SECURITY; GRANT SELECT, INSERT, DELETE ON public.org_memberships TO service_role;"
+          export DCC_TEST_BINDING_ID=$(psql -X -At -v ON_ERROR_STOP=1 -c "INSERT INTO public.dcc_platform_member_bindings(clerk_instance,clerk_user_id,state,verified_at) VALUES ('synthetic-store-ci','user_store_ci','pending_reconciliation',now()) RETURNING id" | head -n 1)
+          trap 'docker rm -f dcc-local-rest >/dev/null 2>&1 || true' EXIT
+          docker run -d --name dcc-local-rest --network host \
+            -e PGRST_DB_URI=postgres://dcc_local_gateway:local-gateway-only@127.0.0.1:5432/dcc_test \
+            -e PGRST_DB_SCHEMAS=public -e PGRST_DB_ANON_ROLE=service_role \
+            -e PGRST_SERVER_HOST=127.0.0.1 -e PGRST_SERVER_PORT=3009 \
+            postgrest/postgrest:v12.2.3
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3009/ >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3009/ >/dev/null
+          npx jest --runInBand --ci __tests__/lib/dcc-passport-local-store.test.ts
+
   test:
     runs-on: ubuntu-latest
 
@@ -16,7 +117,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -27,6 +128,10 @@ jobs:
 
       - name: Run type check
         run: npm run type-check
+        env:
+          # This repository's TS program exceeds the runner's default V8 heap.
+          # Keep strict checking enabled; do not suppress diagnostics.
+          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Run linting
         run: npm run lint
@@ -35,6 +140,7 @@ jobs:
         run: npm run test
 
       - name: Memory Agent golden eval (optional)
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
         run: |
           if [ -z "$OPENAI_API_KEY" ]; then
             echo "Optional Memory Agent golden eval skipped (no API key)"
@@ -49,8 +155,19 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NODE_OPTIONS: --max-old-space-size=4096
+          # Limit static page worker concurrency.
+          CIRCLE_NODE_TOTAL: '2'
+          NEXT_TELEMETRY_DISABLED: '1'
+          # Compile with offline fixtures. Provider integration runs in protected preview.
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Y2xlcmsucHJldmlldy5leGFtcGxlJA
+          CLERK_SECRET_KEY: local-dummy
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:65432
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: local-placeholder
+          SUPABASE_SERVICE_ROLE_KEY: local-placeholder
+          RESEND_API_KEY: re_local_only
+
+      - name: Type check generated Next route contracts after build
+        run: npm run type-check
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096

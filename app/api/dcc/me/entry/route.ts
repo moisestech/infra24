@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { memberPassportContext, MemberAccessError, PRIVATE_HEADERS } from '@/lib/dcc/membership/profile-store'
+import { memberPassportContext, MemberAccessError, PRIVATE_HEADERS, requireOwnerMutationOrigin } from '@/lib/dcc/membership/profile-store'
 import { normalizeCampaignId, normalizeEntrySource } from '@/lib/dcc/membership/clerk-event'
 
 export const dynamic='force-dynamic'
 /** Authenticated private entry context. Values are untrusted hints, NOT proof of membership. */
 export async function POST(request:NextRequest) {
   try {
+    requireOwnerMutationOrigin(request)
     if(Number(request.headers.get('content-length')||0)>1000) {
       return NextResponse.json({error:'too_large'},{status:413,headers:PRIVATE_HEADERS})
     }
