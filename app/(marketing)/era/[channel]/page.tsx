@@ -22,7 +22,8 @@ export function generateStaticParams(): EraChannelParams[] {
   return getEraChannelSlugs().map((channel) => ({ channel }));
 }
 
-export function generateMetadata({ params }: { params: EraChannelParams }): Metadata {
+export async function generateMetadata({ params: pendingParams }: { params: Promise<EraChannelParams> }): Promise<Metadata> {
+  const params = await pendingParams
   return cdcPageMetadata(`/era/${params.channel}`);
 }
 
@@ -130,7 +131,8 @@ const ROADMAP_PHASES: Record<
   ],
 };
 
-export default function EraChannelPage({ params }: { params: EraChannelParams }) {
+export default async function EraChannelPage({ params: pendingParams }: { params: Promise<EraChannelParams> }) {
+  const params = await pendingParams
   const channel = getBornDigitalEraChannel(params.channel as BornDigitalEraChannelId);
   if (!channel) {
     return notFound();
