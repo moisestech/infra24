@@ -11,11 +11,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 }
 
-export default async function LearnAiRehearsePage({
-  params,
-}: {
-  params: { slug: string; workshopKey: string }
+export default async function LearnAiRehearsePage({ params: pendingParams }: {
+  params: Promise<{ slug: string; workshopKey: string }>
 }) {
+  const params = await pendingParams
   if (params.workshopKey !== LEARN_AI_WORKSHOP_SLUG) {
     notFound()
   }

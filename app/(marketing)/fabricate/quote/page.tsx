@@ -2,11 +2,10 @@ import { redirect } from 'next/navigation'
 
 type SearchParams = Record<string, string | string[] | undefined>
 
-export default function FabricateQuoteRedirectPage({
-  searchParams,
-}: {
-  searchParams: SearchParams
+export default async function FabricateQuoteRedirectPage({ searchParams: pendingSearchParams }: {
+  searchParams: Promise<SearchParams>
 }) {
+  const searchParams = await pendingSearchParams
   const params = new URLSearchParams()
   for (const [key, value] of Object.entries(searchParams ?? {})) {
     if (typeof value === 'string') params.set(key, value)

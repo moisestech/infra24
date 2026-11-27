@@ -20,10 +20,11 @@ import {
 const path = '/edgezones'
 
 type PageProps = {
-  searchParams?: { lang?: string | string[] }
+  searchParams?: Promise<{ lang?: string | string[] }>
 }
 
-export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ searchParams: pendingSearchParams }: PageProps): Promise<Metadata> {
+  const searchParams = await pendingSearchParams
   const cookieStore = await cookies()
   const locale = resolveEdgeZonesLocale({
     searchParams,
@@ -38,7 +39,8 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   }
 }
 
-export default async function EdgeZonesPortalPage({ searchParams }: PageProps) {
+export default async function EdgeZonesPortalPage({ searchParams: pendingSearchParams }: PageProps) {
+  const searchParams = await pendingSearchParams
   const cookieStore = await cookies()
   const locale = resolveEdgeZonesLocale({
     searchParams,
