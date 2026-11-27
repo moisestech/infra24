@@ -42,12 +42,17 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime()) || end < start || end.getTime()-start.getTime() > 30*86400000) {
+      return NextResponse.json({error:'Invalid availability range'}, {status:400})
+    }
     const supabaseAdmin = getSupabaseAdmin()
 
     // Get resource with availability rules
     const { data: resource, error: resourceError } = await supabaseAdmin
       .from('resources')
-      .select('*')
+      .select('id,org_id,availability_rules')
       .eq('id', resourceId)
       .eq('is_active', true)
       .eq('is_bookable', true)
@@ -69,21 +74,11 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Parse date range
-    const start = new Date(startDate)
-    const end = new Date(endDate)
-    
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-      return NextResponse.json(
-        { error: 'Invalid date format. Use YYYY-MM-DD' },
-        { status: 400 }
-      )
-    }
-
     // Generate available slots
     const availableSlots = await generateAvailableSlots(
       supabaseAdmin,
       resourceId,
+      resource.org_id,
       rules,
       start,
       end
@@ -93,14 +88,13 @@ export async function GET(request: NextRequest) {
       resource_id: resourceId,
       timezone: rules.timezone || 'America/New_York',
       slot_minutes: rules.slot_minutes || 30,
-      slots: availableSlots
-    })
+      slots: availableSlots.map(({start,end})=>({start,end}))
+    }, {headers:{'Cache-Control':'private, no-store'}})
 
-  } catch (error) {
-    console.error('Error in availability API:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 503 }
     )
   }
 }
@@ -108,6 +102,7 @@ export async function GET(request: NextRequest) {
 async function generateAvailableSlots(
   supabaseAdmin: any,
   resourceId: string,
+  orgId: string,
   rules: AvailabilityRules,
   startDate: Date,
   endDate: Date
@@ -119,14 +114,19 @@ async function generateAvailableSlots(
   const maxPerDay = rules.max_per_day_per_host || 10
 
   // Get existing bookings for the date range
-  const { data: existingBookings } = await supabaseAdmin
+  if (!Number.isInteger(slotMinutes) || slotMinutes < 1 || slotMinutes > 1440) throw new Error('Invalid slot duration')
+  const { data: existingBookings, error } = await supabaseAdmin
     .from('bookings')
     .select('start_time, end_time, metadata')
     .eq('resource_id', resourceId)
+    .eq('org_id', orgId)
     .eq('status', 'confirmed')
-    .gte('start_time', startDate.toISOString())
-    .lte('start_time', endDate.toISOString())
+    .gt('end_time', startDate.toISOString())
+    .lt('start_time', new Date(endDate.getTime()+86400000).toISOString())
+    .limit(1000)
+  if (error || !existingBookings || existingBookings.length >= 1000) throw new Error('Availability lookup incomplete')
 
+  // Conservatively block all overlapping bookings, including those without a host.
   // Group bookings by host and date
   const bookingsByHost: Record<string, Record<string, any[]>> = {}
   existingBookings?.forEach((booking: any) => {
@@ -165,7 +165,7 @@ async function generateAvailableSlots(
             slotMinutes,
             bufferBefore,
             bufferAfter,
-            bookingsByHost[window.host]?.[dateStr] || [],
+            existingBookings,
             maxPerDay
           )
           slots.push(...hostSlots)
