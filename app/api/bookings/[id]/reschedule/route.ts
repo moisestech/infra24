@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { generateScheduledGoogleMeetLink } from '@/lib/google-meet'
+import { configuredSlot,bookingBuffers } from '@/lib/booking/configured-slot'
+import { bookingCalendarToken } from '@/lib/security/booking-receipt'
 import { sendBookingRescheduledEmail, BookingEmailData } from '@/lib/email/email-service'
 
 export const dynamic = 'force-dynamic';
@@ -13,14 +15,14 @@ export async function POST(
     const { id: bookingId } = await params
     const { token, start_time, end_time, notes } = await request.json()
 
-    if (!token) {
+    if (typeof token !== 'string' || !token.trim()) {
       return NextResponse.json(
         { error: 'Reschedule token is required' },
         { status: 400 }
       )
     }
 
-    if (!start_time || !end_time) {
+    if (typeof start_time !== 'string' || typeof end_time !== 'string' || !Number.isFinite(Date.parse(start_time)) || !Number.isFinite(Date.parse(end_time)) || Date.parse(end_time) <= Date.parse(start_time)) {
       return NextResponse.json(
         { error: 'New start_time and end_time are required' },
         { status: 400 }
@@ -32,16 +34,7 @@ export async function POST(
     // Get booking details
     const { data: booking, error: bookingError } = await supabaseAdmin
       .from('bookings')
-      .select(`
-        *,
-        resources (
-          id,
-          title,
-          location,
-          metadata,
-          availability_rules
-        )
-      `)
+      .select('*')
       .eq('id', bookingId)
       .single()
 
@@ -79,7 +72,8 @@ export async function POST(
     }
 
     // Check availability for new time slot
-    const resource = booking.resources
+    const {data:resource,error:resourceError}=await supabaseAdmin.from('resources').select('id,title,location,metadata,availability_rules').eq('id',booking.resource_id).eq('org_id',booking.org_id).eq('is_active',true).eq('is_bookable',true).maybeSingle()
+    if(resourceError) return NextResponse.json({error:'Resource verification unavailable'},{status:503,headers:{'Cache-Control':'private, no-store'}})
     if (!resource) {
       return NextResponse.json(
         { error: 'Resource not found' },
@@ -87,14 +81,21 @@ export async function POST(
       )
     }
 
-    // Simple availability check - in a real system, you'd use the availability API
-    const { data: conflictingBookings } = await supabaseAdmin
+    const host=booking.metadata?.host
+    if(typeof host!=='string'||!configuredSlot(resource.availability_rules,start_time,end_time,host))return NextResponse.json({error:'Outside configured availability'},{status:409})
+    const {before,after}=bookingBuffers(resource.availability_rules)
+    // Check interval including configured buffers
+    const { data: conflictingBookings, error: conflictError } = await supabaseAdmin
       .from('bookings')
       .select('id')
       .eq('resource_id', resource.id)
+      .eq('org_id', booking.org_id)
       .eq('status', 'confirmed')
       .neq('id', bookingId)
-      .or(`and(start_time.lt.${end_time},end_time.gt.${start_time})`)
+      .lt('start_time', new Date(Date.parse(end_time)+before*60000).toISOString())
+      .gt('end_time', new Date(newStartTime.getTime()-after*60000).toISOString())
+
+    if (conflictError || !conflictingBookings) return NextResponse.json({error:'Availability check failed'},{status:503})
 
     if (conflictingBookings && conflictingBookings.length > 0) {
       return NextResponse.json(
@@ -114,7 +115,7 @@ export async function POST(
         description: booking.description || 'Remote consultation via Google Meet',
         startTime: newStartTime,
         endTime: new Date(end_time),
-        hostEmail: booking.metadata?.host || 'mo@oolite.org',
+        hostEmail: host,
         attendeeEmails: [booking.metadata?.artist_email || booking.user_id]
       }
       
@@ -145,9 +146,14 @@ export async function POST(
         }
       })
       .eq('id', bookingId)
+      .eq('org_id', booking.org_id)
+      .eq('metadata->>reschedule_token', token)
+      .eq('status', booking.status)
       .select()
       .single()
 
+    if(updateError?.code==='23P01')return NextResponse.json({error:'Time slot is not available'},{status:409})
+    if (updateError?.code === '40P01' || updateError?.code === '40001') return NextResponse.json({error:'Booking contention; retry availability'},{status:503})
     if (updateError) {
       console.error('Error updating booking:', updateError)
       return NextResponse.json(
@@ -160,7 +166,8 @@ export async function POST(
     const { data: announcement } = await supabaseAdmin
       .from('announcements')
       .select('id')
-      .eq('payload->booking_id', bookingId)
+      .eq('payload->>booking_id', bookingId)
+      .eq('org_id',booking.org_id)
       .single()
 
     if (announcement) {
@@ -173,16 +180,18 @@ export async function POST(
           updated_at: new Date().toISOString()
         })
         .eq('id', announcement.id)
+        .eq('org_id',booking.org_id)
     }
 
     // Send reschedule notification email
     try {
+      const calendarPage = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/bookings/confirmation/${booking.id}#calendar=${bookingCalendarToken(booking.id,token)}`
       const emailData: BookingEmailData = {
         bookingId: booking.id,
         artistName: booking.metadata?.artist_name || 'Unknown Artist',
         artistEmail: booking.metadata?.artist_email || booking.user_id,
         hostName: booking.metadata?.host?.split('@')[0] || 'Host',
-        hostEmail: booking.metadata?.host || 'mo@oolite.org',
+        hostEmail: host,
         resourceTitle: resource.title,
         startTime: new Date(start_time),
         endTime: new Date(end_time),
@@ -192,8 +201,8 @@ export async function POST(
         organizationName: 'Oolite Arts',
         rescheduleUrl: '', // Not needed for reschedule email
         cancelUrl: '', // Not needed for reschedule email
-        icsUrl: '',
-        calendarUrls: { google: '', outlook: '' }
+        icsUrl: calendarPage,
+        calendarUrls: { google: calendarPage, outlook: calendarPage }
       }
 
       const oldStartTime = new Date(booking.start_time)

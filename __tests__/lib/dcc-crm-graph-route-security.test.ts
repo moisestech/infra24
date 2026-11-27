@@ -10,14 +10,14 @@ jest.mock('../../lib/airtable/crm-graph-service', () => ({
 }))
 
 const graph = fetchDccCrmGraphPayload as jest.Mock
-const clerk = auth as jest.Mock
+const clerk = auth as unknown as jest.Mock
 const savedFlag = process.env.DCC_NETWORK_ADMIN_ENABLED
 const savedAllowlist = process.env.DCC_NETWORK_ADMIN_CLERK_USER_IDS
 
 beforeEach(() => {
   jest.clearAllMocks()
   graph.mockResolvedValue({ elements: [], meta: { source: 'fixture' } })
-  clerk.mockReturnValue({ userId: null })
+  clerk.mockResolvedValue({ userId: null })
   delete process.env.DCC_NETWORK_ADMIN_ENABLED
   delete process.env.DCC_NETWORK_ADMIN_CLERK_USER_IDS
 })
@@ -47,7 +47,8 @@ describe('public CRM graph route', () => {
   ])('fails closed without an authorized staff account for %s', async query => {
     const response = await call(query)
     expect(response.status).toBe(403)
-    expect(response.headers.get('cache-control')).toBe('no-store')
+    const invalid = query.includes('=unknown')
+    expect(response.headers.get('cache-control')).toBe(invalid ? 'no-store' : 'private, no-store')
     expect(graph).not.toHaveBeenCalled()
   })
 
@@ -62,7 +63,7 @@ describe('public CRM graph route', () => {
   it('allows explicitly configured staff and never caches internal responses', async () => {
     process.env.DCC_NETWORK_ADMIN_ENABLED = 'true'
     process.env.DCC_NETWORK_ADMIN_CLERK_USER_IDS = 'user_staff'
-    clerk.mockReturnValue({ userId: 'user_staff' })
+    clerk.mockResolvedValue({ userId: 'user_staff' })
     const response = await call('mode=research&visibility=internal')
     expect(response.status).toBe(200)
     expect(response.headers.get('cache-control')).toBe('no-store')

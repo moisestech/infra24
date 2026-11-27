@@ -1,0 +1,757 @@
+{
+  "source": "af86e2f388a8cd74a021eb9c83f32c7e537c540d",
+  "pilotParent": "aaca9e2cc60881d3ea3c531b94a5ae2bd6564356",
+  "reason": "Repair inherited full-repository Next/Clerk/type/lint/test compatibility. Source blobs from existing integrated draft, not a merge. No Phase B/C or activation.",
+  "files": [
+    {
+      "path": "__tests__/components/BookingForm.test.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "4ed37d1c809d46e8b53ed0262fb958ede905a333"
+    },
+    {
+      "path": "__tests__/lib/airtable-question-catalog.test.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "71d829106066877ea9a5a16a3700e99c1f137a87"
+    },
+    {
+      "path": "__tests__/lib/dcc-crm-graph-route-security.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "bc1fa9d2c3ae2cbc35399b7f085b850121f1cd79"
+    },
+    {
+      "path": "__tests__/lib/dcc-culture.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "76a04b1f5da54fdf584221236123247f63302f4d"
+    },
+    {
+      "path": "__tests__/lib/dcc-signup.test.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "2fb62d79a43750c0260270164034b2ad3236f0cf"
+    },
+    {
+      "path": "__tests__/lib/oolite-artist-workshop.test.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "009c4c65cdaa4418e86dabf241b4089038b8b8a3"
+    },
+    {
+      "path": "__tests__/lib/programming-relationships.test.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "529018783c47bd1a05a2b4f46cc4c4055ebadb88"
+    },
+    {
+      "path": "__tests__/utils/ics-generator.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "a56e5b2a3dc458ee05733148d3ad44fa388ab744"
+    },
+    {
+      "path": "app/(marketing)/portal/fabricator/page.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "3a6ea4ef107320a20197510ec8c5b243d8796faa"
+    },
+    {
+      "path": "app/(marketing)/portal/projects/[jobCode]/page.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "2e679cff30bda89937bd18f953ddc06fa9e64c13"
+    },
+    {
+      "path": "app/api/content/workshops/[workshopId]/chapters/[chapterSlug]/route.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "a57071a7a90d31429a33b1a7100cc777a12ca383"
+    },
+    {
+      "path": "app/api/dcc/signup/route.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "a96b246e5767236eb08cdec9f65529755d924b48"
+    },
+    {
+      "path": "app/api/era-metrics/route.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "79ae86753350e76cad36894743497edceb59dfd5"
+    },
+    {
+      "path": "app/api/marketing/dcc-network-graph/route.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "1a09645ed89ca28bcbb870bc99e2af91d5c7eec1"
+    },
+    {
+      "path": "app/api/organizations/by-slug/[slug]/memory-agent/voice/route.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "5353a2420829f87e16191e3fdd79272d6636f177"
+    },
+    {
+      "path": "app/create-announcement/page.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "3743453f8b57e81359e9dfdf740bca616e67ef43"
+    },
+    {
+      "path": "components/carousel/AnnouncementDateDisplay.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "88d539c636375c628ce71da45db5a38fd9834ae4"
+    },
+    {
+      "path": "components/dcc/fabrication/proposal/modules.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "bdeb02702cd533494dcef6033f84a583feccf41a"
+    },
+    {
+      "path": "components/marketing/dcc-network/GraphExplorer.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "220ba8c0d466a77094cda92d4178922b3a3010c3"
+    },
+    {
+      "path": "components/marketing/knight/budget/BudgetSteppedFlow.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "1cbac1e645804911c6b8fbca191510983de28066"
+    },
+    {
+      "path": "components/memory-agent/MemoryAgentClient.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "d4528927d285c17f34f05927b048aca8c6d5157b"
+    },
+    {
+      "path": "components/memory-agent/MemoryAgentDevPanel.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "342d3feadf1b7ce93fa1b354fa0512d28ee2985d"
+    },
+    {
+      "path": "components/memory-agent/MemoryAgentVoicePipelineCard.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "d0a4819f3ce94d0f29ca259106212df7c602ae19"
+    },
+    {
+      "path": "components/workshop-engine/InstructionalConcepts.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "95cc70e0149e323a91ddd53daafc3ed804455a3b"
+    },
+    {
+      "path": "components/workshops/marketing/IpAgeOfAiWorkshopDetailSectionNav.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "b6b54c7bc180ce5782ffb5d23130b44e5cfa0fcd"
+    },
+    {
+      "path": "features/learn-canvas/components/__tests__/chapter-visibility.test.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "9bab3e3d4070798a1726a7e40d4eb734f6c6e5b7"
+    },
+    {
+      "path": "features/learn-canvas/components/interactive/__tests__/MiniMapDensity.test.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "002bd5079a7fd22654411c77c37924dccb15acc2"
+    },
+    {
+      "path": "features/learn-canvas/components/interactive/__tests__/TimelineWrapper.test.tsx",
+      "reason": "Reported strict type diagnostic",
+      "sha": "1b6d9e73acdb06a0ecc68a71b305f1c7b28d3460"
+    },
+    {
+      "path": "features/learn-canvas/services/__tests__/workshopService.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "4adc41ce7ecc370bb00d4645e94c7c1e15ccbd96"
+    },
+    {
+      "path": "lib/auth/rate-limiter.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "7795fb36c2af7c978c09cc3385b090fc67ffdc55"
+    },
+    {
+      "path": "lib/course/vibe-net-art/glossary.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "474563e6988bb265219962a45e5d8c48c420fc26"
+    },
+    {
+      "path": "lib/dcc/artwork/people-practice-graph.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "2d19bf2a7089a4d53cbf2707588147e4c47646d2"
+    },
+    {
+      "path": "lib/dcc/fabrication/materials.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "a9abdccd8b1716c4a7170be9b0db664525dcf07e"
+    },
+    {
+      "path": "lib/dcc/signup/suggest/schema.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "1c748c83fc77ef91e57a2d3b86edc9a37aedbc24"
+    },
+    {
+      "path": "lib/display/announcement-display-mode.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "93e4d0e3d8d3d6ff52e5a747f112aef8fd681c27"
+    },
+    {
+      "path": "lib/enrich-people-data.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "b25c9c1dd89fc4e967b6bb9e5e8fffd68972b072"
+    },
+    {
+      "path": "lib/marketing/network-graph-3d-layout.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "2189bfb89b29e0c150894052ef4e62388cf192cc"
+    },
+    {
+      "path": "lib/memory-agent/apply-capital-campaign-response.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "010bc379a34a2c0e2ab57369ffdd126c959e6fba"
+    },
+    {
+      "path": "lib/memory-agent/apply-digital-lab-booking-response.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "ae63429db06d65fd251f271ff39dc53f71c361ed"
+    },
+    {
+      "path": "lib/memory-agent/ask.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "48320bd7b01c688662d363dfacac964cf2150b0b"
+    },
+    {
+      "path": "lib/memory-agent/programming.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "c02af7773c2296a6ec69ec917a90cf1096986c85"
+    },
+    {
+      "path": "lib/network-builder/actions.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "683a8dd351236f16d0be2890be6dbc6993749e57"
+    },
+    {
+      "path": "lib/network-builder/dcc-index-form.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "adaf2ff6174631f1745ced27223f3bfdd3c8fe2c"
+    },
+    {
+      "path": "lib/network-builder/read-contacts.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "ae24882f27618dff652b866e6f2ecfcac8a5b2ed"
+    },
+    {
+      "path": "lib/oolite/open-calls-showcase.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "d90f99e03d0bacc8049c41daec4e245b07ea33dc"
+    },
+    {
+      "path": "lib/workshop-engine/resin-printing/technique-boards.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "7fad7298d05f9d0460579527c38358d3a37a633a"
+    },
+    {
+      "path": "lib/workshop-engine/session-store.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "19de08d29e6265684019081538c2979c8881a1d1"
+    },
+    {
+      "path": "lib/workshops/rehype-external-lesson-links.ts",
+      "reason": "Reported strict type diagnostic",
+      "sha": "46e5cd768b4ef8fa97e8c1e6adc85d756937e417"
+    },
+    {
+      "path": "app/api/admin/organizations/[id]/pricing/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "d8fffaab208c686c8167259fcda9ba9df5d287fa"
+    },
+    {
+      "path": "app/api/admin/users/[id]/role/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "8374c5d408c6500c58fa786ba28b7c635bb0864b"
+    },
+    {
+      "path": "app/api/admin/users/[id]/status/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "2fdc3e20ba33fd2be2268f5b3d23155d4570702e"
+    },
+    {
+      "path": "app/api/artists/[id]/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "bb21388c176c2bd8ba787fdebcac1c6bad9316e1"
+    },
+    {
+      "path": "app/api/dcc/fabricate/media/[...path]/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "4f009b2a4f120efbb9db273e75034718331d2c2b"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/appsheet/requests/[requestId]/approve/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "623702f07bae7f710c41f393363eacb9d01051ee"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/appsheet/requests/[requestId]/reject/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "b019c1a0daa8ae2e1943188bf8daf939ca1be1ca"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/appsheet/requests/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "c501635f11c04d4a8020c102658acc6f8fc4fde5"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/appsheet/webhook/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "231d3b65772c3979c2c24d16e011d1e23cc1fe68"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/calendar/connect/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "aa46c491d5dcdfd42764a31b89ad6fcb5f807921"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/calendar/events/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "64d5dc5453050e53184b9e5668facd170d360841"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/conflicts/[conflictId]/resolve/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "d0b68dde9f8c1b2ba005cae7a8001eb0e879c45d"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/conflicts/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "bb6c8786ebc1be7ffd25cf6c87e8996b8ff602bd"
+    },
+    {
+      "path": "app/api/organizations/[orgId]/resources/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "ae5f91fec8fd5449855acb39ac5b09fcbc910fcc"
+    },
+    {
+      "path": "app/api/organizations/by-id/analytics/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "81857c9f10c161b6392e8107da7f3ca0b7bcbc40"
+    },
+    {
+      "path": "app/api/organizations/by-id/announcements/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "c0147b3d5b12fcd1e1b3ed50c771889489c7f726"
+    },
+    {
+      "path": "app/api/organizations/by-id/artists/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "966c4b179bc676716fca4c556d09955f8e90e0ef"
+    },
+    {
+      "path": "app/api/organizations/by-id/resources/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "76087709477e699eb236edbb3b2cd5b2ead8dc62"
+    },
+    {
+      "path": "app/api/organizations/by-id/submission-forms/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "c250c19e9d3220242a7ed31bcf63eab4388a2f8d"
+    },
+    {
+      "path": "app/api/organizations/by-id/submissions/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "75324b5901616da6938788c874174a0c78c3e2d0"
+    },
+    {
+      "path": "app/api/organizations/by-id/users/route.ts",
+      "reason": "Generated Next route diagnostic",
+      "sha": "2bb23375bfbcbc4073b4fa75251572b863c5e342"
+    },
+    {
+      "path": "features/learn-canvas/data/__tests__/aiVideoTimelineData.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "c50deb51cf2b37ab8a0772344ce95b811f26b4a4"
+    },
+    {
+      "path": "lib/airtable/crm-graph-transform.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "fe90690bf2b370c165f0d9cd89813c7bed4d83f6"
+    },
+    {
+      "path": "__tests__/lib/network-builder.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "031e47ba385f4482ec95254961dfe046c5f228b0"
+    },
+    {
+      "path": "__tests__/api/bookings.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "42ac256f767db6ed32c70936b854d9f6b6b568b2"
+    },
+    {
+      "path": "__tests__/lib/format-announcement-event-date.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "74c095377dce414c7dd277d886ac766c4e5d800c"
+    },
+    {
+      "path": "__tests__/api/availability.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "38a22a3488377f964e45032d0cb5a4bfb4f5900d"
+    },
+    {
+      "path": "__tests__/lib/network-graph-3d-layout.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "96fd7bf3ca8999ff0680dca02f680cef920b13f5"
+    },
+    {
+      "path": "__tests__/lib/takeover-overlay-layout.test.ts",
+      "reason": "Reported failing inherited test suite",
+      "sha": "5d2f5bc74bf5e7e304431d6574071917271662fb"
+    },
+    {
+      "path": "app/(marketing)/contact/[audience]/page.tsx",
+      "reason": "Reported lint error",
+      "sha": "7f55390f3bcea4e6c25192c18ca77afc176c81df"
+    },
+    {
+      "path": "app/(marketing)/journal/[category]/[slug]/page.tsx",
+      "reason": "Reported lint error",
+      "sha": "befdc9e571c06c89de162b6773fd8dd912c2610b"
+    },
+    {
+      "path": "app/(marketing)/mission/page.tsx",
+      "reason": "Reported lint error",
+      "sha": "62591039c961320c033f2807863b7c03188fbc78"
+    },
+    {
+      "path": "app/o/[slug]/page.tsx",
+      "reason": "Reported lint error",
+      "sha": "d91be87a73db827963d1837483d2db79de737c83"
+    },
+    {
+      "path": "app/o/madarts/page.tsx",
+      "reason": "Reported lint error",
+      "sha": "58e4a5cdd3159bdae87b7f53f5c3e5813082fd9c"
+    },
+    {
+      "path": "app/platform/page.tsx",
+      "reason": "Reported lint error",
+      "sha": "46ccbfd601d9647bd2d0f6ad80ba7998e17eefeb"
+    },
+    {
+      "path": "app/workshop/saturday-lab/facilitator/page.tsx",
+      "reason": "Reported lint error",
+      "sha": "0df7790d917b7e5ec81b10bd93e45bb34c2887c3"
+    },
+    {
+      "path": "components/artists/ArtistDirectoryProfileClient.tsx",
+      "reason": "Reported lint error",
+      "sha": "0e38ee4414d1a0dff1f3207272b6bfcd2a8c5e88"
+    },
+    {
+      "path": "components/carousel/AnnouncementContent.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "728dfe847d458623aa39361f9417a1b9f1455582"
+    },
+    {
+      "path": "components/dcc/community/AtlasProfileForm.tsx",
+      "reason": "Reported lint error",
+      "sha": "1003485a4094e4fb92848dbb9ae955470bfef987"
+    },
+    {
+      "path": "components/marketing/cdc/ProgramLayout.tsx",
+      "reason": "Reported lint error",
+      "sha": "14f56275f8a8dc4932285b47cda6f1fbb5b27e26"
+    },
+    {
+      "path": "components/marketing/cdc/SupportLayout.tsx",
+      "reason": "Reported lint error",
+      "sha": "e64d37b156b8f1bc6f7231e97078f595f9d4a513"
+    },
+    {
+      "path": "components/organization/AnnouncementCard.tsx",
+      "reason": "Reported lint error",
+      "sha": "341ca55951206beeae865be5b193a823dfdf88a1"
+    },
+    {
+      "path": "components/organization/SignInPrompt.tsx",
+      "reason": "Reported lint error",
+      "sha": "881f115f8841953a994bb29a6ef2f451c5493ce6"
+    },
+    {
+      "path": "components/page/OoliteDigitalLabPage.tsx",
+      "reason": "Reported lint error",
+      "sha": "eb883138e8c1242b11666da1a02888c4d4571d68"
+    },
+    {
+      "path": "components/workshop-engine/WorkshopVisuals.tsx",
+      "reason": "Reported lint error",
+      "sha": "5fca675584bd8948f457960fca62c6942b30b7c3"
+    },
+    {
+      "path": "lib/dcc/artwork/member-presence.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "2a87ae30f45d9ea7995531133c453ae0b64f3969"
+    },
+    {
+      "path": "lib/dcc/fabrication-os/backoffice-home.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "1a1ab3898f7b3eda58125ba5d55d18f52227d042"
+    },
+    {
+      "path": "lib/display/announcement-images.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "ec987a9f5d60dfa5a09ba1a56d2e8492525bbb2d"
+    },
+    {
+      "path": "lib/dcc/culture/editorial.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "e44f8a482e7cdf9ac3fc715e9705d9b9b98c04fc"
+    },
+    {
+      "path": "types/memory-agent.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "2d81fccc51ad4d4910513d328fce3d4320af8581"
+    },
+    {
+      "path": "lib/dcc/signup/copy.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "948daefa56295ab489b2dd46426162ae0ecbc7dd"
+    },
+    {
+      "path": "lib/display/display-program.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "1ecb477727492755d97b2c7d131ad784df542bfd"
+    },
+    {
+      "path": "lib/dcc/signup/send-welcome-email.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "2ddca908598a46924bf529a7bd3872a419f75ece"
+    },
+    {
+      "path": "components/dcc/signup/DccSignupSuccess.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "06ff605253951b23d58aa195412153ac4d8f1587"
+    },
+    {
+      "path": "app/(marketing)/knight/budget/page.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "4349f6d73e3bf31eb1503e3fd6ab220f2457c6e6"
+    },
+    {
+      "path": "app/(marketing)/network/admin/page.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "f076d61adbe7e1824de3f299cdb9f712e9feba35"
+    },
+    {
+      "path": "app/(marketing)/network/immersive/page.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "20a68b7b99dae2bc27b38fe06109279e1d12af41"
+    },
+    {
+      "path": "app/(marketing)/network/living/page.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "697216b4ea01f3be650b035a0ce963bd7161a54a"
+    },
+    {
+      "path": "app/(marketing)/network/page.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "fcd8e12a713ba4910a27375c1829d41749ff8af0"
+    },
+    {
+      "path": "components/marketing/dcc-network/GraphExplorerClient.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "fd1d8c7fbb59203898270c6790c5c13dbd168dc6"
+    },
+    {
+      "path": "components/marketing/dcc-network/NetworkGraph3DExplorerClient.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "b740340ef6d9411295641ee6469034579e756da1"
+    },
+    {
+      "path": "components/marketing/dcc-network/NetworkGraphDeferred.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "84d93aec799dc273a44d8ba8b47f7a41723a67c7"
+    },
+    {
+      "path": "components/marketing/HomeLivingNetworkTeaserClient.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "0ebc88708646925b95f6b559e7fda5b1fd63a78f"
+    },
+    {
+      "path": "types/d3-force-3d.d.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "cfff75d07f6645fb51a8d951dda31f30a400c5c5"
+    },
+    {
+      "path": "lib/security/require-organization-staff.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "9abed4b8bbfaa2d8d4141e142c6ee222f9767cb9"
+    },
+    {
+      "path": "lib/airtable/crm-graph-service.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "82b3b9507ba6dee4a29a6e8d87b0d92015f1c34f"
+    },
+    {
+      "path": "lib/airtable/crm-graph-transform.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "7ade3b808503f282e6e1f9d4d018a037b00fe354"
+    },
+    {
+      "path": "lib/booking/configured-slot.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "78c89087d189beab0bd26f6e1a28589e84d7d381"
+    },
+    {
+      "path": "lib/security/booking-receipt.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "3ea7bc089fd0e575a4ebfebc812530beca3483d9"
+    },
+    {
+      "path": "app/api/bookings/route.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "e120ae24a30b2156956be54259ea7a91dbe5cff0"
+    },
+    {
+      "path": "app/api/availability/route.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "a9465493566a4fc43d32692ac1d5be400bf43c77"
+    },
+    {
+      "path": "app/api/bookings/[id]/confirmation/route.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "d19e26b7547a3c8027da70d2dca9b67a60516718"
+    },
+    {
+      "path": "app/api/bookings/[id]/calendar-urls/route.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "77bc3acea75cd156a3917d2ca22185a455cd8702"
+    },
+    {
+      "path": "app/api/bookings/[id]/ics/route.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "cbf50798bb88dfedfc9fe5764f1bf6ba989b1eb8"
+    },
+    {
+      "path": "app/api/bookings/[id]/cancel/route.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "e3a2ae76d2524044177c38fe290d11cea04160aa"
+    },
+    {
+      "path": "app/api/bookings/[id]/reschedule/route.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "ecb21d0e7940c28069f4c4219fd7512317788802"
+    },
+    {
+      "path": "app/book/page.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "7f574aca615b35cfc2e91e44990e1a5b5e42b453"
+    },
+    {
+      "path": "app/bookings/confirmation/[id]/page.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "234aeaec49399952843546d297f7c7f9d27158b8"
+    },
+    {
+      "path": "lib/email/templates/booking-confirmation.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "843f06535b3b0175c064465e8045bcec71ef37c6"
+    },
+    {
+      "path": "components/booking/ResourceCalendar.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "b1e6564b53914a362085ad70aa83c2a14668d6ef"
+    },
+    {
+      "path": "features/learn-canvas/components/ChapterReader.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "0464472504f7d77fe3216f9440e1dc58319be737"
+    },
+    {
+      "path": "features/learn-canvas/components/WorkshopDetail.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "bb246e426c194d8f1547c7324d0b6ddd8196fe9c"
+    },
+    {
+      "path": "features/learn-canvas/components/interactive/FilmstripTimeline.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "7fffba40c37d6b1663b9651eb98d20b14f2aed55"
+    },
+    {
+      "path": "features/learn-canvas/components/interactive/MiniMapDensity.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "d99affd5fa0a06cf190462566ac52d8ec31a1c1e"
+    },
+    {
+      "path": "features/learn-canvas/components/interactive/Timeline.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "a3bae7df90192a2cc28014710096f9fbe44be30a"
+    },
+    {
+      "path": "features/learn-canvas/components/ui/ExerciseCard.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "6694c8cd617dda2e19070490ffe14eb4960854fd"
+    },
+    {
+      "path": "features/learn-canvas/data/aiVideoTimelineData.ts",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "e49ef39718e5994420b3c078d48eabf828ef3150"
+    },
+    {
+      "path": "components/memory-agent/MemoryAgentShellClient.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "84f382e0506e6ec45524f35f4a24f6ee669cd3ba"
+    },
+    {
+      "path": "components/memory-agent/MemoryAgentEventCards.tsx",
+      "reason": "Direct compatibility dependency of reported diagnostics",
+      "sha": "ed0d90aa2c31e55993983e5e0b28cfacc4482d15"
+    }
+  ],
+  "remainingGates": [
+    "Exact-head strict typegen, full test, build and Vercel",
+    "Review inherited legacy exposure; no production eligibility",
+    "No hosted migrations, flags or communications"
+  ],
+  "followup": {
+    "source": "c4d03fa68f683e54b0b71f4f02ba72460776daae",
+    "parent": "7876dffc455a2d5aeeeec209fc083df91ba59089",
+    "diagnosedHead": "71b9810f6eb2321eaac3abce37f2114aba102abb",
+    "previousResults": {
+      "typeDiagnostics": 3,
+      "generatedRouteContractDiagnostics": 0,
+      "lint": "passed",
+      "failedSuites": 2,
+      "failedTests": 12,
+      "passedTests": 687,
+      "buildErrors": 5
+    },
+    "parallelRepair": {
+      "commit": "7876dffc455a2d5aeeeec209fc083df91ba59089",
+      "files": [
+        "components/dcc/artwork/PeopleNetworkField.tsx",
+        "components/marketing/knight/budget/FundingSourcesDonutClient.tsx",
+        "lib/network-builder/readiness.ts"
+      ]
+    },
+    "files": [
+      {
+        "path": "features/playwire-demo/PublisherJourneyDemoClient.tsx",
+        "sha": "249db9bd3399fea6cfac211fcf94094e6fb2cad2",
+        "reason": "Client-only dynamic import boundary and dependency closure"
+      },
+      {
+        "path": "app/(marketing)/network/research/page.tsx",
+        "sha": "73a1e18cfceecd977418498301fe4bcb46537c64",
+        "reason": "Client-only dynamic import boundary and dependency closure"
+      },
+      {
+        "path": "app/(marketing)/opportunities/playwire/page.tsx",
+        "sha": "6c6d757260e5e78c4dd80c180caf2c3719a7884c",
+        "reason": "Client-only dynamic import boundary and dependency closure"
+      },
+      {
+        "path": "app/(marketing)/page.tsx",
+        "sha": "17755ade3c90ce0e76835d29af87d84a63aa7f12",
+        "reason": "Client-only dynamic import boundary and dependency closure"
+      },
+      {
+        "path": "app/o/[slug]/memory-agent/page.tsx",
+        "sha": "b84eb97c90ed9896bcdfa93ec9b09b240280c80c",
+        "reason": "Client-only dynamic import boundary and dependency closure"
+      },
+      {
+        "path": "features/learn-canvas/components/__tests__/course-components.test.tsx",
+        "sha": "5e6035fc39ac87dcb01da282b466a457db0b50d9",
+        "reason": "Retain and repair existing real assertions for current UI contracts"
+      },
+      {
+        "path": "features/learn-canvas/components/interactive/__tests__/FilmstripTimeline.test.tsx",
+        "sha": "a6820909fe2fc34d2039708f7a121a3bf7f10cf6",
+        "reason": "Retain and repair existing real assertions for current UI contracts"
+      }
+    ],
+    "status": "New strict CI required; no scope expansion"
+  }
+}

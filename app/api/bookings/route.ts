@@ -1,9 +1,12 @@
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { generateScheduledGoogleMeetLink } from '@/lib/google-meet'
 import { sendBookingConfirmationEmail, sendHostNotificationEmail, BookingEmailData } from '@/lib/email/email-service'
 import { auth } from '@clerk/nextjs/server'
 import crypto from 'crypto'
+import { configuredSlot,bookingBuffers } from '@/lib/booking/configured-slot'
+import { bookingReceiptToken,bookingCalendarToken } from '@/lib/security/booking-receipt'
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +37,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const supabaseAdmin = getSupabaseAdmin()
+    const access = await requireOrganizationStaff(orgId)
+    if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status, headers: { 'Cache-Control': 'private, no-store' } })
+    const supabaseAdmin = access.db
 
     // Build date range based on 'when' parameter
     let startDate: Date
@@ -106,7 +111,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ bookings })
+    return NextResponse.json({ bookings }, { headers: { 'Cache-Control': 'private, no-store' } })
 
   } catch (error) {
     console.error('Error in bookings GET API:', error)
@@ -152,6 +157,9 @@ export async function POST(request: NextRequest) {
       .eq('is_bookable', true)
       .single()
 
+    if (resourceError?.code === '42703' || resourceError?.code === 'PGRST204') {
+      return NextResponse.json({error:'Booking resource configuration unavailable'},{status:503,headers:{'Cache-Control':'private, no-store'}})
+    }
     if (resourceError || !resource) {
       return NextResponse.json(
         { error: 'Resource not found or not bookable' },
@@ -159,13 +167,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if(typeof start_time!=='string'||typeof end_time!=='string'||!Number.isFinite(Date.parse(start_time))||!Number.isFinite(Date.parse(end_time))||Date.parse(end_time)<=Date.parse(start_time)||Date.parse(start_time)<=Date.now())return NextResponse.json({error:'Invalid booking interval'},{status:400})
     // Validate slot availability
     const slotAvailable = await validateSlotAvailability(
       supabaseAdmin,
       resource_id,
       start_time,
       end_time,
-      resource.availability_rules
+      resource.availability_rules,
+      org_id
     )
 
     if (!slotAvailable.available) {
@@ -179,7 +189,12 @@ export async function POST(request: NextRequest) {
     const rescheduleToken = crypto.randomBytes(32).toString('hex')
 
     // Determine host (from availability or default)
-    const host = slotAvailable.host || resource.metadata?.default_hosts?.[0] || 'mo@oolite.org'
+    const host = slotAvailable.host
+    if (typeof host !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(host)) {
+      return NextResponse.json({ error: 'Booking host is not configured' }, { status: 503 })
+    }
+    const { data: organization, error: organizationError } = await supabaseAdmin.from('organizations').select('name').eq('id', org_id).eq('is_active', true).single()
+    if (organizationError || !organization?.name) return NextResponse.json({ error: 'Booking organization is not configured' }, { status: 503 })
 
     // Generate Google Meet link for remote visits
     let meetingUrl: string | undefined
@@ -231,12 +246,14 @@ export async function POST(request: NextRequest) {
           meeting_code: meetingCode,
           meeting_platform: resource.metadata?.meeting_platform || 'google_meet'
         },
-        created_by_clerk_id: 'public_booking',
-        updated_by_clerk_id: 'public_booking'
+        created_by: 'public_booking',
+        updated_by: 'public_booking'
       })
       .select()
       .single()
 
+    if (bookingError?.code === '23P01') return NextResponse.json({error:'Time slot is already booked'},{status:409})
+    if (bookingError?.code === '40P01' || bookingError?.code === '40001') return NextResponse.json({error:'Booking contention; retry availability'},{status:503})
     if (bookingError) {
       console.error('Error creating booking:', bookingError)
       return NextResponse.json(
@@ -304,14 +321,12 @@ export async function POST(request: NextRequest) {
 
     // Generate URLs
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const confirmationUrl = `${baseUrl}/bookings/confirmation/${booking.id}`
+    const confirmationUrl = `${baseUrl}/bookings/confirmation/${booking.id}#receipt=${bookingReceiptToken(booking.id,rescheduleToken)}`
     const rescheduleUrl = `${baseUrl}/bookings/reschedule/${booking.id}?token=${rescheduleToken}`
     const cancelUrl = `${baseUrl}/bookings/cancel/${booking.id}?token=${rescheduleToken}`
-    const icsUrl = `${baseUrl}/api/bookings/${booking.id}/ics`
-    const calendarUrls = {
-      google: `${baseUrl}/api/bookings/${booking.id}/calendar-urls?provider=google`,
-      outlook: `${baseUrl}/api/bookings/${booking.id}/calendar-urls?provider=outlook`
-    }
+    const calendarPage = `${baseUrl}/bookings/confirmation/${booking.id}#calendar=${bookingCalendarToken(booking.id,rescheduleToken)}`
+    const icsUrl = calendarPage
+    const calendarUrls = { google: calendarPage, outlook: calendarPage }
 
     // Send email notifications
     try {
@@ -327,7 +342,7 @@ export async function POST(request: NextRequest) {
         location: meetingUrl || resource.location || 'TBD',
         meetingUrl: meetingUrl,
         meetingCode: meetingCode,
-        organizationName: 'Oolite Arts', // TODO: Get from organization data
+        organizationName: organization.name,
         rescheduleUrl: rescheduleUrl,
         cancelUrl: cancelUrl,
         icsUrl: icsUrl,
@@ -369,26 +384,29 @@ async function validateSlotAvailability(
   resourceId: string,
   startTime: string,
   endTime: string,
-  availabilityRules: any
+  availabilityRules: any,
+  orgId: string
 ): Promise<{ available: boolean; reason?: string; host?: string }> {
   try {
+    const host=configuredSlot(availabilityRules,startTime,endTime)
+    if(!host)return {available:false,reason:'Outside configured availability'}
+    const {before,after}=bookingBuffers(availabilityRules)
+    const start=new Date(Date.parse(startTime)-after*60000).toISOString(),end=new Date(Date.parse(endTime)+before*60000).toISOString()
     // Check for existing bookings in the same time slot
-    const { data: conflictingBookings } = await supabaseAdmin
+    const { data: conflictingBookings, error: conflictError } = await supabaseAdmin
       .from('bookings')
       .select('start_time, end_time, metadata')
       .eq('resource_id', resourceId)
+      .eq('org_id', orgId)
       .eq('status', 'confirmed')
-      .or(`and(start_time.lt.${endTime},end_time.gt.${startTime})`)
+      .or(`and(start_time.lt.${end},end_time.gt.${start})`)
 
+    if (conflictError || !conflictingBookings) return { available: false, reason: 'Error checking availability' }
     if (conflictingBookings && conflictingBookings.length > 0) {
       return { available: false, reason: 'Time slot is already booked' }
     }
 
-    // For now, return the first available host
-    // In a more sophisticated implementation, you'd check availability rules
-    const defaultHost = availabilityRules?.windows?.[0]?.host || 'mo@oolite.org'
-    
-    return { available: true, host: defaultHost }
+    return { available: true, host }
 
   } catch (error) {
     console.error('Error validating slot availability:', error)

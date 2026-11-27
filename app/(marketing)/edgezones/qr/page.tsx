@@ -7,10 +7,11 @@ export const metadata: Metadata = {
 }
 
 type Props = {
-  searchParams?: { tracked?: string }
+  searchParams?: Promise<{ tracked?: string }>
 }
 
-export default function EdgeZonesQrPage({ searchParams }: Props) {
+export default async function EdgeZonesQrPage({ searchParams: pendingSearchParams }: Props) {
+  const searchParams = await pendingSearchParams
   const useTrackedUrl = searchParams?.tracked === '1' || searchParams?.tracked === 'true'
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-neutral-100 px-4 py-12 dark:bg-neutral-950">

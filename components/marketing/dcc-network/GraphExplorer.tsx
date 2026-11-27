@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { Core, Stylesheet } from 'cytoscape'
+import type { Core, EdgeSingular, StylesheetStyle } from 'cytoscape'
 import { GraphFilterBar } from '@/components/marketing/dcc-network/GraphFilterBar'
 import { GraphNodeCard, GraphNodeTooltip } from '@/components/marketing/dcc-network/GraphNodeCard'
 import type {
@@ -21,14 +21,14 @@ import { cn } from '@/lib/utils'
 
 type TooltipState = { x: number; y: number; node: DccGraphNodeData } | null
 
-const cytoscapeStylesheet: Stylesheet[] = [
+const cytoscapeStylesheet: StylesheetStyle[] = [
   {
     selector: 'node',
     style: {
       label: 'data(label)',
-      'font-size': 10,
+      'font-size': '10px',
       'text-wrap': 'wrap',
-      'text-max-width': 88,
+      'text-max-width': '88px',
       color: '#171717',
       'text-valign': 'center',
       'text-halign': 'center',
@@ -113,7 +113,13 @@ const cytoscapeStylesheet: Stylesheet[] = [
       'target-arrow-color': '#94a3b8',
       'target-arrow-shape': 'triangle',
       'curve-style': 'bezier',
-      opacity: 'mapData(recencyScore, 0, 3, 0.35, 0.9)',
+      opacity: (edge: EdgeSingular) => {
+        // Equivalent clamped mapping of recencyScore 0..3 to opacity 0.35..0.9.
+        // A numeric accessor also satisfies Cytoscape's typed edge-style API.
+        const raw = Number(edge.data('recencyScore') ?? 0)
+        const score = Number.isFinite(raw) ? Math.min(3, Math.max(0, raw)) : 0
+        return 0.35 + (score / 3) * 0.55
+      },
     },
   },
   {

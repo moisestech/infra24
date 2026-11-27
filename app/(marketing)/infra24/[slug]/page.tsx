@@ -4,18 +4,20 @@ import { PageHero, Section } from '@/components/marketing/cdc';
 import { getCdcBreadcrumbs, getCdcPageByPath, getInfra24LeafSlugs } from '@/lib/cdc/routes';
 import { cdcPageMetadata } from '@/lib/cdc/metadata';
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
   return getInfra24LeafSlugs().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const path = `/infra24/${params.slug}`;
   return cdcPageMetadata(path);
 }
 
-export default function Infra24SubPage({ params }: Props) {
+export default async function Infra24SubPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const path = `/infra24/${params.slug}`;
   const def = getCdcPageByPath(path);
   if (!def) notFound();

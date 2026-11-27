@@ -71,7 +71,7 @@ export function WorkshopDetail({ workshop, chapters = [], user_progress }: Works
         prerequisites: Array.isArray(translatedPrerequisites) ? translatedPrerequisites : workshop.prerequisites,
         chapters: chapters.map(chapter => ({
           ...chapter,
-          title: t(`courses.${courseKey}.chapters.${chapter.slug}.title`) || chapter.title
+          title: chapter.title
         }))
       };
     }
@@ -202,6 +202,7 @@ export function WorkshopDetail({ workshop, chapters = [], user_progress }: Works
         </div>
         
         <div className="space-y-4">
+          {translatedContent.chapters.length === 0 && <p>No chapters available.</p>}
           {translatedContent.chapters.map((chapter, index) => {
             const isCompleted = completedChapters.includes(chapter.id);
             // Make all chapters accessible for browsing (BuzzFeed-style)
@@ -214,7 +215,7 @@ export function WorkshopDetail({ workshop, chapters = [], user_progress }: Works
                   id: chapter.id,
                   title: chapter.title,
                   chapter_number: chapter.chapter_number,
-                  estimated_duration_minutes: chapter.estimated_duration_minutes || 30,
+                  estimated_duration_minutes: chapter.estimated_duration_minutes ?? 30,
                   slug: chapter.slug,
                   is_free: true // All chapters are free to browse
                 }}

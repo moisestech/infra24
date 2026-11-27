@@ -5,8 +5,9 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { orgId: string } }
+  { params: pendingParams }: { params: Promise<{ orgId: string }> }
 ) {
+  const params = await pendingParams
   try {
     console.log('🔍 AppSheet Webhook API: Starting POST request')
     console.log('🔍 AppSheet Webhook API: orgId =', params.orgId)

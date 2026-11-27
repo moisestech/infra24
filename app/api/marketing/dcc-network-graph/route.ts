@@ -30,8 +30,11 @@ export async function GET(request: NextRequest) {
     // Query parameters can never authorize access to internal CRM data.
     // Research mode also contains unsanitized candidate names in JSON.
     const restricted = mode !== 'active' || visibility !== 'public'
-    const staffId = restricted ? auth().userId : null
-    if (!mayReadDccCrmGraph(mode, visibility, staffId, process.env)) {
+    const staffId = restricted ? (await auth()).userId : null
+    if (!mayReadDccCrmGraph(mode, visibility, staffId, {
+      DCC_NETWORK_ADMIN_ENABLED: process.env.DCC_NETWORK_ADMIN_ENABLED,
+      DCC_NETWORK_ADMIN_CLERK_USER_IDS: process.env.DCC_NETWORK_ADMIN_CLERK_USER_IDS,
+    })) {
       return NextResponse.json({ error: 'Private graph access is not authorized' }, {
         status: 403, headers: { 'Cache-Control': 'private, no-store' },
       })

@@ -12,14 +12,15 @@ export const metadata: Metadata = {
 }
 
 type Props = {
-  params: { section: string }
+  params: Promise<{ section: string }>
 }
 
 export function generateStaticParams(): { section: EdgeZonesSectionPath }[] {
   return EDGE_ZONES_SECTION_PATHS.map((section) => ({ section }))
 }
 
-export default function EdgeZonesSectionPage({ params }: Props) {
+export default async function EdgeZonesSectionPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   if (!isEdgeZonesSectionPath(params.section)) {
     notFound()
   }

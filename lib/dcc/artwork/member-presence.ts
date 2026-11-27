@@ -57,7 +57,7 @@ export const PUBLIC_ARTISTS: readonly MemberPresenceMark[] = [
 ]
 
 export function makeMembershipPresenceGraph(
-  count = MEMBER_PRESENCE_SOURCE.minimumCount,
+  count: number = MEMBER_PRESENCE_SOURCE.minimumCount,
 ): MembershipPresenceGraph {
   const bounded = Number.isFinite(count) ? Math.max(0, Math.min(5000, Math.floor(count))) : 0
   const visible = PUBLIC_ARTISTS.slice(0, bounded)

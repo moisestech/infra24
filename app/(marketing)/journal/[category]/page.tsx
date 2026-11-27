@@ -16,18 +16,20 @@ import {
   listEditorialForJournalCategory,
 } from '@/lib/dcc/culture';
 
-type Props = { params: { category: string } };
+type Props = { params: Promise<{ category: string }> };
 
 export function generateStaticParams() {
   return getJournalCategorySlugs().map((category) => ({ category }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const path = `/journal/${params.category}`;
   return cdcPageMetadata(path);
 }
 
-export default function JournalCategoryPage({ params }: Props) {
+export default async function JournalCategoryPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const path = `/journal/${params.category}`;
   const def = getCdcPageByPath(path);
   if (!def) notFound();

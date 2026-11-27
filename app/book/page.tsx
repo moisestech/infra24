@@ -137,7 +137,8 @@ export default function BookPage() {
       
       if (response.ok) {
         // Redirect to confirmation page
-        window.location.href = `/bookings/confirmation/${result.booking_id}`
+        const confirmation = new URL(result.confirmation_url, window.location.origin)
+        window.location.href = confirmation.pathname + confirmation.hash
       } else {
         alert(`Error: ${result.error}`)
       }

@@ -8,7 +8,7 @@ interface TimelineEvent {
   year: string
   title: string
   description: string
-  category?: 'milestone' | 'breakthrough' | 'release' | 'research'
+  category?: 'milestone' | 'breakthrough' | 'release' | 'research' | 'controversy' | 'adoption'
 }
 
 interface TimelineProps {
@@ -18,6 +18,8 @@ interface TimelineProps {
 }
 
 const categoryConfig = {
+  controversy: {color:'bg-orange-500',borderColor:'border-orange-500',textColor:'text-orange-400'},
+  adoption: {color:'bg-teal-500',borderColor:'border-teal-500',textColor:'text-teal-400'},
   milestone: {
     color: 'bg-lime-500',
     borderColor: 'border-lime-500',
@@ -70,7 +72,7 @@ export function Timeline({
         
         <div className="space-y-8">
           {events.map((event, index) => {
-            const config = categoryConfig[event.category || 'milestone']
+            const config = categoryConfig[event.category || 'milestone'] ?? categoryConfig.milestone
             
             return (
               <motion.div

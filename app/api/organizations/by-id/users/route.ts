@@ -1,3 +1,4 @@
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { createClient } from '@supabase/supabase-js';
@@ -16,8 +17,7 @@ const supabase = createClient(
 );
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ orgId: string }> }
+  request: NextRequest
 ) {
   try {
     const { userId } = await auth();
@@ -25,7 +25,10 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { orgId: id } = await params;
+    const requestedOrgId = new URL(request.url).searchParams.get('org_id')
+    const access = await requireOrganizationStaff(requestedOrgId)
+    if (!access.ok) return NextResponse.json({error:access.error},{status:access.status,headers:{'Cache-Control':'private, no-store'}})
+    const id = access.orgId
 
     // First, get the organization by ID
     const { data: organization, error: orgError } = await supabase
@@ -36,25 +39,6 @@ export async function GET(
 
     if (orgError || !organization) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
-    }
-
-    // Check if user has access to this organization
-    const { data: userMembership } = await supabase
-      .from('org_memberships')
-      .select('role, org_id')
-      .eq('clerk_user_id', userId)
-      .single();
-
-    // For now, allow access if user has any membership (super admin logic)
-    // TODO: Implement proper organization-specific access control
-    if (!userMembership) {
-      // Allow access for now - this will be refined later
-      console.log('No membership found for user, but allowing access for development');
-    } else {
-      // Super admins can see all organizations, others can only see their own
-      if (userMembership.role !== 'super_admin' && userMembership.org_id !== organization.id) {
-        return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-      }
     }
 
     // Get all memberships for this organization

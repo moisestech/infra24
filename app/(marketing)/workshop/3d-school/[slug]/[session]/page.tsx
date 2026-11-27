@@ -9,14 +9,15 @@ import {
 import { dccSiteMeta } from '@/lib/marketing/content'
 
 type Props = {
-  params: { slug: string; session: string }
+  params: Promise<{ slug: string; session: string }>
 }
 
 export function generateStaticParams() {
   return listCurriculumSessionParams()
 }
 
-export function generateMetadata({ params }: Props): Metadata {
+export async function generateMetadata({ params: pendingParams }: Props): Promise<Metadata> {
+  const params = await pendingParams
   const match = getCurriculumSession(params.slug, params.session)
   if (!match) return { title: 'Session' }
   const session = match.workshop.curriculumSessions?.[match.sessionIndex]
@@ -34,7 +35,8 @@ export function generateMetadata({ params }: Props): Metadata {
   }
 }
 
-export default function ThreeDSchoolSessionPage({ params }: Props) {
+export default async function ThreeDSchoolSessionPage({ params: pendingParams }: Props) {
+  const params = await pendingParams
   const match = getCurriculumSession(params.slug, params.session)
   if (!match) notFound()
 

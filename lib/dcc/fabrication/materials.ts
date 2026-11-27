@@ -25,6 +25,7 @@ export const FABRICATION_MATERIALS: Material[] = [
     id: 'resin-translucent-pending',
     manufacturer: 'TBD',
     productName: 'Translucent resin — pending approval',
+    currency: 'USD',
     materialType: 'SLA photopolymer',
     color: 'Translucent',
     translucency: 'To be confirmed after resin approval',

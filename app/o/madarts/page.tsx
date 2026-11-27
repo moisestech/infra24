@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { Bell, Users, Building2, Calendar, MapPin, Globe, Eye, Edit, ClipboardList, FileCheck, GraduationCap, Copy, Check, Video, Camera, Palette, Mic } from 'lucide-react'
@@ -318,18 +319,18 @@ export default function MadArtsPage() {
                   </p>
                 </div>
                 <div className="flex space-x-3">
-                  <a
+                  <Link
                     href="/sign-in"
                     className="bg-white text-pink-600 px-4 py-2 rounded-lg font-medium hover:bg-pink-50 transition-colors"
                   >
                     Sign In
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/sign-up"
                     className="bg-pink-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-pink-400 transition-colors"
                   >
                     Join Now
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -342,7 +343,7 @@ export default function MadArtsPage() {
             {user ? 'Quick Actions' : 'Explore Our Platform'}
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <a
+            <Link
               href="/o/madarts/announcements"
               className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-xl hover:border-pink-300 dark:hover:border-pink-600 transition-all duration-200 group"
             >
@@ -353,9 +354,9 @@ export default function MadArtsPage() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">{recentAnnouncements.length} active</p>
                 </div>
               </div>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/o/madarts/workshops"
               className="bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow"
             >
@@ -366,9 +367,9 @@ export default function MadArtsPage() {
                   <p className="text-sm text-pink-100">{workshops.length} available</p>
                 </div>
               </div>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/o/madarts/bookings"
               className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-xl hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-200 group"
             >
@@ -379,9 +380,9 @@ export default function MadArtsPage() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">Studio Time</p>
                 </div>
               </div>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/o/madarts/members"
               className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-200 group"
             >
@@ -392,7 +393,7 @@ export default function MadArtsPage() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">Artists</p>
                 </div>
               </div>
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -405,12 +406,12 @@ export default function MadArtsPage() {
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                   Recent Announcements
                 </h2>
-                <a
+                <Link
                   href="/o/madarts/announcements"
                   className="text-pink-600 dark:text-pink-400 hover:text-pink-500 dark:hover:text-pink-300 text-sm font-medium"
                 >
                   View all →
-                </a>
+                </Link>
               </div>
               <div className="space-y-4">
                 {recentAnnouncements.slice(0, 3).map((announcement) => {
@@ -499,12 +500,12 @@ export default function MadArtsPage() {
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                   Featured Workshops
                 </h2>
-                <a
+                <Link
                   href="/o/madarts/workshops"
                   className="text-pink-600 dark:text-pink-400 hover:text-pink-500 dark:hover:text-pink-300 text-sm font-medium"
                 >
                   View all →
-                </a>
+                </Link>
               </div>
               <div className="space-y-4">
                 {workshops.slice(0, 3).map((workshop) => (

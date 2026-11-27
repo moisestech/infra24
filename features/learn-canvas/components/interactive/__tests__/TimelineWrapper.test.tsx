@@ -1,5 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { TimelineWrapper } from '../TimelineWrapper'
+import type { ComponentProps, CSSProperties } from 'react'
+
+type TimelineItems = ComponentProps<typeof TimelineWrapper>['events']
 
 // Mock the Timeline and FilmstripTimeline components
 jest.mock('../Timeline', () => ({
@@ -17,7 +20,7 @@ jest.mock('../Timeline', () => ({
 
 jest.mock('../FilmstripTimeline', () => ({
   FilmstripTimeline: ({ events, height, neon }: any) => (
-    <div data-testid="horizontal-timeline" style={{ height, '--neon': neon }}>
+    <div data-testid="horizontal-timeline" style={{ height, '--neon': neon } as CSSProperties}>
       {events.map((event: any, index: number) => (
         <div key={index} data-testid={`horizontal-event-${index}`}>
           {event.title}
@@ -27,12 +30,12 @@ jest.mock('../FilmstripTimeline', () => ({
   ),
 }))
 
-const smallEventSet = [
+const smallEventSet: TimelineItems = [
   { year: '2020', title: 'Event 1', description: 'Description 1', category: 'milestone' },
   { year: '2021', title: 'Event 2', description: 'Description 2', category: 'breakthrough' }
 ]
 
-const largeEventSet = [
+const largeEventSet: TimelineItems = [
   { year: '2017', title: 'Event 1', description: 'Description 1', category: 'milestone' },
   { year: '2018', title: 'Event 2', description: 'Description 2', category: 'breakthrough' },
   { year: '2019', title: 'Event 3', description: 'Description 3', category: 'release' },
@@ -152,7 +155,7 @@ describe('TimelineWrapper', () => {
   })
 
   it('handles events with missing optional fields', () => {
-    const eventsWithMissingFields = [
+    const eventsWithMissingFields: TimelineItems = [
       { year: '2020', title: 'Event 1', description: 'Description 1' },
       { year: '2021', title: 'Event 2', description: 'Description 2', category: 'milestone' }
     ]
@@ -170,7 +173,7 @@ describe('TimelineWrapper', () => {
   })
 
   it('handles events with all category types', () => {
-    const eventsWithAllCategories = [
+    const eventsWithAllCategories: TimelineItems = [
       { year: '2020', title: 'Milestone', description: 'A milestone', category: 'milestone' },
       { year: '2021', title: 'Breakthrough', description: 'A breakthrough', category: 'breakthrough' },
       { year: '2022', title: 'Release', description: 'A release', category: 'release' },

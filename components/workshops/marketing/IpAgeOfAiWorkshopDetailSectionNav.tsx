@@ -47,7 +47,7 @@ export function IpAgeOfAiWorkshopDetailSectionNav({
   onJump: (targetId: string, tab?: DetailTab) => void
 }) {
   const ids = IP_AGE_OF_AI_WORKSHOP_DETAIL_SECTION_IDS
-  const items: NavItem[] = [
+  const allItems: NavItem[] = [
     { label: 'Overview', targetId: ids.overview },
     { label: 'Program', targetId: ids.program },
     { label: 'Outline', targetId: ids.outline },
@@ -59,7 +59,8 @@ export function IpAgeOfAiWorkshopDetailSectionNav({
     { label: 'Session details', targetId: ids.session, tab: 'workshop', hide: !tabsVisible },
     { label: 'Modules & video', targetId: ids.learn, tab: 'learn', hide: !tabsVisible },
     { label: 'PDF templates', targetId: ids.pdfTemplates, tab: 'learn', hide: !tabsVisible },
-  ].filter((x) => !x.hide)
+  ]
+  const items = allItems.filter((x) => !x.hide)
 
   function RowButton({ item }: { item: NavItem }) {
     return (
