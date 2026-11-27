@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { generateScheduledGoogleMeetLink } from '@/lib/google-meet'
+import { configuredSlot,bookingBuffers } from '@/lib/booking/configured-slot'
 import { bookingCalendarToken } from '@/lib/security/booking-receipt'
 import { sendBookingRescheduledEmail, BookingEmailData } from '@/lib/email/email-service'
 
@@ -80,7 +81,10 @@ export async function POST(
       )
     }
 
-    // Simple availability check - in a real system, you'd use the availability API
+    const host=booking.metadata?.host
+    if(typeof host!=='string'||!configuredSlot(resource.availability_rules,start_time,end_time,host))return NextResponse.json({error:'Outside configured availability'},{status:409})
+    const {before,after}=bookingBuffers(resource.availability_rules)
+    // Check interval including configured buffers
     const { data: conflictingBookings, error: conflictError } = await supabaseAdmin
       .from('bookings')
       .select('id')
@@ -88,8 +92,8 @@ export async function POST(
       .eq('org_id', booking.org_id)
       .eq('status', 'confirmed')
       .neq('id', bookingId)
-      .lt('start_time', new Date(end_time).toISOString())
-      .gt('end_time', newStartTime.toISOString())
+      .lt('start_time', new Date(Date.parse(end_time)+before*60000).toISOString())
+      .gt('end_time', new Date(newStartTime.getTime()-after*60000).toISOString())
 
     if (conflictError || !conflictingBookings) return NextResponse.json({error:'Availability check failed'},{status:503})
 
@@ -100,8 +104,6 @@ export async function POST(
       )
     }
 
-    const host=booking.metadata?.host
-    if(typeof host!=='string'||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(host))return NextResponse.json({error:'Booking host unavailable'},{status:503})
     // Generate new Google Meet link if it's a remote visit
     let newMeetingUrl = booking.location
     let newMeetingCode = booking.metadata?.meeting_code
@@ -150,6 +152,7 @@ export async function POST(
       .select()
       .single()
 
+    if(updateError?.code==='23P01')return NextResponse.json({error:'Time slot is not available'},{status:409})
     if (updateError) {
       console.error('Error updating booking:', updateError)
       return NextResponse.json(

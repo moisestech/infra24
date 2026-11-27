@@ -5,6 +5,7 @@ import { generateScheduledGoogleMeetLink } from '@/lib/google-meet'
 import { sendBookingConfirmationEmail, sendHostNotificationEmail, BookingEmailData } from '@/lib/email/email-service'
 import { auth } from '@clerk/nextjs/server'
 import crypto from 'crypto'
+import { configuredSlot,bookingBuffers } from '@/lib/booking/configured-slot'
 import { bookingReceiptToken,bookingCalendarToken } from '@/lib/security/booking-receipt'
 
 export const dynamic = 'force-dynamic';
@@ -166,6 +167,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if(typeof start_time!=='string'||typeof end_time!=='string'||!Number.isFinite(Date.parse(start_time))||!Number.isFinite(Date.parse(end_time))||Date.parse(end_time)<=Date.parse(start_time)||Date.parse(start_time)<=Date.now())return NextResponse.json({error:'Invalid booking interval'},{status:400})
     // Validate slot availability
     const slotAvailable = await validateSlotAvailability(
       supabaseAdmin,
@@ -187,7 +189,7 @@ export async function POST(request: NextRequest) {
     const rescheduleToken = crypto.randomBytes(32).toString('hex')
 
     // Determine host (from availability or default)
-    const host = slotAvailable.host || resource.metadata?.default_hosts?.[0]
+    const host = slotAvailable.host
     if (typeof host !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(host)) {
       return NextResponse.json({ error: 'Booking host is not configured' }, { status: 503 })
     }
@@ -250,6 +252,7 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
+    if (bookingError?.code === '23P01') return NextResponse.json({error:'Time slot is already booked'},{status:409})
     if (bookingError) {
       console.error('Error creating booking:', bookingError)
       return NextResponse.json(
@@ -384,6 +387,10 @@ async function validateSlotAvailability(
   orgId: string
 ): Promise<{ available: boolean; reason?: string; host?: string }> {
   try {
+    const host=configuredSlot(availabilityRules,startTime,endTime)
+    if(!host)return {available:false,reason:'Outside configured availability'}
+    const {before,after}=bookingBuffers(availabilityRules)
+    const start=new Date(Date.parse(startTime)-after*60000).toISOString(),end=new Date(Date.parse(endTime)+before*60000).toISOString()
     // Check for existing bookings in the same time slot
     const { data: conflictingBookings, error: conflictError } = await supabaseAdmin
       .from('bookings')
@@ -391,18 +398,14 @@ async function validateSlotAvailability(
       .eq('resource_id', resourceId)
       .eq('org_id', orgId)
       .eq('status', 'confirmed')
-      .or(`and(start_time.lt.${endTime},end_time.gt.${startTime})`)
+      .or(`and(start_time.lt.${end},end_time.gt.${start})`)
 
-    if (conflictError) return { available: false, reason: 'Error checking availability' }
+    if (conflictError || !conflictingBookings) return { available: false, reason: 'Error checking availability' }
     if (conflictingBookings && conflictingBookings.length > 0) {
       return { available: false, reason: 'Time slot is already booked' }
     }
 
-    // For now, return the first available host
-    // In a more sophisticated implementation, you'd check availability rules
-    const defaultHost = availabilityRules?.windows?.[0]?.host
-    
-    return { available: true, host: defaultHost }
+    return { available: true, host }
 
   } catch (error) {
     console.error('Error validating slot availability:', error)

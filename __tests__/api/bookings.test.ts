@@ -34,7 +34,7 @@ jest.mock('@/lib/email/email-service', () => ({
 describe('/api/bookings', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockResource.mockReset().mockResolvedValue({data:{id:'test-resource-id',title:'Test Resource',metadata:{default_hosts:['host@example.com']}},error:null})
+    mockResource.mockReset().mockResolvedValue({data:{id:'test-resource-id',title:'Test Resource',availability_rules:{timezone:'UTC',slot_minutes:30,windows:[{host:'host@example.com',days:['Thursday'],start:'00:00',end:'23:59'}]},metadata:{default_hosts:['host@example.com']}},error:null})
     mockOrganization.mockReset().mockResolvedValue({data:{name:'Synthetic organization'},error:null})
     mockConflict.mockReset().mockResolvedValue({data:[],error:null})
     mockBooking.mockReset().mockResolvedValue({data:{id:'test-booking-id'},error:null})
@@ -44,8 +44,8 @@ describe('/api/bookings', () => {
     const bookingData = {
       org_id: 'test-org-id',
       resource_id: 'test-resource-id',
-      start_time: '2025-01-15T12:00:00Z',
-      end_time: '2025-01-15T12:30:00Z',
+      start_time: '2099-01-01T12:00:00Z',
+      end_time: '2099-01-01T12:30:00Z',
       artist_name: 'Test Artist',
       artist_email: 'test@example.com',
       goal_text: 'Test consultation'
@@ -110,8 +110,8 @@ describe('/api/bookings', () => {
     const bookingData = {
       org_id: 'test-org-id',
       resource_id: 'non-existent-resource',
-      start_time: '2025-01-15T12:00:00Z',
-      end_time: '2025-01-15T12:30:00Z',
+      start_time: '2099-01-01T12:00:00Z',
+      end_time: '2099-01-01T12:30:00Z',
       artist_name: 'Test Artist',
       artist_email: 'test@example.com',
       goal_text: 'Test consultation'
@@ -138,8 +138,8 @@ describe('/api/bookings', () => {
     const bookingData = {
       org_id: 'test-org-id',
       resource_id: 'test-resource-id',
-      start_time: '2025-01-15T12:00:00Z',
-      end_time: '2025-01-15T12:30:00Z',
+      start_time: '2099-01-01T12:00:00Z',
+      end_time: '2099-01-01T12:30:00Z',
       artist_name: 'Test Artist',
       artist_email: 'test@example.com',
       goal_text: 'Test consultation'
@@ -179,21 +179,22 @@ describe('/api/bookings', () => {
 
 
 
- test('missing tenant host fails closed before insertion',async()=>{
+ test('missing configured host fails closed before insertion',async()=>{
   mockResource.mockResolvedValueOnce({data:{id:'resource',title:'Resource',metadata:{}},error:null})
-  const response=await POST(new NextRequest('http://localhost/api/bookings',{method:'POST',body:JSON.stringify({org_id:'org',resource_id:'resource',start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T11:00:00Z',artist_name:'Test',artist_email:'guest@example.com'})}))
-  expect(response.status).toBe(503)
+  const response=await POST(new NextRequest('http://localhost/api/bookings',{method:'POST',body:JSON.stringify({org_id:'org',resource_id:'resource',start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T10:30:00Z',artist_name:'Test',artist_email:'guest@example.com'})}))
+  expect(response.status).toBe(409)
   expect(mockInsert).not.toHaveBeenCalled()
  })
  test('availability database error prevents insertion',async()=>{
+  mockResource.mockResolvedValue({data:{id:'resource',title:'Resource',availability_rules:{timezone:'UTC',slot_minutes:30,windows:[{host:'host@example.com',days:['Thursday'],start:'00:00',end:'23:59'}]},metadata:{}},error:null})
   mockConflict.mockResolvedValueOnce({data:null,error:{message:'synthetic'}})
-  const response=await POST(new NextRequest('http://localhost/api/bookings',{method:'POST',body:JSON.stringify({org_id:'org',resource_id:'resource',start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T11:00:00Z',artist_name:'Test',artist_email:'guest@example.com'})}))
+  const response=await POST(new NextRequest('http://localhost/api/bookings',{method:'POST',body:JSON.stringify({org_id:'org',resource_id:'resource',start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T10:30:00Z',artist_name:'Test',artist_email:'guest@example.com'})}))
   expect(response.status).toBe(409)
   expect(mockInsert).not.toHaveBeenCalled()
  })
 
 test('missing hosted bookability column prevents booking insertion',async()=>{
  mockResource.mockResolvedValue({data:null,error:{code:'42703'}});mockInsert.mockClear()
- const res=await POST(new NextRequest('http://localhost/api/bookings',{method:'POST',body:JSON.stringify({org_id:'org',resource_id:'resource',start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T11:00:00Z',artist_name:'Test',artist_email:'guest@example.com'})}))
+ const res=await POST(new NextRequest('http://localhost/api/bookings',{method:'POST',body:JSON.stringify({org_id:'org',resource_id:'resource',start_time:'2099-01-01T10:00:00Z',end_time:'2099-01-01T10:30:00Z',artist_name:'Test',artist_email:'guest@example.com'})}))
  expect(res.status).toBe(503);expect(mockInsert).not.toHaveBeenCalled()
 })

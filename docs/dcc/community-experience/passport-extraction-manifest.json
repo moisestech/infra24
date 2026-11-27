@@ -335,5 +335,23 @@
     "Private pilot only: Phase A conditional on verified backup; B/C not authorized",
     "No production activation, main merge, or hosted migration",
     "Exact-head strict build, security CI, isolated preview and two-account acceptance"
-  ]
+  ],
+  "reconciliation": {
+    "source": "93cf9943b688e22e9a483da8c01a1e0ecca4ca0e",
+    "existingPrivatePilotPR": 87,
+    "existingPrivatePilotHead": "8b0b8e78c6a25796adb3c673c8c49fb1c2cd3adc",
+    "phase": "Phase A private owner draft only; B/C excluded",
+    "verifiedUnchangedBaseDependencies": [
+      "lib/dcc/community/atlas.ts",
+      "lib/airtable/client.ts",
+      "lib/auth/public-routes.ts",
+      "app/layout.tsx"
+    ],
+    "excludedLegacyChanges": [
+      "booking integrity and calendar work",
+      "survey and analytics work",
+      "education consolidation"
+    ],
+    "status": "Existing draft candidate requires independent strict CI and shared auth/build closure; no production eligibility"
+  }
 }

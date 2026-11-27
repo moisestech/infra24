@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
+import { configuredDaySlots,bookingBuffers } from '@/lib/booking/configured-slot'
 
 export const dynamic = 'force-dynamic';
 
@@ -102,163 +103,17 @@ export async function GET(request: NextRequest) {
   }
 }
 
-async function generateAvailableSlots(
-  supabaseAdmin: any,
-  resourceId: string,
-  orgId: string,
-  rules: AvailabilityRules,
-  startDate: Date,
-  endDate: Date
-): Promise<TimeSlot[]> {
-  const slots: TimeSlot[] = []
-  const slotMinutes = rules.slot_minutes || 30
-  const bufferBefore = rules.buffer_before || 0
-  const bufferAfter = rules.buffer_after || 0
-  const maxPerDay = rules.max_per_day_per_host || 10
-
-  // Get existing bookings for the date range
-  if (!Number.isInteger(slotMinutes) || slotMinutes < 1 || slotMinutes > 1440) throw new Error('Invalid slot duration')
-  const { data: existingBookings, error } = await supabaseAdmin
-    .from('bookings')
-    .select('start_time, end_time, metadata')
-    .eq('resource_id', resourceId)
-    .eq('org_id', orgId)
-    .eq('status', 'confirmed')
-    .gt('end_time', startDate.toISOString())
-    .lt('start_time', new Date(endDate.getTime()+86400000).toISOString())
-    .limit(1000)
-  if (error || !existingBookings || existingBookings.length >= 1000) throw new Error('Availability lookup incomplete')
-
-  // Conservatively block all overlapping bookings, including those without a host.
-  // Group bookings by host and date
-  const bookingsByHost: Record<string, Record<string, any[]>> = {}
-  existingBookings?.forEach((booking: any) => {
-    const host = booking.metadata?.host
-    if (host) {
-      const date = new Date(booking.start_time).toISOString().split('T')[0]
-      if (!bookingsByHost[host]) bookingsByHost[host] = {}
-      if (!bookingsByHost[host][date]) bookingsByHost[host][date] = []
-      bookingsByHost[host][date].push(booking)
-    }
-  })
-
-  // Generate slots for each day in the range
-  const currentDate = new Date(startDate)
-  while (currentDate <= endDate) {
-    const dateStr = currentDate.toISOString().split('T')[0]
-    const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' })
-
-    // Check if date is blacked out
-    const isBlackedOut = rules.blackouts?.some(blackout => {
-      if (blackout.date) return blackout.date === dateStr
-      if (blackout.range) {
-        const [rangeStart, rangeEnd] = blackout.range
-        return dateStr >= rangeStart && dateStr <= rangeEnd
-      }
-      return false
-    })
-
-    if (!isBlackedOut) {
-      // Generate slots for each host window on this day
-      for (const window of rules.windows) {
-        if (window.days.includes(dayName)) {
-          const hostSlots = generateHostSlots(
-            window,
-            currentDate,
-            slotMinutes,
-            bufferBefore,
-            bufferAfter,
-            existingBookings,
-            maxPerDay
-          )
-          slots.push(...hostSlots)
-        }
-      }
-    }
-
-    currentDate.setDate(currentDate.getDate() + 1)
+async function generateAvailableSlots(db:any,resourceId:string,orgId:string,rules:AvailabilityRules,start:Date,end:Date):Promise<TimeSlot[]>{
+ const {before,after}=bookingBuffers(rules)
+ const {data:rows,error}=await db.from('bookings').select('start_time,end_time,metadata').eq('resource_id',resourceId).eq('org_id',orgId).eq('status','confirmed').gt('end_time',new Date(start.getTime()-3*86400000).toISOString()).lt('start_time',new Date(end.getTime()+3*86400000).toISOString()).limit(1000)
+ if(error||!rows||rows.length>=1000)throw Error('Availability lookup incomplete')
+ const slots:TimeSlot[]=[]
+ for(let day=start.getTime();day<=end.getTime();day+=86400000){
+  const date=new Date(day).toISOString().slice(0,10)
+  for(const slot of configuredDaySlots(rules,date)){
+   if(rows.some((row:any)=>Date.parse(slot.start)<Date.parse(row.end_time)+after*60000&&Date.parse(slot.end)>Date.parse(row.start_time)-before*60000))continue
+   slots.push(slot)
   }
-
-  // Apply pooling strategy
-  return applyPoolingStrategy(slots, rules.pooling || 'round_robin')
+ }
+ return [...new Map(slots.map(s=>[s.start,s])).values()]
 }
-
-function generateHostSlots(
-  window: AvailabilityWindow,
-  date: Date,
-  slotMinutes: number,
-  bufferBefore: number,
-  bufferAfter: number,
-  existingBookings: any[],
-  maxPerDay: number
-): TimeSlot[] {
-  const slots: TimeSlot[] = []
-  const [startHour, startMinute] = window.start.split(':').map(Number)
-  const [endHour, endMinute] = window.end.split(':').map(Number)
-
-  const windowStart = new Date(date)
-  windowStart.setHours(startHour, startMinute, 0, 0)
-
-  const windowEnd = new Date(date)
-  windowEnd.setHours(endHour, endMinute, 0, 0)
-
-  // Create blocked time ranges with buffers
-  const blockedRanges = existingBookings.map(booking => ({
-    start: new Date(new Date(booking.start_time).getTime() - bufferBefore * 60000),
-    end: new Date(new Date(booking.end_time).getTime() + bufferAfter * 60000)
-  }))
-
-  // Generate slots
-  const currentSlot = new Date(windowStart)
-  let dailyCount = 0
-
-  while (currentSlot < windowEnd && dailyCount < maxPerDay) {
-    const slotEnd = new Date(currentSlot.getTime() + slotMinutes * 60000)
-    
-    if (slotEnd <= windowEnd) {
-      // Check if slot conflicts with blocked ranges
-      const isBlocked = blockedRanges.some(blocked => 
-        (currentSlot < blocked.end && slotEnd > blocked.start)
-      )
-
-      if (!isBlocked) {
-        slots.push({
-          start: currentSlot.toISOString(),
-          end: slotEnd.toISOString(),
-          host: window.host
-        })
-        dailyCount++
-      }
-    }
-
-    currentSlot.setMinutes(currentSlot.getMinutes() + slotMinutes)
-  }
-
-  return slots
-}
-
-function applyPoolingStrategy(slots: TimeSlot[], strategy: string): TimeSlot[] {
-  if (strategy === 'round_robin') {
-    // Group slots by time, then interleave hosts
-    const slotsByTime: Record<string, TimeSlot[]> = {}
-    slots.forEach(slot => {
-      const timeKey = slot.start
-      if (!slotsByTime[timeKey]) slotsByTime[timeKey] = []
-      slotsByTime[timeKey].push(slot)
-    })
-
-    const result: TimeSlot[] = []
-    Object.values(slotsByTime).forEach(timeSlots => {
-      // Sort by host for consistent ordering
-      timeSlots.sort((a, b) => a.host.localeCompare(b.host))
-      result.push(...timeSlots)
-    })
-
-    return result.sort((a, b) => a.start.localeCompare(b.start))
-  }
-
-  // For 'least_loaded', we'd need to count upcoming bookings per host
-  // For now, just return sorted by time
-  return slots.sort((a, b) => a.start.localeCompare(b.start))
-}
-
