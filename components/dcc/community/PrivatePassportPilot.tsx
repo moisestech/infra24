@@ -22,7 +22,7 @@ export function PrivatePassportPilot(){
   setSaving(true)
   try{
    const {revision,displayName,summary,practices,interests,links}=draft
-   const r=await fetch('/api/dcc/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision,displayName,summary,practices,interests,links}),cache:'no-store'})
+   const r=await fetch('/api/dcc/me',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision,displayName,summary,practices:practices.map(p=>p.trim()).filter(Boolean),interests,links}),cache:'no-store'})
    if(r.status===409){setConflict(true);setMessage('Your revision changed. Copy unsaved edits before reloading.');return}
    if(!r.ok)throw Error()
    const result=await r.json()
