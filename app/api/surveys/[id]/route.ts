@@ -1,213 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireOrganizationStaff } from '@/lib/security/require-organization-staff'
+export const dynamic = 'force-dynamic'
+const headers = { 'Cache-Control': 'private, no-store' }
+const fail = (error:string,status:number) => NextResponse.json({error},{status,headers})
 import { auth } from '@clerk/nextjs/server'
 import { getSupabaseAdmin } from '@/lib/supabase'
-
-export const dynamic = 'force-dynamic';
-
-// GET /api/surveys/[id] - Get specific survey
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params
-    console.log('🔍 API Route: /api/surveys/[id] - Starting request for survey:', id)
-
-    // Get survey details
-    const supabaseAdmin = getSupabaseAdmin()
-
-    const { data: survey, error: surveyError } = await supabaseAdmin
-      .from('submission_forms')
-      .select(`
-        id,
-        title,
-        description,
-        category,
-        type,
-        form_schema,
-        submission_settings,
-        is_public,
-        requires_authentication,
-        organization_id,
-        organizations!inner(id, name, slug)
-      `)
-      .eq('id', id)
-      .eq('type', 'survey')
-      .eq('is_active', true)
-      .single()
-
-    if (surveyError || !survey) {
-      console.log('❌ Survey not found:', surveyError)
-      return NextResponse.json({ error: 'Survey not found' }, { status: 404 })
-    }
-
-    console.log('✅ Found survey:', survey.title)
-
-    return NextResponse.json({
-      survey: {
-        id: survey.id,
-        title: survey.title,
-        description: survey.description,
-        category: survey.category,
-        form_schema: survey.form_schema,
-        submission_settings: survey.submission_settings,
-        is_public: survey.is_public,
-        requires_authentication: survey.requires_authentication,
-        organization: survey.organizations
-      }
-    })
-
-  } catch (error) {
-    console.error('Error in survey API:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
+export async function GET(_request:NextRequest,{params}:{params:Promise<{id:string}>}){
+  try{
+    const {id}=await params
+    const db=getSupabaseAdmin()
+    const {data:visibility,error}=await db.from('submission_forms').select('id,org_id,is_public,requires_authentication').eq('id',id).eq('type','survey').eq('is_active',true).maybeSingle()
+    if(error) return fail('Survey unavailable',503)
+    if(!visibility) return fail('Survey not found',404)
+    if(visibility.is_public!==true){
+      const access=await requireOrganizationStaff(visibility.org_id)
+      if(!access.ok) return fail(access.error,access.status)
+    }else if(visibility.requires_authentication===true && !(await auth()).userId) return fail('Sign in required',401)
+    let query=db.from('submission_forms').select('id,title,description,category,form_schema,submission_settings,is_public,requires_authentication,organizations!inner(id,name,slug)').eq('id',id).eq('org_id',visibility.org_id).eq('type','survey').eq('is_active',true).eq('is_public',visibility.is_public).eq('requires_authentication',visibility.requires_authentication)
+    const {data:survey,error:readError}=await query.maybeSingle()
+    if(readError) return fail('Survey unavailable',503)
+    if(!survey) return fail('Survey not found',404)
+    return NextResponse.json({survey:{id:survey.id,title:survey.title,description:survey.description,category:survey.category,form_schema:survey.form_schema,submission_settings:survey.submission_settings,is_public:survey.is_public,requires_authentication:survey.requires_authentication,organization:survey.organizations}},{headers})
+  }catch{return fail('Survey unavailable',503)}
 }
-
-// PUT /api/surveys/[id] - Update survey
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { id } = await params;
-    const body = await request.json();
-
-    const supabaseAdmin = getSupabaseAdmin();
-    const supabase = supabaseAdmin;
-
-    // Get current survey to check permissions
-    const { data: currentSurvey, error: fetchError } = await supabase
-      .from('surveys')
-      .select('organization_id')
-      .eq('id', id)
-      .single();
-
-    if (fetchError) {
-      return NextResponse.json({ error: 'Survey not found' }, { status: 404 });
-    }
-
-    // Check if user has admin/manager access
-    const { data: membership } = await supabase
-      .from('org_memberships')
-      .select('role')
-      .eq('org_id', currentSurvey.organization_id)
-      .eq('user_id', userId)
-      .single();
-
-    if (!membership || !['admin', 'manager'].includes(membership.role)) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
-    }
-
-    const b = body as Record<string, unknown>;
-    const allowedKeys = [
-      'title',
-      'description',
-      'status',
-      'is_anonymous',
-      'is_public',
-      'requires_authentication',
-      'allowed_roles',
-      'opens_at',
-      'closes_at',
-      'max_responses',
-      'max_responses_per_user',
-      'survey_schema',
-      'settings',
-      'metadata',
-      'template_id',
-      'language_default',
-      'languages_supported',
-    ] as const;
-
-    const patch: Record<string, unknown> = {
-      updated_by: userId,
-      updated_at: new Date().toISOString(),
-    };
-    for (const key of allowedKeys) {
-      if (b[key] !== undefined) patch[key] = b[key];
-    }
-    if (b.isPublic !== undefined) patch.is_public = b.isPublic === true;
-
-    const { data: survey, error } = await supabase
-      .from('surveys')
-      .update(patch)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error updating survey:', error);
-      return NextResponse.json({ error: 'Failed to update survey' }, { status: 500 });
-    }
-
-    return NextResponse.json({ survey }, { status: 200 });
-  } catch (error) {
-    console.error('Error in update survey API:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
-}
-
-// DELETE /api/surveys/[id] - Delete survey
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { id } = await params;
-
-    const supabaseAdmin = getSupabaseAdmin();
-    const supabase = supabaseAdmin;
-
-    // Get current survey to check permissions
-    const { data: currentSurvey, error: fetchError } = await supabase
-      .from('surveys')
-      .select('organization_id')
-      .eq('id', id)
-      .single();
-
-    if (fetchError) {
-      return NextResponse.json({ error: 'Survey not found' }, { status: 404 });
-    }
-
-    // Check if user has admin access
-    const { data: membership } = await supabase
-      .from('org_memberships')
-      .select('role')
-      .eq('org_id', currentSurvey.organization_id)
-      .eq('user_id', userId)
-      .single();
-
-    if (!membership || membership.role !== 'admin') {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
-    }
-
-    // Delete survey (cascade will handle related records)
-    const { error } = await supabase
-      .from('surveys')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error deleting survey:', error);
-      return NextResponse.json({ error: 'Failed to delete survey' }, { status: 500 });
-    }
-
-    return NextResponse.json({ message: 'Survey deleted successfully' }, { status: 200 });
-  } catch (error) {
-    console.error('Error in delete survey API:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
-}
+// Legacy mutation target 'surveys' does not exist in the hosted catalog.
+// Do not silently redirect mutations to a different table or permission model.
+export async function PUT(_request:NextRequest,_context:{params:Promise<{id:string}>}){return fail('Legacy survey editing unavailable',410)}
+export async function DELETE(_request:NextRequest,_context:{params:Promise<{id:string}>}){return fail('Legacy survey deletion unavailable',410)}

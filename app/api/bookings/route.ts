@@ -5,6 +5,7 @@ import { generateScheduledGoogleMeetLink } from '@/lib/google-meet'
 import { sendBookingConfirmationEmail, sendHostNotificationEmail, BookingEmailData } from '@/lib/email/email-service'
 import { auth } from '@clerk/nextjs/server'
 import crypto from 'crypto'
+import { bookingReceiptToken } from '@/lib/security/booking-receipt'
 
 export const dynamic = 'force-dynamic';
 
@@ -313,7 +314,7 @@ export async function POST(request: NextRequest) {
 
     // Generate URLs
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const confirmationUrl = `${baseUrl}/bookings/confirmation/${booking.id}`
+    const confirmationUrl = `${baseUrl}/bookings/confirmation/${booking.id}#receipt=${bookingReceiptToken(booking.id,rescheduleToken)}`
     const rescheduleUrl = `${baseUrl}/bookings/reschedule/${booking.id}?token=${rescheduleToken}`
     const cancelUrl = `${baseUrl}/bookings/cancel/${booking.id}?token=${rescheduleToken}`
     const icsUrl = `${baseUrl}/api/bookings/${booking.id}/ics`

@@ -10,8 +10,9 @@ jest.mock('@/lib/supabase', () => ({
     from: () => ({
       select: jest.fn().mockReturnThis(),
       eq: jest.fn().mockReturnThis(),
-      gte: jest.fn().mockReturnThis(),
-      lte: mockBookings,
+      gt: jest.fn().mockReturnThis(),
+      lt: jest.fn().mockReturnThis(),
+      limit: mockBookings,
       single: mockResource,
     }),
   }),
@@ -20,7 +21,7 @@ jest.mock('@/lib/supabase', () => ({
 describe('/api/availability', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockResource.mockReset().mockResolvedValue({data:{id:'test-resource-id',availability_rules:{timezone:'America/New_York',slot_minutes:30,windows:[{by:'host',host:'host@example.test',days:['Wednesday','Tuesday'],start:'12:00',end:'16:00'}]}},error:null})
+    mockResource.mockReset().mockResolvedValue({data:{id:'test-resource-id',org_id:'11111111-1111-4111-8111-111111111111',availability_rules:{timezone:'America/New_York',slot_minutes:30,windows:[{by:'host',host:'host@example.test',days:['Wednesday','Tuesday'],start:'12:00',end:'16:00'}]}},error:null})
     mockBookings.mockReset().mockResolvedValue({data:[],error:null})
   })
 
@@ -98,3 +99,10 @@ describe('/api/availability', () => {
 
 
 
+
+it('fails closed on an incomplete booking query', async () => {
+  mockResource.mockResolvedValue({data:{id:'test-resource-id',org_id:'11111111-1111-4111-8111-111111111111',availability_rules:{slot_minutes:30,windows:[]}},error:null})
+  mockBookings.mockResolvedValue({data:null,error:{message:'unavailable'}})
+  const response=await GET(new NextRequest('http://localhost/api/availability?resource_id=test-resource-id&start_date=2025-01-15&end_date=2025-01-15'))
+  expect(response.status).toBe(503)
+})

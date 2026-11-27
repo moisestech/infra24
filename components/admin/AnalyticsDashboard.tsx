@@ -77,20 +77,27 @@ export function AnalyticsDashboard() {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('30d');
   const [selectedMetric, setSelectedMetric] = useState('bookings');
+  const [organizationId, setOrganizationId] = useState('');
+  const [reportError, setReportError] = useState('');
 
   const fetchAnalytics = useCallback(async () => {
     try {
-      const response = await fetch(`/api/admin/analytics?range=${timeRange}`);
+      setAnalytics(null);
+      setReportError('');
+      if (!organizationId.trim()) { setReportError('Select an organization ID to view tenant analytics.'); return; }
+      const response = await fetch(`/api/admin/analytics?range=${timeRange}&organization_id=${encodeURIComponent(organizationId.trim())}`);
       if (response.ok) {
         const data = await response.json();
+        // Legacy dashboard assumes payment data that the hosted bookings schema does not provide.
+        if (data.analytics?.unavailable_metrics?.includes('actual_revenue')) { setReportError('Booking analytics available; payment metrics are not verified. Use the tenant report until the dashboard is adapted.'); return; }
         setAnalytics(data.analytics);
-      }
+      } else { setReportError('Organization report unavailable or access denied.'); }
     } catch (error) {
       console.error('Error fetching analytics:', error);
     } finally {
       setLoading(false);
     }
-  }, [timeRange]);
+  }, [timeRange, organizationId]);
 
   useEffect(() => {
     fetchAnalytics();
@@ -110,6 +117,8 @@ export function AnalyticsDashboard() {
     if (value < previousValue) return 'text-red-600';
     return 'text-gray-600';
   };
+
+  if (!organizationId || reportError) return <div className="space-y-3"><label htmlFor="analytics-org">Organization ID</label><input id="analytics-org" className="border rounded p-2 w-full" value={organizationId} onChange={e=>setOrganizationId(e.target.value)} /><p>{reportError || 'Select an organization to view analytics.'}</p></div>;
 
   if (loading) {
     return (
