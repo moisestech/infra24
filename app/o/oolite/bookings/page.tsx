@@ -841,6 +841,7 @@ function OoliteBookingsPageContent() {
           {/* Booking Calendar */}
           <div className="mb-8">
             <ResourceCalendar
+              publicAvailability
               orgId="cf088ac1-39a5-4948-a72c-d8059c1ab739"
               onBookingCreate={handleBookingCreated}
             />
