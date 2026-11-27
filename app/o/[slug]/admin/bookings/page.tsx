@@ -116,25 +116,10 @@ export default function AdminBookingsPage() {
     try {
       setLoading(true);
       
-      // Log current admin user information using Clerk hooks
-      console.log('👤 Current Admin User Info:', {
-        userId: userId || 'Not authenticated',
-        isSignedIn,
-        userEmail: user?.emailAddresses?.[0]?.emailAddress || 'No email',
-        userName: user?.fullName || user?.firstName || 'No name',
-        organization: organization?.name || 'Unknown org'
-      });
-      
       const response = await fetch(`/api/organizations/${organization?.id}/bookings`);
       if (response.ok) {
         const data = await response.json();
         setBookings(data.bookings || []);
-        
-        // Log user emails for debugging
-        console.log('📧 Admin Bookings - User Emails:');
-        data.bookings?.forEach((booking: Booking, index: number) => {
-          console.log(`${index + 1}. ${booking.title}: ${booking.user_email || 'No email'} (User: ${booking.user_name || 'Unknown'})`);
-        });
         
         // Calculate stats
         const bookingStats: BookingStats = {
