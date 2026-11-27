@@ -10,7 +10,7 @@ import PeopleNetwork2D from './PeopleNetwork2D'
 type FieldNode = NodeObject & {
   id: string
   label: string
-  kind: 'public-cofounder' | 'public-artist' | 'anonymous-presence' | 'practice' | 'poll-selection'
+  kind: 'public-cofounder' | 'public-artist' | 'anonymous-presence' | 'anonymous-website-presence' | 'approved-profile' | 'practice' | 'poll-selection'
   choiceId?: string
   count?: number
 }
