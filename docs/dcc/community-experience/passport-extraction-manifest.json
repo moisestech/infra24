@@ -352,7 +352,25 @@
       "survey and analytics work",
       "education consolidation"
     ],
-    "status": "Phase A private owner journey constructed on draft PR 87; strict CI and provider acceptance pending",
-    "privatePilotCandidateHead": "aaca9e2cc60881d3ea3c531b94a5ae2bd6564356"
+    "status": "Focused tests and dependency audit pass on latest pilot head; expanded two-account PostgREST and complete strict CI pending. Compatibility overlay is explicitly tracked, no Phase B/C or production eligibility.",
+    "privatePilotCandidateHead": "71b9810f6eb2321eaac3abce37f2114aba102abb",
+    "compatibilityOverlay": {
+      "source": "af86e2f388a8cd74a021eb9c83f32c7e537c540d",
+      "files": 137,
+      "manifest": "docs/dcc/community-experience/PRIVATE-PILOT-COMPATIBILITY-OVERLAY.json",
+      "previousPilotHead": "aaca9e2cc60881d3ea3c531b94a5ae2bd6564356",
+      "previousDiagnostics": 142,
+      "generatedRouteDiagnostics": 21,
+      "previousFailedSuites": 17,
+      "previousFailedTests": 48
+    },
+    "integratedBookingEvidence": {
+      "head": "af86e2f388a8cd74a021eb9c83f32c7e537c540d",
+      "run": 45917275535,
+      "job": 140239472539,
+      "result": "passed",
+      "preview": "READY (nonproduction)",
+      "remaining": "Full workflow pending; buffer-only overlap, host daily capacity, side effects and hosted preflight remain open"
+    }
   }
 }
