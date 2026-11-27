@@ -693,5 +693,65 @@
     "Exact-head strict typegen, full test, build and Vercel",
     "Review inherited legacy exposure; no production eligibility",
     "No hosted migrations, flags or communications"
-  ]
+  ],
+  "followup": {
+    "source": "c4d03fa68f683e54b0b71f4f02ba72460776daae",
+    "parent": "7876dffc455a2d5aeeeec209fc083df91ba59089",
+    "diagnosedHead": "71b9810f6eb2321eaac3abce37f2114aba102abb",
+    "previousResults": {
+      "typeDiagnostics": 3,
+      "generatedRouteContractDiagnostics": 0,
+      "lint": "passed",
+      "failedSuites": 2,
+      "failedTests": 12,
+      "passedTests": 687,
+      "buildErrors": 5
+    },
+    "parallelRepair": {
+      "commit": "7876dffc455a2d5aeeeec209fc083df91ba59089",
+      "files": [
+        "components/dcc/artwork/PeopleNetworkField.tsx",
+        "components/marketing/knight/budget/FundingSourcesDonutClient.tsx",
+        "lib/network-builder/readiness.ts"
+      ]
+    },
+    "files": [
+      {
+        "path": "features/playwire-demo/PublisherJourneyDemoClient.tsx",
+        "sha": "249db9bd3399fea6cfac211fcf94094e6fb2cad2",
+        "reason": "Client-only dynamic import boundary and dependency closure"
+      },
+      {
+        "path": "app/(marketing)/network/research/page.tsx",
+        "sha": "73a1e18cfceecd977418498301fe4bcb46537c64",
+        "reason": "Client-only dynamic import boundary and dependency closure"
+      },
+      {
+        "path": "app/(marketing)/opportunities/playwire/page.tsx",
+        "sha": "6c6d757260e5e78c4dd80c180caf2c3719a7884c",
+        "reason": "Client-only dynamic import boundary and dependency closure"
+      },
+      {
+        "path": "app/(marketing)/page.tsx",
+        "sha": "17755ade3c90ce0e76835d29af87d84a63aa7f12",
+        "reason": "Client-only dynamic import boundary and dependency closure"
+      },
+      {
+        "path": "app/o/[slug]/memory-agent/page.tsx",
+        "sha": "b84eb97c90ed9896bcdfa93ec9b09b240280c80c",
+        "reason": "Client-only dynamic import boundary and dependency closure"
+      },
+      {
+        "path": "features/learn-canvas/components/__tests__/course-components.test.tsx",
+        "sha": "5e6035fc39ac87dcb01da282b466a457db0b50d9",
+        "reason": "Retain and repair existing real assertions for current UI contracts"
+      },
+      {
+        "path": "features/learn-canvas/components/interactive/__tests__/FilmstripTimeline.test.tsx",
+        "sha": "a6820909fe2fc34d2039708f7a121a3bf7f10cf6",
+        "reason": "Retain and repair existing real assertions for current UI contracts"
+      }
+    ],
+    "status": "New strict CI required; no scope expansion"
+  }
 }
