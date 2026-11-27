@@ -60,8 +60,23 @@ export async function GET(
       )
     }
 
+    const rows = bookings || []
+    const ids = [...new Set(rows.map(row => row.resource_id).filter(id => typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)))]
+    const resourcesById = new Map<string, unknown>()
+    if (ids.length) {
+      const { data: resources, error: resourceError } = await supabase.from('resources')
+        .select('id,title,type,category,location,capacity').eq('org_id', access.orgId).in('id', ids)
+      if (resourceError) return NextResponse.json({ error: 'Failed to fetch booking resources' }, { status: 503, headers: { 'Cache-Control': 'private, no-store' } })
+      for (const resource of resources || []) resourcesById.set(resource.id, resource)
+    }
+    const compatible = rows.map(row => {
+      const { metadata, ...rest } = row
+      return { ...rest, user_name: typeof metadata?.artist_name === 'string' ? metadata.artist_name : null,
+        user_email: typeof metadata?.artist_email === 'string' ? metadata.artist_email : null,
+        resources: resourcesById.get(row.resource_id) || null }
+    })
     return NextResponse.json({ 
-      bookings: bookings || [],
+      bookings: compatible,
       count: bookings?.length || 0
     }, { headers: { 'Cache-Control': 'private, no-store' } })
   } catch (error) {
